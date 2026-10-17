@@ -19,7 +19,10 @@ import {
   CheckCircle2,
   Sparkles,
   Layers,
-  FolderDown
+  FolderDown,
+  Users,
+  GitFork,
+  Globe
 } from 'lucide-react';
 
 interface QuestionBankModalProps {
@@ -41,8 +44,17 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
   const [selectedType, setSelectedType] = useState<string>('all');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all');
   const [insertedIds, setInsertedIds] = useState<Set<string>>(new Set());
+  const [bankTab, setBankTab] = useState<'personal' | 'shared'>('personal');
+  const [sharedQuestions, setSharedQuestions] = useState<any[]>([]);
+  const [loadingShared, setLoadingShared] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Nạp danh sách câu hỏi từ IndexedDB
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3500);
+  };
+
+  // Nạp danh sách câu hỏi cá nhân từ IndexedDB
   const loadBankQuestions = async () => {
     setLoading(true);
     try {
@@ -55,11 +67,47 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
     }
   };
 
+  // Nạp danh sách câu hỏi dùng chung nội bộ từ PostgreSQL server
+  const loadSharedQuestions = async () => {
+    setLoadingShared(true);
+    try {
+      const res = await fetch('/api/questions/shared');
+      if (res.ok) {
+        const data = await res.json();
+        setSharedQuestions(data.questions || []);
+      }
+    } catch (e) {
+      console.error('Lỗi khi nạp ngân hàng dùng chung:', e);
+    } finally {
+      setLoadingShared(false);
+    }
+  };
+
   useEffect(() => {
     if (isOpen) {
-      loadBankQuestions();
+      if (bankTab === 'personal') {
+        loadBankQuestions();
+      } else {
+        loadSharedQuestions();
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, bankTab]);
+
+  // Nhân bản câu hỏi dùng chung về kho cá nhân
+  const handleForkQuestion = async (q: any) => {
+    try {
+      const res = await fetch(`/api/questions/${q.id}/fork`, { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data.error || 'Không thể nhân bản câu hỏi');
+        return;
+      }
+      showToast('Đã nhân bản câu hỏi thành công vào kho của bạn!');
+      loadBankQuestions();
+    } catch {
+      showToast('Lỗi kết nối máy chủ');
+    }
+  };
 
   // Xóa câu hỏi khỏi ngân hàng
   const handleDelete = async (id: string) => {
@@ -183,16 +231,18 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
     await loadBankQuestions();
   };
 
-  // Lọc danh sách câu hỏi
+  // Lọc danh sách câu hỏi theo tab đang chọn (Cá nhân hoặc Dùng chung nội bộ)
+  const targetList = bankTab === 'personal' ? questions : sharedQuestions;
+
   const filteredQuestions = useMemo(() => {
-    return questions.filter(q => {
+    return targetList.filter((q: any) => {
       // 1. Lọc theo từ khóa
       if (searchQuery.trim()) {
         const query = searchQuery.toLowerCase();
-        const contentMatch = q.content.toLowerCase().includes(query);
-        const solutionMatch = (q.step_by_step_solution || '').toLowerCase().includes(query);
-        const tagMatch = (q.tags || []).some(t => t.toLowerCase().includes(query));
-        const topicMatch = (q.topics || []).some(t => t.toLowerCase().includes(query));
+        const contentMatch = (q.content || '').toLowerCase().includes(query);
+        const solutionMatch = (q.solution || q.step_by_step_solution || '').toLowerCase().includes(query);
+        const tagMatch = (q.tags || []).some((t: string) => t.toLowerCase().includes(query));
+        const topicMatch = (q.topics || []).some((t: string) => t.toLowerCase().includes(query));
         if (!contentMatch && !solutionMatch && !tagMatch && !topicMatch) return false;
       }
 
@@ -203,14 +253,14 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
       if (selectedGrade !== 'all' && q.grade !== Number(selectedGrade)) return false;
 
       // 4. Lọc theo loại câu hỏi
-      if (selectedType !== 'all' && q.type !== selectedType) return false;
+      if (selectedType !== 'all' && q.type?.toLowerCase() !== selectedType.toLowerCase()) return false;
 
       // 5. Lọc theo độ khó
-      if (selectedDifficulty !== 'all' && q.difficulty !== selectedDifficulty) return false;
+      if (selectedDifficulty !== 'all' && q.difficulty?.toLowerCase() !== selectedDifficulty.toLowerCase()) return false;
 
       return true;
     });
-  }, [questions, searchQuery, selectedSubject, selectedGrade, selectedType, selectedDifficulty]);
+  }, [targetList, searchQuery, selectedSubject, selectedGrade, selectedType, selectedDifficulty]);
 
   if (!isOpen) return null;
 
@@ -249,6 +299,43 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
               className="p-1.5 text-slate-400 hover:text-white rounded-xl hover:bg-white/10 transition-colors"
             >
               <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Thông báo Toast */}
+        {toastMessage && (
+          <div className="bg-emerald-600 text-white px-4 py-2 text-xs font-semibold flex items-center gap-2 shrink-0 animate-in fade-in">
+            <CheckCircle2 className="w-4 h-4 shrink-0" />
+            <span>{toastMessage}</span>
+          </div>
+        )}
+
+        {/* Tab Switcher: Ngân hàng của tôi vs Ngân hàng dùng chung nội bộ */}
+        <div className="bg-slate-100 px-5 py-2 border-b border-slate-200 flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setBankTab('personal')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                bankTab === 'personal'
+                  ? 'bg-white text-indigo-700 shadow-xs border border-slate-200'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+              }`}
+            >
+              <BookMarked className="w-3.5 h-3.5" />
+              <span>Ngân hàng của tôi ({questions.length})</span>
+            </button>
+
+            <button
+              onClick={() => setBankTab('shared')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                bankTab === 'shared'
+                  ? 'bg-white text-indigo-700 shadow-xs border border-slate-200'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+              }`}
+            >
+              <Globe className="w-3.5 h-3.5 text-indigo-600" />
+              <span>Ngân hàng dùng chung nội bộ ({sharedQuestions.length})</span>
             </button>
           </div>
         </div>
@@ -380,12 +467,30 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
                           <ShieldCheck className="w-3 h-3" /> Đã kiểm định
                         </span>
                       )}
+
+                      {bankTab === 'shared' && q.author?.name && (
+                        <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200 flex items-center gap-1">
+                          <Users className="w-3 h-3" />
+                          <span>Tác giả: {q.author.name}</span>
+                        </span>
+                      )}
                     </div>
 
                     <div className="flex items-center gap-2">
+                      {bankTab === 'shared' && (
+                        <button
+                          onClick={() => handleForkQuestion(q)}
+                          title="Nhân bản câu hỏi này về ngân hàng cá nhân của bạn"
+                          className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 transition-colors cursor-pointer"
+                        >
+                          <GitFork className="w-3.5 h-3.5" />
+                          <span>Nhân bản</span>
+                        </button>
+                      )}
+
                       <button
                         onClick={() => handleInsert(q)}
-                        className={`flex items-center gap-1 px-3 py-1 text-xs font-bold rounded-lg transition-all shadow-xs ${
+                        className={`flex items-center gap-1 px-3 py-1 text-xs font-bold rounded-lg transition-all shadow-xs cursor-pointer ${
                           isInserted
                             ? 'bg-emerald-600 text-white'
                             : 'bg-indigo-600 hover:bg-indigo-700 text-white'
@@ -395,13 +500,15 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
                         <span>{isInserted ? 'Đã thêm vào đề!' : 'Thêm vào đề'}</span>
                       </button>
 
-                      <button
-                        onClick={() => handleDelete(q.id)}
-                        title="Xóa khỏi ngân hàng"
-                        className="p-1 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      {bankTab === 'personal' && (
+                        <button
+                          onClick={() => handleDelete(q.id)}
+                          title="Xóa khỏi ngân hàng"
+                          className="p-1 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
                     </div>
                   </div>
 
@@ -414,7 +521,7 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
                     {/* Figures nếu có */}
                     {q.figures && q.figures.length > 0 && (
                       <div className="my-2 space-y-2">
-                        {q.figures.map(fig => {
+                        {q.figures.map((fig: any) => {
                           if (fig.kind === 'variation_table') return <VariationTable key={fig.id} data={fig.data as any} />;
                           if (fig.kind === 'function_plot') return <FunctionPlot key={fig.id} data={fig.data as any} />;
                           if (fig.kind === 'image') {
@@ -439,7 +546,7 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
                     {/* Choices */}
                     {q.choices && q.choices.length > 0 && (
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-xs">
-                        {q.choices.map((c) => {
+                        {q.choices.map((c: any) => {
                           const isCorrect = c.key === q.correct_answer;
                           return (
                             <div
@@ -468,7 +575,7 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
                     {/* Sub questions Đúng/Sai */}
                     {q.sub_questions && q.sub_questions.length > 0 && (
                       <div className="space-y-1 pt-1 text-xs">
-                        {q.sub_questions.map(sub => (
+                        {q.sub_questions.map((sub: any) => (
                           <div key={sub.key} className="flex items-baseline justify-between p-1.5 rounded-lg bg-slate-50 border border-slate-200">
                             <div className="flex items-baseline gap-2 grow pr-2">
                               <span className="font-bold">{sub.key})</span>

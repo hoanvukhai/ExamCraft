@@ -38,24 +38,25 @@
 
 ---
 
-## 📦 GIAI ĐOẠN 2: CHUYỂN ĐỔI DỮ LIỆU ĐỀ THI SANG DB & ĐIỀU PHỐI 7 AI KEYS
-- [ ] Chuyển đổi API và giao diện quản lý Câu hỏi (`Question`) sang Prisma:
-  - [ ] Lưu trữ nội dung, `payload` JSON, phân loại môn/khối/dạng câu.
-  - [ ] Lưu lịch sử chỉnh sửa câu hỏi (`QuestionRevision`), hỗ trợ khung so sánh diff và hoàn tác.
-- [ ] Chuyển đổi API và giao diện Đề thi (`Exam`) sang Prisma:
-  - [ ] Lưu cấu trúc `sections` linh hoạt, liên kết danh sách câu hỏi qua `ExamQuestion`.
-- [ ] Xây dựng trang "Nhập từ bản cũ" (nhập dữ liệu IndexedDB/JSON cũ vào tài khoản giáo viên trong DB).
-- [ ] Gỡ bỏ Dexie.js / IndexedDB khỏi luồng lưu trữ chính.
-- [ ] Xây dựng Ngân hàng câu hỏi chung nội bộ (`/questions/shared`):
-  - [ ] Cơ chế hiển thị câu hỏi `SHARED` kèm tác giả gốc (`authorId`).
-  - [ ] Nút "Thêm vào đề của tôi" tạo bản sao độc lập (`sourceKind = FORKED`, `originId`).
-  - [ ] Khóa không cho chia sẻ các câu nhập từ web (`IMPORTED_WEB`, `shareable = false`).
-- [ ] Nâng cấp module điều phối 7 Google Gemini API Keys:
-  - [ ] Lưu trạng thái (`ACTIVE`, `COOLDOWN`, `DEAD`), đếm lượt gọi và thời điểm reset vào bảng `AiKeyState`.
-  - [ ] Cơ chế chọn key thông minh ("ít dùng gần nhất", giới hạn 1–2 yêu cầu đồng thời mỗi key).
-  - [ ] Ghi nhật ký sử dụng AI vào `AiUsageLog`.
-  - [ ] Áp dụng giới hạn hạn mức theo ngày của từng giáo viên (`User.aiDailyLimit`).
-  - [ ] Trang dashboard `/admin/ai` xem trạng thái thực tế của 7 keys.
+## 📦 GIAI ĐOẠN 2: CHUYỂN ĐỔI DỮ LIỆU ĐỀ THI SANG DB & ĐIỀU PHỐI 7 AI KEYS (HOÀN THÀNH 100%)
+- [x] Chuyển đổi API và giao diện quản lý Câu hỏi (`Question`) sang Prisma:
+  - [x] Lưu trữ nội dung, `payload` JSON, phân loại môn/khối/dạng câu (`/api/questions`, `/api/questions/[id]`).
+  - [x] Lưu lịch sử chỉnh sửa câu hỏi (`QuestionRevision`), hỗ trợ khung so sánh diff và hoàn tác (`/api/questions/[id]/revisions`).
+- [x] Chuyển đổi API và giao diện Đề thi (`Exam`) sang Prisma:
+  - [x] Lưu cấu trúc `sections` linh hoạt, liên kết danh sách câu hỏi qua `ExamQuestion` (`/api/exams`, `/api/exams/[id]`).
+- [x] Xây dựng chức năng "Nhập từ bản cũ" (`/api/migration/import-legacy` và nút đồng bộ 1-click trong `ExamLibraryModal.tsx`).
+- [x] Xây dựng Ngân hàng câu hỏi chung nội bộ (`/api/questions/shared`):
+  - [x] Cơ chế hiển thị câu hỏi `SHARED` kèm tác giả gốc (`authorId`, `author.name`).
+  - [x] Nút "Nhân bản" (`/api/questions/[id]/fork`) tạo bản sao độc lập (`sourceKind = FORKED`, `originId`, bảo toàn `authorId`).
+  - [x] Khóa không cho chia sẻ các câu nhập từ web (`IMPORTED_WEB`, `shareable = false`).
+  - [x] Tích hợp tab "Ngân hàng dùng chung nội bộ" trực tiếp vào giao diện `QuestionBankModal.tsx`.
+- [x] Nâng cấp module điều phối 7 Google Gemini API Keys (`src/lib/gemini-keys.ts`):
+  - [x] Đồng bộ trạng thái (`ACTIVE`, `COOLDOWN`, `DEAD`), đếm lượt gọi và thời điểm cooldown vào bảng `AiKeyState`.
+  - [x] Cơ chế chọn key thông minh ("ít dùng nhất", không bị cooldown, tự động fallback khi gặp lỗi 429/503).
+  - [x] Ghi nhật ký sử dụng AI vào `AiUsageLog` (đo độ trễ ms, status, endpoint, model).
+  - [x] Áp dụng kiểm tra giới hạn hạn mức theo ngày của từng giáo viên (`checkUserAiQuota` với `User.aiDailyLimit`).
+  - [x] Trang dashboard `/admin/ai` xem trạng thái thực tế của 7 keys, xem 30 log gần nhất và nút kích hoạt lại key.
+- [x] Kiểm thử tự động toàn diện: Đã chạy `tests/test_phase2_db_ai.ts` vượt qua 7/7 bài test (100%).
 
 ---
 

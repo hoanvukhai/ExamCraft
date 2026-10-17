@@ -19,6 +19,7 @@ import {
   Trash2, 
   Download, 
   Upload,
+  CloudUpload,
   Clock, 
   Calendar,
   Layers,
@@ -164,6 +165,45 @@ export const ExamLibraryModal: React.FC<ExamLibraryModalProps> = ({
     }
   };
 
+  const [isMigrating, setIsMigrating] = useState(false);
+
+  // Chuyển toàn bộ dữ liệu từ IndexedDB bản cũ sang PostgreSQL server
+  const handleMigrateToServer = async () => {
+    try {
+      setIsMigrating(true);
+      const jsonString = await dbExportDatabaseToJson();
+      const backupData = JSON.parse(jsonString);
+
+      const res = await fetch('/api/migration/import-legacy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(backupData),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setNotification({
+          type: 'error',
+          message: data.error || 'Vui lòng đăng nhập tài khoản giáo viên trước khi đồng bộ lên máy chủ!',
+        });
+        setTimeout(() => setNotification(null), 4000);
+        return;
+      }
+
+      setNotification({
+        type: 'success',
+        message: data.message || 'Đã đồng bộ thành công kho đề cũ lên cơ sở dữ liệu PostgreSQL!',
+      });
+      setTimeout(() => setNotification(null), 5000);
+    } catch (err) {
+      console.error('Lỗi khi đồng bộ dữ liệu cũ lên server:', err);
+      setNotification({ type: 'error', message: 'Lỗi kết nối khi đồng bộ lên máy chủ.' });
+      setTimeout(() => setNotification(null), 4000);
+    } finally {
+      setIsMigrating(false);
+    }
+  };
+
   const filteredExams = savedExams.filter(e =>
     e.metadata.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     e.metadata.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -231,6 +271,16 @@ export const ExamLibraryModal: React.FC<ExamLibraryModalProps> = ({
           </div>
 
           <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 justify-end">
+            <button
+              onClick={handleMigrateToServer}
+              disabled={isMigrating}
+              title="Chuyển dữ liệu đề thi trên máy này vào tài khoản PostgreSQL trên máy chủ"
+              className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-all shadow-xs cursor-pointer disabled:opacity-50"
+            >
+              <CloudUpload className={`w-3.5 h-3.5 ${isMigrating ? 'animate-bounce' : ''}`} />
+              <span>{isMigrating ? 'Đang đồng bộ...' : 'Đồng bộ lên Server'}</span>
+            </button>
+
             <button
               onClick={handleExportBackup}
               title="Xuất file sao lưu JSON toàn bộ kho đề"

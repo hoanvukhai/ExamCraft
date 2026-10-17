@@ -12,8 +12,6 @@ const CreateUserSchema = z.object({
   aiDailyLimit: z.number().int().min(0).default(100),
 });
 
-export const dynamic = 'force-dynamic';
-
 export async function GET() {
   try {
     const admin = await requireAdmin();
