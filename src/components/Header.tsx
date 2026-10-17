@@ -130,6 +130,16 @@ export const Header: React.FC<HeaderProps> = ({
                 </span>
               )}
             </button>
+
+            {/* Nút Lớp học */}
+            <Link
+              href="/teacher/groups"
+              title="Quản lý lớp dạy thêm và danh sách học sinh"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold text-indigo-900 hover:bg-indigo-100 transition-colors"
+            >
+              <GraduationCap className="w-3.5 h-3.5 text-indigo-600" />
+              <span className="hidden xl:inline">Lớp học</span>
+            </Link>
           </div>
 
           {/* 2. KHU VỰC QUẢN LÝ DỮ LIỆU & SOẠN ĐỀ */}
@@ -259,6 +269,24 @@ export const Header: React.FC<HeaderProps> = ({
                         </span>
                       </div>
                     </div>
+
+                    <Link
+                      href="/teacher/groups"
+                      onClick={() => setIsUserMenuOpen(false)}
+                      className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+                    >
+                      <GraduationCap className="w-4 h-4 text-indigo-600" />
+                      <span>Quản lý Lớp học</span>
+                    </Link>
+
+                    <Link
+                      href="/admin/ai"
+                      onClick={() => setIsUserMenuOpen(false)}
+                      className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+                    >
+                      <Key className="w-4 h-4 text-emerald-600" />
+                      <span>Quản trị AI (7 Keys)</span>
+                    </Link>
 
                     {currentUser.role === 'SUPER_ADMIN' && (
                       <Link

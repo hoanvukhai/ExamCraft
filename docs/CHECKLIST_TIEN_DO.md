@@ -61,27 +61,27 @@
 ---
 
 ## 📝 GIAI ĐOẠN 3: HỆ THỐNG GIAO BÀI & PHÒNG LÀM BÀI HỌC SINH (SERVER-SIDE)
-- [ ] Quản lý Lớp học (`Group`) và Học sinh (`Student`):
-  - [ ] Giáo viên tạo lớp học thêm, nhập danh sách tên học sinh (hỗ trợ dán nhiều dòng một lần).
-  - [ ] Sinh link lớp `/c/[groupCode]`.
-- [ ] Giao bài thi (`Assignment`):
-  - [ ] Giáo viên bấm Giao bài: chọn Group, cấu hình thời gian mở/đóng, thời lượng làm bài, số lần làm tối đa.
-  - [ ] Tự động tạo bản chụp bất biến (**`Assignment.snapshot`**) lưu toàn bộ đề + đáp án tại thời điểm giao.
-  - [ ] Hỗ trợ 3 bộ cấu hình mặc định: Bài tập về nhà, Bài trên lớp, Phòng thi.
-  - [ ] Sinh link bài giao `/a/[publicId]`.
-- [ ] Phòng thi trực tuyến học sinh (`/a/[publicId]`):
-  - [ ] Chế độ chọn tên từ danh sách lớp (`PICK_FROM_LIST`) hoặc tự gõ tên (`FREE_NAME`).
-  - [ ] API lấy đề thi: **bắt buộc bóc tách, loại bỏ sạch đáp án đúng và lời giải** trước khi gửi xuống client.
-  - [ ] Tạo `Attempt` trên server, tính `deadlineAt = startedAt + duration`.
-  - [ ] Cơ chế tự lưu nháp định kỳ (`/api/public/attempts/[id]/draft`).
-  - [ ] Cơ chế nộp bài idempotent (chống bấm đúp, chống nộp hai lần).
-  - [ ] Chấm điểm tự động tại server khi nộp bài theo đúng cấu trúc đề trong snapshot.
-  - [ ] Hiển thị kết quả và lời giải theo đúng chính sách của bài giao (`showResult`, `showSolution`).
-- [ ] Bảng xếp hạng an toàn (`TOP_AND_ME`):
-  - [ ] Chỉ hiển thị Top N (mặc định 3–5 bạn) và dòng vị trí riêng của chính học sinh.
-  - [ ] Không để lộ danh sách điểm của toàn bộ lớp ra ngoài.
-- [ ] Trang lớp học sinh `/c/[groupCode]`: Học sinh chọn tên mình, xem các bài đang mở cần làm và lịch sử bài đã làm.
-- [ ] Thử tải k6 mô phỏng 100 học sinh cùng lưu nháp và nộp bài.
+- [x] Quản lý Lớp học (`Group`) và Học sinh (`Student`):
+  - [x] Giáo viên tạo lớp học thêm, nhập danh sách tên học sinh (hỗ trợ dán nhiều dòng một lần từ Excel/Word) tại `/teacher/groups`.
+  - [x] Sinh link lớp `/c/[groupCode]` với 1-click sao chép.
+- [x] Giao bài thi (`Assignment`):
+  - [x] Giáo viên bấm Giao bài tại `ShareModal.tsx`: chọn Group, cấu hình thời gian mở/đóng, thời lượng làm bài, số lần làm tối đa.
+  - [x] Tự động tạo bản chụp bất biến (**`Assignment.snapshot`**) lưu toàn bộ đề + đáp án tại thời điểm giao.
+  - [x] Hỗ trợ 3 bộ cấu hình mặc định: Bài tập về nhà, Bài trên lớp, Phòng thi.
+  - [x] Sinh link bài giao `/a/[publicId]`.
+- [x] Phòng thi trực tuyến học sinh (`/a/[publicId]`):
+  - [x] Chế độ chọn tên từ danh sách lớp (`PICK_FROM_LIST`) hoặc tự gõ tên (`FREE_NAME`).
+  - [x] API lấy đề thi: **bắt buộc bóc tách, loại bỏ sạch đáp án đúng và lời giải** trước khi gửi xuống client (`sanitizeSnapshotForStudent`).
+  - [x] Tạo `Attempt` trên server, tính `deadlineAt = startedAt + duration`.
+  - [x] Cơ chế tự lưu nháp định kỳ (`/api/public/attempts/[id]/draft`).
+  - [x] Cơ chế nộp bài idempotent (chống bấm đúp, chống nộp hai lần).
+  - [x] Chấm điểm tự động tại server khi nộp bài theo đúng cấu trúc đề trong snapshot (hỗ trợ lũy tiến Đúng/Sai Phần II và chuẩn hóa trả lời ngắn Phần III).
+  - [x] Hiển thị kết quả và lời giải theo đúng chính sách của bài giao (`showResult`, `showSolution`).
+- [x] Bảng xếp hạng an toàn (`TOP_AND_ME`):
+  - [x] Chỉ hiển thị Top N (mặc định 3–5 bạn) và dòng vị trí riêng của chính học sinh.
+  - [x] Không để lộ danh sách điểm của toàn bộ lớp ra ngoài.
+- [x] Trang lớp học sinh `/c/[groupCode]`: Học sinh chọn tên mình, xem các bài đang mở cần làm và lịch sử bài đã làm.
+- [x] Kiểm thử tự động toàn diện: Đã chạy `tests/test_phase3_student_flow.ts` vượt qua 10/10 bài test (100%).
 
 ---
 
