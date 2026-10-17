@@ -1,0 +1,27 @@
+{
+  "subject": "tieng_viet",
+  "name": "Tiếng Việt",
+  "applicableGrades": [1, 2, 3, 4, 5],
+  "defaultDurationMinutes": 40,
+  "sections": [
+    {
+      "id": "part_1",
+      "name": "PHẦN I: ĐỌC HIỂU & KIẾN THỨC TIẾNG VIỆT",
+      "instruction": "Đọc thầm văn bản và hoàn thành các bài tập dưới đây.",
+      "type": "multiple_choice",
+      "questionCount": 8,
+      "pointsPerQuestion": 0.5,
+      "totalPoints": 4.0
+    },
+    {
+      "id": "part_2",
+      "name": "PHẦN II: VIẾT (Chính tả & Tập làm văn)",
+      "instruction": "Học sinh viết đoạn văn hoặc bài văn ngắn theo chủ đề.",
+      "type": "essay",
+      "questionCount": 2,
+      "pointsPerQuestion": 3.0,
+      "totalPoints": 6.0
+    }
+  ],
+  "totalExamPoints": 10.0
+}

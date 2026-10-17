@@ -1,0 +1,27 @@
+{
+  "subject": "ngu_van",
+  "name": "Ngữ văn",
+  "applicableGrades": [10, 11, 12],
+  "defaultDurationMinutes": 120,
+  "sections": [
+    {
+      "id": "part_1",
+      "name": "PHẦN I: ĐỌC HIỂU",
+      "instruction": "Đọc ngữ liệu và trả lời các câu hỏi.",
+      "type": "essay",
+      "questionCount": 5,
+      "pointsPerQuestion": 0.8,
+      "totalPoints": 4.0
+    },
+    {
+      "id": "part_2",
+      "name": "PHẦN II: VIẾT",
+      "instruction": "Thí sinh thực hiện các yêu cầu viết đoạn văn và bài văn nghị luận.",
+      "type": "essay",
+      "questionCount": 2,
+      "pointsPerQuestion": 3.0,
+      "totalPoints": 6.0
+    }
+  ],
+  "totalExamPoints": 10.0
+}

@@ -1,0 +1,226 @@
+{
+  "exam_init_001": {
+    "id": "exam_init_001",
+    "metadata": {
+      "title": "ĐỀ KIỂM TRA ĐỊNH KỲ GIỮA HỌC KỲ 2",
+      "schoolName": "SỞ GIÁO DỤC VÀ ĐÀO TẠO HÀ NỘI",
+      "departmentName": "TRƯỜNG THPT CHUYÊN HÀ NỘI - AMSTERDAM",
+      "subject": "toan",
+      "grade": 12,
+      "durationMinutes": 45,
+      "examCode": "101",
+      "academicYear": "2025 - 2026",
+      "notes": "Học sinh không được sử dụng tài liệu. Cán bộ coi thi không giải thích gì thêm."
+    },
+    "questions": [
+      {
+        "id": "q_1",
+        "type": "multiple_choice",
+        "difficulty": "nhan_biet",
+        "content": "Cho hàm số $y = \\frac{2x + 1}{x - 3}$. Phương trình đường tiệm cận ngang của đồ thị hàm số là:",
+        "figures": [
+          {
+            "id": "fig_plot_q1",
+            "kind": "function_plot",
+            "data": {
+              "title": "Đồ thị minh họa tiệm cận",
+              "expression": "(2*x+1)/(x-3)",
+              "xRange": [
+                -6,
+                8
+              ],
+              "yRange": [
+                -6,
+                8
+              ]
+            }
+          }
+        ],
+        "choices": [
+          {
+            "key": "A",
+            "text": "$y = 2$"
+          },
+          {
+            "key": "B",
+            "text": "$x = 3$"
+          },
+          {
+            "key": "C",
+            "text": "$y = -\\frac{1}{3}$"
+          },
+          {
+            "key": "D",
+            "text": "$x = -\\frac{1}{2}$"
+          }
+        ],
+        "correct_answer": "A",
+        "step_by_step_solution": "Ta có $\\lim_{x \\to \\pm\\infty} y = \\lim_{x \\to \\pm\\infty} \\frac{2x+1}{x-3} = 2$. Do đó đường thẳng $y = 2$ là tiệm cận ngang của đồ thị hàm số.",
+        "tags": [
+          "Tiem_can",
+          "Ham_so"
+        ]
+      },
+      {
+        "id": "q_2",
+        "type": "multiple_choice",
+        "difficulty": "thong_hieu",
+        "content": "Cho hàm số $y = f(x)$ xác định trên $\\mathbb{R}$, liên tục trên mỗi khoảng xác định và có bảng biến thiên như sau:\nKhẳng định nào sau đây là đúng về cực trị của hàm số?",
+        "figures": [
+          {
+            "id": "fig_bbt_q2",
+            "kind": "variation_table",
+            "data": {
+              "xValues": [
+                "-\\infty",
+                "0",
+                "2",
+                "+\\infty"
+              ],
+              "yPrimeSigns": [
+                "+",
+                "0",
+                "-",
+                "0",
+                "+"
+              ],
+              "yValues": [
+                {
+                  "type": "value",
+                  "val": "-\\infty"
+                },
+                {
+                  "type": "up"
+                },
+                {
+                  "type": "value",
+                  "val": "2"
+                },
+                {
+                  "type": "down"
+                },
+                {
+                  "type": "value",
+                  "val": "-2"
+                },
+                {
+                  "type": "up"
+                },
+                {
+                  "type": "value",
+                  "val": "+\\infty"
+                }
+              ]
+            }
+          }
+        ],
+        "choices": [
+          {
+            "key": "A",
+            "text": "Hàm số đạt cực đại tại $x = 0$ và đạt cực tiểu tại $x = 2$"
+          },
+          {
+            "key": "B",
+            "text": "Hàm số đạt cực đại tại $x = 2$ và đạt cực tiểu tại $x = 0$"
+          },
+          {
+            "key": "C",
+            "text": "Hàm số có giá trị cực đại bằng $0$"
+          },
+          {
+            "key": "D",
+            "text": "Hàm số không có cực trị"
+          }
+        ],
+        "correct_answer": "A",
+        "step_by_step_solution": "Dựa vào bảng biến thiên, ta thấy $y'$ đổi dấu từ dương sang âm khi qua $x = 0$ nên hàm số đạt cực đại tại $x = 0$; $y'$ đổi dấu từ âm sang dương khi qua $x = 2$ nên hàm số đạt cực tiểu tại $x = 2$.",
+        "tags": [
+          "Bang_bien_thien",
+          "Cuc_tri"
+        ]
+      },
+      {
+        "id": "q_3",
+        "type": "multiple_choice",
+        "difficulty": "thong_hieu",
+        "content": "Tìm tập nghiệm $S$ của phương trình $\\log_2 (x - 1) + \\log_2 (x + 1) = 3$.",
+        "choices": [
+          {
+            "key": "A",
+            "text": "$S = \\{3\\}$"
+          },
+          {
+            "key": "B",
+            "text": "$S = \\{-3; 3\\}$"
+          },
+          {
+            "key": "C",
+            "text": "$S = \\{\\sqrt{7}\\}$"
+          },
+          {
+            "key": "D",
+            "text": "$S = \\{4\\}$"
+          }
+        ],
+        "correct_answer": "A",
+        "step_by_step_solution": "Điều kiện xác định: $x - 1 > 0$ và $x + 1 > 0 \\Leftrightarrow x > 1$.\nPhương trình tương đương: $\\log_2 [(x-1)(x+1)] = 3 \\Leftrightarrow x^2 - 1 = 2^3 = 8 \\Leftrightarrow x^2 = 9 \\Leftrightarrow x = \\pm 3$.\nKết hợp điều kiện $x > 1$, ta nhận nghiệm $x = 3$.",
+        "tags": [
+          "Logarit",
+          "Phuong_trinh"
+        ]
+      },
+      {
+        "id": "q_4",
+        "type": "true_false_group",
+        "difficulty": "thong_hieu",
+        "content": "Cho hàm số bậc ba $y = f(x) = x^3 - 3x^2 + 2$. Xét tính đúng/sai của các khẳng định sau:",
+        "sub_questions": [
+          {
+            "key": "a",
+            "content": "Hàm số đồng biến trên khoảng $(0; 2)$.",
+            "isCorrect": false,
+            "explanation": "$f'(x) = 3x^2 - 6x < 0$ trên $(0; 2)$ nên hàm số nghịch biến."
+          },
+          {
+            "key": "b",
+            "content": "Đồ thị hàm số có điểm cực đại là $(0; 2)$.",
+            "isCorrect": true,
+            "explanation": "$f'(0) = 0$ và $f(0) = 2$."
+          },
+          {
+            "key": "c",
+            "content": "Giá trị nhỏ nhất của hàm số trên $[-1; 1]$ bằng $-2$.",
+            "isCorrect": true,
+            "explanation": "$f(-1) = -2, f(0) = 2, f(1) = 0 \\Rightarrow \\min = -2$."
+          },
+          {
+            "key": "d",
+            "content": "Điểm uốn của đồ thị hàm số là $I(1; 0)$.",
+            "isCorrect": true,
+            "explanation": "$f''(x) = 6x - 6 = 0 \\Leftrightarrow x = 1, y = 0$."
+          }
+        ],
+        "correct_answer": "a:S, b:Đ, c:Đ, d:Đ",
+        "step_by_step_solution": "Tính đạo hàm $f'(x) = 3x^2 - 6x = 3x(x - 2)$. Suy ra các khẳng định được kiểm tra lần lượt theo định lý cực trị và bảng biến thiên.",
+        "tags": [
+          "Khao_sat_ham_so",
+          "Dung_Sai"
+        ]
+      },
+      {
+        "id": "q_5",
+        "type": "short_answer",
+        "difficulty": "van_dung",
+        "content": "Một xưởng sản xuất cần làm những chiếc hộp inox hình trụ có nắp với thể tích $V = 54\\pi\\text{ cm}^3$. Bán kính đáy $R$ (cm) bằng bao nhiêu để tiết kiệm nguyên liệu sản xuất nhất (diện tích toàn phần nhỏ nhất)?",
+        "correct_answer": "3",
+        "step_by_step_solution": "Thể tích hình trụ: $V = \\pi R^2 h = 54\\pi \\Rightarrow h = \\frac{54}{R^2}$.\nDiện tích toàn phần: $S_{tp} = 2\\pi R^2 + 2\\pi R h = 2\\pi R^2 + 2\\pi R \\left(\\frac{54}{R^2}\\right) = 2\\pi \\left(R^2 + \\frac{54}{R}\\right)$.\nĐạo hàm: $S'(R) = 2\\pi \\left(2R - \\frac{54}{R^2}\\right) = 0 \\Leftrightarrow 2R^3 = 54 \\Leftrightarrow R^3 = 27 \\Leftrightarrow R = 3\\text{ cm}$.",
+        "tags": [
+          "Hinh_tru",
+          "Toan_thuc_te"
+        ]
+      }
+    ],
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-10-17T09:05:30.880Z"
+  }
+}

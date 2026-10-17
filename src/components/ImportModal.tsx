@@ -1,0 +1,580 @@
+'use client';
+
+import React, { useState, useRef } from 'react';
+import { Question } from '@/types/exam';
+import { parseExTestLatex, parseRawVietnameseText } from '@/lib/exam-parser';
+import { MathRenderer } from './MathRenderer';
+import { 
+  X, 
+  FileText, 
+  Sparkles, 
+  Code, 
+  Upload, 
+  Check, 
+  AlertCircle, 
+  RefreshCw,
+  Plus,
+  Image as ImageIcon,
+  FileCode,
+  Trash2,
+  ZoomIn,
+  CheckCircle2,
+  Eye,
+  Layers
+} from 'lucide-react';
+
+interface ImportModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onImportQuestions: (questions: Question[]) => void;
+  apiKey: string;
+}
+
+type ImportSourceType = 'image' | 'word' | 'text' | 'latex';
+
+export const ImportModal: React.FC<ImportModalProps> = ({
+  isOpen,
+  onClose,
+  onImportQuestions,
+  apiKey,
+}) => {
+  const [sourceType, setSourceType] = useState<ImportSourceType>('image');
+  
+  // State cho ảnh
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [imageFileName, setImageFileName] = useState<string>('');
+  
+  // State cho Word & Text & LaTeX
+  const [rawText, setRawText] = useState('');
+  const [wordFileName, setWordFileName] = useState<string>('');
+  const [wordFile, setWordFile] = useState<File | null>(null);
+
+  // State kết quả bóc tách
+  const [parsedQuestions, setParsedQuestions] = useState<Question[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const wordInputRef = useRef<HTMLInputElement>(null);
+
+  if (!isOpen) return null;
+
+  // Xử lý chọn ảnh
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setImageFileName(file.name);
+    setErrorMessage(null);
+    setStatusMessage(null);
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setSelectedImage(event.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Xử lý chọn file Word docx
+  const handleWordSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setWordFile(file);
+    setWordFileName(file.name);
+    setErrorMessage(null);
+    setStatusMessage(null);
+  };
+
+  // Xử lý đọc file text/latex
+  const handleTextFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target?.result as string;
+      if (content) {
+        setRawText(content);
+        if (content.includes('\\begin{ex}') || content.includes('\\choice')) {
+          setSourceType('latex');
+        }
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  // Bắt đầu quá trình bóc tách
+  const handleStartParsing = async () => {
+    setIsLoading(true);
+    setStatusMessage(null);
+    setErrorMessage(null);
+
+    try {
+      if (sourceType === 'image') {
+        if (!selectedImage) {
+          setErrorMessage('Vui lòng chọn hoặc kéo thả một hình ảnh đề thi.');
+          setIsLoading(false);
+          return;
+        }
+
+        const res = await fetch('/api/ocr-exam-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            imageBase64: selectedImage,
+            userApiKey: apiKey,
+          }),
+        });
+
+        const data = await res.json();
+        if (data.success && data.questions) {
+          setParsedQuestions(data.questions);
+          setStatusMessage(`AI Vision đã nhận diện thành công ${data.questions.length} câu hỏi từ ảnh chụp!`);
+        } else {
+          setErrorMessage(data.error || 'Không thể bóc tách câu hỏi từ ảnh.');
+        }
+      } else if (sourceType === 'word') {
+        if (!wordFile) {
+          setErrorMessage('Vui lòng chọn file Word (.docx) của bạn.');
+          setIsLoading(false);
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', wordFile);
+        if (apiKey) formData.append('userApiKey', apiKey);
+
+        const res = await fetch('/api/parse-docx', {
+          method: 'POST',
+          body: formData,
+        });
+
+        const data = await res.json();
+        if (data.success && data.questions) {
+          setParsedQuestions(data.questions);
+          setStatusMessage(`Đã bóc tách thành công ${data.questions.length} câu hỏi từ file Word!`);
+        } else {
+          setErrorMessage(data.error || 'Không thể phân rã nội dung từ file Word.');
+        }
+      } else if (sourceType === 'latex') {
+        if (!rawText.trim()) {
+          setErrorMessage('Vui lòng dán mã LaTeX câu hỏi.');
+          setIsLoading(false);
+          return;
+        }
+
+        const questions = parseExTestLatex(rawText);
+        if (questions.length > 0) {
+          setParsedQuestions(questions);
+          setStatusMessage(`Thành công! Đã bóc tách ${questions.length} câu hỏi chuẩn LaTeX EX_Test.`);
+        } else {
+          setErrorMessage('Không tìm thấy cấu trúc \\begin{ex}...\\end{ex} hợp lệ.');
+        }
+      } else {
+        // Text thô AI
+        if (!rawText.trim()) {
+          setErrorMessage('Vui lòng dán văn bản đề thi thô.');
+          setIsLoading(false);
+          return;
+        }
+
+        const res = await fetch('/api/parse-exam-text', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            rawText,
+            customApiKey: apiKey,
+          }),
+        });
+
+        const data = await res.json();
+        if (data.success && data.questions) {
+          setParsedQuestions(data.questions);
+          setStatusMessage(`AI đã chuyển đổi thành công ${data.questions.length} câu hỏi có công thức KaTeX!`);
+        } else {
+          const fallback = parseRawVietnameseText(rawText);
+          setParsedQuestions(fallback);
+          setStatusMessage(`Bóc tách cơ bản ${fallback.length} câu hỏi theo mẫu tiếng Việt.`);
+        }
+      }
+    } catch (err: any) {
+      console.error('Lỗi phân tích:', err);
+      setErrorMessage(err.message || 'Đã xảy ra lỗi trong quá trình bóc tách đề thi.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Xóa bớt một câu hỏi khỏi danh sách xem trước
+  const handleDeleteQuestion = (id: string) => {
+    setParsedQuestions(prev => prev.filter(q => q.id !== id));
+  };
+
+  // Thêm tất cả vào đề thi hiện tại
+  const handleConfirmImport = () => {
+    if (parsedQuestions.length > 0) {
+      onImportQuestions(parsedQuestions);
+      setParsedQuestions([]);
+      onClose();
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5">
+      <div className="bg-white rounded-2xl max-w-6xl w-full p-5 shadow-2xl border border-slate-200 relative max-h-[92vh] flex flex-col">
+        {/* Header */}
+        <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-linear-to-tr from-indigo-600 to-violet-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/20">
+              <Upload className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="font-bold text-slate-900 text-lg">Phòng Số Hóa & Bóc Tách Đề Thi (AI Ingestion Studio)</h3>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                  Multimodal OCR + Word
+                </span>
+              </div>
+              <p className="text-xs text-slate-500">Chuyển đổi ảnh chụp, file Word .docx hoặc văn bản thô thành câu hỏi KaTeX chuẩn mực</p>
+            </div>
+          </div>
+
+          <button
+            onClick={onClose}
+            className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Thanh chọn 4 định dạng nguồn (Tabs) */}
+        <div className="flex flex-wrap items-center gap-2 pt-3 pb-2 border-b border-slate-100">
+          <button
+            onClick={() => setSourceType('image')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              sourceType === 'image'
+                ? 'bg-indigo-600 text-white shadow-xs'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            <ImageIcon className="w-3.5 h-3.5" />
+            <span>Ảnh chụp đề thi (Gemini Vision OCR)</span>
+          </button>
+
+          <button
+            onClick={() => setSourceType('word')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              sourceType === 'word'
+                ? 'bg-indigo-600 text-white shadow-xs'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            <FileText className="w-3.5 h-3.5" />
+            <span>File Word (.docx)</span>
+          </button>
+
+          <button
+            onClick={() => setSourceType('text')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              sourceType === 'text'
+                ? 'bg-indigo-600 text-white shadow-xs'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Dán văn bản thô (AI Parser)</span>
+          </button>
+
+          <button
+            onClick={() => setSourceType('latex')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              sourceType === 'latex'
+                ? 'bg-indigo-600 text-white shadow-xs'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            <Code className="w-3.5 h-3.5" />
+            <span>Mã LaTeX / EX_Test (VTeX)</span>
+          </button>
+        </div>
+
+        {/* Màn hình chia 2 cột: Trái (Nguồn gốc) | Phải (Kết quả AI bóc tách) */}
+        <div className="grow overflow-hidden grid grid-cols-1 md:grid-cols-2 gap-4 py-3 min-h-[380px]">
+          {/* CỘT TRÁI: KHUNG NGUỒN GỐC */}
+          <div className="flex flex-col h-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 overflow-hidden">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+              <span className="font-bold text-xs uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                <Eye className="w-3.5 h-3.5 text-indigo-600" />
+                <span>Nguồn đầu vào ({sourceType.toUpperCase()})</span>
+              </span>
+
+              {sourceType === 'image' && (
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="text-xs font-semibold text-indigo-600 hover:text-indigo-800"
+                >
+                  {selectedImage ? 'Chọn ảnh khác' : 'Tải ảnh lên'}
+                </button>
+              )}
+              {sourceType === 'word' && (
+                <button
+                  onClick={() => wordInputRef.current?.click()}
+                  className="text-xs font-semibold text-indigo-600 hover:text-indigo-800"
+                >
+                  {wordFile ? 'Chọn file khác' : 'Chọn file Word'}
+                </button>
+              )}
+            </div>
+
+            {/* Vùng nội dung theo từng chế độ */}
+            <div className="grow overflow-auto py-2 flex flex-col justify-center">
+              {/* 1. CHẾ ĐỘ ẢNH CHỤP */}
+              {sourceType === 'image' && (
+                <>
+                  {selectedImage ? (
+                    <div className="h-full flex flex-col items-center justify-center relative group">
+                      <img
+                        src={selectedImage}
+                        alt="Ảnh đề thi"
+                        className="max-h-72 w-auto object-contain rounded-lg border border-slate-300 shadow-sm"
+                      />
+                      <span className="text-[11px] text-slate-500 mt-2 truncate max-w-xs">{imageFileName}</span>
+                    </div>
+                  ) : (
+                    <div
+                      onClick={() => fileInputRef.current?.click()}
+                      className="h-full border-2 border-dashed border-slate-300 hover:border-indigo-400 rounded-xl flex flex-col items-center justify-center p-6 text-center cursor-pointer transition-all hover:bg-indigo-50/30"
+                    >
+                      <ImageIcon className="w-12 h-12 text-slate-300 mb-2" />
+                      <p className="font-bold text-sm text-slate-700">Kéo thả hoặc nhấp để tải ảnh đề thi</p>
+                      <p className="text-xs text-slate-500 mt-1">Hỗ trợ ảnh PNG, JPG, JPEG, WebP (Rõ nét công thức)</p>
+                    </div>
+                  )}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageSelect}
+                    className="hidden"
+                  />
+                </>
+              )}
+
+              {/* 2. CHẾ ĐỘ FILE WORD */}
+              {sourceType === 'word' && (
+                <>
+                  {wordFile ? (
+                    <div className="h-full flex flex-col items-center justify-center p-6 bg-white rounded-xl border border-slate-200">
+                      <FileText className="w-14 h-14 text-indigo-600 mb-2" />
+                      <p className="font-bold text-sm text-slate-900">{wordFileName}</p>
+                      <p className="text-xs text-slate-500 mt-1">Kích thước: {(wordFile.size / 1024).toFixed(1)} KB</p>
+                      <span className="mt-3 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        Sẵn sàng bóc tách bằng mammoth
+                      </span>
+                    </div>
+                  ) : (
+                    <div
+                      onClick={() => wordInputRef.current?.click()}
+                      className="h-full border-2 border-dashed border-slate-300 hover:border-indigo-400 rounded-xl flex flex-col items-center justify-center p-6 text-center cursor-pointer transition-all hover:bg-indigo-50/30"
+                    >
+                      <FileText className="w-12 h-12 text-slate-300 mb-2" />
+                      <p className="font-bold text-sm text-slate-700">Tải lên file đề thi Word (.docx)</p>
+                      <p className="text-xs text-slate-500 mt-1">Tự động nhận diện câu hỏi, bảng biểu và phương án A-B-C-D</p>
+                    </div>
+                  )}
+                  <input
+                    ref={wordInputRef}
+                    type="file"
+                    accept=".docx"
+                    onChange={handleWordSelect}
+                    className="hidden"
+                  />
+                </>
+              )}
+
+              {/* 3. CHẾ ĐỘ TEXT HOẶC LATEX */}
+              {(sourceType === 'text' || sourceType === 'latex') && (
+                <div className="h-full flex flex-col">
+                  <textarea
+                    value={rawText}
+                    onChange={(e) => setRawText(e.target.value)}
+                    placeholder={
+                      sourceType === 'latex'
+                        ? 'Dán mã LaTeX câu hỏi EX_Test tại đây:\n\\begin{ex}%[2D1B1-1]\nCho hàm số y = f(x)...\n\\choice\n{Đáp án A}\n{\\True Đáp án B}\n{Đáp án C}\n{Đáp án D}\n\\loigiai{...}\n\\end{ex}'
+                        : 'Dán đoạn văn bản đề thi thô tại đây (copy từ Word, PDF, Web):\nCâu 1: Cho hàm số y = (2x+1)/(x-1). Đạo hàm là:\nA. y\' = -3/(x-1)^2\nB. y\' = 1\nC. ...\n\nCâu 2: ...'
+                    }
+                    className="w-full grow text-xs p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 font-mono leading-relaxed resize-none bg-white"
+                  />
+                  <div className="flex justify-between items-center text-[11px] text-slate-500 pt-2">
+                    <span>{rawText.length} ký tự</span>
+                    <label className="cursor-pointer text-indigo-600 hover:underline">
+                      Tải file .txt / .tex
+                      <input type="file" accept=".txt,.tex,.md" onChange={handleTextFileSelect} className="hidden" />
+                    </label>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Nút Kích hoạt phân tích */}
+            <div className="pt-2 border-t border-slate-200 flex justify-end">
+              <button
+                onClick={handleStartParsing}
+                disabled={isLoading}
+                className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-xs transition-all disabled:opacity-50"
+              >
+                {isLoading ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <span>Đang bóc tách bằng AI...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>Bắt đầu phân rã thành câu hỏi</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* CỘT PHẢI: KẾT QUẢ CÂU HỎI BÓC TÁCH */}
+          <div className="flex flex-col h-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 overflow-hidden">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+              <span className="font-bold text-xs uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                <Layers className="w-3.5 h-3.5 text-indigo-600" />
+                <span>Kết quả bóc tách ({parsedQuestions.length} câu hỏi)</span>
+              </span>
+
+              {parsedQuestions.length > 0 && (
+                <button
+                  onClick={() => setParsedQuestions([])}
+                  className="text-[11px] text-slate-400 hover:text-red-600 transition-colors"
+                >
+                  Xóa tất cả
+                </button>
+              )}
+            </div>
+
+            {/* Thông báo trạng thái hoặc lỗi */}
+            {statusMessage && (
+              <div className="mt-2 p-2.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg text-xs flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>{statusMessage}</span>
+              </div>
+            )}
+            {errorMessage && (
+              <div className="mt-2 p-2.5 bg-red-50 border border-red-200 text-red-800 rounded-lg text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+                <span>{errorMessage}</span>
+              </div>
+            )}
+
+            {/* Danh sách thẻ câu hỏi */}
+            <div className="grow overflow-y-auto py-2 space-y-2.5 pr-1">
+              {parsedQuestions.map((q, idx) => (
+                <div
+                  key={q.id || idx}
+                  className="p-3 bg-white rounded-xl border border-slate-200 hover:border-indigo-300 shadow-2xs transition-all space-y-2 relative group"
+                >
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-indigo-700">Câu {idx + 1}</span>
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-slate-100 text-slate-600">
+                        {q.type}
+                      </span>
+                    </div>
+
+                    <button
+                      onClick={() => handleDeleteQuestion(q.id)}
+                      title="Xóa câu này"
+                      className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-red-600 transition-all"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                  {/* Nội dung câu hỏi KaTeX */}
+                  <div className="text-xs text-slate-800 leading-relaxed">
+                    <MathRenderer content={q.content} inline />
+                  </div>
+
+                  {/* Các phương án A, B, C, D */}
+                  {q.choices && q.choices.length > 0 && (
+                    <div className="grid grid-cols-2 gap-1.5 pt-1 text-xs">
+                      {q.choices.map((c) => (
+                        <div
+                          key={c.key}
+                          className={`p-1.5 rounded-lg border flex items-baseline gap-1.5 ${
+                            c.key === q.correct_answer
+                              ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold'
+                              : 'bg-slate-50 border-slate-200 text-slate-700'
+                          }`}
+                        >
+                          <span>{c.key}.</span>
+                          <MathRenderer content={c.text} inline />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Ý Đúng / Sai */}
+                  {q.sub_questions && q.sub_questions.length > 0 && (
+                    <div className="space-y-1 pt-1 text-xs">
+                      {q.sub_questions.map((sub) => (
+                        <div key={sub.key} className="flex items-baseline gap-2 bg-slate-50 p-1.5 rounded border border-slate-200">
+                          <span className="font-bold">{sub.key})</span>
+                          <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${sub.isCorrect ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}`}>
+                            {sub.isCorrect ? 'ĐÚNG' : 'SAI'}
+                          </span>
+                          <MathRenderer content={sub.content} inline />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Lời giải tóm tắt */}
+                  {q.step_by_step_solution && (
+                    <div className="text-[11px] text-slate-500 pt-1 border-t border-slate-100 italic truncate">
+                      Lời giải: {q.step_by_step_solution}
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              {parsedQuestions.length === 0 && !isLoading && (
+                <div className="h-full flex flex-col items-center justify-center p-8 text-center text-slate-400">
+                  <Layers className="w-10 h-10 text-slate-300 mb-2" />
+                  <p className="text-xs">Chưa có câu hỏi nào được bóc tách.</p>
+                  <p className="text-[11px] text-slate-400 mt-1">Chọn nguồn bên trái và bấm "Bắt đầu phân rã" để xem kết quả tại đây.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl"
+          >
+            Đóng
+          </button>
+
+          {parsedQuestions.length > 0 && (
+            <button
+              onClick={handleConfirmImport}
+              className="flex items-center gap-1.5 px-5 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-xs transition-all"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Thêm {parsedQuestions.length} câu hỏi vào Đề thi hiện tại</span>
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};

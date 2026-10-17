@@ -1,0 +1,497 @@
+{
+  "title": "Đề kiểm tra 90 phút Khảo sát hàm số và Nguyên hàm - Tích phân Toán 12 GDPT 2018",
+  "questions": [
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Tiệm cận ngang của đồ thị hàm số $y = \\frac{2x - 1}{x + 1}$ là đường thẳng có phương trình nào sau đây?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "$y = 2$"
+        },
+        {
+          "key": "B",
+          "text": "$y = -1$"
+        },
+        {
+          "key": "C",
+          "text": "$x = -1$"
+        },
+        {
+          "key": "D",
+          "text": "$x = 2$"
+        }
+      ],
+      "step_by_step_solution": "Ta có $\\lim_{x \\to +\\infty} \\frac{2x - 1}{x + 1} = \\lim_{x \\to +\\infty} \\frac{2 - \\frac{1}{x}}{1 + \\frac{1}{x}} = 2$ và $\\lim_{x \\to -\\infty} \\frac{2x - 1}{x + 1} = 2$. Do đó, đường tiệm cận ngang của đồ thị hàm số là $y = 2$.",
+      "correct_answer": "A",
+      "tags": ["Khảo sát hàm số", "Tiệm cận"]
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Họ tất cả các nguyên hàm của hàm số $f(x) = 3x^2 + 2x$ trên $\\mathbb{R}$ là",
+      "choices": [
+        {
+          "key": "A",
+          "text": "$x^3 + x^2 + C$"
+        },
+        {
+          "key": "B",
+          "text": "$6x + 2 + C$"
+        },
+        {
+          "key": "C",
+          "text": "$x^3 + 2x^2 + C$"
+        },
+        {
+          "key": "D",
+          "text": "\\frac{x^3}{3} + x^2 + C"
+        }
+      ],
+      "step_by_step_solution": "Sử dụng công thức nguyên hàm cơ bản: $\\int (3x^2 + 2x) dx = 3 \\cdot \\frac{x^3}{3} + 2 \\cdot \\frac{x^2}{2} + C = x^3 + x^2 + C$.",
+      "correct_answer": "A",
+      "tags": ["Nguyên hàm", "Định nghĩa và tính chất"]
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Hàm số $y = x^3 - 3x^2 + 2$ đồng biến trên khoảng nào sau đây?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "$(2; +\\infty)$"
+        },
+        {
+          "key": "B",
+          "text": "$(0; 2)$"
+        },
+        {
+          "key": "C",
+          "text": "$(0; 3)$"
+        },
+        {
+          "key": "D",
+          "text": "$(-1; 2)$"
+        }
+      ],
+      "step_by_step_solution": "Ta có $y' = 3x^2 - 6x$. Cho $y' = 0 \\Leftrightarrow 3x(x - 2) = 0 \\Leftrightarrow x = 0$ hoặc $x = 2$. Bảng xét dấu của $y'$ cho thấy $y' > 0$ khi $x \\in (-\\infty; 0)$ và $x \\in (2; +\\infty)$. Do đó, hàm số đồng biến trên khoảng $(2; +\\infty)$.",
+      "correct_answer": "A",
+      "tags": ["Khảo sát hàm số", "Sự đồng biến nghịch biến"]
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Nếu $\\int_1^3 f(x) dx = 4$ và $\\int_1^3 g(x) dx = -2$ thì $\\int_1^3 [f(x) - 2g(x)] dx$ bằng",
+      "choices": [
+        {
+          "key": "A",
+          "text": "$8$"
+        },
+        {
+          "key": "B",
+          "text": "$0$"
+        },
+        {
+          "key": "C",
+          "text": "$2$"
+        },
+        {
+          "key": "D",
+          "text": "$6$"
+        }
+      ],
+      "step_by_step_solution": "Áp dụng tính chất tuyến tính của tích phân: $\\int_1^3 [f(x) - 2g(x)] dx = \\int_1^3 f(x) dx - 2\\int_1^3 g(x) dx = 4 - 2(-2) = 8$.",
+      "correct_answer": "A",
+      "tags": ["Tích phân", "Tính chất tích phân"]
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Giá trị nhỏ nhất của hàm số $y = x^4 - 2x^2 + 3$ trên đoạn $[0; 2]$ bằng",
+      "choices": [
+        {
+          "key": "A",
+          "text": "$2$"
+        },
+        {
+          "key": "B",
+          "text": "$3$"
+        },
+        {
+          "key": "C",
+          "text": "$11$"
+        },
+        {
+          "key": "D",
+          "text": "$1$"
+        }
+      ],
+      "step_by_step_solution": "Ta có $y' = 4x^3 - 4x = 4x(x^2 - 1)$. Cho $y' = 0 \\Leftrightarrow x = 0$, $x = 1$, $x = -1$. Xét trên $[0; 2]$, ta chỉ nhận $x = 0$ và $x = 1$. Tính các giá trị: $y(0) = 3$, $y(1) = 2$, $y(2) = 2^4 - 2(2^2) + 3 = 11$. Vậy giá trị nhỏ nhất của hàm số trên đoạn $[0; 2]$ bằng $2$.",
+      "correct_answer": "A",
+      "tags": ["Khảo sát hàm số", "Giá trị lớn nhất và nhỏ nhất"]
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Tích phân $I = \\int_0^1 2x e^{x^2} dx$ có giá trị bằng",
+      "choices": [
+        {
+          "key": "A",
+          "text": "$e - 1$"
+        },
+        {
+          "key": "B",
+          "text": "$e + 1$"
+        },
+        {
+          "key": "C",
+          "text": "$e$"
+        },
+        {
+          "key": "D",
+          "text": "$2e - 1$"
+        }
+      ],
+      "step_by_step_solution": "Đặt $u = x^2 \\Rightarrow du = 2x dx$. Đổi cận: với $x = 0 \\Rightarrow u = 0$; với $x = 1 \\Rightarrow u = 1$. Khi đó $I = \\int_0^1 e^u du = \\left. e^u \\right|_0^1 = e^1 - e^0 = e - 1$.",
+      "correct_answer": "A",
+      "tags": ["Tích phân", "Phương pháp đổi biến số"]
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Đường tiệm cận xiên của đồ thị hàm số $y = \\frac{x^2 - 3x + 5}{x - 1}$ có phương trình là",
+      "choices": [
+        {
+          "key": "A",
+          "text": "$y = x - 2$"
+        },
+        {
+          "key": "B",
+          "text": "$y = x + 2$"
+        },
+        {
+          "key": "C",
+          "text": "$y = x - 1$"
+        },
+        {
+          "key": "D",
+          "text": "$y = -x + 2$"
+        }
+      ],
+      "step_by_step_solution": "Thực hiện phép chia đa thức: $\\frac{x^2 - 3x + 5}{x - 1} = x - 2 + \\frac{3}{x - 1}$. Do $\\lim_{x \\to \\pm\\infty} [y - (x - 2)] = \\lim_{x \\to \\pm\\infty} \\frac{3}{x - 1} = 0$, nên đường tiệm cận xiên của đồ thị hàm số là đường thẳng $y = x - 2$.",
+      "correct_answer": "A",
+      "tags": ["Khảo sát hàm số", "Tiệm cận"]
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Diện tích hình phẳng giới hạn bởi đồ thị hàm số $y = x^2 - 2x$ và trục hoành bằng",
+      "choices": [
+        {
+          "key": "A",
+          "text": "$\\frac{4}{3}$"
+        },
+        {
+          "key": "B",
+          "text": "$\\frac{2}{3}$"
+        },
+        {
+          "key": "C",
+          "text": "$4$"
+        },
+        {
+          "key": "D",
+          "text": "$\\frac{8}{3}$"
+        }
+      ],
+      "step_by_step_solution": "Phương trình hoành độ giao điểm: $x^2 - 2x = 0 \\Leftrightarrow x = 0$ hoặc $x = 2$. Diện tích hình phẳng là: $S = \\int_0^2 |x^2 - 2x| dx = -\\int_0^2 (x^2 - 2x) dx = -\\left. \\left( \\frac{x^3}{3} - x^2 \\right) \\right|_0^2 = -\\left( \\frac{8}{3} - 4 \\right) = \\frac{4}{3}$.",
+      "correct_answer": "A",
+      "tags": ["Tích phân", "Ứng dụng hình học của tích phân"]
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Tọa độ điểm cực đại của đồ thị hàm số $y = -x^3 + 3x + 1$ là",
+      "choices": [
+        {
+          "key": "A",
+          "text": "$(1; 3)$"
+        },
+        {
+          "key": "B",
+          "text": "$(-1; -1)$"
+        },
+        {
+          "key": "C",
+          "text": "$(1; 1)$"
+        },
+        {
+          "key": "D",
+          "text": "$(-1; 3)$"
+        }
+      ],
+      "step_by_step_solution": "Ta có $y' = -3x^2 + 3$. Cho $y' = 0 \\Leftrightarrow x^2 = 1 \\Leftrightarrow x = 1$ hoặc $x = -1$. Ta có $y'' = -6x$. Với $x = 1$, $y''(1) = -6 < 0$ nên hàm số đạt cực đại tại $x = 1$, giá trị cực đại tương ứng là $y(1) = -(1)^3 + 3(1) + 1 = 3$. Vậy tọa độ điểm cực đại của đồ thị là $(1; 3)$.",
+      "correct_answer": "A",
+      "tags": ["Khảo sát hàm số", "Cực trị"]
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "van_dung",
+      "content": "Giá trị của tích phân $I = \\int_0^1 (2x + 1) e^x dx$ bằng",
+      "choices": [
+        {
+          "key": "A",
+          "text": "$e + 1$"
+        },
+        {
+          "key": "B",
+          "text": "$3e - 1$"
+        },
+        {
+          "key": "C",
+          "text": "$e - 1$"
+        },
+        {
+          "key": "D",
+          "text": "$2e + 1$"
+        }
+      ],
+      "step_by_step_solution": "Sử dụng phương pháp từng phần: đặt $u = 2x + 1 \\Rightarrow du = 2dx$; $dv = e^x dx \\Rightarrow v = e^x$. Do đó: $I = \\left. (2x + 1)e^x \\right|_0^1 - \\int_0^1 2e^x dx = (3e - 1) - \\left. 2e^x \\right|_0^1 = 3e - 1 - 2(e - 1) = e + 1$.",
+      "correct_answer": "A",
+      "tags": ["Tích phân", "Phương pháp từng phần"]
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "van_dung",
+      "content": "Tìm tất cả các giá trị thực của tham số $m$ để hàm số $y = \\frac{1}{3}x^3 - mx^2 + (m+2)x - 5$ đồng biến trên $\\mathbb{R}$.",
+      "choices": [
+        {
+          "key": "A",
+          "text": "$[-1; 2]$"
+        },
+        {
+          "key": "B",
+          "text": "$(-1; 2)$"
+        },
+        {
+          "key": "C",
+          "text": "$(-\\infty; -1] \\cup [2; +\\infty)$"
+        },
+        {
+          "key": "D",
+          "text": "$(-\\infty; -1) \\cup (2; +\\infty)$"
+        }
+      ],
+      "step_by_step_solution": "Ta có $y' = x^2 - 2mx + m + 2$. Hàm số đồng biến trên $\\mathbb{R}$ khi và chỉ khi $y' \\ge 0, \\forall x \\in \\mathbb{R}$. Điều này tương đương với hệ số $a = 1 > 0$ (luôn đúng) và $\\Delta' = m^2 - (m + 2) \\le 0 \\Leftrightarrow m^2 - m - 2 \\le 0 \\Leftrightarrow -1 \\le m \\le 2$. Vậy $m \\in [-1; 2]$.",
+      "correct_answer": "A",
+      "tags": ["Khảo sát hàm số", "Sự đồng biến nghịch biến"]
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "van_dung",
+      "content": "Cho $F(x)$ là một nguyên hàm của hàm số $f(x) = \\frac{1}{2x - 1}$ trên khoảng $\\left(\\frac{1}{2}; +\\infty\\right)$ thỏa mãn $F(1) = 2$. Giá trị của $F(2)$ bằng",
+      "choices": [
+        {
+          "key": "A",
+          "text": "$2 + \\frac{1}{2}\\ln 3$"
+        },
+        {
+          "key": "B",
+          "text": "$2 + \\ln 3$"
+        },
+        {
+          "key": "C",
+          "text": "$\\frac{1}{2}\\ln 3$"
+        },
+        {
+          "key": "D",
+          "text": "$1 + \\frac{1}{2}\\ln 3$"
+        }
+      ],
+      "step_by_step_solution": "Họ nguyên hàm của $f(x)$ trên $\\left(\\frac{1}{2}; +\\infty\\right)$ là $F(x) = \\int \\frac{1}{2x - 1} dx = \\frac{1}{2}\\ln(2x - 1) + C$. Do $F(1) = 2 \\Rightarrow \\frac{1}{2}\\ln(1) + C = 2 \\Rightarrow C = 2$. Do đó $F(x) = \\frac{1}{2}\\ln(2x - 1) + 2$. Khi đó $F(2) = \\frac{1}{2}\\ln(3) + 2$.",
+      "correct_answer": "A",
+      "tags": ["Nguyên hàm", "Tính chất nguyên hàm"]
+    },
+    {
+      "type": "true_false_group",
+      "difficulty": "thong_hieu",
+      "content": "Cho hàm số $y = \\frac{2x - 1}{x + 1}$ có đồ thị là $(C)$. Xét tính đúng hoặc sai của các mệnh đề sau:",
+      "sub_questions": [
+        {
+          "key": "a",
+          "content": "Tập xác định của hàm số là $D = \\mathbb{R} \\setminus \\{-1\\}$.",
+          "explanation": "Mẫu thức khác $0 \\Leftrightarrow x + 1 \\ne 0 \\Leftrightarrow x \\ne -1$. Do đó tập xác định là $D = \\mathbb{R} \\setminus \\{-1\\}$.",
+          "isCorrect": true
+        },
+        {
+          "key": "b",
+          "content": "Hàm số đồng biến trên từng khoảng xác định $(-\\infty; -1)$ và $(-1; +\\infty)$.",
+          "explanation": "Ta có $y' = \\frac{2(1) - (-1)(1)}{(x+1)^2} = \\frac{3}{(x+1)^2} > 0$ với mọi $x \\ne -1$. Do đó hàm số đồng biến trên mỗi khoảng $(-\\infty; -1)$ và $(-1; +\\infty)$.",
+          "isCorrect": true
+        },
+        {
+          "key": "c",
+          "content": "Đường thẳng $y = 2$ là tiệm cận ngang của đồ thị $(C)$.",
+          "explanation": "Ta có $\\lim_{x \\to \\pm\\infty} y = 2$, suy ra đường thẳng $y = 2$ là tiệm cận ngang của đồ thị $(C)$.",
+          "isCorrect": true
+        },
+        {
+          "key": "d",
+          "content": "Điểm $I(1; 2)$ là tâm đối xứng của đồ thị hàm số.",
+          "explanation": "Đồ thị có tiệm cận đứng $x = -1$ và tiệm cận ngang $y = 2$. Giao điểm của hai đường tiệm cận là điểm $I(-1; 2)$, do đó tâm đối xứng của đồ thị là $(-1; 2)$, không phải $(1; 2)$.",
+          "isCorrect": false
+        }
+      ],
+      "step_by_step_solution": "Hàm số phân thức bậc nhất trên bậc nhất $y = \\frac{2x - 1}{x + 1}$ có tập xác định $D = \\mathbb{R} \\setminus \\{-1\\}$. Đạo hàm $y' = \\frac{3}{(x+1)^2} > 0$, suy ra hàm số đồng biến trên $(-\\infty; -1)$ và $(-1; +\\infty)$. Tiệm cận đứng $x = -1$, tiệm cận ngang $y = 2$. Giao điểm hai tiệm cận là $I(-1; 2)$, là tâm đối xứng của đồ thị.",
+      "tags": ["Khảo sát hàm số", "Hàm phân thức"]
+    },
+    {
+      "type": "true_false_group",
+      "difficulty": "van_dung",
+      "content": "Cho hàm số $y = f(x) = \\frac{x^2 - 3x + 3}{x - 1}$ có đồ thị $(C)$. Xét tính đúng hoặc sai của các mệnh đề sau:",
+      "sub_questions": [
+        {
+          "key": "a",
+          "content": "Đạo hàm của hàm số là $f'(x) = \\frac{x^2 - 2x}{(x - 1)^2}$.",
+          "explanation": "Ta có $f'(x) = \\frac{(2x - 3)(x - 1) - (x^2 - 3x + 3)}{(x - 1)^2} = \\frac{2x^2 - 5x + 3 - x^2 + 3x - 3}{(x - 1)^2} = \\frac{x^2 - 2x}{(x - 1)^2}$.",
+          "isCorrect": true
+        },
+        {
+          "key": "b",
+          "content": "Hàm số có hai điểm cực trị là $x = 0$ và $x = 2$.",
+          "explanation": "Phương trình $f'(x) = 0 \\Leftrightarrow x(x - 2) = 0 \\Leftrightarrow x = 0$ hoặc $x = 2$. Cả hai nghiệm đều thuộc tập xác định và đạo hàm đổi dấu khi qua chúng, nên đây là 2 điểm cực trị.",
+          "isCorrect": true
+        },
+        {
+          "key": "c",
+          "content": "Giá trị cực tiểu của hàm số là $y_{CT} = 1$.",
+          "explanation": "Lập bảng biến thiên, ta thấy hàm số đạt cực tiểu tại $x = 2$. Giá trị cực tiểu tương ứng là $f(2) = \\frac{2^2 - 3(2) + 3}{2 - 1} = 1$.",
+          "isCorrect": true
+        },
+        {
+          "key": "d",
+          "content": "Đồ thị $(C)$ có đường tiệm cận xiên là $y = x - 1$.",
+          "explanation": "Ta có $f(x) = \\frac{x(x - 1) - 2(x - 1) + 1}{x - 1} = x - 2 + \\frac{1}{x - 1}$. Vì $\\lim_{x \\to \\pm\\infty} [f(x) - (x - 2)] = 0$ nên tiệm cận xiên là $y = x - 2$, không phải $y = x - 1$.",
+          "isCorrect": false
+        }
+      ],
+      "step_by_step_solution": "Hàm số $f(x) = x - 2 + \\frac{1}{x - 1}$ có $f'(x) = 1 - \\frac{1}{(x-1)^2} = \\frac{x^2 - 2x}{(x-1)^2}$. $f'(x) = 0 \\Leftrightarrow x = 0$ hoặc $x = 2$. Cực đại tại $x = 0$ ($y_{CĐ} = -3$), cực tiểu tại $x = 2$ ($y_{CT} = 1$). Tiệm cận xiên là $y = x - 2$.",
+      "tags": ["Khảo sát hàm số", "Hàm phân thức"]
+    },
+    {
+      "type": "true_false_group",
+      "difficulty": "thong_hieu",
+      "content": "Cho hàm số $f(x) = x e^x$. Xét tính đúng hoặc sai của các mệnh đề sau:",
+      "sub_questions": [
+        {
+          "key": "a",
+          "content": "Hàm số $F(x) = (x - 1)e^x$ là một nguyên hàm của hàm số $f(x)$ trên $\\mathbb{R}$.",
+          "explanation": "Đạo hàm $F'(x) = [(x - 1)e^x]' = 1 \\cdot e^x + (x - 1)e^x = x e^x = f(x)$. Do đó $F(x)$ là một nguyên hàm của $f(x)$.",
+          "isCorrect": true
+        },
+        {
+          "key": "b",
+          "content": "Tích phân $\\int_0^1 f(x) dx = 1$.",
+          "explanation": "Ta có $\\int_0^1 f(x) dx = F(1) - F(0) = (1 - 1)e^1 - (0 - 1)e^0 = 0 - (-1) = 1$.",
+          "isCorrect": true
+        },
+        {
+          "key": "c",
+          "content": "Nguyên hàm $G(x)$ của hàm số $f(x)$ thỏa mãn $G(0) = 3$ là $G(x) = (x - 1)e^x + 4$.",
+          "explanation": "Họ nguyên hàm là $G(x) = (x - 1)e^x + C$. Do $G(0) = 3 \\Rightarrow -1 + C = 3 \\Rightarrow C = 4$. Vậy $G(x) = (x - 1)e^x + 4$.",
+          "isCorrect": true
+        },
+        {
+          "key": "d",
+          "content": "Tích phân $\\int_0^1 f(2x) dx = \\frac{1}{2}$.",
+          "explanation": "Đặt $t = 2x \\Rightarrow dt = 2dx$. Khi $x = 0 \\Rightarrow t = 0$, $x = 1 \\Rightarrow t = 2$. Do đó $\\int_0^1 f(2x)dx = \\frac{1}{2}\\int_0^2 f(t)dt = \\frac{1}{2}[F(2) - F(0)] = \\frac{1}{2}[(2 - 1)e^2 - (-1)] = \\frac{e^2 + 1}{2} \\ne \\frac{1}{2}$.",
+          "isCorrect": false
+        }
+      ],
+      "step_by_step_solution": "Sử dụng công thức nguyên hàm từng phần, ta xác định họ nguyên hàm của $x e^x$ là $(x - 1)e^x + C$. Từ đó tính toán các giá trị nguyên hàm xác định và tích phân tương ứng.",
+      "tags": ["Nguyên hàm", "Tích phân"]
+    },
+    {
+      "type": "true_false_group",
+      "difficulty": "van_dung",
+      "content": "Một vật chuyển động thẳng với vận tốc thay đổi theo thời gian $t$ (giây) theo quy luật $v(t) = 15 - 3t$ (m/s) kể từ thời điểm $t = 0$. Xét tính đúng hoặc sai của các mệnh đề sau:",
+      "sub_questions": [
+        {
+          "key": "a",
+          "content": "Sau $2$ giây kể từ lúc bắt đầu chuyển động, vận tốc của vật là $9\\text{ m/s}$.",
+          "explanation": "Thay $t = 2$ vào công thức vận tốc: $v(2) = 15 - 3(2) = 9\\text{ m/s}$.",
+          "isCorrect": true
+        },
+        {
+          "key": "b",
+          "content": "Vật dừng lại hẳn tại thời điểm $t = 5\\text{ giây}$.",
+          "explanation": "Vật dừng lại khi vận tốc bằng $0$: $v(t) = 0 \\Leftrightarrow 15 - 3t = 0 \\Leftrightarrow t = 5\\text{ giây}$.",
+          "isCorrect": true
+        },
+        {
+          "key": "c",
+          "content": "Quãng đường vật đi được trong giây đầu tiên (từ $t = 0$ đến $t = 1$) bằng $13.5\\text{ m}$.",
+          "explanation": "Quãng đường trong giây thứ nhất là $s_1 = \\int_0^1 (15 - 3t) dt = \\left. \\left(15t - 1.5t^2\\right) \\right|_0^1 = 15(1) - 1.5(1) = 13.5\\text{ m}$.",
+          "isCorrect": true
+        },
+        {
+          "key": "d",
+          "content": "Tổng quãng đường vật di chuyển được từ lúc $t = 0$ đến khi dừng lại hẳn là $40\\text{ m}$.",
+          "explanation": "Tổng quãng đường là $s = \\int_0^5 (15 - 3t) dt = \\left. \\left(15t - 1.5t^2\\right) \\right|_0^5 = 15(5) - 1.5(25) = 75 - 37.5 = 37.5\\text{ m} \\ne 40\\text{ m}$.",
+          "isCorrect": false
+        }
+      ],
+      "step_by_step_solution": "Vận tốc của vật là $v(t) = 15 - 3t$. Quãng đường đi được từ thời điểm $t_1$ đến $t_2$ được tính bởi tích phân $s = \\int_{t_1}^{t_2} v(t) dt$. Thời điểm vật dừng lại là nghiệm của phương trình $v(t) = 0$, từ đó tính được tổng quãng đường vật đi được.",
+      "tags": ["Tích phân", "Ứng dụng thực tế"]
+    },
+    {
+      "type": "short_answer",
+      "difficulty": "thong_hieu",
+      "content": "Tìm giá trị lớn nhất của hàm số $y = -x^3 + 3x + 2$ trên đoạn $[0; 2]$.",
+      "step_by_step_solution": "Ta có $y' = -3x^2 + 3$. Cho $y' = 0 \\Leftrightarrow x^2 = 1 \\Leftrightarrow x = 1$ hoặc $x = -1$. Trên đoạn $[0; 2]$, ta chỉ xét điểm $x = 1$. Tính các giá trị: $y(0) = 2$; $y(1) = -(1)^3 + 3(1) + 2 = 4$; $y(2) = -(2)^3 + 3(2) + 2 = 0$. So sánh các giá trị, giá trị lớn nhất của hàm số trên đoạn $[0; 2]$ là $4$.",
+      "correct_answer": "4",
+      "tags": ["Khảo sát hàm số", "Giá trị lớn nhất và nhỏ nhất"]
+    },
+    {
+      "type": "short_answer",
+      "difficulty": "thong_hieu",
+      "content": "Biết $\\int_1^2 \\frac{2x + 3}{x} dx = a + b\\ln 2$ với $a, b$ là các số nguyên. Tính giá trị biểu thức $P = a^2 + b^2$.",
+      "step_by_step_solution": "Ta có $\\int_1^2 \\frac{2x + 3}{x} dx = \\int_1^2 \\left(2 + \\frac{3}{x}\\right) dx = \\left. (2x + 3\\ln|x|) \\right|_1^2 = (4 + 3\\ln 2) - (2 + 3\\ln 1) = 2 + 3\\ln 2$. Suy ra $a = 2$ và $b = 3$. Khi đó $P = a^2 + b^2 = 2^2 + 3^2 = 4 + 9 = 13$.",
+      "correct_answer": "13",
+      "tags": ["Tích phân", "Tính chất tích phân"]
+    },
+    {
+      "type": "short_answer",
+      "difficulty": "thong_hieu",
+      "content": "Tính diện tích hình phẳng giới hạn bởi đường parabol $y = -x^2 + 4x$ và đường thẳng $y = x$.",
+      "step_by_step_solution": "Phương trình hoành độ giao điểm: $-x^2 + 4x = x \\Leftrightarrow -x^2 + 3x = 0 \\Leftrightarrow x = 0$ hoặc $x = 3$. Trên đoạn $[0; 3]$, ta có $-x^2 + 4x \\ge x$. Do đó diện tích hình phẳng là: $S = \\int_0^3 (-x^2 + 3x) dx = \\left. \\left( -\\frac{x^3}{3} + \\frac{3x^2}{2} \\right) \\right|_0^3 = -\\frac{27}{3} + \\frac{3 \\cdot 9}{2} = -9 + 13.5 = 4.5$.",
+      "correct_answer": "4.5",
+      "tags": ["Tích phân", "Ứng dụng hình học của tích phân"]
+    },
+    {
+      "type": "short_answer",
+      "difficulty": "van_dung",
+      "content": "Từ một tấm bìa hình vuông có cạnh bằng $60\\text{ cm}$, người ta cắt bỏ ở bốn góc bốn hình vuông bằng nhau có cạnh bằng $x\\text{ (cm)}$ rồi gập mép lại để tạo thành một chiếc hộp hình hộp chữ nhật không có nắp. Tìm $x$ (đơn vị: cm) để thể tích của chiếc hộp thu được là lớn nhất.",
+      "step_by_step_solution": "Sau khi cắt bỏ bốn góc, đáy của chiếc hộp là hình vuông có cạnh $60 - 2x$ (cm) và chiều cao của hộp là $x$ (cm). Điều kiện: $0 < x < 30$. Thể tích chiếc hộp là: $V(x) = x(60 - 2x)^2 = 4x(30 - x)^2 = 4x(x^2 - 60x + 900) = 4(x^3 - 60x^2 + 900x)$. Đạo hàm: $V'(x) = 4(3x^2 - 120x + 900) = 12(x^2 - 40x + 300)$. Cho $V'(x) = 0 \\Leftrightarrow x^2 - 40x + 300 = 0 \\Leftrightarrow x = 10$ hoặc $x = 30$. Do $0 < x < 30$, ta nhận $x = 10$. Lập bảng biến thiên thấy $V(x)$ đạt giá trị lớn nhất tại $x = 10$.",
+      "correct_answer": "10",
+      "tags": ["Khảo sát hàm số", "Ứng dụng thực tế"]
+    },
+    {
+      "type": "short_answer",
+      "difficulty": "van_dung",
+      "content": "Có bao nhiêu giá trị nguyên của tham số $m \\in [-5; 5]$ để hàm số $y = \\frac{x - 1}{x - m}$ đồng biến trên khoảng $(2; +\\infty)$?",
+      "step_by_step_solution": "Tập xác định: $D = \\mathbb{R} \\setminus \\{m\\}$. Đạo hàm: $y' = \\frac{-m + 1}{(x - m)^2}$. Để hàm số đồng biến trên $(2; +\\infty)$ thì phải thỏa mãn đồng thời hai điều kiện: 1) $y' > 0 \\Leftrightarrow -m + 1 > 0 \\Leftrightarrow m < 1$. 2) Điểm gián đoạn không thuộc khoảng đang xét: $m \\notin (2; +\\infty) \\Leftrightarrow m \\le 2$. Giao hai điều kiện ta được $m < 1$. Vì $m$ là số nguyên thuộc đoạn $[-5; 5]$ nên $m \\in \\{-5; -4; -3; -2; -1; 0\\}$. Như vậy có tất cả $6$ giá trị nguyên thỏa mãn.",
+      "correct_answer": "6",
+      "tags": ["Khảo sát hàm số", "Hàm phân thức", "Sự đồng biến nghịch biến"]
+    },
+    {
+      "type": "short_answer",
+      "difficulty": "van_dung_cao",
+      "content": "Một chất điểm bắt đầu chuyển động từ trạng thái nghỉ với gia tốc biến thiên theo thời gian $a(t) = 6t + 2\\text{ (m/s}^2)$. Biết rằng tại thời điểm ban đầu $t = 0\\text{ s}$, vận tốc và vị trí ban đầu của chất điểm đều bằng $0$. Tính quãng đường (đơn vị: mét) mà chất điểm đi được sau $3\\text{ giây}$.",
+      "step_by_step_solution": "Vận tốc của chất điểm là nguyên hàm của gia tốc: $v(t) = \\int a(t) dt = \\int (6t + 2) dt = 3t^2 + 2t + C_1$. Do ban đầu chất điểm ở trạng thái nghỉ nên $v(0) = 0 \\Rightarrow C_1 = 0$, tức là $v(t) = 3t^2 + 2t$. Do $v(t) \\ge 0, \\forall t \\ge 0$, quãng đường chất điểm đi được trong $3$ giây đầu tiên là: $s = \\int_0^3 v(t) dt = \\int_0^3 (3t^2 + 2t) dt = \\left. (t^3 + t^2) \\right|_0^3 = 3^3 + 3^2 = 27 + 9 = 36\\text{ m}$.",
+      "correct_answer": "36",
+      "tags": ["Tích phân", "Ứng dụng vật lý của tích phân"]
+    }
+  ]
+}

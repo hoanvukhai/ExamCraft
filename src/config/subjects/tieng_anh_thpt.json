@@ -1,0 +1,36 @@
+{
+  "subject": "tieng_anh",
+  "name": "Tiếng Anh",
+  "applicableGrades": [10, 11, 12],
+  "defaultDurationMinutes": 50,
+  "sections": [
+    {
+      "id": "part_1",
+      "name": "PHẦN I: Trắc nghiệm Ngữ âm, Từ vựng & Ngữ pháp",
+      "instruction": "Mark the letter A, B, C, or D on your answer sheet to indicate the correct answer to each of the following questions.",
+      "type": "multiple_choice",
+      "questionCount": 24,
+      "pointsPerQuestion": 0.2,
+      "totalPoints": 4.8
+    },
+    {
+      "id": "part_2",
+      "name": "PHẦN II: Đọc hiểu văn bản",
+      "instruction": "Read the following passage and mark the letter A, B, C, or D on your answer sheet to indicate the correct answer.",
+      "type": "multiple_choice",
+      "questionCount": 16,
+      "pointsPerQuestion": 0.2,
+      "totalPoints": 3.2
+    },
+    {
+      "id": "part_3",
+      "name": "PHẦN III: Điền từ & Sắp xếp câu",
+      "instruction": "Choose the best option to complete the sentences or arrange the text in correct order.",
+      "type": "fill_blank",
+      "questionCount": 10,
+      "pointsPerQuestion": 0.2,
+      "totalPoints": 2.0
+    }
+  ],
+  "totalExamPoints": 10.0
+}

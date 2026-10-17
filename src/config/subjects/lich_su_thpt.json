@@ -1,0 +1,27 @@
+{
+  "subject": "lich_su",
+  "name": "Lịch sử",
+  "applicableGrades": [10, 11, 12],
+  "defaultDurationMinutes": 50,
+  "sections": [
+    {
+      "id": "part_1",
+      "name": "PHẦN I: Câu trắc nghiệm nhiều phương án lựa chọn",
+      "instruction": "Thí sinh trả lời từ câu 1 đến câu 24. Mỗi câu hỏi thí sinh chỉ chọn một phương án.",
+      "type": "multiple_choice",
+      "questionCount": 24,
+      "pointsPerQuestion": 0.25,
+      "totalPoints": 6.0
+    },
+    {
+      "id": "part_2",
+      "name": "PHẦN II: Câu trắc nghiệm đúng sai",
+      "instruction": "Thí sinh trả lời từ câu 1 đến câu 4. Trong mỗi ý a), b), c), d) ở mỗi câu, thí sinh chọn đúng hoặc sai.",
+      "type": "true_false_group",
+      "questionCount": 4,
+      "progressiveScoring": [0.0, 0.1, 0.25, 0.5, 1.0],
+      "totalPoints": 4.0
+    }
+  ],
+  "totalExamPoints": 10.0
+}

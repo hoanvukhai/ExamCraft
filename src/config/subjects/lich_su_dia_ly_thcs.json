@@ -1,0 +1,36 @@
+{
+  "subject": "lich_su_dia_ly",
+  "name": "Lịch sử và Địa lí",
+  "applicableGrades": [4, 5, 6, 7, 8, 9],
+  "defaultDurationMinutes": 45,
+  "sections": [
+    {
+      "id": "part_1",
+      "name": "PHẦN I: Trắc nghiệm khách quan",
+      "instruction": "Chọn một phương án đúng nhất trong mỗi câu sau.",
+      "type": "multiple_choice",
+      "questionCount": 16,
+      "pointsPerQuestion": 0.25,
+      "totalPoints": 4.0
+    },
+    {
+      "id": "part_2",
+      "name": "PHẦN II: Trắc nghiệm đúng sai",
+      "instruction": "Trong mỗi ý a), b), c), d) ở mỗi câu, chọn Đúng hoặc Sai.",
+      "type": "true_false_group",
+      "questionCount": 2,
+      "progressiveScoring": [0.0, 0.1, 0.25, 0.5, 1.0],
+      "totalPoints": 2.0
+    },
+    {
+      "id": "part_3",
+      "name": "PHẦN III: Tự luận",
+      "instruction": "Trả lời câu hỏi tự luận theo nội dung đã học.",
+      "type": "essay",
+      "questionCount": 2,
+      "pointsPerQuestion": 2.0,
+      "totalPoints": 4.0
+    }
+  ],
+  "totalExamPoints": 10.0
+}
