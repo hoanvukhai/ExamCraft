@@ -271,6 +271,15 @@ export const Header: React.FC<HeaderProps> = ({
                     </div>
 
                     <Link
+                      href="/teacher/assignments"
+                      onClick={() => setIsUserMenuOpen(false)}
+                      className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+                    >
+                      <Users className="w-4 h-4 text-indigo-600" />
+                      <span>Bài đã giao & Bảng điểm</span>
+                    </Link>
+
+                    <Link
                       href="/teacher/groups"
                       onClick={() => setIsUserMenuOpen(false)}
                       className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors"

@@ -86,12 +86,14 @@
 ---
 
 ## 📊 GIAI ĐOẠN 4: MÀN HÌNH THEO DÕI & BẢNG ĐIỂM DÀNH CHO GIÁO VIÊN
-- [ ] Màn hình theo dõi bài giao theo thời gian thực (polling 3–5s/lần).
-- [ ] Xem chi tiết bài làm của từng học sinh: đáp án đã chọn, đúng/sai từng câu.
-- [ ] Chấm tay câu tự luận, nhập điểm và nhận xét của giáo viên.
-- [ ] Thao tác quản trị bài nộp: Mở lại bài, gia hạn thời gian, cấp thêm 1 lượt làm, xóa lượt làm / xóa học sinh.
-- [ ] Thống kê phân tích: Phổ điểm, điểm trung bình, tỷ lệ đúng theo từng câu hỏi (Item Analysis).
-- [ ] Xuất bảng điểm CSV an toàn (có UTF-8 BOM, làm sạch công thức hiểm độc).
+- [x] Màn hình theo dõi bài giao theo thời gian thực (polling 4s/lần) tại `/teacher/assignments/[id]`.
+- [x] Trang danh sách toàn bộ bài đã giao của giáo viên tại `/teacher/assignments`.
+- [x] Xem chi tiết bài làm của từng học sinh: câu trả lời đã chọn, đáp án chuẩn, lời giải chi tiết.
+- [x] Chấm tay câu tự luận, điều chỉnh điểm số và ghi nhận xét của giáo viên (tự động cập nhật tổng điểm `Attempt.score` tức thì).
+- [x] Thao tác quản trị bài nộp: Khóa/mở lại bài thi, gia hạn thời gian, xóa lượt làm lỗi cho học sinh làm lại.
+- [x] Thống kê phân tích: Phổ điểm (dưới 5, 5–6.5, 6.5–8, 8–10), điểm trung bình, cao nhất, thấp nhất và tỷ lệ đúng theo từng câu hỏi (Item Analysis cảnh báo câu khó để chữa bài).
+- [x] Xuất bảng điểm CSV an toàn (có UTF-8 BOM hiển thị chuẩn Tiếng Việt trên Excel, làm sạch công thức hiểm độc CSV Formula Injection).
+- [x] Kiểm thử tự động toàn diện: Đã chạy `tests/test_phase4_monitoring.ts` vượt qua 9/9 bài test (100%).
 
 ---
 

@@ -1,0 +1,114 @@
+import { NextRequest, NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
+import { requireAuth } from '@/lib/auth';
+import { AttemptStatus } from '@prisma/client';
+
+// Hàm làm sạch chuỗi chống tấn công CSV Injection (Formula Injection)
+function sanitizeCsvCell(value: any): string {
+  if (value === null || value === undefined) return '';
+  let str = String(value).trim();
+  // Nếu bắt đầu bằng ký tự công thức Excel hiểm độc (=, +, -, @, tab, cr), thêm dấu '
+  if (/^[=+\-@\t\r]/.test(str)) {
+    str = `'${str}`;
+  }
+  // Nếu có dấu phẩy hoặc ngoặc kép, bọc trong ngoặc kép và escape
+  if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+    str = `"${str.replace(/"/g, '""')}"`;
+  }
+  return str;
+}
+
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const user = await requireAuth();
+    const { id } = await params;
+
+    const assignment = await prisma.assignment.findFirst({
+      where: { id, ownerId: user.id },
+      include: {
+        group: true,
+        attempts: {
+          include: {
+            student: true,
+            answers: true,
+          },
+          orderBy: { startedAt: 'desc' },
+        },
+      },
+    });
+
+    if (!assignment) {
+      return NextResponse.json({ error: 'Không tìm thấy bài giao' }, { status: 404 });
+    }
+
+    const snapshot = assignment.snapshot as any;
+    const questions: any[] = snapshot?.questions || [];
+
+    // Header CSV
+    const headers = [
+      'STT',
+      'Họ và tên học sinh',
+      'Lớp',
+      'Lượt thi',
+      'Trạng thái',
+      'Điểm số',
+      'Thời gian nộp',
+      ...questions.map((_, idx) => `Câu ${idx + 1}`),
+    ];
+
+    const rows: string[] = [];
+
+    // Nhóm theo từng học sinh để lấy lượt nộp cao nhất hoặc hiển thị tất cả
+    assignment.attempts.forEach((att, index) => {
+      const answersMap = new Map<string, any>(
+        att.answers.map((a) => [a.questionKey, a])
+      );
+
+      const questionColumns = questions.map((q) => {
+        const a = answersMap.get(q.id);
+        if (!a) return 'Chưa làm';
+        return a.isCorrect ? `Đúng (${a.earned}đ)` : `Sai (${a.earned}đ)`;
+      });
+
+      const row = [
+        sanitizeCsvCell(index + 1),
+        sanitizeCsvCell(att.student.displayName),
+        sanitizeCsvCell(assignment.group?.name || 'Tự do'),
+        sanitizeCsvCell(`Lần ${att.attemptNo}`),
+        sanitizeCsvCell(att.status === AttemptStatus.SUBMITTED ? 'Đã nộp' : 'Đang làm'),
+        sanitizeCsvCell(att.score !== null ? `${att.score} / ${att.maxScore || 10}` : 'Chưa có'),
+        sanitizeCsvCell(
+          att.submittedAt ? new Date(att.submittedAt).toLocaleString('vi-VN') : ''
+        ),
+        ...questionColumns.map(sanitizeCsvCell),
+      ];
+
+      rows.push(row.join(','));
+    });
+
+    // Thêm UTF-8 BOM (\uFEFF) ở đầu để mở trực tiếp trên Excel không bị lỗi font Tiếng Việt
+    const csvContent = '\uFEFF' + [headers.join(','), ...rows].join('\r\n');
+
+    const cleanTitle = assignment.title
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9]/g, '_');
+
+    return new NextResponse(csvContent, {
+      headers: {
+        'Content-Type': 'text/csv; charset=utf-8',
+        'Content-Disposition': `attachment; filename="Bang_Diem_${cleanTitle}_${Date.now()}.csv"`,
+      },
+    });
+  } catch (error: unknown) {
+    const err = error as Error;
+    if (err.message === 'UNAUTHORIZED') {
+      return NextResponse.json({ error: 'Chưa đăng nhập' }, { status: 401 });
+    }
+    console.error('Lỗi GET export CSV:', error);
+    return NextResponse.json({ error: 'Lỗi máy chủ khi xuất CSV' }, { status: 500 });
+  }
+}
