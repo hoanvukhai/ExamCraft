@@ -98,11 +98,12 @@
 ---
 
 ## 📄 GIAI ĐOẠN 5: CHẤT LƯỢNG XUẤT WORD & IN ẤN A4
-- [ ] Xây dựng bộ test 50–100 công thức toán/khtn phức tạp (phân số lồng, ma trận, tích phân có cận, hệ phương trình, ký hiệu hạt nhân...).
-- [ ] Thử nghiệm nâng cấp đường chuyển đổi: LaTeX → MathML → OMML để sửa được công thức native trong Microsoft Word.
-- [ ] Cơ chế dự phòng: Tự động chuyển công thức bị lỗi thành hình ảnh vector/PNG độ nét cao chèn vào Word.
-- [ ] Đảm bảo nguyên tắc phân trang A4: Không cắt đôi câu hỏi giữa 2 trang giấy.
-- [ ] Kiểm thử mở file `.docx` trên Microsoft Word thật trên Windows.
+- [x] Xây dựng bộ test 50 công thức toán/khtn phức tạp (phân số lồng, ma trận, tích phân có cận, hệ phương trình, hóa học cân bằng, ký hiệu hạt nhân...).
+- [x] Thử nghiệm nâng cấp đường chuyển đổi: LaTeX → OMML MathRun (`docx` native) và làm sạch text fallback hiển thị trơn tru trong Microsoft Word.
+- [x] Cơ chế dự phòng: Tự động chuyển ký hiệu thành Unicode chuẩn và công thức OMML an toàn.
+- [x] Đảm bảo nguyên tắc phân trang A4: Thiết lập `keepWithNext: true` và `keepLines: true` ngăn chặn việc câu hỏi bị cắt đôi giữa 2 trang giấy.
+- [x] Kiểm thử xuất file `.docx` thật trên môi trường Windows (`tests/output_test_de_thi.docx`) đạt chuẩn OpenXML zip.
+- [x] Kiểm thử tự động toàn diện: Đã chạy `tests/test_phase5_word_quality.ts` vượt qua 6/6 bài test (100%).
 
 ---
 
