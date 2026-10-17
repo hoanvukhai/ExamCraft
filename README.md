@@ -48,11 +48,12 @@
 ## 🛠️ Công Nghệ Sử Dụng
 
 - **Frontend**: [Next.js](https://nextjs.org/) (App Router), [React](https://react.dev/), [Tailwind CSS](https://tailwindcss.com/)
-- **Trí tuệ nhân tạo**: Google Gemini AI (`@google/genai`)
+- **Backend & Database**: [PostgreSQL 16](https://www.postgresql.org/) qua [Prisma ORM](https://www.prisma.io/), Docker Compose
+- **Trí tuệ nhân tạo**: Google Gemini AI (`@google/genai`) với cơ chế xoay tua thông minh 7 API Keys
 - **Công thức Toán**: KaTeX / MathJax ([rehype-katex](https://github.com/remarkjs/remark-math), [remark-math](https://github.com/remarkjs/remark-math))
-- **Đồ thị Canvas**: HTML5 Canvas 2D Engine
-- **Lưu trữ dữ liệu**: IndexedDB ([Dexie.js](https://dexie.org/)) & Cloud File Storage
-- **Xuất bản**: [docx](https://github.com/dolanmiu/docx) (Tạo file Word .docx tiêu chuẩn)
+- **Đồ thị Canvas**: HTML5 Canvas 2D Engine chuyên sâu cho Toán/Lý/Hóa
+- **Xuất bản**: [docx](https://github.com/dolanmiu/docx) (Tạo file Word .docx tiêu chuẩn có MathML/OMML native)
+- **Tài liệu kiến trúc chi tiết**: Xem tại [`docs/EXAMCRAFT_THIET_KE_V3.md`](./docs/EXAMCRAFT_THIET_KE_V3.md) và theo dõi tiến độ thi công tại [`docs/CHECKLIST_TIEN_DO.md`](./docs/CHECKLIST_TIEN_DO.md).
 
 ---
 

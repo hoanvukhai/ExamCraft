@@ -37,6 +37,7 @@ export const MathRenderer: React.FC<MathRendererProps> = ({ content, className =
             displayMode: true,
             throwOnError: false,
             strict: false,
+            trust: false,
           });
           return (
             <span
@@ -58,6 +59,7 @@ export const MathRenderer: React.FC<MathRendererProps> = ({ content, className =
             displayMode: false,
             throwOnError: false,
             strict: false,
+            trust: false,
           });
           return (
             <span

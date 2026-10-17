@@ -96,11 +96,22 @@ export const StudentResultsModal: React.FC<StudentResultsModalProps> = ({
       'Thang điểm',
     ];
 
+    // Chống CSV Formula Injection: nếu chuỗi bắt đầu bằng =, +, -, @, \t, \r thì chèn dấu nháy đơn '
+    const sanitizeCsvCell = (val: string): string => {
+      if (!val) return '""';
+      const trimmed = val.trim();
+      const triggerChars = ['=', '+', '-', '@', '\t', '\r'];
+      const safeVal = triggerChars.some((char) => trimmed.startsWith(char))
+        ? `'${val}`
+        : val;
+      return `"${safeVal.replace(/"/g, '""')}"`;
+    };
+
     const rows = submissions.map((s, idx) => [
       idx + 1,
-      `"${s.studentName.replace(/"/g, '""')}"`,
-      `"${s.studentClass.replace(/"/g, '""')}"`,
-      `"${(s.schoolName || '').replace(/"/g, '""')}"`,
+      sanitizeCsvCell(s.studentName),
+      sanitizeCsvCell(s.studentClass),
+      sanitizeCsvCell(s.schoolName || ''),
       `"${new Date(s.submittedAt).toLocaleString('vi-VN')}"`,
       s.durationSeconds,
       s.part1Score,
