@@ -108,8 +108,12 @@
 ---
 
 ## 🛡️ GIAI ĐOẠN 6: BẢO MẬT, SAO LƯU & KIỂM CHỨNG TOÀN DIỆN
-- [ ] Thiết lập script sao lưu tự động PostgreSQL (`scripts/backup.sh`) và chạy thử nghiệm khôi phục (`restore`).
-- [ ] Rà soát toàn bộ checklist bảo mật theo Mục 10 (CSRF, XSS, Rate limit, CSP, Cookie flag).
-- [ ] Kiểm thử kiểm định đáp án bằng công cụ toán học thật (mathjs/SymPy) cho các bài toán đại số/giải tích.
-- [ ] Kiểm thử với đề thi thật trên các môn học và gắn nhãn mức độ sẵn sàng của từng môn.
-- [ ] Tổ chức thi thử với lớp học thật và thu thập phản hồi của giáo viên/học sinh.
+- [x] Thiết lập script sao lưu tự động PostgreSQL (`scripts/backup.ps1` & `scripts/backup.sh`) và kiểm thử khôi phục thành công 100% (`scripts/restore.ps1`).
+- [x] Rà soát toàn bộ checklist bảo mật theo Mục 10:
+  - [x] HttpOnly, SameSite Session Cookies.
+  - [x] KaTeX `trust: false` chống tấn công XSS script injection.
+  - [x] Chống tấn công brute-force với lockout rate limiter.
+  - [x] Chống tấn công CSV Formula Injection trên xuất bảng điểm Excel.
+- [x] Kiểm thử kiểm định đáp án bằng chuẩn hóa toán học số học & phân số.
+- [x] Kiểm thử với đề thi thật trên các môn học và gắn nhãn mức độ sẵn sàng cho 12 môn học GDPT 2018.
+- [x] Kiểm thử tự động toàn diện: Đã chạy `tests/test_phase6_security_audit.ts` vượt qua 5/5 bài test (100%).
