@@ -506,7 +506,7 @@ export async function exportExamToDocx(
       docChildren.push(
         new Paragraph({
           spacing: { before: 100, after: 60 },
-          keepWithNext: true,
+          keepNext: true,
           keepLines: true,
           children: [
             new TextRun({
@@ -563,7 +563,7 @@ export async function exportExamToDocx(
     docChildren.push(
       new Paragraph({
         spacing: { before: 300, after: 120 },
-        keepWithNext: true,
+        keepNext: true,
         children: [
           new TextRun({
             text: 'PHẦN II. Thí sinh trả lời từ câu ' + currentQuestionNum + ' đến câu ' + (currentQuestionNum + part2.length - 1) + '. Trong mỗi ý a), b), c), d) ở mỗi câu, thí sinh chọn Đúng hoặc Sai. (Đúng 1 ý được 0,1 điểm; đúng 2 ý được 0,25 điểm; đúng 3 ý được 0,5 điểm; đúng cả 4 ý được 1,0 điểm)',
@@ -580,7 +580,7 @@ export async function exportExamToDocx(
       docChildren.push(
         new Paragraph({
           spacing: { before: 100, after: 60 },
-          keepWithNext: true,
+          keepNext: true,
           keepLines: true,
           children: [
             new TextRun({
@@ -608,7 +608,7 @@ export async function exportExamToDocx(
             new Paragraph({
               indent: { left: 400 },
               spacing: { after: isLast ? 120 : 40 },
-              keepWithNext: !isLast,
+              keepNext: !isLast,
               keepLines: true,
               children: [
                 new TextRun({
