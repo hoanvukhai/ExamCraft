@@ -44,4 +44,6 @@ next-env.d.ts
 # backups & generated test docs
 /backups
 *.sql
+tests/*.docx
+
 
