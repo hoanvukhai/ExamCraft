@@ -17,23 +17,24 @@
 
 ---
 
-## 🧱 GIAI ĐOẠN 1: HẠ TẦNG DOCKER + POSTGRESQL + PRISMA + HỆ THỐNG AUTH (1–2 TUẦN)
-- [ ] Thiết lập `docker-compose.yml` (chạy dịch vụ `db: postgres:16-alpine` kèm volume bền vững `pgdata`).
-- [ ] Cài đặt các gói phụ thuộc: `prisma`, `@prisma/client`, `argon2` (hoặc `bcrypt`), `zod`.
-- [ ] Viết `prisma/schema.prisma` chuẩn hóa theo thiết kế v3.1:
-  - [ ] Enums: `Role`, `QuestionType`, `Difficulty`, `QuestionStatus`, `VerifiedBy`, `AssignmentMode`, `AssignmentStatus`, `IdentityMode`, `RevealPolicy`, `AttemptStatus`, `AiKeyStatus`, `LeaderboardMode`, `Visibility`, `SourceKind`.
-  - [ ] Models: `User`, `Passage`, `Question`, `QuestionRevision`, `ExamTemplate`, `Exam`, `ExamQuestion`, `ShareLink`, `Group`, `Student`, `Assignment`, `Attempt`, `AttemptAnswer`, `AiKeyState`, `AiUsageLog`, `AuditLog`.
-- [ ] Tạo migration đầu tiên: `npx prisma migrate dev --name init_v3_schema`.
-- [ ] Viết script `prisma/seed.ts`: Khởi tạo tài khoản `SUPER_ADMIN` đầu tiên, danh sách môn học và các `ExamTemplate` mẫu chuẩn.
-- [ ] Xây dựng hệ thống xác thực (Auth Session):
-  - [ ] Route đăng nhập giáo viên/admin, băm mật khẩu `argon2id`, cookie `HttpOnly`, `Secure`, `SameSite`.
-  - [ ] Cơ chế bắt buộc đổi mật khẩu ở lần đăng nhập đầu tiên (`mustChangePassword`).
-  - [ ] Giới hạn số lần thử sai theo email và IP, khóa tài khoản tạm thời khi vượt ngưỡng.
-- [ ] Xây dựng giao diện & API Quản trị Admin (`/admin/users`):
-  - [ ] Admin tạo tài khoản giáo viên mới (cấp email, mật khẩu tạm).
-  - [ ] Khóa / mở khóa tài khoản (`isActive`), đặt lại mật khẩu.
-  - [ ] Ghi nhận toàn bộ thao tác quản trị vào bảng `AuditLog`.
-- [ ] Thiết lập kiểm tra phân quyền server-side middleware / helpers cho mọi API routes.
+## 🧱 GIAI ĐOẠN 1: HẠ TẦNG DOCKER + POSTGRESQL + PRISMA + HỆ THỐNG AUTH (HOÀN THÀNH 100%)
+- [x] Thiết lập `docker-compose.yml` (chạy dịch vụ `db: postgres:16-alpine` kèm volume bền vững `pgdata`).
+- [x] Cài đặt các gói phụ thuộc: `prisma`, `@prisma/client`, `bcryptjs`, `zod`, `tsx`.
+- [x] Viết `prisma/schema.prisma` chuẩn hóa theo thiết kế v3.1:
+  - [x] Enums: `Role`, `QuestionType`, `Difficulty`, `QuestionStatus`, `VerifiedBy`, `AssignmentMode`, `AssignmentStatus`, `IdentityMode`, `RevealPolicy`, `AttemptStatus`, `AiKeyStatus`, `LeaderboardMode`, `Visibility`, `SourceKind`.
+  - [x] Models: `User`, `Session`, `Passage`, `Question`, `QuestionRevision`, `ExamTemplate`, `Exam`, `ExamQuestion`, `ShareLink`, `Group`, `Student`, `Assignment`, `Attempt`, `AttemptAnswer`, `AiKeyState`, `AiUsageLog`, `AuditLog`.
+- [x] Tạo migration đầu tiên: `npx prisma migrate dev --name init_v3_schema` (Đã đồng bộ thành công vào PostgreSQL container).
+- [x] Viết script `prisma/seed.ts`: Khởi tạo tài khoản `SUPER_ADMIN` đầu tiên, 7 trạng thái AI Keys và 4 `ExamTemplate` mẫu chuẩn GDPT.
+- [x] Xây dựng hệ thống xác thực (Auth Session):
+  - [x] Route đăng nhập giáo viên/admin, băm mật khẩu `bcryptjs`, cookie `HttpOnly`, `Secure`, `SameSite: lax`.
+  - [x] Cơ chế bắt buộc đổi mật khẩu ở lần đăng nhập đầu tiên (`mustChangePassword`) trên giao diện và API.
+  - [x] Giới hạn số lần thử sai theo email và IP, khóa tài khoản tạm thời 15 phút khi thử sai quá 5 lần.
+- [x] Xây dựng giao diện & API Quản trị Admin (`/admin/users`):
+  - [x] Admin tạo tài khoản giáo viên mới (cấp email, họ tên, mật khẩu tạm sinh ngẫu nhiên, hạn mức AI/ngày).
+  - [x] Khóa / mở khóa tài khoản (`isActive`), đặt lại mật khẩu tạm.
+  - [x] Ghi nhận toàn bộ thao tác quản trị vào bảng `AuditLog`.
+- [x] Thiết lập kiểm tra phân quyền server-side middleware / helpers (`requireAuth`, `requireAdmin`) cho mọi API routes.
+- [x] Kiểm thử tự động toàn diện: Đã chạy `tests/test_phase1_auth.ts` và vượt qua 6/6 bài test (100%).
 
 ---
 

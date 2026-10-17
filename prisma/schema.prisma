@@ -1,0 +1,439 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ───────────── ENUMS ─────────────
+
+enum Role {
+  SUPER_ADMIN
+  TEACHER
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  TRUE_FALSE_GROUP
+  SHORT_ANSWER
+  ESSAY
+  FILL_BLANK
+  MATCHING
+  ORDERING
+}
+
+enum Difficulty {
+  NHAN_BIET
+  THONG_HIEU
+  VAN_DUNG
+  VAN_DUNG_CAO
+}
+
+enum QuestionStatus {
+  DRAFT
+  VERIFIED
+}
+
+enum VerifiedBy {
+  NONE
+  HUMAN
+  AI_CONSENSUS
+  MATH_ENGINE
+}
+
+enum AssignmentMode {
+  HOMEWORK
+  CLASSWORK
+  EXAM
+}
+
+enum AssignmentStatus {
+  DRAFT
+  OPEN
+  CLOSED
+  ARCHIVED
+}
+
+enum IdentityMode {
+  PICK_FROM_LIST
+  FREE_NAME
+  PERSONAL_LINK
+}
+
+enum RevealPolicy {
+  IMMEDIATE
+  AFTER_CLOSE
+  NEVER
+}
+
+enum AttemptStatus {
+  IN_PROGRESS
+  SUBMITTED
+  EXPIRED
+}
+
+enum AiKeyStatus {
+  ACTIVE
+  COOLDOWN
+  DEAD
+}
+
+enum LeaderboardMode {
+  OFF
+  TOP_AND_ME
+}
+
+enum Visibility {
+  PRIVATE // chỉ chủ sở hữu thấy
+  SHARED // mọi giáo viên trong hệ thống thấy (chỉ đọc)
+}
+
+enum SourceKind {
+  AI_GENERATED
+  TEACHER_WRITTEN
+  IMPORTED_FILE
+  IMPORTED_WEB
+  LICENSED_DATASET
+  FORKED
+}
+
+// ───────────── NGƯỜI DÙNG & PHIÊN ─────────────
+
+model User {
+  id                 String    @id @default(cuid())
+  email              String    @unique
+  name               String
+  passwordHash       String
+  role               Role      @default(TEACHER)
+  isActive           Boolean   @default(true)
+  mustChangePassword Boolean   @default(true)
+  aiDailyLimit       Int       @default(100) // số lệnh AI tối đa mỗi ngày
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  lastLoginAt        DateTime?
+
+  sessions          Session[]
+  questions         Question[]     @relation("QuestionOwner")
+  authoredQuestions Question[]     @relation("QuestionAuthor")
+  passages          Passage[]
+  exams             Exam[]
+  templates         ExamTemplate[]
+  groups            Group[]
+  assignments       Assignment[]
+  aiUsage           AiUsageLog[]
+  auditLogs         AuditLog[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([token])
+}
+
+// ───────────── NGÂN HÀNG CÂU HỎI ─────────────
+
+model Passage {
+  id        String   @id @default(cuid())
+  ownerId   String
+  owner     User     @relation(fields: [ownerId], references: [id])
+  title     String?
+  content   String   @db.Text
+  source    String?
+  figures   Json?
+  createdAt DateTime @default(now())
+
+  questions Question[]
+
+  @@index([ownerId])
+}
+
+model Question {
+  id         String       @id @default(cuid())
+  ownerId    String // người đang giữ bản này
+  owner      User         @relation("QuestionOwner", fields: [ownerId], references: [id])
+  authorId   String // tác giả gốc (không đổi khi sao chép)
+  author     User         @relation("QuestionAuthor", fields: [authorId], references: [id])
+  originId   String? // nếu là bản sao: trỏ tới câu gốc
+  origin     Question?    @relation("QuestionOrigin", fields: [originId], references: [id], onDelete: SetNull)
+  copies     Question[]   @relation("QuestionOrigin")
+  visibility Visibility   @default(PRIVATE)
+  sourceKind SourceKind   @default(TEACHER_WRITTEN)
+  sourceUrl  String? // dùng cho IMPORTED_WEB
+  shareable  Boolean      @default(true) // false với IMPORTED_WEB hoặc giấy phép cấm
+  subject    String // mã môn (toan, vat_ly, hoa_hoc, sinh_hoc, tieng_anh, ...)
+  grade      Int // 1..12
+  type       QuestionType
+  difficulty Difficulty
+  topics     String[]
+  tags       String[]
+  passageId  String?
+  passage    Passage?     @relation(fields: [passageId], references: [id])
+
+  content  String   @db.Text // nội dung kèm LaTeX
+  figures  Json? // figures[]: bảng biến thiên, đồ thị, ảnh
+  payload  Json // choices, correct, sub_questions, accepted_answers, rubric
+  solution String   @db.Text // lời giải, không nhắc chữ cái A/B/C/D
+  points   Decimal? @db.Decimal(5, 2)
+
+  status      QuestionStatus @default(DRAFT)
+  verifiedBy  VerifiedBy     @default(NONE)
+  aiGenerated Boolean        @default(false)
+  source      String?
+  licenseNote String?
+  version     Int            @default(1)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  deletedAt   DateTime? // xóa mềm
+
+  revisions QuestionRevision[]
+  examItems ExamQuestion[]
+
+  @@index([ownerId, subject, grade])
+  @@index([ownerId, type, difficulty])
+  @@index([visibility, subject, grade])
+  @@index([authorId])
+}
+
+model QuestionRevision {
+  id         String   @id @default(cuid())
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  version    Int
+  snapshot   Json
+  note       String?
+  createdAt  DateTime @default(now())
+
+  @@unique([questionId, version])
+}
+
+// ───────────── ĐỀ THI ─────────────
+
+model ExamTemplate {
+  id        String   @id @default(cuid())
+  ownerId   String? // null = mẫu hệ thống
+  owner     User?    @relation(fields: [ownerId], references: [id])
+  name      String
+  subject   String
+  gradeFrom Int
+  gradeTo   Int
+  sections  Json // danh sách phần: type, questionCount, pointsPerQuestion, scoring...
+  isSystem  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  exams Exam[]
+}
+
+model Exam {
+  id              String        @id @default(cuid())
+  ownerId         String
+  owner           User          @relation(fields: [ownerId], references: [id])
+  templateId      String?
+  template        ExamTemplate? @relation(fields: [templateId], references: [id])
+  title           String
+  subject         String
+  grade           Int
+  durationMinutes Int?
+  metadata        Json // trường, sở, năm học, học kỳ, ghi chú
+  sections        Json // bản sao cấu trúc phần đang dùng cho đề này
+  variantCount    Int           @default(1)
+  version         Int           @default(1)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  deletedAt       DateTime?
+
+  items       ExamQuestion[]
+  assignments Assignment[]
+  shareLinks  ShareLink[]
+
+  @@index([ownerId, updatedAt])
+}
+
+model ExamQuestion {
+  id             String   @id @default(cuid())
+  examId         String
+  exam           Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+  questionId     String
+  question       Question @relation(fields: [questionId], references: [id])
+  sectionId      String // khớp id phần trong Exam.sections
+  position       Int
+  pointsOverride Decimal? @db.Decimal(5, 2)
+
+  @@unique([examId, position])
+  @@index([questionId])
+}
+
+model ShareLink {
+  id          String    @id @default(cuid())
+  examId      String
+  exam        Exam      @relation(fields: [examId], references: [id], onDelete: Cascade)
+  token       String    @unique // chuỗi ngẫu nhiên dài, không đoán được
+  showAnswers Boolean   @default(false)
+  allowCopy   Boolean   @default(false) // chỉ giáo viên đã đăng nhập mới dùng được
+  expiresAt   DateTime?
+  revokedAt   DateTime?
+  createdAt   DateTime  @default(now())
+}
+
+// ───────────── LỚP VÀ HỌC SINH ─────────────
+
+model Group {
+  id         String    @id @default(cuid())
+  ownerId    String
+  owner      User      @relation(fields: [ownerId], references: [id])
+  name       String
+  note       String?
+  publicCode String    @unique // mã cho link lớp /c/{publicCode}
+  createdAt  DateTime  @default(now())
+  archivedAt DateTime?
+
+  students    Student[]
+  assignments Assignment[]
+
+  @@unique([ownerId, name])
+}
+
+model Student {
+  id            String    @id @default(cuid())
+  groupId       String
+  group         Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  displayName   String
+  personalToken String?   @unique // dùng cho chế độ PERSONAL_LINK
+  pinHash       String? // tùy chọn, PIN 4 số (lưu băm)
+  isGuest       Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  archivedAt    DateTime?
+
+  attempts Attempt[]
+
+  @@unique([groupId, displayName])
+}
+
+// ───────────── BÀI GIAO VÀ LƯỢT LÀM ─────────────
+
+model Assignment {
+  id      String  @id @default(cuid())
+  ownerId String
+  owner   User    @relation(fields: [ownerId], references: [id])
+  examId  String
+  exam    Exam    @relation(fields: [examId], references: [id])
+  groupId String?
+  group   Group?  @relation(fields: [groupId], references: [id])
+
+  title        String
+  mode         AssignmentMode
+  status       AssignmentStatus @default(DRAFT)
+  identityMode IdentityMode     @default(PICK_FROM_LIST)
+  publicId     String           @unique // trong link /a/{publicId}
+  joinCode     String? // mã ngắn đọc cho cả lớp, tùy chọn
+
+  snapshot             Json // đề + đáp án + cấu trúc phần tại thời điểm giao (BẤT BIẾN)
+  opensAt              DateTime?
+  closesAt             DateTime?
+  durationMinutes      Int?
+  maxAttempts          Int             @default(1)
+  shuffleQuestions     Boolean         @default(false)
+  shuffleChoices       Boolean         @default(false)
+  showResult           RevealPolicy    @default(IMMEDIATE)
+  showSolution         RevealPolicy    @default(AFTER_CLOSE)
+  requirePin           Boolean         @default(false)
+  leaderboard          LeaderboardMode @default(OFF)
+  leaderboardTopN      Int             @default(3)
+  leaderboardReveal    RevealPolicy    @default(IMMEDIATE)
+  leaderboardAnonymous Boolean         @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  attempts Attempt[]
+
+  @@index([ownerId, status])
+  @@index([groupId])
+}
+
+model Attempt {
+  id           String        @id @default(cuid())
+  assignmentId String
+  assignment   Assignment    @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  studentId    String
+  student      Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  attemptNo    Int
+  status       AttemptStatus @default(IN_PROGRESS)
+  startedAt    DateTime      @default(now())
+  deadlineAt   DateTime? // server tính
+  submittedAt  DateTime?
+  variantSeed  Int // seed trộn câu/đáp án riêng cho lượt này
+  layout       Json // thứ tự câu và hoán vị đáp án đã dùng
+  draft        Json? // đáp án nháp khi đang làm
+  score        Decimal?      @db.Decimal(6, 2)
+  maxScore     Decimal?      @db.Decimal(6, 2)
+  needsGrading Boolean       @default(false)
+
+  answers AttemptAnswer[]
+
+  @@unique([assignmentId, studentId, attemptNo])
+  @@index([assignmentId, status])
+}
+
+model AttemptAnswer {
+  id          String   @id @default(cuid())
+  attemptId   String
+  attempt     Attempt  @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  questionKey String // id câu trong snapshot
+  response    Json
+  isCorrect   Boolean?
+  earned      Decimal? @db.Decimal(5, 2)
+  manualScore Decimal? @db.Decimal(5, 2)
+  comment     String?
+
+  @@unique([attemptId, questionKey])
+}
+
+// ───────────── AI, NHẬT KÝ ─────────────
+
+model AiKeyState {
+  alias         String      @id // ví dụ "key1" (KHÔNG lưu giá trị key)
+  status        AiKeyStatus @default(ACTIVE)
+  cooldownUntil DateTime?
+  dailyCount    Int         @default(0)
+  dailyResetAt  DateTime?
+  lastUsedAt    DateTime?
+  lastError     String?
+}
+
+model AiUsageLog {
+  id               String   @id @default(cuid())
+  userId           String?
+  user             User?    @relation(fields: [userId], references: [id])
+  keyAlias         String?
+  endpoint         String
+  model            String?
+  promptTokens     Int?
+  completionTokens Int?
+  httpStatus       Int?
+  latencyMs        Int?
+  createdAt        DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  actor      User?    @relation(fields: [actorId], references: [id])
+  action     String // user.create, user.disable, attempt.delete, ...
+  targetType String?
+  targetId   String?
+  meta       Json?
+  ip         String?
+  createdAt  DateTime @default(now())
+
+  @@index([actorId, createdAt])
+}
