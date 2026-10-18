@@ -117,43 +117,43 @@ export default function AdminAiPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-[#181818] text-[#e3e3e3] flex flex-col">
       {/* Toast Notification */}
       {toastMsg && (
-        <div className="fixed top-5 right-5 z-50 bg-emerald-600 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2.5 animate-in slide-in-from-top-3 duration-200 text-sm font-medium">
+        <div className="fixed top-5 right-5 z-50 bg-[#137333] text-white px-4 py-3 rounded-full shadow-2xl flex items-center gap-2.5 animate-in slide-in-from-top-3 duration-200 text-sm font-medium">
           <CheckCircle2 className="w-5 h-5 shrink-0" />
           <span>{toastMsg}</span>
         </div>
       )}
 
       {/* Top Navbar */}
-      <header className="border-b border-slate-800 bg-slate-900/60 backdrop-blur-md sticky top-0 z-30 px-4 sm:px-8 py-3.5 flex items-center justify-between">
+      <header className="border-b border-[#3c4043] bg-[#1e1e1e]/80 backdrop-blur-md sticky top-0 z-30 px-4 sm:px-8 py-3.5 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-amber-500/20">
-            <Bot className="w-5 h-5 text-white" />
+          <div className="w-9 h-9 rounded-2xl bg-[#8ab4f8] text-[#181818] flex items-center justify-center shadow-md">
+            <Bot className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-bold text-base tracking-tight text-white">ExamCraft AI Hub</span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-semibold uppercase tracking-wider border border-amber-500/30">
+              <span className="font-bold text-base tracking-tight text-[#e3e3e3]">ExamCraft AI Hub</span>
+              <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[#33250b] text-[#fdd663] font-semibold uppercase tracking-wider border border-[#4d380e]">
                 7 Keys Rotation Pool
               </span>
             </div>
-            <p className="text-[11px] text-slate-400">Điều phối & Giám sát tải Google Gemini</p>
+            <p className="text-[11px] text-[#9aa0a6]">Điều phối & Giám sát tải Google Gemini</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
           <Link
             href="/admin/users"
-            className="text-xs text-slate-300 hover:text-white px-3 py-1.5 rounded-lg border border-slate-800 hover:border-slate-700 bg-slate-900 transition-colors"
+            className="text-xs text-[#e3e3e3] hover:text-white px-3.5 py-1.5 rounded-full border border-[#3c4043] hover:border-[#5f6368] bg-[#242424] transition-colors"
           >
             Quản lý Giáo viên
           </Link>
 
           <Link
             href="/"
-            className="text-xs text-indigo-400 hover:text-indigo-300 px-3 py-1.5 rounded-lg border border-indigo-950 bg-indigo-950/40 transition-colors flex items-center gap-1"
+            className="text-xs text-[#8ab4f8] hover:text-[#aecbfa] px-3.5 py-1.5 rounded-full border border-[#8ab4f8]/30 bg-[#1e2a38] transition-colors flex items-center gap-1"
           >
             <span>Trang Soạn Đề</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -165,41 +165,41 @@ export default function AdminAiPage() {
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-8 space-y-8">
         {/* Stat Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-          <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-5 backdrop-blur-sm">
-            <div className="flex items-center justify-between text-slate-400 mb-2">
+          <div className="bg-[#1e1e1e] border border-[#3c4043] rounded-2xl p-5 shadow-xs">
+            <div className="flex items-center justify-between text-[#9aa0a6] mb-2">
               <span className="text-xs font-medium">Tổng lệnh AI hôm nay</span>
-              <Activity className="w-4 h-4 text-indigo-400" />
+              <Activity className="w-4 h-4 text-[#8ab4f8]" />
             </div>
-            <div className="text-2xl font-bold text-white">{stats.totalToday}</div>
-            <div className="text-[11px] text-slate-400 mt-1">Từ 00:00 hôm nay</div>
+            <div className="text-2xl font-bold text-[#e3e3e3]">{stats.totalToday}</div>
+            <div className="text-[11px] text-[#9aa0a6] mt-1">Từ 00:00 hôm nay</div>
           </div>
 
-          <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-5 backdrop-blur-sm">
-            <div className="flex items-center justify-between text-slate-400 mb-2">
+          <div className="bg-[#1e1e1e] border border-[#3c4043] rounded-2xl p-5 shadow-xs">
+            <div className="flex items-center justify-between text-[#9aa0a6] mb-2">
               <span className="text-xs font-medium">Tỷ lệ thành công</span>
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <CheckCircle2 className="w-4 h-4 text-[#5bb98c]" />
             </div>
-            <div className="text-2xl font-bold text-emerald-400">{stats.successRate}%</div>
-            <div className="text-[11px] text-emerald-400/80 mt-1">{stats.successToday} lệnh thành công</div>
+            <div className="text-2xl font-bold text-[#5bb98c]">{stats.successRate}%</div>
+            <div className="text-[11px] text-[#5bb98c]/80 mt-1">{stats.successToday} lệnh thành công</div>
           </div>
 
-          <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-5 backdrop-blur-sm">
-            <div className="flex items-center justify-between text-slate-400 mb-2">
+          <div className="bg-[#1e1e1e] border border-[#3c4043] rounded-2xl p-5 shadow-xs">
+            <div className="flex items-center justify-between text-[#9aa0a6] mb-2">
               <span className="text-xs font-medium">Lệnh bị lỗi / nghẽn</span>
-              <AlertTriangle className="w-4 h-4 text-rose-400" />
+              <AlertTriangle className="w-4 h-4 text-[#f28b82]" />
             </div>
-            <div className="text-2xl font-bold text-rose-400">{stats.errorToday}</div>
-            <div className="text-[11px] text-slate-400 mt-1">Đã tự động xoay key dự phòng</div>
+            <div className="text-2xl font-bold text-[#f28b82]">{stats.errorToday}</div>
+            <div className="text-[11px] text-[#9aa0a6] mt-1">Đã tự động xoay key dự phòng</div>
           </div>
 
-          <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-5 backdrop-blur-sm flex flex-col justify-between">
-            <div className="flex items-center justify-between text-slate-400">
+          <div className="bg-[#1e1e1e] border border-[#3c4043] rounded-2xl p-5 shadow-xs flex flex-col justify-between">
+            <div className="flex items-center justify-between text-[#9aa0a6]">
               <span className="text-xs font-medium">Cơ chế bảo vệ</span>
-              <ShieldCheck className="w-4 h-4 text-blue-400" />
+              <ShieldCheck className="w-4 h-4 text-[#8ab4f8]" />
             </div>
             <button
               onClick={handleResetAll}
-              className="mt-2 w-full py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
+              className="mt-2 w-full py-2 px-3 rounded-full bg-[#8ab4f8] hover:bg-[#aecbfa] text-[#181818] text-xs font-semibold transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               <span>Kích hoạt lại 7 Keys</span>
@@ -211,13 +211,13 @@ export default function AdminAiPage() {
         <div>
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-base font-bold text-white flex items-center gap-2">
+              <h2 className="text-base font-bold text-[#e3e3e3] flex items-center gap-2">
                 <span>Trạng thái 7 Google Gemini API Keys</span>
-                <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-normal">
+                <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#0f291e] text-[#5bb98c] border border-[#1e4d38] font-normal">
                   Auto Round-Robin & Cooldown
                 </span>
               </h2>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-[#9aa0a6] mt-0.5">
                 Các key nằm hoàn toàn trong biến môi trường, bảo mật tuyệt đối không lộ giá trị
               </p>
             </div>
@@ -225,7 +225,7 @@ export default function AdminAiPage() {
             <button
               onClick={fetchAiData}
               title="Làm mới"
-              className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer"
+              className="p-2.5 rounded-full bg-[#242424] border border-[#3c4043] text-[#9aa0a6] hover:text-white transition-colors cursor-pointer"
             >
               <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
             </button>
@@ -240,69 +240,69 @@ export default function AdminAiPage() {
               return (
                 <div
                   key={key.alias}
-                  className={`bg-slate-900/80 border rounded-2xl p-4.5 backdrop-blur-sm flex flex-col justify-between transition-all ${
+                  className={`bg-[#1e1e1e] border rounded-2xl p-4.5 flex flex-col justify-between transition-all ${
                     isActive
-                      ? 'border-slate-800 hover:border-emerald-500/40 shadow-emerald-500/5'
+                      ? 'border-[#3c4043] hover:border-[#5bb98c]/40'
                       : isCooldown
-                      ? 'border-amber-500/40 bg-amber-500/5 shadow-amber-500/5'
-                      : 'border-rose-500/40 bg-rose-500/5'
+                      ? 'border-[#4d380e] bg-[#33250b]/20'
+                      : 'border-[#5c2523] bg-[#371918]/20'
                   }`}
                 >
                   <div>
                     <div className="flex items-center justify-between mb-3">
-                      <span className="font-mono text-sm font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-                        <Key className="w-4 h-4 text-indigo-400" />
+                      <span className="font-mono text-sm font-bold text-[#e3e3e3] uppercase tracking-wider flex items-center gap-1.5">
+                        <Key className="w-4 h-4 text-[#8ab4f8]" />
                         {key.alias}
                       </span>
 
                       {isActive && (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#0f291e] text-[#5bb98c] border border-[#1e4d38]">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#5bb98c] animate-pulse" />
                           ACTIVE
                         </span>
                       )}
 
                       {isCooldown && (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30">
-                          <Clock className="w-3 h-3 text-amber-400" />
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#33250b] text-[#fdd663] border border-[#4d380e]">
+                          <Clock className="w-3 h-3 text-[#fdd663]" />
                           COOLDOWN
                         </span>
                       )}
 
                       {isDead && (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-rose-500/15 text-rose-400 border border-rose-500/30">
-                          <XCircle className="w-3 h-3 text-rose-400" />
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#371918] text-[#f28b82] border border-[#5c2523]">
+                          <XCircle className="w-3 h-3 text-[#f28b82]" />
                           DEAD
                         </span>
                       )}
                     </div>
 
-                    <div className="space-y-1.5 text-xs text-slate-300">
+                    <div className="space-y-1.5 text-xs text-[#e3e3e3]">
                       <div className="flex justify-between">
-                        <span className="text-slate-500">Đã gọi hôm nay:</span>
+                        <span className="text-[#9aa0a6]">Đã gọi hôm nay:</span>
                         <span className="font-bold text-white">{key.dailyCount} lượt</span>
                       </div>
 
                       <div className="flex justify-between">
-                        <span className="text-slate-500">Dùng gần nhất:</span>
-                        <span className="text-slate-400">
+                        <span className="text-[#9aa0a6]">Dùng gần nhất:</span>
+                        <span className="text-[#9aa0a6]">
                           {key.lastUsedAt ? new Date(key.lastUsedAt).toLocaleTimeString('vi-VN') : 'Chưa dùng'}
                         </span>
                       </div>
 
                       {key.lastError && (
-                        <div className="mt-2 p-2 rounded-lg bg-slate-950/80 border border-slate-800 text-[11px] text-rose-400/90 truncate" title={key.lastError}>
+                        <div className="mt-2 p-2 rounded-xl bg-[#242424] border border-[#3c4043] text-[11px] text-[#f28b82] truncate" title={key.lastError}>
                           {key.lastError}
                         </div>
                       )}
                     </div>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between">
-                    <span className="text-[10px] text-slate-500">Quản trị viên</span>
+                  <div className="mt-4 pt-3 border-t border-[#3c4043] flex items-center justify-between">
+                    <span className="text-[10px] text-[#9aa0a6]">Quản trị viên</span>
                     <button
                       onClick={() => handleResetKey(key.alias)}
-                      className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 cursor-pointer font-medium"
+                      className="text-xs text-[#8ab4f8] hover:text-[#aecbfa] flex items-center gap-1 cursor-pointer font-medium"
                     >
                       <RefreshCw className="w-3 h-3" />
                       <span>Kích hoạt lại</span>
@@ -315,18 +315,18 @@ export default function AdminAiPage() {
         </div>
 
         {/* Recent AI Activity Log */}
-        <div className="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden backdrop-blur-sm">
-          <div className="px-5 py-4 border-b border-slate-800 flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-              <Zap className="w-4 h-4 text-amber-400" />
+        <div className="bg-[#1e1e1e] border border-[#3c4043] rounded-2xl overflow-hidden shadow-xs">
+          <div className="px-5 py-4 border-b border-[#3c4043] flex items-center justify-between">
+            <h3 className="text-sm font-bold text-[#e3e3e3] flex items-center gap-2">
+              <Zap className="w-4 h-4 text-[#fdd663]" />
               <span>Nhật ký gọi AI gần nhất (AiUsageLog)</span>
             </h3>
-            <span className="text-xs text-slate-500">30 yêu cầu gần nhất</span>
+            <span className="text-xs text-[#9aa0a6]">30 yêu cầu gần nhất</span>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-950/60 text-slate-400 uppercase tracking-wider text-[11px] border-b border-slate-800">
+              <thead className="bg-[#242424] text-[#9aa0a6] uppercase tracking-wider text-[11px] border-b border-[#3c4043]">
                 <tr>
                   <th className="px-5 py-3">Thời điểm</th>
                   <th className="px-4 py-3">Chức năng (Endpoint)</th>
@@ -336,30 +336,30 @@ export default function AdminAiPage() {
                   <th className="px-5 py-3">Trạng thái</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-[#3c4043]">
                 {logs.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-5 py-8 text-center text-slate-500">
+                    <td colSpan={6} className="px-5 py-8 text-center text-[#9aa0a6]">
                       Chưa có nhật ký gọi AI nào được ghi nhận.
                     </td>
                   </tr>
                 ) : (
                   logs.map((log) => (
-                    <tr key={log.id} className="hover:bg-slate-800/30 transition-colors">
-                      <td className="px-5 py-3 text-slate-400">
+                    <tr key={log.id} className="hover:bg-[#282828] transition-colors">
+                      <td className="px-5 py-3 text-[#9aa0a6]">
                         {new Date(log.createdAt).toLocaleTimeString('vi-VN')}
                       </td>
-                      <td className="px-4 py-3 font-mono text-slate-200">{log.endpoint}</td>
-                      <td className="px-4 py-3 font-mono text-indigo-400 font-semibold">{log.keyAlias || 'BYOK'}</td>
-                      <td className="px-4 py-3 text-slate-300">{log.user?.name || 'Khách/Ẩn danh'}</td>
-                      <td className="px-4 py-3 text-slate-400">{log.latencyMs ? `${log.latencyMs} ms` : '-'}</td>
+                      <td className="px-4 py-3 font-mono text-[#e3e3e3]">{log.endpoint}</td>
+                      <td className="px-4 py-3 font-mono text-[#8ab4f8] font-semibold">{log.keyAlias || 'BYOK'}</td>
+                      <td className="px-4 py-3 text-[#e3e3e3]">{log.user?.name || 'Khách/Ẩn danh'}</td>
+                      <td className="px-4 py-3 text-[#9aa0a6]">{log.latencyMs ? `${log.latencyMs} ms` : '-'}</td>
                       <td className="px-5 py-3">
                         {log.httpStatus === 200 ? (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#0f291e] text-[#5bb98c] border border-[#1e4d38]">
                             200 OK
                           </span>
                         ) : (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-500/15 text-rose-400 border border-rose-500/30">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#371918] text-[#f28b82] border border-[#5c2523]">
                             {log.httpStatus || 500} ERROR
                           </span>
                         )}

@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
+import { useTheme } from './ThemeProvider';
 
 export interface FunctionPlotData {
   title?: string;
   expression: string; // ví dụ: "x^3 - 3*x + 1" hoặc "x^2 - 4" hoặc "(2*x+1)/(x-1)"
-  xRange?: [number, number]; // mặc định: [-5, 5]
-  yRange?: [number, number]; // mặc định: [-5, 5]
+  xRange?: [number, number]; // mặc định: [-6, 8]
+  yRange?: [number, number]; // mặc định: [-6, 8]
 }
 
 interface FunctionPlotProps {
@@ -14,19 +15,23 @@ interface FunctionPlotProps {
   width?: number;
   height?: number;
   className?: string;
+  forceLight?: boolean;
 }
 
 /**
  * Component Vẽ Đồ Thị Hàm Số Toán Học (HTML5 Canvas 2D)
- * Hỗ trợ các hàm phổ biến trong chương trình THPT: bậc 1, bậc 2, bậc 3, phân thức.
+ * Tự động thích ứng Dark Mode & Light Mode (A4 Preview luôn giữ Light Mode để in ấn chuẩn xác)
  */
 export const FunctionPlot: React.FC<FunctionPlotProps> = ({
   data,
   width = 360,
   height = 240,
   className = '',
+  forceLight = false,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { theme } = useTheme();
+  const isDark = !forceLight && theme === 'dark';
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -35,11 +40,23 @@ export const FunctionPlot: React.FC<FunctionPlotProps> = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const [xMin, xMax] = data.xRange || [-5, 5];
-    const [yMin, yMax] = data.yRange || [-5, 5];
+    // Trích xuất an toàn xRange, yRange tránh trường hợp mảng rỗng [] hoặc NaN
+    const xMin = (Array.isArray(data?.xRange) && typeof data.xRange[0] === 'number' && !isNaN(data.xRange[0])) ? data.xRange[0] : -6;
+    const xMax = (Array.isArray(data?.xRange) && typeof data.xRange[1] === 'number' && !isNaN(data.xRange[1])) ? data.xRange[1] : 8;
+    const yMin = (Array.isArray(data?.yRange) && typeof data.yRange[0] === 'number' && !isNaN(data.yRange[0])) ? data.yRange[0] : -6;
+    const yMax = (Array.isArray(data?.yRange) && typeof data.yRange[1] === 'number' && !isNaN(data.yRange[1])) ? data.yRange[1] : 8;
 
-    // Xóa nền
-    ctx.fillStyle = '#ffffff';
+    // Thiết lập bảng màu theo chế độ Sáng / Tối (Google Obsidian Dark & Clean Paper White)
+    const bgColor = isDark ? '#1e1e1e' : '#ffffff';
+    const gridColor = isDark ? '#282828' : '#f1f3f4';
+    const axisColor = isDark ? '#9aa0a6' : '#5f6368';
+    const labelColor = isDark ? '#e3e3e3' : '#202124';
+    const tickColor = isDark ? '#5f6368' : '#dadce0';
+    const curveColor = isDark ? '#8ab4f8' : '#1a73e8';
+    const asymptoteColor = isDark ? '#f28b82' : '#d93025';
+
+    // Xóa và vẽ nền canvas
+    ctx.fillStyle = bgColor;
     ctx.fillRect(0, 0, width, height);
 
     // Chuyển đổi tọa độ toán học sang tọa độ pixel màn hình
@@ -47,7 +64,7 @@ export const FunctionPlot: React.FC<FunctionPlotProps> = ({
     const toScreenY = (y: number) => height - ((y - yMin) / (yMax - yMin)) * height;
 
     // 1. Vẽ lưới tọa độ mờ
-    ctx.strokeStyle = '#f1f5f9';
+    ctx.strokeStyle = gridColor;
     ctx.lineWidth = 1;
 
     for (let x = Math.ceil(xMin); x <= Math.floor(xMax); x++) {
@@ -66,7 +83,7 @@ export const FunctionPlot: React.FC<FunctionPlotProps> = ({
     }
 
     // 2. Vẽ 2 trục tọa độ Ox và Oy
-    ctx.strokeStyle = '#64748b';
+    ctx.strokeStyle = axisColor;
     ctx.lineWidth = 1.5;
 
     // Trục Ox (y = 0)
@@ -81,7 +98,7 @@ export const FunctionPlot: React.FC<FunctionPlotProps> = ({
     ctx.moveTo(width - 8, originY - 4);
     ctx.lineTo(width, originY);
     ctx.lineTo(width - 8, originY + 4);
-    ctx.fillStyle = '#64748b';
+    ctx.fillStyle = axisColor;
     ctx.fill();
 
     // Trục Oy (x = 0)
@@ -96,18 +113,19 @@ export const FunctionPlot: React.FC<FunctionPlotProps> = ({
     ctx.moveTo(originX - 4, 8);
     ctx.lineTo(originX, 0);
     ctx.lineTo(originX + 4, 8);
+    ctx.fillStyle = axisColor;
     ctx.fill();
 
     // Nhãn trục O, x, y
     ctx.font = 'italic 12px serif';
-    ctx.fillStyle = '#334155';
+    ctx.fillStyle = labelColor;
     ctx.fillText('x', width - 12, originY + 14);
     ctx.fillText('y', originX + 8, 14);
     ctx.fillText('O', originX - 12, originY + 12);
 
     // Vạch chia và số trên trục Ox
     ctx.font = '10px sans-serif';
-    ctx.fillStyle = '#64748b';
+    ctx.fillStyle = tickColor;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
     for (let x = Math.ceil(xMin); x <= Math.floor(xMax); x++) {
@@ -116,9 +134,9 @@ export const FunctionPlot: React.FC<FunctionPlotProps> = ({
       ctx.beginPath();
       ctx.moveTo(sx, originY - 2.5);
       ctx.lineTo(sx, originY + 2.5);
-      ctx.strokeStyle = '#64748b';
+      ctx.strokeStyle = axisColor;
       ctx.stroke();
-      if (Math.abs(x) <= 6 && (x % 2 === 0 || Math.abs(x) === 1)) {
+      if (Math.abs(x) <= 8 && (x % 2 === 0 || Math.abs(x) === 1)) {
         ctx.fillText(x.toString(), sx, originY + 4);
       }
     }
@@ -132,9 +150,9 @@ export const FunctionPlot: React.FC<FunctionPlotProps> = ({
       ctx.beginPath();
       ctx.moveTo(originX - 2.5, sy);
       ctx.lineTo(originX + 2.5, sy);
-      ctx.strokeStyle = '#64748b';
+      ctx.strokeStyle = axisColor;
       ctx.stroke();
-      if (Math.abs(y) <= 6 && (y % 2 === 0 || Math.abs(y) === 1)) {
+      if (Math.abs(y) <= 8 && (y % 2 === 0 || Math.abs(y) === 1)) {
         ctx.fillText(y.toString(), originX - 4, sy);
       }
     }
@@ -142,6 +160,7 @@ export const FunctionPlot: React.FC<FunctionPlotProps> = ({
     // 3. Hàm lượng giá biểu thức toán học an toàn
     const evaluateExpression = (x: number): number | null => {
       try {
+        if (!data?.expression) return null;
         let expr = data.expression
           .replace(/\^/g, '**')
           .replace(/(\d+)\s*([a-zA-Z])/g, '$1*$2')
@@ -155,7 +174,6 @@ export const FunctionPlot: React.FC<FunctionPlotProps> = ({
           .replace(/sqrt/g, 'Math.sqrt')
           .replace(/abs/g, 'Math.abs');
 
-        // Hàm tính toán an toàn không dùng eval độc hại
         const func = new Function('x', `return ${expr};`);
         const val = func(x);
         if (typeof val === 'number' && !isNaN(val) && isFinite(val)) {
@@ -168,24 +186,24 @@ export const FunctionPlot: React.FC<FunctionPlotProps> = ({
     };
 
     // 4. Phát hiện và vẽ các đường tiệm cận (nếu có - hàm phân thức)
-    if (data.expression.includes('/')) {
+    if (data?.expression && data.expression.includes('/')) {
       try {
         // Tiệm cận ngang: y khi x -> vô cùng
         const yPosInf = evaluateExpression(10000);
         const yPosInf2 = evaluateExpression(20000);
-        if (yPosInf !== null && yPosInf2 !== null && Math.abs(yPosInf - yPosInf2) < 0.01) {
+        if (yPosInf !== null && yPosInf2 !== null && Math.abs(yPosInf - yPosInf2) < 0.05) {
           const horizY = Math.round(yPosInf * 100) / 100;
           if (horizY >= yMin && horizY <= yMax) {
             const sy = toScreenY(horizY);
             ctx.save();
             ctx.setLineDash([4, 4]);
-            ctx.strokeStyle = '#e11d48'; // Màu hồng đỏ nét đứt
+            ctx.strokeStyle = asymptoteColor;
             ctx.lineWidth = 1.2;
             ctx.beginPath();
             ctx.moveTo(0, sy);
             ctx.lineTo(width, sy);
             ctx.stroke();
-            ctx.fillStyle = '#e11d48';
+            ctx.fillStyle = asymptoteColor;
             ctx.font = 'bold 10px sans-serif';
             ctx.textAlign = 'right';
             ctx.fillText(`y = ${horizY}`, width - 15, sy - 3);
@@ -208,13 +226,13 @@ export const FunctionPlot: React.FC<FunctionPlotProps> = ({
                 const sx = toScreenX(xVal);
                 ctx.save();
                 ctx.setLineDash([4, 4]);
-                ctx.strokeStyle = '#e11d48';
+                ctx.strokeStyle = asymptoteColor;
                 ctx.lineWidth = 1.2;
                 ctx.beginPath();
                 ctx.moveTo(sx, 0);
                 ctx.lineTo(sx, height);
                 ctx.stroke();
-                ctx.fillStyle = '#e11d48';
+                ctx.fillStyle = asymptoteColor;
                 ctx.font = 'bold 10px sans-serif';
                 ctx.textAlign = 'left';
                 ctx.fillText(`x = ${xVal}`, sx + 4, 25);
@@ -228,7 +246,7 @@ export const FunctionPlot: React.FC<FunctionPlotProps> = ({
     }
 
     // 5. Vẽ đường cong đồ thị chính
-    ctx.strokeStyle = '#4f46e5';
+    ctx.strokeStyle = curveColor;
     ctx.lineWidth = 2;
     ctx.beginPath();
 
@@ -252,7 +270,7 @@ export const FunctionPlot: React.FC<FunctionPlotProps> = ({
     }
     ctx.stroke();
 
-  }, [data, width, height]);
+  }, [data, width, height, isDark]);
 
   // Xuất ảnh đồ thị dạng PNG Base64
   const handleExportPng = () => {
@@ -268,9 +286,15 @@ export const FunctionPlot: React.FC<FunctionPlotProps> = ({
   };
 
   return (
-    <div className={`inline-block border border-slate-300 rounded-xl p-2 bg-white shadow-2xs ${className}`}>
-      {data.title && (
-        <div className="text-xs font-bold text-slate-700 text-center mb-1.5 italic">
+    <div className={`inline-block border rounded-2xl p-2.5 shadow-xs transition-colors ${
+      isDark 
+        ? 'border-[#3c4043] bg-[#1e1e1e] text-[#e3e3e3]' 
+        : 'border-[#dadce0] bg-white text-[#202124]'
+    } ${className}`}>
+      {data?.title && (
+        <div className={`text-xs font-bold text-center mb-1.5 italic ${
+          isDark ? 'text-[#e3e3e3]' : 'text-[#202124]'
+        }`}>
           Đồ thị: {data.title}
         </div>
       )}
@@ -278,13 +302,17 @@ export const FunctionPlot: React.FC<FunctionPlotProps> = ({
         ref={canvasRef}
         width={width}
         height={height}
-        className="rounded border border-slate-200"
+        className={`rounded-xl border ${
+          isDark ? 'border-[#3c4043]' : 'border-[#dadce0]'
+        }`}
       />
-      <div className="flex justify-between items-center text-[10px] text-slate-400 mt-1 px-1">
-        <span>f(x) = {data.expression}</span>
+      <div className={`flex justify-between items-center text-[10px] mt-1.5 px-1 ${
+        isDark ? 'text-[#9aa0a6]' : 'text-[#5f6368]'
+      }`}>
+        <span className="font-mono">f(x) = {data?.expression}</span>
         <button
           onClick={handleExportPng}
-          className="text-indigo-600 hover:text-indigo-800 font-semibold"
+          className="text-[#1a73e8] hover:text-[#1557b0] dark:text-[#8ab4f8] dark:hover:text-[#a8c7fa] font-semibold cursor-pointer"
         >
           Lưu ảnh PNG
         </button>

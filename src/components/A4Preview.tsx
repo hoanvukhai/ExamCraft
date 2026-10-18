@@ -29,10 +29,10 @@ import {
 
 const renderPreviewFigure = (fig: Figure) => {
   if (fig.kind === 'variation_table') {
-    return <VariationTable key={fig.id} data={fig.data as any} />;
+    return <VariationTable key={fig.id} data={fig.data as any} forceLight={true} />;
   }
   if (fig.kind === 'function_plot') {
-    return <FunctionPlot key={fig.id} data={fig.data as any} />;
+    return <FunctionPlot key={fig.id} data={fig.data as any} forceLight={true} />;
   }
   if (fig.kind === 'image') {
     const src = (fig.data as any)?.url || fig.renderedBase64 || (typeof fig.data === 'string' ? fig.data : '');
@@ -42,9 +42,9 @@ const renderPreviewFigure = (fig: Figure) => {
           <img
             src={src}
             alt={fig.caption || 'Hình vẽ đính kèm'}
-            className="max-h-48 max-w-full rounded border border-slate-200 object-contain mx-auto"
+            className="max-h-48 max-w-full rounded border border-[#dadce0] object-contain mx-auto"
           />
-          {fig.caption && <div className="text-[9pt] text-slate-500 italic text-center mt-0.5">{fig.caption}</div>}
+          {fig.caption && <div className="text-[9pt] text-[#5f6368] italic text-center mt-0.5">{fig.caption}</div>}
         </div>
       );
     }
@@ -101,17 +101,17 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
   const scoreBreakdown = getExamScoreBreakdown(exam);
 
   return (
-    <div className="a4-preview-container flex flex-col h-full bg-slate-100 rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
+    <div className="a4-preview-container flex flex-col h-full bg-[#f1f3f4] dark:bg-[#181818] rounded-3xl border border-[#dadce0] dark:border-[#3c4043] overflow-hidden shadow-xs">
       {/* Top Preview Toolbar */}
-      <div className="no-print bg-white px-4 py-3 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
-        {/* Chế độ xem */}
-        <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
+      <div className="no-print bg-white dark:bg-[#1e1e1e] px-4 py-3 border-b border-[#dadce0] dark:border-[#3c4043] flex flex-wrap items-center justify-between gap-3">
+        {/* Chế độ xem Google Segmented Pill */}
+        <div className="flex items-center gap-1 bg-[#f1f3f4] dark:bg-[#282828] p-1 rounded-full">
           <button
             onClick={() => setViewMode('exam')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
               viewMode === 'exam'
-                ? 'bg-white text-indigo-700 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-white dark:bg-[#383a3d] text-[#202124] dark:text-[#e3e3e3] shadow-xs font-semibold'
+                : 'text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3]'
             }`}
           >
             <FileText className="w-3.5 h-3.5" />
@@ -120,10 +120,10 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
 
           <button
             onClick={() => setViewMode('answers')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
               viewMode === 'answers'
-                ? 'bg-white text-indigo-700 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-white dark:bg-[#383a3d] text-[#202124] dark:text-[#e3e3e3] shadow-xs font-semibold'
+                : 'text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3]'
             }`}
           >
             <CheckSquare className="w-3.5 h-3.5" />
@@ -132,10 +132,10 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
 
           <button
             onClick={() => setViewMode('solutions')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
               viewMode === 'solutions'
-                ? 'bg-white text-indigo-700 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-white dark:bg-[#383a3d] text-[#202124] dark:text-[#e3e3e3] shadow-xs font-semibold'
+                : 'text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3]'
             }`}
           >
             <BookOpen className="w-3.5 h-3.5" />
@@ -144,10 +144,10 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
 
           <button
             onClick={() => setViewMode('matrix')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
               viewMode === 'matrix'
-                ? 'bg-white text-indigo-700 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-white dark:bg-[#383a3d] text-[#202124] dark:text-[#e3e3e3] shadow-xs font-semibold'
+                : 'text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3]'
             }`}
           >
             <TableProperties className="w-3.5 h-3.5" />
@@ -158,26 +158,26 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
         {/* Nút hành động */}
         <div className="flex items-center gap-2">
           {/* Zoom controls */}
-          <div className="hidden sm:flex items-center gap-1 text-slate-500 bg-slate-100 px-2 py-1 rounded-lg text-xs">
+          <div className="hidden sm:flex items-center gap-1 text-[#5f6368] dark:text-[#9aa0a6] bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] px-2.5 py-1 rounded-full text-xs shadow-2xs">
             <button
               onClick={() => setZoom(Math.max(60, zoom - 10))}
               title="Thu nhỏ"
-              className="p-1 hover:text-slate-900"
+              className="p-1 hover:text-[#202124] dark:hover:text-[#e3e3e3] cursor-pointer"
             >
               <ZoomOut className="w-3.5 h-3.5" />
             </button>
-            <span className="w-10 text-center font-mono">{zoom}%</span>
+            <span className="w-10 text-center font-mono font-medium">{zoom}%</span>
             <button
               onClick={() => setZoom(Math.min(140, zoom + 10))}
               title="Phóng to"
-              className="p-1 hover:text-slate-900"
+              className="p-1 hover:text-[#202124] dark:hover:text-[#e3e3e3] cursor-pointer"
             >
               <ZoomIn className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => setZoom(100)}
               title="Khôi phục chuẩn 100%"
-              className="p-1 hover:text-slate-900"
+              className="p-1 hover:text-[#202124] dark:hover:text-[#e3e3e3] cursor-pointer"
             >
               <Maximize2 className="w-3.5 h-3.5" />
             </button>
@@ -185,18 +185,18 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
 
           <button
             onClick={handlePrint}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] transition-colors shadow-2xs"
           >
-            <Printer className="w-4 h-4 text-slate-600" />
+            <Printer className="w-3.5 h-3.5 text-[#5f6368] dark:text-[#9aa0a6]" />
             <span>In / PDF</span>
           </button>
 
           <button
             onClick={handleExportDocx}
             disabled={isExporting}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 shadow-xs hover:shadow transition-all disabled:opacity-50"
+            className="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium text-white bg-[#202124] hover:bg-[#303134] dark:bg-[#282828] dark:text-[#e3e3e3] dark:hover:bg-[#303134] dark:border dark:border-[#3c4043] shadow-2xs hover:shadow-xs transition-all disabled:opacity-50"
           >
-            <Download className="w-4 h-4" />
+            <Download className="w-3.5 h-3.5" />
             <span>{isExporting ? 'Đang tạo .docx...' : 'Tải file Word (.docx)'}</span>
           </button>
         </div>
@@ -206,7 +206,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
       <div className="a4-scroll-area grow overflow-auto p-4 sm:p-8 flex justify-center items-start">
         <div
           style={{ transform: `scale(${zoom / 100})`, transformOrigin: 'top center' }}
-          className="a4-paper w-[210mm] min-h-[297mm] bg-white text-black p-[18mm] shadow-xl border border-slate-300 font-serif leading-normal transition-transform duration-200"
+          className="a4-paper w-[210mm] min-h-[297mm] bg-white text-black p-[18mm] shadow-xl border border-[#dadce0] font-serif leading-normal transition-transform duration-200"
         >
           {/* VIEW: ĐỀ THI */}
           {viewMode === 'exam' && (
@@ -216,7 +216,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
                 <div className="text-center font-bold">
                   <div className="uppercase text-[12pt]">{metadata.schoolName || 'SỞ GIÁO DỤC VÀ ĐÀO TẠO'}</div>
                   <div className="uppercase text-[12pt]">{metadata.departmentName || 'TRƯỜNG THPT CHUYÊN'}</div>
-                  <div className="text-indigo-900 font-extrabold text-[13pt] mt-1">
+                  <div className="text-[#1a73e8] font-extrabold text-[13pt] mt-1">
                     MÃ ĐỀ THI: {metadata.examCode || '101'}
                   </div>
                 </div>
@@ -227,7 +227,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
                     MÔN: {subjectConfig.name.toUpperCase()} - KHỐI {metadata.grade}
                   </div>
                   <div className="italic text-[11pt]">
-                    Thời gian làm bài: {metadata.durationMinutes} phút - <strong className="not-italic text-indigo-950 font-bold">Tổng {totalPoints} điểm</strong>
+                    Thời gian làm bài: {metadata.durationMinutes} phút - <strong className="not-italic text-black font-bold">Tổng {totalPoints} điểm</strong>
                   </div>
                 </div>
               </div>
@@ -242,10 +242,10 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
               {passages && passages.length > 0 && (
                 <div className="space-y-3 pb-2">
                   {passages.map((p) => (
-                    <div key={p.id} className="p-3 bg-slate-50 border border-slate-300 rounded-lg text-[11pt]">
-                      <div className="font-bold text-slate-900 mb-1">{p.title || 'NGỮ LIỆU ĐỌC HIỂU:'}</div>
-                      <div className="italic text-slate-800 leading-relaxed whitespace-pre-line">{p.content}</div>
-                      {p.source && <div className="text-right text-[10pt] text-slate-500 mt-1">({p.source})</div>}
+                    <div key={p.id} className="p-3 bg-[#f8f9fa] border border-[#dadce0] rounded-lg text-[11pt]">
+                      <div className="font-bold text-black mb-1">{p.title || 'NGỮ LIỆU ĐỌC HIỂU:'}</div>
+                      <div className="italic text-[#202124] leading-relaxed whitespace-pre-line">{p.content}</div>
+                      {p.source && <div className="text-right text-[10pt] text-[#5f6368] mt-1">({p.source})</div>}
                     </div>
                   ))}
                 </div>
@@ -394,28 +394,28 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
               <div className="text-center border-b border-black pb-3">
                 <h2 className="text-[14pt] font-bold uppercase">BẢNG ĐÁP ÁN VÀ THANG ĐIỂM CHUẨN</h2>
                 <p className="italic text-[11pt]">Đề kiểm tra: {metadata.title} - Mã đề: {metadata.examCode || '101'}</p>
-                <p className="font-semibold text-indigo-900 mt-1">Tổng điểm toàn bài: {totalPoints} điểm</p>
+                <p className="font-semibold text-[#1a73e8] mt-1">Tổng điểm toàn bài: {totalPoints} điểm</p>
               </div>
 
               {/* Ma trận thống kê điểm */}
-              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                <h4 className="font-bold text-xs uppercase tracking-wider text-slate-700 mb-2">Cơ cấu phân bổ điểm số:</h4>
+              <div className="bg-[#f8f9fa] p-4 rounded-xl border border-[#dadce0]">
+                <h4 className="font-bold text-xs uppercase tracking-wider text-[#5f6368] mb-2">Cơ cấu phân bổ điểm số:</h4>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                  <div className="bg-white p-2.5 rounded-lg border border-slate-200">
-                    <span className="text-slate-500 block">Phần I (Nhiều lựa chọn):</span>
-                    <strong className="text-sm text-indigo-600">{scoreBreakdown.part1Count} câu ({scoreBreakdown.part1Points}đ)</strong>
+                  <div className="bg-white p-2.5 rounded-lg border border-[#dadce0]">
+                    <span className="text-[#5f6368] block">Phần I (Nhiều lựa chọn):</span>
+                    <strong className="text-sm text-[#1a73e8]">{scoreBreakdown.part1Count} câu ({scoreBreakdown.part1Points}đ)</strong>
                   </div>
-                  <div className="bg-white p-2.5 rounded-lg border border-slate-200">
-                    <span className="text-slate-500 block">Phần II (Đúng/Sai):</span>
-                    <strong className="text-sm text-indigo-600">{scoreBreakdown.part2Count} câu ({scoreBreakdown.part2Points}đ)</strong>
+                  <div className="bg-white p-2.5 rounded-lg border border-[#dadce0]">
+                    <span className="text-[#5f6368] block">Phần II (Đúng/Sai):</span>
+                    <strong className="text-sm text-[#1a73e8]">{scoreBreakdown.part2Count} câu ({scoreBreakdown.part2Points}đ)</strong>
                   </div>
-                  <div className="bg-white p-2.5 rounded-lg border border-slate-200">
-                    <span className="text-slate-500 block">Phần III (Trả lời ngắn):</span>
-                    <strong className="text-sm text-indigo-600">{scoreBreakdown.part3Count} câu ({scoreBreakdown.part3Points}đ)</strong>
+                  <div className="bg-white p-2.5 rounded-lg border border-[#dadce0]">
+                    <span className="text-[#5f6368] block">Phần III (Trả lời ngắn):</span>
+                    <strong className="text-sm text-[#1a73e8]">{scoreBreakdown.part3Count} câu ({scoreBreakdown.part3Points}đ)</strong>
                   </div>
-                  <div className="bg-white p-2.5 rounded-lg border border-slate-200">
-                    <span className="text-slate-500 block">Tự luận / Khác:</span>
-                    <strong className="text-sm text-indigo-600">{scoreBreakdown.part4Count} câu ({scoreBreakdown.part4Points}đ)</strong>
+                  <div className="bg-white p-2.5 rounded-lg border border-[#dadce0]">
+                    <span className="text-[#5f6368] block">Tự luận / Khác:</span>
+                    <strong className="text-sm text-[#1a73e8]">{scoreBreakdown.part4Count} câu ({scoreBreakdown.part4Points}đ)</strong>
                   </div>
                 </div>
               </div>
@@ -423,10 +423,10 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
               {/* Bảng đáp án Phần I */}
               {part1.length > 0 && (
                 <div>
-                  <h3 className="font-bold text-[12pt] mb-2 text-indigo-900">PHẦN I: ĐÁP ÁN TRẮC NGHIỆM 4 LỰA CHỌN</h3>
+                  <h3 className="font-bold text-[12pt] mb-2 text-[#1a73e8]">PHẦN I: ĐÁP ÁN TRẮC NGHIỆM 4 LỰA CHỌN</h3>
                   <table className="w-full border-collapse border border-black text-center text-[11pt]">
                     <thead>
-                      <tr className="bg-slate-100 font-bold">
+                      <tr className="bg-[#f1f3f4] font-bold">
                         <th className="border border-black p-1">Câu</th>
                         {part1.map((_, i) => (
                           <th key={i} className="border border-black p-1">{i + 1}</th>
@@ -435,9 +435,9 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
                     </thead>
                     <tbody>
                       <tr>
-                        <td className="border border-black p-1 font-bold bg-slate-50">Chọn</td>
+                        <td className="border border-black p-1 font-bold bg-[#f8f9fa]">Chọn</td>
                         {part1.map((q, i) => (
-                          <td key={i} className="border border-black p-1 font-bold text-indigo-700">
+                          <td key={i} className="border border-black p-1 font-bold text-[#1a73e8]">
                             {q.correct_answer || 'A'}
                           </td>
                         ))}
@@ -450,10 +450,10 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
               {/* Bảng đáp án Phần II */}
               {part2.length > 0 && (
                 <div>
-                  <h3 className="font-bold text-[12pt] mb-2 text-indigo-900">PHẦN II: ĐÁP ÁN ĐÚNG / SAI</h3>
+                  <h3 className="font-bold text-[12pt] mb-2 text-[#1a73e8]">PHẦN II: ĐÁP ÁN ĐÚNG / SAI</h3>
                   <table className="w-full border-collapse border border-black text-center text-[11pt]">
                     <thead>
-                      <tr className="bg-slate-100 font-bold">
+                      <tr className="bg-[#f1f3f4] font-bold">
                         <th className="border border-black p-1">Câu</th>
                         <th className="border border-black p-1">Lệnh hỏi a)</th>
                         <th className="border border-black p-1">Lệnh hỏi b)</th>
@@ -464,7 +464,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
                     <tbody>
                       {part2.map((q, i) => (
                         <tr key={q.id}>
-                          <td className="border border-black p-1 font-bold bg-slate-50">Câu {part1.length + i + 1}</td>
+                          <td className="border border-black p-1 font-bold bg-[#f8f9fa]">Câu {part1.length + i + 1}</td>
                           {['a', 'b', 'c', 'd'].map(key => {
                             const sub = q.sub_questions?.find(s => s.key === key);
                             return (
@@ -483,10 +483,10 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
               {/* Bảng đáp án Phần III */}
               {part3.length > 0 && (
                 <div>
-                  <h3 className="font-bold text-[12pt] mb-2 text-indigo-900">PHẦN III: ĐÁP SỐ TRẢ LỜI NGẮN</h3>
+                  <h3 className="font-bold text-[12pt] mb-2 text-[#1a73e8]">PHẦN III: ĐÁP SỐ TRẢ LỜI NGẮN</h3>
                   <table className="w-full border-collapse border border-black text-center text-[11pt]">
                     <thead>
-                      <tr className="bg-slate-100 font-bold">
+                      <tr className="bg-[#f1f3f4] font-bold">
                         <th className="border border-black p-1">Câu</th>
                         {part3.map((_, i) => (
                           <th key={i} className="border border-black p-1">{part1.length + part2.length + i + 1}</th>
@@ -495,9 +495,9 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
                     </thead>
                     <tbody>
                       <tr>
-                        <td className="border border-black p-1 font-bold bg-slate-50">Đáp số</td>
+                        <td className="border border-black p-1 font-bold bg-[#f8f9fa]">Đáp số</td>
                         {part3.map((q, i) => (
-                          <td key={i} className="border border-black p-1 font-bold text-indigo-700">
+                          <td key={i} className="border border-black p-1 font-bold text-[#1a73e8]">
                             {q.correct_answer || '-'}
                           </td>
                         ))}
@@ -510,17 +510,17 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
               {/* Bảng đáp án & Barem Phần IV (Tự luận / Câu hỏi mở) */}
               {part4.length > 0 && (
                 <div>
-                  <h3 className="font-bold text-[12pt] mb-2 text-indigo-900">PHẦN IV: BAREM CHẤM ĐIỂM TỰ LUẬN / PHẦN KHÁC</h3>
+                  <h3 className="font-bold text-[12pt] mb-2 text-[#1a73e8]">PHẦN IV: BAREM CHẤM ĐIỂM TỰ LUẬN / PHẦN KHÁC</h3>
                   <div className="space-y-4">
                     {part4.map((q, idx) => (
-                      <div key={q.id} className="border border-black p-3 rounded-lg bg-slate-50/50">
+                      <div key={q.id} className="border border-black p-3 rounded-lg bg-[#f8f9fa]">
                         <div className="font-bold text-[11pt] mb-1">
                           Câu {part1.length + part2.length + part3.length + idx + 1} ({formatPointsString(getDefaultPointsForQuestion(q, exam))}):
                         </div>
                         {q.rubric && q.rubric.length > 0 ? (
                           <table className="w-full border-collapse border border-black text-left text-[10pt] bg-white mt-1">
                             <thead>
-                              <tr className="bg-slate-100 font-bold">
+                              <tr className="bg-[#f1f3f4] font-bold">
                                 <th className="border border-black p-1.5">Tiêu chí chấm điểm / Yêu cầu cần đạt</th>
                                 <th className="border border-black p-1.5 text-center w-24">Điểm tối đa</th>
                               </tr>
@@ -535,7 +535,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
                             </tbody>
                           </table>
                         ) : (
-                          <div className="text-[11pt] text-slate-800">
+                          <div className="text-[11pt] text-[#202124]">
                             {q.correct_answer ? <span>Đáp án: <strong>{q.correct_answer}</strong></span> : <span>Chấm theo nội dung yêu cầu bài làm.</span>}
                           </div>
                         )}
@@ -557,8 +557,8 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
 
               <div className="space-y-6">
                 {questions.map((q, idx) => (
-                  <div key={q.id} className="question-item pb-4 border-b border-slate-200 last:border-b-0">
-                    <div className="font-bold text-[12pt] text-slate-900">
+                  <div key={q.id} className="question-item pb-4 border-b border-[#dadce0] last:border-b-0">
+                    <div className="font-bold text-[12pt] text-[#202124]">
                       Câu {idx + 1}: {' '}
                       {q.type === 'multiple_choice' && (
                         <span className="text-emerald-700">Đáp án đúng là {q.correct_answer || 'A'}</span>
@@ -575,14 +575,14 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
                     {q.type === 'true_false_group' && q.sub_questions && (
                       <div className="pl-4 space-y-1 my-2 text-[11pt]">
                         {q.sub_questions.map(sq => (
-                          <div key={sq.key} className="text-slate-700">
+                          <div key={sq.key} className="text-[#202124]">
                             <strong>Ý {sq.key}) ({sq.isCorrect ? 'Đúng' : 'Sai'}):</strong>{' '}
                             <MathRenderer content={sq.explanation || sq.content} inline />
                           </div>
                         ))}
                       </div>
                     )}
-                    <div className="text-[12pt] text-slate-800 leading-relaxed pl-4">
+                    <div className="text-[12pt] text-[#202124] leading-relaxed pl-4">
                       <MathRenderer content={q.step_by_step_solution} />
                     </div>
                   </div>
@@ -608,7 +608,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse border border-black text-center text-[10pt]">
                   <thead>
-                    <tr className="bg-slate-100 font-bold">
+                    <tr className="bg-[#f1f3f4] font-bold">
                       <th rowSpan={2} className="border border-black p-2 w-10">TT</th>
                       <th rowSpan={2} className="border border-black p-2 text-left">Chủ đề / Mạch kiến thức</th>
                       <th colSpan={4} className="border border-black p-1">Mức độ nhận thức (Số câu)</th>
@@ -616,7 +616,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
                       <th rowSpan={2} className="border border-black p-2 w-16">Điểm số</th>
                       <th rowSpan={2} className="border border-black p-2 w-16">Tỉ lệ %</th>
                     </tr>
-                    <tr className="bg-slate-50 font-semibold text-[9pt]">
+                    <tr className="bg-[#f8f9fa] font-semibold text-[9pt]">
                       <th className="border border-black p-1">Nhận biết</th>
                       <th className="border border-black p-1">Thông hiểu</th>
                       <th className="border border-black p-1">Vận dụng</th>
@@ -625,7 +625,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
                   </thead>
                   <tbody>
                     {matrixData.rows.map((row) => (
-                      <tr key={row.index} className="hover:bg-slate-50/50">
+                      <tr key={row.index} className="hover:bg-[#f8f9fa]">
                         <td className="border border-black p-1.5 font-bold">{row.index}</td>
                         <td className="border border-black p-1.5 text-left font-medium">{row.topicName}</td>
                         <td className="border border-black p-1.5">
@@ -649,18 +649,18 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
                             : '-'}
                         </td>
                         <td className="border border-black p-1.5 font-bold">{row.totalQuestions}</td>
-                        <td className="border border-black p-1.5 font-bold text-indigo-700">{row.totalPoints.toFixed(1)}</td>
+                        <td className="border border-black p-1.5 font-bold text-[#1a73e8]">{row.totalPoints.toFixed(1)}</td>
                         <td className="border border-black p-1.5 font-bold">{row.percentage}%</td>
                       </tr>
                     ))}
-                    <tr className="bg-slate-100 font-bold border-t-2 border-black">
+                    <tr className="bg-[#f1f3f4] font-bold border-t-2 border-black">
                       <td colSpan={2} className="border border-black p-2 text-center">TỔNG CỘNG</td>
                       <td className="border border-black p-2">{matrixData.totalNbPoints}đ</td>
                       <td className="border border-black p-2">{matrixData.totalThPoints}đ</td>
                       <td className="border border-black p-2">{matrixData.totalVdPoints}đ</td>
                       <td className="border border-black p-2">{matrixData.totalVdcPoints}đ</td>
-                      <td className="border border-black p-2 text-indigo-900">{matrixData.totalQuestions}</td>
-                      <td className="border border-black p-2 text-indigo-700">{matrixData.totalExamPoints.toFixed(1)}đ</td>
+                      <td className="border border-black p-2 text-[#1a73e8]">{matrixData.totalQuestions}</td>
+                      <td className="border border-black p-2 text-[#1a73e8]">{matrixData.totalExamPoints.toFixed(1)}đ</td>
                       <td className="border border-black p-2">100%</td>
                     </tr>
                   </tbody>
@@ -678,7 +678,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse border border-black text-[10pt]">
                     <thead>
-                      <tr className="bg-slate-100 font-bold text-center">
+                      <tr className="bg-[#f1f3f4] font-bold text-center">
                         <th className="border border-black p-2 w-10">TT</th>
                         <th className="border border-black p-2 text-left w-36">Chủ đề</th>
                         <th className="border border-black p-2 text-left">Yêu cầu cần đạt</th>
@@ -692,8 +692,8 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
                       {specData.map((spec) => (
                         <tr key={spec.index} className="align-top">
                           <td className="border border-black p-1.5 text-center font-bold">{spec.index}</td>
-                          <td className="border border-black p-1.5 font-bold text-slate-900">{spec.topicName}</td>
-                          <td className="border border-black p-1.5 text-slate-700 text-[9.5pt] leading-relaxed">
+                          <td className="border border-black p-1.5 font-bold text-[#202124]">{spec.topicName}</td>
+                          <td className="border border-black p-1.5 text-[#5f6368] text-[9.5pt] leading-relaxed">
                             {spec.requirement}
                           </td>
                           <td className="border border-black p-1.5 text-center font-mono font-bold text-emerald-700">
@@ -705,7 +705,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
                           <td className="border border-black p-1.5 text-center font-mono font-bold text-amber-700">
                             {spec.vdQuestions.length > 0 ? spec.vdQuestions.map(n => `C${n}`).join(', ') : '-'}
                           </td>
-                          <td className="border border-black p-1.5 text-center font-mono font-bold text-purple-700">
+                          <td className="border border-black p-1.5 text-center font-mono font-bold text-[#1a73e8]">
                             {spec.vdcQuestions.length > 0 ? spec.vdcQuestions.map(n => `C${n}`).join(', ') : '-'}
                           </td>
                         </tr>

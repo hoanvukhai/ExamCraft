@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenAI, Type } from '@google/genai';
 import { z } from 'zod';
 import { Question } from '@/types/exam';
-import { executeWithKeyRotation, getGeminiModel, getAllGeminiKeys } from '@/lib/gemini-keys';
+import { getCurrentUser } from '@/lib/auth';
+import prisma from '@/lib/prisma';
+import { executeWithKeyRotation, getGeminiModel } from '@/lib/gemini-keys';
 
 const questionSchema = {
   type: Type.OBJECT,
@@ -91,6 +93,7 @@ const ParseResultSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    const currentUser = await getCurrentUser();
     const body = await req.json();
     const { rawText, customApiKey } = body as { rawText: string; customApiKey?: string };
 
@@ -103,13 +106,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'Nội dung đề thi quá dài (vượt quá 50.000 ký tự). Vui lòng chia nhỏ tài liệu.' }, { status: 400 });
     }
 
-    const allKeys = getAllGeminiKeys();
-    const hasKeys = (customApiKey && customApiKey.trim()) || allKeys.length > 0;
+    let hasKeys = Boolean(customApiKey && customApiKey.trim());
+    if (!hasKeys && currentUser) {
+      const activeCount = await prisma.userApiKey.count({
+        where: { userId: currentUser.id, isActive: true },
+      });
+      hasKeys = activeCount > 0;
+    }
 
     if (!hasKeys) {
       return NextResponse.json({
         success: false,
-        error: 'Chưa có Gemini API Key để thực hiện bóc tách văn bản bằng AI. Vui lòng kiểm tra file .env.local hoặc nhập key.',
+        error: 'Tài khoản chưa có Google Gemini API Key. Thầy/Cô vui lòng thêm khóa API trong mục Kho Khóa AI.',
       }, { status: 401 });
     }
 
@@ -132,20 +140,27 @@ QUY TẮC BẮT BUỘC:
 
     const modelName = getGeminiModel();
 
-    const responseText = await executeWithKeyRotation(customApiKey, async (apiKey) => {
-      const ai = new GoogleGenAI({ apiKey });
-      const response = await ai.models.generateContent({
-        model: modelName,
-        contents: rawText,
-        config: {
-          systemInstruction: systemPrompt,
-          responseMimeType: 'application/json',
-          responseSchema: parseResponseSchema,
-          temperature: 0.2,
-        },
-      });
-      return response.text || '{}';
-    });
+    const responseText = await executeWithKeyRotation(
+      customApiKey,
+      async (apiKey) => {
+        const ai = new GoogleGenAI({ apiKey });
+        const response = await ai.models.generateContent({
+          model: modelName,
+          contents: rawText,
+          config: {
+            systemInstruction: systemPrompt,
+            responseMimeType: 'application/json',
+            responseSchema: parseResponseSchema,
+            temperature: 0.2,
+          },
+        });
+        return response.text || '{}';
+      },
+      {
+        userId: currentUser?.id,
+        endpoint: 'exam.parse',
+      }
+    );
 
     const parsedRaw = JSON.parse(responseText);
     const validationResult = ParseResultSchema.safeParse(parsedRaw);

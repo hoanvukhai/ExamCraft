@@ -124,6 +124,7 @@ model User {
   assignments       Assignment[]
   aiUsage           AiUsageLog[]
   auditLogs         AuditLog[]
+  apiKeys           UserApiKey[]
 }
 
 model Session {
@@ -436,4 +437,21 @@ model AuditLog {
   createdAt  DateTime @default(now())
 
   @@index([actorId, createdAt])
+}
+
+model UserApiKey {
+  id           String    @id @default(cuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label        String    @default("Khóa chính")
+  keyEncrypted String    @db.Text
+  keyIv        String
+  keyTag       String
+  keyMasked    String
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  lastUsedAt   DateTime?
+  errorCount   Int       @default(0)
+
+  @@index([userId])
 }

@@ -72,16 +72,15 @@ cd ExamCraft
 npm install
 ```
 
-### 3. Cấu hình biến môi trường
-Tạo file `.env.local` từ file mẫu:
+### 3. Cấu hình biến môi trường & CSDL
+Tạo file `.env` từ file mẫu và khởi động cơ sở dữ liệu PostgreSQL:
 ```bash
-cp .env.example .env.local
+cp .env.example .env
+docker compose up -d
+npx prisma db push
+npx prisma db seed
 ```
-Mở file `.env.local` và điền Google Gemini API Key của bạn:
-```env
-GEMINI_API_KEY_1=AIzaSy...
-# Có thể thêm các key dự phòng từ key 2 đến key 7
-```
+*Lưu ý: Hệ thống sử dụng mô hình BYOK (Bring Your Own Key). Giáo viên đăng nhập tài khoản và thêm Google Gemini API Key cá nhân trực tiếp trong giao diện "Kho Khóa AI". Khóa được mã hóa AES-256-GCM an toàn.*
 
 ### 4. Khởi động môi trường phát triển
 ```bash

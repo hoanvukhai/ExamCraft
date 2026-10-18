@@ -223,40 +223,40 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5">
-      <div className="bg-white rounded-2xl max-w-6xl w-full p-5 shadow-2xl border border-slate-200 relative max-h-[92vh] flex flex-col">
+      <div className="bg-white dark:bg-[#1e1e1e] rounded-3xl max-w-6xl w-full p-5 sm:p-6 shadow-2xl border border-[#dadce0] dark:border-[#3c4043] relative max-h-[92vh] flex flex-col text-[#202124] dark:text-[#e3e3e3] animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+        <div className="flex items-center justify-between pb-3 border-b border-[#dadce0] dark:border-[#3c4043]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-linear-to-tr from-indigo-600 to-violet-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/20">
-              <Upload className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-2xl bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] border border-[#d2e3fc] dark:border-[#29425e] flex items-center justify-center shadow-xs">
+              <Upload className="w-5 h-5 text-[#1a73e8] dark:text-[#8ab4f8]" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-bold text-slate-900 text-lg">Phòng Số Hóa & Bóc Tách Đề Thi (AI Ingestion Studio)</h3>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                <h3 className="font-bold text-[#202124] dark:text-[#e3e3e3] text-lg">Phòng Số Hóa & Bóc Tách Đề Thi (AI Ingestion Studio)</h3>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] border border-[#d2e3fc] dark:border-[#29425e]">
                   Multimodal OCR + Word
                 </span>
               </div>
-              <p className="text-xs text-slate-500">Chuyển đổi ảnh chụp, file Word .docx hoặc văn bản thô thành câu hỏi KaTeX chuẩn mực</p>
+              <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">Chuyển đổi ảnh chụp, file Word .docx hoặc văn bản thô thành câu hỏi KaTeX chuẩn mực</p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100"
+            className="p-1.5 text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] rounded-full hover:bg-[#f1f3f4] dark:hover:bg-[#282828] transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Thanh chọn 4 định dạng nguồn (Tabs) */}
-        <div className="flex flex-wrap items-center gap-2 pt-3 pb-2 border-b border-slate-100">
+        <div className="flex flex-wrap items-center gap-2 pt-3 pb-2 border-b border-[#dadce0] dark:border-[#3c4043]">
           <button
             onClick={() => setSourceType('image')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
               sourceType === 'image'
-                ? 'bg-indigo-600 text-white shadow-xs'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                ? 'bg-[#1a73e8] text-white dark:bg-[#8ab4f8] dark:text-[#202124] shadow-xs'
+                : 'bg-[#f1f3f4] dark:bg-[#282828] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#e8eaed] dark:hover:bg-[#303134]'
             }`}
           >
             <ImageIcon className="w-3.5 h-3.5" />
@@ -265,10 +265,10 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 
           <button
             onClick={() => setSourceType('word')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
               sourceType === 'word'
-                ? 'bg-indigo-600 text-white shadow-xs'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                ? 'bg-[#1a73e8] text-white dark:bg-[#8ab4f8] dark:text-[#202124] shadow-xs'
+                : 'bg-[#f1f3f4] dark:bg-[#282828] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#e8eaed] dark:hover:bg-[#303134]'
             }`}
           >
             <FileText className="w-3.5 h-3.5" />
@@ -277,10 +277,10 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 
           <button
             onClick={() => setSourceType('text')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
               sourceType === 'text'
-                ? 'bg-indigo-600 text-white shadow-xs'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                ? 'bg-[#1a73e8] text-white dark:bg-[#8ab4f8] dark:text-[#202124] shadow-xs'
+                : 'bg-[#f1f3f4] dark:bg-[#282828] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#e8eaed] dark:hover:bg-[#303134]'
             }`}
           >
             <Sparkles className="w-3.5 h-3.5" />
@@ -289,10 +289,10 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 
           <button
             onClick={() => setSourceType('latex')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
               sourceType === 'latex'
-                ? 'bg-indigo-600 text-white shadow-xs'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                ? 'bg-[#1a73e8] text-white dark:bg-[#8ab4f8] dark:text-[#202124] shadow-xs'
+                : 'bg-[#f1f3f4] dark:bg-[#282828] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#e8eaed] dark:hover:bg-[#303134]'
             }`}
           >
             <Code className="w-3.5 h-3.5" />
@@ -303,25 +303,26 @@ export const ImportModal: React.FC<ImportModalProps> = ({
         {/* Màn hình chia 2 cột: Trái (Nguồn gốc) | Phải (Kết quả AI bóc tách) */}
         <div className="grow overflow-hidden grid grid-cols-1 md:grid-cols-2 gap-4 py-3 min-h-[380px]">
           {/* CỘT TRÁI: KHUNG NGUỒN GỐC */}
-          <div className="flex flex-col h-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 overflow-hidden">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-200">
-              <span className="font-bold text-xs uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                <Eye className="w-3.5 h-3.5 text-indigo-600" />
+          <div className="flex flex-col h-full bg-[#f8f9fa] dark:bg-[#181818] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-3.5 overflow-hidden">
+            <div className="flex items-center justify-between pb-2 border-b border-[#dadce0] dark:border-[#3c4043]">
+              <span className="font-bold text-xs uppercase tracking-wider text-[#3c4043] dark:text-[#e3e3e3] flex items-center gap-1.5">
+                <Eye className="w-3.5 h-3.5 text-[#1a73e8] dark:text-[#8ab4f8]" />
                 <span>Nguồn đầu vào ({sourceType.toUpperCase()})</span>
               </span>
 
               {sourceType === 'image' && (
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="text-xs font-semibold text-indigo-600 hover:text-indigo-800"
+                  className="text-xs font-medium text-[#1a73e8] dark:text-[#8ab4f8] hover:underline cursor-pointer"
                 >
                   {selectedImage ? 'Chọn ảnh khác' : 'Tải ảnh lên'}
                 </button>
               )}
+
               {sourceType === 'word' && (
                 <button
                   onClick={() => wordInputRef.current?.click()}
-                  className="text-xs font-semibold text-indigo-600 hover:text-indigo-800"
+                  className="text-xs font-medium text-[#1a73e8] dark:text-[#8ab4f8] hover:underline cursor-pointer"
                 >
                   {wordFile ? 'Chọn file khác' : 'Chọn file Word'}
                 </button>
@@ -338,18 +339,18 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                       <img
                         src={selectedImage}
                         alt="Ảnh đề thi"
-                        className="max-h-72 w-auto object-contain rounded-lg border border-slate-300 shadow-sm"
+                        className="max-h-72 w-auto object-contain rounded-xl border border-[#dadce0] dark:border-[#3c4043] shadow-xs"
                       />
-                      <span className="text-[11px] text-slate-500 mt-2 truncate max-w-xs">{imageFileName}</span>
+                      <span className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] mt-2 truncate max-w-xs">{imageFileName}</span>
                     </div>
                   ) : (
                     <div
                       onClick={() => fileInputRef.current?.click()}
-                      className="h-full border-2 border-dashed border-slate-300 hover:border-indigo-400 rounded-xl flex flex-col items-center justify-center p-6 text-center cursor-pointer transition-all hover:bg-indigo-50/30"
+                      className="h-full border-2 border-dashed border-[#dadce0] dark:border-[#3c4043] hover:border-[#1a73e8] dark:hover:border-[#8ab4f8] rounded-2xl flex flex-col items-center justify-center p-6 text-center cursor-pointer transition-all hover:bg-[#e8f0fe]/30 dark:hover:bg-[#1e2a38]/40"
                     >
-                      <ImageIcon className="w-12 h-12 text-slate-300 mb-2" />
-                      <p className="font-bold text-sm text-slate-700">Kéo thả hoặc nhấp để tải ảnh đề thi</p>
-                      <p className="text-xs text-slate-500 mt-1">Hỗ trợ ảnh PNG, JPG, JPEG, WebP (Rõ nét công thức)</p>
+                      <ImageIcon className="w-12 h-12 text-[#5f6368] dark:text-[#9aa0a6] mb-2 opacity-50" />
+                      <p className="font-bold text-sm text-[#202124] dark:text-[#e3e3e3]">Kéo thả hoặc nhấp để tải ảnh đề thi</p>
+                      <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] mt-1">Hỗ trợ ảnh PNG, JPG, JPEG, WebP (Rõ nét công thức)</p>
                     </div>
                   )}
                   <input
@@ -366,22 +367,22 @@ export const ImportModal: React.FC<ImportModalProps> = ({
               {sourceType === 'word' && (
                 <>
                   {wordFile ? (
-                    <div className="h-full flex flex-col items-center justify-center p-6 bg-white rounded-xl border border-slate-200">
-                      <FileText className="w-14 h-14 text-indigo-600 mb-2" />
-                      <p className="font-bold text-sm text-slate-900">{wordFileName}</p>
-                      <p className="text-xs text-slate-500 mt-1">Kích thước: {(wordFile.size / 1024).toFixed(1)} KB</p>
-                      <span className="mt-3 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <div className="h-full flex flex-col items-center justify-center p-6 bg-white dark:bg-[#282828] rounded-2xl border border-[#dadce0] dark:border-[#3c4043]">
+                      <FileText className="w-14 h-14 text-[#1a73e8] dark:text-[#8ab4f8] mb-2" />
+                      <p className="font-bold text-sm text-[#202124] dark:text-[#e3e3e3]">{wordFileName}</p>
+                      <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] mt-1">Kích thước: {(wordFile.size / 1024).toFixed(1)} KB</p>
+                      <span className="mt-3 px-3 py-1 rounded-full text-xs font-medium bg-[#e6f4ea] dark:bg-[#0f291e] text-[#137333] dark:text-[#5bb98c] border border-[#ceead6] dark:border-[#1d4834]">
                         Sẵn sàng bóc tách bằng mammoth
                       </span>
                     </div>
                   ) : (
                     <div
                       onClick={() => wordInputRef.current?.click()}
-                      className="h-full border-2 border-dashed border-slate-300 hover:border-indigo-400 rounded-xl flex flex-col items-center justify-center p-6 text-center cursor-pointer transition-all hover:bg-indigo-50/30"
+                      className="h-full border-2 border-dashed border-[#dadce0] dark:border-[#3c4043] hover:border-[#1a73e8] dark:hover:border-[#8ab4f8] rounded-2xl flex flex-col items-center justify-center p-6 text-center cursor-pointer transition-all hover:bg-[#e8f0fe]/30 dark:hover:bg-[#1e2a38]/40"
                     >
-                      <FileText className="w-12 h-12 text-slate-300 mb-2" />
-                      <p className="font-bold text-sm text-slate-700">Tải lên file đề thi Word (.docx)</p>
-                      <p className="text-xs text-slate-500 mt-1">Tự động nhận diện câu hỏi, bảng biểu và phương án A-B-C-D</p>
+                      <FileText className="w-12 h-12 text-[#5f6368] dark:text-[#9aa0a6] mb-2 opacity-50" />
+                      <p className="font-bold text-sm text-[#202124] dark:text-[#e3e3e3]">Tải lên file đề thi Word (.docx)</p>
+                      <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] mt-1">Tự động nhận diện câu hỏi, bảng biểu và phương án A-B-C-D</p>
                     </div>
                   )}
                   <input
@@ -405,11 +406,11 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                         ? 'Dán mã LaTeX câu hỏi EX_Test tại đây:\n\\begin{ex}%[2D1B1-1]\nCho hàm số y = f(x)...\n\\choice\n{Đáp án A}\n{\\True Đáp án B}\n{Đáp án C}\n{Đáp án D}\n\\loigiai{...}\n\\end{ex}'
                         : 'Dán đoạn văn bản đề thi thô tại đây (copy từ Word, PDF, Web):\nCâu 1: Cho hàm số y = (2x+1)/(x-1). Đạo hàm là:\nA. y\' = -3/(x-1)^2\nB. y\' = 1\nC. ...\n\nCâu 2: ...'
                     }
-                    className="w-full grow text-xs p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 font-mono leading-relaxed resize-none bg-white"
+                    className="w-full grow text-xs p-3 border border-[#dadce0] dark:border-[#3c4043] rounded-xl focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] focus:ring-1 focus:ring-[#1a73e8] dark:focus:ring-[#8ab4f8] outline-hidden font-mono leading-relaxed resize-none bg-white dark:bg-[#282828] text-[#202124] dark:text-[#e3e3e3]"
                   />
-                  <div className="flex justify-between items-center text-[11px] text-slate-500 pt-2">
+                  <div className="flex justify-between items-center text-[11px] text-[#5f6368] dark:text-[#9aa0a6] pt-2">
                     <span>{rawText.length} ký tự</span>
-                    <label className="cursor-pointer text-indigo-600 hover:underline">
+                    <label className="cursor-pointer text-[#1a73e8] dark:text-[#8ab4f8] hover:underline">
                       Tải file .txt / .tex
                       <input type="file" accept=".txt,.tex,.md" onChange={handleTextFileSelect} className="hidden" />
                     </label>
@@ -419,11 +420,11 @@ export const ImportModal: React.FC<ImportModalProps> = ({
             </div>
 
             {/* Nút Kích hoạt phân tích */}
-            <div className="pt-2 border-t border-slate-200 flex justify-end">
+            <div className="pt-2 border-t border-[#dadce0] dark:border-[#3c4043] flex justify-end">
               <button
                 onClick={handleStartParsing}
                 disabled={isLoading}
-                className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-xs transition-all disabled:opacity-50"
+                className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-white bg-[#1a73e8] hover:bg-[#1557b0] dark:bg-[#8ab4f8] dark:hover:bg-[#a8c7fa] dark:text-[#202124] rounded-full shadow-xs transition-all cursor-pointer disabled:opacity-50"
               >
                 {isLoading ? (
                   <>
@@ -441,17 +442,17 @@ export const ImportModal: React.FC<ImportModalProps> = ({
           </div>
 
           {/* CỘT PHẢI: KẾT QUẢ CÂU HỎI BÓC TÁCH */}
-          <div className="flex flex-col h-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 overflow-hidden">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-200">
-              <span className="font-bold text-xs uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                <Layers className="w-3.5 h-3.5 text-indigo-600" />
+          <div className="flex flex-col h-full bg-[#f8f9fa] dark:bg-[#181818] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-3.5 overflow-hidden">
+            <div className="flex items-center justify-between pb-2 border-b border-[#dadce0] dark:border-[#3c4043]">
+              <span className="font-bold text-xs uppercase tracking-wider text-[#3c4043] dark:text-[#e3e3e3] flex items-center gap-1.5">
+                <Layers className="w-3.5 h-3.5 text-[#1a73e8] dark:text-[#8ab4f8]" />
                 <span>Kết quả bóc tách ({parsedQuestions.length} câu hỏi)</span>
               </span>
 
               {parsedQuestions.length > 0 && (
                 <button
                   onClick={() => setParsedQuestions([])}
-                  className="text-[11px] text-slate-400 hover:text-red-600 transition-colors"
+                  className="text-[11px] text-[#5f6368] hover:text-[#c5221f] dark:text-[#9aa0a6] dark:hover:text-[#f28b82] transition-colors cursor-pointer"
                 >
                   Xóa tất cả
                 </button>
@@ -460,14 +461,14 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 
             {/* Thông báo trạng thái hoặc lỗi */}
             {statusMessage && (
-              <div className="mt-2 p-2.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg text-xs flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <div className="mt-2 p-2.5 bg-[#e6f4ea] dark:bg-[#0f291e] border border-[#ceead6] dark:border-[#1d4834] text-[#137333] dark:text-[#5bb98c] rounded-xl text-xs flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#137333] dark:text-[#5bb98c] shrink-0" />
                 <span>{statusMessage}</span>
               </div>
             )}
             {errorMessage && (
-              <div className="mt-2 p-2.5 bg-red-50 border border-red-200 text-red-800 rounded-lg text-xs flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+              <div className="mt-2 p-2.5 bg-[#fce8e6] dark:bg-[#371918] border border-[#fad2cf] dark:border-[#5c2523] text-[#c5221f] dark:text-[#f28b82] rounded-xl text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-[#c5221f] dark:text-[#f28b82] shrink-0" />
                 <span>{errorMessage}</span>
               </div>
             )}
@@ -477,12 +478,12 @@ export const ImportModal: React.FC<ImportModalProps> = ({
               {parsedQuestions.map((q, idx) => (
                 <div
                   key={q.id || idx}
-                  className="p-3 bg-white rounded-xl border border-slate-200 hover:border-indigo-300 shadow-2xs transition-all space-y-2 relative group"
+                  className="p-3 bg-white dark:bg-[#282828] rounded-2xl border border-[#dadce0] dark:border-[#3c4043] hover:border-[#1a73e8] dark:hover:border-[#8ab4f8] shadow-xs transition-all space-y-2 relative group"
                 >
                   <div className="flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-indigo-700">Câu {idx + 1}</span>
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-slate-100 text-slate-600">
+                      <span className="font-bold text-[#1a73e8] dark:text-[#8ab4f8]">Câu {idx + 1}</span>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-[#f1f3f4] dark:bg-[#1e1e1e] text-[#5f6368] dark:text-[#9aa0a6] border border-[#dadce0] dark:border-[#3c4043]">
                         {q.type}
                       </span>
                     </div>
@@ -490,14 +491,14 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                     <button
                       onClick={() => handleDeleteQuestion(q.id)}
                       title="Xóa câu này"
-                      className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-red-600 transition-all"
+                      className="opacity-0 group-hover:opacity-100 p-1 text-[#5f6368] hover:text-[#c5221f] dark:text-[#9aa0a6] dark:hover:text-[#f28b82] transition-all cursor-pointer"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
 
                   {/* Nội dung câu hỏi KaTeX */}
-                  <div className="text-xs text-slate-800 leading-relaxed">
+                  <div className="text-xs text-[#202124] dark:text-[#e3e3e3] leading-relaxed">
                     <MathRenderer content={q.content} inline />
                   </div>
 
@@ -507,13 +508,13 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                       {q.choices.map((c) => (
                         <div
                           key={c.key}
-                          className={`p-1.5 rounded-lg border flex items-baseline gap-1.5 ${
+                          className={`p-2 rounded-xl border flex items-baseline gap-1.5 ${
                             c.key === q.correct_answer
-                              ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold'
-                              : 'bg-slate-50 border-slate-200 text-slate-700'
+                              ? 'bg-[#e6f4ea] dark:bg-[#0f291e] border-[#ceead6] dark:border-[#1d4834] text-[#137333] dark:text-[#5bb98c] font-bold'
+                              : 'bg-[#f8f9fa] dark:bg-[#1e1e1e] border-[#dadce0] dark:border-[#3c4043] text-[#3c4043] dark:text-[#e3e3e3]'
                           }`}
                         >
-                          <span>{c.key}.</span>
+                          <span className="font-bold">{c.key}.</span>
                           <MathRenderer content={c.text} inline />
                         </div>
                       ))}
@@ -522,11 +523,15 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 
                   {/* Ý Đúng / Sai */}
                   {q.sub_questions && q.sub_questions.length > 0 && (
-                    <div className="space-y-1 pt-1 text-xs">
+                    <div className="space-y-1.5 pt-1 text-xs">
                       {q.sub_questions.map((sub) => (
-                        <div key={sub.key} className="flex items-baseline gap-2 bg-slate-50 p-1.5 rounded border border-slate-200">
+                        <div key={sub.key} className="flex items-baseline gap-2 bg-[#f8f9fa] dark:bg-[#1e1e1e] p-2 rounded-xl border border-[#dadce0] dark:border-[#3c4043]">
                           <span className="font-bold">{sub.key})</span>
-                          <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${sub.isCorrect ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}`}>
+                          <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                            sub.isCorrect 
+                              ? 'bg-[#e6f4ea] dark:bg-[#0f291e] text-[#137333] dark:text-[#5bb98c] border border-[#ceead6] dark:border-[#1d4834]' 
+                              : 'bg-[#fce8e6] dark:bg-[#371918] text-[#c5221f] dark:text-[#f28b82] border border-[#fad2cf] dark:border-[#5c2523]'
+                          }`}>
                             {sub.isCorrect ? 'ĐÚNG' : 'SAI'}
                           </span>
                           <MathRenderer content={sub.content} inline />
@@ -537,7 +542,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 
                   {/* Lời giải tóm tắt */}
                   {q.step_by_step_solution && (
-                    <div className="text-[11px] text-slate-500 pt-1 border-t border-slate-100 italic truncate">
+                    <div className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] pt-1.5 border-t border-[#dadce0] dark:border-[#3c4043] italic truncate">
                       Lời giải: {q.step_by_step_solution}
                     </div>
                   )}
@@ -545,10 +550,10 @@ export const ImportModal: React.FC<ImportModalProps> = ({
               ))}
 
               {parsedQuestions.length === 0 && !isLoading && (
-                <div className="h-full flex flex-col items-center justify-center p-8 text-center text-slate-400">
-                  <Layers className="w-10 h-10 text-slate-300 mb-2" />
+                <div className="h-full flex flex-col items-center justify-center p-8 text-center text-[#5f6368] dark:text-[#9aa0a6]">
+                  <Layers className="w-10 h-10 text-[#5f6368] dark:text-[#9aa0a6] mb-2 opacity-40" />
                   <p className="text-xs">Chưa có câu hỏi nào được bóc tách.</p>
-                  <p className="text-[11px] text-slate-400 mt-1">Chọn nguồn bên trái và bấm "Bắt đầu phân rã" để xem kết quả tại đây.</p>
+                  <p className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] mt-1">Chọn nguồn bên trái và bấm "Bắt đầu phân rã" để xem kết quả tại đây.</p>
                 </div>
               )}
             </div>
@@ -556,10 +561,10 @@ export const ImportModal: React.FC<ImportModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
+        <div className="pt-3 border-t border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl"
+            className="px-4 py-2 text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] rounded-full transition-colors cursor-pointer"
           >
             Đóng
           </button>
@@ -567,7 +572,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
           {parsedQuestions.length > 0 && (
             <button
               onClick={handleConfirmImport}
-              className="flex items-center gap-1.5 px-5 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-xs transition-all"
+              className="flex items-center gap-1.5 px-5 py-2 text-xs font-medium text-white bg-[#137333] hover:bg-[#0d5925] dark:bg-[#5bb98c] dark:hover:bg-[#4ea77d] dark:text-[#0f291e] rounded-full shadow-xs transition-all cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>Thêm {parsedQuestions.length} câu hỏi vào Đề thi hiện tại</span>

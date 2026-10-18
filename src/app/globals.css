@@ -1,8 +1,27 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --background: #f8f9fa;
+  --foreground: #202124;
+  --google-surface: #ffffff;
+  --google-surface-variant: #f1f3f4;
+  --google-border: #dadce0;
+  --google-text-primary: #202124;
+  --google-text-secondary: #5f6368;
+  --google-blue: #1a73e8;
+}
+
+.dark {
+  --background: #121212;
+  --foreground: #e3e3e3;
+  --google-surface: #1e1e1e;
+  --google-surface-variant: #282828;
+  --google-border: #3c4043;
+  --google-text-primary: #e3e3e3;
+  --google-text-secondary: #9aa0a6;
+  --google-blue: #8ab4f8;
 }
 
 @theme inline {
@@ -15,8 +34,10 @@
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  overflow-x: hidden;
+  font-family: var(--font-sans), 'Google Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
 }
 
 /* Print styling for A4 Exam Paper */
@@ -99,7 +120,7 @@ body {
   }
 }
 
-/* Custom scrollbars */
+/* Custom scrollbars Google style */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -110,12 +131,20 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #dadce0;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #bdc1c6;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #3c4043;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #5f6368;
 }
 
 /* KaTeX tweaks */
@@ -127,4 +156,24 @@ body {
 
 .katex {
   font-size: 1.05em;
+}
+
+/* Dark mode KaTeX & Math overrides */
+.dark .katex {
+  color: #e3e3e3;
+}
+
+.dark .math-rendered {
+  color: #f1f3f4;
+}
+
+/* A4 Paper is always white with black ink for high-precision printing */
+.a4-paper,
+.a4-paper * {
+  color-scheme: light !important;
+}
+
+.a4-paper .katex,
+.a4-paper .math-rendered {
+  color: #000000 !important;
 }

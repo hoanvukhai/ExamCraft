@@ -1,5 +1,5 @@
 import prisma from './prisma';
-import { AiKeyStatus } from '@prisma/client';
+import { decryptApiKey } from './crypto';
 
 export interface KeyInfo {
   alias: string;
@@ -7,35 +7,15 @@ export interface KeyInfo {
 }
 
 /**
- * Lấy danh sách ánh xạ alias -> rawKey từ biến môi trường
- * TUYỆT ĐỐI không in rawKey ra log hay trả về client!
+ * Tương thích ngược: Hệ thống v3.2 hoạt động theo mô hình Bring-Your-Own-Key (BYOK) thuần túy.
+ * Toàn bộ API Key được lưu riêng biệt và mã hóa AES-256-GCM trong PostgreSQL của từng tài khoản.
  */
 export function getRegisteredKeys(): KeyInfo[] {
-  const result: KeyInfo[] = [];
-
-  for (let i = 1; i <= 7; i++) {
-    const rawKey = process.env[`GEMINI_API_KEY_${i}`];
-    if (rawKey && rawKey.trim()) {
-      result.push({
-        alias: `key${i}`,
-        rawKey: rawKey.trim(),
-      });
-    }
-  }
-
-  // Fallback: nếu dùng biến đơn GEMINI_API_KEY
-  if (result.length === 0 && process.env.GEMINI_API_KEY) {
-    result.push({
-      alias: 'key1',
-      rawKey: process.env.GEMINI_API_KEY.trim(),
-    });
-  }
-
-  return result;
+  return [];
 }
 
 export function getAllGeminiKeys(): string[] {
-  return getRegisteredKeys().map((k) => k.rawKey);
+  return [];
 }
 
 export function getGeminiModel(): string {
@@ -43,7 +23,7 @@ export function getGeminiModel(): string {
 }
 
 /**
- * Kiểm tra hạn mức gọi AI trong ngày của giáo viên
+ * Kiểm tra hạn mức gọi AI trong ngày của giáo viên (aiDailyLimit)
  */
 export async function checkUserAiQuota(userId: string): Promise<{ allowed: boolean; limit: number; used: number }> {
   const user = await prisma.user.findUnique({
@@ -74,58 +54,11 @@ export async function checkUserAiQuota(userId: string): Promise<{ allowed: boole
 }
 
 /**
- * Chọn key thông minh nhất từ cơ sở dữ liệu (least used, không bị cooldown hay dead)
- */
-async function selectBestKey(registeredKeys: KeyInfo[], excludeAliases: string[] = []): Promise<KeyInfo | null> {
-  const now = new Date();
-
-  // Lấy trạng thái của các key từ DB
-  const dbStates = await prisma.aiKeyState.findMany({
-    where: {
-      alias: { in: registeredKeys.map((k) => k.alias) },
-    },
-  });
-
-  const stateMap = new Map(dbStates.map((s) => [s.alias, s]));
-
-  // Lọc các key khả dụng
-  const eligibleKeys = registeredKeys.filter((k) => {
-    if (excludeAliases.includes(k.alias)) return false;
-    const state = stateMap.get(k.alias);
-    if (!state) return true; // Chưa có bản ghi thì khả dụng
-
-    if (state.status === AiKeyStatus.DEAD) return false;
-    if (state.status === AiKeyStatus.COOLDOWN) {
-      if (state.cooldownUntil && state.cooldownUntil > now) {
-        return false; // Vẫn đang trong thời gian cooldown
-      }
-    }
-    return true;
-  });
-
-  if (eligibleKeys.length === 0) {
-    return null;
-  }
-
-  // Sắp xếp theo số lượt gọi trong ngày ít nhất, sau đó đến thời điểm dùng cũ nhất
-  eligibleKeys.sort((a, b) => {
-    const stateA = stateMap.get(a.alias);
-    const stateB = stateMap.get(b.alias);
-
-    const countA = stateA?.dailyCount || 0;
-    const countB = stateB?.dailyCount || 0;
-    if (countA !== countB) return countA - countB;
-
-    const timeA = stateA?.lastUsedAt ? new Date(stateA.lastUsedAt).getTime() : 0;
-    const timeB = stateB?.lastUsedAt ? new Date(stateB.lastUsedAt).getTime() : 0;
-    return timeA - timeB;
-  });
-
-  return eligibleKeys[0];
-}
-
-/**
- * Thực thi gọi AI với điều phối 7 Keys, ghi log DB và tự động xoay tua khi có lỗi
+ * THỰC THI GỌI AI VỚI CƠ CHẾ XOAY TUA KEY CỦA CHÍNH TÀI KHOẢN (BYOK)
+ * - Người dùng thêm 1 key -> Dùng 1 key
+ * - Người dùng thêm 2, 3, 5 key -> Tự động xoay tua Round-Robin
+ * - Khi 1 key gặp lỗi hạn mức (Quota 429) -> Tự động Fallback sang key tiếp theo của người dùng
+ * - Tuyệt đối không dùng key chung hệ thống
  */
 export async function executeWithKeyRotation<T>(
   customKey: string | undefined,
@@ -140,7 +73,7 @@ export async function executeWithKeyRotation<T>(
   const endpoint = context?.endpoint || 'ai.generate';
   const model = context?.model || getGeminiModel();
 
-  // 1. Nếu dùng Custom Key (BYOK)
+  // 1. Trường hợp người dùng truyền trực tiếp key tạm thời (BYOK Custom Input)
   if (customKey && customKey.trim()) {
     try {
       const res = await operation(customKey.trim());
@@ -174,57 +107,64 @@ export async function executeWithKeyRotation<T>(
     }
   }
 
-  // 2. Kiểm tra hạn mức cá nhân của giáo viên
-  if (context?.userId) {
-    const quota = await checkUserAiQuota(context.userId);
-    if (!quota.allowed) {
-      throw new Error(
-        `Thầy/Cô đã dùng hết hạn mức AI trong ngày (${quota.used}/${quota.limit} lệnh). Vui lòng liên hệ Quản trị viên để nâng hạn mức.`
-      );
-    }
+  // 2. Bắt buộc phải có thông tin tài khoản người dùng
+  if (!context?.userId) {
+    throw new Error('Chưa đăng nhập tài khoản. Vui lòng đăng nhập để sử dụng tính năng AI.');
   }
 
-  const registeredKeys = getRegisteredKeys();
-  if (registeredKeys.length === 0) {
-    throw new Error('Chưa cấu hình GEMINI_API_KEY trong hệ thống (.env.local).');
+  // 3. Kiểm tra hạn mức gọi AI trong ngày của giáo viên
+  const quota = await checkUserAiQuota(context.userId);
+  if (!quota.allowed) {
+    throw new Error(
+      `Thầy/Cô đã dùng hết hạn mức AI trong ngày (${quota.used}/${quota.limit} lệnh). Vui lòng liên hệ Quản trị viên để nâng hạn mức hoặc chờ sau 00:00 đêm.`
+    );
   }
 
-  const maxAttempts = Math.min(registeredKeys.length, 7);
-  const usedAliases: string[] = [];
+  // 4. Lấy toàn bộ API Key cá nhân đang hoạt động của người dùng trong PostgreSQL
+  const userKeys = await prisma.userApiKey.findMany({
+    where: { userId: context.userId, isActive: true },
+    orderBy: [
+      { errorCount: 'asc' }, // Ưu tiên các key chưa gặp lỗi
+      { lastUsedAt: 'asc' },  // Xoay tua round-robin (chọn key ít dùng nhất gần đây)
+    ],
+  });
+
+  if (userKeys.length === 0) {
+    throw new Error(
+      'Tài khoản của Thầy/Cô chưa có Google Gemini API Key nào đang kích hoạt. Vui lòng bấm vào Avatar hoặc mục "Kho Khóa AI" ở menu bên trái để thêm khóa API của mình.'
+    );
+  }
+
+  // 5. Vòng lặp xoay tua giữa các key của chính người dùng
   let lastError: unknown = null;
 
-  for (let attempt = 0; attempt < maxAttempts; attempt++) {
-    const bestKey = await selectBestKey(registeredKeys, usedAliases);
-    if (!bestKey) break;
-
-    usedAliases.push(bestKey.alias);
+  for (let i = 0; i < userKeys.length; i++) {
+    const currentKeyRecord = userKeys[i];
     const attemptStartTime = Date.now();
 
     try {
-      const result = await operation(bestKey.rawKey);
+      // Giải mã an toàn trong bộ nhớ RAM
+      const plainApiKey = decryptApiKey(
+        currentKeyRecord.keyEncrypted,
+        currentKeyRecord.keyIv,
+        currentKeyRecord.keyTag
+      );
 
-      // Cập nhật trạng thái thành công trong DB
+      const result = await operation(plainApiKey);
+
+      // Gọi thành công -> Cập nhật trạng thái tốt cho key
       await prisma.$transaction([
-        prisma.aiKeyState.upsert({
-          where: { alias: bestKey.alias },
-          create: {
-            alias: bestKey.alias,
-            status: AiKeyStatus.ACTIVE,
-            dailyCount: 1,
+        prisma.userApiKey.update({
+          where: { id: currentKeyRecord.id },
+          data: {
             lastUsedAt: new Date(),
-            lastError: null,
-          },
-          update: {
-            status: AiKeyStatus.ACTIVE,
-            dailyCount: { increment: 1 },
-            lastUsedAt: new Date(),
-            lastError: null,
+            errorCount: 0,
           },
         }),
         prisma.aiUsageLog.create({
           data: {
-            userId: context?.userId,
-            keyAlias: bestKey.alias,
+            userId: context.userId,
+            keyAlias: `user_key:${currentKeyRecord.label}`,
             endpoint,
             model,
             httpStatus: 200,
@@ -237,55 +177,48 @@ export async function executeWithKeyRotation<T>(
     } catch (err: unknown) {
       lastError = err;
       const errorMsg = String(err);
-      const isKeyDead = errorMsg.includes('API_KEY_INVALID') || errorMsg.includes('401') || errorMsg.includes('403');
-      const isRateLimit = errorMsg.includes('429') || errorMsg.includes('RESOURCE_EXHAUSTED') || errorMsg.includes('quota');
-      const isDemandSpike = errorMsg.includes('503') || errorMsg.includes('high demand') || errorMsg.includes('UNAVAILABLE');
+      const isRateLimit = errorMsg.includes('429') || errorMsg.includes('quota') || errorMsg.includes('RESOURCE_EXHAUSTED');
+      const isDead = errorMsg.includes('API_KEY_INVALID') || errorMsg.includes('400') || errorMsg.includes('403');
 
-      console.warn(`[GeminiCoordinator] Key ${bestKey.alias} thất bại:`, errorMsg);
+      console.warn(`[UserKeyRotation] Key cá nhân "${currentKeyRecord.label}" (${currentKeyRecord.keyMasked}) thất bại:`, errorMsg);
 
-      // Cập nhật trạng thái lỗi vào DB
-      if (isKeyDead) {
-        await prisma.aiKeyState.upsert({
-          where: { alias: bestKey.alias },
-          create: { alias: bestKey.alias, status: AiKeyStatus.DEAD, lastError: errorMsg },
-          update: { status: AiKeyStatus.DEAD, lastError: errorMsg },
-        });
-      } else if (isRateLimit || isDemandSpike) {
-        // Cooldown 60 giây
-        const cooldownUntil = new Date(Date.now() + 60 * 1000);
-        await prisma.aiKeyState.upsert({
-          where: { alias: bestKey.alias },
-          create: { alias: bestKey.alias, status: AiKeyStatus.COOLDOWN, cooldownUntil, lastError: errorMsg },
-          update: { status: AiKeyStatus.COOLDOWN, cooldownUntil, lastError: errorMsg },
-        });
-      }
+      // Cập nhật lỗi cho key này
+      await prisma.userApiKey.update({
+        where: { id: currentKeyRecord.id },
+        data: {
+          errorCount: { increment: 1 },
+          ...(isDead ? { isActive: false } : {}),
+        },
+      });
 
       await prisma.aiUsageLog.create({
         data: {
-          userId: context?.userId,
-          keyAlias: bestKey.alias,
+          userId: context.userId,
+          keyAlias: `user_key:${currentKeyRecord.label}`,
           endpoint,
           model,
-          httpStatus: isKeyDead ? 403 : isRateLimit ? 429 : 500,
+          httpStatus: isDead ? 403 : isRateLimit ? 429 : 500,
           latencyMs: Date.now() - attemptStartTime,
         },
       });
 
-      // Thử key tiếp theo với một chút jitter backoff
-      if (attempt < maxAttempts - 1) {
-        await new Promise((resolve) => setTimeout(resolve, 300 * (attempt + 1)));
+      // Nếu còn key tiếp theo trong danh sách của người dùng -> Thử key tiếp theo ngay!
+      if (i < userKeys.length - 1) {
+        console.info(`[UserKeyRotation] Tự động chuyển sang key tiếp theo của Thầy/Cô (${userKeys[i + 1].label})...`);
+        await new Promise((resolve) => setTimeout(resolve, 300));
       }
     }
   }
 
-  // Xử lý thông báo thân thiện
-  const finalMsg = String(lastError);
-  if (finalMsg.includes('503') || finalMsg.includes('high demand')) {
-    throw new Error('Máy chủ Google AI hiện đang quá tải tạm thời (Spikes in demand 503). Đã tự động xoay tua qua 7 key. Thầy/Cô vui lòng bấm thử lại sau vài giây.');
-  }
-  if (finalMsg.includes('429') || finalMsg.includes('RESOURCE_EXHAUSTED')) {
-    throw new Error('Tất cả 7 Google Gemini API Keys hiện đã chạm hạn mức số lượt gọi tạm thời. Vui lòng đợi 30-60 giây để hệ thống phục hồi.');
+  // 6. Nếu tất cả các key của người dùng đều thất bại
+  const errMsg = String(lastError);
+  if (errMsg.includes('429') || errMsg.includes('quota') || errMsg.includes('RESOURCE_EXHAUSTED')) {
+    throw new Error(
+      `Tất cả ${userKeys.length} Google Gemini API Key của Thầy/Cô đều đang chạm trần hạn mức (Quota 429). Thầy/Cô vui lòng đợi vài phút hoặc bấm vào Avatar để thêm/kiểm tra các khóa.`
+    );
   }
 
-  throw lastError || new Error('Tất cả các API Key đều không thể kết nối tới Google Gemini.');
+  throw new Error(
+    `Không thể kết nối đến Google Gemini với các API Key của bạn: ${errMsg}. Vui lòng mở mục "Kho Khóa AI" để kiểm tra.`
+  );
 }

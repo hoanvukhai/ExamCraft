@@ -92,23 +92,23 @@ function ClassPortalContent({
 
   if (loading && !group) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-white p-4">
-        <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="text-slate-400 font-medium text-sm">Đang tải thông tin lớp học...</p>
+      <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#181818] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
+        <div className="w-10 h-10 border-3 border-[#1a73e8] dark:border-[#8ab4f8] border-t-transparent rounded-full animate-spin mb-4" />
+        <p className="text-[#5f6368] dark:text-[#9aa0a6] font-medium text-sm">Đang tải thông tin lớp học...</p>
       </div>
     );
   }
 
   if (error || !group) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-white p-4">
-        <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 text-center shadow-2xl">
-          <AlertCircle className="w-12 h-12 text-rose-400 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-white mb-2">Không tìm thấy lớp học</h2>
-          <p className="text-slate-400 text-sm mb-6">{error}</p>
+      <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#181818] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
+        <div className="max-w-md w-full bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl p-8 text-center shadow-xl">
+          <AlertCircle className="w-12 h-12 text-[#c5221f] dark:text-[#f28b82] mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-[#202124] dark:text-[#e3e3e3] mb-2">Không tìm thấy lớp học</h2>
+          <p className="text-[#5f6368] dark:text-[#9aa0a6] text-sm mb-6">{error}</p>
           <Link
             href="/"
-            className="inline-flex items-center justify-center px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold rounded-xl transition-all"
+            className="inline-flex items-center justify-center px-5 py-2.5 bg-[#1a73e8] dark:bg-[#8ab4f8] hover:bg-[#1557b0] dark:hover:bg-[#aecbfa] text-white dark:text-[#202124] text-sm font-semibold rounded-full transition-all shadow-xs"
           >
             Về trang chủ
           </Link>
@@ -117,36 +117,32 @@ function ClassPortalContent({
     );
   }
 
-  const selectedStudent = group.students.find((s) => s.id === selectedStudentId);
-
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 py-10 px-4">
+    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#181818] text-[#202124] dark:text-[#e3e3e3] py-10 px-4">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Banner Lớp học */}
-        <div className="bg-gradient-to-r from-indigo-950/80 via-slate-900 to-slate-900 border border-indigo-500/30 rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-
+        <div className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl p-6 md:p-8 shadow-xs relative overflow-hidden">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
             <div>
-              <div className="flex items-center gap-2 text-indigo-400 text-xs font-bold uppercase tracking-wider mb-2">
+              <div className="flex items-center gap-2 text-[#1a73e8] dark:text-[#8ab4f8] text-xs font-bold uppercase tracking-wider mb-2">
                 <GraduationCap className="w-4 h-4" /> Lớp học trực tuyến
               </div>
-              <h1 className="text-2xl md:text-3xl font-black text-white">{group.name}</h1>
-              <p className="text-slate-400 text-xs md:text-sm mt-1">
-                Mã lớp: <span className="font-mono font-bold text-indigo-300">{group.publicCode}</span> •{' '}
+              <h1 className="text-2xl md:text-3xl font-bold text-[#202124] dark:text-[#e3e3e3]">{group.name}</h1>
+              <p className="text-[#5f6368] dark:text-[#9aa0a6] text-xs md:text-sm mt-1">
+                Mã lớp: <span className="font-mono font-bold text-[#1a73e8] dark:text-[#8ab4f8]">{group.publicCode}</span> •{' '}
                 {group.students.length} học sinh
               </p>
             </div>
 
             {/* Chọn tên học sinh */}
-            <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-2xl min-w-[280px]">
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+            <div className="bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] p-4 rounded-2xl min-w-[280px]">
+              <label className="block text-xs font-semibold text-[#5f6368] dark:text-[#9aa0a6] uppercase tracking-wider mb-2">
                 Chọn tên em để xem điểm:
               </label>
               <select
                 value={selectedStudentId}
                 onChange={(e) => handleSelectStudent(e.target.value)}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                className="w-full bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-3 py-2 text-sm text-[#202124] dark:text-[#e3e3e3] focus:outline-none focus:border-[#1a73e8] dark:focus:border-[#8ab4f8]"
               >
                 <option value="">-- Chọn học sinh --</option>
                 {group.students.map((st) => (
@@ -162,18 +158,18 @@ function ClassPortalContent({
         {/* Danh sách bài tập / bài thi của lớp */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-white flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-indigo-400" /> Danh sách bài thi & bài tập
+            <h2 className="text-lg font-bold text-[#202124] dark:text-[#e3e3e3] flex items-center gap-2">
+              <BookOpen className="w-5 h-5 text-[#1a73e8] dark:text-[#8ab4f8]" /> Danh sách bài thi & bài tập
             </h2>
-            <span className="text-xs text-slate-400">
-              Tổng số: <span className="font-bold text-slate-200">{group.assignments.length}</span> bài
+            <span className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">
+              Tổng số: <span className="font-bold text-[#202124] dark:text-[#e3e3e3]">{group.assignments.length}</span> bài
             </span>
           </div>
 
           {group.assignments.length === 0 ? (
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-10 text-center">
-              <BookOpen className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-              <p className="text-slate-400 text-sm">Hiện chưa có bài tập nào được giao cho lớp này.</p>
+            <div className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-10 text-center">
+              <BookOpen className="w-12 h-12 text-[#5f6368] dark:text-[#9aa0a6] mx-auto mb-3" />
+              <p className="text-[#5f6368] dark:text-[#9aa0a6] text-sm">Hiện chưa có bài tập nào được giao cho lớp này.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-4">
@@ -185,35 +181,35 @@ function ClassPortalContent({
                 return (
                   <div
                     key={asg.id}
-                    className="bg-slate-900/90 border border-slate-800 hover:border-slate-700 rounded-2xl p-5 transition-all shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4"
+                    className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] hover:border-[#bdc1c6] dark:hover:border-[#5f6368] rounded-2xl p-5 transition-all shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4"
                   >
                     <div className="space-y-1.5 flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold uppercase tracking-wider bg-indigo-600/20 text-indigo-400 border border-indigo-500/30">
+                        <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wider bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] border border-[#1a73e8]/30 dark:border-[#8ab4f8]/30">
                           {asg.mode === 'EXAM' ? 'Bài Thi' : asg.mode === 'PRACTICE' ? 'Luyện tập' : 'Bài về nhà'}
                         </span>
                         {isSubmitted ? (
-                          <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+                          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#e6f4ea] dark:bg-[#0f291e] text-[#137333] dark:text-[#5bb98c] border border-[#ceead6] dark:border-[#1e4d38] flex items-center gap-1">
                             <CheckCircle2 className="w-3 h-3" /> Đã nộp bài
                           </span>
                         ) : isInProgress ? (
-                          <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center gap-1">
+                          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#fef7e0] dark:bg-[#33250b] text-[#b06000] dark:text-[#fdd663] border border-[#feefc3] dark:border-[#4d380e] flex items-center gap-1">
                             <Clock className="w-3 h-3" /> Đang làm dở
                           </span>
                         ) : null}
                       </div>
 
-                      <h3 className="text-base font-bold text-white">{asg.title}</h3>
+                      <h3 className="text-base font-bold text-[#202124] dark:text-[#e3e3e3]">{asg.title}</h3>
 
-                      <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400">
+                      <div className="flex flex-wrap items-center gap-4 text-xs text-[#5f6368] dark:text-[#9aa0a6]">
                         {asg.durationMinutes && (
                           <span className="flex items-center gap-1">
-                            <Clock className="w-3.5 h-3.5 text-slate-500" /> {asg.durationMinutes} phút
+                            <Clock className="w-3.5 h-3.5" /> {asg.durationMinutes} phút
                           </span>
                         )}
                         {asg.closesAt && (
                           <span className="flex items-center gap-1">
-                            <Calendar className="w-3.5 h-3.5 text-slate-500" /> Hạn nộp:{' '}
+                            <Calendar className="w-3.5 h-3.5" /> Hạn nộp:{' '}
                             {new Date(asg.closesAt).toLocaleDateString('vi-VN')}
                           </span>
                         )}
@@ -224,22 +220,22 @@ function ClassPortalContent({
                     <div className="flex items-center gap-4 self-end md:self-auto shrink-0">
                       {isSubmitted && latest?.score !== null && latest?.score !== undefined ? (
                         <div className="text-right">
-                          <span className="text-xs text-slate-400 block">Điểm số</span>
-                          <span className="text-xl font-black text-emerald-400">
+                          <span className="text-xs text-[#5f6368] dark:text-[#9aa0a6] block">Điểm số</span>
+                          <span className="text-xl font-bold text-[#137333] dark:text-[#5bb98c]">
                             {latest.score}
-                            <span className="text-xs text-slate-400 font-normal ml-1">/ {latest.maxScore || 10}</span>
+                            <span className="text-xs text-[#5f6368] dark:text-[#9aa0a6] font-normal ml-1">/ {latest.maxScore || 10}</span>
                           </span>
                         </div>
                       ) : null}
 
                       <Link
                         href={`/a/${asg.publicId}`}
-                        className={`px-5 py-2.5 rounded-xl font-bold text-xs md:text-sm flex items-center gap-1.5 transition-all ${
+                        className={`px-5 py-2.5 rounded-full font-semibold text-xs md:text-sm flex items-center gap-1.5 transition-all cursor-pointer ${
                           isSubmitted
-                            ? 'bg-slate-800 hover:bg-slate-700 text-slate-200'
+                            ? 'bg-[#f1f3f4] hover:bg-[#e8eaed] dark:bg-[#282828] dark:hover:bg-[#333538] text-[#202124] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043]'
                             : isInProgress
-                            ? 'bg-amber-600 hover:bg-amber-500 text-white shadow-md shadow-amber-600/30'
-                            : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/30'
+                            ? 'bg-[#b06000] hover:bg-[#924f00] text-white shadow-xs'
+                            : 'bg-[#1a73e8] hover:bg-[#1557b0] dark:bg-[#8ab4f8] dark:hover:bg-[#aecbfa] text-white dark:text-[#202124] shadow-xs'
                         }`}
                       >
                         {isSubmitted ? (
@@ -272,9 +268,9 @@ export default function ClassPortalPage(props: { params: Promise<{ groupCode: st
   return (
     <React.Suspense
       fallback={
-        <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-white p-4">
-          <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4" />
-          <p className="text-slate-400 font-medium text-sm">Đang tải thông tin lớp học...</p>
+        <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#181818] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
+          <div className="w-10 h-10 border-3 border-[#1a73e8] dark:border-[#8ab4f8] border-t-transparent rounded-full animate-spin mb-4" />
+          <p className="text-[#5f6368] dark:text-[#9aa0a6] font-medium text-sm">Đang tải thông tin lớp học...</p>
         </div>
       }
     >

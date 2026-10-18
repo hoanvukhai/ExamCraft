@@ -3,6 +3,7 @@ import { GoogleGenAI } from '@google/genai';
 import { Exam, Question } from '@/types/exam';
 import { executeWithKeyRotation, getGeminiModel } from '@/lib/gemini-keys';
 import { syncQuestionFigures } from '@/lib/figure-sync';
+import { getCurrentUser } from '@/lib/auth';
 
 interface CopilotRequest {
   exam: Exam;
@@ -13,6 +14,7 @@ interface CopilotRequest {
 
 export async function POST(req: NextRequest) {
   try {
+    const currentUser = await getCurrentUser();
     const body: CopilotRequest = await req.json();
     const { exam, command, targetQuestionId, customApiKey } = body;
 
@@ -88,19 +90,26 @@ ${JSON.stringify(exam.questions, null, 2)}
 
     const modelName = getGeminiModel();
 
-    const responseText = await executeWithKeyRotation(customApiKey, async (apiKey) => {
-      const ai = new GoogleGenAI({ apiKey });
-      const response = await ai.models.generateContent({
-        model: modelName,
-        contents: userPrompt,
-        config: {
-          systemInstruction: systemPrompt,
-          responseMimeType: 'application/json',
-          temperature: 0.3,
-        },
-      });
-      return response.text || '{}';
-    });
+    const responseText = await executeWithKeyRotation(
+      customApiKey,
+      async (apiKey) => {
+        const ai = new GoogleGenAI({ apiKey });
+        const response = await ai.models.generateContent({
+          model: modelName,
+          contents: userPrompt,
+          config: {
+            systemInstruction: systemPrompt,
+            responseMimeType: 'application/json',
+            temperature: 0.3,
+          },
+        });
+        return response.text || '{}';
+      },
+      {
+        userId: currentUser?.id,
+        endpoint: 'exam.copilot',
+      }
+    );
 
     let cleanJson = responseText.trim();
     if (cleanJson.startsWith('```json')) cleanJson = cleanJson.slice(7);

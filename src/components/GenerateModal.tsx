@@ -104,23 +104,23 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200 relative max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+      <div className="bg-white dark:bg-[#1e1e1e] rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-[#dadce0] dark:border-[#3c4043] relative max-h-[90vh] flex flex-col text-[#202124] dark:text-[#e3e3e3] animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+        <div className="flex items-center justify-between pb-4 border-b border-[#dadce0] dark:border-[#3c4043]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-linear-to-tr from-indigo-600 to-violet-600 text-white flex items-center justify-center shadow-md">
-              <Sparkles className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-2xl bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] border border-[#d2e3fc] dark:border-[#29425e] flex items-center justify-center shadow-xs">
+              <Sparkles className="w-5 h-5 text-[#1a73e8] dark:text-[#8ab4f8]" />
             </div>
             <div>
-              <h3 className="font-bold text-slate-900 text-lg">Thiết Lập Sinh Đề Thi Bằng AI</h3>
-              <p className="text-xs text-slate-500">Soạn đề chuẩn ma trận kiến thức GDPT 2018</p>
+              <h3 className="font-bold text-[#202124] dark:text-[#e3e3e3] text-lg">Thiết Lập Sinh Đề Thi Bằng AI</h3>
+              <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">Soạn đề chuẩn ma trận kiến thức GDPT 2018</p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100"
+            className="p-1.5 text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] rounded-full hover:bg-[#f1f3f4] dark:hover:bg-[#282828] transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -130,35 +130,35 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
         <div className="grow overflow-y-auto py-4 space-y-4 pr-1">
           {/* Mẫu nhanh */}
           <div>
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-2">
+            <label className="text-xs font-bold uppercase tracking-wider text-[#5f6368] dark:text-[#9aa0a6] block mb-2">
               Chọn cấu trúc mẫu nhanh:
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               <button
                 type="button"
                 onClick={() => applyPreset('15min')}
-                className="p-2.5 rounded-xl border border-slate-200 hover:border-indigo-400 bg-slate-50/60 hover:bg-indigo-50/40 text-left transition-all"
+                className="p-3 rounded-2xl border border-[#dadce0] dark:border-[#3c4043] hover:border-[#1a73e8] dark:hover:border-[#8ab4f8] bg-[#f8f9fa] dark:bg-[#282828] hover:bg-[#e8f0fe]/40 dark:hover:bg-[#1e2a38]/60 text-left transition-all cursor-pointer"
               >
-                <div className="font-bold text-xs text-slate-800">Kiểm tra 15 phút</div>
-                <div className="text-[11px] text-slate-500">6 trắc nghiệm + 1 điền số</div>
+                <div className="font-bold text-xs text-[#202124] dark:text-[#e3e3e3]">Kiểm tra 15 phút</div>
+                <div className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] mt-0.5">6 trắc nghiệm + 1 điền số</div>
               </button>
 
               <button
                 type="button"
                 onClick={() => applyPreset('45min')}
-                className="p-2.5 rounded-xl border border-indigo-200 bg-indigo-50/50 text-left transition-all"
+                className="p-3 rounded-2xl border border-[#1a73e8] dark:border-[#8ab4f8] bg-[#e8f0fe]/60 dark:bg-[#1e2a38]/80 text-left transition-all cursor-pointer shadow-xs"
               >
-                <div className="font-bold text-xs text-indigo-900">Kiểm tra 1 tiết (45p)</div>
-                <div className="text-[11px] text-indigo-600">8 trắc nghiệm + 1 Đ/S + 2 điền số</div>
+                <div className="font-bold text-xs text-[#1a73e8] dark:text-[#8ab4f8]">Kiểm tra 1 tiết (45p)</div>
+                <div className="text-[11px] text-[#1a73e8]/80 dark:text-[#8ab4f8]/80 mt-0.5">8 trắc nghiệm + 1 Đ/S + 2 điền số</div>
               </button>
 
               <button
                 type="button"
                 onClick={() => applyPreset('new_gdpt')}
-                className="p-2.5 rounded-xl border border-slate-200 hover:border-indigo-400 bg-slate-50/60 hover:bg-indigo-50/40 text-left transition-all"
+                className="p-3 rounded-2xl border border-[#dadce0] dark:border-[#3c4043] hover:border-[#1a73e8] dark:hover:border-[#8ab4f8] bg-[#f8f9fa] dark:bg-[#282828] hover:bg-[#e8f0fe]/40 dark:hover:bg-[#1e2a38]/60 text-left transition-all cursor-pointer"
               >
-                <div className="font-bold text-xs text-slate-800">Chuẩn thi mới 2025 (90p)</div>
-                <div className="text-[11px] text-slate-500">12 TN + 4 Đ/S + 6 điền số</div>
+                <div className="font-bold text-xs text-[#202124] dark:text-[#e3e3e3]">Chuẩn thi mới 2025 (90p)</div>
+                <div className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] mt-0.5">12 TN + 4 Đ/S + 6 điền số</div>
               </button>
             </div>
           </div>
@@ -166,11 +166,11 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
           {/* Chọn Môn & Lớp */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1">Môn học (chuẩn GDPT 2018):</label>
+              <label className="text-xs font-semibold text-[#3c4043] dark:text-[#e3e3e3] block mb-1">Môn học (chuẩn GDPT 2018):</label>
               <select
                 value={subject}
                 onChange={(e) => setSubject(e.target.value as Subject)}
-                className="w-full text-xs font-medium p-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500"
+                className="w-full text-xs font-medium p-2.5 bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] rounded-xl focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] focus:ring-1 focus:ring-[#1a73e8] dark:focus:ring-[#8ab4f8] outline-hidden cursor-pointer"
               >
                 {getSubjectsForGrade(grade).map((s) => (
                   <option key={s.key} value={s.key}>
@@ -181,7 +181,7 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1">Khối lớp:</label>
+              <label className="text-xs font-semibold text-[#3c4043] dark:text-[#e3e3e3] block mb-1">Khối lớp:</label>
               <select
                 value={grade}
                 onChange={(e) => {
@@ -192,7 +192,7 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
                     setSubject(validSubjects[0].key);
                   }
                 }}
-                className="w-full text-xs font-medium p-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500"
+                className="w-full text-xs font-medium p-2.5 bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] rounded-xl focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] focus:ring-1 focus:ring-[#1a73e8] dark:focus:ring-[#8ab4f8] outline-hidden cursor-pointer"
               >
                 <optgroup label="Cấp Tiểu học (Lớp 1 - 5)">
                   {[1, 2, 3, 4, 5].map((g) => (
@@ -213,11 +213,11 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1">Thời gian làm bài:</label>
+              <label className="text-xs font-semibold text-[#3c4043] dark:text-[#e3e3e3] block mb-1">Thời gian làm bài:</label>
               <select
                 value={duration}
                 onChange={(e) => setDuration(Number(e.target.value))}
-                className="w-full text-xs font-medium p-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500"
+                className="w-full text-xs font-medium p-2.5 bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] rounded-xl focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] focus:ring-1 focus:ring-[#1a73e8] dark:focus:ring-[#8ab4f8] outline-hidden cursor-pointer"
               >
                 <option value={15}>15 phút</option>
                 <option value={45}>45 phút</option>
@@ -229,23 +229,23 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
 
           {/* PHẠM VI PHÂN MÔN THCS (Dành cho KHTN & Lịch sử - Địa lí) */}
           {grade <= 9 && (subject === 'khtn' || subject === 'lich_su_dia_ly') && (
-            <div className="p-3 bg-teal-50/70 border border-teal-200 rounded-xl space-y-2">
+            <div className="p-3 bg-[#e6f4ea]/60 dark:bg-[#0f291e]/60 border border-[#ceead6] dark:border-[#1d4834] rounded-2xl space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-teal-950 flex items-center gap-1.5">
-                  <Layers className="w-3.5 h-3.5 text-teal-700" />
+                <label className="text-xs font-bold text-[#137333] dark:text-[#5bb98c] flex items-center gap-1.5">
+                  <Layers className="w-3.5 h-3.5" />
                   <span>Phạm vi phân môn (Dành cho GV THCS):</span>
                 </label>
-                <span className="text-[11px] text-teal-700 italic">Kiểm tra chuyên môn</span>
+                <span className="text-[11px] text-[#137333] dark:text-[#5bb98c] italic">Kiểm tra chuyên môn</span>
               </div>
               {subject === 'khtn' ? (
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-xs">
                   <button
                     type="button"
                     onClick={() => setIntegratedSubBranch('all')}
-                    className={`px-2 py-1.5 rounded-lg font-medium transition-all text-center ${
+                    className={`px-3 py-1.5 rounded-full font-medium transition-all text-center cursor-pointer ${
                       integratedSubBranch === 'all'
-                        ? 'bg-teal-700 text-white font-bold shadow-xs'
-                        : 'bg-white text-teal-900 border border-teal-200 hover:bg-teal-100/50'
+                        ? 'bg-[#137333] text-white dark:bg-[#5bb98c] dark:text-[#0f291e] font-bold shadow-xs'
+                        : 'bg-white dark:bg-[#282828] text-[#137333] dark:text-[#5bb98c] border border-[#ceead6] dark:border-[#1d4834] hover:bg-[#e6f4ea] dark:hover:bg-[#163829]'
                     }`}
                   >
                     Đề tích hợp cả 3
@@ -253,10 +253,10 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setIntegratedSubBranch('physics')}
-                    className={`px-2 py-1.5 rounded-lg font-medium transition-all text-center ${
+                    className={`px-3 py-1.5 rounded-full font-medium transition-all text-center cursor-pointer ${
                       integratedSubBranch === 'physics'
-                        ? 'bg-teal-700 text-white font-bold shadow-xs'
-                        : 'bg-white text-teal-900 border border-teal-200 hover:bg-teal-100/50'
+                        ? 'bg-[#137333] text-white dark:bg-[#5bb98c] dark:text-[#0f291e] font-bold shadow-xs'
+                        : 'bg-white dark:bg-[#282828] text-[#137333] dark:text-[#5bb98c] border border-[#ceead6] dark:border-[#1d4834] hover:bg-[#e6f4ea] dark:hover:bg-[#163829]'
                     }`}
                   >
                     Phân môn Vật lí
@@ -264,10 +264,10 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setIntegratedSubBranch('chemistry')}
-                    className={`px-2 py-1.5 rounded-lg font-medium transition-all text-center ${
+                    className={`px-3 py-1.5 rounded-full font-medium transition-all text-center cursor-pointer ${
                       integratedSubBranch === 'chemistry'
-                        ? 'bg-teal-700 text-white font-bold shadow-xs'
-                        : 'bg-white text-teal-900 border border-teal-200 hover:bg-teal-100/50'
+                        ? 'bg-[#137333] text-white dark:bg-[#5bb98c] dark:text-[#0f291e] font-bold shadow-xs'
+                        : 'bg-white dark:bg-[#282828] text-[#137333] dark:text-[#5bb98c] border border-[#ceead6] dark:border-[#1d4834] hover:bg-[#e6f4ea] dark:hover:bg-[#163829]'
                     }`}
                   >
                     Phân môn Hóa học
@@ -275,10 +275,10 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setIntegratedSubBranch('biology')}
-                    className={`px-2 py-1.5 rounded-lg font-medium transition-all text-center ${
+                    className={`px-3 py-1.5 rounded-full font-medium transition-all text-center cursor-pointer ${
                       integratedSubBranch === 'biology'
-                        ? 'bg-teal-700 text-white font-bold shadow-xs'
-                        : 'bg-white text-teal-900 border border-teal-200 hover:bg-teal-100/50'
+                        ? 'bg-[#137333] text-white dark:bg-[#5bb98c] dark:text-[#0f291e] font-bold shadow-xs'
+                        : 'bg-white dark:bg-[#282828] text-[#137333] dark:text-[#5bb98c] border border-[#ceead6] dark:border-[#1d4834] hover:bg-[#e6f4ea] dark:hover:bg-[#163829]'
                     }`}
                   >
                     Phân môn Sinh học
@@ -289,10 +289,10 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setIntegratedSubBranch('all')}
-                    className={`px-2 py-1.5 rounded-lg font-medium transition-all text-center ${
+                    className={`px-3 py-1.5 rounded-full font-medium transition-all text-center cursor-pointer ${
                       integratedSubBranch === 'all'
-                        ? 'bg-teal-700 text-white font-bold shadow-xs'
-                        : 'bg-white text-teal-900 border border-teal-200 hover:bg-teal-100/50'
+                        ? 'bg-[#137333] text-white dark:bg-[#5bb98c] dark:text-[#0f291e] font-bold shadow-xs'
+                        : 'bg-white dark:bg-[#282828] text-[#137333] dark:text-[#5bb98c] border border-[#ceead6] dark:border-[#1d4834] hover:bg-[#e6f4ea] dark:hover:bg-[#163829]'
                     }`}
                   >
                     Đề tích hợp Sử - Địa
@@ -300,10 +300,10 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setIntegratedSubBranch('history')}
-                    className={`px-2 py-1.5 rounded-lg font-medium transition-all text-center ${
+                    className={`px-3 py-1.5 rounded-full font-medium transition-all text-center cursor-pointer ${
                       integratedSubBranch === 'history'
-                        ? 'bg-teal-700 text-white font-bold shadow-xs'
-                        : 'bg-white text-teal-900 border border-teal-200 hover:bg-teal-100/50'
+                        ? 'bg-[#137333] text-white dark:bg-[#5bb98c] dark:text-[#0f291e] font-bold shadow-xs'
+                        : 'bg-white dark:bg-[#282828] text-[#137333] dark:text-[#5bb98c] border border-[#ceead6] dark:border-[#1d4834] hover:bg-[#e6f4ea] dark:hover:bg-[#163829]'
                     }`}
                   >
                     Phân môn Lịch sử
@@ -311,10 +311,10 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setIntegratedSubBranch('geography')}
-                    className={`px-2 py-1.5 rounded-lg font-medium transition-all text-center ${
+                    className={`px-3 py-1.5 rounded-full font-medium transition-all text-center cursor-pointer ${
                       integratedSubBranch === 'geography'
-                        ? 'bg-teal-700 text-white font-bold shadow-xs'
-                        : 'bg-white text-teal-900 border border-teal-200 hover:bg-teal-100/50'
+                        ? 'bg-[#137333] text-white dark:bg-[#5bb98c] dark:text-[#0f291e] font-bold shadow-xs'
+                        : 'bg-white dark:bg-[#282828] text-[#137333] dark:text-[#5bb98c] border border-[#ceead6] dark:border-[#1d4834] hover:bg-[#e6f4ea] dark:hover:bg-[#163829]'
                     }`}
                   >
                     Phân môn Địa lí
@@ -326,13 +326,13 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
 
           {/* KHUNG CHƯƠNG TRÌNH THPT (Cốt lõi vs Cụm chuyên đề) */}
           {grade >= 10 && (
-            <div className="p-3 bg-indigo-50/70 border border-indigo-200 rounded-xl space-y-2">
+            <div className="p-3 bg-[#e8f0fe]/50 dark:bg-[#1e2a38]/60 border border-[#d2e3fc] dark:border-[#29425e] rounded-2xl space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-indigo-950 flex items-center gap-1.5">
-                  <BookOpen className="w-3.5 h-3.5 text-indigo-700" />
+                <label className="text-xs font-bold text-[#1a73e8] dark:text-[#8ab4f8] flex items-center gap-1.5">
+                  <BookOpen className="w-3.5 h-3.5" />
                   <span>Khung chương trình THPT (GDPT 2018):</span>
                 </label>
-                <span className="text-[10px] bg-indigo-200/60 text-indigo-800 px-2 py-0.5 rounded-md font-semibold">
+                <span className="text-[10px] bg-[#d2e3fc] dark:bg-[#29425e] text-[#1a73e8] dark:text-[#8ab4f8] px-2 py-0.5 rounded-md font-semibold">
                   TT 17/2025 Cập nhật
                 </span>
               </div>
@@ -340,26 +340,26 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setCurriculumTrack('core')}
-                  className={`p-2 rounded-xl border text-left transition-all ${
+                  className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
                     curriculumTrack === 'core'
-                      ? 'bg-white border-indigo-600 ring-2 ring-indigo-500/20 text-indigo-950 shadow-xs'
-                      : 'bg-white/60 border-indigo-200 text-slate-700 hover:bg-white'
+                      ? 'bg-white dark:bg-[#1e1e1e] border-[#1a73e8] dark:border-[#8ab4f8] ring-2 ring-[#1a73e8]/20 dark:ring-[#8ab4f8]/20 text-[#202124] dark:text-[#e3e3e3] shadow-xs'
+                      : 'bg-white/60 dark:bg-[#282828]/60 border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-white dark:hover:bg-[#282828]'
                   }`}
                 >
-                  <div className="font-bold">📘 Chương trình Cốt lõi (70 tiết)</div>
-                  <div className="text-[11px] text-slate-500 mt-0.5">Kiểm tra định kỳ kiến thức phổ thông</div>
+                  <div className="font-bold text-[#202124] dark:text-[#e3e3e3]">📘 Chương trình Cốt lõi (70 tiết)</div>
+                  <div className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] mt-0.5">Kiểm tra định kỳ kiến thức phổ thông</div>
                 </button>
                 <button
                   type="button"
                   onClick={() => setCurriculumTrack('advanced_topic')}
-                  className={`p-2 rounded-xl border text-left transition-all ${
+                  className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
                     curriculumTrack === 'advanced_topic'
-                      ? 'bg-white border-indigo-600 ring-2 ring-indigo-500/20 text-indigo-950 shadow-xs'
-                      : 'bg-white/60 border-indigo-200 text-slate-700 hover:bg-white'
+                      ? 'bg-white dark:bg-[#1e1e1e] border-[#1a73e8] dark:border-[#8ab4f8] ring-2 ring-[#1a73e8]/20 dark:ring-[#8ab4f8]/20 text-[#202124] dark:text-[#e3e3e3] shadow-xs'
+                      : 'bg-white/60 dark:bg-[#282828]/60 border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-white dark:hover:bg-[#282828]'
                   }`}
                 >
-                  <div className="font-bold text-indigo-900">🚀 Cụm Chuyên đề Học tập (35 tiết)</div>
-                  <div className="text-[11px] text-indigo-600 mt-0.5">Kiểm tra 3 chuyên đề nâng cao / thi ĐH</div>
+                  <div className="font-bold text-[#1a73e8] dark:text-[#8ab4f8]">🚀 Cụm Chuyên đề Học tập (35 tiết)</div>
+                  <div className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] mt-0.5">Kiểm tra 3 chuyên đề nâng cao / thi ĐH</div>
                 </button>
               </div>
             </div>
@@ -368,56 +368,56 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
           {/* Nhập chủ đề / yêu cầu */}
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="text-xs font-semibold text-slate-700">Chủ đề & Nội dung kiến thức:</label>
+              <label className="text-xs font-semibold text-[#3c4043] dark:text-[#e3e3e3]">Chủ đề & Nội dung kiến thức:</label>
             </div>
             <textarea
               rows={2}
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
               placeholder="Ví dụ: Khảo sát hàm số, bài toán cực trị, ứng dụng thực tế..."
-              className="w-full text-xs p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 leading-relaxed"
+              className="w-full text-xs p-3 bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] rounded-xl focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] focus:ring-1 focus:ring-[#1a73e8] dark:focus:ring-[#8ab4f8] outline-hidden leading-relaxed"
             />
           </div>
 
           {/* Cấu hình số lượng từng loại câu hỏi */}
           <div>
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-2">
+            <label className="text-xs font-bold uppercase tracking-wider text-[#5f6368] dark:text-[#9aa0a6] block mb-2">
               Số lượng câu hỏi từng phần:
             </label>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-[#f8f9fa] dark:bg-[#282828]/50 p-3 rounded-2xl border border-[#dadce0] dark:border-[#3c4043]">
               <div>
-                <span className="text-xs text-slate-600 block mb-1">Phần I (Trắc nghiệm 4 LC):</span>
+                <span className="text-xs text-[#3c4043] dark:text-[#e3e3e3] block mb-1">Phần I (Trắc nghiệm 4 LC):</span>
                 <input
                   type="number"
                   min={1}
                   max={40}
                   value={numMC}
                   onChange={(e) => setNumMC(Number(e.target.value))}
-                  className="w-full text-xs font-bold p-2 bg-white border border-slate-300 rounded-lg text-center"
+                  className="w-full text-xs font-bold p-2 bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] rounded-lg text-center outline-hidden focus:border-[#1a73e8] dark:focus:border-[#8ab4f8]"
                 />
               </div>
 
               <div>
-                <span className="text-xs text-slate-600 block mb-1">Phần II (Đúng / Sai 4 ý):</span>
+                <span className="text-xs text-[#3c4043] dark:text-[#e3e3e3] block mb-1">Phần II (Đúng / Sai 4 ý):</span>
                 <input
                   type="number"
                   min={0}
                   max={8}
                   value={numTF}
                   onChange={(e) => setNumTF(Number(e.target.value))}
-                  className="w-full text-xs font-bold p-2 bg-white border border-slate-300 rounded-lg text-center"
+                  className="w-full text-xs font-bold p-2 bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] rounded-lg text-center outline-hidden focus:border-[#1a73e8] dark:focus:border-[#8ab4f8]"
                 />
               </div>
 
               <div>
-                <span className="text-xs text-slate-600 block mb-1">Phần III (Điền số / kết quả):</span>
+                <span className="text-xs text-[#3c4043] dark:text-[#e3e3e3] block mb-1">Phần III (Điền số / kết quả):</span>
                 <input
                   type="number"
                   min={0}
                   max={10}
                   value={numSA}
                   onChange={(e) => setNumSA(Number(e.target.value))}
-                  className="w-full text-xs font-bold p-2 bg-white border border-slate-300 rounded-lg text-center"
+                  className="w-full text-xs font-bold p-2 bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] rounded-lg text-center outline-hidden focus:border-[#1a73e8] dark:focus:border-[#8ab4f8]"
                 />
               </div>
             </div>
@@ -425,7 +425,7 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
 
           {/* Ghi chú thêm cho AI */}
           <div>
-            <label className="text-xs font-semibold text-slate-700 block mb-1">
+            <label className="text-xs font-semibold text-[#3c4043] dark:text-[#e3e3e3] block mb-1">
               Yêu cầu sư phạm bổ sung (tùy chọn):
             </label>
             <input
@@ -433,21 +433,21 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
               value={customInstructions}
               onChange={(e) => setCustomInstructions(e.target.value)}
               placeholder="Ví dụ: Tránh nghiệm vô tỉ phức tạp, thêm 1 câu liên hệ thực tế..."
-              className="w-full text-xs p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500"
+              className="w-full text-xs p-2.5 bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] rounded-xl focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] focus:ring-1 focus:ring-[#1a73e8] dark:focus:ring-[#8ab4f8] outline-hidden"
             />
           </div>
 
           {/* Thông tin pháp lý GDPT 2018 & QĐ 764/QĐ-BGDĐT */}
-          <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-[11px] text-slate-600 flex items-start gap-2">
-            <span className="text-emerald-600 font-bold shrink-0 mt-0.5">✓</span>
+          <div className="p-3 bg-[#f8f9fa] dark:bg-[#282828]/60 border border-[#dadce0] dark:border-[#3c4043] rounded-2xl text-[11px] text-[#5f6368] dark:text-[#9aa0a6] flex items-start gap-2.5">
+            <span className="text-[#137333] dark:text-[#5bb98c] font-bold shrink-0 mt-0.5">✓</span>
             <div>
-              <strong className="text-slate-800">Chuẩn hóa GDPT 2018 & Quyết định 764/QĐ-BGDĐT:</strong> Cấu trúc định dạng đề thi chuẩn Bộ GD&ĐT, tự động cập nhật địa giới hành chính, số liệu thống kê mới và quy định pháp luật hiện hành.
+              <strong className="text-[#202124] dark:text-[#e3e3e3]">Chuẩn hóa GDPT 2018 & Quyết định 764/QĐ-BGDĐT:</strong> Cấu trúc định dạng đề thi chuẩn Bộ GD&ĐT, tự động cập nhật địa giới hành chính, số liệu thống kê mới và quy định pháp luật hiện hành.
             </div>
           </div>
 
           {/* Cảnh báo lỗi nếu có */}
           {errorMessage && (
-            <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs flex items-center gap-2">
+            <div className="p-3 bg-[#fce8e6] dark:bg-[#371918] border border-[#fad2cf] dark:border-[#5c2523] text-[#c5221f] dark:text-[#f28b82] rounded-2xl text-xs flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{errorMessage}</span>
             </div>
@@ -455,23 +455,23 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
-          <span className="text-xs text-slate-500">
-            Tổng cộng: <strong className="text-indigo-600">{numMC + numTF + numSA}</strong> câu hỏi
+        <div className="pt-4 border-t border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between">
+          <span className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">
+            Tổng cộng: <strong className="text-[#1a73e8] dark:text-[#8ab4f8] font-bold">{numMC + numTF + numSA}</strong> câu hỏi
           </span>
 
           <div className="flex items-center gap-2">
             <button
               onClick={onClose}
               disabled={isLoading}
-              className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl"
+              className="px-4 py-2 text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] rounded-full transition-colors cursor-pointer"
             >
               Hủy
             </button>
             <button
               onClick={handleGenerate}
               disabled={isLoading}
-              className="flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-linear-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 rounded-xl shadow-md hover:shadow-lg transition-all disabled:opacity-50"
+              className="flex items-center gap-2 px-5 py-2.5 text-xs font-medium text-white bg-[#1a73e8] hover:bg-[#1557b0] dark:bg-[#8ab4f8] dark:hover:bg-[#a8c7fa] dark:text-[#202124] rounded-full shadow-xs hover:shadow-md transition-all cursor-pointer disabled:opacity-50"
             >
               {isLoading ? (
                 <>

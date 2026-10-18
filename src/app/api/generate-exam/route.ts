@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenAI, Type } from '@google/genai';
 import { z } from 'zod';
 import { GenerationParams, Question, Exam } from '@/types/exam';
-import { executeWithKeyRotation, getGeminiModel, getAllGeminiKeys } from '@/lib/gemini-keys';
+import { executeWithKeyRotation, getGeminiModel } from '@/lib/gemini-keys';
+import { getCurrentUser } from '@/lib/auth';
+import prisma from '@/lib/prisma';
 
 // Bộ đề mẫu sẵn có chuẩn xác 100% nếu chưa cấu hình API Key
 function getFallbackExam(params: GenerationParams): Exam {
@@ -227,20 +229,26 @@ const ExamZodSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    const currentUser = await getCurrentUser();
     const body = await req.json();
     const { params, customApiKey } = body as { params: GenerationParams; customApiKey?: string };
 
-    const allKeys = getAllGeminiKeys();
-    const hasKeys = (customApiKey && customApiKey.trim()) || allKeys.length > 0;
+    let hasKeys = Boolean(customApiKey && customApiKey.trim());
+    if (!hasKeys && currentUser) {
+      const activeCount = await prisma.userApiKey.count({
+        where: { userId: currentUser.id, isActive: true },
+      });
+      hasKeys = activeCount > 0;
+    }
 
-    // Nếu không có API Key nào, trả về bộ đề mẫu chuẩn
+    // Nếu người dùng chưa cấu hình API Key nào, trả về bộ đề mẫu chuẩn
     if (!hasKeys) {
       const fallbackExam = getFallbackExam(params);
       return NextResponse.json({
         success: true,
         exam: fallbackExam,
         isFallback: true,
-        message: 'Đang dùng bộ đề mẫu tiêu chuẩn do chưa cấu hình Gemini API Key. Nhập API Key ở thanh công cụ để mở khóa AI sinh đề trực tiếp!',
+        message: 'Đang dùng bộ đề mẫu tiêu chuẩn do tài khoản chưa thêm Google Gemini API Key. Nhấn vào Avatar hoặc mục "Kho Khóa AI" để thêm khóa của bạn!',
       });
     }
 
@@ -305,20 +313,27 @@ ${subBranchInstruction}${trackInstruction}- Chủ đề: ${params.topic || 'Tổ
     const modelName = getGeminiModel();
 
     // Gọi AI với cơ chế xoay tua key tự động nếu gặp lỗi 429
-    const responseText = await executeWithKeyRotation(customApiKey, async (apiKey) => {
-      const ai = new GoogleGenAI({ apiKey });
-      const response = await ai.models.generateContent({
-        model: modelName,
-        contents: userPrompt,
-        config: {
-          systemInstruction: systemPrompt,
-          responseMimeType: 'application/json',
-          responseSchema: examResponseSchema,
-          temperature: 0.4,
-        },
-      });
-      return response.text || '{}';
-    });
+    const responseText = await executeWithKeyRotation(
+      customApiKey,
+      async (apiKey) => {
+        const ai = new GoogleGenAI({ apiKey });
+        const response = await ai.models.generateContent({
+          model: modelName,
+          contents: userPrompt,
+          config: {
+            systemInstruction: systemPrompt,
+            responseMimeType: 'application/json',
+            responseSchema: examResponseSchema,
+            temperature: 0.4,
+          },
+        });
+        return response.text || '{}';
+      },
+      {
+        userId: currentUser?.id,
+        endpoint: 'exam.generate',
+      }
+    );
 
     const parsedRaw = JSON.parse(responseText);
 

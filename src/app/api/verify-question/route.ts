@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenAI, Type } from '@google/genai';
 import { z } from 'zod';
 import { Question } from '@/types/exam';
-import { executeWithKeyRotation, getGeminiModel, getAllGeminiKeys } from '@/lib/gemini-keys';
+import { getCurrentUser } from '@/lib/auth';
+import prisma from '@/lib/prisma';
+import { executeWithKeyRotation, getGeminiModel } from '@/lib/gemini-keys';
 
 const geminiVerifySchema = {
   type: Type.OBJECT,
@@ -70,6 +72,7 @@ const verifyZodSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    const currentUser = await getCurrentUser();
     const body = await req.json();
     const { question, customApiKey } = body as { question: Question; customApiKey?: string };
 
@@ -77,10 +80,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Thiếu dữ liệu câu hỏi cần kiểm tra' }, { status: 400 });
     }
 
-    const availableKeys = getAllGeminiKeys();
-    if (!customApiKey && availableKeys.length === 0) {
+    let hasKeys = Boolean(customApiKey && customApiKey.trim());
+    if (!hasKeys && currentUser) {
+      const activeCount = await prisma.userApiKey.count({
+        where: { userId: currentUser.id, isActive: true },
+      });
+      hasKeys = activeCount > 0;
+    }
+
+    if (!hasKeys) {
       return NextResponse.json(
-        { error: 'Chưa cấu hình API Key trong hệ thống hoặc file .env.local.' },
+        { error: 'Tài khoản chưa có Google Gemini API Key. Thầy/Cô vui lòng thêm khóa API trong mục Kho Khóa AI.' },
         { status: 401 }
       );
     }
@@ -110,19 +120,26 @@ ${questionTextForSolver}
 
 Yêu cầu xuất ra cấu trúc JSON hợp lệ theo Schema đã cung cấp.`;
 
-    const responseText = await executeWithKeyRotation(customApiKey, async (apiKey) => {
-      const ai = new GoogleGenAI({ apiKey });
-      const response = await ai.models.generateContent({
-        model: getGeminiModel(),
-        contents: prompt,
-        config: {
-          responseMimeType: 'application/json',
-          responseSchema: geminiVerifySchema,
-          temperature: 0.1, // Nhiệt độ cực thấp cho kết quả xác định, chuẩn xác
-        },
-      });
-      return response.text || '{}';
-    });
+    const responseText = await executeWithKeyRotation(
+      customApiKey,
+      async (apiKey) => {
+        const ai = new GoogleGenAI({ apiKey });
+        const response = await ai.models.generateContent({
+          model: getGeminiModel(),
+          contents: prompt,
+          config: {
+            responseMimeType: 'application/json',
+            responseSchema: geminiVerifySchema,
+            temperature: 0.1, // Nhiệt độ cực thấp cho kết quả xác định, chuẩn xác
+          },
+        });
+        return response.text || '{}';
+      },
+      {
+        userId: currentUser?.id,
+        endpoint: 'question.verify',
+      }
+    );
 
     const parsedJson = JSON.parse(responseText);
     const verifiedData = verifyZodSchema.parse(parsedJson);

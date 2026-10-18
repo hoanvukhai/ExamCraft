@@ -23,7 +23,7 @@ for (const suite of testSuites) {
     passedCount++;
   } catch (err: any) {
     console.log('❌ THẤT BẠI!');
-    console.error(err.stdout ? err.stdout.toString() : err.message);
+    console.error(err.stderr ? err.stderr.toString() : (err.stdout ? err.stdout.toString() : err.message));
     process.exit(1);
   }
 }

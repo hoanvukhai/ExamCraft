@@ -211,29 +211,29 @@ export const ExamLibraryModal: React.FC<ExamLibraryModalProps> = ({
   );
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl max-w-4xl w-full p-6 shadow-2xl border border-slate-200 relative max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+      <div className="bg-white dark:bg-[#1e1e1e] rounded-3xl max-w-4xl w-full p-6 shadow-2xl border border-[#dadce0] dark:border-[#3c4043] relative max-h-[90vh] flex flex-col text-[#202124] dark:text-[#e3e3e3] animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+        <div className="flex items-center justify-between pb-4 border-b border-[#dadce0] dark:border-[#3c4043]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-              <BookMarked className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-2xl bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] border border-[#d2e3fc] dark:border-[#29425e] flex items-center justify-center shadow-xs">
+              <BookMarked className="w-5 h-5 text-[#1a73e8] dark:text-[#8ab4f8]" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-bold text-slate-900 text-lg">Kho Đề Thi Cá Nhân (IndexedDB)</h3>
-                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 flex items-center gap-1">
+                <h3 className="font-bold text-[#202124] dark:text-[#e3e3e3] text-lg">Kho Đề Thi Cá Nhân (IndexedDB)</h3>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#e6f4ea] dark:bg-[#0f291e] text-[#137333] dark:text-[#5bb98c] border border-[#ceead6] dark:border-[#1d4834] flex items-center gap-1">
                   <Database className="w-3 h-3" />
                   <span>Offline Storage</span>
                 </span>
               </div>
-              <p className="text-xs text-slate-500">Lưu trữ không giới hạn dung lượng trên máy tính của bạn</p>
+              <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">Lưu trữ không giới hạn dung lượng trên máy tính của bạn</p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100"
+            className="p-1.5 text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] rounded-full hover:bg-[#f1f3f4] dark:hover:bg-[#282828] transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -242,10 +242,10 @@ export const ExamLibraryModal: React.FC<ExamLibraryModalProps> = ({
         {/* Thông báo Toast */}
         {notification && (
           <div
-            className={`mt-3 p-3 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
+            className={`mt-3 p-3 rounded-2xl text-xs font-semibold flex items-center gap-2 transition-all ${
               notification.type === 'success'
-                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                : 'bg-red-50 text-red-700 border border-red-200'
+                ? 'bg-[#e6f4ea] dark:bg-[#0f291e] text-[#137333] dark:text-[#5bb98c] border border-[#ceead6] dark:border-[#1d4834]'
+                : 'bg-[#fce8e6] dark:bg-[#371918] text-[#c5221f] dark:text-[#f28b82] border border-[#fad2cf] dark:border-[#5c2523]'
             }`}
           >
             {notification.type === 'success' ? (
@@ -260,13 +260,13 @@ export const ExamLibraryModal: React.FC<ExamLibraryModalProps> = ({
         {/* Thanh tìm kiếm & Nút Sao lưu / Phục hồi */}
         <div className="pt-4 pb-2 flex flex-col sm:flex-row items-center gap-2.5">
           <div className="relative grow w-full">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+            <Search className="w-4 h-4 text-[#5f6368] dark:text-[#9aa0a6] absolute left-3.5 top-3" />
             <input
               type="text"
               placeholder="Tìm kiếm theo tên đề thi, môn học, khối lớp..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full text-xs pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all"
+              className="w-full text-xs pl-10 pr-4 py-2.5 bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] rounded-full focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] focus:ring-1 focus:ring-[#1a73e8] dark:focus:ring-[#8ab4f8] outline-hidden transition-all"
             />
           </div>
 
@@ -275,7 +275,7 @@ export const ExamLibraryModal: React.FC<ExamLibraryModalProps> = ({
               onClick={handleMigrateToServer}
               disabled={isMigrating}
               title="Chuyển dữ liệu đề thi trên máy này vào tài khoản PostgreSQL trên máy chủ"
-              className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-all shadow-xs cursor-pointer disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-white bg-[#1a73e8] hover:bg-[#1557b0] dark:bg-[#8ab4f8] dark:hover:bg-[#a8c7fa] dark:text-[#202124] rounded-full transition-all shadow-xs cursor-pointer disabled:opacity-50"
             >
               <CloudUpload className={`w-3.5 h-3.5 ${isMigrating ? 'animate-bounce' : ''}`} />
               <span>{isMigrating ? 'Đang đồng bộ...' : 'Đồng bộ lên Server'}</span>
@@ -284,7 +284,7 @@ export const ExamLibraryModal: React.FC<ExamLibraryModalProps> = ({
             <button
               onClick={handleExportBackup}
               title="Xuất file sao lưu JSON toàn bộ kho đề"
-              className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl border border-slate-200 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] bg-white dark:bg-[#282828] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] rounded-full border border-[#dadce0] dark:border-[#3c4043] transition-colors cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Sao lưu JSON</span>
@@ -293,11 +293,12 @@ export const ExamLibraryModal: React.FC<ExamLibraryModalProps> = ({
             <button
               onClick={() => fileInputRef.current?.click()}
               title="Phục hồi kho đề từ file JSON"
-              className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl border border-slate-200 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] bg-white dark:bg-[#282828] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] rounded-full border border-[#dadce0] dark:border-[#3c4043] transition-colors cursor-pointer"
             >
               <Upload className="w-3.5 h-3.5" />
               <span>Phục hồi JSON</span>
             </button>
+
             <input
               ref={fileInputRef}
               type="file"
@@ -313,40 +314,40 @@ export const ExamLibraryModal: React.FC<ExamLibraryModalProps> = ({
           {filteredExams.map((ex) => (
             <div
               key={ex.id}
-              className="p-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-300 hover:shadow-xs transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
+              className="p-4 rounded-2xl border border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#282828]/50 hover:border-[#1a73e8] dark:hover:border-[#8ab4f8] transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
             >
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-sm text-slate-900">{ex.metadata.title}</span>
-                  <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-indigo-50 text-indigo-700">
+                  <span className="font-bold text-sm text-[#202124] dark:text-[#e3e3e3]">{ex.metadata.title}</span>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] border border-[#d2e3fc] dark:border-[#29425e]">
                     {ex.metadata.subject} {ex.metadata.grade}
                   </span>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+                <div className="flex flex-wrap items-center gap-3 text-xs text-[#5f6368] dark:text-[#9aa0a6]">
                   <span className="flex items-center gap-1">
-                    <Layers className="w-3.5 h-3.5 text-slate-400" />
+                    <Layers className="w-3.5 h-3.5 text-[#5f6368] dark:text-[#9aa0a6]" />
                     <span>{ex.questions.length} câu hỏi</span>
                   </span>
                   <span className="flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5 text-slate-400" />
+                    <Clock className="w-3.5 h-3.5 text-[#5f6368] dark:text-[#9aa0a6]" />
                     <span>{ex.metadata.durationMinutes} phút</span>
                   </span>
                   <span className="flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                    <Calendar className="w-3.5 h-3.5 text-[#5f6368] dark:text-[#9aa0a6]" />
                     <span>{new Date(ex.updatedAt || ex.createdAt).toLocaleDateString('vi-VN')}</span>
                   </span>
                 </div>
               </div>
 
               {/* Nút hành động */}
-              <div className="flex items-center gap-1.5 shrink-0 w-full sm:w-auto justify-end pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+              <div className="flex items-center gap-1.5 shrink-0 w-full sm:w-auto justify-end pt-2 sm:pt-0 border-t sm:border-t-0 border-[#dadce0] dark:border-[#3c4043]/60">
                 <button
                   onClick={() => {
                     onLoadExam(ex);
                     onClose();
                   }}
-                  className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs transition-all"
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium text-white bg-[#1a73e8] hover:bg-[#1557b0] dark:bg-[#8ab4f8] dark:hover:bg-[#a8c7fa] dark:text-[#202124] rounded-full shadow-xs transition-all cursor-pointer"
                 >
                   <FolderOpen className="w-3.5 h-3.5" />
                   <span>Mở biên tập</span>
@@ -355,7 +356,7 @@ export const ExamLibraryModal: React.FC<ExamLibraryModalProps> = ({
                 <button
                   onClick={() => handleExportDocx(ex)}
                   title="Xuất file Word"
-                  className="p-1.5 text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+                  className="p-1.5 text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3] bg-white dark:bg-[#282828] hover:bg-[#f1f3f4] dark:hover:bg-[#303134] border border-[#dadce0] dark:border-[#3c4043] rounded-full transition-colors cursor-pointer"
                 >
                   <Download className="w-4 h-4" />
                 </button>
@@ -363,7 +364,7 @@ export const ExamLibraryModal: React.FC<ExamLibraryModalProps> = ({
                 <button
                   onClick={() => handleClone(ex)}
                   title="Tạo bản sao đề này"
-                  className="p-1.5 text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+                  className="p-1.5 text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3] bg-white dark:bg-[#282828] hover:bg-[#f1f3f4] dark:hover:bg-[#303134] border border-[#dadce0] dark:border-[#3c4043] rounded-full transition-colors cursor-pointer"
                 >
                   <Copy className="w-4 h-4" />
                 </button>
@@ -371,7 +372,7 @@ export const ExamLibraryModal: React.FC<ExamLibraryModalProps> = ({
                 <button
                   onClick={() => handleDelete(ex.id)}
                   title="Xóa đề này"
-                  className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  className="p-1.5 text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#c5221f] dark:hover:text-[#f28b82] hover:bg-[#fce8e6] dark:hover:bg-[#371918] rounded-full transition-colors cursor-pointer"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -380,19 +381,19 @@ export const ExamLibraryModal: React.FC<ExamLibraryModalProps> = ({
           ))}
 
           {filteredExams.length === 0 && (
-            <div className="p-12 text-center text-slate-500">
-              <BookMarked className="w-10 h-10 text-slate-300 mx-auto mb-2" />
+            <div className="p-12 text-center text-[#5f6368] dark:text-[#9aa0a6]">
+              <BookMarked className="w-10 h-10 text-[#5f6368] dark:text-[#9aa0a6] mx-auto mb-2 opacity-50" />
               <p className="text-xs">Không tìm thấy đề thi nào phù hợp.</p>
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="pt-4 border-t border-slate-200 flex justify-between items-center text-xs text-slate-500">
+        <div className="pt-4 border-t border-[#dadce0] dark:border-[#3c4043] flex justify-between items-center text-xs text-[#5f6368] dark:text-[#9aa0a6]">
           <span>Tổng số đề lưu trong IndexedDB: {savedExams.length}</span>
           <button
             onClick={onClose}
-            className="px-4 py-2 font-semibold text-slate-600 hover:bg-slate-100 rounded-xl"
+            className="px-4 py-2 font-medium text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] rounded-full transition-colors cursor-pointer"
           >
             Đóng
           </button>

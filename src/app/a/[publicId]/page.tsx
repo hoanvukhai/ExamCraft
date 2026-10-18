@@ -344,23 +344,23 @@ function StudentExamContent({
   // MÀN HÌNH 1: ĐANG TẢI HOẶC LỖI
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center text-white p-4">
-        <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="text-slate-300 font-medium">Đang tải phòng thi trực tuyến...</p>
+      <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#181818] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
+        <div className="w-10 h-10 border-3 border-[#1a73e8] dark:border-[#8ab4f8] border-t-transparent rounded-full animate-spin mb-4" />
+        <p className="text-[#5f6368] dark:text-[#9aa0a6] font-medium text-sm">Đang tải phòng thi trực tuyến...</p>
       </div>
     );
   }
 
   if (error || !assignment) {
     return (
-      <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center text-white p-4">
-        <div className="max-w-md w-full bg-slate-800 border border-slate-700 rounded-2xl p-6 text-center shadow-2xl">
-          <ShieldAlert className="w-14 h-14 text-rose-400 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-slate-100 mb-2">Không thể truy cập bài thi</h2>
-          <p className="text-slate-300 text-sm mb-6 leading-relaxed">{error}</p>
+      <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#181818] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
+        <div className="max-w-md w-full bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl p-8 text-center shadow-xl">
+          <ShieldAlert className="w-14 h-14 text-[#c5221f] dark:text-[#f28b82] mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-[#202124] dark:text-[#e3e3e3] mb-2">Không thể truy cập bài thi</h2>
+          <p className="text-[#5f6368] dark:text-[#9aa0a6] text-sm mb-6 leading-relaxed">{error}</p>
           <a
             href="/"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-700 hover:bg-slate-600 rounded-xl text-slate-200 text-sm font-medium transition-all"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1a73e8] dark:bg-[#8ab4f8] hover:bg-[#1557b0] dark:hover:bg-[#aecbfa] text-white dark:text-[#202124] text-sm font-semibold rounded-full transition-all shadow-xs"
           >
             <ArrowLeft className="w-4 h-4" /> Về trang chủ
           </a>
@@ -372,37 +372,36 @@ function StudentExamContent({
   // MÀN HÌNH 3: KẾT QUẢ SAU KHI NỘP BÀI THÀNH CÔNG
   if (submitResult) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 py-10 px-4">
+      <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#181818] text-[#202124] dark:text-[#e3e3e3] py-10 px-4">
         <div className="max-w-3xl mx-auto space-y-6">
           {/* Card điểm số chính */}
-          <div className="bg-gradient-to-b from-slate-900 to-slate-900/90 border border-emerald-500/30 rounded-3xl p-8 text-center relative overflow-hidden shadow-2xl">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="w-20 h-20 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-500/40">
-              <CheckCircle2 className="w-10 h-10" />
+          <div className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl p-8 text-center relative overflow-hidden shadow-xl">
+            <div className="w-16 h-16 bg-[#e6f4ea] dark:bg-[#0f291e] text-[#137333] dark:text-[#5bb98c] rounded-full flex items-center justify-center mx-auto mb-4 border border-[#ceead6] dark:border-[#1e4d38]">
+              <CheckCircle2 className="w-8 h-8" />
             </div>
 
-            <h1 className="text-2xl font-black text-white mb-2">{assignment.title}</h1>
-            <p className="text-slate-300 text-sm mb-6">
-              Học sinh: <span className="font-semibold text-emerald-400">{submitResult.studentName}</span>
+            <h1 className="text-2xl font-bold text-[#202124] dark:text-[#e3e3e3] mb-2">{assignment.title}</h1>
+            <p className="text-[#5f6368] dark:text-[#9aa0a6] text-sm mb-6">
+              Học sinh: <span className="font-semibold text-[#137333] dark:text-[#5bb98c]">{submitResult.studentName}</span>
             </p>
 
             {submitResult.score !== null ? (
-              <div className="inline-block bg-slate-800/80 border border-emerald-500/40 rounded-2xl px-8 py-5 my-2 shadow-inner">
-                <span className="text-xs uppercase tracking-wider text-slate-400 font-semibold block mb-1">
+              <div className="inline-block bg-[#f8f9fa] dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl px-8 py-5 my-2 shadow-xs">
+                <span className="text-xs uppercase tracking-wider text-[#5f6368] dark:text-[#9aa0a6] font-semibold block mb-1">
                   Điểm số đạt được
                 </span>
-                <div className="text-5xl font-black text-emerald-400 tracking-tight">
+                <div className="text-5xl font-black text-[#137333] dark:text-[#5bb98c] tracking-tight">
                   {submitResult.score}
-                  <span className="text-2xl text-slate-400 font-normal ml-1">/ {submitResult.maxScore || 10}</span>
+                  <span className="text-2xl text-[#5f6368] dark:text-[#9aa0a6] font-normal ml-1">/ {submitResult.maxScore || 10}</span>
                 </div>
               </div>
             ) : (
-              <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-4 text-sm text-slate-300">
+              <div className="bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-4 text-sm text-[#5f6368] dark:text-[#9aa0a6]">
                 Bài làm của em đã được nộp an toàn. Điểm số sẽ được giáo viên công bố sau khi kết thúc đợt thi.
               </div>
             )}
 
-            <p className="text-xs text-slate-400 mt-4">
+            <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] mt-4">
               Nộp lúc: {new Date(submitResult.submittedAt).toLocaleTimeString('vi-VN')} ngày{' '}
               {new Date(submitResult.submittedAt).toLocaleDateString('vi-VN')}
             </p>
@@ -410,62 +409,62 @@ function StudentExamContent({
 
           {/* Bảng xếp hạng Top & Me */}
           {submitResult.leaderboard && (
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+            <div className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl p-6 shadow-xs">
               <div className="flex items-center gap-2 mb-4">
-                <Trophy className="w-5 h-5 text-amber-400" />
-                <h3 className="text-lg font-bold text-white">Bảng xếp hạng lớp</h3>
+                <Trophy className="w-5 h-5 text-[#b06000] dark:text-[#fdd663]" />
+                <h3 className="text-base font-bold text-[#202124] dark:text-[#e3e3e3]">Bảng xếp hạng lớp</h3>
               </div>
 
               <div className="space-y-2 mb-4">
                 {submitResult.leaderboard.top.map((item) => (
                   <div
                     key={item.rank}
-                    className="flex items-center justify-between px-4 py-3 bg-slate-800/60 border border-slate-700/50 rounded-xl"
+                    className="flex items-center justify-between px-4 py-3 bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl"
                   >
                     <div className="flex items-center gap-3">
                       <span
                         className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs ${
                           item.rank === 1
-                            ? 'bg-amber-400 text-slate-950'
+                            ? 'bg-[#fef7e0] text-[#b06000] border border-[#feefc3]'
                             : item.rank === 2
-                            ? 'bg-slate-300 text-slate-950'
+                            ? 'bg-[#f1f3f4] text-[#5f6368] border border-[#dadce0]'
                             : item.rank === 3
-                            ? 'bg-amber-700 text-white'
-                            : 'bg-slate-700 text-slate-300'
+                            ? 'bg-[#fce8e6] text-[#c5221f] border border-[#fad2cf]'
+                            : 'bg-[#f1f3f4] dark:bg-[#333538] text-[#5f6368] dark:text-[#9aa0a6]'
                         }`}
                       >
                         {item.rank}
                       </span>
-                      <span className="text-sm font-medium text-slate-200">{item.name}</span>
+                      <span className="text-sm font-medium text-[#202124] dark:text-[#e3e3e3]">{item.name}</span>
                     </div>
-                    <span className="text-sm font-bold text-emerald-400">{item.score} đ</span>
+                    <span className="text-sm font-bold text-[#137333] dark:text-[#5bb98c]">{item.score} đ</span>
                   </div>
                 ))}
               </div>
 
-              {/* Dòng vị trí riêng của chính học sinh (bảo mật không lộ cả lớp) */}
-              <div className="flex items-center justify-between px-4 py-3 bg-indigo-950/40 border border-indigo-500/40 rounded-xl">
+              {/* Dòng vị trí riêng của chính học sinh */}
+              <div className="flex items-center justify-between px-4 py-3 bg-[#e8f0fe] dark:bg-[#1e2a38] border border-[#1a73e8]/30 dark:border-[#8ab4f8]/30 rounded-2xl">
                 <div className="flex items-center gap-3">
-                  <Award className="w-5 h-5 text-indigo-400" />
+                  <Award className="w-5 h-5 text-[#1a73e8] dark:text-[#8ab4f8]" />
                   <div>
-                    <span className="text-xs text-indigo-300 font-semibold block">Vị trí của em</span>
-                    <span className="text-sm font-bold text-white">
+                    <span className="text-xs text-[#1a73e8] dark:text-[#8ab4f8] font-semibold block">Vị trí của em</span>
+                    <span className="text-sm font-bold text-[#202124] dark:text-[#e3e3e3]">
                       Hạng #{submitResult.leaderboard.me.rank} / {submitResult.leaderboard.me.total} bạn
                     </span>
                   </div>
                 </div>
-                <span className="text-base font-black text-indigo-400">
+                <span className="text-base font-bold text-[#1a73e8] dark:text-[#8ab4f8]">
                   {submitResult.leaderboard.me.score} đ
                 </span>
               </div>
             </div>
           )}
 
-          {/* Chi tiết lời giải và đáp án (nếu giáo viên cho phép xem ngay) */}
+          {/* Chi tiết lời giải và đáp án */}
           {submitResult.solutions && (
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                <HelpCircle className="w-5 h-5 text-indigo-400" /> Đáp án & Lời giải chi tiết
+            <div className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl p-6 shadow-xs space-y-6">
+              <h3 className="text-base font-bold text-[#202124] dark:text-[#e3e3e3] flex items-center gap-2">
+                <HelpCircle className="w-5 h-5 text-[#1a73e8] dark:text-[#8ab4f8]" /> Đáp án & Lời giải chi tiết
               </h3>
 
               <div className="space-y-6">
@@ -474,34 +473,34 @@ function StudentExamContent({
                   const studentAns = answers[q.id];
 
                   return (
-                    <div key={q.id} className="p-4 bg-slate-800/50 border border-slate-700 rounded-xl space-y-3">
+                    <div key={q.id} className="p-4 bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold px-2 py-1 bg-slate-700 text-indigo-300 rounded">
+                        <span className="text-xs font-bold px-2.5 py-1 bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] rounded-full">
                           Câu {idx + 1}
                         </span>
-                        <span className="text-xs text-slate-400">{q.points || 0.25} điểm</span>
+                        <span className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">{q.points || 0.25} điểm</span>
                       </div>
 
-                      <div className="text-sm text-slate-200">
+                      <div className="text-sm text-[#202124] dark:text-[#e3e3e3]">
                         <MathRenderer content={q.content} />
                       </div>
 
-                      <div className="text-xs space-y-1.5 pt-2 border-t border-slate-700">
+                      <div className="text-xs space-y-1.5 pt-3 border-t border-[#dadce0] dark:border-[#3c4043]">
                         <div>
-                          <span className="text-slate-400">Đáp án em chọn: </span>
-                          <span className="font-semibold text-slate-200">
+                          <span className="text-[#5f6368] dark:text-[#9aa0a6]">Đáp án em chọn: </span>
+                          <span className="font-semibold text-[#202124] dark:text-[#e3e3e3]">
                             {typeof studentAns === 'object' ? JSON.stringify(studentAns) : String(studentAns || 'Chưa trả lời')}
                           </span>
                         </div>
                         {sol?.correct && (
                           <div>
-                            <span className="text-emerald-400">Đáp án đúng: </span>
-                            <span className="font-bold text-emerald-400">{sol.correct}</span>
+                            <span className="text-[#137333] dark:text-[#5bb98c]">Đáp án đúng: </span>
+                            <span className="font-bold text-[#137333] dark:text-[#5bb98c]">{sol.correct}</span>
                           </div>
                         )}
                         {sol?.solution && (
-                          <div className="p-3 bg-slate-900/80 rounded-lg text-slate-300 mt-2">
-                            <span className="text-indigo-400 font-semibold block mb-1">Hướng dẫn giải:</span>
+                          <div className="p-3 bg-white dark:bg-[#1e1e1e] rounded-xl border border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] mt-2">
+                            <span className="text-[#1a73e8] dark:text-[#8ab4f8] font-semibold block mb-1">Hướng dẫn giải:</span>
                             <MathRenderer content={sol.solution} />
                           </div>
                         )}
@@ -517,26 +516,24 @@ function StudentExamContent({
     );
   }
 
-  // MÀN HÌNH 2: FORM ĐIỀN TÊN TRƯỚC KHI BẮT ĐẦU (ZERO-ACCOUNT LOGIN)
+  // MÀN HÌNH 2: FORM ĐIỀN TÊN TRƯỚC KHI BẮT ĐẦU
   if (!attempt) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-slate-100 p-4">
-        <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-
-          <div className="w-12 h-12 bg-indigo-500/20 text-indigo-400 rounded-2xl flex items-center justify-center mb-5 border border-indigo-500/30">
+      <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#181818] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
+        <div className="max-w-md w-full bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl p-8 shadow-xl">
+          <div className="w-12 h-12 bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] rounded-2xl flex items-center justify-center mb-5 border border-[#1a73e8]/30 dark:border-[#8ab4f8]/30">
             <User className="w-6 h-6" />
           </div>
 
-          <span className="text-xs font-semibold uppercase tracking-wider text-indigo-400">
+          <span className="text-xs font-semibold uppercase tracking-wider text-[#1a73e8] dark:text-[#8ab4f8]">
             {assignment.group?.name || 'Phòng thi trực tuyến'}
           </span>
-          <h1 className="text-2xl font-black text-white mt-1 mb-2 leading-tight">{assignment.title}</h1>
+          <h1 className="text-2xl font-bold text-[#202124] dark:text-[#e3e3e3] mt-1 mb-2 leading-tight">{assignment.title}</h1>
 
-          <div className="flex items-center gap-4 text-xs text-slate-400 mb-6 pb-6 border-b border-slate-800">
+          <div className="flex items-center gap-4 text-xs text-[#5f6368] dark:text-[#9aa0a6] mb-6 pb-6 border-b border-[#dadce0] dark:border-[#3c4043]">
             {assignment.durationMinutes && (
               <span className="flex items-center gap-1.5">
-                <Clock className="w-4 h-4 text-slate-400" /> {assignment.durationMinutes} phút
+                <Clock className="w-4 h-4 text-[#5f6368] dark:text-[#9aa0a6]" /> {assignment.durationMinutes} phút
               </span>
             )}
             <span>Số câu: {questions.length} câu</span>
@@ -546,13 +543,13 @@ function StudentExamContent({
           <form onSubmit={handleStartExam} className="space-y-5">
             {assignment.identityMode === 'PICK_FROM_LIST' && assignment.group?.students ? (
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-semibold text-[#5f6368] dark:text-[#9aa0a6] uppercase tracking-wider mb-2">
                   Chọn tên của em trong danh sách lớp:
                 </label>
                 <select
                   value={selectedStudentId}
                   onChange={(e) => setSelectedStudentId(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-[#f8f9fa] dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2.5 text-sm text-[#202124] dark:text-[#e3e3e3] focus:outline-none focus:border-[#1a73e8] dark:focus:border-[#8ab4f8]"
                   required
                 >
                   <option value="">-- Chọn họ và tên --</option>
@@ -565,7 +562,7 @@ function StudentExamContent({
               </div>
             ) : (
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-semibold text-[#5f6368] dark:text-[#9aa0a6] uppercase tracking-wider mb-2">
                   Nhập họ và tên của em:
                 </label>
                 <input
@@ -573,7 +570,7 @@ function StudentExamContent({
                   value={freeName}
                   onChange={(e) => setFreeName(e.target.value)}
                   placeholder="Ví dụ: Nguyễn Văn An"
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-[#f8f9fa] dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2.5 text-sm text-[#202124] dark:text-[#e3e3e3] placeholder-[#5f6368] dark:placeholder-[#9aa0a6] focus:outline-none focus:border-[#1a73e8] dark:focus:border-[#8ab4f8]"
                   required
                 />
               </div>
@@ -582,10 +579,10 @@ function StudentExamContent({
             <button
               type="submit"
               disabled={starting}
-              className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-bold rounded-xl shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 transition-all"
+              className="w-full py-3 bg-[#1a73e8] hover:bg-[#1557b0] dark:bg-[#8ab4f8] dark:hover:bg-[#aecbfa] disabled:opacity-50 text-white dark:text-[#202124] font-semibold text-sm rounded-full shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
             >
               {starting ? (
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-white dark:border-[#202124] border-t-transparent rounded-full animate-spin" />
               ) : (
                 <>
                   Bắt đầu làm bài <ChevronRight className="w-4 h-4" />
@@ -600,16 +597,16 @@ function StudentExamContent({
 
   // MÀN HÌNH 4: PHÒNG THI ĐANG DIỄN RA (EXAM ROOM)
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#181818] text-[#202124] dark:text-[#e3e3e3] flex flex-col">
       {/* Top Bar Cố Định */}
-      <header className="sticky top-0 z-40 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 px-4 py-3">
+      <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#1e1e1e]/95 backdrop-blur-md border-b border-[#dadce0] dark:border-[#3c4043] px-4 py-3">
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
           <div>
-            <h1 className="text-sm md:text-base font-bold text-white truncate max-w-xs md:max-w-md">
+            <h1 className="text-sm md:text-base font-bold text-[#202124] dark:text-[#e3e3e3] truncate max-w-xs md:max-w-md">
               {assignment.title}
             </h1>
-            <p className="text-xs text-slate-400">
-              Học sinh: <span className="text-indigo-400 font-semibold">{attempt.studentName}</span>
+            <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">
+              Học sinh: <span className="text-[#1a73e8] dark:text-[#8ab4f8] font-semibold">{attempt.studentName}</span>
             </p>
           </div>
 
@@ -617,10 +614,10 @@ function StudentExamContent({
             {/* Đồng hồ đếm ngược */}
             {timeLeft !== null && (
               <div
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-mono text-sm font-bold border ${
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-full font-mono text-sm font-bold border ${
                   timeLeft <= 300
-                    ? 'bg-rose-500/20 text-rose-400 border-rose-500/40 animate-pulse'
-                    : 'bg-slate-800 text-indigo-400 border-slate-700'
+                    ? 'bg-[#fce8e6] dark:bg-[#371918] text-[#c5221f] dark:text-[#f28b82] border-[#fad2cf] dark:border-[#5c2523] animate-pulse'
+                    : 'bg-[#f1f3f4] dark:bg-[#282828] text-[#1a73e8] dark:text-[#8ab4f8] border-[#dadce0] dark:border-[#3c4043]'
                 }`}
               >
                 <Clock className="w-4 h-4" />
@@ -629,14 +626,14 @@ function StudentExamContent({
             )}
 
             {/* Trạng thái lưu nháp */}
-            <div className="hidden md:flex items-center gap-1.5 text-xs text-slate-400">
+            <div className="hidden md:flex items-center gap-1.5 text-xs text-[#5f6368] dark:text-[#9aa0a6]">
               {isSaving ? (
                 <>
-                  <Save className="w-3.5 h-3.5 animate-spin text-amber-400" /> Đang lưu...
+                  <Save className="w-3.5 h-3.5 animate-spin text-[#b06000] dark:text-[#fdd663]" /> Đang lưu...
                 </>
               ) : lastSaved ? (
                 <>
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Lưu nháp {lastSaved}
+                  <CheckCircle2 className="w-3.5 h-3.5 text-[#137333] dark:text-[#5bb98c]" /> Lưu nháp {lastSaved}
                 </>
               ) : null}
             </div>
@@ -645,7 +642,7 @@ function StudentExamContent({
             <button
               onClick={() => setShowSubmitModal(true)}
               disabled={submitting}
-              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs md:text-sm rounded-xl shadow-md shadow-emerald-600/30 flex items-center gap-1.5 transition-all"
+              className="px-4 py-2 bg-[#137333] hover:bg-[#0f5c29] text-white font-semibold text-xs md:text-sm rounded-full shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
             >
               <Send className="w-4 h-4" /> Nộp bài
             </button>
@@ -664,15 +661,15 @@ function StudentExamContent({
               <div
                 key={q.id}
                 id={`q-${index + 1}`}
-                className="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 md:p-6 shadow-md transition-all hover:border-slate-700"
+                className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl p-5 md:p-6 shadow-xs transition-all hover:border-[#bdc1c6] dark:hover:border-[#5f6368]"
               >
                 {/* Header câu hỏi */}
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <span className="w-8 h-8 rounded-xl bg-indigo-600/20 border border-indigo-500/40 text-indigo-400 flex items-center justify-center font-bold text-sm">
+                    <span className="w-8 h-8 rounded-full bg-[#e8f0fe] dark:bg-[#1e2a38] border border-[#1a73e8]/30 dark:border-[#8ab4f8]/30 text-[#1a73e8] dark:text-[#8ab4f8] flex items-center justify-center font-bold text-sm">
                       {index + 1}
                     </span>
-                    <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                    <span className="text-xs font-semibold text-[#5f6368] dark:text-[#9aa0a6] uppercase tracking-wider">
                       {q.type === 'MULTIPLE_CHOICE'
                         ? 'Trắc nghiệm 4 lựa chọn'
                         : q.type === 'TRUE_FALSE_GROUP'
@@ -682,11 +679,11 @@ function StudentExamContent({
                         : 'Câu hỏi'}
                     </span>
                   </div>
-                  {q.points && <span className="text-xs text-slate-400 font-medium">{q.points} điểm</span>}
+                  {q.points && <span className="text-xs text-[#5f6368] dark:text-[#9aa0a6] font-medium">{q.points} điểm</span>}
                 </div>
 
                 {/* Nội dung câu hỏi KaTeX */}
-                <div className="text-sm md:text-base text-slate-100 leading-relaxed mb-4">
+                <div className="text-sm md:text-base text-[#202124] dark:text-[#e3e3e3] leading-relaxed mb-4">
                   <MathRenderer content={q.content} />
                 </div>
 
@@ -694,10 +691,10 @@ function StudentExamContent({
                 {q.figures && q.figures.length > 0 && (
                   <div className="my-4 flex flex-wrap gap-4">
                     {q.figures.map((fig, fIdx) => (
-                      <div key={fIdx} className="bg-slate-800 p-2 rounded-xl border border-slate-700">
+                      <div key={fIdx} className="bg-[#f8f9fa] dark:bg-[#202124] p-2 rounded-2xl border border-[#dadce0] dark:border-[#3c4043]">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={fig.url} alt={fig.caption || `Hình ${fIdx + 1}`} className="max-h-60 rounded-lg" />
-                        {fig.caption && <p className="text-xs text-slate-400 text-center mt-1">{fig.caption}</p>}
+                        <img src={fig.url} alt={fig.caption || `Hình ${fIdx + 1}`} className="max-h-60 rounded-xl" />
+                        {fig.caption && <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] text-center mt-1">{fig.caption}</p>}
                       </div>
                     ))}
                   </div>
@@ -713,15 +710,15 @@ function StudentExamContent({
                           key={c.key}
                           type="button"
                           onClick={() => handleSelectChoice(q.id, c.key)}
-                          className={`flex items-start gap-3 p-3.5 rounded-xl border text-left transition-all ${
+                          className={`flex items-start gap-3 p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
                             isSelected
-                              ? 'bg-indigo-600/20 border-indigo-500 text-white ring-1 ring-indigo-500'
-                              : 'bg-slate-800/40 border-slate-700/60 text-slate-300 hover:bg-slate-800 hover:border-slate-600'
+                              ? 'bg-[#e8f0fe] dark:bg-[#1e2a38] border-[#1a73e8] dark:border-[#8ab4f8] text-[#1a73e8] dark:text-[#8ab4f8] ring-1 ring-[#1a73e8] dark:ring-[#8ab4f8]'
+                              : 'bg-[#f8f9fa] dark:bg-[#242424] border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#2c2c2c]'
                           }`}
                         >
                           <span
-                            className={`w-6 h-6 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 mt-0.5 ${
-                              isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-700 text-slate-300'
+                            className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0 mt-0.5 ${
+                              isSelected ? 'bg-[#1a73e8] dark:bg-[#8ab4f8] text-white dark:text-[#202124]' : 'bg-[#e8eaed] dark:bg-[#333538] text-[#5f6368] dark:text-[#9aa0a6]'
                             }`}
                           >
                             {c.key}
@@ -745,13 +742,13 @@ function StudentExamContent({
                       return (
                         <div
                           key={sub.key}
-                          className="flex flex-col md:flex-row md:items-center justify-between gap-3 p-3 bg-slate-800/40 border border-slate-700/60 rounded-xl"
+                          className="flex flex-col md:flex-row md:items-center justify-between gap-3 p-3.5 bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl"
                         >
                           <div className="flex items-start gap-2.5">
-                            <span className="w-5 h-5 rounded bg-slate-700 text-slate-300 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                            <span className="w-5 h-5 rounded-full bg-[#e8eaed] dark:bg-[#333538] text-[#5f6368] dark:text-[#9aa0a6] font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                               {sub.key}
                             </span>
-                            <div className="text-sm text-slate-200">
+                            <div className="text-sm text-[#202124] dark:text-[#e3e3e3]">
                               <MathRenderer content={sub.content} inline />
                             </div>
                           </div>
@@ -760,10 +757,10 @@ function StudentExamContent({
                             <button
                               type="button"
                               onClick={() => handleSelectTrueFalse(q.id, sub.key, true)}
-                              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                                 userVal === true
-                                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30'
-                                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                                  ? 'bg-[#137333] dark:bg-[#5bb98c] text-white dark:text-[#0f291e] shadow-xs'
+                                  : 'bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#282828]'
                               }`}
                             >
                               ĐÚNG
@@ -771,10 +768,10 @@ function StudentExamContent({
                             <button
                               type="button"
                               onClick={() => handleSelectTrueFalse(q.id, sub.key, false)}
-                              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                                 userVal === false
-                                  ? 'bg-rose-600 text-white shadow-md shadow-rose-600/30'
-                                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                                  ? 'bg-[#c5221f] dark:text-[#371918] text-white dark:bg-[#f28b82] shadow-xs'
+                                  : 'bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#282828]'
                               }`}
                             >
                               SAI
@@ -789,13 +786,13 @@ function StudentExamContent({
                 {/* DẠNG 3: TRẢ LỜI NGẮN (SHORT_ANSWER) */}
                 {q.type === 'SHORT_ANSWER' && (
                   <div className="mt-4">
-                    <label className="block text-xs text-slate-400 mb-2">Điền câu trả lời hoặc số:</label>
+                    <label className="block text-xs text-[#5f6368] dark:text-[#9aa0a6] mb-2">Điền câu trả lời hoặc số:</label>
                     <input
                       type="text"
                       value={typeof currentAns === 'string' ? currentAns : ''}
                       onChange={(e) => handleShortAnswerChange(q.id, e.target.value)}
                       placeholder="Ví dụ: 3.14 hoặc 1/2..."
-                      className="w-full md:w-80 bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-indigo-500"
+                      className="w-full md:w-80 bg-[#f8f9fa] dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2 text-sm text-[#202124] dark:text-[#e3e3e3] font-mono focus:outline-none focus:border-[#1a73e8] dark:focus:border-[#8ab4f8]"
                     />
                   </div>
                 )}
@@ -806,10 +803,10 @@ function StudentExamContent({
 
         {/* Thanh Navigator Cố Định bên Phải */}
         <aside className="w-full md:w-72 shrink-0 space-y-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 sticky top-20 shadow-xl">
+          <div className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl p-5 sticky top-20 shadow-xs">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">Bảng câu hỏi</h3>
-              <span className="text-xs font-semibold text-emerald-400">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#5f6368] dark:text-[#9aa0a6]">Bảng câu hỏi</h3>
+              <span className="text-xs font-semibold text-[#137333] dark:text-[#5bb98c]">
                 {answeredCount} / {questions.length} câu
               </span>
             </div>
@@ -829,8 +826,8 @@ function StudentExamContent({
                     href={`#q-${idx + 1}`}
                     className={`h-9 rounded-xl flex items-center justify-center text-xs font-bold transition-all ${
                       isFilled
-                        ? 'bg-indigo-600 text-white shadow-sm'
-                        : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-slate-200'
+                        ? 'bg-[#1a73e8] dark:bg-[#8ab4f8] text-white dark:text-[#202124] shadow-xs'
+                        : 'bg-[#f1f3f4] dark:bg-[#282828] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#e8eaed] dark:hover:bg-[#333538]'
                     }`}
                   >
                     {idx + 1}
@@ -839,11 +836,11 @@ function StudentExamContent({
               })}
             </div>
 
-            <div className="mt-5 pt-4 border-t border-slate-800">
+            <div className="mt-5 pt-4 border-t border-[#dadce0] dark:border-[#3c4043]">
               <button
                 type="button"
                 onClick={() => setShowSubmitModal(true)}
-                className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm rounded-xl shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2 transition-all"
+                className="w-full py-3 bg-[#137333] hover:bg-[#0f5c29] text-white font-semibold text-sm rounded-full shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
               >
                 <Send className="w-4 h-4" /> Nộp bài thi
               </button>
@@ -854,18 +851,18 @@ function StudentExamContent({
 
       {/* Modal Xác Nhận Nộp Bài */}
       {showSubmitModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl">
-            <div className="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center mb-4 border border-amber-500/30">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="max-w-md w-full bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl p-6 shadow-2xl">
+            <div className="w-12 h-12 rounded-full bg-[#fef7e0] dark:bg-[#33250b] text-[#b06000] dark:text-[#fdd663] flex items-center justify-center mb-4 border border-[#feefc3] dark:border-[#4d380e]">
               <AlertCircle className="w-6 h-6" />
             </div>
 
-            <h3 className="text-lg font-bold text-white mb-2">Xác nhận nộp bài thi?</h3>
-            <p className="text-slate-300 text-sm mb-4 leading-relaxed">
-              Em đã hoàn thành <span className="font-bold text-white">{answeredCount}</span> trên tổng số{' '}
-              <span className="font-bold text-white">{questions.length}</span> câu hỏi.
+            <h3 className="text-lg font-bold text-[#202124] dark:text-[#e3e3e3] mb-2">Xác nhận nộp bài thi?</h3>
+            <p className="text-[#5f6368] dark:text-[#9aa0a6] text-sm mb-4 leading-relaxed">
+              Em đã hoàn thành <span className="font-bold text-[#202124] dark:text-[#e3e3e3]">{answeredCount}</span> trên tổng số{' '}
+              <span className="font-bold text-[#202124] dark:text-[#e3e3e3]">{questions.length}</span> câu hỏi.
               {answeredCount < questions.length && (
-                <span className="text-amber-400 block mt-1">
+                <span className="text-[#b06000] dark:text-[#fdd663] block mt-1">
                   Vẫn còn {questions.length - answeredCount} câu chưa làm xong!
                 </span>
               )}
@@ -875,7 +872,7 @@ function StudentExamContent({
               <button
                 type="button"
                 onClick={() => setShowSubmitModal(false)}
-                className="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold rounded-xl transition-all"
+                className="flex-1 py-2.5 bg-[#f1f3f4] hover:bg-[#e8eaed] dark:bg-[#282828] dark:hover:bg-[#333538] text-[#202124] dark:text-[#e3e3e3] text-sm font-semibold rounded-full transition-all cursor-pointer"
               >
                 Làm tiếp
               </button>
@@ -883,7 +880,7 @@ function StudentExamContent({
                 type="button"
                 onClick={() => handleFinalSubmit(false)}
                 disabled={submitting}
-                className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-sm font-bold rounded-xl shadow-lg shadow-emerald-600/30 transition-all flex items-center justify-center gap-1.5"
+                className="flex-1 py-2.5 bg-[#137333] hover:bg-[#0f5c29] disabled:opacity-50 text-white text-sm font-semibold rounded-full shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 {submitting ? (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -903,9 +900,9 @@ export default function StudentExamPage(props: { params: Promise<{ publicId: str
   return (
     <React.Suspense
       fallback={
-        <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-white p-4">
-          <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4" />
-          <p className="text-slate-400 font-medium text-sm">Đang tải phòng thi trực tuyến...</p>
+        <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#181818] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
+          <div className="w-10 h-10 border-3 border-[#1a73e8] dark:border-[#8ab4f8] border-t-transparent rounded-full animate-spin mb-4" />
+          <p className="text-[#5f6368] dark:text-[#9aa0a6] font-medium text-sm">Đang tải phòng thi trực tuyến...</p>
         </div>
       }
     >
