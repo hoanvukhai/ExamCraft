@@ -53,6 +53,7 @@
 - **Công thức Toán**: KaTeX / MathJax ([rehype-katex](https://github.com/remarkjs/remark-math), [remark-math](https://github.com/remarkjs/remark-math))
 - **Đồ thị Canvas**: HTML5 Canvas 2D Engine chuyên sâu cho Toán/Lý/Hóa
 - **Xuất bản**: [docx](https://github.com/dolanmiu/docx) (Tạo file Word .docx tiêu chuẩn có MathML/OMML native)
+- **Báo cáo toàn diện dự án**: Xem chi tiết tại [`docs/BAO_CAO_TOAN_DIEN_V3.md`](./docs/BAO_CAO_TOAN_DIEN_V3.md) (Toàn bộ tính năng, công nghệ, kiến trúc, CSDL & hướng dẫn triển khai).
 - **Tài liệu kiến trúc chi tiết**: Xem tại [`docs/EXAMCRAFT_THIET_KE_V3.md`](./docs/EXAMCRAFT_THIET_KE_V3.md) và theo dõi tiến độ thi công tại [`docs/CHECKLIST_TIEN_DO.md`](./docs/CHECKLIST_TIEN_DO.md).
 
 ---
