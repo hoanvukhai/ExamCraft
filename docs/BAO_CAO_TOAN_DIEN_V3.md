@@ -5,7 +5,7 @@
 
 ## 📑 MỤC LỤC
 1. [Giới Thiệu Tổng Quan & Mục Tiêu Dự Án](#1-giới-thiệu-tổng-quan--mục-tiêu-dự-án)
-2. [Cơ Sở Pháp Lý & Tiêu Chuẩn Sư Phạm (GDPT 2018 / Thông Tư 17/2025/TT-BGDĐT)](#2-cơ-sở-pháp-lý--tiêu-chuẩn-sư-phạm)
+2. [Cơ Sở Pháp Lý & Tiêu Chuẩn Sư Phạm (GDPT 2018 / Quyết Định 764/QĐ-BGDĐT)](#2-cơ-sở-pháp-lý--tiêu-chuẩn-sư-phạm)
 3. [Ngăn Xếp Công Nghệ (Technology Stack)](#3-ngăn-xếp-công-nghệ-technology-stack)
 4. [Kiến Trúc Hệ Thống & Cấu Trúc Thư Mục](#4-kiến-trúc-hệ-thống--cấu-trúc-thư-mục)
 5. [Cơ Sở Dữ Liệu Quan Hệ & Prisma Schema (14 Enums, 17 Models)](#5-cơ-sở-dữ-liệu-quan-hệ--prisma-schema)
@@ -40,16 +40,16 @@
 
 ## 2. CƠ SỞ PHÁP LÝ & TIÊU CHUẨN SƯ PHẠM
 
-ExamCraft được thiết kế bám sát các văn bản quy phạm pháp luật mới nhất của Bộ Giáo dục và Đào tạo:
-1. **Thông tư số 17/2025/TT-BGDĐT** (Quy chế thi tốt nghiệp THPT và kiểm tra đánh giá định kỳ):
+ExamCraft được thiết kế bám sát các văn bản quy phạm pháp luật và khảo thí mới nhất của Bộ Giáo dục và Đào tạo:
+1. **Quyết định số 764/QĐ-BGDĐT** (ngày 08/03/2024 quy định cấu trúc định dạng đề thi Kỳ thi tốt nghiệp THPT từ năm 2025):
    - **Phần I — Trắc nghiệm nhiều lựa chọn**: Mỗi câu gồm 4 phương án $A, B, C, D$, chỉ có 1 phương án đúng duy nhất. Điểm mặc định 0,25 điểm/câu.
-   - **Phần II — Trắc nghiệm Đúng/Sai**: Mỗi câu gồm 4 lệnh hỏi độc lập $a), b), c), d)$. Thí sinh chọn Đúng hoặc Sai cho từng ý. **Barem chấm điểm lũy tiến bắt buộc**:
+   - **Phần II — Trắc nghiệm Đúng/Sai**: Mỗi câu gồm 4 lệnh hỏi độc lập $a), b), c), d)$. Thí sinh chọn Đúng hoặc Sai cho từng ý. **Barem chấm điểm lũy tiến bắt buộc theo Quyết định 764**:
      - Đúng 1 ý: đạt **0,10 điểm**
      - Đúng 2 ý: đạt **0,25 điểm**
      - Đúng 3 ý: đạt **0,50 điểm**
      - Đúng cả 4 ý: đạt **1,00 điểm**
    - **Phần III — Trắc nghiệm trả lời ngắn**: Thí sinh tự tính toán và điền đáp số vào ô trống (số nguyên, số thập phân hoặc phân số tối giản). Điểm mặc định 0,50 điểm/câu.
-   - **Phần IV — Tự luận / Ngoại ngữ / Mở rộng**: Dành cho bài thi tự luận hoặc câu hỏi mở rộng, hỗ trợ giáo viên chấm tay và ghi nhận xét.
+   - **Phần IV — Tự luận / Ngoại ngữ / Mở rộng (Phân hệ mở rộng của ExamCraft)**: Phục vụ kiểm tra định kỳ (giữa kỳ, cuối kỳ) theo chương trình GDPT 2018 và Thông tư 22/2021/TT-BGDĐT, hỗ trợ giáo viên chấm tay và ghi nhận xét.
 2. **Nghị định 13/2023/NĐ-CP** về bảo vệ dữ liệu cá nhân:
    - Hệ thống **tuyệt đối không thu thập dữ liệu nhạy cảm** của học sinh (không lưu số điện thoại, CMND/CCCD, email, địa chỉ nhà).
    - Chỉ lưu tên hiển thị và kết quả làm bài của học sinh trong phạm vi lớp học.

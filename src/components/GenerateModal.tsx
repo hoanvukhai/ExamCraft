@@ -437,11 +437,11 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
             />
           </div>
 
-          {/* Thông tin pháp lý Thông tư 17/2025 */}
+          {/* Thông tin pháp lý GDPT 2018 & QĐ 764/QĐ-BGDĐT */}
           <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-[11px] text-slate-600 flex items-start gap-2">
             <span className="text-emerald-600 font-bold shrink-0 mt-0.5">✓</span>
             <div>
-              <strong className="text-slate-800">Chuẩn hóa Thông tư 17/2025/TT-BGDĐT:</strong> Tự động cập nhật địa giới hành chính sáp nhập huyện/xã, ranh giới vùng kinh tế - xã hội, số liệu thống kê mới và quy định pháp luật hiện hành.
+              <strong className="text-slate-800">Chuẩn hóa GDPT 2018 & Quyết định 764/QĐ-BGDĐT:</strong> Cấu trúc định dạng đề thi chuẩn Bộ GD&ĐT, tự động cập nhật địa giới hành chính, số liệu thống kê mới và quy định pháp luật hiện hành.
             </div>
           </div>
 

@@ -143,10 +143,11 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
     fetchAssignmentData();
   }, [fetchAssignmentData]);
 
-  // Polling tự động mỗi 4 giây (theo đặc tả v3.1)
+  // Polling tự động mỗi 4 giây (theo đặc tả v3.1, tối ưu MON-BUG-001: tạm dừng khi tab bị ẩn)
   useEffect(() => {
     if (!autoRefresh) return;
     const interval = setInterval(() => {
+      if (typeof document !== 'undefined' && document.hidden) return;
       fetchAssignmentData();
     }, 4000);
     return () => clearInterval(interval);

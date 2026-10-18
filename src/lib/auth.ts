@@ -102,13 +102,33 @@ export async function getCurrentUser(): Promise<UserSession | null> {
   return session.user;
 }
 
+// ───────────── BẢO VỆ MÔI TRƯỜNG PRODUCTION (R17) ─────────────
+const DEFAULT_INSECURE_SECRETS = [
+  'examcraft_session_super_secret_key_change_in_production_2026',
+  'examcraft_session_super_secret_key_2026',
+  'super-secret-key-change-in-production',
+];
+
+if (process.env.NODE_ENV === 'production' && process.env.NEXT_PHASE !== 'phase-production-build') {
+  const secret = process.env.SESSION_SECRET || '';
+  if (!secret || DEFAULT_INSECURE_SECRETS.includes(secret) || secret.includes('change_in_production')) {
+    const errorMsg = 'CRITICAL SECURITY ERROR: Ứng dụng từ chối khởi động ở môi trường production vì SESSION_SECRET đang mang giá trị mặc định không an toàn! Vui lòng thiết lập biến môi trường SESSION_SECRET có độ dài ngẫu nhiên và bảo mật.';
+    console.error(errorMsg);
+    throw new Error(errorMsg);
+  }
+}
+
 /**
  * Helper kiểm tra phân quyền cho Route Handler: bắt buộc đăng nhập
+ * Tự động chặn các tài khoản bắt buộc đổi mật khẩu truy cập API (AUTH-BUG-002)
  */
-export async function requireAuth(): Promise<UserSession> {
+export async function requireAuth(options?: { allowMustChangePassword?: boolean }): Promise<UserSession> {
   const user = await getCurrentUser();
   if (!user) {
     throw new Error('UNAUTHORIZED');
+  }
+  if (user.mustChangePassword && !options?.allowMustChangePassword) {
+    throw new Error('MUST_CHANGE_PASSWORD');
   }
   return user;
 }
@@ -137,21 +157,35 @@ const MAX_ATTEMPTS = 5;
 const WINDOW_MS = 15 * 60 * 1000; // 15 phút
 const LOCKOUT_MS = 15 * 60 * 1000; // Khóa 15 phút nếu thử sai 5 lần
 
-export function checkLoginRateLimit(key: string): { allowed: boolean; waitMinutes?: number } {
+export async function checkLoginRateLimit(key: string, ip?: string): Promise<{ allowed: boolean; waitMinutes?: number }> {
   const now = Date.now();
   const record = loginAttempts.get(key);
 
-  if (!record) {
-    return { allowed: true };
-  }
-
-  if (record.blockedUntil && record.blockedUntil > now) {
+  if (record && record.blockedUntil && record.blockedUntil > now) {
     const waitMinutes = Math.ceil((record.blockedUntil - now) / 60000);
     return { allowed: false, waitMinutes };
   }
 
+  // Bổ sung kiểm tra bền vững qua PostgreSQL AuditLog (AUTH-BUG-001 - R18)
+  try {
+    const windowStart = new Date(now - WINDOW_MS);
+    const failedCount = await prisma.auditLog.count({
+      where: {
+        action: 'user.login_failed',
+        ...(ip ? { ip } : {}),
+        createdAt: { gte: windowStart },
+      },
+    });
+
+    if (failedCount >= MAX_ATTEMPTS) {
+      return { allowed: false, waitMinutes: 15 };
+    }
+  } catch (err) {
+    console.warn('Lỗi kiểm tra rate limit từ DB:', err);
+  }
+
   // Đã hết thời gian cửa sổ kiểm tra
-  if (now - record.firstAttemptAt > WINDOW_MS) {
+  if (record && now - record.firstAttemptAt > WINDOW_MS) {
     loginAttempts.delete(key);
     return { allowed: true };
   }

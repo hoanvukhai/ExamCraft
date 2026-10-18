@@ -45,7 +45,7 @@ async function main() {
   // 3. Khởi tạo các mẫu cấu trúc đề thi hệ thống (ExamTemplate)
   const templates = [
     {
-      name: 'Đề thi Tốt nghiệp THPT — Môn Toán (Chuẩn Thông tư 17/2025)',
+      name: 'Đề thi Tốt nghiệp THPT — Môn Toán (Chuẩn QĐ 764/QĐ-BGDĐT)',
       subject: 'toan',
       gradeFrom: 10,
       gradeTo: 12,
@@ -81,7 +81,7 @@ async function main() {
       ],
     },
     {
-      name: 'Đề thi Tốt nghiệp THPT — Môn Vật lí (Chuẩn Thông tư 17/2025)',
+      name: 'Đề thi Tốt nghiệp THPT — Môn Vật lí (Chuẩn QĐ 764/QĐ-BGDĐT)',
       subject: 'vat_ly',
       gradeFrom: 10,
       gradeTo: 12,
@@ -117,7 +117,7 @@ async function main() {
       ],
     },
     {
-      name: 'Đề thi Tốt nghiệp THPT — Môn Hóa học (Chuẩn Thông tư 17/2025)',
+      name: 'Đề thi Tốt nghiệp THPT — Môn Hóa học (Chuẩn QĐ 764/QĐ-BGDĐT)',
       subject: 'hoa_hoc',
       gradeFrom: 10,
       gradeTo: 12,

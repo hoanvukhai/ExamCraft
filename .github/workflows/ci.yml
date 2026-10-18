@@ -1,0 +1,63 @@
+name: ExamCraft CI
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  test-and-build:
+    name: Regression Tests & Build Verification
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: examcraft
+          POSTGRES_PASSWORD: examcraft_secret_ci
+          POSTGRES_DB: examcraft_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: "postgresql://examcraft:examcraft_secret_ci@localhost:5432/examcraft_ci?schema=public"
+      SESSION_SECRET: "ci_temporary_test_session_secret_key_random_for_github_actions_12345"
+      NODE_ENV: "test"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Push Database Schema
+        run: npx prisma db push --skip-generate
+
+      - name: Seed Database
+        run: npx tsx prisma/seed.ts
+
+      - name: Run Unit & Regression Tests
+        run: npm test
+
+      - name: Run Next.js Production Build
+        run: npm run build
+        env:
+          NODE_ENV: production
+          SESSION_SECRET: "ci_prod_build_valid_session_secret_32_bytes_super_secure"

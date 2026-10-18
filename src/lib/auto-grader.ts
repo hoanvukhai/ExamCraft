@@ -42,7 +42,7 @@ function normalizeAnswerString(str: string | undefined | null): string {
 }
 
 /**
- * Chấm điểm bài làm của học sinh theo chuẩn Thông tư 17/2025/TT-BGDĐT
+ * Chấm điểm bài làm của học sinh theo chuẩn Quyết định 764/QĐ-BGDĐT và GDPT 2018
  */
 export function gradeStudentExam(
   exam: Exam,

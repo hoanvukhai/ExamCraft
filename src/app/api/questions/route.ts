@@ -87,6 +87,9 @@ export async function GET(req: NextRequest) {
     if (err.message === 'UNAUTHORIZED') {
       return NextResponse.json({ error: 'Vui lòng đăng nhập để xem danh sách câu hỏi' }, { status: 401 });
     }
+    if (err.message === 'MUST_CHANGE_PASSWORD') {
+      return NextResponse.json({ error: 'Tài khoản bắt buộc phải đổi mật khẩu trước khi tiếp tục', code: 'MUST_CHANGE_PASSWORD' }, { status: 403 });
+    }
     console.error('Lỗi GET /api/questions:', error);
     return NextResponse.json({ error: 'Lỗi máy chủ khi lấy danh sách câu hỏi' }, { status: 500 });
   }
@@ -165,6 +168,9 @@ export async function POST(req: NextRequest) {
     const err = error as Error;
     if (err.message === 'UNAUTHORIZED') {
       return NextResponse.json({ error: 'Vui lòng đăng nhập để tạo câu hỏi' }, { status: 401 });
+    }
+    if (err.message === 'MUST_CHANGE_PASSWORD') {
+      return NextResponse.json({ error: 'Tài khoản bắt buộc phải đổi mật khẩu trước khi tiếp tục', code: 'MUST_CHANGE_PASSWORD' }, { status: 403 });
     }
     console.error('Lỗi POST /api/questions:', error);
     return NextResponse.json({ error: 'Lỗi máy chủ khi tạo câu hỏi' }, { status: 500 });

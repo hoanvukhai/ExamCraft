@@ -14,8 +14,9 @@ import {
   MathFraction,
   MathRadical,
   PageBreak,
+  ImageRun,
 } from 'docx';
-import { Exam, Question } from '@/types/exam';
+import { Exam, Question, Figure } from '@/types/exam';
 import { getDefaultPointsForQuestion, formatPointsString } from '@/lib/scoring';
 import { computeExamMatrix, generateDocxMatrixTable } from './matrix-spec-generator';
 
@@ -257,6 +258,172 @@ export function renderLatexRunsForWord(
   }
 
   return runs;
+}
+
+/**
+ * Chuyển đổi và render hình vẽ, đồ thị hàm số và bảng biến thiên vào file Word docx (EXP-BUG-001)
+ */
+export function renderFiguresForDocx(figures?: Figure[]): (Paragraph | Table)[] {
+  if (!figures || figures.length === 0) return [];
+  const elements: (Paragraph | Table)[] = [];
+
+  for (const fig of figures) {
+    if (fig.renderedBase64) {
+      try {
+        const cleanBase64 = fig.renderedBase64.replace(/^data:image\/\w+;base64,/, '');
+        const imgBuffer = Buffer.from(cleanBase64, 'base64');
+        elements.push(
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { before: 100, after: 60 },
+            children: [
+              new ImageRun({
+                data: imgBuffer,
+                transformation: {
+                  width: 380,
+                  height: 200,
+                },
+                type: 'png',
+              }),
+            ],
+          })
+        );
+      } catch (err) {
+        console.warn('Lỗi chèn ImageRun cho figure:', err);
+      }
+    } else if (fig.kind === 'variation_table' && fig.data) {
+      const vData = fig.data as any;
+      if (Array.isArray(vData.xValues) && Array.isArray(vData.yPrimeSigns)) {
+        // Tạo bảng biến thiên dạng Table trong docx
+        const totalWidth = 8500; // dxa
+        const headerColWidth = 1000;
+        const contentColWidth = globalThis.Math.floor((totalWidth - headerColWidth) / globalThis.Math.max(1, vData.xValues.length));
+
+        // Hàng 1: x
+        const rowXCells = [
+          new TableCell({
+            width: { size: headerColWidth, type: WidthType.DXA },
+            children: [
+              new Paragraph({
+                alignment: AlignmentType.CENTER,
+                children: [new TextRun({ text: 'x', bold: true, italics: true, font: 'Times New Roman', size: 20 })],
+              }),
+            ],
+          }),
+          ...vData.xValues.map((xVal: string) =>
+            new TableCell({
+              width: { size: contentColWidth, type: WidthType.DXA },
+              children: [
+                new Paragraph({
+                  alignment: AlignmentType.CENTER,
+                  children: [new TextRun({ text: cleanLatexForWord(xVal), font: 'Times New Roman', size: 20 })],
+                }),
+              ],
+            })
+          ),
+        ];
+
+        // Hàng 2: y'
+        const rowYPrimeCells = [
+          new TableCell({
+            width: { size: headerColWidth, type: WidthType.DXA },
+            children: [
+              new Paragraph({
+                alignment: AlignmentType.CENTER,
+                children: [new TextRun({ text: "y'", bold: true, italics: true, font: 'Times New Roman', size: 20 })],
+              }),
+            ],
+          }),
+          new TableCell({
+            columnSpan: vData.xValues.length,
+            children: [
+              new Paragraph({
+                alignment: AlignmentType.CENTER,
+                children: [
+                  new TextRun({
+                    text: vData.yPrimeSigns.map((s: string) => `  ${s}  `).join(''),
+                    bold: true,
+                    font: 'Times New Roman',
+                    size: 20,
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ];
+
+        // Hàng 3: y
+        let ySummary = '';
+        if (Array.isArray(vData.yValues)) {
+          ySummary = vData.yValues
+            .map((yv: any) => {
+              if (yv.type === 'up') return ' ↗ ';
+              if (yv.type === 'down') return ' ↘ ';
+              return cleanLatexForWord(yv.val || '');
+            })
+            .join(' ');
+        }
+        const rowYCells = [
+          new TableCell({
+            width: { size: headerColWidth, type: WidthType.DXA },
+            children: [
+              new Paragraph({
+                alignment: AlignmentType.CENTER,
+                children: [new TextRun({ text: 'y', bold: true, italics: true, font: 'Times New Roman', size: 20 })],
+              }),
+            ],
+          }),
+          new TableCell({
+            columnSpan: vData.xValues.length,
+            children: [
+              new Paragraph({
+                alignment: AlignmentType.CENTER,
+                children: [new TextRun({ text: ySummary || 'Giá trị hàm số biến thiên', font: 'Times New Roman', size: 20 })],
+              }),
+            ],
+          }),
+        ];
+
+        const varTable = new Table({
+          width: { size: totalWidth, type: WidthType.DXA },
+          alignment: AlignmentType.CENTER,
+          borders: {
+            top: { style: BorderStyle.SINGLE, size: 6, color: '666666' },
+            bottom: { style: BorderStyle.SINGLE, size: 6, color: '666666' },
+            left: { style: BorderStyle.SINGLE, size: 6, color: '666666' },
+            right: { style: BorderStyle.SINGLE, size: 6, color: '666666' },
+            insideHorizontal: { style: BorderStyle.SINGLE, size: 4, color: '888888' },
+            insideVertical: { style: BorderStyle.SINGLE, size: 4, color: 'CCCCCC' },
+          },
+          rows: [
+            new TableRow({ children: rowXCells }),
+            new TableRow({ children: rowYPrimeCells }),
+            new TableRow({ children: rowYCells }),
+          ],
+        });
+        elements.push(varTable);
+      }
+    }
+
+    if (fig.caption) {
+      elements.push(
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          spacing: { before: 40, after: 80 },
+          children: [
+            new TextRun({
+              text: fig.caption,
+              italics: true,
+              size: 20,
+              font: 'Times New Roman',
+            }),
+          ],
+        })
+      );
+    }
+  }
+
+  return elements;
 }
 
 /**
@@ -526,6 +693,9 @@ export async function exportExamToDocx(
         })
       );
 
+      // Chèn hình vẽ, đồ thị, bảng biến thiên (EXP-BUG-001)
+      docChildren.push(...renderFiguresForDocx(q.figures));
+
       // Hiển thị các phương án A, B, C, D
       if (q.choices && q.choices.length > 0) {
         const choiceRuns: (TextRun | Math)[] = [];
@@ -600,6 +770,9 @@ export async function exportExamToDocx(
         })
       );
 
+      // Chèn hình vẽ, đồ thị, bảng biến thiên (EXP-BUG-001)
+      docChildren.push(...renderFiguresForDocx(q.figures));
+
       if (q.sub_questions && q.sub_questions.length > 0) {
         for (let sIdx = 0; sIdx < q.sub_questions.length; sIdx++) {
           const sq = q.sub_questions[sIdx];
@@ -667,6 +840,10 @@ export async function exportExamToDocx(
           ],
         })
       );
+
+      // Chèn hình vẽ, đồ thị, bảng biến thiên (EXP-BUG-001)
+      docChildren.push(...renderFiguresForDocx(q.figures));
+
       currentQuestionNum++;
     }
   }
@@ -702,6 +879,10 @@ export async function exportExamToDocx(
           ],
         })
       );
+
+      // Chèn hình vẽ, đồ thị, bảng biến thiên (EXP-BUG-001)
+      docChildren.push(...renderFiguresForDocx(q.figures));
+
       currentQuestionNum++;
     }
   }

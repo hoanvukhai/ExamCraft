@@ -2,44 +2,73 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { AssignmentStatus } from '@prisma/client';
 
-// Helper làm sạch đáp án và lời giải tuyệt đối trước khi gửi cho học sinh
-export function sanitizeSnapshotForStudent(snapshot: any) {
-  if (!snapshot || !Array.isArray(snapshot.questions)) return snapshot;
+// Helper làm sạch 1 câu hỏi (xóa bỏ đáp án, cờ đúng/sai, lời giải, giải thích)
+function sanitizeSingleQuestionForStudent(q: any) {
+  if (!q) return q;
+  const cleanPayload: Record<string, any> = {};
 
-  const sanitizedQuestions = snapshot.questions.map((q: any) => {
-    const cleanPayload: Record<string, any> = {};
-
-    if (q.payload) {
-      // 1. Trắc nghiệm: chỉ giữ lại choices, xóa correct
-      if (Array.isArray(q.payload.choices)) {
-        cleanPayload.choices = q.payload.choices.map((c: any) => ({
-          key: c.key,
-          text: c.text,
-        }));
-      }
-
-      // 2. Đúng/Sai: chỉ giữ lại nội dung ý a,b,c,d; xóa isCorrect và explanation
-      if (Array.isArray(q.payload.sub_questions)) {
-        cleanPayload.sub_questions = q.payload.sub_questions.map((sub: any) => ({
-          key: sub.key,
-          content: sub.content,
-        }));
-      }
+  if (q.payload) {
+    // 1. Trắc nghiệm: chỉ giữ lại choices, xóa correct
+    if (Array.isArray(q.payload.choices)) {
+      cleanPayload.choices = q.payload.choices.map((c: any) => ({
+        key: c.key,
+        text: c.text,
+      }));
     }
 
-    return {
-      id: q.id,
-      sectionId: q.sectionId,
-      position: q.position,
-      type: q.type,
-      difficulty: q.difficulty,
-      content: q.content,
-      figures: q.figures,
-      payload: cleanPayload,
-      points: q.points,
-      // TUYỆT ĐỐI KHÔNG gửi solution hoặc correct_answer
-    };
-  });
+    // 2. Đúng/Sai: chỉ giữ lại nội dung ý a,b,c,d; xóa isCorrect và explanation
+    if (Array.isArray(q.payload.sub_questions)) {
+      cleanPayload.sub_questions = q.payload.sub_questions.map((sub: any) => ({
+        key: sub.key,
+        content: sub.content,
+      }));
+    }
+  }
+
+  // Làm sạch nếu choices hoặc sub_questions nằm ở cấp câu hỏi
+  const cleanChoices = Array.isArray(q.choices)
+    ? q.choices.map((c: any) => ({ key: c.key, text: c.text }))
+    : undefined;
+
+  const cleanSubQuestions = Array.isArray(q.sub_questions)
+    ? q.sub_questions.map((sub: any) => ({ key: sub.key, content: sub.content }))
+    : undefined;
+
+  return {
+    id: q.id,
+    sectionId: q.sectionId,
+    position: q.position,
+    type: q.type,
+    difficulty: q.difficulty,
+    content: q.content,
+    figures: q.figures,
+    payload: Object.keys(cleanPayload).length > 0 ? cleanPayload : (cleanChoices ? { choices: cleanChoices } : (cleanSubQuestions ? { sub_questions: cleanSubQuestions } : undefined)),
+    choices: cleanChoices,
+    sub_questions: cleanSubQuestions,
+    points: q.points,
+    // TUYỆT ĐỐI KHÔNG gửi solution, correct_answer, hay explanation
+  };
+}
+
+// Helper làm sạch đáp án và lời giải tuyệt đối trước khi gửi cho học sinh (ROOM-BUG-001 - R5)
+export function sanitizeSnapshotForStudent(snapshot: any) {
+  if (!snapshot) return snapshot;
+
+  const sanitizedQuestions = Array.isArray(snapshot.questions)
+    ? snapshot.questions.map(sanitizeSingleQuestionForStudent)
+    : [];
+
+  // Làm sạch đệ quy bên trong sections[].questions nếu đề thi lưu cấu trúc phân mục lồng nhau
+  const sanitizedSections = Array.isArray(snapshot.sections)
+    ? snapshot.sections.map((sec: any) => {
+        if (!sec) return sec;
+        const cleanSec = { ...sec };
+        if (Array.isArray(cleanSec.questions)) {
+          cleanSec.questions = cleanSec.questions.map(sanitizeSingleQuestionForStudent);
+        }
+        return cleanSec;
+      })
+    : snapshot.sections;
 
   return {
     title: snapshot.title,
@@ -47,7 +76,7 @@ export function sanitizeSnapshotForStudent(snapshot: any) {
     grade: snapshot.grade,
     durationMinutes: snapshot.durationMinutes,
     metadata: snapshot.metadata,
-    sections: snapshot.sections,
+    sections: sanitizedSections,
     questions: sanitizedQuestions,
   };
 }

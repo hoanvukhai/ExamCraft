@@ -381,41 +381,38 @@ export default function HomePage() {
     setTimeout(() => setIsSaved(false), 2000);
   };
 
-  // Lưu đề thi lên Cloud Server (Cơ sở dữ liệu đám mây)
+  // Lưu đề thi lên Máy chủ PostgreSQL an toàn (SEC-BUG-001)
   const handleSaveCloud = async () => {
     try {
       setIsCloudSaving(true);
-      const res = await fetch('/api/cloud/exams', {
+      const res = await fetch('/api/migration/import-legacy', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(exam),
+        body: JSON.stringify({
+          exams: [exam],
+          questions: [],
+        }),
       });
       const data = await res.json();
-      if (data.success) {
+      if (res.ok && data.success) {
         setIsCloudSaved(true);
         setTimeout(() => setIsCloudSaved(false), 2500);
+      } else if (res.status === 401) {
+        alert('Vui lòng đăng nhập tài khoản Giáo viên để lưu đề thi lên máy chủ.');
       } else {
-        alert(data.error || 'Lỗi khi lưu lên Đám mây');
+        alert(data.error || 'Lỗi khi lưu đề thi lên máy chủ');
       }
     } catch {
-      alert('Không thể kết nối đến máy chủ Cloud');
+      alert('Không thể kết nối đến máy chủ ExamCraft');
     } finally {
       setIsCloudSaving(false);
     }
   };
 
-  // Nạp số lượng bài nộp của học sinh
+  // Đồng bộ số lượng bài thi / bài nộp (an toàn, không gọi legacy cloud)
   useEffect(() => {
-    if (exam?.id) {
-      fetch(`/api/cloud/exams/${exam.id}/submissions`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.success && typeof data.totalCount === 'number') {
-            setSubmissionCount(data.totalCount);
-          }
-        })
-        .catch(() => {});
-    }
+    // Trong kiến trúc v3, bài làm của học sinh được quản lý tập trung tại /teacher/assignments
+    setSubmissionCount(0);
   }, [exam?.id]);
 
   // Nạp thêm các câu hỏi từ Import

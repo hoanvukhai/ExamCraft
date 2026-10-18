@@ -6,8 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "test": "npx tsx tests/unit_tests.mjs",
+    "lint": "next lint",
+    "test": "npx tsx tests/run_all_v3_tests.ts",
+    "test:unit": "npx tsx tests/unit_tests.mjs",
+    "test:all": "npx tsx tests/run_all_v3_tests.ts",
+    "test:audit": "npx tsx tests_e2e/test_vong2_http_audit.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

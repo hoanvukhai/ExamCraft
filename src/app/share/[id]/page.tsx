@@ -35,7 +35,7 @@ function ShareExamContent({ params }: SharePageProps) {
     async function loadSharedExam() {
       try {
         setIsLoading(true);
-        const res = await fetch(`/api/cloud/exams/${examId}`);
+        const res = await fetch(`/api/public/share/${examId}`);
         const data = await res.json();
         if (data.success && data.exam) {
           setExam(data.exam);

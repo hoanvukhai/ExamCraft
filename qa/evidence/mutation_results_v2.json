@@ -1,0 +1,132 @@
+[
+  {
+    "mutant": {
+      "id": "MUT-01",
+      "name": "Scoring: Sửa barem Đúng/Sai từ 0.1đ thành 0.2đ",
+      "category": "Chấm điểm",
+      "file": "src/config/subjects/toan_thpt.json",
+      "search": "\"progressiveScoring\": [0.0, 0.1, 0.25, 0.5, 1.0]",
+      "replace": "\"progressiveScoring\": [0.0, 0.2, 0.4, 0.6, 1.0]",
+      "description": "Sửa barem điểm Đúng/Sai lũy tiến trong cấu hình môn Toán"
+    },
+    "status": "SURVIVED",
+    "output": "Tests passed without error"
+  },
+  {
+    "mutant": {
+      "id": "MUT-02",
+      "name": "Scoring: Bỏ hàm tính điểm trong scoring.ts",
+      "category": "Chấm điểm",
+      "file": "src/lib/scoring.ts",
+      "search": "return Math.round(total * 100) / 100;",
+      "replace": "return 0;",
+      "description": "Hàm calculateExamTotalPoints luôn trả về 0 điểm"
+    },
+    "status": "SURVIVED",
+    "output": "Tests passed without error"
+  },
+  {
+    "mutant": {
+      "id": "MUT-03",
+      "name": "Sanitize: Không lọc payload.correct khỏi đề thi học sinh",
+      "category": "Bảo mật đề thi",
+      "file": "src/app/api/public/assignments/[publicId]/route.ts",
+      "search": "cleanPayload.choices = q.payload.choices.map((c: any) => ({",
+      "replace": "cleanPayload.correct = q.payload.correct; cleanPayload.choices = q.payload.choices.map((c: any) => ({",
+      "description": "Làm rò rỉ đáp án trắc nghiệm trong hàm sanitizeSnapshotForStudent"
+    },
+    "status": "KILLED",
+    "output": "===============================================================\n       EXAMCRAFT v3.1 — KIỂM THỬ TỰ ĐỘNG TOÀN BỘ CÁC GIAI ĐOẠN\n======================="
+  },
+  {
+    "mutant": {
+      "id": "MUT-04",
+      "name": "Auth Lockout: Tăng số lần thử sai tối đa từ 5 lên 50",
+      "category": "Xác thực & Lockout",
+      "file": "src/lib/auth.ts",
+      "search": "const MAX_ATTEMPTS = 5;",
+      "replace": "const MAX_ATTEMPTS = 50;",
+      "description": "Làm suy yếu cơ chế chống Brute-force"
+    },
+    "status": "KILLED",
+    "output": "===============================================================\n       EXAMCRAFT v3.1 — KIỂM THỬ TỰ ĐỘNG TOÀN BỘ CÁC GIAI ĐOẠN\n======================="
+  },
+  {
+    "mutant": {
+      "id": "MUT-05",
+      "name": "Auth Bcrypt: Cho phép mọi mật khẩu đều xác thực thành công",
+      "category": "Xác thực",
+      "file": "src/lib/auth.ts",
+      "search": "return bcrypt.compare(password, hash);",
+      "replace": "return true;",
+      "description": "Vô hiệu hóa kiểm tra mật khẩu"
+    },
+    "status": "KILLED",
+    "output": "===============================================================\n       EXAMCRAFT v3.1 — KIỂM THỬ TỰ ĐỘNG TOÀN BỘ CÁC GIAI ĐOẠN\n======================="
+  },
+  {
+    "mutant": {
+      "id": "MUT-06",
+      "name": "CSV Escape: Bỏ logic escape công thức nguy hiểm trong xuất CSV",
+      "category": "Bảo mật CSV",
+      "file": "src/app/api/teacher/assignments/[id]/export-csv/route.ts",
+      "search": "str = `'${str}`;",
+      "replace": "// str = `'${str}`;",
+      "description": "Không thêm dấu nháy đơn vào trước các ô chứa =,+,-,@"
+    },
+    "status": "SURVIVED",
+    "output": "Tests passed without error"
+  },
+  {
+    "mutant": {
+      "id": "MUT-07",
+      "name": "IDOR: Bỏ kiểm tra ownerId trong API lấy danh sách câu hỏi",
+      "category": "Phân quyền IDOR",
+      "file": "src/app/api/questions/route.ts",
+      "search": "ownerId: user.id,",
+      "replace": "// ownerId: user.id,",
+      "description": "Cho phép giáo viên lấy danh sách câu hỏi của bất kỳ ai"
+    },
+    "status": "SURVIVED",
+    "output": "Tests passed without error"
+  },
+  {
+    "mutant": {
+      "id": "MUT-08",
+      "name": "Shuffler: Phá vỡ ánh xạ đáp án đúng khi hoán vị",
+      "category": "Trộn đề",
+      "file": "src/lib/shuffler.ts",
+      "search": "correct_answer: newCorrectKey,",
+      "replace": "correct_answer: 'Z',",
+      "description": "Gán sai nhãn đáp án đúng sau khi trộn câu hỏi trắc nghiệm"
+    },
+    "status": "SURVIVED",
+    "output": "Tests passed without error"
+  },
+  {
+    "mutant": {
+      "id": "MUT-09",
+      "name": "Submit: Cho phép nộp đè lên bài thi đã SUBMITTED và reset điểm",
+      "category": "Toàn vẹn bài nộp",
+      "file": "src/app/api/public/attempts/[id]/submit/route.ts",
+      "search": "if (attempt.status === AttemptStatus.SUBMITTED) {",
+      "replace": "if (false && attempt.status === AttemptStatus.SUBMITTED) {",
+      "description": "Vô hiệu hóa kiểm tra idempotent khi nộp bài"
+    },
+    "status": "SURVIVED",
+    "output": "Tests passed without error"
+  },
+  {
+    "mutant": {
+      "id": "MUT-10",
+      "name": "Submit Grading: Ép điểm bài nộp luôn bằng 0",
+      "category": "Chấm điểm API",
+      "file": "src/app/api/public/attempts/[id]/submit/route.ts",
+      "search": "totalScore = Math.round(totalScore * 100) / 100;",
+      "replace": "totalScore = 0;",
+      "description": "Cố ý làm sai lệch điểm số nộp bài trên API"
+    },
+    "status": "SURVIVED",
+    "output": "Tests passed without error"
+  }
+]

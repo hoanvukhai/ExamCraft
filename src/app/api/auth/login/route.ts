@@ -32,8 +32,8 @@ export async function POST(req: NextRequest) {
     const { email, password } = parsed.data;
     const rateLimitKey = `${ip}:${email.toLowerCase()}`;
 
-    // Kiểm tra giới hạn số lần thử
-    const rateCheck = checkLoginRateLimit(rateLimitKey);
+    // Kiểm tra giới hạn số lần thử (bền vững qua AuditLog & bộ nhớ)
+    const rateCheck = await checkLoginRateLimit(rateLimitKey, ip);
     if (!rateCheck.allowed) {
       return NextResponse.json(
         {
@@ -50,6 +50,11 @@ export async function POST(req: NextRequest) {
 
     if (!user) {
       recordFailedLogin(rateLimitKey);
+      await logAudit({
+        action: 'user.login_failed',
+        ip,
+        meta: { email },
+      });
       return NextResponse.json(
         { error: 'Email hoặc mật khẩu không chính xác' },
         { status: 401 }

@@ -54,7 +54,7 @@ async function runTests() {
     recordFailedLogin(dummyKey);
   }
 
-  const rateCheck = checkLoginRateLimit(dummyKey);
+  const rateCheck = await checkLoginRateLimit(dummyKey);
   if (rateCheck.allowed) {
     throw new Error('❌ Test 4 Thất bại: Rate limiting không khóa sau 5 lần thử sai!');
   }

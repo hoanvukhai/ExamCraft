@@ -1,0 +1,63 @@
+{
+  "R5": {
+    "status": "PASS",
+    "htmlLeak": false,
+    "apiLeak": false
+  },
+  "R8": {
+    "status": "PASS",
+    "leaderboard": {
+      "top": [
+        {
+          "rank": 1,
+          "name": "Học sinh An V2",
+          "score": 1.25
+        },
+        {
+          "rank": 2,
+          "name": "Học sinh Bình V2",
+          "score": 0.25
+        }
+      ],
+      "me": {
+        "rank": 2,
+        "total": 2,
+        "score": 0.25
+      }
+    }
+  },
+  "R11": {
+    "startSafe": true,
+    "submitSafe": true,
+    "draftAfterSubmitOverwritten": false,
+    "status": "PASS"
+  },
+  "R17": {
+    "secretsFoundInFiles": [
+      ".env.example",
+      "docker-compose.yml",
+      "prisma/seed.ts"
+    ],
+    "hasProdSecretGuard": true,
+    "status": "PASS"
+  },
+  "R28": {
+    "lockedSessionBlocked": true,
+    "mustChangeBypassed": false,
+    "sameErrorMsg": true,
+    "status": "PASS"
+  },
+  "PERF_HTTP": {
+    "totalStudents": 100,
+    "successCount": 100,
+    "errorCount": 0,
+    "totalTimeMs": 5257,
+    "p50": 4488,
+    "p95": 5233,
+    "p99": 5241,
+    "min": 3610,
+    "max": 5241,
+    "avg": 4499,
+    "dbConnections": 14
+  }
+}

@@ -1,6 +1,6 @@
 # ExamCraft — Trợ Lý Soạn Đề AI Chuẩn GDPT 2018
 
-> **ExamCraft** là nền tảng trợ lý AI chuyên sâu hỗ trợ giáo viên Việt Nam biên tập, trộn đề, tổ chức thi trực tuyến và xuất bản đề kiểm tra chuẩn chương trình GDPT 2018 (cập nhật mới nhất theo **Thông tư 17/2025/TT-BGDĐT**).
+> **ExamCraft** là nền tảng trợ lý AI chuyên sâu hỗ trợ giáo viên Việt Nam biên tập, trộn đề, tổ chức thi trực tuyến và xuất bản đề kiểm tra chuẩn chương trình GDPT 2018 và cấu trúc định dạng đề thi theo **Quyết định 764/QĐ-BGDĐT**.
 
 ---
 
@@ -20,13 +20,14 @@
 - Trộn đề gốc thành **4 mã đề** (101, 102, 103, 104) với thuật toán hoán vị công bằng.
 - Tự động xuất **Ma trận đáp án đối soát** dạng bảng giúp giáo viên chấm bài nhanh chóng.
 
-### 4. 📝 Phòng Thi Trực Tuyến Học Sinh (`/test/[id]`)
-- Giáo viên tạo link gửi học sinh vào làm bài thi trực tiếp trên web hoặc điện thoại (như Google Forms / Azota).
-- Học sinh nhập Họ tên, Lớp -> Làm bài với **đồng hồ đếm ngược** và giao diện chuẩn 3 phần của Bộ GD&ĐT:
+### 4. 📝 Phòng Thi Trực Tuyến Học Sinh Chuẩn v3.1 (`/room/[code]`)
+- Giáo viên tạo phòng thi trực tuyến có bảo mật mã phòng, nạp danh sách học sinh theo lớp, snapshot đề thi bất biến và chống rò rỉ đáp án.
+- Học sinh tham gia phòng thi với **đồng hồ đếm ngược đồng bộ**, tự động thu bài khi hết giờ và giao diện chuẩn cấu trúc Bộ GD&ĐT (Quyết định 764/QĐ-BGDĐT):
   - **Phần I**: Trắc nghiệm 4 lựa chọn (0,25đ / câu).
   - **Phần II**: Trắc nghiệm Đúng / Sai 4 ý ($a, b, c, d$) chấm theo barem lũy tiến (1 ý: 0,1đ; 2 ý: 0,25đ; 3 ý: 0,5đ; 4 ý: 1,0đ).
   - **Phần III**: Câu trắc nghiệm trả lời ngắn / điền số (0,5đ / câu).
-- **Chấm điểm tự động tức thì**: Thông báo kết quả ngay khi nộp bài kèm lời giải chi tiết từng bước.
+  - **Phần IV**: Tự luận / ngoại ngữ (phân hệ tự mở rộng cho kiểm tra định kỳ).
+- **Chấm điểm tự động tức thì**: Chấm điểm tự động trên server, hỗ trợ chấm tay câu tự luận và ẩn/hiện lời giải linh hoạt theo chính sách phòng thi.
 
 ### 5. 📊 Bảng Điểm Lớp Học & Xuất File Excel
 - Giáo viên theo dõi danh sách học sinh đã nộp bài trong thời gian thực.

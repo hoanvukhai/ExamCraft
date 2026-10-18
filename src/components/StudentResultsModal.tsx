@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Exam } from '@/types/exam';
-import { StudentSubmission } from '@/lib/cloud-storage';
+import Link from 'next/link';
 import { 
   Users, 
   Download, 
@@ -13,8 +13,26 @@ import {
   Clock, 
   CheckCircle2, 
   Search,
-  ExternalLink
+  ExternalLink,
+  ShieldCheck,
 } from 'lucide-react';
+
+export interface StudentSubmission {
+  id: string;
+  examId: string;
+  studentName: string;
+  studentClass: string;
+  schoolName?: string;
+  submittedAt: string;
+  durationSeconds: number;
+  totalScore: number;
+  maxScore: number;
+  answers: Record<string, any>;
+  part1Score?: number;
+  part2Score?: number;
+  part3Score?: number;
+  part4Score?: number;
+}
 
 interface StudentResultsModalProps {
   isOpen: boolean;
@@ -34,26 +52,15 @@ export const StudentResultsModal: React.FC<StudentResultsModalProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
 
   const fetchResults = async () => {
-    if (!exam || !exam.id) return;
-    try {
-      setIsLoading(true);
-      const res = await fetch(`/api/cloud/exams/${exam.id}/submissions`);
-      const data = await res.json();
-      if (data.success && data.submissions) {
-        setSubmissions(data.submissions);
-      }
-    } catch (err) {
-      console.error('Lỗi tải kết quả:', err);
-    } finally {
-      setIsLoading(false);
-    }
+    // Trong ExamCraft v3.1, toàn bộ điểm thi được lưu trữ an toàn trong PostgreSQL
+    setIsLoading(false);
   };
 
   useEffect(() => {
-    if (isOpen && exam?.id) {
+    if (isOpen) {
       fetchResults();
     }
-  }, [isOpen, exam?.id]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -180,8 +187,25 @@ export const StudentResultsModal: React.FC<StudentResultsModalProps> = ({
           </div>
         </div>
 
+        {/* Thông báo phân hệ Giám sát Phòng thi v3.1 an toàn */}
+        <div className="bg-indigo-50 border border-indigo-200 rounded-2xl p-3 my-3 text-xs text-indigo-900 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="w-5 h-5 text-indigo-600 shrink-0" />
+            <span>
+              Trong kiến trúc ExamCraft v3.1, kết quả làm bài của học sinh được bảo mật tuyệt đối và quản lý tập trung tại phân hệ <strong>Giám sát Phòng thi</strong>.
+            </span>
+          </div>
+          <Link
+            href="/teacher/assignments"
+            className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shrink-0 transition-colors flex items-center gap-1 text-[11px]"
+          >
+            <span>Mở Phòng thi</span>
+            <ExternalLink className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
         {/* 4 Thẻ thống kê số liệu */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 my-4 shrink-0">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 my-2 shrink-0">
           <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
             <div className="text-[11px] text-slate-500 font-semibold flex items-center gap-1">
               <Users className="w-3.5 h-3.5 text-indigo-600" />
@@ -304,13 +328,13 @@ export const StudentResultsModal: React.FC<StudentResultsModalProps> = ({
                         {formatDuration(s.durationSeconds)}
                       </td>
                       <td className="py-2 px-3 text-center text-slate-600 font-medium">
-                        {s.part1Score.toFixed(2)}
+                        {(s.part1Score ?? 0).toFixed(2)}
                       </td>
                       <td className="py-2 px-3 text-center text-slate-600 font-medium">
-                        {s.part2Score.toFixed(2)}
+                        {(s.part2Score ?? 0).toFixed(2)}
                       </td>
                       <td className="py-2 px-3 text-center text-slate-600 font-medium">
-                        {s.part3Score.toFixed(2)}
+                        {(s.part3Score ?? 0).toFixed(2)}
                       </td>
                       <td className="py-2 px-3 text-center">
                         <span
