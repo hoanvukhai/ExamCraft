@@ -1,0 +1,516 @@
+{
+  "format_version": 1,
+  "updated_at_utc": "2026-10-24T14:22:44.000Z",
+  "coordinator": "CLAUDE",
+  "shared_root": "F:/Workspace/Zazz/ExamCraft",
+  "purpose": "Assignments only; not the canonical product checklist",
+  "runtime_owner": "CODEX",
+  "tasks": [
+    {
+      "task_id": "CODEX-STUDENT-JOURNAL",
+      "assignment_generation": 1,
+      "owner": "CODEX",
+      "base_commit": "83d4a95fedd632b69d8d1eedd135dabc10e369ad",
+      "worktree": "F:/Workspace/Zazz/ExamCraft",
+      "reserved_files": [
+        "src/lib/student-draft-journal.ts",
+        "src/app/a/[publicId]/page.tsx",
+        "tests/student_draft_journal.test.ts",
+        "src/app/api/public/attempts/[id]/submit/route.ts",
+        "src/components/StudentDraftRecovery.tsx",
+        "tests/http_workflows.test.ts",
+        "src/lib/student-network.ts",
+        "tests/student_network.test.ts",
+        "src/app/share/[id]/page.tsx",
+        "tests/http_public_policies.test.ts",
+        "tests/public_access.test.ts",
+        "src/lib/attempt-access.ts",
+        "src/app/api/public/attempts/[id]/draft/route.ts",
+        "src/app/api/public/assignments/[publicId]/route.ts",
+        "src/app/api/teacher/assignments/[id]/route.ts",
+        "src/app/api/teacher/assignments/[id]/export-csv/route.ts",
+        "scripts/test-database.cjs",
+        "src/components/ImportModal.tsx",
+        "src/components/ExamWorkspace.tsx",
+        "src/components/TeacherDashboard.tsx",
+        "src/app/api/parse-docx/route.ts",
+        "src/app/api/parse-exam-text/route.ts",
+        "src/app/api/ocr-exam-image/route.ts",
+        "src/lib/share-copy.ts",
+        "src/app/api/public/share/[id]/route.ts",
+        "src/app/api/public/share/[id]/copy/route.ts",
+        "tests/share_copy.test.ts",
+        "src/app/api/user/keys/route.ts",
+        "src/app/api/exams/[id]/share/route.ts"
+      ],
+      "status_file": "CODEX_STATUS.md",
+      "deliverable": "Integration and canonical progress",
+      "director_decision": "FREEZE_NEW_FEATURES: chỉ commit và ghi giới hạn phần đang làm; không thêm bảng/nhật ký khôi phục mới"
+    },
+    {
+      "task_id": "CODEX-GRADE-INTEGRATION",
+      "assignment_generation": 3,
+      "owner": "CODEX",
+      "base_commit": "ca738712aed01604a4d4072733cb9dea33ae8e5b",
+      "branch": "rebuild/2026-10-local",
+      "worktree": "F:/Workspace/Zazz/ExamCraft",
+      "allowed_code": [
+        "src/app/api/teacher/attempts/[id]/route.ts",
+        "src/app/teacher/assignments/[id]/page.tsx",
+        "src/lib/grade-history-restore.ts",
+        "tests/grade_history_restore.test.ts",
+        "src/components/TeacherGradeEditor.tsx"
+      ],
+      "status_file": "CODEX_STATUS.md",
+      "deliverable": "Codex integration review fixes, HTTP/PG verification, canonical reports",
+      "previous_assignment": {
+        "owner": "CLAUDE",
+        "generation": 2,
+        "delivered": [
+          "4473f17",
+          "1a1bdad",
+          "f3dca22"
+        ],
+        "integrated": [
+          "c02f43e",
+          "25dddce",
+          "7b5e0e6"
+        ]
+      },
+      "director_decision": "FREEZE_NEW_FEATURES: chỉ commit và ghi giới hạn phần đang làm; không thêm bảng/nhật ký khôi phục mới"
+    },
+    {
+      "task_id": "GEMINI-CONTINUOUS-BATCH",
+      "assignment_generation": 5,
+      "owner": "GEMINI",
+      "base_commit": "bb14bee",
+      "source_mode": "Readonly code/docs; own assigned reports only. No runtime, DB, provider or common progress mutations.",
+      "status_file": "GEMINI_STATUS.md",
+      "deliverables": [
+        "qa/ai-review/GEMINI_ACCOUNT_CALLERS.md",
+        "qa/ai-review/GEMINI_PUBLIC_POLICY_CASES.md",
+        "qa/ai-review/GEMINI_DOC_LINKS.md",
+        "qa/ai-review/GEMINI_MANUAL_TEST_CARDS.md",
+        "qa/ai-review/GEMINI_CALLER_EVIDENCE.md",
+        "qa/ai-review/GEMINI_UI_WORDING.md",
+        "qa/ai-review/GEMINI_CONTENT_COVERAGE.md",
+        "qa/ai-review/GEMINI_VERIFICATION_INDEX.md",
+        "qa/ai-review/GEMINI_BATCH_SUMMARY.md"
+      ],
+      "previous_assignment": {
+        "task_id": "GEMINI-AUDIT-EVIDENCE-PRECISION",
+        "generation": 4,
+        "note": "G01 inherits generation4 precision task"
+      },
+      "queue_file": "qa/ai-review/coordination/GEMINI_BATCH_05.md",
+      "review_file": "qa/ai-review/coordination/BATCH_REVIEWS.json",
+      "independent_items_may_continue_while_review_pending": true,
+      "queue_items": [
+        {
+          "id": "G01",
+          "kind": "readonly_report",
+          "deliverables": [
+            "qa/ai-review/GEMINI_ACCOUNT_CALLERS.md",
+            "qa/ai-review/GEMINI_PUBLIC_POLICY_CASES.md"
+          ]
+        },
+        {
+          "id": "G02",
+          "kind": "readonly_report",
+          "deliverables": [
+            "qa/ai-review/GEMINI_DOC_LINKS.md"
+          ]
+        },
+        {
+          "id": "G03",
+          "kind": "readonly_report",
+          "deliverables": [
+            "qa/ai-review/GEMINI_MANUAL_TEST_CARDS.md"
+          ]
+        },
+        {
+          "id": "G04",
+          "kind": "readonly_report",
+          "deliverables": [
+            "qa/ai-review/GEMINI_CALLER_EVIDENCE.md"
+          ]
+        },
+        {
+          "id": "G05",
+          "kind": "readonly_report",
+          "deliverables": [
+            "qa/ai-review/GEMINI_UI_WORDING.md"
+          ]
+        },
+        {
+          "id": "G06",
+          "kind": "readonly_report",
+          "deliverables": [
+            "qa/ai-review/GEMINI_CONTENT_COVERAGE.md"
+          ]
+        },
+        {
+          "id": "G07",
+          "kind": "readonly_report",
+          "deliverables": [
+            "qa/ai-review/GEMINI_VERIFICATION_INDEX.md"
+          ]
+        },
+        {
+          "id": "G08",
+          "kind": "readonly_report",
+          "deliverables": [
+            "qa/ai-review/GEMINI_BATCH_SUMMARY.md"
+          ]
+        }
+      ],
+      "director_decision": "SUPERSEDED_BY_GEMINI-PILOT-PREP: G03/G05 gộp GEM-P1/P2, G07 gộp GEM-P3, G01/G04 hạ ưu tiên, G08 đóng; G02/G06 đã duyệt"
+    },
+    {
+      "task_id": "CODEX-TEMPLATE-INTEGRATION",
+      "assignment_generation": 5,
+      "owner": "CODEX",
+      "base_commit": "f3dca226a827fd2569d58c3c8d924c56987084a2",
+      "branch": "rebuild/2026-10-local",
+      "worktree": "F:/Workspace/Zazz/ExamCraft",
+      "allowed_code": [
+        "src/components/ExamTemplatePanel.tsx",
+        "src/lib/template-request-context.ts",
+        "src/lib/exam-template.ts",
+        "tests/template_request_context.test.ts",
+        "tests/exam_template.test.ts"
+      ],
+      "status_file": "CODEX_STATUS.md",
+      "deliverable": "qa/ai-review/CLAUDE_TEMPLATE_ASYNC.md and only new commits after f3dca22",
+      "previous_assignment": {
+        "owner": "CLAUDE",
+        "generation": 4,
+        "delivered": [
+          "b442c22",
+          "f85712e"
+        ],
+        "integrated": [
+          "58509d0",
+          "bb14bee"
+        ]
+      },
+      "director_decision": "FREEZE_NEW_FEATURES: chỉ commit và ghi giới hạn phần đang làm; không thêm bảng/nhật ký khôi phục mới"
+    },
+    {
+      "task_id": "CODEX-MEMORY-INTEGRATION",
+      "assignment_generation": 7,
+      "owner": "CODEX",
+      "base_commit": "f85712e7b4f789b1701bec7d63b97d1e88fa0e10",
+      "branch": "rebuild/2026-10-local",
+      "worktree": "F:/Workspace/Zazz/ExamCraft",
+      "allowed_code": [
+        "src/components/AiLearningModal.tsx",
+        "src/app/api/teacher/ai-memory/route.ts",
+        "src/app/api/teacher/ai-memory/archive/route.ts",
+        "src/app/api/teacher/ai-memory/analyze/route.ts",
+        "src/lib/ai-memory-request-context.ts",
+        "tests/ai_memory_request_context.test.ts"
+      ],
+      "status_file": "CODEX_STATUS.md",
+      "deliverable": "qa/ai-review/CLAUDE_MEMORY_ACCOUNT.md and new commits only after f85712e",
+      "previous_assignment": {
+        "owner": "CLAUDE",
+        "generation": 6,
+        "delivered": [
+          "b19745f",
+          "7d713b6",
+          "d75bbea"
+        ],
+        "integrated": [
+          "804459e",
+          "8cec3d9",
+          "6eae5fd"
+        ]
+      },
+      "director_decision": "FREEZE_NEW_FEATURES: chỉ commit và ghi giới hạn phần đang làm; không thêm bảng/nhật ký khôi phục mới"
+    },
+    {
+      "task_id": "CLAUDE-CONTINUOUS-BATCH",
+      "assignment_generation": 10,
+      "owner": "CLAUDE",
+      "base_commit": "d75bbea26ec70d34e84dc69f57e662a88c639049",
+      "branch": "ai/claude-grade-history",
+      "worktree": "F:/Workspace/Zazz/ExamCraft/tmp/ai-claude-grade-history",
+      "allowed_code": [],
+      "status_file": "CLAUDE_STATUS.md",
+      "previous_assignment": {
+        "task_id": "CLAUDE-KEY-MODAL-ASYNC-SAFETY",
+        "generation": 8,
+        "note": "C01 inherits task8 and any WIP; no reset"
+      },
+      "queue_file": "qa/ai-review/coordination/CLAUDE_BATCH_10.md",
+      "review_file": "qa/ai-review/coordination/BATCH_REVIEWS.json",
+      "independent_items_may_continue_while_review_pending": true,
+      "queue_items": [
+        {
+          "id": "C01",
+          "kind": "code",
+          "cv": [
+            "011",
+            "031",
+            "032"
+          ],
+          "allowed_code": [
+            "src/components/ApiKeyModal.tsx",
+            "src/lib/key-modal-request-context.ts",
+            "tests/key_modal_request_context.test.ts"
+          ],
+          "deliverable": "qa/ai-review/CLAUDE_KEY_MODAL_ASYNC.md",
+          "code_owner": "CODEX",
+          "integration_commits": [
+            "a04e0fe",
+            "0db7ef8",
+            "887ccc4"
+          ],
+          "frozen": true
+        },
+        {
+          "id": "C02",
+          "kind": "code",
+          "cv": [
+            "010",
+            "060",
+            "061"
+          ],
+          "allowed_code": [
+            "src/lib/teacher-grade-draft.ts",
+            "src/components/TeacherGradeDraftRecovery.tsx",
+            "tests/teacher_grade_draft.test.ts"
+          ],
+          "deliverable": "qa/ai-review/CLAUDE_TEACHER_GRADE_DRAFT.md",
+          "code_owner": "CODEX",
+          "frozen": true
+        },
+        {
+          "id": "C03",
+          "kind": "code",
+          "cv": [
+            "010",
+            "064",
+            "069"
+          ],
+          "allowed_code": [
+            "src/lib/memory-note-draft.ts",
+            "src/components/MemoryNoteDraftRecovery.tsx",
+            "tests/memory_note_draft.test.ts"
+          ],
+          "deliverable": "qa/ai-review/CLAUDE_MEMORY_NOTE_DRAFT.md",
+          "code_owner": "CODEX",
+          "frozen": true
+        },
+        {
+          "id": "C04",
+          "kind": "design_only",
+          "cv": [
+            "030",
+            "048"
+          ],
+          "allowed_code": [],
+          "deliverable": "qa/ai-review/CLAUDE_PUBLICATION_DESIGN.md"
+        },
+        {
+          "id": "C05",
+          "kind": "design_only",
+          "cv": [
+            "059",
+            "060",
+            "061"
+          ],
+          "allowed_code": [],
+          "deliverable": "qa/ai-review/CLAUDE_REGRADE_DESIGN.md"
+        },
+        {
+          "id": "C06",
+          "kind": "summary",
+          "allowed_code": [],
+          "deliverable": "qa/ai-review/CLAUDE_BATCH_SUMMARY.md"
+        }
+      ],
+      "deliverables": [
+        "qa/ai-review/CLAUDE_KEY_MODAL_ASYNC.md",
+        "qa/ai-review/CLAUDE_TEACHER_GRADE_DRAFT.md",
+        "qa/ai-review/CLAUDE_MEMORY_NOTE_DRAFT.md",
+        "qa/ai-review/CLAUDE_PUBLICATION_DESIGN.md",
+        "qa/ai-review/CLAUDE_REGRADE_DESIGN.md",
+        "qa/ai-review/CLAUDE_BATCH_SUMMARY.md",
+        "qa/rebuild-2026-10-24/CLAUDE_BATCH_CHECKS.md"
+      ],
+      "director_decision": "CLOSED_BY_DIRECTOR: worker batch đóng; C04/C06 sau pilot, C05 không tiếp; worktree giữ nguyên"
+    },
+    {
+      "task_id": "CODEX-KEY-INTEGRATION",
+      "assignment_generation": 11,
+      "owner": "CODEX",
+      "branch": "rebuild/2026-10-local",
+      "worktree": "F:/Workspace/Zazz/ExamCraft",
+      "allowed_code": [
+        "src/components/ApiKeyModal.tsx",
+        "src/lib/key-modal-request-context.ts",
+        "tests/key_modal_request_context.test.ts"
+      ],
+      "status_file": "CODEX_STATUS.md",
+      "deliverable": "Root runtime validation and integration of C01; worker must not edit released files",
+      "director_decision": "FREEZE_NEW_FEATURES: chỉ commit và ghi giới hạn phần đang làm; không thêm bảng/nhật ký khôi phục mới"
+    },
+    {
+      "task_id": "CODEX-DRAFT-UI-INTEGRATION",
+      "assignment_generation": 12,
+      "owner": "CODEX",
+      "worktree": "F:/Workspace/Zazz/ExamCraft",
+      "branch": "rebuild/2026-10-local",
+      "allowed_code": [
+        "src/lib/teacher-grade-draft.ts",
+        "src/components/TeacherGradeDraftRecovery.tsx",
+        "tests/teacher_grade_draft.test.ts",
+        "src/lib/memory-note-draft.ts",
+        "src/components/MemoryNoteDraftRecovery.tsx",
+        "tests/memory_note_draft.test.ts",
+        "src/lib/grade-save-receipt.ts",
+        "tests/grade_save_receipt.test.ts",
+        "tests/draft_recovery_render.test.tsx"
+      ],
+      "status_file": "CODEX_STATUS.md",
+      "deliverable": "Mount draft recovery with account/context/ACK safeguards; root owns parent files in existing assignments",
+      "director_decision": "FREEZE_NEW_FEATURES: chỉ commit và ghi giới hạn phần đang làm; không thêm bảng/nhật ký khôi phục mới"
+    },
+    {
+      "task_id": "CODEX-P0-COMMIT",
+      "assignment_generation": 13,
+      "owner": "CODEX",
+      "priority": "P0",
+      "branch": "rebuild/2026-10-local",
+      "worktree": "F:/Workspace/Zazz/ExamCraft",
+      "scope": "Commit phần đang làm dở thành các nhóm có kiểm; không thêm tính năng; trả cây làm việc sạch trừ tmp/.",
+      "definition_of_done": [
+        "git status sạch (trừ tmp/)",
+        "mỗi commit có test liên quan chạy mới hoặc ghi rõ kế thừa",
+        "CODEX_STATUS cập nhật"
+      ],
+      "status_file": "CODEX_STATUS.md",
+      "rules": [
+        "Không push/reset/clean; không ghi DB chính; không gọi AI/provider thật; không chép key/cookie/.env",
+        "Test ghi chỉ trên DB thử đã kiểm đích; một build tại một thời điểm, không chạy lint/SAFE cùng build",
+        "Cập nhật status của mình sau mỗi mốc; gửi tin vào messages/ khi xong hoặc bị chặn"
+      ]
+    },
+    {
+      "task_id": "CODEX-P1-E2E",
+      "assignment_generation": 13,
+      "owner": "CODEX",
+      "priority": "P0",
+      "depends_on": [
+        "CODEX-P0-COMMIT"
+      ],
+      "scope": "Bộ kiểm trình duyệt tự động cho luồng F1–F7 trong docs/phoi-hop-ai/04_MOC_PILOT.md, chạy trên server thử cô lập với dữ liệu giả.",
+      "allowed_code": [
+        "tests_pilot/**",
+        "scripts/pilot-*.cjs",
+        "package.json (chỉ thêm script test:pilot và devDependency trình điều khiển trình duyệt)"
+      ],
+      "constraints": [
+        "Dùng Chrome/Edge cài sẵn trên máy; không tải trình duyệt; nếu không có thì BLOCKED và báo",
+        "Mỗi luồng F một kiểm độc lập; bắt đầu từ cùng trạng thái DB thử rồi dọn dữ liệu mình tạo",
+        "Không dùng CUA"
+      ],
+      "deliverable": "qa/rebuild-2026-10-24/PILOT_E2E.md + lệnh npm run test:pilot chạy được",
+      "definition_of_done": [
+        "F1–F7 mỗi luồng đạt hoặc lỗi được ghi cụ thể",
+        "log chạy mới trong qa/rebuild-2026-10-24/",
+        "không dữ liệu thật"
+      ],
+      "status_file": "CODEX_STATUS.md",
+      "rules": [
+        "Không push/reset/clean; không ghi DB chính; không gọi AI/provider thật; không chép key/cookie/.env",
+        "Test ghi chỉ trên DB thử đã kiểm đích; một build tại một thời điểm, không chạy lint/SAFE cùng build",
+        "Cập nhật status của mình sau mỗi mốc; gửi tin vào messages/ khi xong hoặc bị chặn"
+      ]
+    },
+    {
+      "task_id": "CODEX-P2-GAPS",
+      "assignment_generation": 13,
+      "owner": "CODEX",
+      "priority": "P0",
+      "depends_on": [
+        "CODEX-P1-E2E"
+      ],
+      "scope": "Sửa lỗi lộ ra từ bộ kiểm theo thứ tự P0 (010,011,023,024,026,027,043,054–062,073); commit nhỏ; mỗi lần cập nhật dòng Hiện trạng của CV và báo cáo nhóm; không đóng CV.",
+      "allowed_code": [
+        "theo từng lỗi; ghi tệp trước khi sửa vào CODEX_STATUS"
+      ],
+      "deliverable": "qa/rebuild-2026-10-24/PILOT_GAPS.md",
+      "status_file": "CODEX_STATUS.md",
+      "rules": [
+        "Không push/reset/clean; không ghi DB chính; không gọi AI/provider thật; không chép key/cookie/.env",
+        "Test ghi chỉ trên DB thử đã kiểm đích; một build tại một thời điểm, không chạy lint/SAFE cùng build",
+        "Cập nhật status của mình sau mỗi mốc; gửi tin vào messages/ khi xong hoặc bị chặn"
+      ]
+    },
+    {
+      "task_id": "GEMINI-PILOT-PREP",
+      "assignment_generation": 6,
+      "owner": "GEMINI",
+      "priority": "P0",
+      "base_commit": "rebuild/2026-10-local HEAD",
+      "source_mode": "Readonly code/docs; chỉ ghi các tệp deliverable bên dưới và GEMINI_STATUS/messages. Không runtime, DB, provider, không sửa mã.",
+      "status_file": "GEMINI_STATUS.md",
+      "queue_file": "docs/phoi-hop-ai/04_MOC_PILOT.md",
+      "queue_items": [
+        {
+          "id": "GEM-P1",
+          "kind": "readonly_report",
+          "deliverables": [
+            "docs/huong-dan/THE_KIEM_TAY_PILOT.md"
+          ],
+          "scope": "Thẻ kiểm tay F1–F8 bằng tiếng Việt: từng bước, kết quả mong đợi, nhãn nút đúng giao diện thật (đọc mã/GEMINI_UI_WORDING). Kế thừa G03."
+        },
+        {
+          "id": "GEM-P2",
+          "kind": "readonly_report",
+          "deliverables": [
+            "docs/huong-dan/HUONG_DAN_GIAO_VIEN_PILOT.md"
+          ],
+          "scope": "Hướng dẫn 1–2 trang cho giáo viên: key tùy chọn, soạn, đáp án, chia sẻ, giao bài, chấm, sao lưu. Không thuật ngữ kỹ thuật. Kế thừa G05."
+        },
+        {
+          "id": "GEM-P3",
+          "kind": "readonly_report",
+          "deliverables": [
+            "docs/nghien-cuu/goi/PILOT-TOAN-6/00_PHAM_VI.md",
+            "docs/nghien-cuu/goi/PILOT-TOAN-6/01_MUC_LUC_VA_YEU_CAU.md"
+          ],
+          "scope": "Toán 6: mục lục sách một bộ, yêu cầu cần đạt, nguồn kèm trang, trạng thái chờ duyệt, điểm chưa chắc. Dựa sổ nguồn docs/nghien-cuu; không nạp vào mã/DB. Kế thừa G07."
+        },
+        {
+          "id": "GEM-P4",
+          "kind": "readonly_report",
+          "deliverables": [
+            "docs/phoi-hop-ai/05_TUYEN_GIAO_VIEN_VA_NGUOI_DUYET.md"
+          ],
+          "scope": "Mô tả vai trò, nhiệm vụ thử, thời lượng, quyền riêng tư dữ liệu cho giáo viên thử và người duyệt chuyên môn; để chủ dự án dùng, không tự liên hệ ai."
+        },
+        {
+          "id": "GEM-P5",
+          "kind": "readonly_report",
+          "priority": "LOW",
+          "deliverables": [
+            "qa/ai-review/GEMINI_ACCOUNT_CALLERS.md"
+          ],
+          "scope": "Chỉ làm khi GEM-P1..P4 xong: sửa bản đồ caller tài khoản theo yêu cầu đã trả (CV011). Kế thừa G01/G04."
+        }
+      ],
+      "rules": [
+        "Không push/reset/clean; không ghi DB chính; không gọi AI/provider thật; không chép key/cookie/.env",
+        "Test ghi chỉ trên DB thử đã kiểm đích; một build tại một thời điểm, không chạy lint/SAFE cùng build",
+        "Cập nhật status của mình sau mỗi mốc; gửi tin vào messages/ khi xong hoặc bị chặn"
+      ]
+    }
+  ],
+  "batch_protocol": "docs/phoi-hop-ai/03_HANG_DOI_LIEN_MACH.md",
+  "coordinator_since_utc": "2026-10-24T14:22:44.000Z",
+  "director_note": "Từ 24/10/2026 chủ dự án giao vai chỉ đạo cho CLAUDE; CLAUDE giữ ASSIGNMENTS.json và BATCH_REVIEWS.json. CODEX giữ mã chính, build/DB/server/provider và thực thi. Kế hoạch: docs/phoi-hop-ai/04_MOC_PILOT.md."
+}

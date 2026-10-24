@@ -1,0 +1,1 @@
+[ĐÃ NGỪNG DÙNG 24/10/2026] Claude không còn là worker; Claude là người chỉ đạo (xem docs/phoi-hop-ai/04_MOC_PILOT.md). Dùng 02_DAN_CHO_CODEX.txt cho Codex và 01_DAN_CHO_GEMINI.txt cho Gemini. Nội dung prompt Claude worker cũ nằm trong lịch sử Git.
