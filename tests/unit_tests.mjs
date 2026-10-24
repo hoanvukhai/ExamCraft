@@ -46,16 +46,16 @@ function runTest(name, fn) {
 // -----------------------------------------------------------------
 // 1. KIỂM THỬ SCORING.TS
 // -----------------------------------------------------------------
-runTest('Scoring: Điểm mặc định chuẩn GDPT 2018 (0.25, 1.0, 0.5, 1.0)', () => {
+runTest('Scoring: Thiếu ngữ cảnh không tự lấy điểm Toán lớp 12', () => {
   const mc = { id: '1', type: 'multiple_choice', difficulty: 'nhan_biet', content: '', step_by_step_solution: '' };
   const tf = { id: '2', type: 'true_false_group', difficulty: 'thong_hieu', content: '', step_by_step_solution: '' };
   const sa = { id: '3', type: 'short_answer', difficulty: 'van_dung', content: '', step_by_step_solution: '' };
   const es = { id: '4', type: 'essay', difficulty: 'van_dung_cao', content: '', step_by_step_solution: '' };
 
-  assert.strictEqual(getDefaultPointsForQuestion(mc), 0.25);
-  assert.strictEqual(getDefaultPointsForQuestion(tf), 1.0);
-  assert.strictEqual(getDefaultPointsForQuestion(sa), 0.5);
-  assert.strictEqual(getDefaultPointsForQuestion(es), 1.0);
+  assert.strictEqual(getDefaultPointsForQuestion(mc), 0);
+  assert.strictEqual(getDefaultPointsForQuestion(tf), 0);
+  assert.strictEqual(getDefaultPointsForQuestion(sa), 0);
+  assert.strictEqual(getDefaultPointsForQuestion(es), 0);
 });
 
 runTest('Scoring: Tính tổng điểm đề thi 12 MC + 4 TF + 6 SA = 10.0đ', () => {
@@ -65,7 +65,7 @@ runTest('Scoring: Tính tổng điểm đề thi 12 MC + 4 TF + 6 SA = 10.0đ', 
     ...Array(6).fill(0).map((_, i) => ({ id: `sa_${i}`, type: 'short_answer', difficulty: 'thong_hieu', content: '', step_by_step_solution: '' })),
   ];
 
-  const exam = { id: 'test_exam', metadata: {}, questions, createdAt: '', updatedAt: '' };
+  const exam = { id: 'test_exam', sections: getSubjectConfig('toan', 12).sections, metadata: { subject: 'toan', grade: 12 }, questions, createdAt: '', updatedAt: '' };
   const total = calculateExamTotalPoints(exam);
   const breakdown = getExamScoreBreakdown(exam);
 
@@ -82,7 +82,7 @@ runTest('Scoring: Tính tổng điểm Vật lí THPT (18 MC + 4 TF + 6 SA = 10.
     ...Array(6).fill(0).map((_, i) => ({ id: `sa_${i}`, type: 'short_answer', difficulty: 'thong_hieu', content: '', step_by_step_solution: '' })),
   ];
 
-  const exam = { id: 'test_physics', metadata: { subject: 'vat_ly', grade: 12 }, questions, createdAt: '', updatedAt: '' };
+  const exam = { id: 'test_physics', sections: getSubjectConfig('vat_ly', 12).sections, metadata: { subject: 'vat_ly', grade: 12 }, questions, createdAt: '', updatedAt: '' };
   const total = calculateExamTotalPoints(exam);
   const breakdown = getExamScoreBreakdown(exam);
 
@@ -272,8 +272,9 @@ Xét tính đúng sai của các mệnh đề sau:
   assert.strictEqual(q.sub_questions[3].isCorrect, false);
 });
 
-runTest('Matrix Generator: Tính toán ma trận 2D chuẩn theo CV 7991', () => {
+runTest('Matrix Generator: Tổng hợp câu và điểm thực tế, không tự chuẩn hóa thang 10', () => {
   const sampleExam = {
+    sections: getSubjectConfig('toan', 12).sections,
     metadata: { subject: 'toan', grade: 12, durationMinutes: 90, title: 'Đề kiểm tra' },
     questions: [
       { id: '1', type: 'multiple_choice', difficulty: 'nhan_biet', topics: ['Hàm số'], content: 'Câu 1' },
@@ -305,9 +306,14 @@ runTest('Spec Generator: Tạo bảng đặc tả ánh xạ chính xác số th�
 
   const spec = computeExamSpecification(sampleExam);
   assert.strictEqual(spec.length, 1);
-  assert.deepStrictEqual(spec[0].nbQuestions, [1]);
-  assert.deepStrictEqual(spec[0].thQuestions, [2]);
-  assert.deepStrictEqual(spec[0].vdcQuestions, [3]);
+  assert.deepStrictEqual(spec[0].unmappedQuestions, [1, 2, 3]);
+  assert.deepStrictEqual(spec[0].nbQuestions, []);
+  sampleExam.metadata.cognitiveFrameworkId = 'legacy_4';
+  sampleExam.questions.forEach(q => { q.cognitiveLevel = q.difficulty; });
+  const explicitlyMapped = computeExamSpecification(sampleExam);
+  assert.deepStrictEqual(explicitlyMapped[0].nbQuestions, [1]);
+  assert.deepStrictEqual(explicitlyMapped[0].thQuestions, [2]);
+  assert.deepStrictEqual(explicitlyMapped[0].vdcQuestions, [3]);
 });
 
 // -----------------------------------------------------------------
@@ -330,7 +336,7 @@ runTest('KHTN: CleanLatex hỗ trợ công thức hóa học mhchem và ký hi�
 // -----------------------------------------------------------------
 // 6. KIỂM THỬ CẤU HÌNH ĐỀ THI 19 MÔN HỌC CHUẨN GDPT 2018
 // -----------------------------------------------------------------
-runTest('Subject Config: Cấu hình chuẩn 10.0 điểm cho tất cả phân môn mới', () => {
+runTest('Subject Config: Các mẫu tham khảo giữ cấu trúc vốn có, không đại diện mọi lớp', () => {
   const lichSu = getSubjectConfig('lich_su', 12);
   assert.strictEqual(lichSu.totalExamPoints, 10.0);
   assert.strictEqual(lichSu.sections[0].questionCount, 24); // 24 MC x 0.25 = 6.0
@@ -371,7 +377,8 @@ runTest('Curriculum: Danh mục môn học khớp chuẩn từng cấp lớp GDP
   // Lớp 3: Tiếng Anh bắt buộc, có Tin học & Công nghệ
   const g3 = getSubjectsForGrade(3);
   const g3Keys = g3.map(s => s.key);
-  assert.ok(g3Keys.includes('tin_hoc_cong_nghe'));
+  assert.ok(g3Keys.includes('tin_hoc'));
+  assert.ok(g3Keys.includes('cong_nghe'));
   assert.strictEqual(g3.find(s => s.key === 'tieng_anh').category, 'Bắt buộc');
 
   // Lớp 8 THCS: KHTN tích hợp, Lịch sử và Địa lí tích hợp
@@ -384,7 +391,9 @@ runTest('Curriculum: Danh mục môn học khớp chuẩn từng cấp lớp GDP
   // Lớp 12 THPT: 4 môn bắt buộc (Toán, Văn, Anh, Sử) + các môn lựa chọn độc lập
   const g12 = getSubjectsForGrade(12);
   const compulsory = g12.filter(s => s.category === 'Bắt buộc').map(s => s.key);
-  assert.deepStrictEqual(compulsory, ['toan', 'ngu_van', 'tieng_anh', 'lich_su']);
+  for (const key of ['toan', 'ngu_van', 'tieng_anh', 'lich_su', 'giao_duc_the_chat', 'giao_duc_quoc_phong_an_ninh']) assert.ok(compulsory.includes(key), key);
+  assert.ok(g12.some(s => s.key === 'am_nhac'));
+  assert.ok(g12.some(s => s.key === 'mi_thuat'));
   const electives = g12.filter(s => s.category === 'Lựa chọn').map(s => s.key);
   assert.ok(electives.includes('vat_ly'));
   assert.ok(electives.includes('hoa_hoc'));
@@ -431,5 +440,6 @@ runTest('TT 17/2025 & Tracks: Hỗ trợ phân môn THCS và cụm chuyên đề
 });
 
 console.log('\n========================================================');
-console.log(`KẾT QUẢ: ĐÃ VƯỢT QUA ${passedTests}/${totalTests} BÀI KIỂM THỬ (100% PASS)`);
+console.log(`KẾT QUẢ: ${passedTests}/${totalTests} bài kiểm thử đạt; ${totalTests - passedTests} thất bại.`);
 console.log('========================================================');
+if (passedTests !== totalTests) process.exitCode = 1;

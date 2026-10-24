@@ -1,0 +1,24 @@
+{
+  "format": "examcraft-knowledge-package",
+  "formatVersion": 1,
+  "id": "personal-fixture-math6",
+  "revision": "r1",
+  "title": "Gói tự soạn minh họa — chỉ dùng kiểm thử",
+  "subject": "toan",
+  "grade": 6,
+  "curriculumVersion": "fixture-khong-phai-chuong-trinh-chinh-thuc",
+  "kind": "personal",
+  "status": "needs_review",
+  "sources": [{ "id": "teacher-note", "title": "Nội dung giả do người thử tự soạn", "rights": "unknown" }],
+  "knowledge": [
+    { "id": "group", "title": "Nhóm phép tính minh họa", "sourceIds": ["teacher-note"] },
+    { "id": "addition", "parentId": "group", "title": "Phép cộng minh họa", "sourceIds": ["teacher-note"] },
+    { "id": "subtraction", "parentId": "group", "title": "Phép trừ minh họa", "sourceIds": ["teacher-note"] }
+  ],
+  "outcomes": [
+    { "id": "outcome-add", "text": "Yêu cầu tự soạn: thực hiện phép cộng trong ví dụ", "knowledgeIds": ["addition"], "sourceIds": ["teacher-note"] },
+    { "id": "outcome-sub", "text": "Yêu cầu tự soạn: thực hiện phép trừ trong ví dụ", "knowledgeIds": ["subtraction"], "sourceIds": ["teacher-note"] }
+  ],
+  "books": [{ "id": "personal-outline", "series": "Mục lục tự soạn", "title": "Tài liệu minh họa", "edition": "fixture-r1", "entries": [{ "id": "chapter-example", "title": "Chương minh họa" }, { "id": "lesson-example", "parentId": "chapter-example", "title": "Bài minh họa", "order": 99 }] }],
+  "mappings": [{ "bookId": "personal-outline", "entryId": "lesson-example", "knowledgeIds": ["addition"], "outcomeIds": ["outcome-add"], "sourceIds": ["teacher-note"] }]
+}

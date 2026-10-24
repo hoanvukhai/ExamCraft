@@ -1,5 +1,5 @@
 import { PrismaClient, Role, QuestionType, Difficulty, Visibility, SourceKind, AttemptStatus, AssignmentMode } from '@prisma/client';
-import { hashPassword, verifyPassword, createSession, deleteSession, checkLoginRateLimit, recordFailedLogin, clearLoginRateLimit } from '../src/lib/auth';
+import { hashPassword, verifyPassword, createSession, deleteSession } from '../src/lib/auth';
 
 const prisma = new PrismaClient({
   datasources: {
@@ -73,17 +73,8 @@ async function main() {
   const deletedDbSession = await prisma.session.findUnique({ where: { token: sessionA.token } });
   assert(deletedDbSession === null, 'Hủy phiên Session thành công sau khi đăng xuất');
 
-  // Test Brute-force lockout
-  const testIpKey = 'ip_test_brute_force';
-  clearLoginRateLimit(testIpKey);
-  const initialCheck = await checkLoginRateLimit(testIpKey);
-  assert(initialCheck.allowed, 'Lần đầu kiểm tra rate limit cho phép đăng nhập');
-  for (let i = 1; i <= 5; i++) {
-    recordFailedLogin(testIpKey);
-  }
-  const lockoutStatus = await checkLoginRateLimit(testIpKey);
-  assert(!lockoutStatus.allowed && (lockoutStatus.waitMinutes || 0) > 0, 'Khóa tạm thời tài khoản sau 5 lần đăng nhập thất bại');
-  clearLoginRateLimit(testIpKey);
+  // Durable account limiter is covered separately by auth_security.test.ts.
+  // Do not invoke the removed process-local rate-limit hooks here.
 
   // ─────────────────────────────────────────────────────────────
   // 2. IDOR CHÉO GIỮA CÁC GIÁO VIÊN (R7)

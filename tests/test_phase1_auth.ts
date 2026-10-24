@@ -1,5 +1,5 @@
 import prisma from '../src/lib/prisma';
-import { hashPassword, verifyPassword, createSession, deleteSession, checkLoginRateLimit, recordFailedLogin, clearLoginRateLimit } from '../src/lib/auth';
+import { hashPassword, verifyPassword, createSession, deleteSession } from '../src/lib/auth';
 import { Role } from '@prisma/client';
 
 async function runTests() {
@@ -46,20 +46,8 @@ async function runTests() {
   }
   console.log('✅ Test 3 Thành công: Tạo và hủy phiên đăng nhập (Session) trong DB chính xác.');
 
-  // Test 4: Chống brute-force rate limit
-  const dummyKey = 'test_ip:test@school.edu.vn';
-  clearLoginRateLimit(dummyKey);
-
-  for (let i = 0; i < 5; i++) {
-    recordFailedLogin(dummyKey);
-  }
-
-  const rateCheck = await checkLoginRateLimit(dummyKey);
-  if (rateCheck.allowed) {
-    throw new Error('❌ Test 4 Thất bại: Rate limiting không khóa sau 5 lần thử sai!');
-  }
-  clearLoginRateLimit(dummyKey);
-  console.log('✅ Test 4 Thành công: Cơ chế khóa tạm thời chống tấn công dò mật khẩu (Brute-force).');
+  // Legacy process-local limiter was removed. Durable account rate limiting is
+  // exercised in auth_security.test.ts and the isolated HTTP authentication tests.
 
   // Test 5: Tạo và khóa/mở tài khoản giáo viên
   const teacherEmail = 'gv_kiemthu@examcraft.test';

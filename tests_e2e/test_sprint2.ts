@@ -1,5 +1,5 @@
 import { PrismaClient, Role, QuestionType, Difficulty, Visibility, SourceKind, AssignmentMode, AssignmentStatus, RevealPolicy, AttemptStatus } from '@prisma/client';
-import { sanitizeSnapshotForStudent } from '../src/app/api/public/assignments/[publicId]/route';
+import { sanitizeSnapshotForStudent } from '../src/lib/public-exam';
 import { exportExamToDocx } from '../src/lib/docx-export';
 
 const prisma = new PrismaClient({
@@ -159,14 +159,14 @@ async function main() {
   // Kiểm tra câu trắc nghiệm
   const q1 = sanitized.questions[0];
   assert(q1.payload.choices.length === 2, 'Giữ nguyên 2 phương án A, B');
-  assert(q1.payload.correct === undefined, 'Đã loại bỏ trường payload.correct khỏi câu hỏi trắc nghiệm');
-  assert((q1 as any).solution === undefined, 'Đã loại bỏ trường solution khỏi câu hỏi trắc nghiệm');
+  assert(!('correct' in q1.payload), 'Đã loại bỏ trường payload.correct khỏi câu hỏi trắc nghiệm');
+  assert(!('solution' in q1), 'Đã loại bỏ trường solution khỏi câu hỏi trắc nghiệm');
 
   // Kiểm tra câu Đúng/Sai
   const q2 = sanitized.questions[1];
   assert(q2.payload.sub_questions.length === 4, 'Giữ nguyên 4 ý a, b, c, d');
   assert(q2.payload.sub_questions[0].isCorrect === undefined, 'Đã loại bỏ isCorrect khỏi ý sub_question');
-  assert((q2 as any).solution === undefined, 'Đã loại bỏ solution khỏi câu hỏi Đúng/Sai');
+  assert(!('solution' in q2), 'Đã loại bỏ solution khỏi câu hỏi Đúng/Sai');
 
   // ─────────────────────────────────────────────────────────────
   // 2. PHÒNG THI HỌC SINH & SERVER TIMER & DRAFT (ROOM)

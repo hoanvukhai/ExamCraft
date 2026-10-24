@@ -8,7 +8,7 @@ import {
   Difficulty,
   AttemptStatus,
 } from '@prisma/client';
-import { sanitizeSnapshotForStudent } from '../src/app/api/public/assignments/[publicId]/route';
+import { sanitizeSnapshotForStudent } from '../src/lib/public-exam';
 
 async function runPhase3Tests() {
   console.log('--- BẮT ĐẦU KIỂM THỬ GIAI ĐOẠN 3: HỆ THỐNG GIAO BÀI & PHÒNG THI HỌC SINH ---');
@@ -209,13 +209,14 @@ async function runPhase3Tests() {
 
   // 5. Kiểm tra an toàn: Làm sạch đề thi gửi cho học sinh (Sanitization)
   const sanitized = sanitizeSnapshotForStudent(assignment.snapshot);
-  const sanitizedQ1 = sanitized.questions.find((q: any) => q.id === q1.id);
-  const sanitizedQ2 = sanitized.questions.find((q: any) => q.id === q2.id);
+  const sanitizedQ1 = sanitized.questions.find(q => q.id === q1.id);
+  const sanitizedQ2 = sanitized.questions.find(q => q.id === q2.id);
+  if (!sanitizedQ1 || !sanitizedQ2) throw new Error('Sanitizer làm mất câu hỏi cần kiểm');
 
-  if (sanitizedQ1.payload?.correct || sanitizedQ1.solution) {
+  if ('correct' in sanitizedQ1.payload || 'solution' in sanitizedQ1) {
     throw new Error('LỖI BẢO MẬT: Bị lộ đáp án hoặc lời giải của câu trắc nghiệm!');
   }
-  if (sanitizedQ2.payload?.sub_questions?.some((sub: any) => 'isCorrect' in sub)) {
+  if (sanitizedQ2.payload.sub_questions.some(sub => 'isCorrect' in sub)) {
     throw new Error('LỖI BẢO MẬT: Bị lộ cờ isCorrect của câu Đúng/Sai!');
   }
 
