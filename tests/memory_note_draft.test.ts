@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { canApplyNoteDraft, discardNoteDraftEntry, exportNoteDraft, isKnownNoteCategory, noteDraftKey, readNoteDrafts, retireWriterNoteDraft, writeNoteDraft, type NoteDraftStorage, type NoteFields } from '../src/lib/memory-note-draft';
+import { canApplyNoteDraft, discardNoteDraftEntry, exportNoteDraft, isKnownNoteCategory, noteDraftKey, noteDraftsForOwner, readNoteDrafts, retireWriterNoteDraft, writeNoteDraft, type NoteDraftStorage, type NoteFields } from '../src/lib/memory-note-draft';
 
 const memory = () => {
   const data = new Map<string, string>();
@@ -128,4 +128,16 @@ test('export keeps the stored bytes untouched and the file name carries no accou
   assert.equal(exportNoteDraft(entry, 0).raw, '{"broken": 1, \n "kept": "đúng từng byte"');
   assert.match(exportNoteDraft(entry, 1).fileName, /-2\.json$/);
   assert.equal(exportNoteDraft(entry, 0).fileName.includes('teacher-a'), false);
+});
+
+test('a dialog shows only records under its own account namespace, readable or not, and keeps their raw bytes', () => {
+  const store = memory(), own = noteDraftKey('teacher-a', 'w'), other = noteDraftKey('teacher-b', 'w');
+  store.data.set(own, '{broken own'); store.data.set(other, '{broken of B'); store.data.set(noteDraftKey('teacher-b', 'big'), 'x'.repeat(70 * 1024));
+  writeNoteDraft(() => store, 'teacher-a', 'w2', fields(), NOW);
+  const all = [...readNoteDrafts(() => store, 'teacher-a').entries, ...readNoteDrafts(() => store, 'teacher-b').entries];
+  assert.equal(all.length, 4);
+  assert.deepEqual(noteDraftsForOwner(all, 'teacher-a').map(entry => entry.key).sort(), [own, noteDraftKey('teacher-a', 'w2')].sort(), 'account B bytes stay hidden even if a stale prop carries them');
+  assert.equal(noteDraftsForOwner(all, 'teacher-a').find(entry => entry.key === own)!.raw, '{broken own');
+  assert.deepEqual(noteDraftsForOwner(all, 'teacher-b').map(entry => entry.raw).sort(), ['x'.repeat(70 * 1024), '{broken of B'].sort());
+  assert.deepEqual(noteDraftsForOwner(all, 'teacher-c'), []);
 });

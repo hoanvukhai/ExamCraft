@@ -34,6 +34,16 @@ function parseEntry(key: string, raw: string): NoteDraftEntry {
   return entry;
 }
 
+/**
+ * What a dialog pinned to this account may show: only entries stored under this account's own key namespace. Unreadable
+ * or oversized records stay visible (raw, for export) only inside that namespace, so a stale prop cannot expose another
+ * account's bytes.
+ */
+export function noteDraftsForOwner(entries: readonly NoteDraftEntry[], ownerId: string) {
+  const wanted = prefix(ownerId);
+  return entries.filter(entry => entry.key.startsWith(wanted) && (!entry.value || entry.value.ownerId === ownerId));
+}
+
 /** Every draft this account has on this browser (one per page that wrote one). */
 export function readNoteDrafts(getStorage: () => NoteDraftStorage, ownerId: string): { entries: NoteDraftEntry[]; unavailable: boolean } {
   try {

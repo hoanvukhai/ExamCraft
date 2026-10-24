@@ -1,11 +1,11 @@
 'use client';
 
-import { canApplyNoteDraft, exportNoteDraft, isKnownNoteCategory, type NoteDraftEntry, type NoteDraftRecord, type NoteDraftWrite, type NoteFields } from '@/lib/memory-note-draft';
+import { canApplyNoteDraft, exportNoteDraft, isKnownNoteCategory, noteDraftsForOwner, type NoteDraftEntry, type NoteDraftRecord, type NoteDraftWrite, type NoteFields } from '@/lib/memory-note-draft';
 
 interface Props {
   /** The account this dialog is pinned to. The parent should also key the panel by it. */
   ownerId: string;
-  /** From readNoteDrafts(...); records naming another account are ignored here as a second line of defence. */
+  /** From readNoteDrafts(...); entries outside this account's key namespace (readable or not) are dropped here as a second line of defence. */
   entries: NoteDraftEntry[];
   /** True when the browser blocked reading storage, so no backup exists to show. */
   unavailable?: boolean;
@@ -26,7 +26,7 @@ interface Props {
 
 /** Backup panel for unsent AI-memory notes. Small on purpose: read, choose, download, drop. */
 export function MemoryNoteDraftRecovery({ ownerId, entries, unavailable, writeStatus, form, writerId, disabled, onApply, onDiscard }: Props) {
-  const mine = entries.filter(entry => !entry.value || entry.value.ownerId === ownerId);
+  const mine = noteDraftsForOwner(entries, ownerId);
   const blocked = unavailable || (!!writeStatus && writeStatus !== 'saved' && writeStatus !== 'empty');
   if (!mine.length && !blocked) return null;
   return <details className="border rounded-xl p-3 my-3 text-xs" open={blocked || undefined}>
