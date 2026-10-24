@@ -1,32 +1,22 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { usePinnedAccount } from '@/hooks/usePinnedAccount';
+import { accountFetch } from '@/lib/account-fetch';
+import { createRequestIdentity, isAccountFailure } from '@/lib/template-request-context';
+import { MemoryGate, canActOnMemory, memoryDraftFingerprint, parseMemoryList, parseSavedMemory, shouldClearDraft, type MemoryDraft, type MemoryToken, type TeacherMemoryRow } from '@/lib/ai-memory-request-context';
 import {
   Brain,
   Sparkles,
   RefreshCw,
   Plus,
   Trash2,
-  Check,
   X,
-  AlertCircle,
   Lightbulb,
-  Sliders,
-  CheckCircle2,
-  Bot
+  CheckCircle2
 } from 'lucide-react';
 
-interface TeacherMemory {
-  id: string;
-  subject: string;
-  category: string;
-  title: string;
-  insight: string;
-  confidence: number;
-  isActive: boolean;
-  sourceAction: string;
-  createdAt: string;
-}
+type TeacherMemory = TeacherMemoryRow;
 
 interface AiLearningModalProps {
   isOpen: boolean;
@@ -37,161 +27,188 @@ interface AiLearningModalProps {
   };
 }
 
-export const AiLearningModal: React.FC<AiLearningModalProps> = ({ isOpen, onClose }) => {
+type Busy = { kind: 'load' | 'analyze' | 'save' | 'archive' | 'row'; id?: string } | null;
+const jsonHeaders = { 'Content-Type': 'application/json' };
+const messageOf = (data: unknown, fallback: string) => data && typeof data === 'object' && typeof (data as { error?: unknown }).error === 'string' ? (data as { error: string }).error : fallback;
+const emptyDraft: MemoryDraft = { title: '', insight: '', category: 'PEDAGOGICAL_STYLE', subject: 'toan' };
+const lockedMessage = 'Phiên hoặc tài khoản đã thay đổi. Chưa gửi thêm gì từ cửa sổ này; nội dung đang soạn vẫn còn. Hãy tải lại trang bằng đúng tài khoản rồi thử lại.';
+
+/** The dialog is re-created for every open and every pinned account, so no state or request can outlive its context. */
+export const AiLearningModal: React.FC<AiLearningModalProps> = ({ isOpen, onClose, currentUser }) => {
+  const account = usePinnedAccount();
+  if (!isOpen) return null;
+  return <AiLearningDialog key={account.ownerId ?? 'pending'} ownerId={account.ownerId} accountError={account.error} expectedUserId={currentUser?.id} onClose={onClose} />;
+};
+
+function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { ownerId: string | null; accountError: string; expectedUserId?: string; onClose: () => void }) {
   const archiveInput = useRef<HTMLInputElement>(null);
-  const [archiveBusy, setArchiveBusy] = useState(false);
-  const [memories, setMemories] = useState<TeacherMemory[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const gateRef = useRef<MemoryGate | null>(null);
+  const [saveRequestId] = useState(() => createRequestIdentity(() => crypto.randomUUID()));
+  const [list, setList] = useState<{ ownerId: string; items: TeacherMemory[] }>({ ownerId: '', items: [] });
+  const [skipped, setSkipped] = useState(0);
+  const [busy, setBusy] = useState<Busy>(null);
+  const [locked, setLocked] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
-  const [activeCategoryFilter, setActiveCategoryFilter] = useState<string>('all');
+  const [problem, setProblem] = useState('');
+  const [activeCategoryFilter] = useState<string>('all');
 
-  // Form thêm thủ công
+  // Form thêm thủ công; draftRef lets a late save receipt see what was typed after pressing Save.
   const [isAddingNew, setIsAddingNew] = useState(false);
-  const [newTitle, setNewTitle] = useState('');
-  const [newInsight, setNewInsight] = useState('');
-  const [newCategory, setNewCategory] = useState('PEDAGOGICAL_STYLE');
-  const [newSubject, setNewSubject] = useState('toan');
+  const draftRef = useRef<MemoryDraft>(emptyDraft);
+  const [draft, setDraft] = useState<MemoryDraft>(emptyDraft);
+  const editDraft = (patch: Partial<MemoryDraft>) => { draftRef.current = { ...draftRef.current, ...patch }; setDraft(draftRef.current); };
+  const { title: newTitle, insight: newInsight, category: newCategory } = draft;
+  const setNewTitle = (title: string) => editDraft({ title });
+  const setNewInsight = (insight: string) => editDraft({ insight });
+  const setNewCategory = (category: string) => editDraft({ category });
 
-  const exportNotes = async () => {
-    setArchiveBusy(true);
-    try {
-      const response = await fetch('/api/teacher/ai-memory/archive');
-      if (!response.ok) { const body = await response.json(); throw new Error(body.error); }
-      const url = URL.createObjectURL(await response.blob());
-      const anchor = document.createElement('a'); anchor.href = url; anchor.download = 'examcraft-ghi-chu-rieng.json'; anchor.click();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-      setStatusMessage('Đã xuất ghi chú riêng. Hãy giữ tệp này ở nơi bạn tin cậy.');
-    } catch (error) { setStatusMessage(error instanceof Error ? error.message : 'Chưa xuất được ghi chú.'); }
-    finally { setArchiveBusy(false); }
+  const accountProblem = accountError || (expectedUserId && ownerId && expectedUserId !== ownerId ? 'Trang đang hiển thị tài khoản khác với phiên hiện tại. Hãy tải lại trang.' : '');
+  const ready = !!ownerId && !accountProblem && !locked;
+  const memories = ownerId && list.ownerId === ownerId ? list.items : [];
+  const isLoading = busy?.kind === 'load', isAnalyzing = busy?.kind === 'analyze';
+  const idle = ready && busy === null;
+
+  const begin = (kind: NonNullable<Busy>['kind'], id?: string) => {
+    const token = ownerId ? gateRef.current?.begin() ?? null : null;
+    if (token) { setBusy({ kind, id }); setProblem(''); }
+    return token;
   };
-  const importNotes = async (file?: File) => {
-    if (!file) return;
-    setArchiveBusy(true);
-    try {
-      if (file.size > 5 * 1024 * 1024) throw new Error('Tệp vượt 5 MB; hãy chia nhỏ trước khi nhập.');
-      const archive: unknown = JSON.parse(await file.text());
-      const send = (dryRun: boolean) => fetch('/api/teacher/ai-memory/archive', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ archive, dryRun, confirmPrivateOwnership: !dryRun }) });
-      const previewResponse = await send(true); const preview = await previewResponse.json();
-      if (!previewResponse.ok) throw new Error(preview.error);
-      if (!confirm(`Nhập ${preview.toImport} ghi chú vào kho riêng? ${preview.duplicates} mục trùng sẽ bỏ qua. Các ghi chú nhập sẽ để tắt để bạn đọc trước khi bật.`)) return;
-      const response = await send(false); const result = await response.json();
-      if (!response.ok) throw new Error(result.error);
-      setStatusMessage(`Đã nhập ${result.imported} ghi chú riêng. Chưa bật tự động.`); await loadMemories();
-    } catch (error) { setStatusMessage(error instanceof Error ? error.message : 'Chưa nhập được ghi chú.'); }
-    finally { setArchiveBusy(false); if (archiveInput.current) archiveInput.current.value = ''; }
+  // A stale token's release() is false, so an old request can never clear the busy flag of a newer one.
+  const finish = (token: MemoryToken) => { if (token.release()) setBusy(null); };
+  const fail = (token: MemoryToken, cause: unknown, fallback: string) => { if (token.isLive()) setProblem(cause instanceof Error ? cause.message : fallback); };
+  const send = async (token: MemoryToken, url: string, init: RequestInit = {}, asBlob = false) => {
+    const response = await accountFetch(ownerId!, url, { ...init, signal: token.signal });
+    const data: unknown = asBlob && response.ok ? await response.blob() : await response.json().catch(() => null);
+    if (isAccountFailure(response.status, data) && token.lockAccount()) setLocked(true);
+    return { response, data };
   };
+  const fetchList = async (token: MemoryToken) => {
+    const { response, data } = await send(token, '/api/teacher/ai-memory');
+    if (!token.isLive()) return null;
+    if (!response.ok) throw Error(messageOf(data, 'Chưa tải được ghi chú.'));
+    return parseMemoryList(data);
+  };
+  const showList = (parsed: NonNullable<Awaited<ReturnType<typeof fetchList>>>) => { setList({ ownerId: ownerId!, items: parsed.items }); setSkipped(parsed.skipped); };
 
   const loadMemories = async () => {
-    setIsLoading(true);
-    try {
-      const res = await fetch('/api/teacher/ai-memory');
-      if (res.ok) {
-        const data = await res.json();
-        setMemories(data.memories || []);
-      }
-    } catch (err) {
-      console.error('Lỗi khi tải tri thức AI:', err);
-    } finally {
-      setIsLoading(false);
-    }
+    const token = begin('load'); if (!token) return;
+    try { const parsed = await fetchList(token); if (parsed) showList(parsed); }
+    catch (cause) { fail(token, cause, 'Chưa tải được ghi chú. Danh sách đang xem được giữ nguyên.'); }
+    finally { finish(token); }
   };
 
   useEffect(() => {
-    if (isOpen) {
-      loadMemories();
-    }
-  }, [isOpen]);
+    const gate = new MemoryGate(); gateRef.current = gate;
+    return () => { gate.dispose(); if (gateRef.current === gate) gateRef.current = null; };
+  }, []);
+  useEffect(() => {
+    if (!ready) return;
+    // Deferred so a strict-mode re-run cancels the first load instead of sending it; loadMemories reads the current gate.
+    const timer = setTimeout(() => void loadMemories(), 0);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready]);
+
+  const exportNotes = async () => {
+    const token = begin('archive'); if (!token) return;
+    try {
+      const { response, data } = await send(token, '/api/teacher/ai-memory/archive', {}, true);
+      if (!token.isLive()) return;
+      if (!response.ok) throw Error(messageOf(data, 'Chưa xuất được ghi chú.'));
+      const url = URL.createObjectURL(data as Blob);
+      const anchor = document.createElement('a'); anchor.href = url; anchor.download = 'examcraft-ghi-chu-rieng.json'; anchor.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      setStatusMessage('Đã xuất ghi chú riêng. Hãy giữ tệp này ở nơi bạn tin cậy.');
+    } catch (cause) { fail(token, cause, 'Chưa xuất được ghi chú.'); }
+    finally { finish(token); }
+  };
+  const importNotes = async (file?: File) => {
+    if (!file) return;
+    const token = begin('archive');
+    try {
+      if (!token) return;
+      if (file.size > 5 * 1024 * 1024) throw new Error('Tệp vượt 5 MB; hãy chia nhỏ trước khi nhập.');
+      const archive: unknown = JSON.parse(await file.text());
+      if (!token.isLive()) return;
+      const post = (dryRun: boolean) => send(token, '/api/teacher/ai-memory/archive', { method: 'POST', headers: jsonHeaders, body: JSON.stringify({ archive, dryRun, confirmPrivateOwnership: !dryRun }) });
+      const { response: previewResponse, data: preview } = await post(true);
+      if (!token.isLive()) return;
+      if (!previewResponse.ok) throw new Error(messageOf(preview, 'Chưa nhập được ghi chú.'));
+      const counts = preview as { toImport: number; duplicates: number };
+      if (!confirm(`Nhập ${counts.toImport} ghi chú vào kho riêng? ${counts.duplicates} mục trùng sẽ bỏ qua. Các ghi chú nhập sẽ để tắt để bạn đọc trước khi bật.`) || !token.isLive()) return;
+      const { response, data: result } = await post(false);
+      if (!token.isLive()) return;
+      if (!response.ok) throw new Error(messageOf(result, 'Chưa nhập được ghi chú.'));
+      setStatusMessage(`Đã nhập ${(result as { imported: number }).imported} ghi chú riêng. Chưa bật tự động.`);
+      try { const parsed = await fetchList(token); if (parsed) showList(parsed); } catch { if (token.isLive()) setProblem('Đã nhập nhưng chưa tải lại danh sách. Bấm “Tải lại”.'); }
+    } catch (cause) { if (token) fail(token, cause, 'Chưa nhập được ghi chú.'); }
+    finally { if (token) finish(token); if (archiveInput.current) archiveInput.current.value = ''; }
+  };
 
   const handleToggleActive = async (memory: TeacherMemory) => {
+    if (!canActOnMemory(list, ownerId, memory.id)) { setProblem('Ghi chú này không còn trong danh sách hiện tại. Hãy tải lại.'); return; }
+    const token = begin('row', memory.id); if (!token) return;
     try {
-      const res = await fetch('/api/teacher/ai-memory', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: memory.id,
-          isActive: !memory.isActive,
-        }),
-      });
-      if (res.ok) {
-        setMemories((prev) =>
-          prev.map((m) => (m.id === memory.id ? { ...m, isActive: !m.isActive } : m))
-        );
-      }
-    } catch {
-      alert('Không thể cập nhật trạng thái');
-    }
+      const { response, data } = await send(token, '/api/teacher/ai-memory', { method: 'POST', headers: jsonHeaders, body: JSON.stringify({ id: memory.id, isActive: !memory.isActive }) });
+      if (!token.isLive()) return;
+      if (!response.ok) throw Error(messageOf(data, 'Không thể cập nhật trạng thái'));
+      const saved = parseMemoryList({ memories: [data && typeof data === 'object' ? (data as { memory?: unknown }).memory : undefined] }).items[0];
+      setList(previous => previous.ownerId !== ownerId ? previous : { ...previous, items: previous.items.map(item => item.id === memory.id ? saved ?? { ...item, isActive: !memory.isActive } : item) });
+    } catch (cause) { fail(token, cause, 'Không thể cập nhật trạng thái'); }
+    finally { finish(token); }
   };
 
   const handleDelete = async (id: string) => {
+    if (!canActOnMemory(list, ownerId, id)) { setProblem('Ghi chú này không còn trong danh sách hiện tại. Hãy tải lại.'); return; }
     if (!confirm('Thầy/Cô có chắc chắn muốn xóa quy tắc phong cách này của AI?')) return;
+    const token = begin('row', id); if (!token) return;
     try {
-      const res = await fetch(`/api/teacher/ai-memory?id=${id}`, {
-        method: 'DELETE',
-      });
-      if (res.ok) {
-        setMemories((prev) => prev.filter((m) => m.id !== id));
-      }
-    } catch {
-      alert('Không thể xóa quy tắc');
-    }
+      const { response, data } = await send(token, `/api/teacher/ai-memory?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
+      if (!token.isLive()) return;
+      if (!response.ok) throw Error(messageOf(data, 'Không thể xóa quy tắc'));
+      setList(previous => previous.ownerId !== ownerId ? previous : { ...previous, items: previous.items.filter(item => item.id !== id) });
+    } catch (cause) { fail(token, cause, 'Không thể xóa quy tắc'); }
+    finally { finish(token); }
   };
 
   const handleRunAutoAnalysis = async () => {
-    setIsAnalyzing(true);
+    const token = begin('analyze'); if (!token) return;
     setStatusMessage('AI đang quét kho đề thi và các câu hỏi của Thầy/Cô để đúc kết phong cách...');
     try {
-      const res = await fetch('/api/teacher/ai-memory/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ autoScan: true }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setStatusMessage(data.message || 'AI đã phân tích và học xong!');
-        loadMemories();
-        setTimeout(() => setStatusMessage(null), 4000);
-      } else {
-        alert(data.error || 'Có lỗi xảy ra khi AI phân tích');
-        setStatusMessage(null);
-      }
-    } catch (err) {
-      console.error(err);
-      alert('Lỗi kết nối khi phân tích');
-      setStatusMessage(null);
-    } finally {
-      setIsAnalyzing(false);
-    }
+      const { response, data } = await send(token, '/api/teacher/ai-memory/analyze', { method: 'POST', headers: jsonHeaders, body: JSON.stringify({ autoScan: true }) });
+      if (!token.isLive()) return;
+      const reply = data as { success?: boolean; message?: string } | null;
+      if (!response.ok || reply?.success !== true) throw Error(messageOf(data, 'Có lỗi xảy ra khi AI phân tích'));
+      setStatusMessage(reply.message || 'AI đã phân tích và học xong!');
+      try { const parsed = await fetchList(token); if (parsed) showList(parsed); } catch { if (token.isLive()) setProblem('AI đã tạo đề xuất nhưng chưa tải lại danh sách. Bấm “Tải lại”.'); }
+    } catch (cause) { if (token.isLive()) setStatusMessage(null); fail(token, cause, 'Lỗi kết nối khi phân tích'); }
+    finally { finish(token); }
   };
 
   const handleCreateManualRule = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newTitle.trim() || !newInsight.trim()) return;
-
+    const sent = { ...draftRef.current };
+    if (!sent.title.trim() || !sent.insight.trim()) return;
+    const token = begin('save'); if (!token) return;
     try {
-      const res = await fetch('/api/teacher/ai-memory', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: newTitle.trim(),
-          insight: newInsight.trim(),
-          category: newCategory,
-          subject: newSubject,
-        }),
-      });
-
-      if (res.ok) {
-        setNewTitle('');
-        setNewInsight('');
-        setIsAddingNew(false);
-        loadMemories();
-      }
-    } catch {
-      alert('Không thể tạo quy tắc');
-    }
+      // Same text keeps the same request ID, so a retry after a lost reply cannot add the note twice.
+      const clientRequestId = saveRequestId(memoryDraftFingerprint(sent));
+      const { response, data } = await send(token, '/api/teacher/ai-memory', { method: 'POST', headers: jsonHeaders, body: JSON.stringify({ title: sent.title.trim(), insight: sent.insight.trim(), category: sent.category, subject: sent.subject, clientRequestId }) });
+      if (!token.isLive()) return;
+      if (!response.ok) throw Error(messageOf(data, 'Không thể tạo quy tắc'));
+      const saved = parseSavedMemory(data);
+      setList(previous => previous.ownerId !== ownerId ? previous : { ...previous, items: [saved, ...previous.items.filter(item => item.id !== saved.id)] });
+      setStatusMessage('Đã lưu quy tắc vào kho riêng.');
+      // Text typed after pressing Save is a new draft: keep it instead of clearing it with this receipt.
+      if (shouldClearDraft(sent, draftRef.current)) { editDraft({ title: '', insight: '' }); setIsAddingNew(false); }
+    } catch (cause) { fail(token, cause, 'Không thể tạo quy tắc. Nội dung vẫn được giữ để thử lại.'); }
+    finally { finish(token); }
   };
 
-  if (!isOpen) return null;
+  const requestClose = () => {
+    if ((draft.title.trim() || draft.insight.trim()) && !confirm('Quy tắc đang soạn chưa được lưu và sẽ mất nếu đóng. Đóng cửa sổ này?')) return;
+    onClose();
+  };
 
   const filteredMemories =
     activeCategoryFilter === 'all'
@@ -231,7 +248,7 @@ export const AiLearningModal: React.FC<AiLearningModalProps> = ({ isOpen, onClos
           </div>
 
           <button
-            onClick={onClose}
+            onClick={requestClose}
             className="p-1.5 text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-white rounded-full hover:bg-black/5 cursor-pointer"
           >
             <X className="w-5 h-5" />
@@ -243,7 +260,7 @@ export const AiLearningModal: React.FC<AiLearningModalProps> = ({ isOpen, onClos
           <div className="flex items-center gap-2">
             <button
               onClick={handleRunAutoAnalysis}
-              disabled={isAnalyzing}
+              disabled={!idle}
               className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold shadow-xs transition-all cursor-pointer disabled:opacity-50"
             >
               {isAnalyzing ? (
@@ -275,11 +292,18 @@ export const AiLearningModal: React.FC<AiLearningModalProps> = ({ isOpen, onClos
         </div>
 
         <div className="flex flex-wrap gap-3 py-2 text-xs">
-          <button type="button" disabled={archiveBusy} onClick={() => void exportNotes()} className="border rounded px-3 py-2 disabled:opacity-50">Xuất ghi chú riêng</button>
-          <button type="button" disabled={archiveBusy} onClick={() => archiveInput.current?.click()} className="border rounded px-3 py-2 disabled:opacity-50">Nhập tệp ghi chú</button>
+          <button type="button" disabled={!idle} onClick={() => void exportNotes()} className="border rounded px-3 py-2 disabled:opacity-50">Xuất ghi chú riêng</button>
+          <button type="button" disabled={!idle} onClick={() => archiveInput.current?.click()} className="border rounded px-3 py-2 disabled:opacity-50">Nhập tệp ghi chú</button>
           <input ref={archiveInput} type="file" accept=".json,application/json" className="hidden" aria-label="Tệp ghi chú riêng" onChange={e => void importNotes(e.target.files?.[0])} />
           <p className="w-full text-gray-500">Ghi chú ở kho riêng. Phân tích mới chỉ tạo đề xuất; bạn đọc rồi bật từng mục muốn áp dụng.</p>
         </div>
+        <div className="flex flex-wrap items-center gap-3 pb-1 text-xs">
+          <button type="button" disabled={!idle} onClick={() => void loadMemories()} className="border rounded px-3 py-2 disabled:opacity-50">Tải lại</button>
+          {skipped > 0 && <span>Có {skipped} ghi chú chưa đọc được nên chưa hiển thị; dữ liệu gốc không bị đổi.</span>}
+        </div>
+        {(accountProblem || locked) && <p role="alert" className="my-2 p-2.5 rounded-xl bg-amber-50 text-amber-900 border border-amber-300 text-xs">{accountProblem || lockedMessage}</p>}
+        {!ownerId && !accountProblem && <p role="status" className="my-2 text-xs">Đang xác nhận tài khoản…</p>}
+        {problem && <p role="alert" className="my-2 p-2.5 rounded-xl bg-red-50 text-red-800 border border-red-200 text-xs">{problem}</p>}
         {/* Thông báo trạng thái */}
         {statusMessage && (
           <div className="my-2 p-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 text-purple-800 dark:text-purple-200 text-xs flex items-center gap-2 animate-in fade-in">
@@ -365,6 +389,7 @@ export const AiLearningModal: React.FC<AiLearningModalProps> = ({ isOpen, onClos
               </button>
               <button
                 type="submit"
+                disabled={!idle}
                 className="px-4 py-1.5 text-xs bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold shadow-xs cursor-pointer"
               >
                 Lưu vào bộ não AI
@@ -429,6 +454,7 @@ export const AiLearningModal: React.FC<AiLearningModalProps> = ({ isOpen, onClos
 
                     <div className="flex items-center gap-2 shrink-0 pt-0.5">
                       <button
+                        disabled={!idle}
                         onClick={() => handleToggleActive(m)}
                         title={m.isActive ? 'Tạm tắt quy tắc này' : 'Bật quy tắc này'}
                         className={`text-xs px-2.5 py-1 rounded-full font-semibold transition-colors cursor-pointer ${
@@ -441,6 +467,7 @@ export const AiLearningModal: React.FC<AiLearningModalProps> = ({ isOpen, onClos
                       </button>
 
                       <button
+                        disabled={!idle}
                         onClick={() => handleDelete(m.id)}
                         title="Xóa quy tắc này"
                         className="p-1 rounded-full text-[#5f6368] hover:text-red-500 hover:bg-black/5 cursor-pointer"
@@ -461,7 +488,7 @@ export const AiLearningModal: React.FC<AiLearningModalProps> = ({ isOpen, onClos
             Mọi quy tắc đang bật sẽ tự động được gửi kèm cho Gemini mỗi khi Thầy/Cô bấm <strong>Sinh đề AI</strong>.
           </p>
           <button
-            onClick={onClose}
+            onClick={requestClose}
             className="px-4 py-2 text-xs bg-[#1a73e8] hover:bg-[#1557b0] text-white rounded-full font-semibold shadow-xs cursor-pointer"
           >
             Đóng
@@ -470,4 +497,4 @@ export const AiLearningModal: React.FC<AiLearningModalProps> = ({ isOpen, onClos
       </div>
     </div>
   );
-};
+}
