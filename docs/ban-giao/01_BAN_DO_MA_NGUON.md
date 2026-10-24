@@ -1,5 +1,7 @@
 # Bản đồ mã nguồn — tra theo công việc
 
+Đợt25/10: [lưu câu đổi, offline/CSV và kiểm cuối](../../qa/rebuild-2026-10-25/BATCH_SUMMARY.md). Mã liên quan: `question-row-change.ts`, `exam-persistence.ts`, `csv-cell.ts`, route teacher export-csv và `tests_pilot/pilot.test.ts`.
+
 Đọc hàng cần làm; không cần đọc hết các tệp bên dưới. Đường dẫn tương đối dùng được khi chuyển checkout. Đây là bản đồ vị trí, không chứng nhận chức năng hoàn tất.
 
 ## Tìm đúng phần

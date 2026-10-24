@@ -1,7 +1,9 @@
 {
   "format_version": 1,
-  "updated_at_utc": "2026-10-24T17:17:06.000Z",
-  "coordinator": "CLAUDE",
+  "updated_at_utc": "2026-10-24T19:09:37.030Z",
+  "coordinator": "CODEX",
+  "execution_mode": "solo",
+  "current_direction": "2026-10-25: Codex lam mot minh theo yeu cau chu du an; tasks cu giu truy vet, khong cho Claude/Gemini duyet hay giao them.",
   "shared_root": "F:/Workspace/Zazz/ExamCraft",
   "purpose": "Assignments only; not the canonical product checklist",
   "runtime_owner": "CODEX",

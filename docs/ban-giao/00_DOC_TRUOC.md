@@ -1,6 +1,6 @@
 # ExamCraft — đọc trước khi tiếp nối
 
-Điểm vào hiện hành cho người và AI. Cập nhật hồ sơ: 24/10/2026 (gọn theo kiểu một nơi cho số liệu). Không cần đọc lại toàn bộ chat hoặc báo cáo cũ để bắt đầu.
+Điểm vào hiện hành cho người và AI. Cập nhật hồ sơ: 25/10/2026 (gọn theo kiểu một nơi cho số liệu). Không cần đọc lại toàn bộ chat hoặc báo cáo cũ để bắt đầu.
 
 ## Đọc ít nhưng đúng
 

@@ -1,5 +1,7 @@
 # Mốc pilot và kế hoạch chỉ đạo — 24/10/2026
 
+> Cập nhật25/10: chủ dự án chuyển Codex làm một mình. Phân công nhiều AI phía dưới là lịch sử; mốc kỹ thuật và giới hạn vẫn theo tài liệu này/checklist. Kết quả mới: [báo cáo đợt25/10](../../qa/rebuild-2026-10-25/BATCH_SUMMARY.md).
+
 Người chỉ đạo từ 24/10/2026: **Claude** (chủ dự án giao quyền). Tệp này là kế hoạch điều phối, **không thay** [checklist 03](../ke-hoach-2026-10-21/03_CHECKLIST.md): tiêu chí và dấu hoàn thành CV vẫn theo 03. Trạng thái hiện hành: [hồ sơ 02](../ban-giao/02_TRANG_THAI_TIEP_NOI.md).
 
 ## 1. Vì sao đổi cách làm

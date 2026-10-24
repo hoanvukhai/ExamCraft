@@ -1,0 +1,16 @@
+{
+  "runId": "31b413e7-7c4d-4f35-b79a-ebd20ba0e59d",
+  "database": "examcraft_test_20261022",
+  "checks": [
+    "roundtrip-seven-types",
+    "idempotent-create",
+    "reference-and-owner-permissions",
+    "concurrent-version-cas",
+    "transaction-rollback",
+    "denied-update-no-mutation"
+  ],
+  "cleanupComplete": true,
+  "status": "PASS",
+  "checkedAt": "2026-10-24T18:54:12.532Z",
+  "limitations": "Direct services and real database transactions; HTTP and browser UX are separate checks."
+}

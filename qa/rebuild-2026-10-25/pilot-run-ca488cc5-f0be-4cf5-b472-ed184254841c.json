@@ -1,0 +1,19 @@
+{
+  "run": "ca488cc5-f0be-4cf5-b472-ed184254841c",
+  "sourceSha256": "3d903054d7f8f50f7191dd508cf76357531692fff0e2f3672bb4e459e09c803e",
+  "buildId": "0ZR-udEX0sCvS9nqvUGJR",
+  "browserVersion": "155.0.4283.62",
+  "browserExecutable": "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
+  "requestedFlow": "F9",
+  "checkedAt": "2026-10-24T19:00:26.264Z",
+  "environment": "isolatedTest localhost3117 / examcraft_test_20261022",
+  "realAiCalls": false,
+  "results": [
+    {
+      "id": "F9",
+      "status": "PASS",
+      "durationMs": 12957,
+      "cleanupComplete": true
+    }
+  ]
+}

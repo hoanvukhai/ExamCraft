@@ -99,7 +99,7 @@
    - Trả lời Câu 4 (gõ nội dung câu tự luận).
    - Tích chọn Câu 5 (câu đúng/sai).
 5. **Quan sát phản ứng của giao diện:**
-   - Màn hình **tuyệt đối không bị văng ra ngoài**, không xuất hiện màn hình trắng xóa (White Screen of Death).
+   - Kiểm màn hình vẫn hoạt động, không trắng trang; nếu lỗi thì ghi bước gây lỗi và giữ bản nháp để đối chiếu.
    - Thanh trạng thái nháp ghi nhận lỗi kết nối nhưng cơ chế `Local Journal` vẫn âm thầm lưu toàn bộ câu trả lời vào bộ nhớ cục bộ của trình duyệt (IndexedDB / LocalStorage).
 6. **Thử nghiệm tải lại trang khi đang mất mạng:**
    - Học sinh lỡ tay bấm phím `F5` hoặc đóng tab mở lại khi chưa có mạng: Màn hình hiển thị thông báo nhẹ nhàng và bản nháp từ Local Journal được nạp lại đầy đủ, không mất một chữ nào.
@@ -149,7 +149,7 @@
    - **Tuyệt đối không:** Hệ thống không được âm thầm ghi đè làm mất đi nội dung Câu 1 mà Giáo viên A vừa lưu ở bước 4.
 
 #### Kết quả mong đợi cần đạt:
-- Dữ liệu của Giáo viên A được bảo toàn 100%.
+- Đối chiếu dữ liệu Giáo viên A với bản trước thử: không bị ghi đè hoặc xóa.
 - Công sức chỉnh sửa Câu 2 của Giáo viên B không bị mất; Giáo viên B bấm "Lưu bản nháp thành đề mới" để tách riêng thành một đề mới mang trọn vẹn phần chỉnh sửa của mình.
 
 #### Nơi ghi kết quả và bằng chứng cần thu thập:

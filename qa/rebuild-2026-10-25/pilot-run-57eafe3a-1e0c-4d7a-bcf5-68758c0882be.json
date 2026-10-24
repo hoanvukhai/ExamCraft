@@ -1,0 +1,62 @@
+{
+  "run": "57eafe3a-1e0c-4d7a-bcf5-68758c0882be",
+  "sourceSha256": "30776051be77e0d1c8db97af5f5f91de97b60234ebf6ec17c0c4a033c104bc78",
+  "buildId": "lnciKc3Ggt4zS9XQbpFzn",
+  "browserVersion": "155.0.8059.85",
+  "browserExecutable": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  "requestedFlow": "F1-F7,F9",
+  "checkedAt": "2026-10-24T18:51:08.331Z",
+  "environment": "isolatedTest localhost3117 / examcraft_test_20261022",
+  "realAiCalls": false,
+  "results": [
+    {
+      "id": "F1",
+      "status": "PASS",
+      "durationMs": 3969,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F2",
+      "status": "PASS",
+      "durationMs": 8649,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F3",
+      "status": "PASS",
+      "durationMs": 5265,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F4",
+      "status": "PASS",
+      "durationMs": 8784,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F5",
+      "status": "PASS",
+      "durationMs": 34624,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F6",
+      "status": "PASS",
+      "durationMs": 19388,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F7",
+      "status": "PASS",
+      "durationMs": 19470,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F9",
+      "status": "FAIL",
+      "durationMs": 28650,
+      "cleanupComplete": true,
+      "error": "Conflicting draft copy was not saved"
+    }
+  ]
+}

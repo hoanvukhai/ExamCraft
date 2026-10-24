@@ -1,5 +1,7 @@
 # Quy ước phối hợp — đọc trước khi sửa
 
+> **Hiện hành 25/10/2026 — chủ dự án chuyển về làm một mình:** Codex thực hiện và tổng hợp toàn bộ nhóm việc, giữ mã, kiểm thử và hồ sơ chung; không giao thêm hoặc chờ Claude/Gemini. Phân công và quyết định ngày 24/10 bên dưới được giữ để truy vết lịch sử, không còn là hàng đợi đang chờ duyệt. Giữ các thay đổi đã có, quy tắc bảo toàn dữ liệu và kiểm thử cô lập. Gom việc theo nhóm lớn, ghi bằng chứng vào báo cáo nhóm rồi tổng kết.
+
 > **Thay đổi vai trò 24/10/2026 (chủ dự án giao):** **Claude là người chỉ đạo.** Claude giữ `ASSIGNMENTS.json`, `BATCH_REVIEWS.json`, quyết định duyệt, checklist 03, hồ sơ 02 và báo cáo tiến độ. **Codex là người thực thi chính**: giữ mã, build/DB/server/provider, tích hợp theo việc được giao, ghi `CODEX_STATUS.md`. **Gemini** chỉ đọc mã và ghi các báo cáo được giao. Mọi câu dưới đây ghi "chỉ Codex sửa ASSIGNMENTS/BATCH_REVIEWS/checklist/hồ sơ/review decisions" nay đọc là "chỉ người chỉ đạo (Claude) sửa". Kế hoạch hiện hành: [04_MOC_PILOT](04_MOC_PILOT.md); việc mới nằm ở generation 13 (Codex) và 6 (Gemini). Claude worker batch 10 đã đóng.
 > Codex vẫn được cập nhật dòng "Hiện trạng" của CV và báo cáo nhóm `qa/rebuild-<ngày>/` cho phần mình làm; không đóng CV và không sửa ASSIGNMENTS/BATCH_REVIEWS. Khi cần đổi phạm vi, gửi tin vào `messages/`, người chỉ đạo quyết.
 

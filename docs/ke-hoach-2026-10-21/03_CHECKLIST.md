@@ -58,7 +58,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-02, YC-13. Nghiệm thu: NT-02, NT-04.
   - Đạt khi: Tạo/sửa/mở lại trên phiên khác đúng dữ liệu; lỗi mạng/HTTP không báo đã lưu; ID server cập nhật đúng.
 - [ ] **CV-010 — Nháp offline, version và chống ghi đè.**
-  - **Hiện trạng24/10:** Giữ nháp đề/writer và các bằng chứng trước. Bổ sung mount nháp chấm/ghi chú riêng theo owner và writer; khôi phục chủ động, giữ base cũ và raw lỗi, tải bản RAM khi storage lỗi. Helper/render tĩnh/build/API DB thử đạt; chưa thao tác reload/nhiều tab/storage lỗi trên parent React mới, offline thật và hai browser còn mở. [DRAFT_RECOVERY_INTEGRATION](../../qa/rebuild-2026-10-24/DRAFT_RECOVERY_INTEGRATION.md).
+  - **Hiện trạng25/10:** Đã kiểm trình duyệt mất mạng khi đang mở đề, giữ nháp trên máy, nối lại lưu đúng; nếu phiên khác sửa thì không ghi đè và lưu nháp thành đề riêng. Chrome và Edge chạy độc lập theo lượt. Giữ các kiểm nháp owner/writer/ACK trước; chưa mở ứng dụng từ đầu khi hoàn toàn offline, chưa đủ parent journal/storage lỗi/hai engine sửa đồng thời. Giữ mở. [Báo cáo đợt](../../qa/rebuild-2026-10-25/BATCH_SUMMARY.md).
   - Phạm vi: YC-13. Nghiệm thu: NT-04, NT-20.
   - Đạt khi: Nháp phục hồi sau reload, tách tài khoản, có version conflict; bản đến muộn không ghi đè bản mới, không đồng bộ sang sai tài khoản.
 - [ ] **CV-011 — Quyền đối tượng và liên kết.**
@@ -118,11 +118,11 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-08, YC-09. Nghiệm thu: NT-07, NT-08.
   - Đạt khi: Sửa lựa chọn/ý đúng-sai, thêm kiểu câu phù hợp, thứ tự/ghim; matching/ordering/fill_blank có cấu trúc đủ hoặc báo chưa hỗ trợ rõ.
 - [ ] **CV-024 — Đề, đáp án và song song.**
-  - **Hiện trạng24/10:** Tích hợp Song song của Claude (b44c0ec), browser chuyển Đề/Đáp án/Hướng dẫn/Song song và đối chiếu hai cột từ cùng dữ liệu. Build/helper/API đạt; ngữ liệu chung ở Song song còn thiếu, đã gửi Claude. Word ở chế độ này vẫn bố cục all; giữ mở. [PILOT_E2E](../../qa/rebuild-2026-10-24/PILOT_E2E.md).
+  - **Hiện trạng25/10:** Song song có ngữ liệu chung xuất hiện một lần, giữ đủ câu/hai cột và lời giải; browser kiểm cả fixture bảy dạng và Ngữ văn ngữ liệu dài. Đề/đáp án/hướng dẫn vẫn dùng cùng tài liệu. Word của Song song còn xuất bố cục toàn đề rồi đáp án, chưa hai cột; chưa nghiệm thu trực quan Word/PDF. Giữ mở. [Báo cáo đợt](../../qa/rebuild-2026-10-25/BATCH_SUMMARY.md).
   - Phạm vi: YC-09. Nghiệm thu: NT-07, NT-08.
   - Đạt khi: Ba chế độ cùng dữ liệu; đáp án/lời giải/rubric riêng nhưng gắn version, thiếu đáp án không tự điền đúng.
 - [ ] **CV-025 — Lịch sử câu và kiểm định theo phiên bản.**
-  - **Hiện trạng24/10:** Undo so câu/ngữ cảnh và guard lại trong updater, tăng version/reset verified, sửa ghost history; chặn Undo cũ khi tab khác đã sửa (version/hash DB không đổi); clone/move/lưu/reload giữ lời giải/ảnh/điểm0; offline sau Apply giữ journal tới khi server xác nhận. Copilot Undo/Redo sửa/thêm/bỏ có guard toàn nền/source/owner và ack trước khi chuyển mốc. Stack Undo còn trong RAM, chưa bền qua reload; còn bảo vệ toàn luồng AI và tách lưu ngân hàng với lưu nháp. Đọc tĩnh24/10: mỗi lần lưu đề tạo revision cho mọi câu kể cả câu không đổi; cần đo (CV074) trước khi đổi. Giữ mở. Bằng chứng: [QUESTION_COMMANDS](../../qa/rebuild-2026-10-23/QUESTION_COMMANDS.md), [AI_JOURNAL_AND_HISTORY](../../qa/rebuild-2026-10-23/AI_JOURNAL_AND_HISTORY.md).
+  - **Hiện trạng25/10:** Đã sửa chỉ cập nhật/lập lịch sử câu khi dữ liệu câu đổi; đọc theo lô, ghi liên kết và lịch sử theo lô, giữ toàn bộ lịch sử cũ và ExamRevision. Kiểm DB thử: lưu lặp/reorder không thêm lịch sử câu, sửa một câu, xóa trường, điểm thập phân, xóa/ghép lại, rollback, quyền và CAS từng câu đạt. Giữ Undo/Copilot guard đã có; Undo còn RAM và tách lưu ngân hàng/nháp còn mở. [Báo cáo đợt](../../qa/rebuild-2026-10-25/BATCH_SUMMARY.md).
   - Phạm vi: YC-09, YC-13, YC-16. Nghiệm thu: NT-08, NT-15.
   - Đạt khi: Sửa dữ kiện đánh dấu cần kiểm lại, undo/redo và lưu mốc giữ liên kết; chọn lưu ngân hàng khác với lưu nháp.
 - [ ] **CV-026 — Hình, công thức, bảng và ngữ liệu.**
@@ -214,7 +214,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-14, YC-19. Nghiệm thu: NT-06, NT-20.
   - Đạt khi: View/comment/edit/download/fork/publish phân biệt, mặc định private; public view không cấp edit/key; server kiểm từng thao tác.
 - [ ] **CV-048 — Link xem, thu hồi và phiên bản chia sẻ.**
-  - **Hiện trạng24/10:** Giữ copy theo version, khóa Exam/ShareLink/Question và kiểm quyền lại đã kiểm trên DB thử. C04 thiết kế publication được duyệt có giới hạn sau sửa reader tương thích/rollback fail-closed/permission refs; chưa triển khai schema hay migration. Ảnh ngoài kho/UI/hai browser vẫn mở. [DRAFT_RECOVERY_INTEGRATION](../../qa/rebuild-2026-10-24/DRAFT_RECOVERY_INTEGRATION.md).
+  - **Hiện trạng25/10:** Copy theo phiên bản nguồn đã có trong mã và kiểm HTTP: nguồn đổi thì yêu cầu xem lại, sao chép phiên bản mới thành bản riêng, retry không nhân bản; không phải tính năng chưa làm. Giữ khóa Exam/ShareLink/Question và kiểm quyền lại. Publication snapshot riêng vẫn mới là thiết kế C04, chưa triển khai schema; ảnh ngoài kho và toàn UI còn mở. [Báo cáo đợt](../../qa/rebuild-2026-10-25/BATCH_SUMMARY.md).
   - Phạm vi: YC-19. Nghiệm thu: NT-06, NT-20.
   - Đạt khi: Link dùng ID/quyền riêng, chính sách đáp án, hết hạn/thu hồi; bản công bố không vô tình trỏ nháp.
 - [ ] **CV-049 — Cùng sửa đồng thời.**
@@ -222,7 +222,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-19. Nghiệm thu: NT-20.
   - Đạt khi: Sửa khác/cùng khối, thay cấu trúc câu, reorder, undo từng người; không last-write-wins mất dữ liệu.
 - [ ] **CV-050 — Mất mạng, reconnect và thu hồi quyền đang mở.**
-  - **Hiện trạng24/10:** app thật giữ nháp khi server QA tắt và phục hồi/lưu đúng vào PostgreSQL khi bật lại; tab cũ giữ nháp và báo xung đột; phản hồi cũ không đè bản mới hoặc tài khoản mới; ack một tab không xóa nháp tab khác; hạ rồi thu hồi quyền khi đang có nháp thì khóa sửa ngay và giữ nháp, retry sau thu hồi không đổi nội dung/revision; logout lỗi mạng và chuyển tài khoản không mất nội dung. Chưa airplane mode, hai browser độc lập, race thu hồi; nhánh save403 trên UI chưa kiểm riêng. Giữ mở. Bằng chứng: [DELAYED_SAVE](../../qa/rebuild-2026-10-23/DELAYED_SAVE.md), [NETWORK_OUTAGE](../../qa/rebuild-2026-10-23/NETWORK_OUTAGE.md), [WRITER_SLOTS](../../qa/rebuild-2026-10-23/WRITER_SLOTS.md), [TABS_AND_REVOCATION](../../qa/rebuild-2026-10-23/TABS_AND_REVOCATION.md), [RECOVERY](../../qa/rebuild-2026-10-23/RECOVERY.md).
+  - **Hiện trạng25/10:** Giữ các kiểm hồi đáp trễ, owner/writer/ACK và thu hồi quyền trước. Browser thêm mất mạng, reconnect khi có phiên khác sửa, giữ bản máy chủ và cất nháp thành bản phục hồi; Chrome/Edge kiểm độc lập theo lượt. F4 còn kiểm thu hồi editor đang mở. Chưa hai engine sửa đồng thời hoặc mọi race quyền/ghi; giữ mở. [Báo cáo đợt](../../qa/rebuild-2026-10-25/BATCH_SUMMARY.md).
   - Phạm vi: YC-13, YC-19. Nghiệm thu: NT-20.
   - Đạt khi: Đồng bộ không nhân đôi/mất, quyền kiểm lại khi gửi thay đổi; editor bị thu hồi không tiếp tục ghi.
 - [ ] **CV-051 — Góp ý và lịch sử tác giả.**
@@ -264,7 +264,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-22. Nghiệm thu: NT-24, NT-25.
   - Đạt khi: Tự luận pending, chỉnh rubric/điểm có lịch sử, regrade có phạm vi/phiên bản; bài cũ không đổi ngầm khi sửa ngân hàng.
 - [ ] **CV-061 — Theo dõi, phản hồi và bảng điểm.**
-  - **Hiện trạng24/10:** Browser chấm/xuất CSV của bài có điểm, đối chiếu học sinh và tổng; giữ API bài không số đã kiểm trước. CSV scored hiện không chứa nhận xét chữ; còn nhiều chính sách và UI bài không số, gia hạn/mở lại, giữ mở. [PILOT_E2E](../../qa/rebuild-2026-10-24/PILOT_E2E.md).
+  - **Hiện trạng25/10:** Bổ sung nhận xét từng câu vào CSV bài có điểm, giữ cột điểm cũ; bài không số vẫn giữ đánh giá/nhận xét, không tạo điểm giả. Có kiểm chống công thức CSV, dấu phẩy/ngoặc kép/xuống dòng và quyền xuất. Chưa toàn UI bài không số, gia hạn/mở lại hoặc mọi chính sách; giữ mở. [Báo cáo đợt](../../qa/rebuild-2026-10-25/BATCH_SUMMARY.md).
   - Phạm vi: YC-20, YC-22. Nghiệm thu: NT-25.
   - Đạt khi: Danh sách bài/lượt, progress, gia hạn/mở lại có quyền, thống kê/CSV; leaderboard tùy chọn mặc định tắt và không lộ toàn lớp.
 - [ ] **CV-062 — Hồi quy link và toàn luồng học sinh.**
@@ -311,18 +311,19 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-24. Nghiệm thu: NT-27.
   - Đạt khi: DB+tệp+khả năng giải mã phục hồi vào môi trường trống; kiểm native exit code script, backup rỗng không báo tốt; retention/đường xóa an toàn.
 - [ ] **CV-073 — Chốt vận hành local và phương án pilot.**
-  - **Hiện trạng24/10:** runbook local [SAO_LUU_KHOI_PHUC_LOCAL](../van-hanh/SAO_LUU_KHOI_PHUC_LOCAL.md) đã đổi lệnh sang `powershell -NoProfile -File …` vì máy chưa có `pwsh`; script không dùng cú pháp riêng PowerShell7 và execution policy máy là RemoteSigned (đọc tĩnh). Test wrapper restore (đích sai→thoát khác0, không in thành công) đã chạy được bằng `powershell` 5.1 khi không có `pwsh`; backup/restore thật bằng 5.1 chưa chạy lại. Còn RPO/RTO, nơi giữ bản thứ hai, người chịu trách nhiệm, chuyển máy/mất DPAPI và chi phí; giữ mở.
+  - **Hiện trạng25/10:** sao lưu/khôi phục thật bằng PowerShell5.1 đã đạt ở đợt trước, gồm sửa fallback DPAPI khi thiếu pwsh; không còn là việc chờ chạy. Kế thừa [PILOT_CLAUDE_INTEGRATION](../../qa/rebuild-2026-10-24/PILOT_CLAUDE_INTEGRATION.md), không chạy lại chỉ vì sửa hồ sơ. Còn RPO/RTO, nơi giữ bản thứ hai, chuyển máy/mất DPAPI và đọc chéo gói PowerShell7; giữ mở.
   - Phạm vi: YC-24. Nghiệm thu: NT-27.
   - Đạt khi: Runbook secrets/config/log/restore, tài khoản chịu trách nhiệm; mục tiêu RPO/RTO, dung lượng và chi phí có chủ dự án duyệt trước triển khai thật.
-  - **Hiện trạng25/10 (Claude):** sao lưu và khôi phục thật đã chạy bằng `powershell` 5.1: `backup.ps1 -Execute` tạo `backups/package-20261024171439636`, `restore.ps1 -Execute` vào DB mới `examcraft_restore_ps51_20261024` đạt `RESTORED_VERIFIED`; DB chính chỉ đọc. Tìm và sửa lỗi thật: bước DPAPI trong `backup-package-tools.cjs` và `verify-full-restore.cjs` gọi cứng `pwsh` nên sao lưu hỏng trên máy này; nay dùng `pwsh` nếu có, không thì `powershell`. Chưa kiểm đọc chéo gói tạo bằng PowerShell 7. Còn RPO/RTO, nơi giữ bản thứ hai, chuyển máy/mất DPAPI. Giữ mở. [PILOT_CLAUDE_INTEGRATION](../../qa/rebuild-2026-10-24/PILOT_CLAUDE_INTEGRATION.md).
+
 - [ ] **CV-074 — CI, kiểm tải và giám sát.**
-  - Ghi nhận24/10: `.github/workflows/ci.yml` chạy `db push` + seed trên DB CI riêng, `npm test` (SAFE) và build; chưa có integration/HTTP. Mã mới mới commit local, chưa push nên CI chưa chạy trên cây hiện tại. Chưa đo tải; xem thêm điểm revision câu ở CV025.
+  - **Hiện trạng25/10:** Đã đo lưu đề mẫu trên DB thử; CI thêm DB thử riêng, migration, integration và HTTP sau build, giữ chạy tuần tự giới hạn RAM; không tự tải log ra ngoài. Các lệnh tương ứng kiểm local, YAML đọc được; workflow remote chưa chạy vì chưa push. Chưa đo tải nhiều người hay giám sát vận hành đầy đủ; giữ mở. [Báo cáo đợt](../../qa/rebuild-2026-10-25/BATCH_SUMMARY.md).
   - Phạm vi: YC-01, YC-24, YC-29. Nghiệm thu: NT-05, NT-29.
   - Đạt khi: CI dùng DB thử và fail thật, health/error/usage không lộ dữ liệu; tải đo trên kịch bản xác định, không hứa công suất chưa đo.
 - [ ] **CV-075 — Thiết kế kết nối Drive tùy chọn.**
   - Phạm vi: YC-24. Nghiệm thu: NT-27.
   - Đạt khi: Chốt backlog/định dạng/quyền tối thiểu/trạng thái backup/restore; chỉ triển khai kết nối khi được chọn, không yêu cầu Drive để dùng app. Không đánh dấu tích hợp hoàn thành nếu mới thiết kế.
 - [ ] **CV-076 — Hướng dẫn giáo viên và kiểm dễ dùng.**
+  - **Hiện trạng25/10:** Đã rút gọn hướng dẫn giáo viên, bỏ tham chiếu mã nguồn và lời hứa tuyệt đối; làm rõ lưu form/lưu đề, quyền chia sẻ, Word Song song, nháp offline và sao lưu kho khác gói đầy đủ. Sửa nhãn xác nhận nộp bài và cách kiểm reload trong thẻ kiểm. Chưa có quan sát giáo viên thật; giữ mở. [Hướng dẫn](../huong-dan/HUONG_DAN_GIAO_VIEN_PILOT.md), [báo cáo đợt](../../qa/rebuild-2026-10-25/BATCH_SUMMARY.md).
   - Phạm vi: YC-26, YC-29. Nghiệm thu: NT-30.
   - Đạt khi: Hướng dẫn ngắn key, soạn, đáp án, cùng sửa, giao bài, khôi phục; người mới thực hiện nhiệm vụ, sửa ngôn ngữ/điểm ngợp theo quan sát.
 - [ ] **CV-077 — Dọn đường cũ và cập nhật tài liệu.**

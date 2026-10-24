@@ -167,7 +167,7 @@
      * Nút hiển thị trạng thái `Đang sao chép...`.
      * Khi hoàn tất, nút hiển thị `Đã lưu vào kho đề! Đang mở...` và tự động điều hướng sang `/editor/[newId]`.
      * Kiểm tra nội dung: Đề thi được sao chép nguyên vẹn vào kho đề của Giáo viên B.
-     * **Kiểm tra tính an toàn của đáp án:** Nếu ở bước 1 Giáo viên A không tích `Kèm đáp án`, bản sao của Giáo viên B sẽ không có đáp án, đảm bảo bảo mật tuyệt đối. Đề gốc của Giáo viên A hoàn toàn giữ nguyên.
+     * **Kiểm tra đáp án:** Nếu Giáo viên A không tích `Kèm đáp án`, đối chiếu bản sao của Giáo viên B không chứa đáp án/lời giải; kiểm cả nội dung hiển thị và dữ liệu tải về. Đối chiếu đề gốc của Giáo viên A không bị đổi.
 3. **Mời đồng nghiệp cùng soạn thảo (Collaborator Invite):**
    - Quay lại màn hình soạn thảo của Giáo viên A. Bấm nút **"Cùng soạn · Góp ý · Lịch sử"** để mở `ExamCollaboratorsPanel`.
    - Nhập email Giáo viên B: `gv_toan_dongnghiep@examcraft.test`.
@@ -230,8 +230,8 @@
 5. Bấm nút **"Bắt đầu làm bài"** (`src/app/a/[publicId]/page.tsx:740`).
 6. Màn hình làm bài thi mở ra: Đồng hồ đếm ngược chạy (`14:59...`), học sinh trả lời các câu hỏi trắc nghiệm, Đúng/Sai, trả lời ngắn, tự luận, điền khuyết, ghép nối, sắp xếp.
 7. **Thử nghiệm tính năng Tự Động Lưu Nháp (Auto-save Draft):** Sau khi chọn 2 câu đầu, quan sát biểu tượng đĩa mềm hiện `Đang lưu...` rồi chuyển thành `Lưu nháp <giờ:phút:giây>`.
-8. **Thử nghiệm khôi phục khi gặp sự cố (F5 / Mất kết nối):** Bấm phím **F5**: Hệ thống tự động khôi phục nguyên vẹn 100% các câu trả lời đã tích chọn từ nhật ký cục bộ (Local Journal).
-9. Bấm nút **"Nộp bài thi"** ở góc trên cùng bên phải và bấm **"Xác nhận nộp bài"**.
+8. **Kiểm khôi phục sau tải lại:** Khi còn mạng, bấm **F5**, vào lại đúng lượt và đối chiếu từng câu trả lời với trước khi tải lại. Thử mất mạng là ca riêng: ghi câu nào đã được máy chủ xác nhận và câu nào còn là nháp; không suy rằng tải lại khi có mạng chứng minh mở được ứng dụng khi hoàn toàn offline.
+9. Bấm **"Nộp bài thi"**, sau đó bấm **"Nộp bài ngay"** trong hộp xác nhận.
 
 #### Kết quả cần quan sát trên màn hình:
 - Màn hình kết quả xuất hiện: **"Nộp bài thành công!"**.
