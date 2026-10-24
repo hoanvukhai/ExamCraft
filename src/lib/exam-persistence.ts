@@ -1,6 +1,7 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { z } from 'zod';
-import type { Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
+import { questionRowChanged } from './question-row-change';
 import { ApiError } from './api-error';
 import { normalizeExamDocument, questionToDatabase, fromDatabaseExam } from './exam-document';
 import { assertKnowledgeRevision } from './knowledge-package';
@@ -46,17 +47,41 @@ function documentData(document: Exam) {
 }
 
 async function writeDocumentQuestions(tx: Prisma.TransactionClient, ownerId: string, examId: string, document: Exam) {
+  const ids = document.questions.map(question => stableId('wq', ownerId, examId, question.id));
+  const existingRows = ids.length ? await tx.question.findMany({ where: { id: { in: ids } } }) : [];
+  // Check even detached historical rows before any replacement writes.
+  if (existingRows.some(row => row.ownerId !== ownerId)) throw new ApiError(403, 'Không thể ghi câu hỏi của tài khoản khác');
+  const existingById = new Map(existingRows.map(row => [row.id, row]));
+  const revisions: Prisma.QuestionRevisionCreateManyInput[] = [];
+  const links: Prisma.ExamQuestionCreateManyInput[] = [];
   await tx.examQuestion.deleteMany({ where: { examId } });
   for (const [position, question] of document.questions.entries()) {
-    const questionId = stableId('wq', ownerId, examId, question.id);
-    const existing = await tx.question.findUnique({ where: { id: questionId } });
-    if (existing && existing.ownerId !== ownerId) throw new ApiError(403, 'Không thể ghi câu hỏi của tài khoản khác');
+    const questionId = ids[position];
+    const existing = existingById.get(questionId);
     const data = questionToDatabase(question, { ownerId, examId, questionId, subject: document.metadata.subject, grade: document.metadata.grade });
     data.tags = [...(question.tags ?? []).filter(tag => tag !== '__workspace_only'), '__workspace_only'];
-    const saved = existing ? await tx.question.update({ where: { id: questionId }, data: { ...data, version: existing.version + 1, deletedAt: null } }) : await tx.question.create({ data });
-    await tx.questionRevision.create({ data: { questionId, version: saved.version, snapshot: json(saved), note: `Lưu trong đề ${examId}` } });
-    await tx.examQuestion.create({ data: { examId, questionId, position, sectionId: String((question as unknown as Record<string, unknown>).sectionId ?? 'workspace'), pointsOverride: question.points } });
+    // A workspace document is a complete snapshot: omitted optional values clear
+    // old values rather than letting Prisma silently retain stale answers/images.
+    const rowData = { ...data, figures: data.figures ?? Prisma.DbNull, points: data.points ?? null,
+      source: data.source ?? null, licenseNote: data.licenseNote ?? null, deletedAt: null };
+    if (!existing || questionRowChanged(existing, rowData)) {
+      const saved = await (async () => {
+        if (!existing) return tx.question.create({ data: rowData });
+        try {
+          return await tx.question.update({ where: { id: questionId, ownerId, version: existing.version }, data: { ...rowData, version: existing.version + 1 } });
+        } catch (error) {
+          if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+            throw new ApiError(409, 'Câu hỏi vừa thay đổi ở phiên khác. Bản nháp của bạn vẫn được giữ', 'VERSION_CONFLICT');
+          }
+          throw error;
+        }
+      })();
+      revisions.push({ questionId, version: saved.version, snapshot: json(saved), note: `Lưu trong đề ${examId}` });
+    }
+    links.push({ examId, questionId, position, sectionId: String((question as unknown as Record<string, unknown>).sectionId ?? 'workspace'), pointsOverride: question.points ?? null });
   }
+  if (revisions.length) await tx.questionRevision.createMany({ data: revisions });
+  if (links.length) await tx.examQuestion.createMany({ data: links });
 }
 
 const include = { items: { include: { question: { include: { passage: true } } }, orderBy: { position: 'asc' as const } } };

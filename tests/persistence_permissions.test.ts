@@ -93,12 +93,13 @@ function database() {
       },
     },
     question: {
+      findMany: async ({ where }: { where: Row }) => copy([...questions.values()].filter(row => matches(row, where))),
       count: async ({ where }: { where: Row }) => [...questions.values()].filter(row => matches(row, where)).length,
       findUnique: async ({ where }: { where: Row }) => copy(questions.get(String(where.id)) ?? null),
       create: async ({ data }: { data: Row }) => { const saved = { deletedAt: null, ...copy(data) }; questions.set(String(data.id), saved); return copy(saved); },
       update: async ({ where, data }: { where: Row; data: Row }) => { const saved = { ...questions.get(String(where.id)), ...copy(data) }; questions.set(String(where.id), saved); return copy(saved); },
     },
-    questionRevision: { create: async ({ data }: { data: Row }) => { revisions.push(copy(data)); return copy(data); } },
+    questionRevision: { createMany: async ({ data }: { data: Row[] }) => { revisions.push(...copy(data)); return { count: data.length }; } },
     examQuestion: {
       deleteMany: async ({ where }: { where: Row }) => { items = items.filter(row => !matches(row, where)); },
       create: async ({ data }: { data: Row }) => { items.push(copy(data)); return copy(data); },

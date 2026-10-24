@@ -31,7 +31,7 @@ test('S1 real PostgreSQL transactions in an isolated test database', async t => 
         await tx.user.deleteMany({ where: { id: { in: users } } });
       });
       const evidence = { runId, database: new URL(target).pathname.slice(1), checks, cleanupComplete: true, status: checks.length === 6 ? 'PASS' : 'INCOMPLETE', checkedAt: new Date().toISOString(), limitations: 'Direct services and real database transactions; HTTP and browser UX are separate checks.' };
-      const directory = path.resolve('qa/rebuild-2026-10-22');
+      const directory = path.resolve('qa/rebuild-2026-10-25');
       fs.mkdirSync(directory, { recursive: true });
       fs.writeFileSync(path.join(directory, 'integration_s1.json'), JSON.stringify(evidence, null, 2));
     } finally { await prisma.$disconnect(); }
