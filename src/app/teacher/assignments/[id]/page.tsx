@@ -5,6 +5,9 @@ import Link from 'next/link';
 import { usePinnedAccount } from '@/hooks/usePinnedAccount';
 import { MathRenderer } from '@/components/MathRenderer';
 import { studentResponseText } from '@/lib/student-response-text';
+import { TeacherGradeEditor } from '@/components/TeacherGradeEditor';
+import { buildGradeSubmission, isGradeDraftDirty, readHistoryState, type GradeDraft, type GradeHistorySide } from '@/lib/grade-history-restore';
+import { requiresNumericScore, type AssessmentMode } from '@/lib/education-catalog';
 import {
   Users,
   Clock,
@@ -92,8 +95,10 @@ interface AttemptDetailQuestion {
 interface GradeHistoryItem {
   id: string;
   createdAt: string;
-  meta: { questionKey: string; before: { earned: number; comment: string | null }; after: { earned: number; comment: string | null } };
+  meta: { questionKey: string; before: { earned: number; comment: string | null }; after: { earned: number; comment: string | null }; restoredFrom?: { eventId: string; side: string } };
 }
+interface RestorePreview { attemptId: string; eventId: string; side: GradeHistorySide; questionKey: string; base: string }
+const emptyDrafts = { attemptId: '', byQuestion: {} as Record<string, GradeDraft> };
 
 function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -127,6 +132,10 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
   const [loadingOlder, setLoadingOlder] = useState(false);
   const [olderError, setOlderError] = useState('');
   const olderRequestRef = useRef(0);
+  // Unsaved score/comment drafts live here (not in the inputs) so reloads, history paging and restores never drop them.
+  const [drafts, setDrafts] = useState(emptyDrafts);
+  const [restorePreview, setRestorePreview] = useState<RestorePreview | null>(null);
+  const [leavePrompt, setLeavePrompt] = useState(false);
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [savingGrade, setSavingGrade] = useState(false);
   const [detailError, setDetailError] = useState('');
@@ -138,6 +147,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
     selectedAttemptRef.current = null; detailRequestRef.current++;
     resetOlderHistory();
     setSelectedAttemptId(null); setAttemptDetail(null); setDetailError('');
+    setDrafts(emptyDrafts); setRestorePreview(null); setLeavePrompt(false);
   };
 
   // Tải dữ liệu bài thi
@@ -204,14 +214,16 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
   };
 
   // Mở modal xem chi tiết bài làm
-  const handleOpenAttemptDetail = async (attemptId: string) => {
+  // refresh = reread the open attempt in place (after a save/restore) without unmounting the editors or dropping drafts.
+  const handleOpenAttemptDetail = async (attemptId: string, refresh = false) => {
     const requestId = ++detailRequestRef.current;
     selectedAttemptRef.current = attemptId;
     resetOlderHistory();
     setSelectedAttemptId(attemptId);
-    setAttemptDetail(null); setDetailError('');
+    setDetailError('');
+    if (!refresh) { setAttemptDetail(null); setDrafts(emptyDrafts); setRestorePreview(null); setLeavePrompt(false); }
     try {
-      setLoadingDetail(true);
+      if (!refresh) setLoadingDetail(true);
       const res = await accountRequest(`/api/teacher/attempts/${attemptId}`, { cache: 'no-store' });
       const data = await res.json();
       if (requestId !== detailRequestRef.current || selectedAttemptRef.current !== attemptId) return;
@@ -250,38 +262,84 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
     }
   };
 
-  // Chấm tay hoặc điều chỉnh điểm
-  const handleSaveGrade = async (questionKey: string, earned: number, comment?: string) => {
-    if (!selectedAttemptId || gradingRef.current || attemptDetail?.attempt.id !== selectedAttemptId) return;
+  const numericGrading = requiresNumericScore(attemptDetail?.attempt.assessmentMode as AssessmentMode | undefined);
+  const currentDrafts = drafts.attemptId === selectedAttemptId ? drafts.byQuestion : emptyDrafts.byQuestion;
+  const dirtyQuestions = attemptDetail ? attemptDetail.questions.filter(item => isGradeDraftDirty(item, currentDrafts[item.questionId], numericGrading)) : [];
+  const editDraft = (question: AttemptDetailQuestion, patch: Partial<Pick<GradeDraft, 'score' | 'comment'>>) => {
+    const attemptId = selectedAttemptRef.current; if (!attemptId) return;
+    setDrafts(previous => {
+      const byQuestion = previous.attemptId === attemptId ? previous.byQuestion : {};
+      const existing = byQuestion[question.questionId];
+      // A draft equal to what the box showed carries no edit, so a new edit starts from the newest token.
+      const base: GradeDraft = existing && isGradeDraftDirty(question, existing, numericGrading) ? existing : { score: numericGrading && question.isCorrect !== null ? String(question.earned) : '', comment: question.teacherComment ?? '', base: question.gradeRevision };
+      return { attemptId, byQuestion: { ...byQuestion, [question.questionId]: { ...base, ...patch } } };
+    });
+  };
+  const discardDraft = (questionId: string) => setDrafts(previous => { const byQuestion = { ...previous.byQuestion }; delete byQuestion[questionId]; return { ...previous, byQuestion }; });
+  const requestClose = () => { if (dirtyQuestions.length) setLeavePrompt(true); else closeAttemptDetail(); };
+
+  // Lưu điểm + nhận xét của đúng một câu; chỉ chạy khi bấm nút Lưu.
+  const handleSaveGrade = async (question: AttemptDetailQuestion) => {
+    const draft = currentDrafts[question.questionId];
+    if (!selectedAttemptId || gradingRef.current || attemptDetail?.attempt.id !== selectedAttemptId || !draft) return;
     const gradingAttemptId = selectedAttemptId;
-    const question = attemptDetail.questions.find(item => item.questionId === questionKey);
-    if (!question?.gradeRevision) { setDetailError('Chưa có phiên bản điểm để lưu an toàn. Giữ số đang nhập rồi mở lại bài.'); return; }
+    const built = buildGradeSubmission(question, draft, numericGrading);
+    if (!built.ok) { setDetailError(built.message); return; }
     try {
       gradingRef.current = true;
       setSavingGrade(true);
       setDetailError('');
-      const res = await accountRequest(`/api/teacher/attempts/${selectedAttemptId}`, {
+      const res = await accountRequest(`/api/teacher/attempts/${gradingAttemptId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          questionKey,
-          earned,
-          teacherComment: comment,
-          baseGradeRevision: question.gradeRevision,
-        }),
+        body: JSON.stringify({ questionKey: question.questionId, earned: built.earned, teacherComment: built.teacherComment, baseGradeRevision: draft.base }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Chưa lưu được điểm. Số đang nhập vẫn giữ trong ô.');
-      if (selectedAttemptRef.current === gradingAttemptId) await handleOpenAttemptDetail(gradingAttemptId);
+      if (!res.ok) throw new Error(data.error || 'Chưa lưu được điểm. Điểm và nhận xét đang nhập vẫn được giữ.');
+      if (selectedAttemptRef.current === gradingAttemptId) { discardDraft(question.questionId); await handleOpenAttemptDetail(gradingAttemptId, true); }
       fetchAssignmentData();
     } catch (err) {
       console.error(err);
-      if (selectedAttemptRef.current === gradingAttemptId) setDetailError(err instanceof Error ? err.message : 'Chưa lưu được điểm. Hãy kiểm tra kết nối.');
+      if (selectedAttemptRef.current === gradingAttemptId) setDetailError(err instanceof Error ? err.message : 'Chưa lưu được điểm. Hãy kiểm tra kết nối; điểm và nhận xét đang nhập vẫn được giữ.');
     } finally {
       gradingRef.current = false;
       setSavingGrade(false);
     }
   };
+
+  // Khôi phục chỉ sau khi xem trước và xác nhận; máy chủ tự đọc lại trạng thái từ lịch sử.
+  const handleConfirmRestore = async () => {
+    const preview = restorePreview;
+    if (!preview || gradingRef.current || selectedAttemptRef.current !== preview.attemptId) return;
+    try {
+      gradingRef.current = true;
+      setSavingGrade(true);
+      setDetailError('');
+      const res = await accountRequest(`/api/teacher/attempts/${preview.attemptId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'restore', eventId: preview.eventId, side: preview.side, baseGradeRevision: preview.base }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Chưa khôi phục được. Điểm hiện tại không đổi.');
+      if (selectedAttemptRef.current === preview.attemptId) { setRestorePreview(null); await handleOpenAttemptDetail(preview.attemptId, true); }
+      fetchAssignmentData();
+    } catch (err) {
+      console.error(err);
+      if (selectedAttemptRef.current === preview.attemptId) setDetailError(err instanceof Error ? err.message : 'Chưa khôi phục được. Hãy kiểm tra kết nối; điểm hiện tại không đổi.');
+    } finally {
+      gradingRef.current = false;
+      setSavingGrade(false);
+    }
+  };
+
+  const dirtyCount = dirtyQuestions.length;
+  useEffect(() => {
+    if (!dirtyCount) return;
+    const warn = (event: BeforeUnloadEvent) => { event.preventDefault(); event.returnValue = ''; };
+    window.addEventListener('beforeunload', warn);
+    return () => window.removeEventListener('beforeunload', warn);
+  }, [dirtyCount]);
 
   // Xóa lượt làm bài (cho học sinh làm lại)
   const handleDeleteAttempt = async (attemptId: string, studentName: string) => {
@@ -716,7 +774,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                   </p>
                 </div>
                 <button
-                  onClick={closeAttemptDetail}
+                  onClick={requestClose}
                   className="p-1.5 rounded-full text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] hover:text-[#202124] dark:hover:text-[#e3e3e3] transition-colors cursor-pointer"
                 >
                   <X className="w-5 h-5" />
@@ -778,30 +836,16 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                         )}
                       </div>
 
-                      {/* Ô Chấm Điểm & Nhận Xét của Giáo Viên */}
-                      <div className="pt-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
-                        <div className="flex items-center gap-2">
-                          <label className="text-[#5f6368] dark:text-[#9aa0a6] font-semibold">Điều chỉnh điểm:</label>
-                          <input
-                            type="number"
-                            step="0.05"
-                            disabled={savingGrade}
-                            defaultValue={q.earned}
-                            onBlur={(e) => {
-                              const val = parseFloat(e.target.value);
-                              if (!isNaN(val) && val !== q.earned) {
-                                handleSaveGrade(q.questionId, val, q.teacherComment || undefined);
-                              }
-                            }}
-                            className="w-20 bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-lg px-2.5 py-1 text-[#202124] dark:text-[#e3e3e3] text-center font-bold"
-                          />
-                          <span className="text-[#5f6368] dark:text-[#9aa0a6]">/ {q.points}đ</span>
-                        </div>
-
-                        <div className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6]">
-                          {savingGrade ? 'Đang lưu điểm...' : 'Điểm tự động cập nhật khi đổi'}
-                        </div>
-                      </div>
+                      {/* Ô chấm điểm và nhận xét: chỉ ghi khi bấm Lưu */}
+                      <TeacherGradeEditor
+                        question={q}
+                        numeric={numericGrading}
+                        draft={currentDrafts[q.questionId]}
+                        busy={savingGrade}
+                        onChange={patch => editDraft(q, patch)}
+                        onSave={() => handleSaveGrade(q)}
+                        onDiscard={() => discardDraft(q.questionId)}
+                      />
                     </div>
                   ))}
                 </div>
@@ -814,19 +858,58 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                 return <details className="my-4 border rounded-xl p-3 text-xs">
                 <summary className="cursor-pointer font-semibold">Lịch sử chấm ({shown.length}{hasMore ? '+' : ''})</summary>
                 {!shown.length && <p className="mt-2">Chưa có lần sửa điểm được ghi từ khi bật lịch sử. Điểm cũ vẫn được giữ.</p>}
-                <ol className="space-y-2 mt-2">{shown.map(entry => <li key={entry.id} className="border-t pt-2">
-                  <p>{new Date(entry.createdAt).toLocaleString('vi-VN')} · Câu {attemptDetail.questions.find(item => item.questionId === entry.meta.questionKey)?.index ?? 'trong bản đề'}: {entry.meta.before.earned} → {entry.meta.after.earned} điểm</p>
+                <ol className="space-y-2 mt-2">{shown.map(entry => {
+                  const question = attemptDetail.questions.find(item => item.questionId === entry.meta.questionKey);
+                  const previewOpen = restorePreview?.eventId === entry.id && restorePreview.attemptId === attemptDetail.attempt.id;
+                  const sides = (['before', 'after'] as const).map(side => ({ side, read: readHistoryState(entry.meta, side, entry.meta.questionKey) }));
+                  const unusable = sides.find(item => !item.read.ok);
+                  return <li key={entry.id} className="border-t pt-2">
+                  <p>{new Date(entry.createdAt).toLocaleString('vi-VN')} · Câu {question?.index ?? 'trong bản đề'}: {entry.meta.before.earned} → {entry.meta.after.earned} điểm{entry.meta.restoredFrom ? ' (khôi phục từ một lần chấm trước)' : ''}</p>
                   {entry.meta.after.comment !== entry.meta.before.comment && <p>Nhận xét mới: {entry.meta.after.comment || '(để trống)'}</p>}
-                </li>)}</ol>
+                  {!question ? <p>Câu này không còn trong bản đề nên không khôi phục được.</p> : unusable && !unusable.read.ok ? <p>Không khôi phục được lần này: {unusable.read.message}</p> : !previewOpen && <div className="flex gap-2 mt-1">
+                    {sides.map(({ side }) => <button key={side} type="button" disabled={savingGrade} onClick={() => setRestorePreview({ attemptId: attemptDetail.attempt.id, eventId: entry.id, side, questionKey: question.questionId, base: question.gradeRevision })} className="px-3 py-1 border rounded-full cursor-pointer disabled:opacity-50">{side === 'before' ? 'Xem trước: khôi phục trạng thái trước lần này' : 'Xem trước: khôi phục trạng thái sau lần này'}</button>)}
+                  </div>}
+                  {previewOpen && question && restorePreview && (() => {
+                    const target = sides.find(item => item.side === restorePreview.side)?.read;
+                    const draft = currentDrafts[question.questionId];
+                    const hasDraft = isGradeDraftDirty(question, draft, numericGrading);
+                    const changed = restorePreview.base !== question.gradeRevision;
+                    if (!target?.ok) return null;
+                    const state = target.state;
+                    return <div role="group" aria-label="Xem trước khôi phục" className="mt-2 p-3 rounded-xl border border-[#1a73e8] space-y-1">
+                      <p className="font-semibold">Khôi phục câu {question.index} về trạng thái {restorePreview.side === 'before' ? 'trước' : 'sau'} lần chấm này</p>
+                      <p>Hiện tại: {question.isCorrect === null ? 'Chờ chấm' : `${question.earned} điểm`} · Nhận xét: {question.teacherComment === null || question.teacherComment === undefined ? '(chưa có)' : question.teacherComment || '(để trống)'}</p>
+                      <p>Sau khôi phục: {state.manualScore === null ? (state.isCorrect === null && state.earned === 0 ? 'Chờ chấm (chưa có điểm chấm tay)' : `${state.earned} điểm (điểm tự động, chưa chấm tay)`) : `${state.manualScore} điểm (chấm tay)`} · Nhận xét: {state.comment === null ? '(chưa có)' : state.comment || '(để trống)'}</p>
+                      <p>Bài làm của học sinh không đổi; việc khôi phục được ghi thêm vào lịch sử.</p>
+                      {hasDraft && <p role="status" className="text-amber-900">Câu này đang có chỉnh sửa chưa lưu. Hãy lưu hoặc bỏ chỉnh sửa trước khi khôi phục.</p>}
+                      {changed && <p role="status" className="text-amber-900">Điểm hoặc nhận xét của câu đã đổi từ lúc xem trước. Hãy hủy rồi xem trước lại.</p>}
+                      <div className="flex gap-2 pt-1">
+                        <button type="button" onClick={handleConfirmRestore} disabled={savingGrade || hasDraft || changed} className="px-3 py-1 rounded-full bg-[#1a73e8] text-white font-semibold disabled:opacity-40 cursor-pointer">{savingGrade ? 'Đang khôi phục...' : 'Xác nhận khôi phục'}</button>
+                        {hasDraft && <button type="button" onClick={() => discardDraft(question.questionId)} disabled={savingGrade} className="px-3 py-1 border rounded-full cursor-pointer disabled:opacity-40">Bỏ chỉnh sửa của câu này</button>}
+                        <button type="button" onClick={() => setRestorePreview(null)} disabled={savingGrade} className="px-3 py-1 border rounded-full cursor-pointer disabled:opacity-40">Hủy</button>
+                      </div>
+                    </div>;
+                  })()}
+                </li>;
+                })}</ol>
                 {hasMore && <div className="mt-2 space-y-1">
                   <button type="button" onClick={handleLoadOlderHistory} disabled={loadingOlder} className="px-3 py-1 border rounded-full cursor-pointer disabled:opacity-50">{loadingOlder ? 'Đang tải...' : olderError ? 'Thử lại' : 'Xem lịch sử cũ hơn'}</button>
                   {olderError && <p role="alert">{olderError}</p>}
                 </div>}
               </details>;
               })()}
+              {leavePrompt && dirtyCount > 0 && (
+                <div role="alertdialog" aria-label="Có chỉnh sửa chưa lưu" className="p-3 my-3 rounded-xl bg-amber-50 text-amber-900 border border-amber-300 text-xs space-y-2">
+                  <p>Có chỉnh sửa chưa lưu ở {dirtyCount} câu. Đóng bây giờ sẽ bỏ các chỉnh sửa này.</p>
+                  <div className="flex gap-2">
+                    <button type="button" onClick={() => setLeavePrompt(false)} className="px-3 py-1 rounded-full bg-[#1a73e8] text-white font-semibold cursor-pointer">Giữ lại và tiếp tục sửa</button>
+                    <button type="button" onClick={closeAttemptDetail} className="px-3 py-1 rounded-full border cursor-pointer">Bỏ thay đổi và đóng</button>
+                  </div>
+                </div>
+              )}
               <div className="pt-4 border-t border-[#dadce0] dark:border-[#3c4043] flex justify-end">
                 <button
-                  onClick={closeAttemptDetail}
+                  onClick={requestClose}
                   className="px-5 py-2 bg-[#f1f3f4] hover:bg-[#e8eaed] dark:bg-[#282828] dark:hover:bg-[#333538] text-[#202124] dark:text-[#e3e3e3] text-xs font-semibold rounded-full cursor-pointer transition-colors"
                 >
                   Đóng
