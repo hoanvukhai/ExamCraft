@@ -7,12 +7,12 @@ import { ApiError } from './api-error';
 export interface KeyInfo { alias: string; rawKey: string; }
 export function getRegisteredKeys(): KeyInfo[] { return []; }
 export function getAllGeminiKeys(): string[] { return []; }
-export const DEFAULT_GEMINI_MODEL = 'gemini-3.8-flash';
+export const DEFAULT_GEMINI_MODEL = 'gemini-3.5-flash';
 export function getGeminiModel() { return normalizeModelId(process.env.GEMINI_MODEL) ?? DEFAULT_GEMINI_MODEL; }
 export interface AiModelOption { id: string; name: string; badge: string; badgeColor: 'emerald' | 'amber' | 'purple' | 'blue'; tier: 'UNKNOWN'; description: string; recommended?: boolean; }
-// Examples from the provider catalog checked 22/10/2026. Actual availability is checked with the user's own project.
+// Default matches the schema default; probed 24/10/2026 with one project's key. Actual availability is checked with the user's own project.
 export const AVAILABLE_GEMINI_MODELS: AiModelOption[] = [
-  ['gemini-3.8-flash', 'Gemini 3.8 Flash'], ['gemini-3.6-flash', 'Gemini 3.6 Flash'], ['gemini-3.5-flash-lite', 'Gemini 3.5 Flash-Lite'], ['gemini-4-argon', 'Gemini 4 Argon'],
+  ['gemini-3.5-flash', 'Gemini 3.5 Flash'], ['gemini-3.6-flash', 'Gemini 3.6 Flash'], ['gemini-3.5-flash-lite', 'Gemini 3.5 Flash-Lite'], ['gemini-3.8-flash', 'Gemini 3.8 Flash'], ['gemini-4-argon', 'Gemini 4 Argon'],
 ].map(([id, name]) => ({ id, name, badge: 'Kiểm tra với project', badgeColor: 'blue', tier: 'UNKNOWN', description: 'Quyền truy cập, giá và quota phụ thuộc project/model; chưa xác minh bằng khóa của bạn.' }));
 export function resolveModelId(model: string | null | undefined) { return normalizeModelId(model) ?? getGeminiModel(); }
 export class AiRequestError extends ApiError { constructor(message: string, status: number, code: string) { super(status, message, code); this.name = 'AiRequestError'; } }

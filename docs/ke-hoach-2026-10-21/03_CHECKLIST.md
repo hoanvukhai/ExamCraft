@@ -150,7 +150,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-03. Nghiệm thu: NT-09.
   - Đạt khi: Generate/tweak/OCR/Word/verify/memory đều lấy key theo người gọi và quyền dữ liệu; không fallback mock dưới nhãn kết quả AI thật.
 - [ ] **CV-032 — Quản lý key và sử dụng minh bạch.**
-  - Phát hiện24/10 (đọc tĩnh): model mặc định lệch nhau. `User.selectedAiModel` mặc định `gemini-3.5-flash` (schema và migration `20261022000150`), còn `DEFAULT_GEMINI_MODEL` là `gemini-3.8-flash` và danh sách chọn không có3.5-flash. Tạo tài khoản không đặt model và các route AI không truyền model riêng, nên tài khoản chưa tự chọn sẽ gọi3.5-flash; `GEMINI_MODEL` chỉ được dùng khi cột model rỗng. Chưa đối chiếu giá trị thực trong DB chính. Cần quyết định mặc định và kiểm với project nhà cung cấp; không tự đổi dữ liệu người dùng.
+  - **Hiện trạng24/10:** đã thống nhất model mặc định `gemini-3.5-flash` (mã, schema, `.env.example`; danh sách gợi ý có3.5-flash). DB chính: 6/6 tài khoản đang dùng3.5-flash nên không đổi dữ liệu người dùng, không migration. Gọi thử bằng khóa đã lưu: 3.5-flash/3.6-flash/3.5-flash-lite trả lời ~1s, 3.8-flash quá 90s không trả lời. Còn toàn tiêu chí quản lý key/usage. Giữ mở; [MODEL_DEFAULT_AND_BUILD_CPUS](../../qa/rebuild-2026-10-23/MODEL_DEFAULT_AND_BUILD_CPUS.md).
   - Phạm vi: YC-03. Nghiệm thu: NT-09, NT-10.
   - Đạt khi: Thêm/chọn/test/thay/xóa; usage theo ID không theo label; bỏ 1500*key, gói chưa xác minh ghi chưa biết; không hứa số dư thật.
 - [ ] **CV-033 — Hạn mức, chi phí và tác vụ nền.**
@@ -211,7 +211,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-14, YC-19. Nghiệm thu: NT-06, NT-20.
   - Đạt khi: View/comment/edit/download/fork/publish phân biệt, mặc định private; public view không cấp edit/key; server kiểm từng thao tác.
 - [ ] **CV-048 — Link xem, thu hồi và phiên bản chia sẻ.**
-  - **Hiện trạng24/10:** nút sao chép ở `/share/[id]` đã chuyển sang route server `POST /api/public/share/[id]/copy` (đăng nhập, same-origin, ghim tài khoản, chỉ khi allowCopy; một bản/link/người; chỉ mang đáp án khi link hiện đáp án; bỏ gói kiến thức/kế hoạch). Unit, HTTP18/18 và UI thật đạt trên DB thử. Còn: quyết định chính sách đáp án cần chủ dự án xác nhận, sao chép lại sau khi gốc đổi, hình ngoài kho, hai browser độc lập. Giữ mở; [SHARE_COPY](../../qa/rebuild-2026-10-23/SHARE_COPY.md).
+  - **Hiện trạng24/10:** nút sao chép ở `/share/[id]` đã chuyển sang route server `POST /api/public/share/[id]/copy` (đăng nhập, same-origin, ghim tài khoản, chỉ khi allowCopy; một bản/link/người; chỉ mang đáp án khi link hiện đáp án; bỏ gói kiến thức/kế hoạch). Unit, HTTP18/18 và UI thật đạt trên DB thử. Chủ dự án đã chốt giữ chính sách đáp án này (24/10). Còn: sao chép lại sau khi gốc đổi, hình ngoài kho, hai browser độc lập. Giữ mở; [SHARE_COPY](../../qa/rebuild-2026-10-23/SHARE_COPY.md).
   - Phạm vi: YC-19. Nghiệm thu: NT-06, NT-20.
   - Đạt khi: Link dùng ID/quyền riêng, chính sách đáp án, hết hạn/thu hồi; bản công bố không vô tình trỏ nháp.
 - [ ] **CV-049 — Cùng sửa đồng thời.**

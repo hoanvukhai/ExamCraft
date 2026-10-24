@@ -24,11 +24,11 @@ Cập nhật: **24/10/2026**. Tệp này được **viết đè** mỗi đợt t
 
 1. **CV057** (còn lại): xung đột nhật ký dựng trên UI, hai browser độc lập/đổi máy, nhập lại JSON đã tải, hai tab cùng lượt, phản hồi API chậm ([STUDENT_DRAFT_JOURNAL](../../qa/rebuild-2026-10-23/STUDENT_DRAFT_JOURNAL.md)). **CV060/061** (còn lại): paging/khôi phục điểm từ lịch sử, đính chính đáp án/regrade, gia hạn/mở lại.
    Fixture trên DB thử: exam `ex_49510788f581bb80104a8ca126057b22861cbcd0`, assignment `cmvltft9b009btbbskwkmw4e7` (CLOSED; lượt 1 chốt 9.5, lượt 2 chờ chấm) và bài giao thử `cmvlzp3sk0001tb4o3zm7hck5` (lượt đã nộp của "QA học sinh journal"). Không tạo lại fixture; test-server xoay ATTEMPT_SESSION_SECRET mỗi lần khởi động nên cookie học sinh cũ không dùng lại được.
-2. **CV048** (còn lại): chủ dự án xác nhận chính sách đáp án của bản sao (chỉ mang đáp án khi link hiện đáp án), "sao chép lại" sau khi đề gốc đổi. **CV032:** model AI mặc định lệch (DB 3.5-flash, mã 3.8-flash) cần quyết định.
+2. **CV048** (còn lại): "sao chép lại" sau khi đề gốc đổi, hình ngoài kho, hai browser độc lập (chính sách đáp án đã được chủ dự án chốt giữ). **CV032:** model mặc định đã thống nhất `gemini-3.5-flash` ([MODEL_DEFAULT_AND_BUILD_CPUS](../../qa/rebuild-2026-10-23/MODEL_DEFAULT_AND_BUILD_CPUS.md)); còn phần quản lý key/usage. Build máy ít RAM: đặt `NEXT_BUILD_CPUS=2`.
 3. **CV010/011**, kết hợp **005/049/050:** offline/reload/reconnect trên React, nhiều tab đề mới → server ack, hai browser độc lập, phản hồi muộn; rà pin tài khoản cho template và toàn bộ caller. Không coi localStorage là giao dịch nguyên tử.
 4. Đi hết soạn → lưu → mở → xuất, rồi mẫu có nguồn/UX. CV014/015 còn kho hợp nhất UI, câu rời có ngữ liệu, kho lớn/bộ nhớ. Gói backup mới nhất `backups/package-20261023093421079`; DB restore `examcraft_restore_package_20261023`; app phục hồi `examcraft_restore_app_20261023` có runtime config DPAPI riêng, không trỏ DB chính. Thao tác theo [runbook local](../van-hanh/SAO_LUU_KHOI_PHUC_LOCAL.md).
 5. Nội dung theo sổ nguồn; tìm giáo viên/mẫu thực tế. Chưa có reviewer/ngân sách/nơi triển khai.
-6. Khi được yêu cầu sửa tài liệu/vận hành: phần còn mở của CV077 (liên kết tuyệt đối `F:/…`, banner lịch sử cho báo cáo `qa/` gốc, nút `/room` 404). CV032 (model AI mặc định lệch) cần chủ dự án quyết và kiểm với provider trước khi đổi.
+6. Khi được yêu cầu sửa tài liệu/vận hành: phần còn mở của CV077 (liên kết tuyệt đối `F:/…`, banner lịch sử cho báo cáo `qa/` gốc, nút `/room` 404). Model AI mặc định (CV032) đã xử lý, xem mục 2.
 
 Thứ tự trên là đề nghị, không thay lộ trình/tiêu chí. Lỗi mất dữ liệu hoặc vượt quyền mới phát hiện được ưu tiên trước tính năng. Không tự reset engine hoặc dữ liệu dự án khác.
 

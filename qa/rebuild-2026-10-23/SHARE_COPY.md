@@ -8,7 +8,7 @@ Nút "Tạo bản sao để sửa" ở `/share/[id]` chỉ ghi vào kho cũ củ
 ## Đã sửa
 - `POST /api/public/share/[id]/copy` (mới): cần đăng nhập đã đổi mật khẩu, cùng nguồn gốc (same-origin), khớp tài khoản đang mở. Link phải còn hạn/chưa thu hồi, đề chưa vào thùng rác, câu còn chia sẻ được và `allowCopy` bật (không thì `403 COPY_NOT_ALLOWED`).
 - `src/lib/share-copy.ts` dựng bản sao: ID cố định theo link nên bấm lại/retry không tạo bản thứ hai (trả cùng đề); tiêu đề có tiền tố "[Bản sao]"; mọi câu về `draft`/`none`/version1; bỏ gói kiến thức, phạm vi, kế hoạch đề, mẫu áp dụng và mã kiến thức vì chia sẻ công khai không mang các phần này. Giữ điểm0.
-- **Chính sách đáp án (quyết định cần chủ dự án xác nhận):** chỉ khi link bật "hiện đáp án" thì bản sao mang đáp án/lời giải/rubric/vế đúng của ghép/thứ tự đúng. Link ẩn đáp án thì bản sao bị xóa các phần đó (giáo viên phải nhập lại), để không lộ đáp án ngoài chính sách chủ đề đã chọn.
+- **Chính sách đáp án (chủ dự án đã xác nhận giữ, 24/10):** chỉ khi link bật "hiện đáp án" thì bản sao mang đáp án/lời giải/rubric/vế đúng của ghép/thứ tự đúng. Link ẩn đáp án thì bản sao bị xóa các phần đó (giáo viên phải nhập lại), để không lộ đáp án ngoài chính sách chủ đề đã chọn.
 - Trang chia sẻ gọi route trên bằng tài khoản đã ghim, báo lỗi tại chỗ, thành công thì mở `/editor/<id>`; không còn ghi kho cũ.
 
 ## Bằng chứng (chạy mới, sau sửa cuối)
