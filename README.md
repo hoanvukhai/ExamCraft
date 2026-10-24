@@ -8,13 +8,13 @@ ExamCraft hướng tới hỗ trợ giáo viên quản lý tài liệu, chọn k
 
 Bắt đầu từ [Hồ sơ tiếp nối — đọc trước](docs/ban-giao/00_DOC_TRUOC.md). AI/người mới đọc trang này và trạng thái02, rồi chỉ mở phần liên quan. [Mục lục kế hoạch](docs/ke-hoach-2026-10-21/00_BAT_DAU_TU_DAY.md) giữ định hướng và tiêu chí chi tiết.
 
-- [Tổng kết sản phẩm và phạm vi](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/01_TONG_KET_DU_AN.md)
-- [Lộ trình thực hiện](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/02_LO_TRINH.md)
-- [Checklist có tiêu chí hoàn thành](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/03_CHECKLIST.md)
-- [Kiểm thử và nghiệm thu](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/04_NGHIEM_THU.md)
-- [Chuẩn bị, rủi ro và nguồn](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/05_CHUAN_BI_VA_NGUON.md)
-- [Khung dữ liệu](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/06_KHUNG_DU_LIEU.md)
-- [Nghiên cứu tài liệu và bộ prompt](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/07_NGHIEN_CUU_VA_PROMPT.md)
+- [Tổng kết sản phẩm và phạm vi](docs/ke-hoach-2026-10-21/01_TONG_KET_DU_AN.md)
+- [Lộ trình thực hiện](docs/ke-hoach-2026-10-21/02_LO_TRINH.md)
+- [Checklist có tiêu chí hoàn thành](docs/ke-hoach-2026-10-21/03_CHECKLIST.md)
+- [Kiểm thử và nghiệm thu](docs/ke-hoach-2026-10-21/04_NGHIEM_THU.md)
+- [Chuẩn bị, rủi ro và nguồn](docs/ke-hoach-2026-10-21/05_CHUAN_BI_VA_NGUON.md)
+- [Khung dữ liệu](docs/ke-hoach-2026-10-21/06_KHUNG_DU_LIEU.md)
+- [Nghiên cứu tài liệu và bộ prompt](docs/ke-hoach-2026-10-21/07_NGHIEN_CUU_VA_PROMPT.md)
 
 Các báo cáo V1/V2/V3, thiết kế v3.1 và checklist cũ là lịch sử/đầu vào đối chiếu; dấu hoàn thành cũ không dùng làm tiến độ đợt mới. Báo cáo trong `qa/rebuild-2026-10-22/` là bằng chứng triển khai hiện hành, có giới hạn và mốc chạy riêng; tra qua hồ sơ tiếp nối.
 
@@ -46,4 +46,4 @@ Ghi chú lịch sử: lượt lập kế hoạch21/10/2026 chỉ cập nhật t�
 
 ## Giấy phép
 
-Xem [LICENSE](F:/Workspace/Zazz/ExamCraft/LICENSE) trong repo. Quyền dùng tài liệu/đề nhập từ nguồn ngoài cần lưu riêng, không suy từ giấy phép mã nguồn.
+Xem [LICENSE](LICENSE) trong repo. Quyền dùng tài liệu/đề nhập từ nguồn ngoài cần lưu riêng, không suy từ giấy phép mã nguồn.
