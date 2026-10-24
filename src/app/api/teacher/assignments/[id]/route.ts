@@ -118,6 +118,7 @@ export async function GET(
         maxAttempts: assignment.maxAttempts,
         opensAt: assignment.opensAt,
         closesAt: assignment.closesAt,
+        joinCode: assignment.joinCode,
         showResult: assignment.showResult,
         showSolution: assignment.showSolution,
         leaderboard: assignment.leaderboard,

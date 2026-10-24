@@ -85,3 +85,24 @@ export function buildAssignmentOptions(input: AssignmentOptionsInput): Assignmen
     ...(joinCode ? { joinCode } : {}), requirePin, shuffleQuestions: Boolean(input.shuffleQuestions), shuffleChoices: Boolean(input.shuffleChoices),
   } };
 }
+
+/**
+ * Does the code a student typed match the code stored on the assignment?
+ * Exact match always works, so codes saved by older versions (any case or shape) keep working.
+ * A stored code that follows the current rules is also matched without regard to case or spaces.
+ */
+export function joinCodeMatches(stored: string | null | undefined, supplied: string | null | undefined): boolean {
+  if (!stored) return true; // no code required
+  if (typeof supplied !== 'string') return false;
+  if (supplied === stored) return true;
+  const normalizedStored = normalizeJoinCode(stored), normalizedSupplied = normalizeJoinCode(supplied);
+  return normalizedStored !== null && normalizedStored !== undefined && normalizedStored === normalizedSupplied;
+}
+
+/** "24/10/2026 08:30" in the browser's own time zone; '' for a missing or invalid time. */
+export function formatLocalDateTime(iso: string | null | undefined): string {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}

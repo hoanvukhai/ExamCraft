@@ -1,5 +1,6 @@
 'use client';
 
+import { formatLocalDateTime } from '@/lib/assignment-options';
 import React, { useState, useEffect, useCallback, useRef, use } from 'react';
 import Link from 'next/link';
 import { usePinnedAccount } from '@/hooks/usePinnedAccount';
@@ -501,6 +502,9 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
               Lớp: <strong className="text-[#202124] dark:text-[#e3e3e3]">{assignment.group?.name || 'Tự do'}</strong> • Thời lượng:{' '}
               {assignment.durationMinutes ? `${assignment.durationMinutes} phút` : 'Tự do'} • Mã phòng:{' '}
               <span className="font-mono text-[#1a73e8] dark:text-[#8ab4f8] font-bold">{assignment.publicId}</span>
+            </p>
+            <p data-testid="assignment-window" className="text-xs text-[#5f6368] dark:text-[#9aa0a6] mt-1">
+              Mở: <strong>{formatLocalDateTime(assignment.opensAt) || 'ngay khi giao'}</strong> • Đóng: <strong>{formatLocalDateTime(assignment.closesAt) || 'không đặt hạn'}</strong> • Số lượt: <strong>{assignment.maxAttempts ?? 1}</strong>{assignment.joinCode ? <> • Mã vào bài: <strong className="font-mono">{assignment.joinCode}</strong></> : null} <span className="opacity-70">(giờ theo máy này)</span>
             </p>
           </div>
 

@@ -1,4 +1,4 @@
-import type { Question } from '@/types/exam';
+import type { Passage, Question } from '@/types/exam';
 
 /**
  * Right-hand column of the side-by-side (Đề | Đáp án) view. Missing data is said out loud:
@@ -48,4 +48,23 @@ export function parallelAnswer(question: Question): ParallelAnswer {
       headline = NO_ANSWER;
   }
   return { headline, details, solution: question.step_by_step_solution?.trim() ?? '' };
+}
+
+export type ParallelRow = { kind: 'passage'; passage: Passage } | { kind: 'question'; index: number; question: Question };
+
+/**
+ * Rows of the side-by-side view in exam order. A shared reading passage is shown once, as a
+ * full-width row right before the first question that uses it, never repeated per question.
+ * A question that points at a missing passage keeps its place; nothing is dropped or invented.
+ */
+export function parallelRows(questions: Question[], passages: Passage[] | undefined): ParallelRow[] {
+  const byId = new Map((passages ?? []).map(passage => [passage.id, passage]));
+  const shown = new Set<string>();
+  const rows: ParallelRow[] = [];
+  questions.forEach((question, index) => {
+    const passage = question.passageId ? byId.get(question.passageId) : undefined;
+    if (passage && !shown.has(passage.id)) { shown.add(passage.id); rows.push({ kind: 'passage', passage }); }
+    rows.push({ kind: 'question', index, question });
+  });
+  return rows;
 }

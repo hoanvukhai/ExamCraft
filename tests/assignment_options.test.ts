@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildAssignmentOptions, localToIso, isoToLocal, normalizeJoinCode, assignmentPolicyError } from '../src/lib/assignment-options';
+import { joinCodeMatches, formatLocalDateTime, buildAssignmentOptions, localToIso, isoToLocal, normalizeJoinCode, assignmentPolicyError } from '../src/lib/assignment-options';
 
 const now = new Date(2026, 9, 24, 10, 0, 0); // local time: 24/10/2026 10:00
 const base = { defaultMaxAttempts: 3, hasGroup: true, identityMode: 'PICK_FROM_LIST', now };
@@ -62,4 +62,22 @@ test('shuffle flags pass through and never turn on by themselves', () => {
   assert.equal(on.ok && on.payload.shuffleQuestions && on.payload.shuffleChoices, true);
   const off = buildAssignmentOptions(base);
   assert.equal(off.ok && (off.payload.shuffleQuestions || off.payload.shuffleChoices), false);
+});
+
+test('join code matching keeps older codes working and ignores case only for codes that follow the current rules', () => {
+  assert.equal(joinCodeMatches(null, undefined), true, 'no code required');
+  assert.equal(joinCodeMatches('MA01X', 'ma01x'), true);
+  assert.equal(joinCodeMatches('MA01X', ' ma01x '), true);
+  assert.equal(joinCodeMatches('MA01X', 'MA01Y'), false);
+  assert.equal(joinCodeMatches('MA01X', undefined), false);
+  assert.equal(joinCodeMatches('abc', 'abc'), true, 'older code outside the new pattern: exact only');
+  assert.equal(joinCodeMatches('abc', 'ABC'), false);
+  assert.equal(joinCodeMatches('phong 1', 'phong 1'), true);
+  assert.equal(joinCodeMatches('ma01x', 'MA01X'), true, 'older lowercase code that fits the pattern');
+});
+
+test('local date-time display matches the datetime-local helper and is empty for bad input', () => {
+  assert.equal(formatLocalDateTime(null), ''); assert.equal(formatLocalDateTime('not a date'), '');
+  const iso = localToIso('2026-10-24T08:05')!;
+  assert.equal(formatLocalDateTime(iso), '24/10/2026 08:05');
 });

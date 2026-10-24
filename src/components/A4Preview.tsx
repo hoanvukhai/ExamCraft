@@ -5,7 +5,7 @@ import { Exam, Figure } from '@/types/exam';
 import { MathRenderer } from './MathRenderer';
 import { FigureView } from './FigureView';
 import { exportExamToDocx } from '@/lib/docx-export';
-import { parallelAnswer } from '@/lib/parallel-view';
+import { parallelAnswer, parallelRows } from '@/lib/parallel-view';
 import { prepareExportFigures } from '@/lib/export-figures';
 import { 
   formatPointsString, 
@@ -286,7 +286,14 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
               ) : (
                 <div className="border border-black">
                   <div className="grid grid-cols-2 border-b border-black font-bold text-center text-[11pt]"><div className="p-2 border-r border-black">ĐỀ</div><div className="p-2">ĐÁP ÁN VÀ HƯỚNG DẪN</div></div>
-                  {questions.map((q, index) => {
+                  {parallelRows(questions, passages).map(row => {
+                    if (row.kind === 'passage') return <div key={'passage-' + row.passage.id} className="question-item border-b border-black p-2 text-[11pt] break-inside-avoid">
+                      <div className="font-bold mb-1">{row.passage.title || 'NGỮ LIỆU ĐỌC HIỂU:'}</div>
+                      <div className="italic leading-relaxed whitespace-pre-line">{row.passage.content}</div>
+                      {row.passage.figures?.map(renderPreviewFigure)}
+                      {row.passage.source && <div className="text-right text-[10pt] mt-1">({row.passage.source})</div>}
+                    </div>;
+                    const { question: q, index } = row;
                     const answer = parallelAnswer(q);
                     return <div key={q.id} className="question-item grid grid-cols-2 border-b border-black last:border-b-0 break-inside-avoid">
                       <div className="p-2 border-r border-black text-[11pt]">

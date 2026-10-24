@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parallelAnswer } from '../src/lib/parallel-view';
+import { parallelAnswer, parallelRows } from '../src/lib/parallel-view';
 import type { Question } from '../src/types/exam';
 
 const q = (extra: Partial<Question>): Question => ({ id: 'q', type: 'multiple_choice', difficulty: 'nhan_biet', content: 'c', step_by_step_solution: '', ...extra });
@@ -40,4 +40,13 @@ test('essay lists rubric rows, keeps zero-point rows, and returns the trimmed so
 test('the helper does not change the question it reads', () => {
   const original = q({ type: 'fill_blank', correct_answer: 'x', accepted_answers: ['x', 'y'] }); const before = JSON.stringify(original);
   parallelAnswer(original); assert.equal(JSON.stringify(original), before);
+});
+
+test('a shared passage appears once, before its first question, and no question is dropped', () => {
+  const passages = [{ id: 'p1', content: 'Ngữ liệu' }, { id: 'p2', content: 'Khác' }];
+  const questions = [q({ id: 'a' }), q({ id: 'b', passageId: 'p1' }), q({ id: 'c', passageId: 'p1' }), q({ id: 'd', passageId: 'missing' }), q({ id: 'e', passageId: 'p2' })];
+  const rows = parallelRows(questions, passages);
+  assert.deepEqual(rows.map(row => row.kind === 'passage' ? 'P:' + row.passage.id : 'Q:' + row.question.id), ['Q:a', 'P:p1', 'Q:b', 'Q:c', 'Q:d', 'P:p2', 'Q:e']);
+  assert.deepEqual(rows.filter(row => row.kind === 'question').map(row => row.kind === 'question' && row.index), [0, 1, 2, 3, 4]);
+  assert.equal(parallelRows(questions, undefined).length, 5, 'without passages only questions remain');
 });
