@@ -120,15 +120,23 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
     questions: AttemptDetailQuestion[];
     gradingHistory?: GradeHistoryItem[];
     historyHasMore?: boolean;
+    historyNextCursor?: string | null;
   } | null>(null);
+  // Older history pages append here; the first page and the grade inputs stay untouched.
+  const [olderHistory, setOlderHistory] = useState<{ attemptId: string; items: GradeHistoryItem[]; hasMore: boolean; nextCursor: string | null } | null>(null);
+  const [loadingOlder, setLoadingOlder] = useState(false);
+  const [olderError, setOlderError] = useState('');
+  const olderRequestRef = useRef(0);
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [savingGrade, setSavingGrade] = useState(false);
   const [detailError, setDetailError] = useState('');
   const detailRequestRef = useRef(0);
   const selectedAttemptRef = useRef<string | null>(null);
   const gradingRef = useRef(false);
+  const resetOlderHistory = () => { olderRequestRef.current++; setOlderHistory(null); setLoadingOlder(false); setOlderError(''); };
   const closeAttemptDetail = () => {
     selectedAttemptRef.current = null; detailRequestRef.current++;
+    resetOlderHistory();
     setSelectedAttemptId(null); setAttemptDetail(null); setDetailError('');
   };
 
@@ -199,6 +207,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
   const handleOpenAttemptDetail = async (attemptId: string) => {
     const requestId = ++detailRequestRef.current;
     selectedAttemptRef.current = attemptId;
+    resetOlderHistory();
     setSelectedAttemptId(attemptId);
     setAttemptDetail(null); setDetailError('');
     try {
@@ -214,6 +223,30 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
       if (requestId === detailRequestRef.current) setDetailError('Chưa tải được bài làm. Hãy kiểm tra kết nối rồi mở lại.');
     } finally {
       if (requestId === detailRequestRef.current) setLoadingDetail(false);
+    }
+  };
+
+  // Chỉ gọi khi giáo viên bấm; phản hồi muộn của bài/tài khoản khác bị bỏ.
+  const handleLoadOlderHistory = async () => {
+    const attemptId = selectedAttemptRef.current;
+    const cursor = olderHistory?.attemptId === attemptId ? olderHistory.nextCursor : attemptDetail?.attempt.id === attemptId ? attemptDetail.historyNextCursor : null;
+    if (!attemptId || !cursor || loadingOlder) return;
+    const requestId = ++olderRequestRef.current;
+    const current = () => requestId === olderRequestRef.current && selectedAttemptRef.current === attemptId;
+    setLoadingOlder(true); setOlderError('');
+    try {
+      const res = await accountRequest(`/api/teacher/attempts/${attemptId}?historyCursor=${encodeURIComponent(cursor)}`, { cache: 'no-store' });
+      const data = await res.json();
+      if (!current()) return;
+      if (!res.ok) throw new Error(data.error || 'Chưa tải được lịch sử cũ hơn.');
+      setOlderHistory(previous => {
+        const kept = previous?.attemptId === attemptId ? previous.items : [];
+        return { attemptId, items: [...kept, ...(data.gradingHistory as GradeHistoryItem[])], hasMore: Boolean(data.historyHasMore), nextCursor: data.historyNextCursor ?? null };
+      });
+    } catch (err) {
+      if (current()) setOlderError(err instanceof Error ? err.message : 'Chưa tải được lịch sử cũ hơn. Hãy kiểm tra kết nối rồi thử lại.');
+    } finally {
+      if (requestId === olderRequestRef.current) setLoadingOlder(false);
     }
   };
 
@@ -774,15 +807,23 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                 </div>
               ) : null}
 
-              {attemptDetail && <details className="my-4 border rounded-xl p-3 text-xs">
-                <summary className="cursor-pointer font-semibold">Lịch sử chấm gần đây ({attemptDetail.gradingHistory?.length ?? 0})</summary>
-                {!attemptDetail.gradingHistory?.length && <p className="mt-2">Chưa có lần sửa điểm được ghi từ khi bật lịch sử. Điểm cũ vẫn được giữ.</p>}
-                <ol className="space-y-2 mt-2">{attemptDetail.gradingHistory?.map(entry => <li key={entry.id} className="border-t pt-2">
+              {attemptDetail && (() => {
+                const older = olderHistory?.attemptId === attemptDetail.attempt.id ? olderHistory : null;
+                const shown = [...(attemptDetail.gradingHistory ?? []), ...(older?.items ?? [])];
+                const hasMore = older ? older.hasMore : Boolean(attemptDetail.historyHasMore && attemptDetail.historyNextCursor);
+                return <details className="my-4 border rounded-xl p-3 text-xs">
+                <summary className="cursor-pointer font-semibold">Lịch sử chấm ({shown.length}{hasMore ? '+' : ''})</summary>
+                {!shown.length && <p className="mt-2">Chưa có lần sửa điểm được ghi từ khi bật lịch sử. Điểm cũ vẫn được giữ.</p>}
+                <ol className="space-y-2 mt-2">{shown.map(entry => <li key={entry.id} className="border-t pt-2">
                   <p>{new Date(entry.createdAt).toLocaleString('vi-VN')} · Câu {attemptDetail.questions.find(item => item.questionId === entry.meta.questionKey)?.index ?? 'trong bản đề'}: {entry.meta.before.earned} → {entry.meta.after.earned} điểm</p>
                   {entry.meta.after.comment !== entry.meta.before.comment && <p>Nhận xét mới: {entry.meta.after.comment || '(để trống)'}</p>}
                 </li>)}</ol>
-                {attemptDetail.historyHasMore && <p className="mt-2">Hiển thị 50 lần gần nhất; các lần cũ hơn vẫn được giữ trong dữ liệu.</p>}
-              </details>}
+                {hasMore && <div className="mt-2 space-y-1">
+                  <button type="button" onClick={handleLoadOlderHistory} disabled={loadingOlder} className="px-3 py-1 border rounded-full cursor-pointer disabled:opacity-50">{loadingOlder ? 'Đang tải...' : olderError ? 'Thử lại' : 'Xem lịch sử cũ hơn'}</button>
+                  {olderError && <p role="alert">{olderError}</p>}
+                </div>}
+              </details>;
+              })()}
               <div className="pt-4 border-t border-[#dadce0] dark:border-[#3c4043] flex justify-end">
                 <button
                   onClick={closeAttemptDetail}

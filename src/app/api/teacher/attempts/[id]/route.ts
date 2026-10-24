@@ -8,6 +8,9 @@ import { manualGradeTarget, summarizeManualGrades, teacherSnapshotQuestions } fr
 import { gradeSnapshot } from '@/lib/attempt-grading';
 import { asObject } from '@/lib/public-exam';
 import { manualGradeRevision, manualGradeState, manualGradeAlreadyApplied } from '@/lib/manual-grade-revision';
+import { GRADE_HISTORY_PAGE_SIZE, GradeHistoryCursorError, decodeGradeHistoryCursor, gradeHistoryWhere, pageGradeHistory } from '@/lib/grade-history-pagination';
+
+const historyRows = (id: string, cursor?: ReturnType<typeof decodeGradeHistoryCursor>) => prisma.auditLog.findMany({ where: gradeHistoryWhere(id, cursor), orderBy: [{ createdAt: 'desc' }, { id: 'desc' }], take: GRADE_HISTORY_PAGE_SIZE + 1, select: { id: true, createdAt: true, meta: true } });
 
 // GET: Xem chi tiết bài làm của một học sinh
 export async function GET(
@@ -17,6 +20,15 @@ export async function GET(
   try {
     const user = await requireRequestAuth(req);
     const { id } = await params;
+
+    // Older history only: after the owner check, read just the next page and never touch other attempts.
+    const rawCursor = req.nextUrl.searchParams.get('historyCursor');
+    if (rawCursor !== null) {
+      const cursor = decodeGradeHistoryCursor(rawCursor, id);
+      if (!await prisma.attempt.findFirst({ where: { id, assignment: { ownerId: user.id } }, select: { id: true } })) return NextResponse.json({ error: 'Không tìm thấy bài làm' }, { status: 404 });
+      const older = pageGradeHistory(id, await historyRows(id, cursor));
+      return NextResponse.json({ gradingHistory: older.items, historyHasMore: older.hasMore, historyNextCursor: older.nextCursor }, { headers: { 'Cache-Control': 'no-store' } });
+    }
 
     const attempt = await prisma.attempt.findFirst({
       where: {
@@ -71,7 +83,7 @@ export async function GET(
       };
     });
 
-    const gradingHistory = await prisma.auditLog.findMany({ where: { action: 'attempt.grade', targetType: 'Attempt', targetId: id }, orderBy: [{ createdAt: 'desc' }, { id: 'desc' }], take: 51, select: { id: true, createdAt: true, meta: true } });
+    const history = pageGradeHistory(id, await historyRows(id));
     return NextResponse.json({
       attempt: {
         id: attempt.id,
@@ -87,11 +99,13 @@ export async function GET(
         assessmentMode: asObject(snapshot.metadata).assessmentMode,
       },
       questions: detailedQuestions,
-      gradingHistory: gradingHistory.slice(0, 50),
-      historyHasMore: gradingHistory.length > 50,
+      gradingHistory: history.items,
+      historyHasMore: history.hasMore,
+      historyNextCursor: history.nextCursor,
       passages: Array.isArray(snapshot?.passages) ? snapshot.passages : [],
     }, { headers: { 'Cache-Control': 'no-store' } });
   } catch (error: unknown) {
+    if (error instanceof GradeHistoryCursorError) return NextResponse.json({ error: error.message, code: 'HISTORY_CURSOR_INVALID' }, { status: 400 });
     if (error instanceof ApiError) return apiErrorResponse(error, 'Chưa đọc được bài làm');
     const err = error as Error;
     if (err.message === 'MUST_CHANGE_PASSWORD') return NextResponse.json({ error: 'Vui lòng đổi mật khẩu trước khi tiếp tục', code: 'MUST_CHANGE_PASSWORD' }, { status: 403 });
