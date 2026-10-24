@@ -4,6 +4,7 @@ import { randomUUID } from 'node:crypto';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import fs from 'node:fs';
+import { loginBucket } from '../src/lib/auth-security';
 import { requireTestDatabase } from './helpers/test-database';
 
 const db = new PrismaClient({ datasources: { db: { url: requireTestDatabase() } }, log: [] });
@@ -22,7 +23,7 @@ test('assignment options (times, attempts, entry code, PIN) are decided on the s
       await db.group.deleteMany({ where: { ownerId: uid } });
       await db.exam.deleteMany({ where: { ownerId: uid } });
       await db.question.deleteMany({ where: { ownerId: uid } });
-      await db.auditLog.deleteMany({ where: { actorId: uid } });
+      await db.auditLog.deleteMany({ where: { OR: [{ actorId: uid }, { targetType: 'LoginBucket', targetId: loginBucket(uid + '@example.invalid') }] } });
       await db.user.deleteMany({ where: { id: uid } });
       const directory = `qa/rebuild-${new Date().toISOString().slice(0, 10)}`;
       fs.mkdirSync(directory, { recursive: true });

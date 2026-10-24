@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Exam, ShuffledExamVariant } from '@/types/exam';
 import { generateShuffledExams, buildAnswerMatrix } from '@/lib/shuffler';
 import { exportExamToDocx } from '@/lib/docx-export';
+import { prepareExportFigures } from '@/lib/export-figures';
 import { X, Shuffle, Download, Check, Copy } from 'lucide-react';
 
 interface ShuffleModalProps {
@@ -22,6 +23,8 @@ export const ShuffleModal: React.FC<ShuffleModalProps> = ({
   const [numVariants, setNumVariants] = useState<number>(4);
   const [variants, setVariants] = useState<ShuffledExamVariant[]>([]);
   const [copiedMatrix, setCopiedMatrix] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState('');
 
   // Chỉ sinh các mã đề xáo trộn ngẫu nhiên khi modal được mở ra
   React.useEffect(() => {
@@ -52,15 +55,21 @@ export const ShuffleModal: React.FC<ShuffleModalProps> = ({
 
   // Tải file Word của 1 mã đề
   const handleDownloadVariant = async (variant: ShuffledExamVariant) => {
-    const blob = await exportExamToDocx(variant.exam, true);
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${baseExam.metadata.title}_MaDe_${variant.examCode}.docx`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    if (downloading) return;
+    setDownloading(true); setDownloadError('');
+    try {
+      const blob = await exportExamToDocx(await prepareExportFigures(variant.exam), true);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${baseExam.metadata.title}_MaDe_${variant.examCode}.docx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      setDownloadError(error instanceof Error ? error.message : 'Chưa tải được mã đề. Hãy thử lại; đề gốc vẫn được giữ.');
+    } finally { setDownloading(false); }
   };
 
   return (
@@ -122,6 +131,7 @@ export const ShuffleModal: React.FC<ShuffleModalProps> = ({
         </div>
 
         {/* Danh sách các mã đề và bảng ma trận */}
+        {downloadError && <p role="alert" className="my-2 text-sm text-red-600">{downloadError}</p>}
         <div className="grow overflow-y-auto space-y-6 pr-1">
           {/* Danh sách mã đề có nút xem/tải */}
           <div>
@@ -155,6 +165,7 @@ export const ShuffleModal: React.FC<ShuffleModalProps> = ({
                     </button>
                     <button
                       onClick={() => handleDownloadVariant(v)}
+                      disabled={downloading}
                       title="Tải file Word của mã này"
                       className="p-1.5 text-[#1a73e8] dark:text-[#8ab4f8] bg-[#e8f0fe] dark:bg-[#1e2a38] hover:bg-[#d2e3fc] dark:hover:bg-[#28384a] rounded-full transition-colors cursor-pointer"
                     >
