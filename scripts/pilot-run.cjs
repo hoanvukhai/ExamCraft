@@ -15,7 +15,7 @@ async function main() {
   const health = await fetch('http://127.0.0.1:3117/api/health', { signal: AbortSignal.timeout(10000) });
   if (!health.ok || (await health.json()).isolatedTest !== true) throw Error('BLOCKED: server3117 did not prove isolatedTest. Start scripts/test-server.cjs --production.');
   console.log('Pilot guard: installed browser; isolatedTest confirmed; exact test database selected.');
-  if (process.env.PILOT_FLOW && !/^F[1-7]$/.test(process.env.PILOT_FLOW)) throw Error('BLOCKED: PILOT_FLOW must name one of F1-F7.');
+  if (process.env.PILOT_FLOW && !/^F[1-7]$|^F9$/.test(process.env.PILOT_FLOW)) throw Error('BLOCKED: PILOT_FLOW must name F1-F7 or F9 (offline/reconnect). F8 is the separate backup rehearsal.');
   const result = spawnSync(process.execPath, ['--import', 'tsx', '--test', '--test-concurrency=1', ...(process.env.PILOT_FLOW ? ['--test-name-pattern', '^' + process.env.PILOT_FLOW + ' '] : []), 'tests_pilot/pilot.test.ts'], { env: { ...env, PILOT_BROWSER_PATH: browser }, stdio: 'inherit' });
   process.exitCode = result.status ?? 1;
 }

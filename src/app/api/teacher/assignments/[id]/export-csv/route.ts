@@ -5,21 +5,7 @@ import { ApiError, apiErrorResponse } from '@/lib/api-error';
 import { AttemptStatus } from '@prisma/client';
 import { asObject } from '@/lib/public-exam';
 import { requiresNumericScore, type AssessmentMode } from '@/lib/education-catalog';
-
-// Hàm làm sạch chuỗi chống tấn công CSV Injection (Formula Injection)
-function sanitizeCsvCell(value: any): string {
-  if (value === null || value === undefined) return '';
-  let str = String(value).trim();
-  // Nếu bắt đầu bằng ký tự công thức Excel hiểm độc (=, +, -, @, tab, cr), thêm dấu '
-  if (/^[=+\-@\t\r]/.test(str)) {
-    str = `'${str}`;
-  }
-  // Nếu có dấu phẩy hoặc ngoặc kép, bọc trong ngoặc kép và escape
-  if (str.includes(',') || str.includes('"') || str.includes('\n')) {
-    str = `"${str.replace(/"/g, '""')}"`;
-  }
-  return str;
-}
+import { csvCell as sanitizeCsvCell } from '@/lib/csv-cell';
 
 export async function GET(
   req: NextRequest,
@@ -47,10 +33,10 @@ export async function GET(
       return NextResponse.json({ error: 'Không tìm thấy bài giao' }, { status: 404 });
     }
 
-    const snapshot = assignment.snapshot as any;
+    const snapshot = asObject(assignment.snapshot);
     const mode = asObject(asObject(assignment.snapshot).metadata).assessmentMode as AssessmentMode | undefined;
     const numeric = requiresNumericScore(mode);
-    const questions: any[] = snapshot?.questions || [];
+    const questions = Array.isArray(snapshot.questions) ? snapshot.questions.map(asObject) : [];
 
     // Header CSV
     const headers = [
@@ -62,18 +48,19 @@ export async function GET(
       numeric ? 'Điểm số' : 'Đánh giá',
       'Thời gian nộp',
       ...questions.map((_, idx) => `Câu ${idx + 1}`),
+      ...(numeric ? questions.map((_, idx) => `Nhận xét câu ${idx + 1}`) : []),
     ];
 
     const rows: string[] = [];
 
     // Nhóm theo từng học sinh để lấy lượt nộp cao nhất hoặc hiển thị tất cả
     assignment.attempts.forEach((att, index) => {
-      const answersMap = new Map<string, any>(
+      const answersMap = new Map(
         att.answers.map((a) => [a.questionKey, a])
       );
 
       const questionColumns = questions.map((q) => {
-        const a = answersMap.get(q.id);
+        const a = answersMap.get(String(q.id));
         if (!a) return 'Chưa làm';
         if (!numeric) return a.comment || (a.response == null ? 'Chưa trả lời' : mode === 'survey' ? 'Đã ghi nhận' : a.manualScore != null ? 'Đã nhận xét' : 'Chờ nhận xét');
         if (a.isCorrect === null) return a.manualScore == null ? 'Chờ chấm' : `Đã chấm (${a.earned}đ)`;
@@ -91,6 +78,7 @@ export async function GET(
           att.submittedAt ? new Date(att.submittedAt).toLocaleString('vi-VN') : ''
         ),
         ...questionColumns.map(sanitizeCsvCell),
+        ...(numeric ? questions.map(q => sanitizeCsvCell(answersMap.get(String(q.id))?.comment)) : []),
       ];
 
       rows.push(row.join(','));

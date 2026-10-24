@@ -30,6 +30,8 @@ jobs:
       DATABASE_URL: "postgresql://examcraft:examcraft_secret_ci@localhost:5432/examcraft_ci?schema=public"
       SESSION_SECRET: "ci_temporary_test_session_secret_key_random_for_github_actions_12345"
       NODE_ENV: "test"
+      NEXT_BUILD_CPUS: "1"
+      NODE_OPTIONS: "--max-old-space-size=1024"
 
     steps:
       - name: Checkout repository
@@ -53,11 +55,44 @@ jobs:
       - name: Seed Database
         run: npx tsx prisma/seed.ts
 
+      - name: Create isolated integration database
+        run: psql "${DATABASE_URL%%\?*}" -v ON_ERROR_STOP=1 -c 'CREATE DATABASE examcraft_test_20261022'
+
+      - name: Prepare isolated integration schema
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: "postgresql://examcraft:examcraft_secret_ci@localhost:5432/examcraft_test_20261022?schema=public"
+
       - name: Run Unit & Regression Tests
         run: npm test
+
+      - name: Run isolated transaction tests
+        run: npm run test:integration
 
       - name: Run Next.js Production Build
         run: npm run build
         env:
           NODE_ENV: production
           SESSION_SECRET: "ci_prod_build_valid_session_secret_32_bytes_super_secure"
+
+      - name: Start isolated HTTP server
+        shell: bash
+        env:
+          NODE_ENV: production
+        run: |
+          ci_report="qa/rebuild-$(date -u +%F)"
+          mkdir -p "$ci_report" tmp
+          node --import tsx scripts/test-server.cjs --production > "$ci_report/ci-server.log" 2>&1 &
+          echo $! > tmp/ci-server.pid
+          node -e 'const retry=async()=>{for(let i=0;i<60;i++){try{const r=await fetch("http://127.0.0.1:3117/api/health");if(r.ok&&(await r.json()).isolatedTest===true)return;}catch{}await new Promise(r=>setTimeout(r,1000));}throw Error("Isolated server did not become ready");};retry().catch(()=>process.exit(1));'
+
+      - name: Run isolated HTTP workflows
+        run: npm run test:http
+
+      - name: Stop isolated HTTP server
+        if: always()
+        shell: bash
+        run: |
+          if [ -f tmp/ci-server.pid ]; then
+            kill "$(cat tmp/ci-server.pid)" || true
+          fi

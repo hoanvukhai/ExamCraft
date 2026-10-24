@@ -13,7 +13,8 @@ import type { Exam } from '../src/types/exam';
 const origin = 'http://127.0.0.1:3117';
 const dbUrl = requireTestDatabase();
 assert.equal(new URL(dbUrl).pathname, '/examcraft_test_20261022');
-const reportDir = 'qa/rebuild-2026-10-24';
+const reportDir = 'qa/rebuild-2026-10-25';
+fs.mkdirSync(reportDir, { recursive: true });
 const run = randomUUID();
 const sourceSha256 = createHash('sha256').update(fs.readFileSync('tests_pilot/pilot.test.ts')).digest('hex');
 const buildId = fs.readFileSync('.next/BUILD_ID','utf8').trim();
@@ -136,7 +137,7 @@ async function flow(id: string, action: (f: Fixture) => Promise<void>, firstPass
   finally { if (f) { try { await f.cleanup(); cleanupComplete = true; } catch (e) { error ??= e; } } }
   const message = error instanceof Error ? error.message.replaceAll(f?.password ?? '\0', '[fixture-password]') : error ? 'Unknown pilot failure' : undefined;
   results.push({ id, status: error ? 'FAIL' : 'PASS', durationMs: Date.now() - start, cleanupComplete, ...(message ? { error: message } : {}) });
-  fs.mkdirSync(reportDir, { recursive: true }); const evidence=JSON.stringify({ run, sourceSha256, buildId, browserVersion, requestedFlow: process.env.PILOT_FLOW ?? 'F1-F7', checkedAt: new Date().toISOString(), environment: 'isolatedTest localhost3117 / examcraft_test_20261022', realAiCalls: false, results }, null, 2);
+  fs.mkdirSync(reportDir, { recursive: true }); const evidence=JSON.stringify({ run, sourceSha256, buildId, browserVersion, browserExecutable: process.env.PILOT_BROWSER_PATH, requestedFlow: process.env.PILOT_FLOW ?? 'F1-F7,F9', checkedAt: new Date().toISOString(), environment: 'isolatedTest localhost3117 / examcraft_test_20261022', realAiCalls: false, results }, null, 2);
   fs.writeFileSync(`${reportDir}/pilot-results.json`,evidence);fs.writeFileSync(`${reportDir}/pilot-run-${run}.json`,evidence);
   if (error) throw Error(`${id}: ${message}`);
 }
@@ -205,6 +206,18 @@ test('F3 answer views, shuffle, Word and print', { timeout: 120000 }, () => flow
   await click(f.page,'Song song'); await f.page.getByRole('heading',{name:'ĐỀ VÀ ĐÁP ÁN SONG SONG',exact:true}).waitFor();
   const rows=f.page.getByRole('heading',{name:'ĐỀ VÀ ĐÁP ÁN SONG SONG',exact:true}).locator('..').locator('.question-item'); assert.equal(await rows.count(),7);
   for(let i=0;i<7;i++){ const row=rows.nth(i);assert.equal(await row.locator(':scope > div').count(),2);assert.ok((await row.innerText()).includes('PILOT Q'+(i+1)));assert.ok((await row.innerText()).includes(solution)); }
+  const passage = f.page.locator('[data-parallel-passage="p1"]');
+  assert.equal(await passage.count(),1); assert.ok((await passage.innerText()).includes('Lan đọc sách ở thư viện.'));
+  // The contributed fixture exercises a long shared passage across five questions.
+  // It remains synthetic test content, never an approved curriculum package.
+  const literary = JSON.parse(fs.readFileSync('tests/fixtures/pilot/mon2-ngu-lieu.json','utf8')) as Exam;
+  literary.id = randomUUID();
+  const literaryId = (await f.api('/api/exams','POST',{document:literary})).exam.id;
+  await openExam(f,literaryId); await click(f.page,'Song song');
+  await f.page.getByRole('heading',{name:'ĐỀ VÀ ĐÁP ÁN SONG SONG',exact:true}).waitFor();
+  assert.equal(await f.page.locator('[data-parallel-passage]').count(),1);
+  assert.ok((await f.page.locator('[data-parallel-passage]').innerText()).includes('Con sông quê tôi'));
+  assert.equal(await f.page.getByRole('heading',{name:'ĐỀ VÀ ĐÁP ÁN SONG SONG',exact:true}).locator('..').locator('.question-item').count(),literary.questions.length);
 }));
 
 test('F4 public link, collaborator edits and revoke', { timeout: 150000 }, () => flow('F4', async f => {
@@ -243,6 +256,12 @@ test('F5 assign link with and without class and inspect frozen policies', { time
   const rows=await f.db.assignment.findMany({where:{ownerId:f.ids[0]}});assert.equal(rows.length,2);assert.deepEqual(new Set(rows.map(r=>r.groupId)),new Set([null,group.id]));
   const advanced=rows.find(r=>r.groupId===null)!; assert.equal(advanced.closesAt?.toISOString(),closing!.toISOString());assert.equal(advanced.maxAttempts,2);assert.equal(advanced.joinCode,'PILOT01');assert.equal(advanced.shuffleQuestions,true);assert.equal(advanced.shuffleChoices,true);
   for(const row of rows){assert.equal(row.showSolution,'AFTER_CLOSE');assert.equal(row.durationMinutes,45);assert.equal(row.status,'OPEN');}
+  await f.page.goto(origin+'/teacher/assignments/'+advanced.id);
+  await f.page.getByText('PILOT01',{exact:true}).waitFor();
+  const policy = f.page.getByText('(giờ theo máy này)',{exact:true}).locator('..');
+  const policyText = await policy.innerText();
+  assert.ok(policyText.includes('Mở:') && policyText.includes('Đóng:') && policyText.includes('Số lượt:'));
+  assert.ok(!policyText.includes('không đặt hạn')); assert.ok(!policyText.includes('ngay khi giao'));
   const guest=await f.context(),p=await guest.newPage();await p.goto(origin+'/a/'+advanced.publicId);await p.getByPlaceholder('Ví dụ: Nguyễn Văn An').waitFor();
   await waitUntil(async()=>Date.now()>closing!.getTime()+200, 'Real server close time not reached',90000);
   await p.getByPlaceholder('Ví dụ: Nguyễn Văn An').fill('Vào muộn pilot');
@@ -262,5 +281,35 @@ test('F7 manual essay grade, total and CSV', { timeout: 150000 }, () => flow('F7
   await waitUntil(async()=>Number((await f.db.attemptAnswer.findUniqueOrThrow({where:{id:essay.id}})).manualScore)===1,'Manual grade not saved');
   const final=await f.db.attempt.findUniqueOrThrow({where:{id:attempt.id}});assert.equal(Number(final.score),6);assert.equal(Number(final.maxScore),6);assert.equal(final.needsGrading,false);
   await waitUntil(async()=>(await editor.innerText()).includes('Chưa có thay đổi.'),'Grade receipt did not clear sent input');await click(f.page,'Đóng');
-  const [download]=await Promise.all([f.page.waitForEvent('download'),click(f.page,'Xuất Excel (CSV)')]);const file=await download.path();assert.ok(file);const csv=fs.readFileSync(file,'utf8');assert.ok(csv.includes('Học sinh pilot'));assert.ok(csv.includes('6 / 6'));
+  const [download]=await Promise.all([f.page.waitForEvent('download'),click(f.page,'Xuất Excel (CSV)')]);const file=await download.path();assert.ok(file);const csv=fs.readFileSync(file,'utf8');assert.ok(csv.includes('Học sinh pilot'));assert.ok(csv.includes('6 / 6'));assert.ok(csv.includes('Nhận xét câu 4'));assert.ok(csv.includes('Lập luận đạt'));
+}));
+
+test('F9 offline edits reconnect safely and preserve a conflicting draft as a separate exam', { timeout: 150000 }, () => flow('F9', async f => {
+  await authenticated(f); const id = await seedExam(f); await openExam(f,id);
+  const rename = async (value: string) => {
+    await f.page.getByTitle('Nhấn để đổi tên đề thi (như Google Docs)').click();
+    const input=f.page.locator('header input').first(); await input.fill(value); await input.press('Enter');
+  };
+  const baseline = await f.db.exam.findUniqueOrThrow({where:{id}});
+  await f.owner.setOffline(true); await rename('Pilot offline giữ nháp');
+  await f.page.getByText('Mất kết nối — đang giữ bản nháp trên máy',{exact:true}).waitFor();
+  assert.equal((await f.db.exam.findUniqueOrThrow({where:{id}})).version,baseline.version);
+  assert.ok(await f.page.evaluate(()=>Object.values(localStorage).some(value=>value.includes('Pilot offline giữ nháp'))));
+  await f.owner.setOffline(false);
+  await waitUntil(async()=>(await f.db.exam.findUniqueOrThrow({where:{id}})).title==='Pilot offline giữ nháp','Reconnect did not save offline edit');
+  await f.page.reload(); await f.page.getByTitle('Nhấn để đổi tên đề thi (như Google Docs)').filter({hasText:'Pilot offline giữ nháp'}).waitFor();
+  await f.owner.setOffline(true); await rename('Pilot offline cần giữ riêng');
+  await f.page.getByText('Mất kết nối — đang giữ bản nháp trên máy',{exact:true}).waitFor();
+  const remote=(await f.api('/api/exams/'+id)).document as Exam;
+  remote.metadata.title='Pilot bản mới từ phiên khác';
+  await f.api('/api/exams/'+id,'PATCH',{baseVersion:remote.version,document:remote});
+  const remoteVersion=(await f.db.exam.findUniqueOrThrow({where:{id}})).version;
+  await f.owner.setOffline(false);
+  await f.page.getByRole('button',{name:'Lưu bản nháp thành đề mới',exact:true}).waitFor();
+  assert.ok((await f.page.getByTitle('Nhấn để đổi tên đề thi (như Google Docs)').innerText()).includes('Pilot offline cần giữ riêng'));
+  assert.equal((await f.db.exam.findUniqueOrThrow({where:{id}})).version,remoteVersion);
+  await click(f.page,'Lưu bản nháp thành đề mới');
+  await waitUntil(async()=>await f.db.exam.count({where:{ownerId:f.ids[0],title:'Pilot offline cần giữ riêng (Bản sao phục hồi)'}})===1,'Conflicting draft copy was not saved');
+  assert.equal((await f.db.exam.findUniqueOrThrow({where:{id}})).title,'Pilot bản mới từ phiên khác');
+  assert.equal(await f.db.exam.count({where:{ownerId:f.ids[0]}}),2);
 }));

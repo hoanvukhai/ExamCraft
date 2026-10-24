@@ -161,8 +161,13 @@ test('public deadlines, reveal policies and nonnumeric results on isolated Postg
     assert.equal(zero.status, 200); assert.equal(Number(zero.data.score), 0); assert.equal(Number(zero.data.maxScore), 0);
     const zeroRow = await db.attempt.findUniqueOrThrow({ where: { id: zeroStarted.data.attempt.id } });
     assert.notEqual(zeroRow.score, null); assert.notEqual(zeroRow.maxScore, null);
-    const zeroCsv = await fetch(origin + `/api/teacher/assignments/${zeroAssignment.id}/export-csv`, { headers: { Cookie: owner } });
-    assert.equal(zeroCsv.status, 200); assert.ok((await zeroCsv.text()).includes('0 / 0'));
+    await db.attemptAnswer.updateMany({where:{attemptId:zeroRow.id},data:{comment:'@SUM(1,2)\r\n"Nhận xét"'}});
+    const csvPath=origin + `/api/teacher/assignments/${zeroAssignment.id}/export-csv`;
+    const zeroCsv = await fetch(csvPath, { headers: { Cookie: owner } });
+    assert.equal(zeroCsv.status, 200);
+    const scoredCsv=await zeroCsv.text(); assert.ok(scoredCsv.includes('0 / 0'));
+    assert.ok(scoredCsv.includes('Nhận xét câu 1')); assert.ok(scoredCsv.includes("\"'@SUM(1,2)\r\n\"\"Nhận xét\"\"\""));
+    assert.equal((await fetch(csvPath,{headers:{Cookie:zeroStarted.cookie}})).status,401,'Student capability must not export teacher comments.');
     checks.push('nonnumeric-null-storage-monitor-and-csv');
   });
 });
