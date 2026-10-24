@@ -9,6 +9,12 @@ datasource db {
 
 // ───────────── ENUMS ─────────────
 
+enum ExamCollaboratorRole {
+  VIEWER
+  COMMENTER
+  EDITOR
+}
+
 enum Role {
   SUPER_ADMIN
   TEACHER
@@ -110,6 +116,7 @@ model User {
   isActive           Boolean   @default(true)
   mustChangePassword Boolean   @default(true)
   aiDailyLimit       Int       @default(100) // số lệnh AI tối đa mỗi ngày
+  selectedAiModel    String?   @default("gemini-3.5-flash") // mô hình AI giáo viên chọn
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
   lastLoginAt        DateTime?
@@ -119,12 +126,17 @@ model User {
   authoredQuestions Question[]     @relation("QuestionAuthor")
   passages          Passage[]
   exams             Exam[]
+  folders           Folder[]
   templates         ExamTemplate[]
   groups            Group[]
   assignments       Assignment[]
   aiUsage           AiUsageLog[]
   auditLogs         AuditLog[]
   apiKeys           UserApiKey[]
+  aiMemories        TeacherAiMemory[]
+  examCollaborations ExamCollaborator[]
+  examRevisions      ExamRevision[]
+  examComments       ExamComment[]
 }
 
 model Session {
@@ -238,6 +250,9 @@ model Exam {
   owner           User          @relation(fields: [ownerId], references: [id])
   templateId      String?
   template        ExamTemplate? @relation(fields: [templateId], references: [id])
+  folderId        String?
+  folder          Folder?       @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  isStarred       Boolean       @default(false)
   title           String
   subject         String
   grade           Int
@@ -253,8 +268,29 @@ model Exam {
   items       ExamQuestion[]
   assignments Assignment[]
   shareLinks  ShareLink[]
+  collaborators ExamCollaborator[]
+  revisions     ExamRevision[]
+  comments      ExamComment[]
 
   @@index([ownerId, updatedAt])
+  @@index([ownerId, folderId])
+}
+
+model Folder {
+  id        String   @id @default(cuid())
+  ownerId   String
+  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name      String
+  color     String?  @default("#1a73e8")
+  parentId  String?
+  parent    Folder?  @relation("FolderTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children  Folder[] @relation("FolderTree")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  exams     Exam[]
+
+  @@unique([ownerId, parentId, name])
+  @@index([ownerId])
 }
 
 model ExamQuestion {
@@ -454,4 +490,66 @@ model UserApiKey {
   errorCount   Int       @default(0)
 
   @@index([userId])
+}
+
+// ───────────── HỌC TẬP & PHÂN TÍCH PHONG CÁCH GIÁO VIÊN ─────────────
+
+model TeacherAiMemory {
+  id             String    @id @default(cuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject        String    @default("all") // "toan", "vat_ly", "all"...
+  category       String    // "PEDAGOGICAL_STYLE", "TRICK_OR_TRAP", "REAL_WORLD_CONTEXT", "DIFFICULTY_BALANCE", "EXPLANATION_RULE"
+  title          String    // Tóm tắt: "Ưu tiên bài toán thực tế tối ưu thể tích", "Hạn chế mẹo Casio"...
+  insight        String    @db.Text // Phân tích chi tiết AI đúc kết được
+  sampleQuestion Json?     // Câu hỏi mẫu tiêu biểu làm chuẩn (Few-shot example)
+  sourceAction   String    @default("AI_ANALYSIS") // "QUESTION_VERIFIED", "QUESTION_EDITED", "MANUAL_NOTE", "AI_ANALYSIS"
+  confidence     Float     @default(1.0)
+  isActive       Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([userId, subject])
+  @@index([userId, isActive])
+}
+
+// Named invitations are private; a public share link never grants editing.
+model ExamCollaborator {
+  id        String @id @default(cuid())
+  examId    String
+  exam      Exam @relation(fields: [examId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      ExamCollaboratorRole @default(VIEWER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  revokedAt DateTime?
+  @@unique([examId, userId])
+  @@index([userId, revokedAt])
+}
+
+// Append-only at the application layer; restoration creates a new revision.
+model ExamRevision {
+  id        String @id @default(cuid())
+  examId    String
+  exam      Exam @relation(fields: [examId], references: [id], onDelete: Cascade)
+  version   Int
+  actorId   String?
+  actor     User? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  snapshot  Json
+  note      String?
+  createdAt DateTime @default(now())
+  @@unique([examId, version])
+}
+
+model ExamComment {
+  id         String @id @default(cuid())
+  examId     String
+  exam       Exam @relation(fields: [examId], references: [id], onDelete: Cascade)
+  authorId   String?
+  author     User? @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  body       String @db.Text
+  questionId String?
+  createdAt  DateTime @default(now())
+  @@index([examId, createdAt])
 }
