@@ -6,11 +6,11 @@ Cập nhật: 24/10/2026. Chủ dự án đã duyệt hướng và cho triển k
 
 Ba thông báo mới nhất, viết cho chủ dự án; số liệu kiểm thử ở báo cáo nhóm được liên kết. Các thông báo trước: [lịch sử thông báo](lich-su/TIEN_DO_THONG_BAO_2026-10-22_24.md).
 
+Đợt pilot 24/10 (đêm): đã có bộ kiểm tự động chạy trên trình duyệt thật cho bảy luồng chính của giáo viên và học sinh (đăng nhập, soạn, xuất Word và trộn mã đề, chia sẻ, giao bài, làm bài, chấm) — cả bảy đạt trên dữ liệu thử; bộ kiểm cũng phát hiện và sửa một lỗi thật: mã đề có ảnh không tải được Word. Thêm cho pilot: giao bài đặt được giờ mở/đóng, số lượt, mã vào bài; xem đề và đáp án song song; giáo viên thấy giờ và mã của bài đã giao. Còn lại trước khi đưa giáo viên thật dùng: build và kiểm lại bản mới nhất (Codex đang hết lượt), thử tay việc chưa tự động hóa được (mở Word, in nhiều trang, mất mạng), và tìm giáo viên thử/người duyệt. Chưa nghiệm thu, không AI thật. [Chi tiết](../qa/rebuild-2026-10-24/PILOT_E2E.md).
+
 Đợt khôi phục nháp24/10: đã nối bản dự phòng vào trang chấm và ghi chú AI. Giáo viên chọn bản để khôi phục; khi lưu lỗi hoặc nội dung đã đổi thì giữ bản nhập, có tải tệp dự phòng. Kiểm thử nền và API trên DB thử đạt, dữ liệu thật giữ nguyên. Đã duyệt thêm thiết kế/báo cáo có giới hạn và giao sửa các chỗ chưa đúng cho Claude/Gemini. Kiểm thao tác giao diện còn bị chặn bởi lỗi công cụ trình duyệt; chưa tổng nghiệm thu. [Báo cáo](../qa/rebuild-2026-10-24/DRAFT_RECOVERY_INTEGRATION.md).
 
 Đợt lưu khóa và duyệt bàn giao24/10: đã tích hợp quản lý khóa AI của Claude sau yêu cầu sửa; lưu thử lại không tạo trùng và không mất form khi phản hồi hỏng hoặc đổi tài khoản. Đường chia sẻ chặn ngữ liệu sai chủ và quyền câu hỏi đổi trong lúc sao chép. Build/kiểm thử nền/API trên DB thử đạt, không dùng khóa thật. Hai bộ helper nháp của Claude được duyệt nhưng chưa nối giao diện; thiết kế và một số báo cáo Gemini còn yêu cầu sửa. Đã duyệt/sửa các link lịch sử được đối chứng. Dữ liệu thật giữ nguyên, chưa tổng nghiệm thu. [Báo cáo](../qa/rebuild-2026-10-24/KEY_CREATE_RETRY_AND_BATCH_REVIEW.md).
-
-Đợt tổ chức làm liền mạch24/10: đã chuẩn bị hàng đợi dài cho Claude làm code và thiết kế sâu, Gemini làm các báo cáo/đối chiếu nhỏ. Mỗi mục bàn giao riêng và tiếp việc độc lập; Codex duyệt, yêu cầu sửa, tích hợp và kiểm cuối. Có hai prompt dán một lần, checkpoint khi hết lượt và tệp duyệt riêng; chưa xác nhận hai AI đã nhận đợt mới. Đợt này chỉ chuẩn bị phối hợp, không thêm tính năng hoặc chạy lại kiểm thử. [Cách dùng](phoi-hop-ai/00_CACH_DUNG.md), [báo cáo](../qa/rebuild-2026-10-24/CONTINUOUS_WORK_QUEUES.md).
 
 ## Trạng thái theo đợt
 

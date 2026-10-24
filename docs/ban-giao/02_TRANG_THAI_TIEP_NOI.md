@@ -1,15 +1,15 @@
 # Trạng thái để tiếp nối
 
-Cập nhật: **24/10/2026**. Tệp này được **viết đè** mỗi đợt theo khuôn dưới, giữ khoảng một trang. Số test, tên log và giới hạn chi tiết chỉ nằm trong báo cáo nhóm được liên kết; không chép lại ở đây. Bản trước khi viết lại: [lịch sử 02](../lich-su/TRANG_THAI_02_2026-10-24.md).
+Cập nhật: **24/10/2026 (đêm)**. Tệp này được **viết đè** mỗi đợt theo khuôn dưới, giữ khoảng một trang. Số test, tên log và giới hạn chi tiết chỉ nằm trong báo cáo nhóm được liên kết; không chép lại ở đây. Bản trước khi viết lại: [lịch sử 02](../lich-su/TRANG_THAI_02_2026-10-24.md).
 
 ## 1. Mốc hiện tại
 
-- **Tiến độ:** 8/78 CV đạt theo [checklist](../ke-hoach-2026-10-21/03_CHECKLIST.md); đang làm S7 (giao/làm/chấm) xen các việc còn mở của S1/S6 (lưu, quyền, cộng tác). Chưa tổng nghiệm thu.
-- **Mới nhất24/10:** C02/C03 đã tích hợp và nối vào trang chấm/ghi chú AI; khôi phục có chọn, giữ base/raw và bản mới khi ACK không khớp, tải RAM khi storage lỗi. Helper/render tĩnh/build/API DB thử đạt, không provider/DB chính. UI thực chưa kiểm do CUA lỗi; CV vẫn mở. [DRAFT_RECOVERY_INTEGRATION](../../qa/rebuild-2026-10-24/DRAFT_RECOVERY_INTEGRATION.md).
-- **Các đợt khác cùng ngày:** giao/làm/chấm bảy dạng qua UI ([ASSIGNMENT_ACCESS_AND_STUDENT_FLOW](../../qa/rebuild-2026-10-23/ASSIGNMENT_ACCESS_AND_STUDENT_FLOW.md)); CAS nháp học sinh và chặn nộp bản cũ ([STUDENT_DRAFT_CAS](../../qa/rebuild-2026-10-23/STUDENT_DRAFT_CAS.md)); đọc chi tiết bài làm, chặn phản hồi muộn ([TEACHER_DETAIL_REVIEW](../../qa/rebuild-2026-10-23/TEACHER_DETAIL_REVIEW.md)); đề xuất AI bền qua tải trang và Undo/Redo Copilot ([AI_JOURNAL_AND_HISTORY](../../qa/rebuild-2026-10-23/AI_JOURNAL_AND_HISTORY.md)); chặn sai tài khoản ở Copilot/tweak/verify ([COPILOT_GUARDS](../../qa/rebuild-2026-10-23/COPILOT_GUARDS.md)).
-- **Hồ sơ:** đã gọn theo kiểu một nơi cho số liệu; nhật ký theo đợt chuyển nguyên văn vào [docs/lich-su](../lich-su/README.md).
-- **Phối hợp AI:** C01/C02/C03 tích hợp, Codex giữ mã; C04/C06 và G02/G06 duyệt có giới hạn. C05 và G01/G03/G04/G05/G07/G08 yêu cầu sửa cụ thể; chưa duyệt hết, không DONE. Theo [BATCH_REVIEWS](../../qa/ai-review/coordination/BATCH_REVIEWS.json)/[ASSIGNMENTS](../../qa/ai-review/coordination/ASSIGNMENTS.json); tệp không đánh thức AI đã dừng.
-- Đợt này không gọi provider/khóa thật, không ghi DB chính. Model mặc định và probe của đợt khác tra [MODEL_DEFAULT_AND_BUILD_CPUS](../../qa/rebuild-2026-10-23/MODEL_DEFAULT_AND_BUILD_CPUS.md).
+- **Tiến độ:** vẫn 8/78 CV đạt theo [checklist](../ke-hoach-2026-10-21/03_CHECKLIST.md); chưa tổng nghiệm thu. Từ 24/10 làm theo **mốc pilot** ([04_MOC_PILOT](../phoi-hop-ai/04_MOC_PILOT.md)): Claude chỉ đạo, Codex thực thi, Gemini chuẩn bị nội dung/thẻ kiểm. Chủ dự án đã duyệt mức "đạt trong phạm vi pilot" cho CV tiện ích (không đổi dấu `[x]`).
+- **Bộ kiểm pilot F1–F7 chạy được** (`npm run test:pilot`, Chrome cài sẵn, DB thử): 7/7 luồng đạt trên mã `0f7a29f`; SAFE 321/321 và HTTP 33/33 cùng mốc. Tìm và sửa một lỗi thật: mã đề có ảnh không tải được Word. Chi tiết và giới hạn: [PILOT_E2E](../../qa/rebuild-2026-10-24/PILOT_E2E.md), [PILOT_GAPS](../../qa/rebuild-2026-10-24/PILOT_GAPS.md).
+- **Tính năng mới cho pilot:** tùy chọn nâng cao khi giao bài (giờ mở/đóng, số lượt, mã vào bài, PIN, trộn), chế độ xem Song song, sao chép đề từ link chia sẻ vào kho server, nhật ký nháp học sinh, chấm tay có bản nền điểm và lịch sử. Sau review của Codex, mã `1ce95b9` sửa: mã vào bài cũ vẫn dùng được, ngữ liệu hiện ở Song song, giờ/mã hiển thị cho giáo viên; **`1ce95b9` mới qua kiểm thử thuần, chưa build/HTTP/test:pilot**.
+- **Phân tích:** [PILOT_GAP_ANALYSIS](../../qa/rebuild-2026-10-24/PILOT_GAP_ANALYSIS.md), [CV025_REVISION_COST](../../qa/rebuild-2026-10-24/CV025_REVISION_COST.md) (mỗi lần lưu ghi lịch sử mọi câu; đề xuất chỉ ghi câu đổi, P1 sau pilot).
+- **Phối hợp AI:** Gemini đã nộp GEM-P1…P8 (duyệt có giới hạn; P7 bị yêu cầu sửa) và đang nhận GEM-P9…P12; Codex hết token lượt trước, chờ resume. Theo [BATCH_REVIEWS](../../qa/ai-review/coordination/BATCH_REVIEWS.json), [ASSIGNMENTS](../../qa/ai-review/coordination/ASSIGNMENTS.json). Các gói nội dung Toán 6/môn 2 là bản chuẩn bị chờ duyệt chuyên môn, chưa phải nội dung chuẩn.
+- Không gọi provider/khóa thật, không ghi DB chính. Model mặc định: [MODEL_DEFAULT_AND_BUILD_CPUS](../../qa/rebuild-2026-10-23/MODEL_DEFAULT_AND_BUILD_CPUS.md).
 
 ## 2. Đã có, chưa đồng nghĩa nghiệm thu
 
@@ -23,15 +23,14 @@ Cập nhật: **24/10/2026**. Tệp này được **viết đè** mỗi đợt t
 
 ## 3. Việc tiếp theo khi được yêu cầu tiếp tục kỹ thuật
 
-1. **Codex:** tiếp nhận bản sửa C05 và các báo cáo Gemini còn bị trả; review theo source/bằng chứng, không suy hoàn tất từ summary. C02/C03 đã mount; tiếp theo kiểm UI khôi phục chấm/ghi chú/key/template/import/share, reload, storage lỗi, đổi tài khoản và hai browser khi CUA hoạt động. Không dùng render tĩnh thay UI. [DRAFT_RECOVERY_INTEGRATION](../../qa/rebuild-2026-10-24/DRAFT_RECOVERY_INTEGRATION.md).
-   Fixture trên DB thử: exam `ex_49510788f581bb80104a8ca126057b22861cbcd0`, assignment `cmvltft9b009btbbskwkmw4e7` (CLOSED; lượt 1 chốt 9.5, lượt 2 chờ chấm) và bài giao thử `cmvlzp3sk0001tb4o3zm7hck5` (lượt đã nộp của "QA học sinh journal"). Không tạo lại fixture; test-server xoay ATTEMPT_SESSION_SECRET mỗi lần khởi động nên cookie học sinh cũ không dùng lại được.
-2. **CV048** (còn lại): UI sao chép sau khi đề gốc đổi, hình ngoài kho, hai browser độc lập, race thay đổi câu ngân hàng và publication snapshot (race sửa Exam/thu hồi link đã kiểm cả hai chiều) (chính sách đáp án đã được chủ dự án chốt giữ). **CV032:** model mặc định đã thống nhất `gemini-3.5-flash` ([MODEL_DEFAULT_AND_BUILD_CPUS](../../qa/rebuild-2026-10-23/MODEL_DEFAULT_AND_BUILD_CPUS.md)); còn phần quản lý key/usage. Build máy ít RAM: ưu tiên tuần tự `NEXT_BUILD_CPUS=1`, `NODE_OPTIONS=--max-old-space-size=1024`; không chạy lint/SAFE cùng build.
-3. **CV010/011**, kết hợp **005/049/050:** offline/reload/reconnect trên React, nhiều tab đề mới → server ack, hai browser độc lập, phản hồi muộn; rà pin tài khoản cho template và toàn bộ caller. Không coi localStorage là giao dịch nguyên tử.
-4. Đi hết soạn → lưu → mở → xuất, rồi mẫu có nguồn/UX. CV014/015 còn kho hợp nhất UI, câu rời có ngữ liệu, kho lớn/bộ nhớ. Gói backup mới nhất `backups/package-20261023093421079`; DB restore `examcraft_restore_package_20261023`; app phục hồi `examcraft_restore_app_20261023` có runtime config DPAPI riêng, không trỏ DB chính. Thao tác theo [runbook local](../van-hanh/SAO_LUU_KHOI_PHUC_LOCAL.md).
-5. Nội dung theo sổ nguồn; tìm giáo viên/mẫu thực tế. Chưa có reviewer/ngân sách/nơi triển khai.
-6. Khi được yêu cầu sửa tài liệu/vận hành: phần còn mở của CV077 (liên kết tuyệt đối `F:/…`, banner lịch sử cho báo cáo `qa/` gốc, nút `/room` 404). Model AI mặc định (CV032) đã xử lý, xem mục 2.
+1. **Codex (khi có token):** dừng QA3117, build 1 CPU trên `1ce95b9`, chạy SAFE, HTTP và `npm run test:pilot`; thêm ca giờ đóng, `assignment-window`, Song song có ngữ liệu; gap I (sao lưu/khôi phục bằng PowerShell 5.1 vào DB mới `examcraft_restore_ps51_20261024`, đã được duyệt); ghi Hiện trạng CV024/054/056/073. Tin: `claude-codex-20261024T160000Z`.
+2. **Gemini:** GEM-P9 (sửa dữ liệu đề mẫu: ảnh dataURL, README, ngữ liệu chung), GEM-P10 (cập nhật hướng dẫn/thẻ kiểm cho tính năng mới), GEM-P11 (phiếu phản hồi), GEM-P12 (kiểm nguồn hai gói nội dung). Tin: `claude-gemini-20261024T160000Z`.
+3. **Chủ dự án:** thử tay bằng [thẻ kiểm](../huong-dan/THE_KIEM_TAY_GIAO_BAI_VA_WORD.md) việc chưa tự động hóa được (mở Word, in nhiều trang, offline, hai trình duyệt); tìm giáo viên thử và người duyệt theo [05_TUYEN_GIAO_VIEN_VA_NGUOI_DUYET](../phoi-hop-ai/05_TUYEN_GIAO_VIEN_VA_NGUOI_DUYET.md).
+4. **Sau pilot (P1):** CV025 chỉ ghi câu đổi; CV010/011 offline, nhiều tab, hai trình duyệt độc lập; CV057/060/061 phần còn lại; CV048 chọn sao chép lại sau khi đề gốc đổi; bản chụp `ExamRevision` mang ảnh mỗi lần lưu (đo ở CV074).
+5. Nội dung theo sổ nguồn; tìm giáo viên/mẫu thực tế; chưa có reviewer/ngân sách/nơi triển khai.
+6. CV077 còn: liên kết tuyệt đối `F:/…` còn ở 3 tệp (tham chiếu `tệp:dòng` trong báo cáo V1–V3, giữ vì là nguồn), kiểm lại banner lịch sử khi thêm báo cáo mới.
 
-Thứ tự trên là đề nghị, không thay lộ trình/tiêu chí. Lỗi mất dữ liệu hoặc vượt quyền mới phát hiện được ưu tiên trước tính năng. Không tự reset engine hoặc dữ liệu dự án khác.
+Thứ tự là đề nghị, không thay lộ trình/tiêu chí. Lỗi mất dữ liệu hoặc vượt quyền mới phát hiện được ưu tiên trước tính năng. Không tự reset engine hoặc dữ liệu dự án khác.
 
 ## 4. Bản đồ 78 CV
 
@@ -54,9 +53,9 @@ Các bổ sung ND01–07, nhánh ngôn ngữ/địa phương, hiệu lực ngu�
 
 ## 5. Môi trường và điểm dễ làm sai
 
-- **Git:** thay đổi từ 22/10 nằm trên nhánh local `rebuild/2026-10-local`; `main` và baseline cũ vẫn là `bb831f240772f27ee57e4abcb83442ab0361e483`. Chưa push/merge; chỉ làm khi chủ dự án cho. Commit nhỏ theo nhóm cuối mỗi đợt khi được yêu cầu; không reset/dọn. `.gitattributes` giữ đúng byte `migration.sql` đã áp dụng. `tmp/` bị ignore, giữ nguyên trên máy.
+- **Git:** thay đổi từ 22/10 nằm trên nhánh local `rebuild/2026-10-local` (HEAD tại thời điểm viết: `2e3e46d`); nhánh `ai/claude-pilot-features` (b44c0ec) đã được tích hợp thành `0f7a29f`; tệp của Gemini (`docs/huong-dan/`, hai gói `PILOT-*`, `tests/fixtures/pilot/`, tin trong `messages/`) còn chưa commit; `main` và baseline cũ vẫn là `bb831f240772f27ee57e4abcb83442ab0361e483`. Chưa push/merge; chỉ làm khi chủ dự án cho. Commit nhỏ theo nhóm cuối mỗi đợt khi được yêu cầu; không reset/dọn. `.gitattributes` giữ đúng byte `migration.sql` đã áp dụng. `tmp/` bị ignore, giữ nguyên trên máy.
 - **DB:** main là container `examcraft_postgres`, cổng 5436, DB `examcraft`. Test `examcraft_test_20261022`; restore `examcraft_restore_20261022`; cài mới kiểm migration `examcraft_migrate_fresh_20261022`. Không nhầm bốn DB; không đụng container dự án khác `study_work_postgres`/5435.
-- **Server QA:** đợt cuối chạy production cô lập trên3117, DB thử; harness3124 đã dừng. Luôn kiểm trạng thái trước khi chạy, không tin session ID/tool handle cũ. Dừng máy chủ dùng `.next` trước build; build cuối dùng `NEXT_BUILD_CPUS=1`, heap1024; test:safe giới hạn2worker, không chạy cùng build trên máy ít RAM.
+- **Server QA:** QA production 3117 (phiên của Codex, DB thử, build trước `1ce95b9`) có thể còn chạy; kiểm cổng trước khi dùng, dừng trước build. Build/lint/SAFE tuần tự, 1 CPU, heap 1024; không chạy cùng lúc trên máy ít RAM. Luôn kiểm trạng thái, không tin session ID/tool handle cũ.
 - **PowerShell:** máy chưa có `pwsh`; runbook dùng `powershell` 5.1 (CV073).
 - **Tìm kiếm:** `.rgignore` loại báo cáo lịch sử, `docs/lich-su/`, `qa/` gốc, log/DOM dump `qa/rebuild-*/*.log|*.txt` và danh mục nghiên cứu lớn khỏi tìm kiếm mặc định. Cần thì chỉ rõ tệp hoặc dùng `rg --no-ignore`.
 - **Bí mật:** bản sao trong `backups/` (không Git); bí mật DPAPI phụ thuộc hồ sơ Windows. Bí mật mã hóa key cũ chưa phù hợp production: **không xoay tùy tiện vì có thể mất khả năng giải mã key cũ**. Kế hoạch rekey/asset restore còn mở. Không chép `.env`, key, cookie, mật khẩu hoặc dữ liệu thật vào hồ sơ.
