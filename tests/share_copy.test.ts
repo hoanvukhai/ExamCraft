@@ -51,3 +51,14 @@ test('share copy does not mutate its source', () => {
   buildShareCopy(original, { id: 'link-3', showAnswers: false }); buildShareCopy(original, { id: 'link-3', showAnswers: true });
   assert.equal(JSON.stringify(original), before);
 });
+
+test('versioned copies keep legacy identity and separate source revisions without copying server identity', () => {
+  const original = source();
+  const v7 = buildShareCopy(original, { id: 'link-3', showAnswers: false, sourceVersion: 7 });
+  const v8 = buildShareCopy({ ...original, version: 8 }, { id: 'link-3', showAnswers: false, sourceVersion: 8 });
+  assert.equal(shareCopyClientId('link-3'), 'share-copy:link-3');
+  assert.equal(v7.id, shareCopyClientId('link-3', 7));
+  assert.notEqual(v7.id, v8.id); assert.notEqual(v7.id, shareCopyClientId('link-3'));
+  assert.equal(v7.version, undefined); assert.equal(v7.serverId, undefined);
+  assert.equal(v7.id, buildShareCopy(original, { id: 'link-3', showAnswers: false, sourceVersion: 7 }).id);
+});

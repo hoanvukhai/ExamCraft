@@ -5,6 +5,8 @@ import { usePinnedAccount } from '@/hooks/usePinnedAccount';
 import { accountFetch } from '@/lib/account-fetch';
 import { createRequestIdentity, isAccountFailure } from '@/lib/template-request-context';
 import { MemoryGate, canActOnMemory, memoryDraftFingerprint, parseMemoryList, parseSavedMemory, shouldClearDraft, type MemoryDraft, type MemoryToken, type TeacherMemoryRow } from '@/lib/ai-memory-request-context';
+import { MemoryNoteDraftRecovery } from '@/components/MemoryNoteDraftRecovery';
+import { readNoteDrafts, writeNoteDraft, retireWriterNoteDraft, discardNoteDraftEntry, type NoteDraftWrite } from '@/lib/memory-note-draft';
 import {
   Brain,
   Sparkles,
@@ -37,7 +39,7 @@ const lockedMessage = 'Phiên hoặc tài khoản đã thay đổi. Chưa gửi 
 export const AiLearningModal: React.FC<AiLearningModalProps> = ({ isOpen, onClose, currentUser }) => {
   const account = usePinnedAccount();
   if (!isOpen) return null;
-  return <AiLearningDialog key={account.ownerId ?? 'pending'} ownerId={account.ownerId} accountError={account.error} expectedUserId={currentUser?.id} onClose={onClose} />;
+  return <AiLearningDialog key={JSON.stringify([account.ownerId, currentUser?.id])} ownerId={account.ownerId} accountError={account.error} expectedUserId={currentUser?.id} onClose={onClose} />;
 };
 
 function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { ownerId: string | null; accountError: string; expectedUserId?: string; onClose: () => void }) {
@@ -56,7 +58,17 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
   const [isAddingNew, setIsAddingNew] = useState(false);
   const draftRef = useRef<MemoryDraft>(emptyDraft);
   const [draft, setDraft] = useState<MemoryDraft>(emptyDraft);
-  const editDraft = (patch: Partial<MemoryDraft>) => { draftRef.current = { ...draftRef.current, ...patch }; setDraft(draftRef.current); };
+  const [writerId] = useState(() => crypto.randomUUID());
+  const [recovery, setRecovery] = useState<ReturnType<typeof readNoteDrafts>>({ entries: [], unavailable: false });
+  const [draftWrite, setDraftWrite] = useState<NoteDraftWrite | null>(null);
+  const refreshDrafts = () => { if (ownerId) setRecovery(readNoteDrafts(() => localStorage, ownerId)); };
+  const editDraft = (patch: Partial<MemoryDraft>) => {
+    draftRef.current = { ...draftRef.current, ...patch }; setDraft(draftRef.current);
+    if (ownerId && !accountError && (!expectedUserId || expectedUserId === ownerId) && gateRef.current && !gateRef.current.locked) {
+      setDraftWrite(writeNoteDraft(() => localStorage, ownerId, writerId, draftRef.current));
+      refreshDrafts();
+    }
+  };
   const { title: newTitle, insight: newInsight, category: newCategory } = draft;
   const setNewTitle = (title: string) => editDraft({ title });
   const setNewInsight = (insight: string) => editDraft({ insight });
@@ -69,6 +81,7 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
   const idle = ready && busy === null;
 
   const begin = (kind: NonNullable<Busy>['kind'], id?: string) => {
+    if (!ready) return null;
     const token = ownerId ? gateRef.current?.begin() ?? null : null;
     if (token) { setBusy({ kind, id }); setProblem(''); }
     return token;
@@ -108,6 +121,20 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready]);
+  useEffect(() => {
+    if (!ready) return;
+    const timer = setTimeout(() => refreshDrafts(), 0);
+    const refresh = () => refreshDrafts();
+    window.addEventListener('storage', refresh);
+    return () => { clearTimeout(timer); window.removeEventListener('storage', refresh); };
+    // Owner is pinned by the dialog key; account loss stops reading other browser changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready, ownerId]);
+  useEffect(() => {
+    const warn = (event: BeforeUnloadEvent) => { if (draftRef.current.title.trim() || draftRef.current.insight.trim()) { event.preventDefault(); event.returnValue = ''; } };
+    window.addEventListener('beforeunload', warn);
+    return () => window.removeEventListener('beforeunload', warn);
+  }, []);
 
   const exportNotes = async () => {
     const token = begin('archive'); if (!token) return;
@@ -142,7 +169,7 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
       setStatusMessage(`Đã nhập ${(result as { imported: number }).imported} ghi chú riêng. Chưa bật tự động.`);
       try { const parsed = await fetchList(token); if (parsed) showList(parsed); } catch { if (token.isLive()) setProblem('Đã nhập nhưng chưa tải lại danh sách. Bấm “Tải lại”.'); }
     } catch (cause) { if (token) fail(token, cause, 'Chưa nhập được ghi chú.'); }
-    finally { if (token) finish(token); if (archiveInput.current) archiveInput.current.value = ''; }
+    finally { if (token?.isLive() && archiveInput.current) archiveInput.current.value = ''; if (token) finish(token); }
   };
 
   const handleToggleActive = async (memory: TeacherMemory) => {
@@ -152,8 +179,9 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
       const { response, data } = await send(token, '/api/teacher/ai-memory', { method: 'POST', headers: jsonHeaders, body: JSON.stringify({ id: memory.id, isActive: !memory.isActive }) });
       if (!token.isLive()) return;
       if (!response.ok) throw Error(messageOf(data, 'Không thể cập nhật trạng thái'));
-      const saved = parseMemoryList({ memories: [data && typeof data === 'object' ? (data as { memory?: unknown }).memory : undefined] }).items[0];
-      setList(previous => previous.ownerId !== ownerId ? previous : { ...previous, items: previous.items.map(item => item.id === memory.id ? saved ?? { ...item, isActive: !memory.isActive } : item) });
+      const saved = parseSavedMemory(data);
+      if (saved.id !== memory.id) throw Error('Biên nhận không khớp ghi chú đang sửa. Hãy tải lại danh sách.');
+      setList(previous => previous.ownerId !== ownerId ? previous : { ...previous, items: previous.items.map(item => item.id === memory.id ? saved : item) });
     } catch (cause) { fail(token, cause, 'Không thể cập nhật trạng thái'); }
     finally { finish(token); }
   };
@@ -197,7 +225,10 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
       if (!token.isLive()) return;
       if (!response.ok) throw Error(messageOf(data, 'Không thể tạo quy tắc'));
       const saved = parseSavedMemory(data);
-      setList(previous => previous.ownerId !== ownerId ? previous : { ...previous, items: [saved, ...previous.items.filter(item => item.id !== saved.id)] });
+      if (memoryDraftFingerprint(saved) !== memoryDraftFingerprint(sent)) throw Error('Biên nhận không khớp nội dung đã gửi. Bản đang soạn vẫn được giữ; hãy tải lại danh sách.');
+      if (ownerId) retireWriterNoteDraft(() => localStorage, ownerId, writerId, saved);
+      refreshDrafts();
+      setList(previous => previous.ownerId && previous.ownerId !== ownerId ? previous : { ownerId: ownerId!, items: [saved, ...previous.items.filter(item => item.id !== saved.id)] });
       setStatusMessage('Đã lưu quy tắc vào kho riêng.');
       // Text typed after pressing Save is a new draft: keep it instead of clearing it with this receipt.
       if (shouldClearDraft(sent, draftRef.current)) { editDraft({ title: '', insight: '' }); setIsAddingNew(false); }
@@ -206,7 +237,8 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
   };
 
   const requestClose = () => {
-    if ((draft.title.trim() || draft.insight.trim()) && !confirm('Quy tắc đang soạn chưa được lưu và sẽ mất nếu đóng. Đóng cửa sổ này?')) return;
+    if ((draft.title.trim() || draft.insight.trim()) && !confirm('Ghi chú đang soạn chưa lưu lên máy chủ. Nếu bản dự phòng trên trình duyệt không lưu được, nội dung sẽ mất khi đóng. Đóng cửa sổ này?')) return;
+    gateRef.current?.dispose();
     onClose();
   };
 
@@ -235,14 +267,14 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="font-bold text-base text-[#202124] dark:text-white">
-                  Bộ Não AI Sư Phạm & Tự Học
+                  Ghi chú riêng cho AI
                 </h3>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300">
-                  Adaptive Learning
+                  Kho riêng
                 </span>
               </div>
               <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">
-                AI tự động phân tích và học phong cách ra đề của Thầy/Cô để tự thích ứng khi biên soạn đề mới
+                Lưu chỉ dẫn của bạn và xem đề xuất phân tích trước khi bật.
               </p>
             </div>
           </div>
@@ -272,6 +304,7 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
             </button>
 
             <button
+              disabled={!ready}
               onClick={() => setIsAddingNew(true)}
               className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] text-xs font-medium cursor-pointer"
             >
@@ -281,7 +314,7 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
           </div>
 
           <div className="flex items-center gap-1.5 text-xs text-[#5f6368] dark:text-[#9aa0a6]">
-            <span>Đã học: </span>
+            <span>Đã lưu: </span>
             <strong className="text-purple-600 dark:text-purple-400 font-bold">{memories.length}</strong>
             <span>quy tắc (</span>
             <strong className="text-emerald-600 dark:text-emerald-400 font-bold">
@@ -312,6 +345,9 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
           </div>
         )}
 
+        {ownerId && !accountProblem && <MemoryNoteDraftRecovery ownerId={ownerId} entries={recovery.entries} unavailable={recovery.unavailable} writeStatus={draftWrite} form={draft} writerId={writerId} disabled={!idle}
+          onApply={record => { if (!ready || busy || gateRef.current?.locked || record.ownerId !== ownerId) return; editDraft({ title: record.title, insight: record.insight, category: record.category, subject: record.subject }); setIsAddingNew(true); }}
+          onDiscard={entry => { if (!ready || busy || gateRef.current?.locked) return; discardNoteDraftEntry(() => localStorage, ownerId, entry); refreshDrafts(); }} />}
         {/* Form thêm thủ công */}
         {isAddingNew && (
           <form
@@ -321,7 +357,7 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
             <div className="flex items-center justify-between">
               <h4 className="font-bold text-xs text-purple-700 dark:text-purple-300 flex items-center gap-1.5">
                 <Lightbulb className="w-4 h-4" />
-                <span>Thêm quy tắc sư phạm để AI luôn ghi nhớ</span>
+                <span>Thêm ghi chú hướng dẫn AI</span>
               </h4>
               <button
                 type="button"
@@ -367,7 +403,7 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
 
             <div>
               <label className="block text-[11px] font-semibold text-[#5f6368] mb-1">
-                Chỉ dẫn chi tiết cho AI (AI sẽ áp dụng chính xác chỉ dẫn này khi sinh đề):
+                Nội dung hướng dẫn AI khi soạn đề:
               </label>
               <textarea
                 required
@@ -380,6 +416,12 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
             </div>
 
             <div className="flex justify-end gap-2">
+              <button type="button" className="px-3 py-1.5 text-xs border rounded-lg" onClick={() => {
+                if (!ownerId) return;
+                const raw = JSON.stringify({ v: 1, context: 'manual-note', ownerId, writerId, ...draftRef.current, savedAt: new Date().toISOString() }, null, 2);
+                const url = URL.createObjectURL(new Blob([raw], { type: 'application/json' })), link = document.createElement('a');
+                link.href = url; link.download = 'examcraft-ghi-chu-dang-soan.json'; link.click(); setTimeout(() => URL.revokeObjectURL(url), 30_000);
+              }}>Tải bản đang soạn</button>
               <button
                 type="button"
                 onClick={() => setIsAddingNew(false)}
@@ -392,7 +434,7 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
                 disabled={!idle}
                 className="px-4 py-1.5 text-xs bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold shadow-xs cursor-pointer"
               >
-                Lưu vào bộ não AI
+                Lưu ghi chú
               </button>
             </div>
           </form>
@@ -411,10 +453,10 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
                 <Brain className="w-6 h-6" />
               </div>
               <div className="text-xs font-semibold text-[#202124] dark:text-[#e3e3e3]">
-                AI chưa lưu phong cách sư phạm cá nhân nào
+                Chưa có ghi chú riêng
               </div>
               <p className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] max-w-sm mx-auto">
-                Bấm nút <strong>&quot;AI Phân tích từ kho đề của tôi&quot;</strong> để AI tự động quét các đề thi và câu hỏi Thầy/Cô đã tạo để học phong cách ra đề!
+                Bấm nút <strong>&quot;AI Phân tích từ kho đề của tôi&quot;</strong> để tạo đề xuất từ kho đề. Bạn đọc rồi tự chọn mục muốn bật.
               </p>
             </div>
           ) : (
@@ -443,7 +485,7 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
                           {m.title}
                         </h4>
                         <span className="text-[10px] text-[#5f6368] dark:text-[#9aa0a6]">
-                          Độ tin cậy: {Math.round(m.confidence * 100)}%
+                          {m.sourceAction === 'MANUAL_NOTE' ? 'Bạn tự ghi chú' : `Ước tính của AI: ${Math.round(m.confidence * 100)}%`}
                         </span>
                       </div>
 
@@ -485,7 +527,7 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
         {/* Footer */}
         <div className="pt-3 border-t border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between shrink-0">
           <p className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6]">
-            Mọi quy tắc đang bật sẽ tự động được gửi kèm cho Gemini mỗi khi Thầy/Cô bấm <strong>Sinh đề AI</strong>.
+            Mục đang bật có thể được dùng làm chỉ dẫn khi soạn đề. Giáo viên vẫn cần kiểm tra kết quả.
           </p>
           <button
             onClick={requestClose}

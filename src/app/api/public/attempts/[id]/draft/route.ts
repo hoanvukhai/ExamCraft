@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { hasAttemptAccess, isAttemptOpen, isSameOriginMutation } from '@/lib/attempt-access';
+import { hasActiveAttemptAccess, isAttemptOpen, isSameOriginMutation } from '@/lib/attempt-access';
 import { validateResponses } from '@/lib/public-exam';
 import { attemptDraftRevision, validDraftRevision } from '@/lib/attempt-draft-revision';
 
@@ -9,15 +9,15 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   try {
     const { id } = await params;
     const body = await req.json().catch(() => null);
-    const attempt = await prisma.attempt.findUnique({ where: { id }, include: { assignment: { include: { group: true } } } });
-    if (!attempt || !hasAttemptAccess(req, attempt)) return NextResponse.json({ error: 'Không có quyền truy cập lượt làm bài' }, { status: 403 });
+    const attempt = await prisma.attempt.findUnique({ where: { id }, include: { assignment: { include: { group: true } }, student: { select: { archivedAt: true, groupId: true } } } });
+    if (!attempt || !hasActiveAttemptAccess(req, attempt)) return NextResponse.json({ error: 'Không có quyền truy cập lượt làm bài' }, { status: 403 });
     if (!validDraftRevision(body?.baseDraftRevision)) return NextResponse.json({ error: 'Thiếu phiên bản nháp. Hãy giữ bản đang nhập rồi mở lại lượt làm.', code: 'DRAFT_REVISION_REQUIRED' }, { status: 400 });
     if (!isAttemptOpen(attempt, attempt.assignment)) return NextResponse.json({ error: 'Lượt đã đóng hoặc hết thời gian làm bài' }, { status: 409 });
     if (!validateResponses(body?.draft, attempt.assignment.snapshot)) return NextResponse.json({ error: 'Bản nháp không hợp lệ' }, { status: 400 });
     const outcome = await prisma.$transaction(async tx => {
       await tx.$queryRaw`SELECT id FROM "Attempt" WHERE id = ${id} FOR UPDATE`;
-      const current = await tx.attempt.findUnique({ where: { id }, include: { assignment: { include: { group: true } } } });
-      if (!current || !hasAttemptAccess(req, current)) return { status: 403, error: 'Không có quyền truy cập lượt làm bài' };
+      const current = await tx.attempt.findUnique({ where: { id }, include: { assignment: { include: { group: true } }, student: { select: { archivedAt: true, groupId: true } } } });
+      if (!current || !hasActiveAttemptAccess(req, current)) return { status: 403, error: 'Không có quyền truy cập lượt làm bài' };
       if (!isAttemptOpen(current, current.assignment)) return { status: 409, error: 'Lượt đã đóng hoặc hết thời gian làm bài' };
       const revision = attemptDraftRevision(current.draft), nextRevision = attemptDraftRevision(body.draft);
       // A retry after a lost receipt is safe only when the actual content already matches.

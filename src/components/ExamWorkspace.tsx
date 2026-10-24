@@ -636,11 +636,13 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       />
 
       <ImportModal
+        ownerId={currentUser.id}
+        documentId={exam.id}
         context={{ subject: exam.metadata.subject, grade: exam.metadata.grade }}
         isOpen={isImportModalOpen}
         onClose={() => setIsImportModalOpen(false)}
         onImportQuestions={(newQuestions, context) => {
-          setExam((prev) => ({
+          setExam((prev) => prev.id !== exam.id || prev.access?.canEdit === false ? prev : ({
             ...prev,
             questions: [...prev.questions, ...newQuestions],
             passages: [...(prev.passages ?? []), ...(context.passages ?? [])],

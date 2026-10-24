@@ -1,8 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { writeJournal, readJournal, clearJournal, reconcileJournal, stableJson, journalKey } from '../src/lib/student-draft-journal';
+import { writeJournal, readJournal, clearJournal, reconcileJournal, stableJson, journalKey, readStudentJournals, writeWriterJournal, retireWriterJournal, writerJournalKey, reconcileStudentJournals, unsubmittedStudentJournals, importStudentJournal } from '../src/lib/student-draft-journal';
 
 const memory = () => { const data = new Map<string, string>(); return { data, getItem: (k: string) => data.get(k) ?? null, setItem: (k: string, v: string) => { data.set(k, v); }, removeItem: (k: string) => { data.delete(k); } }; };
+const writerMemory = () => { const store = memory(); return { ...store, get length() { return store.data.size; }, key: (i: number) => [...store.data.keys()][i] ?? null }; };
 
 test('journal round trip keeps 0, false, empty text and null distinct and is bound to one attempt', () => {
   const store = memory();
@@ -45,4 +46,100 @@ test('an empty server draft with a journal of answers is restored, and an explic
   const outcome = reconcileJournal(journal, {}, 'empty-rev');
   assert.equal(outcome.kind, 'restored');
   assert.deepEqual(outcome.answers, { short: 0, tf: { a: false } });
+});
+
+test('two pages keep independent answers and require a choice instead of selecting the last writer', () => {
+  const store = writerMemory(), access = () => store;
+  assert.equal(writeWriterJournal(access, 'att', 'A', 'r', { essay: 'A', short: 0 }), true);
+  assert.equal(writeWriterJournal(access, 'att', 'B', 'r', { essay: 'B', tf: { a: false } }), true);
+  const { entries } = readStudentJournals(access, 'att');
+  assert.equal(entries.length, 2);
+  assert.equal(reconcileStudentJournals(entries, {}, 'r').kind, 'choose');
+  assert.deepEqual(entries.map(entry => entry.value?.answers), [{ essay: 'A', short: 0 }, { essay: 'B', tf: { a: false } }]);
+  assert.equal(retireWriterJournal(access, 'att', 'A', { essay: 'A', short: 0 }), true);
+  assert.equal(readStudentJournals(access, 'att').entries[0].value?.answers.essay, 'B');
+});
+
+test('an acknowledged different page cannot retire an unsubmitted writer or corrupt legacy bytes', () => {
+  const store = writerMemory(), access = () => store;
+  store.data.set(journalKey('att'), '{broken-original');
+  writeWriterJournal(access, 'att', 'B', 'old', { answer: 'private-B' });
+  assert.equal(retireWriterJournal(access, 'att', 'B', { answer: 'server-A' }), false);
+  const { entries } = readStudentJournals(access, 'att');
+  assert.equal(entries.length, 2);
+  assert.equal(entries[0].raw, '{broken-original'); assert.equal(entries[0].value, undefined);
+  assert.equal(unsubmittedStudentJournals(entries, { answer: 'server-A' }).length, 2);
+});
+
+test('legacy recovery stays readable and is not rewritten by a new writer', () => {
+  const store = writerMemory(), access = () => store;
+  writeJournal(store, 'att', 'r', { short: '0', tf: { a: false } });
+  const original = store.getItem(journalKey('att'));
+  const entries = readStudentJournals(access, 'att').entries;
+  assert.equal(reconcileStudentJournals(entries, {}, 'r').kind, 'restored');
+  assert.equal(reconcileStudentJournals(entries, { short: '1' }, 'new').kind, 'conflict');
+  writeWriterJournal(access, 'att', 'new-page', 'r', { short: '0', tf: { a: false } });
+  assert.equal(store.getItem(journalKey('att')), original);
+});
+
+test('unreadable own slot, foreign attempt and storage errors never become automatic replacement', () => {
+  const store = writerMemory(), access = () => store;
+  store.data.set(writerJournalKey('att', 'A'), '{keep');
+  assert.equal(writeWriterJournal(access, 'att', 'A', 'r', {}), false);
+  assert.equal(store.getItem(writerJournalKey('att', 'A')), '{keep');
+  writeWriterJournal(access, 'other', 'B', 'r', { secret: 'other-attempt' });
+  assert.ok(!JSON.stringify(readStudentJournals(access, 'att')).includes('other-attempt'));
+  const denied = () => { throw Error('Storage denied'); };
+  assert.deepEqual(readStudentJournals(denied, 'att'), { entries: [], unavailable: true });
+  assert.equal(writeWriterJournal(denied, 'att', 'A', 'r', {}), false);
+  assert.equal(retireWriterJournal(denied, 'att', 'A', {}), false);
+});
+
+test('submitted responses retire only matching content and preserve explicit zero/false differences', () => {
+  const store = writerMemory(), access = () => store;
+  writeWriterJournal(access, 'att', 'A', 'r', { short: 0, tf: false });
+  assert.equal(retireWriterJournal(access, 'att', 'A', { short: '0', tf: false }), false);
+  assert.equal(retireWriterJournal(access, 'att', 'A', { short: 0, tf: true }), false);
+  assert.equal(retireWriterJournal(access, 'att', 'A', { short: 0, tf: false, blank: null }), true);
+});
+
+test('import preserves exact original bytes independently across reload and never rebases old answers', () => {
+  const store = writerMemory(), access = () => store;
+  writeJournal(store, 'att', 'old', { q: 0, tf: false });
+  const raw = '  ' + store.getItem(journalKey('att')) + '\n';
+  const imported = importStudentJournal(access, 'att', 'file-1', raw);
+  assert.ok(imported.entry); assert.equal(imported.entry.raw, raw);
+  writeWriterJournal(access, 'att', 'current', 'new', { q: 'server' });
+  const reloaded = readStudentJournals(access, 'att').entries.find(entry => entry.key === imported.entry.key)!;
+  assert.equal(reloaded.raw, raw); assert.deepEqual(reloaded.value?.answers, { q: 0, tf: false });
+  assert.equal(reconcileStudentJournals([reloaded], { q: 'server' }, 'new').kind, 'choose');
+  assert.equal(reconcileJournal(reloaded.value!, { q: 'server' }, 'new').kind, 'conflict');
+  assert.ok(importStudentJournal(access, 'att', 'file-1', raw).error, 'duplicate identifier never overwrites');
+  assert.equal(store.getItem(imported.entry.key), raw);
+});
+
+test('old answer exports without a revision remain review-only, new exports retain the original revision', () => {
+  const store = writerMemory(), access = () => store;
+  const raw = JSON.stringify({ format: 'examcraft-student-answers-v1', attemptId: 'att', exportedAt: '2026-10-24T08:00:00Z', responses: { q: 'offline' } });
+  const old = importStudentJournal(access, 'att', 'old-export', raw).entry!;
+  assert.equal(reconcileStudentJournals([old], {}, 'current').kind, 'choose');
+  assert.equal(reconcileJournal(old.value!, {}, 'current').kind, 'conflict');
+  const current = importStudentJournal(access, 'att', 'current-export', JSON.stringify({ ...JSON.parse(raw), baseDraftRevision: 'current' })).entry!;
+  assert.equal(reconcileStudentJournals([current], {}, 'current').kind, 'choose', 'reload still requires an explicit selection');
+  assert.equal(reconcileJournal(current.value!, {}, 'current').kind, 'restored');
+  assert.equal(importStudentJournal(access, 'other', 'foreign', raw).entry, undefined);
+});
+
+test('malformed, oversized and blocked imports preserve existing slots', () => {
+  const store = writerMemory(), access = () => store;
+  writeWriterJournal(access, 'att', 'A', 'r', { q: 'keep' });
+  const before = [...store.data];
+  for (const raw of ['{broken', '[]', JSON.stringify({ v: 1, attemptId: 'att', answers: [] }), ' '.repeat(4 * 1024 * 1024 + 1)]) {
+    assert.ok(importStudentJournal(access, 'att', 'new', raw).error);
+  }
+  assert.deepEqual([...store.data], before);
+  const valid = store.getItem(writerJournalKey('att', 'A'))!;
+  assert.ok(importStudentJournal(() => { throw Error('denied'); }, 'att', 'new', valid).error);
+  assert.ok(importStudentJournal(() => ({ ...store, setItem() { throw Error('quota'); } }), 'att', 'new', valid).error);
+  assert.deepEqual([...store.data], before);
 });

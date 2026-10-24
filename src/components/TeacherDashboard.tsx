@@ -1489,6 +1489,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
       />
 
       <ImportModal
+        ownerId={currentUser.id}
         isOpen={isImportModalOpen}
         onClose={() => setIsImportModalOpen(false)}
         onImportQuestions={(importedQuestions, context) => {

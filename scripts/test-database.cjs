@@ -14,7 +14,7 @@ try {
   const action = process.argv[2];
   const args = action === 'push'
     ? [path.join(workspace, 'node_modules/prisma/build/index.js'), 'db', 'push', '--skip-generate']
-    : action === 'run' ? ['--import', 'tsx', '--test', 'tests/integration_s1.test.ts'] : action === 'http' ? ['--import', 'tsx', '--test', 'tests/http_workflows.test.ts', 'tests/http_auth.test.ts'] : null;
+    : action === 'run' ? ['--import', 'tsx', '--test', 'tests/integration_s1.test.ts'] : action === 'http' ? ['--import', 'tsx', '--test', 'tests/http_workflows.test.ts', 'tests/http_auth.test.ts', 'tests/http_public_policies.test.ts'] : null;
   if (!args) throw new Error('Use push, run or http. Only the dedicated test database is supported.');
   console.log(`Validated test target: ${target.hostname}:${target.port || '5432'}${target.pathname}; action=${action}`);
   const childEnv = action === 'push' ? { ...env, DATABASE_URL: target.href } : env;

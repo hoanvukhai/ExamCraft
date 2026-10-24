@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { importResponseSchema, parseImportedDocument, IMPORT_SOURCE_RULES } from '@/lib/import-document';
 import { GoogleGenAI } from '@google/genai';
-import { requireAuth } from '@/lib/auth';
+import { requireRequestAuth } from '@/lib/request-auth';
 import { isSameOriginMutation } from '@/lib/attempt-access';
 import { apiErrorResponse } from '@/lib/api-error';
 import prisma from '@/lib/prisma';
@@ -11,7 +11,7 @@ import { executeWithKeyRotation } from '@/lib/gemini-keys';
 export async function POST(req: NextRequest) {
   try {
     if (!isSameOriginMutation(req)) return NextResponse.json({ error: 'Yêu cầu không hợp lệ' }, { status: 403 });
-    const currentUser = await requireAuth();
+    const currentUser = await requireRequestAuth(req);
     const body = await req.json();
     const { rawText } = body as { rawText: string };
     const customApiKey = requestApiKey(body);

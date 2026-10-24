@@ -1,13 +1,27 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { NextRequest } from 'next/server';
-import { attemptCookieName, attemptSessionToken, hasAttemptAccess, attemptDeadline, isAttemptOpen, isPolicyVisible, isSameOriginMutation, canAcceptSubmissionAnswers, SUBMIT_GRACE_MS } from '../src/lib/attempt-access';
+import { attemptCookieName, attemptSessionToken, hasAttemptAccess, hasActiveAttemptAccess, attemptDeadline, isAttemptOpen, isPolicyVisible, isSameOriginMutation, canAcceptSubmissionAnswers, SUBMIT_GRACE_MS } from '../src/lib/attempt-access';
 import { publicFigure, sanitizeSnapshotForStudent, snapshotQuestions, validateResponses } from '../src/lib/public-exam';
 import { gradeSnapshot } from '../src/lib/attempt-grading';
 import { createAttemptLayout, examForAttempt } from '../src/lib/attempt-layout';
 
 const now = new Date('2026-10-22T12:00:00.000Z');
 const identity = { id: 'attempt-a', studentId: 'student-a', assignmentId: 'assignment-a', startedAt: now };
+
+test('a valid capability does not bypass archived students, groups or changed group ownership/membership', () => {
+  const old = process.env.ATTEMPT_SESSION_SECRET;
+  process.env.ATTEMPT_SESSION_SECRET = 'fixture-active-access-secret-at-least-32-chars';
+  try {
+    const attempt = { ...identity, student: { archivedAt: null as Date | null, groupId: 'group' }, assignment: { ownerId: 'owner', groupId: 'group', group: { ownerId: 'owner', archivedAt: null as Date | null } } };
+    const request = new NextRequest('http://localhost/api/public/test', { headers: { cookie: `${attemptCookieName(identity.id)}=${attemptSessionToken(identity)}` } });
+    assert.equal(hasActiveAttemptAccess(request, attempt, now), true);
+    assert.equal(hasActiveAttemptAccess(request, { ...attempt, student: { ...attempt.student, archivedAt: now } }, now), false);
+    assert.equal(hasActiveAttemptAccess(request, { ...attempt, student: { ...attempt.student, groupId: 'other' } }, now), false);
+    assert.equal(hasActiveAttemptAccess(request, { ...attempt, assignment: { ...attempt.assignment, group: { ...attempt.assignment.group, archivedAt: now } } }, now), false);
+    assert.equal(hasActiveAttemptAccess(request, { ...attempt, assignment: { ...attempt.assignment, group: { ...attempt.assignment.group, ownerId: 'other' } } }, now), false);
+  } finally { if (old === undefined) delete process.env.ATTEMPT_SESSION_SECRET; else process.env.ATTEMPT_SESSION_SECRET = old; }
+});
 function publicQuestionId(value: unknown): string {
   assert.ok(value && typeof value === 'object' && 'id' in value && typeof value.id === 'string');
   return value.id;

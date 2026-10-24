@@ -7,9 +7,12 @@ import { encryptApiKey } from '@/lib/crypto';
 import { AVAILABLE_GEMINI_MODELS, checkUserAiQuota, resolveModelId } from '@/lib/gemini-keys';
 import { applicationDayStart, normalizeModelId } from '@/lib/ai-policy';
 import { isSameOriginMutation } from '@/lib/attempt-access';
+import { createHash, timingSafeEqual } from 'node:crypto';
+import { Prisma } from '@prisma/client';
+import { decryptApiKey } from '@/lib/crypto';
 
 const selection = { id: true, label: true, keyMasked: true, isActive: true, createdAt: true, lastUsedAt: true, errorCount: true } as const;
-const CreateSchema = z.object({ apiKey: z.string().trim().min(10).max(500), label: z.string().trim().min(1).max(120).optional() });
+const CreateSchema = z.object({ apiKey: z.string().trim().min(10).max(500), label: z.string().trim().min(1).max(120).optional(), clientRequestId: z.uuid().optional() });
 function failure(error: unknown) {
   if (error instanceof ApiError) return apiErrorResponse(error, 'Yêu cầu quản lý khóa bị từ chối');
   const message = error instanceof Error ? error.message : '';
@@ -41,9 +44,23 @@ export async function POST(req: NextRequest) {
     const user = await requireRequestAuth(req);
     const parsed = CreateSchema.safeParse(await req.json().catch(() => null));
     if (!parsed.success) return NextResponse.json({ error: 'Khóa hoặc tên khóa không hợp lệ' }, { status: 400 });
-    const encrypted = encryptApiKey(parsed.data.apiKey);
-    const key = await prisma.userApiKey.create({ data: { userId: user.id, label: parsed.data.label ?? 'Khóa Gemini', ...encrypted, isActive: true }, select: selection });
-    return NextResponse.json({ success: true, key }, { headers: { 'Cache-Control': 'no-store' } });
+    const { apiKey, clientRequestId } = parsed.data;
+    const label = parsed.data.label ?? 'Khóa Gemini';
+    const id = clientRequestId ? `key_req_${createHash('sha256').update(JSON.stringify([user.id, clientRequestId])).digest('hex').slice(0, 40)}` : undefined;
+    try {
+      const key = await prisma.userApiKey.create({ data: { ...(id ? { id } : {}), userId: user.id, label, ...encryptApiKey(apiKey), isActive: true }, select: selection });
+      return NextResponse.json({ success: true, key }, { headers: { 'Cache-Control': 'no-store' } });
+    } catch (error) {
+      if (!id || !(error instanceof Prisma.PrismaClientKnownRequestError) || error.code !== 'P2002') throw error;
+      const saved = await prisma.userApiKey.findFirst({ where: { id, userId: user.id } });
+      if (!saved) throw new ApiError(409, 'Chưa xác nhận được lần lưu trước. Hãy tải lại danh sách khóa.', 'KEY_REQUEST_CONFLICT');
+      // Compare only in server memory. Neither plaintext nor encrypted material belongs in a receipt.
+      const previous = Buffer.from(decryptApiKey(saved.keyEncrypted, saved.keyIv, saved.keyTag));
+      const incoming = Buffer.from(apiKey);
+      if (saved.label !== label || previous.length !== incoming.length || !timingSafeEqual(previous, incoming)) throw new ApiError(409, 'Mã yêu cầu đã lưu nội dung khác. Chưa ghi đè khóa; hãy kiểm tra danh sách trước khi lưu mới.', 'KEY_REQUEST_CONFLICT');
+      const key = Object.fromEntries(Object.keys(selection).map(field => [field, saved[field as keyof typeof selection]]));
+      return NextResponse.json({ success: true, replayed: true, key }, { headers: { 'Cache-Control': 'no-store' } });
+    }
   } catch (error) { return failure(error); }
 }
 export async function DELETE(req: NextRequest) {

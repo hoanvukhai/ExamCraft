@@ -10,7 +10,8 @@ const failureMessage = 'Không thể xử lý ghi chú hoặc yêu cầu AI lúc
 const noStore = { 'Cache-Control': 'private, no-store' };
 const fields = { title: z.string().trim().min(1).max(500), insight: z.string().trim().min(1).max(12000), category: z.string().trim().min(1).max(100) };
 const updateSchema = z.object({ id: z.string().min(1).max(200), isActive: z.boolean().optional(), title: fields.title.optional(), insight: fields.insight.optional(), category: fields.category.optional() }).strict();
-const createSchema = z.object({ ...fields, subject: z.string().trim().min(1).max(100).optional(), sampleQuestion: z.unknown().optional(), clientRequestId: z.uuid().optional() }).strict();
+const createSchema = z.object({ ...fields, category: fields.category.default('PEDAGOGICAL_STYLE'), subject: z.string().trim().min(1).max(100).optional(), sampleQuestion: z.unknown().optional(), clientRequestId: z.uuid().optional() }).strict();
+const comparableSample = (value: unknown) => JSON.stringify(value ?? null, (_key, entry) => entry && typeof entry === 'object' && !Array.isArray(entry) ? Object.fromEntries(Object.keys(entry).sort().map(key => [key, entry[key]])) : entry);
 // The same account and request ID always name the same note, so a retry after a lost reply cannot add a second one.
 const requestNoteId = (ownerId: string, clientRequestId: string) => `mem_req_${createHash('sha256').update(JSON.stringify([ownerId, clientRequestId])).digest('hex').slice(0, 40)}`;
 
@@ -51,7 +52,7 @@ export async function POST(req: NextRequest) {
     } catch (error) {
       if (!(error instanceof Prisma.PrismaClientKnownRequestError) || error.code !== 'P2002') throw error;
       const existing = await prisma.teacherAiMemory.findFirst({ where: { id, userId: user.id } });
-      if (!existing || existing.title !== title || existing.insight !== insight || existing.category !== category || existing.subject !== data.subject) throw new ApiError(409, 'Mã yêu cầu này đã lưu nội dung khác. Hãy lưu lại để tạo yêu cầu mới.');
+      if (!existing || existing.title !== title || existing.insight !== insight || existing.category !== category || existing.subject !== data.subject || comparableSample(existing.sampleQuestion) !== comparableSample(sampleQuestion)) throw new ApiError(409, 'Mã yêu cầu này đã lưu nội dung khác. Hãy lưu lại để tạo yêu cầu mới.');
       return NextResponse.json({ success: true, replayed: true, memory: existing }, { headers: noStore });
     }
   } catch (error: unknown) {

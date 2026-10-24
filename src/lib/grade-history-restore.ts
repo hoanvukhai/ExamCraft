@@ -28,6 +28,13 @@ export function readHistoryState(meta: unknown, side: unknown, questionKey?: str
   return { ok: true, state: { earned, manualScore, comment, isCorrect } };
 }
 
+/** Old or incomplete audit metadata must remain visible without crashing the grading screen. */
+export function describeGradeHistory(meta: unknown) {
+  const questionKey = isRecord(meta) && typeof meta.questionKey === 'string' ? meta.questionKey : null;
+  return { questionKey, before: readHistoryState(meta, 'before'), after: readHistoryState(meta, 'after'),
+    restored: isRecord(meta) && isRecord(meta.restoredFrom) && typeof meta.restoredFrom.eventId === 'string' && isGradeHistorySide(meta.restoredFrom.side) };
+}
+
 /** Check a stored state against the assigned snapshot's limits for that question (the same rules a teacher's own save obeys). */
 export function validateRestoreState(state: GradeState, limits: RestoreLimits): { ok: true } | { ok: false; message: string } {
   const bad = (message: string) => ({ ok: false as const, message });
@@ -56,11 +63,12 @@ export function decideRestore(current: GradeState, target: GradeState, baseMatch
   return baseMatchesCurrent ? 'apply' : 'conflict';
 }
 
-export interface EditableQuestion { points: number; earned: number; isCorrect: boolean | null; teacherComment?: string | null }
+export interface EditableQuestion { points: number; earned: number; manualScore?: number | null; isCorrect: boolean | null; teacherComment?: string | null }
 export interface GradeDraft { score: string; comment: string; base: string }
 
 /** What the score box shows before the teacher types: nothing for a pending answer, so Save never invents a 0. */
-export const initialScoreText = (question: EditableQuestion, numeric: boolean) => (!numeric || question.isCorrect === null ? '' : String(question.earned));
+export const isPendingGrade = (question: EditableQuestion, numeric: boolean) => numeric && question.manualScore == null && question.isCorrect === null;
+export const initialScoreText = (question: EditableQuestion, numeric: boolean) => (!numeric || isPendingGrade(question, numeric) ? '' : String(question.manualScore ?? question.earned));
 export const initialCommentText = (question: EditableQuestion) => question.teacherComment ?? '';
 export function isGradeDraftDirty(question: EditableQuestion, draft: Pick<GradeDraft, 'score' | 'comment'> | undefined, numeric: boolean) {
   return !!draft && ((numeric && draft.score !== initialScoreText(question, numeric)) || draft.comment !== initialCommentText(question));
@@ -77,7 +85,7 @@ export function buildGradeSubmission(question: EditableQuestion, draft: Pick<Gra
     return commentChanged ? { ok: true, earned: null, teacherComment } : { ok: false, message: 'Nhận xét chưa thay đổi.' };
   }
   const text = draft.score.trim().replace(',', '.');
-  if (!text) return { ok: false, message: question.isCorrect === null ? 'Câu đang chờ chấm: hãy nhập điểm rõ ràng (có thể là 0) trước khi lưu.' : 'Hãy nhập điểm.' };
+  if (!text) return { ok: false, message: isPendingGrade(question, numeric) ? 'Câu đang chờ chấm: hãy nhập điểm rõ ràng (có thể là 0) trước khi lưu.' : 'Hãy nhập điểm.' };
   const earned = /^\d+(\.\d+)?$/.test(text) ? Number(text) : NaN;
   if (!Number.isFinite(earned) || earned < 0 || earned > question.points || Math.abs(Math.round(earned * 100) - earned * 100) > 1e-8) return { ok: false, message: `Điểm cần từ 0 đến ${question.points}, tối đa hai chữ số thập phân.` };
   return { ok: true, earned, teacherComment };

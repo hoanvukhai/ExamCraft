@@ -43,11 +43,12 @@ function TemplatePanelContent({ ownerId, exam, onChange }: Props) {
   const deviations = useMemo(() => templateDeviations(exam), [exam]);
   const resetAttempt = () => { applying.current = false; setApplyAttempt(null); };
   const begin = () => { const token = gateRef.current?.begin() ?? null; if (token) { setBusy(true); setError(''); } return token; };
-  const end = (token: RequestToken) => { token.release(); if (!gateRef.current?.disposed) setBusy(false); };
+  const end = (token: RequestToken) => { const live = token.isLive(); token.release(); if (live) setBusy(false); };
   const fail = (token: RequestToken, cause: unknown) => { if (token.isLive()) setError(errorMessage(cause)); };
   const send = async (token: RequestToken, input: string, init: RequestInit = {}) => {
     const response = await accountFetch(ownerId, input, { ...init, signal: token.signal }), data: unknown = await response.json().catch(() => null);
-    if (isAccountFailure(response.status, data)) { gateRef.current?.lock(); setAccountLocked(true); setError(accountLostMessage); }
+    if (!token.isLive()) return { response, data };
+    if (isAccountFailure(response.status, data)) { gateRef.current?.lock(); setBusy(false); setAccountLocked(true); setError(accountLostMessage); }
     return { response, data };
   };
   const loadList = async (nextPage: number) => {

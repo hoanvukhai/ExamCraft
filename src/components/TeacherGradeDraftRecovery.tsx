@@ -19,6 +19,7 @@ interface Props {
   /** This page's own writer id, to tell its draft from other pages'. */
   writerId?: string;
   disabled?: boolean;
+  numeric?: boolean;
   /**
    * The teacher chose to put a record into the editor. For a draft based on an older grade the parent must keep
    * record.baseRevision (not the current one), so the editor's stale-base check blocks saving until the teacher decides.
@@ -30,12 +31,12 @@ interface Props {
 const scoreText = (raw: string) => { const score = parseScoreText(raw); return score.kind === 'blank' ? 'chưa nhập điểm (vẫn là chờ chấm)' : score.kind === 'number' ? `${raw.trim()} điểm` : `“${raw}” (không phải số hợp lệ)`; };
 
 /** Backup panel for typed-but-unsaved grades. Small on purpose: read, compare, choose, download. */
-export function TeacherGradeDraftRecovery({ teacherId, attemptId, entries, unavailable, writeStatus, currentRevisions, questionLabel, writerId, disabled, onApply }: Props) {
+export function TeacherGradeDraftRecovery({ teacherId, attemptId, entries, unavailable, writeStatus, currentRevisions, questionLabel, writerId, disabled, numeric = true, onApply }: Props) {
   const mine = gradeDraftsForOpen(entries, teacherId, attemptId);
   const blocked = unavailable || (writeStatus !== undefined && writeStatus !== null && writeStatus !== 'saved');
   if (!mine.length && !blocked) return null;
   return <details className="border rounded-xl p-3 my-3 text-xs" open={blocked || undefined}>
-    <summary className="cursor-pointer font-semibold">Bản nháp chấm điểm còn giữ trên máy này ({mine.length})</summary>
+    <summary className="cursor-pointer font-semibold">Bản nháp {numeric ? 'chấm điểm' : 'nhận xét'} còn giữ trên máy này ({mine.length})</summary>
     <p className="my-2">Đây là bản dự phòng nằm trong trình duyệt của máy này, không được mã hóa và có thể bị người dùng chung máy xem. Nó không tự lưu điểm, không tự đưa vào ô nhập và không thay điểm trên máy chủ. Bản được xóa khi điểm đã lưu đúng như nội dung đó hoặc khi bạn bỏ nháp.</p>
     {unavailable && <p role="alert" className="text-amber-900">Trình duyệt đang chặn bộ nhớ nên chưa đọc được bản dự phòng.</p>}
     {writeStatus && writeStatus !== 'saved' && <p role="alert" className="text-amber-900">{writeStatus === 'blocked' ? 'Có một bản cũ không đọc được ở đúng vị trí của trang này, nên chưa ghi đè. Hãy tải bản đó về rồi lưu điểm ngay.' : writeStatus === 'too_large' ? 'Nội dung quá lớn để giữ dự phòng.' : writeStatus === 'invalid' ? 'Chưa đủ thông tin để giữ dự phòng.' : 'Trình duyệt chưa lưu được bản dự phòng (bị chặn hoặc đầy). Điểm và nhận xét đang nhập chỉ còn trên trang này; hãy lưu ngay hoặc chép nhận xét ra nơi khác.'}</p>}
@@ -44,7 +45,7 @@ export function TeacherGradeDraftRecovery({ teacherId, attemptId, entries, unava
       return <details key={entry.key} className="border rounded-lg p-2 my-2">
         <summary className="cursor-pointer">{record ? `${questionLabel?.(record.questionKey) ?? record.questionKey} · ${record.savedAt}${record.writerId === writerId ? ' · của trang này' : ' · từ trang hoặc tab khác'}` : 'Bản chưa đọc được nội dung (vẫn được giữ nguyên)'}</summary>
         {record && <div className="space-y-1 my-2">
-          <p>Điểm đã gõ: {scoreText(record.score)}</p>
+          {numeric && <p>Điểm đã gõ: {scoreText(record.score)}</p>}
           <p>Nhận xét đã gõ: {record.comment ? record.comment : '(để trống)'}</p>
           {open?.allowed && open.mode === 'stale_base' && <p role="status" className="text-amber-900">Bản này dựa trên điểm cũ; điểm hoặc nhận xét của câu đã đổi từ lúc đó. Chỉ dùng để đối chiếu: đưa vào ô nhập sẽ không lưu được cho đến khi bạn chọn dùng giá trị hiện tại hoặc gõ lại.</p>}
           {open && !open.allowed && <p role="status">{open.reason === 'question_missing' ? 'Câu này không còn trong bài hoặc chưa tải xong nên chưa đưa vào ô nhập được.' : 'Bản này thuộc tài khoản hoặc lượt làm khác nên không dùng ở đây.'}</p>}

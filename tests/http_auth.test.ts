@@ -23,7 +23,9 @@ test('authentication revocation and limits on isolated local HTTP server', { tim
     try {
       await db.auditLog.deleteMany({ where: { OR: [{ actorId: { in: ids } }, { targetId: { in: [...ids, ...emails.map(loginBucket)] } }] } });
       await db.user.deleteMany({ where: { id: { in: ids } } });
-      fs.writeFileSync('qa/rebuild-2026-10-22/http_auth.json', JSON.stringify({ checkedAt: new Date().toISOString(), checks, status: checks.length === 5 ? 'PASS' : 'INCOMPLETE', cleanupComplete: true, environment: 'isolated localhost:3117', realAiCalls: false }, null, 2));
+      const reportDirectory = `qa/rebuild-${new Date().toISOString().slice(0, 10)}`;
+      fs.mkdirSync(reportDirectory, { recursive: true });
+      fs.writeFileSync(`${reportDirectory}/http_auth.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, status: checks.length === 5 ? 'PASS' : 'INCOMPLETE', cleanupComplete: true, environment: 'isolated localhost:3117', realAiCalls: false }, null, 2));
     } finally { await db.$disconnect(); }
   });
   const passwordHash = await bcrypt.hash(passwords[0], 10);

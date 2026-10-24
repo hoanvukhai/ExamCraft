@@ -2,15 +2,16 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import bcrypt from 'bcryptjs';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, type Prisma } from '@prisma/client';
 import fs from 'node:fs';
 import { requireTestDatabase } from './helpers/test-database';
 import type { Exam } from '../src/types/exam';
+import { encodeGradeHistoryCursor } from '../src/lib/grade-history-pagination';
 import knowledgeFixture from './fixtures/knowledge-package.json';
 import { parseKnowledgePackage, emptyKnowledgeScope } from '../src/lib/knowledge-package';
 import { parseBackupText, splitBackupFiles } from '../src/lib/backup-files';
 import { createExamPlan, compareExamPlan } from '../src/lib/exam-plan';
-import { captureTemplateSnapshot, applyPersonalTemplate, templateDocumentStamp } from '../src/lib/exam-template';
+import { captureTemplateSnapshot, applyPersonalTemplate, templateDocumentStamp, parseTemplateList, parseOpenedTemplate, parseSavedTemplate } from '../src/lib/exam-template';
 
 const database = requireTestDatabase();
 const origin = 'http://127.0.0.1:3117';
@@ -39,7 +40,9 @@ test('HTTP workflows on the isolated local server', { timeout: 120000 }, async t
       await prisma.teacherAiMemory.deleteMany({ where: { userId: { in: ids } } });
       await prisma.auditLog.deleteMany({ where: { actorId: { in: ids } } });
       await prisma.user.deleteMany({ where: { id: { in: ids } } });
-      fs.writeFileSync('qa/rebuild-2026-10-22/http_workflows.json', JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 11 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117', realAiCalls: false }, null, 2));
+      const reportDirectory = `qa/rebuild-${new Date().toISOString().slice(0, 10)}`;
+      fs.mkdirSync(reportDirectory, { recursive: true });
+      fs.writeFileSync(`${reportDirectory}/http_workflows.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 16 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117', realAiCalls: false }, null, 2));
     } finally { await prisma.$disconnect(); }
   });
   const passwordHash = await bcrypt.hash(password, 10);
@@ -66,9 +69,9 @@ test('HTTP workflows on the isolated local server', { timeout: 120000 }, async t
     assert.equal(await prisma.exam.count({ where: { ownerId: ids[1] } }), 0, 'An old tab must not write its draft into the new account.');
     const staleGeneration = await fetch(origin + '/api/generate-exam', { method: 'POST', headers: { Origin: origin, Cookie: other, 'Content-Type': 'application/json', 'x-examcraft-user': ids[0] }, body: '{}' });
     assert.equal(staleGeneration.status, 409); assert.equal((await staleGeneration.json()).code, 'ACCOUNT_CHANGED');
-    for (const endpoint of ['/api/tweak-question', '/api/verify-question', '/api/exam-copilot']) {
+    for (const endpoint of ['/api/tweak-question', '/api/verify-question', '/api/exam-copilot', '/api/parse-docx', '/api/parse-exam-text', '/api/ocr-exam-image', '/api/teacher/ai-memory', '/api/teacher/ai-memory/archive', '/api/teacher/ai-memory/analyze']) {
       const usageBeforeAccountChecks = await prisma.aiUsageLog.count({ where: { userId: { in: ids } } });
-      const staleQuestionAi = await fetch(origin + endpoint, { method: 'POST', headers: { Origin: origin, Cookie: other, 'Content-Type': 'application/json', 'x-examcraft-user': ids[0] }, body: '{}' });
+      const staleQuestionAi = await fetch(origin + endpoint, { method: 'POST', headers: { Origin: origin, Cookie: other, 'Content-Type': 'application/json', 'x-examcraft-user': ids[0] }, body: '{' });
       assert.equal(staleQuestionAi.status, 409, `${endpoint} must reject an old account pin before parsing the invalid question or looking up a provider key.`);
       assert.equal((await staleQuestionAi.json()).code, 'ACCOUNT_CHANGED');
       assert.equal((await request(endpoint, 'POST', {})).status, 401, `${endpoint} requires authentication`);
@@ -144,6 +147,52 @@ test('HTTP workflows on the isolated local server', { timeout: 120000 }, async t
     assert.equal((await prisma.exam.findUniqueOrThrow({ where: { id: ownInFolder.data.document.id } })).folderId, null);
     assert.equal((await prisma.exam.findUniqueOrThrow({ where: { id: foreignExam.data.document.id } })).folderId, null);
     checks.push('http-private-access-and-origin');
+  });
+  await t.test('key creation retries are private, masked and idempotent without contacting a provider', async () => {
+    const path = '/api/user/keys', clientRequestId = randomUUID();
+    const fakeKey = `synthetic-not-a-provider-key-${suffix}`;
+    const body = { apiKey: fakeKey, label: 'HTTP fake key', clientRequestId };
+    const usageBefore = await prisma.aiUsageLog.count({ where: { userId: { in: ids } } });
+    const beforeKeys = await prisma.userApiKey.count({ where: { userId: { in: ids } } });
+    const stale = await fetch(origin + path, { method: 'POST', headers: { Origin: origin, Cookie: owner, 'x-examcraft-user': ids[1], 'Content-Type': 'application/json' }, body: '{' });
+    assert.equal(stale.status, 409); assert.equal((await stale.json()).code, 'ACCOUNT_CHANGED');
+    assert.equal((await request(path, 'POST', body)).status, 401);
+    assert.equal((await request(path, 'POST', body, owner, 'https://foreign.example')).status, 403);
+    assert.equal((await request(path, 'POST', { ...body, clientRequestId: 'bad-id' }, owner)).status, 400);
+    assert.equal(await prisma.userApiKey.count({ where: { userId: { in: ids } } }), beforeKeys);
+    const replies = await Promise.all([request(path, 'POST', body, owner), request(path, 'POST', body, owner)]);
+    for (const reply of replies) {
+      assert.equal(reply.status, 200, reply.data.error);
+      assert.ok(!JSON.stringify(reply.data).includes(fakeKey));
+      assert.deepEqual(Object.keys(reply.data.key).sort(), ['id', 'label', 'keyMasked', 'isActive', 'createdAt', 'lastUsedAt', 'errorCount'].sort());
+    }
+    const keyId = replies[0].data.key.id;
+    assert.equal(replies[1].data.key.id, keyId);
+    assert.equal(await prisma.userApiKey.count({ where: { userId: ids[0] } }), 1);
+    assert.equal((await request(path, 'POST', { ...body, apiKey: ` ${fakeKey} `, label: ' HTTP fake key ' }, owner)).data.replayed, true);
+    assert.equal((await request(path, 'PATCH', { id: keyId, isActive: false }, owner)).status, 200);
+    const protectedKey = await prisma.userApiKey.findUniqueOrThrow({ where: { id: keyId } });
+    const disabledReplay = await request(path, 'POST', body, owner);
+    assert.equal(disabledReplay.status, 200); assert.equal(disabledReplay.data.key.isActive, false, 'Retry must not re-enable a key.');
+    for (const changed of [{ ...body, label: 'Changed label' }, { ...body, apiKey: fakeKey + '-changed' }]) {
+      const rejected = await request(path, 'POST', changed, owner);
+      assert.equal(rejected.status, 409); assert.equal(rejected.data.code, 'KEY_REQUEST_CONFLICT');
+    }
+    assert.deepEqual(await prisma.userApiKey.findUniqueOrThrow({ where: { id: keyId } }), protectedKey);
+    assert.equal((await request(path, 'PATCH', { id: keyId, isActive: true }, other)).status, 404);
+    const foreignCopy = await request(path, 'POST', body, other);
+    assert.equal(foreignCopy.status, 200); assert.notEqual(foreignCopy.data.key.id, keyId);
+    const legacy1 = await request(path, 'POST', { apiKey: fakeKey }, owner);
+    const legacy2 = await request(path, 'POST', { apiKey: fakeKey }, owner);
+    assert.equal(legacy1.status, 200); assert.equal(legacy2.status, 200);
+    assert.notEqual(legacy1.data.key.id, legacy2.data.key.id, 'Old callers still create a fresh entry without a request ID.');
+    const listed = await request(path, 'GET', undefined, owner);
+    assert.equal(listed.status, 200); assert.equal(listed.data.keys.length, 3);
+    assert.ok(!JSON.stringify(listed.data).includes(fakeKey));
+    assert.equal(await prisma.aiUsageLog.count({ where: { userId: { in: ids } } }), usageBefore);
+    for (const ownId of [keyId, legacy1.data.key.id, legacy2.data.key.id]) assert.equal((await request(`${path}?id=${ownId}`, 'DELETE', undefined, owner)).status, 200);
+    assert.equal((await request(`${path}?id=${foreignCopy.data.key.id}`, 'DELETE', undefined, other)).status, 200);
+    checks.push('http-key-create-private-idempotency');
   });
   await t.test('collaboration honors view, edit, CAS, history and revocation', async () => {
     assert.equal((await request(`/api/exams/${id}/collaborators`, 'POST', { email: emails[1], role: 'VIEWER' }, owner)).status, 200);
@@ -411,6 +460,120 @@ test('HTTP workflows on the isolated local server', { timeout: 120000 }, async t
     assert.equal(await prisma.exam.count({ where: { ownerId: ids[1], title: '[Bản sao] HTTP copy source' } }), 1, 'Retry must not create a second copy.');
     assert.equal(JSON.stringify((await prisma.exam.findUniqueOrThrow({ where: { id: sourceId } })).metadata), sourceBefore, 'Copying must not change the shared exam.');
     assert.equal((await request(`/api/exams/${copyId}`, 'GET', undefined, owner)).status, 404, 'The original owner gets no access to the copy.');
+    const publicSource = await request(`/api/public/share/${token}`);
+    assert.equal(publicSource.data.sourceVersion, copySource.data.document.version);
+    const versionBody = { sourceVersion: publicSource.data.sourceVersion };
+    assert.equal((await request(copyPath, 'POST', { sourceVersion: 0 }, other)).status, 400);
+    const concurrentCopies = await Promise.all([request(copyPath, 'POST', versionBody, other), request(copyPath, 'POST', versionBody, other)]);
+    for (const receipt of concurrentCopies) assert.equal(receipt.status, 200, receipt.data.error);
+    const versionCopy = concurrentCopies[0];
+    assert.equal(concurrentCopies[1].data.id, versionCopy.data.id, 'Concurrent copy requests converge on one private copy.');
+    assert.equal((await request(copyPath, 'POST', versionBody, other)).data.id, versionCopy.data.id);
+    const privateCopy = (await request(`/api/exams/${versionCopy.data.id}`, 'GET', undefined, other)).data.document;
+    const editedCopy = await request(`/api/exams/${privateCopy.id}`, 'PATCH', { baseVersion: privateCopy.version, document: { ...privateCopy, metadata: { ...privateCopy.metadata, title: 'My private edits' } } }, other);
+    assert.equal(editedCopy.status, 200, editedCopy.data.error);
+    const protectedCopy = await prisma.exam.findUniqueOrThrow({ where: { id: privateCopy.id } });
+    assert.equal((await request(copyPath, 'POST', versionBody, other)).status, 409, 'Retry never overwrites edits in a private copy.');
+    const nextSource = await request(`/api/exams/${sourceId}`, 'PATCH', { baseVersion: copySource.data.document.version, document: { ...copySource.data.document, metadata: { ...copySource.data.document.metadata, title: 'HTTP copy source updated' } } }, owner);
+    assert.equal(nextSource.status, 200, nextSource.data.error);
+    const staleCopy = await request(copyPath, 'POST', versionBody, other);
+    assert.equal(staleCopy.status, 409); assert.equal(staleCopy.data.code, 'SOURCE_CHANGED');
+    const nextVersion = (await request(`/api/public/share/${token}`)).data.sourceVersion;
+    assert.equal(nextVersion, nextSource.data.document.version);
+    const newCopy = await request(copyPath, 'POST', { sourceVersion: nextVersion }, other);
+    assert.equal(newCopy.status, 200, newCopy.data.error); assert.notEqual(newCopy.data.id, privateCopy.id);
+    assert.equal((await request(copyPath, 'POST', { sourceVersion: nextVersion }, other)).data.id, newCopy.data.id);
+    assert.deepEqual(await prisma.exam.findUniqueOrThrow({ where: { id: privateCopy.id } }), protectedCopy, 'Copying a new source version leaves private edits intact.');
+    assert.equal((await request(`/api/exams/${copyId}`, 'GET', undefined, other)).data.document.metadata.title, '[Bản sao] HTTP copy source', 'The legacy copy is retained.');
+    assert.ok(!JSON.stringify((await request(`/api/exams/${newCopy.data.id}`, 'GET', undefined, other)).data.document).includes('PRIVATE_SOLUTION'));
+    const linkedQuestionId = (await prisma.examQuestion.findFirstOrThrow({ where: { examId: sourceId }, orderBy: { position: 'asc' } })).questionId;
+    const originalPassageId = (await prisma.question.findUniqueOrThrow({ where: { id: linkedQuestionId }, select: { passageId: true } })).passageId;
+    const foreignPassage = await prisma.passage.create({ data: { ownerId: ids[1], content: 'PRIVATE_OTHER_ACCOUNT_PASSAGE' } });
+    try {
+      // Simulate an invalid legacy cross-owner reference only on the validated test database.
+      await prisma.question.update({ where: { id: linkedQuestionId }, data: { passageId: foreignPassage.id } });
+      const hiddenSource = await request(`/api/public/share/${token}`);
+      assert.equal(hiddenSource.status, 404); assert.ok(!JSON.stringify(hiddenSource.data).includes('PRIVATE_OTHER_ACCOUNT_PASSAGE'));
+      assert.equal((await request(copyPath, 'POST', { sourceVersion: nextVersion }, other)).status, 404);
+      assert.equal((await request(`/api/exams/${sourceId}/share`, 'POST', { allowCopy: true }, owner)).status, 403);
+    } finally {
+      await prisma.question.update({ where: { id: linkedQuestionId }, data: { passageId: originalPassageId } });
+      await prisma.passage.delete({ where: { id: foreignPassage.id } });
+    }
+    // Hold a TEST-DB row, prove the HTTP request is blocked behind that exact backend PID,
+    // then commit a change. No timing-only sleep is used as evidence that the request arrived.
+    const linkedId = shared.data.link.id as string;
+    const countBeforeRaces = await prisma.exam.count({ where: { ownerId: ids[1] } });
+    const queuedCopy = async (row: 'exam' | 'link' | 'question', change: (tx: Prisma.TransactionClient) => Promise<unknown>, version: number) => {
+      let pending: ReturnType<typeof request> | undefined;
+      try {
+        await prisma.$transaction(async tx => {
+          if (row === 'exam') await tx.$queryRaw`SELECT "id" FROM "Exam" WHERE "id" = ${sourceId} FOR UPDATE`;
+          else if (row === 'link') await tx.$queryRaw`SELECT "id" FROM "ShareLink" WHERE "id" = ${linkedId} FOR UPDATE`;
+          else await tx.$queryRaw`SELECT "id" FROM "Question" WHERE "id" = ${linkedQuestionId} FOR UPDATE`;
+          const [{ pid }] = await tx.$queryRaw<{ pid: number }[]>`SELECT pg_backend_pid() AS pid`;
+          let settled = false;
+          pending = request(copyPath, 'POST', { sourceVersion: version }, other).finally(() => { settled = true; });
+          const until = Date.now() + 5000;
+          let observed = false;
+          while (!settled && Date.now() < until) {
+            const [{ waiting }] = await tx.$queryRaw<{ waiting: boolean }[]>`SELECT EXISTS (SELECT 1 FROM pg_stat_activity activity WHERE ${pid} = ANY(pg_blocking_pids(activity.pid))) AS waiting`;
+            if (waiting) { observed = true; break; }
+            await new Promise(resolve => setTimeout(resolve, 20));
+          }
+          assert.equal(observed, true, `Copy must wait for the ${row} edit before validating its snapshot.`);
+          await change(tx);
+        }, { timeout: 15000 });
+        return await pending!;
+      } finally { await pending?.catch(() => undefined); }
+    };
+    const sourceEditRace = await queuedCopy('exam', tx => tx.exam.update({ where: { id: sourceId }, data: { version: { increment: 1 } } }), nextVersion);
+    assert.equal(sourceEditRace.status, 409); assert.equal(sourceEditRace.data.code, 'SOURCE_CHANGED');
+    const racedVersion = nextVersion + 1;
+    const questionRightsRace = await queuedCopy('question', tx => tx.question.update({ where: { id: linkedQuestionId }, data: { shareable: false } }), racedVersion);
+    assert.equal(questionRightsRace.status, 404);
+    await prisma.question.update({ where: { id: linkedQuestionId }, data: { shareable: true } });
+    const copyDisabledRace = await queuedCopy('link', tx => tx.shareLink.update({ where: { id: linkedId }, data: { allowCopy: false } }), racedVersion);
+    assert.equal(copyDisabledRace.status, 403); assert.equal(copyDisabledRace.data.code, 'COPY_NOT_ALLOWED');
+    await prisma.shareLink.update({ where: { id: linkedId }, data: { allowCopy: true } });
+    const expiryRace = await queuedCopy('link', tx => tx.shareLink.update({ where: { id: linkedId }, data: { expiresAt: new Date(Date.now() - 1000) } }), racedVersion);
+    assert.equal(expiryRace.status, 404);
+    await prisma.shareLink.update({ where: { id: linkedId }, data: { expiresAt: null } });
+    const revokedRace = await queuedCopy('link', tx => tx.shareLink.update({ where: { id: linkedId }, data: { revokedAt: new Date() } }), racedVersion);
+    assert.equal(revokedRace.status, 404);
+    assert.equal((await request(copyPath, 'POST', { sourceVersion: nextVersion }, other)).status, 404, 'Revoked link wins over source version checks.');
+    assert.equal(await prisma.exam.count({ where: { ownerId: ids[1] } }), countBeforeRaces, 'Refused queued requests create no private copies.');
+    assert.deepEqual(await prisma.exam.findUniqueOrThrow({ where: { id: privateCopy.id } }), protectedCopy);
+    // Reverse order: hold only the recipient FK so copy reaches INSERT while keeping its source locks.
+    // Revocation must then wait for that copy's backend, and must not delete its valid private result.
+    await prisma.shareLink.update({ where: { id: linkedId }, data: { revokedAt: null } });
+    let copyFirst: ReturnType<typeof request> | undefined, revokeSecond: ReturnType<typeof request> | undefined;
+    try {
+      await prisma.$transaction(async tx => {
+        await tx.$queryRaw`SELECT "id" FROM "User" WHERE "id" = ${ids[1]} FOR UPDATE`;
+        const [{ pid: blockerPid }] = await tx.$queryRaw<{ pid: number }[]>`SELECT pg_backend_pid() AS pid`;
+        const waitForBackend = async (pid: number) => {
+          const until = Date.now() + 5000;
+          while (Date.now() < until) {
+            const waiting = await tx.$queryRaw<{ pid: number }[]>`SELECT activity.pid FROM pg_stat_activity activity WHERE ${pid} = ANY(pg_blocking_pids(activity.pid)) LIMIT 1`;
+            if (waiting[0]) return waiting[0].pid;
+            await new Promise(resolve => setTimeout(resolve, 20));
+          }
+          throw Error('Expected a backend to wait for the proven copy/revoke ordering.');
+        };
+        copyFirst = request(copyPath, 'POST', { sourceVersion: racedVersion }, other);
+        const copyPid = await waitForBackend(blockerPid);
+        revokeSecond = request(`/api/exams/${sourceId}/share`, 'DELETE', { linkId: linkedId }, owner);
+        await waitForBackend(copyPid);
+      }, { timeout: 15000 });
+      const copiedBeforeRevoke = await copyFirst!;
+      assert.equal(copiedBeforeRevoke.status, 200, copiedBeforeRevoke.data.error);
+      assert.equal((await revokeSecond!).status, 200);
+      const retained = await request(`/api/exams/${copiedBeforeRevoke.data.id}`, 'GET', undefined, other);
+      assert.equal(retained.status, 200); assert.equal(retained.data.permissions.role, 'OWNER');
+      assert.equal((await request(copyPath, 'POST', { sourceVersion: racedVersion }, other)).status, 404);
+      assert.equal(await prisma.exam.count({ where: { ownerId: ids[1] } }), countBeforeRaces + 1);
+    } finally { await Promise.allSettled([copyFirst, revokeSecond].filter(Boolean)); }
     checks.push('http-share-copy-to-server-library');
   });
   await t.test('attempt cookie is required; submit is idempotent and essay remains pending', async () => {
@@ -487,7 +650,153 @@ test('HTTP workflows on the isolated local server', { timeout: 120000 }, async t
     assert.equal(gradedMonitor.data.stats.totalSubmitted, 1);
     assert.equal(gradedMonitor.data.stats.totalPendingGrading, 0);
     assert.equal(gradedMonitor.data.stats.totalGraded, 1);
+    // Synthetic audit rows only: compare actual PostgreSQL seek order, including a timestamp tie.
+    const tieTime = new Date('2025-01-01T00:00:00.000Z');
+    await prisma.auditLog.createMany({ data: Array.from({ length: 105 }, (_, i) => ({
+      id: `paging_${suffix}_${String(i).padStart(3, '0')}`, actorId: ids[0], action: 'attempt.grade', targetType: 'Attempt', targetId: attemptId, createdAt: tieTime,
+      meta: { questionKey: 'essay', before: { earned: 0, comment: null }, after: { earned: 0.29, comment: null } },
+    })) });
+    const expectedHistory = await prisma.auditLog.findMany({ where: { action: 'attempt.grade', targetId: attemptId }, orderBy: [{ createdAt: 'desc' }, { id: 'desc' }], select: { id: true } });
+    const firstPage = await request(`/api/teacher/attempts/${attemptId}`, 'GET', undefined, owner);
+    assert.equal(firstPage.data.gradingHistory.length, 50); assert.equal(firstPage.data.historyHasMore, true);
+    assert.ok(Array.isArray(firstPage.data.questions), 'GET without a cursor preserves the detail response.');
+    const firstCursor = firstPage.data.historyNextCursor;
+    assert.equal((await request(`/api/teacher/attempts/${attemptId}?historyCursor=bad`, 'GET', undefined, owner)).status, 400);
+    assert.equal((await request(`/api/teacher/attempts/${attemptId}?historyCursor=bad`, 'GET', undefined, other)).status, 404);
+    const foreignCursor = encodeGradeHistoryCursor('another-attempt', { id: 'row', createdAt: tieTime });
+    assert.equal((await request(`/api/teacher/attempts/${attemptId}?historyCursor=${foreignCursor}`, 'GET', undefined, owner)).status, 400);
+    assert.equal((await request(`/api/teacher/attempts/${attemptId}?historyCursor=${firstCursor}`)).status, 401);
+    await prisma.auditLog.create({ data: { id: `paging_new_${suffix}`, actorId: ids[0], action: 'attempt.grade', targetType: 'Attempt', targetId: attemptId, createdAt: new Date(Date.now() + 60000), meta: { fixture: true } } });
+    const seenHistory: string[] = firstPage.data.gradingHistory.map((entry: { id: string }) => entry.id);
+    let cursor = firstCursor;
+    for (let page = 0; cursor && page < 5; page++) {
+      const older = await request(`/api/teacher/attempts/${attemptId}?historyCursor=${encodeURIComponent(cursor)}`, 'GET', undefined, owner);
+      assert.equal(older.status, 200);
+      assert.deepEqual(Object.keys(older.data).sort(), ['gradingHistory', 'historyHasMore', 'historyNextCursor']);
+      seenHistory.push(...older.data.gradingHistory.map((entry: { id: string }) => entry.id));
+      cursor = older.data.historyNextCursor;
+    }
+    assert.equal(cursor, null);
+    assert.deepEqual(seenHistory, expectedHistory.map(entry => entry.id));
+    assert.equal(new Set(seenHistory).size, expectedHistory.length, 'Timestamp ties and a newly inserted grade must not duplicate or skip the older pages.');
+    checks.push('http-grade-history-owner-cursor-ties-and-new-events');
     checks.push('http-attempt-capability-submit-and-manual-grade');
+  });
+  await t.test('saved-only submission preserves the server draft when another page has unsubmitted conflicting answers', async () => {
+    const started = await request(`/api/public/assignments/${publicId}/start`, 'POST', { freeName: 'HTTP saved-only fixture' });
+    assert.equal(started.status, 200);
+    const attempt = started.data.attempt, cookie = started.cookie;
+    const saved = await request(`/api/public/attempts/${attempt.id}/draft`, 'PATCH', { draft: { mc: 'A', essay: 'Server acknowledged essay' }, baseDraftRevision: attempt.draftRevision }, cookie);
+    assert.equal(saved.status, 200);
+    const stale = await request(`/api/public/attempts/${attempt.id}/submit`, 'POST', { answers: { mc: 'B', essay: 'Unsent other-page essay' }, baseDraftRevision: attempt.draftRevision }, cookie);
+    assert.equal(stale.status, 409);
+    assert.equal((await request(`/api/public/attempts/${attempt.id}/submit`, 'POST', { answers: {}, useSavedDraftOnly: true })).status, 403);
+    const badMode = await request(`/api/public/attempts/${attempt.id}/submit`, 'POST', { answers: {}, useSavedDraftOnly: 'true' }, cookie);
+    assert.equal(badMode.status, 400);
+    const submitted = await request(`/api/public/attempts/${attempt.id}/submit`, 'POST', { answers: { mc: 'B', essay: 'Must never replace server' }, useSavedDraftOnly: true }, cookie);
+    assert.equal(submitted.status, 200, submitted.data.error);
+    assert.equal(Number(submitted.data.score), 1);
+    assert.equal(submitted.data.responses.mc, 'A');
+    assert.equal(submitted.data.responses.essay, 'Server acknowledged essay');
+    const row = await prisma.attempt.findUniqueOrThrow({ where: { id: attempt.id }, include: { answers: true } });
+    assert.deepEqual(row.draft, { mc: 'A', essay: 'Server acknowledged essay' });
+    assert.equal(row.answers.find(answer => answer.questionKey === 'essay')?.response, 'Server acknowledged essay');
+    assert.equal(row.answers.length, 2);
+    checks.push('http-saved-only-submit-keeps-acknowledged-draft');
+  });
+  await t.test('history restore keeps student answers, restores pending distinctly from zero, isolates owners and serializes concurrent changes', async () => {
+    const path = `/api/teacher/attempts/${attemptId}`;
+    const initial = await prisma.attempt.findUniqueOrThrow({ where: { id: attemptId }, include: { answers: true, assignment: true } });
+    const events = await prisma.auditLog.findMany({ where: { action: 'attempt.grade', targetId: attemptId }, orderBy: [{ createdAt: 'asc' }, { id: 'asc' }] });
+    const first = events.find(event => {
+      const meta = JSON.parse(JSON.stringify(event.meta));
+      return meta?.questionKey === 'essay' && meta.before?.manualScore === null && typeof meta.after?.manualScore === 'number';
+    });
+    const last = events.find(event => {
+      const meta = JSON.parse(JSON.stringify(event.meta)); return meta?.after?.manualScore === 0.29;
+    });
+    assert.ok(first); assert.ok(last);
+    const base = async () => (await request(path, 'GET', undefined, owner)).data.questions.find((q: { questionId: string }) => q.questionId === 'essay').gradeRevision;
+    const initialBase = await base();
+    const body = { action: 'restore', eventId: first.id, side: 'before', baseGradeRevision: initialBase };
+    const staleAccount = await fetch(origin + path, { method: 'POST', headers: { Origin: origin, Cookie: owner, 'x-examcraft-user': ids[1], 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    assert.equal(staleAccount.status, 409); assert.equal((await staleAccount.json()).code, 'ACCOUNT_CHANGED');
+    assert.deepEqual(await prisma.attempt.findUniqueOrThrow({ where: { id: attemptId }, include: { answers: true, assignment: true } }), initial);
+    const unfinished = await request(`/api/public/assignments/${publicId}/start`, 'POST', { freeName: 'HTTP unsubmitted restore fixture' });
+    assert.equal(unfinished.status, 200);
+    const unfinishedBefore = await prisma.attempt.findUniqueOrThrow({ where: { id: unfinished.data.attempt.id } });
+    assert.equal((await request(`/api/teacher/attempts/${unfinished.data.attempt.id}`, 'POST', body, owner)).status, 409);
+    assert.deepEqual(await prisma.attempt.findUniqueOrThrow({ where: { id: unfinished.data.attempt.id } }), unfinishedBefore);
+    assert.equal((await request(path, 'POST', body, other)).status, 404);
+    assert.equal((await request(path, 'POST', body, owner, 'https://wrong-origin.invalid')).status, 403);
+    assert.equal((await request(path, 'POST', { ...body, earned: 0.9 }, owner)).status, 400, 'The client cannot supply a historical grade.');
+    assert.equal((await request(path, 'POST', { ...body, eventId: 'missing-event' }, owner)).status, 404);
+    const badEvent = await prisma.auditLog.create({ data: { actorId: ids[0], action: 'attempt.grade', targetType: 'Attempt', targetId: attemptId, meta: { questionKey: 'essay', before: { earned: 0 } } } });
+    assert.equal((await request(path, 'POST', { ...body, eventId: badEvent.id }, owner)).status, 422);
+    const foreignEvent = await prisma.auditLog.create({ data: { actorId: ids[0], action: 'attempt.grade', targetType: 'Attempt', targetId: 'another-attempt', meta: first.meta! } });
+    assert.equal((await request(path, 'POST', { ...body, eventId: foreignEvent.id }, owner)).status, 404);
+    const count = () => prisma.auditLog.count({ where: { action: 'attempt.grade', targetId: attemptId } });
+    const beforeCount = await count();
+    const restored = await request(path, 'POST', body, owner);
+    assert.equal(restored.status, 200, restored.data.error); assert.equal(restored.data.restored, true); assert.equal(restored.data.needsGrading, true);
+    let row = await prisma.attempt.findUniqueOrThrow({ where: { id: attemptId }, include: { answers: true, assignment: true } });
+    const essay = row.answers.find(answer => answer.questionKey === 'essay')!;
+    assert.equal(essay.manualScore, null); assert.equal(essay.isCorrect, null); assert.equal(essay.comment, null); assert.equal(Number(essay.earned), 0);
+    assert.equal(Number(row.score), 1);
+    assert.deepEqual(row.answers.map(a => [a.questionKey, a.response]).sort(), initial.answers.map(a => [a.questionKey, a.response]).sort());
+    assert.deepEqual(row.assignment.snapshot, initial.assignment.snapshot);
+    assert.deepEqual(await prisma.auditLog.findUnique({ where: { id: first.id } }), first, 'Restoration never edits the original event.');
+    const restorationEvent = await prisma.auditLog.findFirstOrThrow({ where: { action: 'attempt.grade', targetId: attemptId, meta: { path: ['restoredFrom', 'eventId'], equals: first.id } } });
+    assert.deepEqual(JSON.parse(JSON.stringify(restorationEvent.meta)).restoredFrom, { eventId: first.id, side: 'before' });
+    assert.equal(await count(), beforeCount + 1);
+    const retry = await request(path, 'POST', body, owner);
+    assert.equal(retry.status, 200); assert.equal(retry.data.restored, false); assert.equal(await count(), beforeCount + 1);
+    const stale = await request(path, 'POST', { ...body, eventId: last.id, side: 'after' }, owner);
+    assert.equal(stale.status, 409); assert.equal(stale.data.code, 'GRADE_CONFLICT');
+    assert.deepEqual(await prisma.attempt.findUniqueOrThrow({ where: { id: attemptId }, include: { answers: true, assignment: true } }), row);
+    // A graded zero differs from pending, so both concurrent restoration targets differ from this base.
+    assert.equal((await request(path, 'POST', { questionKey: 'essay', earned: 0, teacherComment: '', baseGradeRevision: await base() }, owner)).status, 200);
+    const zeroBase = await base();
+    const competing = await Promise.all([
+      request(path, 'POST', { ...body, baseGradeRevision: zeroBase }, owner),
+      request(path, 'POST', { ...body, eventId: last.id, side: 'after', baseGradeRevision: zeroBase }, owner),
+    ]);
+    assert.deepEqual(competing.map(result => result.status).sort(), [200, 409]);
+    const final = await request(path, 'POST', { ...body, eventId: last.id, side: 'after', baseGradeRevision: await base() }, owner);
+    assert.equal(final.status, 200); assert.equal(final.data.needsGrading, false); assert.equal(Number(final.data.newScore), 1.29);
+    row = await prisma.attempt.findUniqueOrThrow({ where: { id: attemptId }, include: { answers: true, assignment: true } });
+    assert.deepEqual(row.answers.map(a => [a.questionKey, a.response]).sort(), initial.answers.map(a => [a.questionKey, a.response]).sort());
+    assert.deepEqual(row.assignment.snapshot, initial.assignment.snapshot);
+    checks.push('http-history-restore-cas-pending-zero-owner-idempotence');
+  });
+  await t.test('comment-only work saves and restores feedback without creating numeric scores', async () => {
+    const created = await request('/api/exams', 'POST', { document: { ...exam, id: `comment_only_${suffix}`, metadata: { ...exam.metadata, assessmentMode: 'comment_only', title: 'HTTP feedback-only fixture' } } }, owner);
+    assert.equal(created.status, 200, created.data.error);
+    const assigned = await request('/api/assignments', 'POST', { examId: created.data.document.id, title: 'HTTP feedback-only assignment', identityMode: 'FREE_NAME' }, owner);
+    assert.equal(assigned.status, 200, assigned.data.error);
+    const started = await request(`/api/public/assignments/${assigned.data.assignment.publicId}/start`, 'POST', { freeName: 'HTTP feedback-only student' });
+    assert.equal(started.status, 200);
+    const ownId = started.data.attempt.id;
+    const submitted = await request(`/api/public/attempts/${ownId}/submit`, 'POST', { answers: { essay: 'Student feedback-only response' }, baseDraftRevision: started.data.attempt.draftRevision }, started.cookie);
+    assert.equal(submitted.status, 200); assert.equal(submitted.data.score, null);
+    const path = `/api/teacher/attempts/${ownId}`;
+    const detail = () => request(path, 'GET', undefined, owner);
+    const revision = async () => (await detail()).data.questions.find((q: { questionId: string }) => q.questionId === 'essay').gradeRevision;
+    assert.equal((await detail()).data.attempt.assessmentMode, 'comment_only');
+    assert.equal((await request(path, 'POST', { questionKey: 'essay', earned: 1, teacherComment: 'Must not assign a score', baseGradeRevision: await revision() }, owner)).status, 400);
+    assert.equal((await request(path, 'POST', { questionKey: 'essay', earned: null, teacherComment: 'Nhận xét đầu', baseGradeRevision: await revision() }, owner)).status, 200);
+    const originalEvent = (await detail()).data.gradingHistory[0];
+    assert.equal((await request(path, 'POST', { questionKey: 'essay', earned: null, teacherComment: 'Nhận xét sau', baseGradeRevision: await revision() }, owner)).status, 200);
+    const before = await prisma.attempt.findUniqueOrThrow({ where: { id: ownId }, include: { answers: true, assignment: true } });
+    const restored = await request(path, 'POST', { action: 'restore', eventId: originalEvent.id, side: 'after', baseGradeRevision: await revision() }, owner);
+    assert.equal(restored.status, 200, restored.data.error); assert.equal(restored.data.newScore, null);
+    const after = await prisma.attempt.findUniqueOrThrow({ where: { id: ownId }, include: { answers: true, assignment: true } });
+    assert.equal(after.score, null); assert.equal(after.maxScore, null);
+    const essay = after.answers.find(answer => answer.questionKey === 'essay')!;
+    assert.equal(essay.comment, 'Nhận xét đầu'); assert.equal(essay.isCorrect, null); assert.equal(Number(essay.manualScore), 0);
+    assert.deepEqual(after.answers.map(answer => [answer.questionKey, answer.response]).sort(), before.answers.map(answer => [answer.questionKey, answer.response]).sort());
+    assert.deepEqual(after.assignment.snapshot, before.assignment.snapshot);
+    checks.push('http-comment-only-feedback-restoration-without-numeric-score');
   });
   await t.test('knowledge snapshot and scope survive HTTP saves, reject a changed revision and stay out of public shares', async () => {
     const pkg = parseKnowledgePackage({ ...knowledgeFixture, sources: [{ id: 'teacher-note', title: 'PRIVATE_SOURCE_TITLE', rights: 'unknown' }] });
@@ -535,6 +844,8 @@ test('HTTP workflows on the isolated local server', { timeout: 120000 }, async t
     const made = await Promise.all([request('/api/templates', 'POST', body, owner), request('/api/templates', 'POST', body, owner)]);
     assert.deepEqual(made.map(r => r.status).sort(), [200, 201]);
     const template = made[0].data.template;
+      assert.equal(parseSavedTemplate(made[0].data).id, template.id, 'Client parser must accept the real save/replay contract.');
+      assert.equal(parseOpenedTemplate((await request(`/api/templates/${template.id}`, 'GET', undefined, owner)).data, template.id).revision, template.revision);
     assert.equal(made[1].data.template.id, template.id);
     assert.equal(template.category, 'personal'); assert.equal(template.status, 'needs_review');
     assert.equal(await prisma.examTemplate.count({ where: { ownerId: ids[0] } }), 1);
@@ -542,6 +853,7 @@ test('HTTP workflows on the isolated local server', { timeout: 120000 }, async t
     assert.equal(sourceRow.ownerId, ids[0]); assert.equal(sourceRow.isSystem, false);
     assert.equal((await request(`/api/templates/${template.id}`, 'GET', undefined, other)).status, 404);
     const ownerList = await request('/api/templates?limit=50', 'GET', undefined, owner);
+      assert.ok(parseTemplateList(ownerList.data, 1).templates.some(item => item.id === template.id));
     assert.ok(ownerList.data.templates.some((item: { id: string }) => item.id === template.id));
     const otherList = await request('/api/templates?limit=50', 'GET', undefined, other);
     assert.ok(!otherList.data.templates.some((item: { id: string }) => item.id === template.id));
@@ -621,6 +933,35 @@ test('HTTP workflows on the isolated local server', { timeout: 120000 }, async t
     const notes = await request('/api/teacher/ai-memory', 'GET', undefined, owner);
     assert.equal(notes.data.memories[0].isActive, false);
     assert.equal((await request('/api/teacher/ai-memory', 'GET', undefined, other)).data.memories.length, 0);
+    const memoryPath = '/api/teacher/ai-memory';
+    for (const [endpoint, method] of [[memoryPath, 'GET'], [path, 'GET'], [memoryPath + '?id=not-owned', 'DELETE']] as const) {
+      const rejected = await fetch(origin + endpoint, { method, headers: { Origin: origin, Cookie: other, 'x-examcraft-user': ids[0] } });
+      assert.equal(rejected.status, 409); assert.equal((await rejected.json()).code, 'ACCOUNT_CHANGED');
+      assert.equal((await request(endpoint, method)).status, 401);
+    }
+    const noteBody = { title: 'HTTP private rule', insight: 'Keep sources private', subject: 'all', clientRequestId: randomUUID(), sampleQuestion: { content: 'sample', type: 'essay' } };
+    const replies = await Promise.all([request(memoryPath, 'POST', noteBody, owner), request(memoryPath, 'POST', noteBody, owner)]);
+    for (const reply of replies) assert.equal(reply.status, 200, reply.data.error);
+    const noteId = replies[0].data.memory.id;
+    assert.equal(replies[1].data.memory.id, noteId);
+    assert.equal(await prisma.teacherAiMemory.count({ where: { id: noteId, userId: ids[0] } }), 1);
+    assert.equal(replies[0].data.memory.category, 'PEDAGOGICAL_STYLE', 'Older callers may omit category.');
+    const orderOnlyReplay = await request(memoryPath, 'POST', { ...noteBody, sampleQuestion: { type: 'essay', content: 'sample' } }, owner);
+    assert.equal(orderOnlyReplay.status, 200); assert.equal(orderOnlyReplay.data.replayed, true);
+    assert.equal((await request(memoryPath, 'POST', { ...noteBody, insight: 'changed' }, owner)).status, 409);
+    assert.equal((await request(memoryPath, 'POST', { ...noteBody, sampleQuestion: { content: 'different', type: 'essay' } }, owner)).status, 409);
+    const originalNote = await prisma.teacherAiMemory.findUniqueOrThrow({ where: { id: noteId } });
+    assert.equal((await request(memoryPath, 'POST', { id: noteId, isActive: false }, other)).status, 404);
+    assert.equal((await request(memoryPath + '?id=' + noteId, 'DELETE', undefined, other)).data.deleted, 0);
+    assert.deepEqual(await prisma.teacherAiMemory.findUniqueOrThrow({ where: { id: noteId } }), originalNote);
+    assert.equal((await request(memoryPath, 'POST', { title: 1, insight: 'wrong type' }, owner)).status, 400);
+    const toggled = await request(memoryPath, 'POST', { id: noteId, isActive: false }, owner);
+    assert.equal(toggled.status, 200); assert.equal(toggled.data.memory.isActive, false);
+    const exportOwn = await request(path, 'GET', undefined, owner);
+    assert.equal(exportOwn.status, 200); assert.equal(exportOwn.data.memories.length, 2);
+    assert.equal((await request(path, 'GET', undefined, other)).data.memories.length, 0);
+    assert.equal((await request(memoryPath + '?id=' + noteId, 'DELETE', undefined, owner)).data.deleted, 1);
+    assert.equal((await request(memoryPath, 'POST', { id: noteId, isActive: true }, owner)).status, 404);
     checks.push('http-private-memory-portability');
   });
 });

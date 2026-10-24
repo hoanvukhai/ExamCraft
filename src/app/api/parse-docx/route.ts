@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { importResponseSchema, parseImportedDocument, IMPORT_SOURCE_RULES } from '@/lib/import-document';
-import { requireAuth } from '@/lib/auth';
+import { requireRequestAuth } from '@/lib/request-auth';
 import { apiErrorResponse, ApiError } from '@/lib/api-error';
 import { requestApiKey } from '@/lib/ai-policy';
 import { isSameOriginMutation } from '@/lib/attempt-access';
@@ -11,7 +11,7 @@ import { executeWithKeyRotation } from '@/lib/gemini-keys';
 
 export async function POST(req: NextRequest) {
   try {
-    const currentUser = await requireAuth();
+    const currentUser = await requireRequestAuth(req);
     if (!isSameOriginMutation(req)) throw new ApiError(403, 'Yêu cầu không hợp lệ');
     let fileBuffer: Buffer | null = null;
     let userApiKey: string | undefined = undefined;

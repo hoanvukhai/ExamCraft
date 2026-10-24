@@ -56,6 +56,7 @@ export async function GET(
     }
 
     const snapshot = asObject(attempt.assignment.snapshot);
+    const numeric = requiresNumericScore(asObject(snapshot.metadata).assessmentMode as AssessmentMode | undefined);
     const questions = teacherSnapshotQuestions(snapshot);
 
     // Map câu trả lời của học sinh theo questionKey
@@ -81,6 +82,7 @@ export async function GET(
         studentResponse: studentAns ? studentAns.response : null,
         isCorrect: studentAns ? studentAns.isCorrect : null,
         earned: studentAns ? Number(studentAns.earned) : 0,
+        manualScore: studentAns?.manualScore == null ? null : Number(studentAns.manualScore),
         teacherComment: studentAns?.comment || null,
         gradeRevision: manualGradeRevision(attempt.id, q.id, studentAns),
       };
@@ -93,8 +95,8 @@ export async function GET(
         studentName: attempt.student.displayName,
         attemptNo: attempt.attemptNo,
         status: attempt.status,
-        score: attempt.score !== null ? Number(attempt.score) : null,
-        maxScore: attempt.maxScore !== null ? Number(attempt.maxScore) : null,
+        score: numeric && attempt.score !== null ? Number(attempt.score) : null,
+        maxScore: numeric && attempt.maxScore !== null ? Number(attempt.maxScore) : null,
         needsGrading: attempt.needsGrading,
         startedAt: attempt.startedAt,
         submittedAt: attempt.submittedAt,

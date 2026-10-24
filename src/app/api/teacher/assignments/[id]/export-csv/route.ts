@@ -3,6 +3,8 @@ import prisma from '@/lib/prisma';
 import { requireRequestAuth } from '@/lib/request-auth';
 import { ApiError, apiErrorResponse } from '@/lib/api-error';
 import { AttemptStatus } from '@prisma/client';
+import { asObject } from '@/lib/public-exam';
+import { requiresNumericScore, type AssessmentMode } from '@/lib/education-catalog';
 
 // Hàm làm sạch chuỗi chống tấn công CSV Injection (Formula Injection)
 function sanitizeCsvCell(value: any): string {
@@ -46,6 +48,8 @@ export async function GET(
     }
 
     const snapshot = assignment.snapshot as any;
+    const mode = asObject(asObject(assignment.snapshot).metadata).assessmentMode as AssessmentMode | undefined;
+    const numeric = requiresNumericScore(mode);
     const questions: any[] = snapshot?.questions || [];
 
     // Header CSV
@@ -55,7 +59,7 @@ export async function GET(
       'Lớp',
       'Lượt thi',
       'Trạng thái',
-      'Điểm số',
+      numeric ? 'Điểm số' : 'Đánh giá',
       'Thời gian nộp',
       ...questions.map((_, idx) => `Câu ${idx + 1}`),
     ];
@@ -71,7 +75,8 @@ export async function GET(
       const questionColumns = questions.map((q) => {
         const a = answersMap.get(q.id);
         if (!a) return 'Chưa làm';
-        if (a.isCorrect === null) return 'Chờ chấm';
+        if (!numeric) return a.comment || (a.response == null ? 'Chưa trả lời' : mode === 'survey' ? 'Đã ghi nhận' : a.manualScore != null ? 'Đã nhận xét' : 'Chờ nhận xét');
+        if (a.isCorrect === null) return a.manualScore == null ? 'Chờ chấm' : `Đã chấm (${a.earned}đ)`;
         return a.isCorrect ? `Đúng (${a.earned}đ)` : `Sai (${a.earned}đ)`;
       });
 
@@ -80,8 +85,8 @@ export async function GET(
         sanitizeCsvCell(att.student.displayName),
         sanitizeCsvCell(assignment.group?.name || 'Tự do'),
         sanitizeCsvCell(`Lần ${att.attemptNo}`),
-        sanitizeCsvCell(att.status === AttemptStatus.SUBMITTED ? 'Đã nộp' : 'Đang làm'),
-        sanitizeCsvCell(att.needsGrading ? 'Chờ giáo viên chấm' : att.score !== null ? `${att.score} / ${att.maxScore || 10}` : 'Chưa có'),
+        sanitizeCsvCell(att.status === AttemptStatus.SUBMITTED ? 'Đã nộp' : att.status === AttemptStatus.IN_PROGRESS ? 'Đang làm' : att.status === AttemptStatus.EXPIRED ? 'Đã hết hạn' : 'Đã dừng'),
+        sanitizeCsvCell(!numeric ? mode === 'survey' ? 'Không chấm điểm' : att.needsGrading ? 'Chờ nhận xét' : 'Đã nhận xét' : att.needsGrading ? 'Chờ giáo viên chấm' : att.score !== null ? `${att.score} / ${att.maxScore ?? ''}` : 'Chưa có'),
         sanitizeCsvCell(
           att.submittedAt ? new Date(att.submittedAt).toLocaleString('vi-VN') : ''
         ),
@@ -102,6 +107,7 @@ export async function GET(
     return new NextResponse(csvContent, {
       headers: {
         'Content-Type': 'text/csv; charset=utf-8',
+        'Cache-Control': 'no-store',
         'Content-Disposition': `attachment; filename="Bang_Diem_${cleanTitle}_${Date.now()}.csv"`,
       },
     });

@@ -19,7 +19,9 @@ import {
   ArrowLeft,
   Award,
 } from 'lucide-react';
-import { writeJournal, readJournal, clearJournal, reconcileJournal } from '@/lib/student-draft-journal';
+import { readStudentJournals, writeWriterJournal, retireWriterJournal, reconcileStudentJournals, unsubmittedStudentJournals, importStudentJournal, stableJson, type StudentJournalEntry } from '@/lib/student-draft-journal';
+import { StudentDraftRecovery } from '@/components/StudentDraftRecovery';
+import { withStudentRequestTimeout } from '@/lib/student-network';
 
 interface Question {
   id: string;
@@ -147,6 +149,8 @@ function StudentExamContent({
   const [lastSaved, setLastSaved] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitNotice, setSubmitNotice] = useState<string | null>(null);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
 
   // Trạng thái kết quả sau khi nộp
@@ -160,6 +164,11 @@ function StudentExamContent({
   const draftSaveRef = useRef<Promise<void> | null>(null);
   const draftConflictRef = useRef(false);
   const submittingRef = useRef(false);
+  const journalWriterRef = useRef('');
+  const journalBaseRef = useRef('');
+  const draftContextRef = useRef(0);
+  const serverDraftRef = useRef<Record<string, unknown>>({});
+  const [recoveryEntries, setRecoveryEntries] = useState<StudentJournalEntry[]>([]);
 
   // 1. Tải thông tin đề bài từ Server
   useEffect(() => {
@@ -184,7 +193,11 @@ function StudentExamContent({
         if (data.myAttempt?.status === 'SUBMITTED') {
           const resultResponse = await fetch('/api/public/attempts/' + data.myAttempt.id + '/submit');
           const result = await resultResponse.json();
-          if (resultResponse.ok) { setSubmitResult(result); setAnswers(result.responses || {}); }
+          if (resultResponse.ok) {
+            setSubmitResult(result); setAnswers(result.responses || {});
+            const stored = readStudentJournals(() => localStorage, data.myAttempt.id);
+            setRecoveryEntries(unsubmittedStudentJournals(stored.entries, result.responses || {}));
+          }
         }
       } catch (err) {
         console.error(err);
@@ -212,8 +225,10 @@ function StudentExamContent({
 
     try {
       setStarting(true);
+      const { res, data } = await withStudentRequestTimeout(async signal => {
       const res = await fetch(`/api/public/assignments/${publicId}/start`, {
         method: 'POST',
+        signal,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           studentId: assignment.identityMode === 'PICK_FROM_LIST' ? selectedStudentId : undefined,
@@ -223,26 +238,35 @@ function StudentExamContent({
         }),
       });
 
-      const data = await res.json();
+      return { res, data: await res.json() };
+      });
       if (!res.ok) {
         alert(data.error || 'Không thể bắt đầu làm bài.');
         return;
       }
 
       activeAttemptRef.current = data.attempt.id;
+      draftContextRef.current++;
       draftRevisionRef.current = data.attempt.draftRevision;
+      journalBaseRef.current = data.attempt.draftRevision;
+      journalWriterRef.current ||= crypto.randomUUID();
+      serverDraftRef.current = data.attempt.draft || {};
       draftSaveRef.current = null;
       draftConflictRef.current = false;
-      setSaveError(null); setLastSaved(null); setIsSaving(false);
+      setSaveError(null); setSubmitError(null); setSubmitNotice(null); setLastSaved(null); setIsSaving(false);
       setAttempt(data.attempt);
       setCanStartAnother(data.attempt.attemptNo < assignment.maxAttempts);
       if (data.exam) { setQuestions(data.exam.questions || []); setSections(data.exam.sections || []); setPassages(data.exam.passages || []); }
       // Answers typed on this browser but never acknowledged by the server (tab closed, power loss) come back here.
-      const outcome = reconcileJournal(readJournal(localStorage, data.attempt.id), data.attempt.draft || {}, data.attempt.draftRevision);
-      setJournalNotice(outcome.kind === 'restored' ? 'Đã khôi phục các câu em làm dở trên máy này; hệ thống sẽ tự lưu lại.' : null);
-      if (outcome.kind === 'conflict') {
+      const stored = readStudentJournals(() => localStorage, data.attempt.id);
+      const outcome = reconcileStudentJournals(stored.entries, data.attempt.draft || {}, data.attempt.draftRevision);
+      setRecoveryEntries(stored.entries.filter(entry => !entry.value || stableJson(entry.value.answers) !== stableJson(serverDraftRef.current)));
+      const restored = stored.entries.find(entry => entry.value && stableJson(entry.value.answers) === stableJson(outcome.answers));
+      if (outcome.kind === 'conflict' && restored?.value) journalBaseRef.current = restored.value.baseRevision;
+      setJournalNotice(stored.unavailable ? 'Trình duyệt không cho lưu nháp trên máy này. Bài vẫn làm và lưu lên máy chủ được; hãy giữ trang mở tới khi có xác nhận.' : outcome.kind === 'restored' ? 'Đã khôi phục các câu em làm dở trên máy này; hệ thống sẽ tự lưu lại.' : null);
+      if (outcome.kind === 'conflict' || outcome.kind === 'choose') {
         draftConflictRef.current = true;
-        setSaveError('Nháp trên máy chủ đã thay đổi ở trang khác sau lần em làm dở trên máy này. Chưa ghi đè hay nộp; hãy tải bản đang nhập về trước khi mở lại.');
+        setSaveError(outcome.kind === 'choose' ? 'Có nhiều bản nháp khác nhau trên máy này. Hãy mở mục bản nháp để chọn và đối chiếu; chưa tự gộp hoặc nộp.' : 'Nháp trên máy chủ đã thay đổi ở trang khác sau lần em làm dở trên máy này. Chưa ghi đè hay nộp; hãy tải bản đang nhập về trước khi mở lại.');
       }
       setAnswers(outcome.answers);
 
@@ -266,23 +290,29 @@ function StudentExamContent({
     async (currentAnswers: Record<string, any>) => {
       if (!attempt?.id || draftSaveRef.current || draftConflictRef.current || submittingRef.current) return;
       const savingAttemptId = attempt.id;
+      const savingContext = draftContextRef.current;
       const operation = (async () => {
       try {
         setIsSaving(true);
+        const { response, result } = await withStudentRequestTimeout(async signal => {
         const response = await fetch(`/api/public/attempts/${attempt.id}/draft`, {
           method: 'PATCH',
+          signal,
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ draft: currentAnswers, baseDraftRevision: draftRevisionRef.current }),
         });
-        const result = await response.json();
-        if (activeAttemptRef.current !== savingAttemptId) return;
+        return { response, result: await response.json() };
+        });
+        if (activeAttemptRef.current !== savingAttemptId || draftContextRef.current !== savingContext) return;
         if (!response.ok) {
           if (result.code === 'DRAFT_CONFLICT' || result.code === 'DRAFT_REVISION_REQUIRED') draftConflictRef.current = true;
           throw new Error(result.error || 'Chưa lưu được bản nháp');
         }
         if (typeof result.draftRevision !== 'string') throw new Error('Chưa nhận được xác nhận phiên bản nháp. Bản đang nhập vẫn giữ trên trang này.');
         draftRevisionRef.current = result.draftRevision;
-        try { writeJournal(localStorage, savingAttemptId, result.draftRevision, answersRef.current); } catch { /* The server save succeeded; only the offline copy could not be refreshed. */ }
+        journalBaseRef.current = result.draftRevision;
+        serverDraftRef.current = currentAnswers;
+        if (!writeWriterJournal(() => localStorage, savingAttemptId, journalWriterRef.current, result.draftRevision, answersRef.current)) setJournalNotice('Đã lưu lên máy chủ, nhưng chưa giữ được bản nháp dự phòng trên máy này.');
         setSaveError(null);
         const now = new Date();
         setLastSaved(
@@ -292,7 +322,7 @@ function StudentExamContent({
             .padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`
         );
       } catch (err) {
-        if (activeAttemptRef.current !== savingAttemptId) return;
+        if (activeAttemptRef.current !== savingAttemptId || draftContextRef.current !== savingContext) return;
         setSaveError(err instanceof Error ? err.message : 'Chưa lưu được bản nháp');
         console.error('Lỗi tự động lưu nháp:', err);
       } finally {
@@ -306,10 +336,10 @@ function StudentExamContent({
     [attempt?.id]
   );
 
-  // Keep every change on this browser until the server acknowledges it; skipped while a conflict is unresolved.
+  // Keep edits even during conflicts, still bound to their original server revision.
   useEffect(() => {
-    if (!attempt?.id || submitResult || draftConflictRef.current) return;
-    try { writeJournal(localStorage, attempt.id, draftRevisionRef.current, answers); } catch { /* Blocked or full storage: the server autosave still runs. */ }
+    if (!attempt?.id || submitResult) return;
+    if (!writeWriterJournal(() => localStorage, attempt.id, journalWriterRef.current, journalBaseRef.current, answers)) setJournalNotice('Chưa lưu được nháp dự phòng trên máy này. Hệ thống vẫn thử lưu máy chủ; đừng đóng trang trước khi có xác nhận.');
   }, [answers, attempt?.id, submitResult]);
 
   // Định kỳ tự lưu nháp mỗi 15 giây
@@ -393,31 +423,47 @@ function StudentExamContent({
     try {
       submittingRef.current = true;
       setSubmitting(true);
+      setSubmitError(null);
       setShowSubmitModal(false);
       await draftSaveRef.current;
 
+      const localAnswers = answersRef.current;
+      const send = (savedOnly: boolean) => withStudentRequestTimeout(async signal => {
       const res = await fetch(`/api/public/attempts/${attempt.id}/submit`, {
         method: 'POST',
+        signal,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ answers: answersRef.current, baseDraftRevision: draftRevisionRef.current }),
+        body: JSON.stringify(savedOnly ? { answers: {}, useSavedDraftOnly: true } : { answers: localAnswers, baseDraftRevision: draftRevisionRef.current }),
       });
-
-      const data = await res.json();
+      return { res, data: await res.json() };
+      });
+      let savedOnly = isAuto && draftConflictRef.current;
+      let { res, data } = await send(savedOnly);
+      if (isAuto && !res.ok && data.code === 'DRAFT_CONFLICT') {
+        draftConflictRef.current = true; savedOnly = true;
+        ({ res, data } = await send(true));
+      }
       if (!res.ok) {
         if (data.code === 'DRAFT_CONFLICT' || data.code === 'DRAFT_REVISION_REQUIRED') { draftConflictRef.current = true; setSaveError(data.error); }
-        alert(data.error || 'Lỗi khi nộp bài.');
+        setSubmitError(data.error || 'Chưa nộp được bài. Câu trả lời vẫn giữ để thử lại.');
         return;
       }
 
       setSubmitResult(data);
-      try { clearJournal(localStorage, attempt.id); } catch { /* Nothing to remove. */ }
+      retireWriterJournal(() => localStorage, attempt.id, journalWriterRef.current, data.responses || {});
+      const remaining = readStudentJournals(() => localStorage, attempt.id).entries;
+      if (!remaining.some(entry => entry.value && stableJson(entry.value.answers) === stableJson(localAnswers))) {
+        const value = { v: 2 as const, attemptId: attempt.id, writerId: journalWriterRef.current, baseRevision: journalBaseRef.current, answers: localAnswers, savedAt: new Date().toISOString() };
+        remaining.push({ key: 'memory:' + journalWriterRef.current, raw: JSON.stringify(value, null, 2), value });
+      }
+      setRecoveryEntries(unsubmittedStudentJournals(remaining, data.responses || {}));
       setAnswers(data.responses || {});
       if (isAuto) {
-        alert('Đã hết giờ làm bài! Bài thi của em đã được nộp tự động.');
+        setSubmitNotice(savedOnly ? 'Đã hết giờ. Hệ thống chỉ nộp bản máy chủ đã lưu; bản nháp khác được giữ để đối chiếu.' : 'Đã hết giờ làm bài. Bài thi đã được nộp tự động.');
       }
     } catch (err) {
       console.error(err);
-      alert('Không thể kết nối đến máy chủ để nộp bài. Vui lòng kiểm tra mạng!');
+      setSubmitError(err instanceof Error && err.message.includes('chưa phản hồi') ? err.message : 'Chưa xác nhận được bài đã nộp. Câu trả lời vẫn giữ trên trang này; kiểm tra mạng rồi thử nộp lại.');
     } finally {
       submittingRef.current = false;
       setSubmitting(false);
@@ -472,6 +518,8 @@ function StudentExamContent({
     return (
       <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#181818] text-[#202124] dark:text-[#e3e3e3] py-10 px-4">
         <div className="max-w-3xl mx-auto space-y-6">
+          {submitNotice && <p role="status" className="p-4 border rounded-xl bg-sky-50 text-sky-900">{submitNotice}</p>}
+          <StudentDraftRecovery entries={recoveryEntries} />
           {/* Card điểm số chính */}
           <div className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl p-8 text-center relative overflow-hidden shadow-xl">
             <div className="w-16 h-16 bg-[#e6f4ea] dark:bg-[#0f291e] text-[#137333] dark:text-[#5bb98c] rounded-full flex items-center justify-center mx-auto mb-4 border border-[#ceead6] dark:border-[#1e4d38]">
@@ -490,12 +538,12 @@ function StudentExamContent({
                 </span>
                 <div className="text-5xl font-black text-[#137333] dark:text-[#5bb98c] tracking-tight">
                   {submitResult.score}
-                  <span className="text-2xl text-[#5f6368] dark:text-[#9aa0a6] font-normal ml-1">/ {submitResult.maxScore || 10}</span>
+                  <span className="text-2xl text-[#5f6368] dark:text-[#9aa0a6] font-normal ml-1">/ {submitResult.maxScore ?? 10}</span>
                 </div>
               </div>
             ) : (
               <div className="bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-4 text-sm text-[#5f6368] dark:text-[#9aa0a6]">
-                Bài làm của em đã được nộp an toàn. Điểm số sẽ được giáo viên công bố sau khi kết thúc đợt thi.
+                {submitResult.message || 'Bài làm của em đã được ghi nhận.'}
               </div>
             )}
 
@@ -757,12 +805,39 @@ function StudentExamContent({
         </div>
       </header>
 
+      <div role="status" aria-live="polite" className="md:hidden px-4 py-2 text-xs border-b">
+        {isSaving ? 'Đang gửi nháp lên máy chủ...' : saveError ? 'Chưa lưu được nháp máy chủ. Xem thông báo bên dưới.' : lastSaved ? `Lần lưu máy chủ gần nhất: ${lastSaved}` : 'Chưa có xác nhận lưu nháp từ máy chủ.'}
+      </div>
+      {submitError && <div role="alert" className="max-w-6xl mx-auto w-full p-4 border rounded-xl bg-amber-50 text-amber-950">
+        <p>{submitError}</p>
+        {timeLeft === 0 && <p>Đã hết giờ nên không sửa thêm đáp án. Khi kết nối lại, máy chủ xác nhận phần bài được nhận trong thời gian cho phép; các bản khác giữ để đối chiếu.</p>}
+        <button type="button" disabled={submitting} onClick={() => handleFinalSubmit(timeLeft === 0)} className="border rounded-lg p-2 mt-2">{submitting ? 'Đang xác nhận...' : 'Thử nộp lại khi có mạng'}</button>
+      </div>}
       {journalNotice && !saveError && <div role="status" className="max-w-6xl mx-auto w-full px-4 py-3 text-sm bg-sky-50 text-sky-900 border border-sky-300 rounded-xl">{journalNotice}</div>}
-      {saveError && <div role="alert" className="max-w-6xl mx-auto w-full px-4 py-3 text-sm bg-amber-50 text-amber-900 border border-amber-300 rounded-xl">
-        <p>{saveError}</p>
+      <StudentDraftRecovery entries={recoveryEntries} onImport={raw => {
+        if (!attempt || activeAttemptRef.current !== attempt.id) return 'Lượt làm bài đã thay đổi. Hãy mở lại tệp ở đúng lượt.';
+        const imported = importStudentJournal(() => localStorage, attempt.id, crypto.randomUUID(), raw);
+        if (imported.error) return imported.error;
+        setRecoveryEntries(previous => [...previous, imported.entry!]);
+        setJournalNotice('Đã giữ tệp nháp riêng. Mở bản vừa nhập để đối chiếu rồi chọn nếu phù hợp; chưa thay câu trả lời đang nhập.');
+        return null;
+      }} onChoose={entry => {
+        if (!entry.value || !attempt || entry.value.attemptId !== attempt.id || activeAttemptRef.current !== attempt.id) return;
+        draftContextRef.current++;
+        journalBaseRef.current = entry.value.baseRevision;
+        const stale = entry.value.baseRevision !== draftRevisionRef.current;
+        draftConflictRef.current = stale; setAnswers(entry.value.answers);
+        setSaveError(stale ? 'Bản được chọn dựa trên nháp máy chủ cũ. Chỉ xem/đối chiếu; chưa ghi đè hoặc nộp nội dung này.' : null);
+      }} onServer={() => {
+        draftContextRef.current++;
+        journalBaseRef.current = draftRevisionRef.current; draftConflictRef.current = false;
+        setAnswers(serverDraftRef.current); setSaveError(null);
+      }} />
+      {(saveError || submitError) && <div className="max-w-6xl mx-auto w-full px-4 py-3 text-sm bg-amber-50 text-amber-900 border border-amber-300 rounded-xl">
+        {saveError && <p role="alert">{saveError}</p>}
         <p>Bản đang nhập vẫn ở trang này. Tải bản sao trước khi đóng hoặc tải lại trang; tệp này dùng để đối chiếu, chưa thay cho bài đã nộp.</p>
         <button type="button" className="underline font-semibold mt-2" onClick={() => {
-          const blob = new Blob([JSON.stringify({ format: 'examcraft-student-answers-v1', assignmentTitle: assignment?.title, attemptId: attempt?.id, exportedAt: new Date().toISOString(), responses: answersRef.current }, null, 2)], { type: 'application/json' });
+          const blob = new Blob([JSON.stringify({ format: 'examcraft-student-answers-v1', assignmentTitle: assignment?.title, attemptId: attempt?.id, baseDraftRevision: journalBaseRef.current, exportedAt: new Date().toISOString(), responses: answersRef.current }, null, 2)], { type: 'application/json' });
           const url = URL.createObjectURL(blob), link = document.createElement('a');
           link.href = url; link.download = `examcraft-bai-lam-${attempt?.id}.json`; link.click();
           setTimeout(() => URL.revokeObjectURL(url), 30_000);

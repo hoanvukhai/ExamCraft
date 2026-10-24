@@ -3,7 +3,7 @@ import prisma from '@/lib/prisma';
 import { AssignmentStatus } from '@prisma/client';
 
 import { sanitizeSnapshotForStudent } from '@/lib/public-exam';
-import { hasAttemptAccess } from '@/lib/attempt-access';
+import { hasActiveAttemptAccess } from '@/lib/attempt-access';
 
 export async function GET(
   req: NextRequest,
@@ -32,8 +32,8 @@ export async function GET(
     }
 
     const cookieIds = req.cookies.getAll().filter(c => c.name.startsWith('exam_attempt_')).slice(0, 100).map(c => c.name.slice('exam_attempt_'.length));
-    const candidates = cookieIds.length ? await prisma.attempt.findMany({ where: { assignmentId: assignment.id, id: { in: cookieIds } }, orderBy: { startedAt: 'desc' } }) : [];
-    const myAttempt = candidates.find(attempt => hasAttemptAccess(req, attempt));
+    const candidates = cookieIds.length ? await prisma.attempt.findMany({ where: { assignmentId: assignment.id, id: { in: cookieIds } }, include: { student: { select: { archivedAt: true, groupId: true } } }, orderBy: { startedAt: 'desc' } }) : [];
+    const myAttempt = candidates.find(attempt => hasActiveAttemptAccess(req, { ...attempt, assignment }));
     const mayReview = myAttempt?.status === 'SUBMITTED';
     const now = new Date();
 

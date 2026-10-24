@@ -1,10 +1,27 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildGradeSubmission, decideRestore, initialScoreText, isGradeDraftDirty, readHistoryState, sameGradeState, validateRestoreState, type GradeState } from '../src/lib/grade-history-restore';
+import { buildGradeSubmission, decideRestore, initialScoreText, isGradeDraftDirty, readHistoryState, sameGradeState, validateRestoreState, describeGradeHistory, isPendingGrade, type GradeState } from '../src/lib/grade-history-restore';
 
 const state = (over: Partial<GradeState> = {}): GradeState => ({ earned: 0, manualScore: null, comment: null, isCorrect: null, ...over });
 const meta = (before: unknown, after: unknown, questionKey = 'q1') => ({ questionKey, before, after, scoreBefore: 1, scoreAfter: 2 });
 const scored = { numeric: true, maxPoints: 2, pointsConfigured: true };
+
+test('incomplete legacy metadata remains describable and never enables restoration by guessing', () => {
+  for (const raw of [null, [], 'old', 4, {}, { questionKey: 'q1' }, { questionKey: 'q1', before: { earned: 0 }, after: null }]) {
+    const described = describeGradeHistory(raw);
+    assert.equal(described.before.ok, false); assert.equal(described.after.ok, false); assert.equal(described.restored, false);
+  }
+  const valid = describeGradeHistory({ ...meta(state(), state({ manualScore: 0, isCorrect: false })), restoredFrom: { eventId: 'source', side: 'before' } });
+  assert.equal(valid.before.ok, true); assert.equal(valid.after.ok, true); assert.equal(valid.restored, true);
+});
+
+test('manual zero on a zero-point question is graded even when correctness is null', () => {
+  const graded = { points: 0, earned: 0, manualScore: 0, isCorrect: null };
+  assert.equal(isPendingGrade(graded, true), false); assert.equal(initialScoreText(graded, true), '0');
+  assert.equal(isPendingGrade({ ...graded, manualScore: null }, true), true);
+  assert.equal(initialScoreText({ ...graded, manualScore: null }, true), '');
+  assert.equal(isPendingGrade({ ...graded, manualScore: null }, false), false);
+});
 
 test('reads both sides of a complete event and keeps null, 0, false and empty text apart', () => {
   const event = meta(state(), { earned: 0, manualScore: 0, comment: '', isCorrect: false });

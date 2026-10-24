@@ -8,7 +8,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   try {
     const { id: token } = await params;
     const link = await prisma.shareLink.findUnique({ where: { token }, include: { exam: { include: { items: { include: { question: { include: { passage: true } } }, orderBy: { position: 'asc' } } } } } });
-    if (!link || link.revokedAt || (link.expiresAt && link.expiresAt <= new Date()) || link.exam.deletedAt || link.exam.items.some(item => item.question.deletedAt || !item.question.shareable || item.question.ownerId !== link.exam.ownerId)) {
+    if (!link || link.revokedAt || (link.expiresAt && link.expiresAt <= new Date()) || link.exam.deletedAt || link.exam.items.some(item => item.question.deletedAt || !item.question.shareable || item.question.ownerId !== link.exam.ownerId || (item.question.passage && item.question.passage.ownerId !== link.exam.ownerId))) {
       return NextResponse.json({ success: false, error: 'Liên kết không tồn tại, đã hết hạn hoặc đã được thu hồi.' }, { status: 404 });
     }
     const exam = link.exam;
@@ -22,7 +22,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
       ...(link.showAnswers ? { correct_answer: solutionForQuestion(raw.questions[index]).correct, sub_questions: solutionForQuestion(raw.questions[index]).sub_questions, step_by_step_solution: solutionForQuestion(raw.questions[index]).solution, matchingPairs: solutionForQuestion(raw.questions[index]).matchingPairs, correctOrder: solutionForQuestion(raw.questions[index]).correctOrder } : {}),
     }));
     const user = link.allowCopy ? await getCurrentUser() : null;
-    return NextResponse.json({ success: true, exam: { ...safe, questions }, permissions: { showAnswers: link.showAnswers, allowCopy: link.allowCopy && Boolean(user && !user.mustChangePassword) } }, { headers: { 'Cache-Control': 'no-store' } });
+    return NextResponse.json({ success: true, exam: { ...safe, questions }, sourceVersion: exam.version, permissions: { showAnswers: link.showAnswers, allowCopy: link.allowCopy && Boolean(user && !user.mustChangePassword) } }, { headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {
     console.error('Load share failed', error);
     return NextResponse.json({ success: false, error: 'Chưa thể tải đề chia sẻ' }, { status: 500 });

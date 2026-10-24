@@ -5,6 +5,8 @@ import { ApiError, apiErrorResponse } from '@/lib/api-error';
 import { AssignmentStatus, AttemptStatus } from '@prisma/client';
 import { z } from 'zod';
 import { isSameOriginMutation } from '@/lib/attempt-access';
+import { asObject } from '@/lib/public-exam';
+import { requiresNumericScore, type AssessmentMode } from '@/lib/education-catalog';
 const UpdateSchema = z.object({ status: z.nativeEnum(AssignmentStatus).optional(), closesAt: z.iso.datetime({ offset: true }).nullable().optional(), durationMinutes: z.number().int().min(1).max(1440).optional(), maxAttempts: z.number().int().min(1).max(10).optional() }).strict();
 
 // GET: Lấy thông tin bài giao, danh sách bài làm và phân tích thống kê theo câu hỏi
@@ -46,12 +48,13 @@ export async function GET(
     }
 
     const snapshot = assignment.snapshot as any;
+    const numeric = requiresNumericScore(asObject(asObject(assignment.snapshot).metadata).assessmentMode as AssessmentMode | undefined);
     const questions: any[] = snapshot?.questions || [];
     const sections: any[] = snapshot?.sections || [];
 
     // Phân loại các lượt làm bài
     const submittedAttempts = assignment.attempts.filter(
-      (a) => a.status === AttemptStatus.SUBMITTED && a.score !== null && !a.needsGrading
+      (a) => numeric && a.status === AttemptStatus.SUBMITTED && a.score !== null && !a.needsGrading
     );
     const inProgressAttempts = assignment.attempts.filter(
       (a) => a.status === AttemptStatus.IN_PROGRESS
@@ -61,10 +64,10 @@ export async function GET(
     const scores = submittedAttempts.map((a) => Number(a.score));
     const totalSubmitted = assignment.attempts.filter(a => a.status === AttemptStatus.SUBMITTED).length;
     const totalPendingGrading = assignment.attempts.filter(a => a.status === AttemptStatus.SUBMITTED && a.needsGrading).length;
-    const totalGraded = scores.length;
-    const avgScore = totalGraded > 0 ? scores.reduce((sum, s) => sum + s, 0) / totalGraded : 0;
-    const maxScore = totalGraded > 0 ? Math.max(...scores) : 0;
-    const minScore = totalGraded > 0 ? Math.min(...scores) : 0;
+    const totalGraded = assignment.attempts.filter(a => a.status === AttemptStatus.SUBMITTED && !a.needsGrading).length;
+    const avgScore = scores.length ? scores.reduce((sum, s) => sum + s, 0) / scores.length : 0;
+    const maxScore = scores.length ? Math.max(...scores) : 0;
+    const minScore = scores.length ? Math.min(...scores) : 0;
 
     const distribution = {
       under5: scores.filter((s) => s < 5.0).length,
@@ -74,7 +77,7 @@ export async function GET(
     };
 
     // Phân tích tỷ lệ đúng theo từng câu hỏi (Item Analysis)
-    const itemAnalysis = questions.map((q, idx) => {
+    const itemAnalysis = numeric ? questions.map((q, idx) => {
       let correctCount = 0;
       let totalAnswered = 0;
 
@@ -100,12 +103,13 @@ export async function GET(
         correctCount,
         correctRate,
       };
-    });
+    }) : [];
 
     return NextResponse.json({
       assignment: {
         id: assignment.id,
         title: assignment.title,
+        assessmentMode: asObject(snapshot.metadata).assessmentMode,
         publicId: assignment.publicId,
         mode: assignment.mode,
         status: assignment.status,
@@ -127,9 +131,9 @@ export async function GET(
         totalPendingGrading,
         totalGraded,
         totalInProgress: inProgressAttempts.length,
-        avgScore: Math.round(avgScore * 100) / 100,
-        maxScore,
-        minScore,
+        avgScore: numeric ? Math.round(avgScore * 100) / 100 : null,
+        maxScore: numeric ? maxScore : null,
+        minScore: numeric ? minScore : null,
         distribution,
       },
       itemAnalysis,
@@ -139,8 +143,8 @@ export async function GET(
         studentName: att.student.displayName,
         attemptNo: att.attemptNo,
         status: att.status,
-        score: att.score !== null ? Number(att.score) : null,
-        maxScore: att.maxScore !== null ? Number(att.maxScore) : 10,
+        score: numeric && att.score !== null ? Number(att.score) : null,
+        maxScore: numeric && att.maxScore !== null ? Number(att.maxScore) : null,
         startedAt: att.startedAt,
         submittedAt: att.submittedAt,
         deadlineAt: att.deadlineAt,

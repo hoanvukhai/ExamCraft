@@ -33,6 +33,17 @@ export function hasAttemptAccess(req: Pick<NextRequest, 'cookies'>, attempt: Att
   return timingSafeEqual(Buffer.from(supplied), Buffer.from(attemptSessionToken(attempt)));
 }
 
+/** A signed cookie proves who began the attempt, not that the student/group is still active. */
+export function hasActiveAttemptAccess(req: Pick<NextRequest, 'cookies'>, attempt: AttemptIdentity & {
+  student: { archivedAt: Date | null; groupId: string };
+  assignment: { ownerId: string; groupId: string | null; group: { ownerId: string; archivedAt: Date | null } | null };
+}, now = new Date()) {
+  const { student, assignment } = attempt;
+  if (student.archivedAt || assignment.group?.archivedAt || (assignment.group && assignment.group.ownerId !== assignment.ownerId) ||
+      (assignment.groupId && assignment.groupId !== student.groupId)) return false;
+  return hasAttemptAccess(req, attempt, now);
+}
+
 export function attachAttemptCookie(response: NextResponse, attempt: AttemptIdentity) {
   response.cookies.set(attemptCookieName(attempt.id), attemptSessionToken(attempt), {
     httpOnly: true,

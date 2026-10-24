@@ -21,9 +21,9 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const user = await requireRequestAuth(req); const { id } = await params;
     const parsed = Schema.safeParse(await req.json().catch(() => null));
     if (!parsed.success || (parsed.data.expiresAt && new Date(parsed.data.expiresAt) <= new Date())) return NextResponse.json({ error: 'Cấu hình chia sẻ không hợp lệ' }, { status: 400 });
-    const exam = await prisma.exam.findFirst({ where: { id, ownerId: user.id, deletedAt: null }, include: { items: { include: { question: { select: { shareable: true, deletedAt: true, ownerId: true } } } } } });
+    const exam = await prisma.exam.findFirst({ where: { id, ownerId: user.id, deletedAt: null }, include: { items: { include: { question: { select: { shareable: true, deletedAt: true, ownerId: true, passage: { select: { ownerId: true } } } } } } } });
     if (!exam) return NextResponse.json({ error: 'Không tìm thấy đề thi của bạn' }, { status: 404 });
-    if (exam.items.some(item => !item.question.shareable || item.question.deletedAt || item.question.ownerId !== user.id)) return NextResponse.json({ error: 'Đề có câu hỏi không được phép chia sẻ hoặc đã xóa' }, { status: 403 });
+    if (exam.items.some(item => !item.question.shareable || item.question.deletedAt || item.question.ownerId !== user.id || (item.question.passage && item.question.passage.ownerId !== user.id))) return NextResponse.json({ error: 'Đề có câu hỏi hoặc ngữ liệu ngoài quyền chia sẻ, hoặc đã xóa' }, { status: 403 });
     const link = await prisma.shareLink.create({ data: { examId: id, token: randomBytes(32).toString('base64url'), showAnswers: parsed.data.showAnswers, allowCopy: parsed.data.allowCopy, expiresAt: parsed.data.expiresAt ? new Date(parsed.data.expiresAt) : null } });
     return NextResponse.json({ success: true, link: { id: link.id, showAnswers: link.showAnswers, allowCopy: link.allowCopy, expiresAt: link.expiresAt }, publicLink: '/share/' + link.token }, { headers: { 'Cache-Control': 'no-store' } });
   } catch (error) { return failure(error); }
