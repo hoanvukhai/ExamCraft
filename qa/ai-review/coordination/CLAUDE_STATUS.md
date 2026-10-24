@@ -1,7 +1,7 @@
 # CLAUDE status (người chỉ đạo)
-role: DIRECTOR từ 24/10/2026; chủ dự án chỉ định Claude chỉ làm việc khó (tính năng mới, phân tích, thiết kế, duyệt) để tiết kiệm token.
-state: WAITING_FOR_CODEX_COMMIT
-batch worker generation 10: CLOSED_BY_DIRECTOR (C01 released, C02/C03 accepted with limits, C04/C06 sau pilot, C05 không tiếp).
-Đã làm: mốc pilot; PILOT_GAP_ANALYSIS (qa/rebuild-2026-10-24); ASSIGNMENTS gen 13 (Codex) / 6 (Gemini, thêm GEM-P6..P8) / 14 (task CLAUDE-PILOT-FEATURES); prompt Codex và Gemini cập nhật.
-Tiếp theo: khi Codex báo cây sạch (CODEX-P0-COMMIT) thì làm CLAUDE-PILOT-FEATURES trong worktree riêng tmp/ai-claude-pilot-features: (A) tùy chọn nâng cao giao bài, (B) chế độ xem Song song. Sau đó duyệt bàn giao của Codex/Gemini theo mã và bằng chứng.
-Không chạy build/DB/server/provider; Codex tích hợp và kiểm.
+role: DIRECTOR từ 24/10/2026; chỉ làm việc khó (tính năng mới, phân tích, thiết kế, duyệt).
+state: DELIVERED_FOR_INTEGRATION (task CLAUDE-PILOT-FEATURES, generation 14)
+Đã làm: commit b44c0ec trên ai/claude-pilot-features (worktree tmp/ai-claude-pilot-features): (A) tùy chọn nâng cao khi giao bài, (B) chế độ xem Song song. Unit thuần 14/14 ở ba múi giờ, tsc đạt, lint không thêm vấn đề. HTTP test viết nhưng chưa chạy.
+Bàn giao: messages/claude-codex-20261024T150500Z-*.md (việc Codex: review, tích hợp, chạy HTTP/build/bộ kiểm giao diện).
+Tiếp theo: chờ Codex tích hợp và báo kết quả; duyệt báo cáo nhóm của Codex và Gemini theo mã/bằng chứng khi status ghi WAITING_REVIEW; chưa nhận thêm tính năng mới cho tới khi có kết quả bộ kiểm F1–F7.
+Không chạy build/DB/server/provider.
