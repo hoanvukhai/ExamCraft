@@ -1,5 +1,7 @@
 # EXAMCRAFT v3.1 — PHÂN TÍCH, QUYẾT ĐỊNH THIẾT KẾ VÀ KẾ HOẠCH TRIỂN KHAI
 
+> **Tài liệu lịch sử/đầu vào phân tích:** từ 21/10/2026, dùng [bộ tổng kết và kế hoạch hiện hành](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/00_BAT_DAU_TU_DAY.md). Nội dung và dấu hoàn thành dưới đây không tự đại diện cho yêu cầu hoặc tiến độ mới; giữ để đối chiếu nguồn gốc.
+
 > **Bản v3.1** bổ sung so với v3: nơi chạy (Vercel hay VPS), tải thực tế khi học sinh vào làm bài, bảng xếp hạng (top + vị trí của mình), ngân hàng câu hỏi chung có tác giả, nhập câu hỏi từ web ở mức cá nhân, và các quyết định đã chốt.
 
 > Tài liệu này thay thế hai file `ExamCraft_phan_tich_va_ke_hoach.md` và `KE_HOACH_PHAN_TICH_DU_AN_EXAMCRAFT.md`.

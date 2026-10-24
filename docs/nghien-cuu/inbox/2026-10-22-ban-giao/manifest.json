@@ -1,0 +1,70 @@
+{
+  "received": "2026-10-22",
+  "files": [
+    {
+      "source": "F:/Downloads/BAN_GIAO_TIM_TAI_LIEU.md",
+      "bytes": 40640,
+      "sha256": "8d79cbba2d477a1c1ffc1833d58c96a5139718a8ae8cb193db4a5cab1b7b4a41",
+      "stored": "BAN_GIAO_TIM_TAI_LIEU.md"
+    },
+    {
+      "source": "F:/Downloads/EXAMCRAFT_BAN_GIAO_2_TEP/BAN_GIAO_TIM_TAI_LIEU.md",
+      "bytes": 40640,
+      "sha256": "8d79cbba2d477a1c1ffc1833d58c96a5139718a8ae8cb193db4a5cab1b7b4a41",
+      "stored": "BAN_GIAO_TIM_TAI_LIEU.md"
+    },
+    {
+      "source": "F:/Downloads/DANH_MUC_DA_TIM.md",
+      "bytes": 26664,
+      "sha256": "01ae175358bf58b50c9685085722a4fe312e6fd81b7e7226a8228b7a78398df0",
+      "stored": "DANH_MUC_DA_TIM.md"
+    },
+    {
+      "source": "F:/Downloads/EXAMCRAFT_BAN_GIAO_2_TEP/DANH_MUC_DA_TIM.md",
+      "bytes": 26664,
+      "sha256": "01ae175358bf58b50c9685085722a4fe312e6fd81b7e7226a8228b7a78398df0",
+      "stored": "DANH_MUC_DA_TIM.md"
+    },
+    {
+      "source": "F:/Downloads/EXAMCRAFT_DANH_MUC_DEN_DOT_03.md",
+      "bytes": 41380,
+      "sha256": "40b601ff2d6efa62c1b678ecb5780e1d010a77187f5c7a86dcf1fcb9d7b2d5e6",
+      "stored": "EXAMCRAFT_DANH_MUC_DEN_DOT_03.md"
+    },
+    {
+      "source": "F:/Downloads/EXAMCRAFT_BAN_GIAO_SAU_DOT_03/EXAMCRAFT_DANH_MUC_DEN_DOT_03.md",
+      "bytes": 41380,
+      "sha256": "40b601ff2d6efa62c1b678ecb5780e1d010a77187f5c7a86dcf1fcb9d7b2d5e6",
+      "stored": "EXAMCRAFT_DANH_MUC_DEN_DOT_03.md"
+    },
+    {
+      "source": "F:/Downloads/EXAMCRAFT_BAN_GIAO_SAU_DOT_03.md",
+      "bytes": 2149,
+      "sha256": "b2a013b0059f6d1d2fe7a7e1d80c921b5894c6c8addba6540def47861bcd3a20",
+      "stored": "EXAMCRAFT_BAN_GIAO_SAU_DOT_03.md"
+    },
+    {
+      "source": "F:/Downloads/EXAMCRAFT_BAN_GIAO_SAU_DOT_03/EXAMCRAFT_BAN_GIAO_SAU_DOT_03.md",
+      "bytes": 2149,
+      "sha256": "b2a013b0059f6d1d2fe7a7e1d80c921b5894c6c8addba6540def47861bcd3a20",
+      "stored": "EXAMCRAFT_BAN_GIAO_SAU_DOT_03.md"
+    },
+    {
+      "source": "F:/Downloads/EXAMCRAFT_DOT_03.md",
+      "bytes": 14710,
+      "sha256": "dc5b208815e2a574856150168c5787cd55b62769a44eb0fada78f35c6b2c7a30",
+      "stored": "EXAMCRAFT_DOT_03.md"
+    },
+    {
+      "source": "F:/Downloads/EXAMCRAFT_BAN_GIAO_SAU_DOT_03/EXAMCRAFT_DOT_03.md",
+      "bytes": 14710,
+      "sha256": "dc5b208815e2a574856150168c5787cd55b62769a44eb0fada78f35c6b2c7a30",
+      "stored": "EXAMCRAFT_DOT_03.md"
+    }
+  ],
+  "shares": [
+    "https://chatgpt.com/share/6ad8f27a-20a0-83ec-b6b1-da7a2be549b5",
+    "https://chatgpt.com/share/6ad8f51b-0900-83ec-8da7-dcc353d07e32"
+  ],
+  "shareAccess": "Đã đọc nội dung hiển thị qua trình duyệt; không tải tệp từ chat."
+}

@@ -1,96 +1,49 @@
-# ExamCraft — Trợ Lý Soạn Đề AI Chuẩn GDPT 2018
+# ExamCraft — Không gian soạn và quản lý bài của giáo viên
 
-> **ExamCraft** là nền tảng trợ lý AI chuyên sâu hỗ trợ giáo viên Việt Nam biên tập, trộn đề, tổ chức thi trực tuyến và xuất bản đề kiểm tra chuẩn chương trình GDPT 2018 và cấu trúc định dạng đề thi theo **Quyết định 764/QĐ-BGDĐT**.
+ExamCraft hướng tới hỗ trợ giáo viên quản lý tài liệu, chọn kiến thức, soạn câu hỏi–đáp án, cùng biên soạn, xuất tài liệu và giao bài qua liên kết. Phạm vi gồm nhiều môn, lớp 1–12; Toán là tuyến kiểm thử sớm của chủ dự án.
 
----
+**Trạng thái: đang triển khai cải tiến trên local.** Đã bảo toàn working tree và phục hồi bản sao DB, sửa lưu/nháp/quyền và bổ sung kiểm thử. Tiến độ và giới hạn bằng chứng xem [báo cáo chung](docs/TIEN_DO_CAI_TIEN_EXAMCRAFT.md); chưa nghiệm thu toàn bộ S0–S9.
 
-## 🌟 Tính Năng Nổi Bật
+## Tài liệu hiện hành
 
-### 1. 🤖 Trợ Lý Biên Tập AI Copilot 2.0
-- **Ra lệnh bằng tiếng Việt tự nhiên**: Yêu cầu AI đổi số liệu, tăng/giảm độ khó, chuyển sang bài toán ứng dụng thực tế, tạo câu tương tự...
-- **Hộp thoại tương tác thông minh**: AI tự động hỏi lại để làm rõ ý giáo viên kèm các tùy chọn nhanh hoặc **ô tự gõ phương án riêng**.
-- **Bảo toàn 100% hình vẽ & bảng biểu**: Tự động đồng bộ và không bao giờ làm mất đồ thị hàm số, bảng biến thiên hay hình ảnh minh họa khi AI sửa đề.
+Bắt đầu từ [Hồ sơ tiếp nối — đọc trước](docs/ban-giao/00_DOC_TRUOC.md). AI/người mới đọc trang này và trạng thái02, rồi chỉ mở phần liên quan. [Mục lục kế hoạch](docs/ke-hoach-2026-10-21/00_BAT_DAU_TU_DAY.md) giữ định hướng và tiêu chí chi tiết.
 
-### 2. 📈 Đồ Thị Hàm Số & Bảng Biến Thiên Động
-- **Đồ thị HTML5 Canvas sắc nét**: Tự động tính toán và vẽ lại đường cong khi thay đổi công thức toán học ($y = ax+b$, bậc 2, bậc 3, phân thức hữu tỉ...).
-- **Đầy đủ vạch chia tọa độ**: Tự động đánh dấu vạch chia số trên trục Ox, Oy và **tự động vẽ đường tiệm cận đứng, tiệm cận ngang nét đứt** ($x = x_0, y = y_0$).
-- **Bảng biến thiên chuẩn mực**: Định dạng bảng biến thiên 3 dòng ($x, y', y$) theo đúng quy chuẩn sách giáo khoa Việt Nam.
+- [Tổng kết sản phẩm và phạm vi](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/01_TONG_KET_DU_AN.md)
+- [Lộ trình thực hiện](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/02_LO_TRINH.md)
+- [Checklist có tiêu chí hoàn thành](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/03_CHECKLIST.md)
+- [Kiểm thử và nghiệm thu](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/04_NGHIEM_THU.md)
+- [Chuẩn bị, rủi ro và nguồn](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/05_CHUAN_BI_VA_NGUON.md)
+- [Khung dữ liệu](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/06_KHUNG_DU_LIEU.md)
+- [Nghiên cứu tài liệu và bộ prompt](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/07_NGHIEN_CUU_VA_PROMPT.md)
 
-### 3. 🔀 Trộn Đề & Hoán Vị Mã Đề
-- Trộn đề gốc thành **4 mã đề** (101, 102, 103, 104) với thuật toán hoán vị công bằng.
-- Tự động xuất **Ma trận đáp án đối soát** dạng bảng giúp giáo viên chấm bài nhanh chóng.
+Các báo cáo V1/V2/V3, thiết kế v3.1 và checklist cũ là lịch sử/đầu vào đối chiếu; dấu hoàn thành cũ không dùng làm tiến độ đợt mới. Báo cáo trong `qa/rebuild-2026-10-22/` là bằng chứng triển khai hiện hành, có giới hạn và mốc chạy riêng; tra qua hồ sơ tiếp nối.
 
-### 4. 📝 Phòng Thi Trực Tuyến Học Sinh Chuẩn v3.1 (`/room/[code]`)
-- Giáo viên tạo phòng thi trực tuyến có bảo mật mã phòng, nạp danh sách học sinh theo lớp, snapshot đề thi bất biến và chống rò rỉ đáp án.
-- Học sinh tham gia phòng thi với **đồng hồ đếm ngược đồng bộ**, tự động thu bài khi hết giờ và giao diện chuẩn cấu trúc Bộ GD&ĐT (Quyết định 764/QĐ-BGDĐT):
-  - **Phần I**: Trắc nghiệm 4 lựa chọn (0,25đ / câu).
-  - **Phần II**: Trắc nghiệm Đúng / Sai 4 ý ($a, b, c, d$) chấm theo barem lũy tiến (1 ý: 0,1đ; 2 ý: 0,25đ; 3 ý: 0,5đ; 4 ý: 1,0đ).
-  - **Phần III**: Câu trắc nghiệm trả lời ngắn / điền số (0,5đ / câu).
-  - **Phần IV**: Tự luận / ngoại ngữ (phân hệ tự mở rộng cho kiểm tra định kỳ).
-- **Chấm điểm tự động tức thì**: Chấm điểm tự động trên server, hỗ trợ chấm tay câu tự luận và ẩn/hiện lời giải linh hoạt theo chính sách phòng thi.
+## Nguyên tắc sản phẩm
 
-### 5. 📊 Bảng Điểm Lớp Học & Xuất File Excel
-- Giáo viên theo dõi danh sách học sinh đã nộp bài trong thời gian thực.
-- Thống kê điểm trung bình, phổ điểm, điểm cao nhất.
-- Hỗ trợ **xuất file Excel (.csv)** tiếng Việt chuẩn UTF-8 BOM mở trực tiếp trên Excel không bị lỗi font.
+Giáo viên là người dùng chính; học sinh làm bài qua link giáo viên mở. Giáo viên có key AI riêng và quyền tùy chỉnh mẫu. Một bộ kết nối phục vụ gói API miễn phí/trả phí, không hứa hạn mức cố định theo số key.
 
-### 6. 🔗 Chia Sẻ Đề Thi "Chỉ Xem & Tải Về" (`/share/[id]`)
-- Chia sẻ link cho đồng nghiệp hoặc học sinh chỉ để xem định dạng A4, in ấn hoặc tải file Word `.docx`.
-- Hỗ trợ nút **"Tạo bản sao để sửa"** cho phép giáo viên khác nhân bản về kho đề của họ mà không làm thay đổi đề gốc của tác giả.
+Dữ liệu server là nguồn chính; nháp cục bộ, lịch sử và backup hỗ trợ phục hồi. Chia sẻ xem tách quyền góp ý/cùng sửa. Nội dung AI và mẫu cần nguồn, phiên bản và mức kiểm chứng rõ ràng. Các mức Biết–Hiểu–Vận dụng đi theo khung áp dụng, không ép mọi bài dùng một cấu hình.
 
-### 7. 📥 Import Thông Minh Đa Nguồn
-- Nhập đề từ file Word (`.docx`), hình ảnh chụp đề thi (OCR AI), hoặc dán văn bản thô / mã LaTeX.
+## Nền tảng hiện có
 
-### 8. 🛡️ Cơ Chế Xoay Tua 7 Google Gemini API Keys
-- Hệ thống tự động xoay tua qua tối đa 7 API Keys kèm thuật toán Exponential Backoff và bắt lỗi Spike in demand (503) / Rate limit (429), đảm bảo quá trình soạn đề không bị gián đoạn.
+Next.js/React/TypeScript, PostgreSQL qua Prisma, Gemini qua @google/genai, Dexie cho phần local, KaTeX và thư viện docx. Phiên bản chính xác tra package.json và lockfile; không dùng mô tả công nghệ cũ làm bằng chứng tính năng.
 
----
+## Chuẩn bị chạy local
 
-## 🛠️ Công Nghệ Sử Dụng
+Chủ dự án đã chọn local trước; baseline/DB thử và migration đã có bằng chứng trong báo cáo tiến độ. Tra [bản đồ mã và lệnh kiểm](docs/ban-giao/01_BAN_DO_MA_NGUON.md) và trạng thái02 trước chạy; không lặp lại S0 hay migration chỉ vì đọc hướng dẫn cũ. Không chạy seed hoặc thay schema trên dữ liệu thật chỉ để thử khởi động.
 
-- **Frontend**: [Next.js](https://nextjs.org/) (App Router), [React](https://react.dev/), [Tailwind CSS](https://tailwindcss.com/)
-- **Backend & Database**: [PostgreSQL 16](https://www.postgresql.org/) qua [Prisma ORM](https://www.prisma.io/), Docker Compose
-- **Trí tuệ nhân tạo**: Google Gemini AI (`@google/genai`) với cơ chế xoay tua thông minh 7 API Keys
-- **Công thức Toán**: KaTeX / MathJax ([rehype-katex](https://github.com/remarkjs/remark-math), [remark-math](https://github.com/remarkjs/remark-math))
-- **Đồ thị Canvas**: HTML5 Canvas 2D Engine chuyên sâu cho Toán/Lý/Hóa
-- **Xuất bản**: [docx](https://github.com/dolanmiu/docx) (Tạo file Word .docx tiêu chuẩn có MathML/OMML native)
-- **Báo cáo toàn diện dự án**: Xem chi tiết tại [`docs/BAO_CAO_TOAN_DIEN_V3.md`](./docs/BAO_CAO_TOAN_DIEN_V3.md) (Toàn bộ tính năng, công nghệ, kiến trúc, CSDL & hướng dẫn triển khai).
-- **Tài liệu kiến trúc chi tiết**: Xem tại [`docs/EXAMCRAFT_THIET_KE_V3.md`](./docs/EXAMCRAFT_THIET_KE_V3.md) và theo dõi tiến độ thi công tại [`docs/CHECKLIST_TIEN_DO.md`](./docs/CHECKLIST_TIEN_DO.md).
+Các script hiện được khai báo trong package.json:
+- npm run dev: khởi động môi trường phát triển.
+- npm run build / npm run start: build và chạy bản build.
+- npm test / npm run test:all: kiểm thử hàm cô lập, không tự ghi DB hoặc gọi AI.
+- npm run test:integration: DB thử riêng, có kiểm tra đích trước khi ghi.
+- npm run test:http: cần máy chủ thử trên127.0.0.1:3117, tự kiểm dấu hiệu DB thử trước khi tạo tài khoản giả.
+- npm run lint: kiểm toàn repo; chưa có bằng chứng sạch toàn bộ. Lint định hướng chỉ xác nhận những tệp được kiểm.
 
----
+Đọc AGENTS.md và hướng dẫn Next.js cục bộ liên quan trước viết code. Giữ bí mật ngoài Git. API key cá nhân nhập qua giao diện được bảo vệ khi tới bước thử AI, không điền vào tài liệu.
 
-## 🚀 Hướng Dẫn Cài Đặt & Chạy Local
+Ghi chú lịch sử: lượt lập kế hoạch21/10/2026 chỉ cập nhật tài liệu. Trạng thái triển khai sau đó xem hồ sơ tiếp nối, không dùng câu “chưa chạy” tại mốc cũ để kết luận trạng thái hiện tại.
 
-### 1. Clone dự án về máy
-```bash
-git clone https://github.com/hoanvukhai/ExamCraft.git
-cd ExamCraft
-```
+## Giấy phép
 
-### 2. Cài đặt các gói phụ thuộc
-```bash
-npm install
-```
-
-### 3. Cấu hình biến môi trường & CSDL
-Tạo file `.env` từ file mẫu và khởi động cơ sở dữ liệu PostgreSQL:
-```bash
-cp .env.example .env
-docker compose up -d
-npx prisma db push
-npx prisma db seed
-```
-*Lưu ý: Hệ thống sử dụng mô hình BYOK (Bring Your Own Key). Giáo viên đăng nhập tài khoản và thêm Google Gemini API Key cá nhân trực tiếp trong giao diện "Kho Khóa AI". Khóa được mã hóa AES-256-GCM an toàn.*
-
-### 4. Khởi động môi trường phát triển
-```bash
-npm run dev
-```
-Mở trình duyệt và truy cập: [http://localhost:3000](http://localhost:3000)
-
----
-
-## 📄 Bản Quyền & Giấy Phép
-
-Phát triển với mục đích phục vụ cộng đồng giáo viên và nền giáo dục Việt Nam.
-Giấy phép: MIT License.
+Xem [LICENSE](F:/Workspace/Zazz/ExamCraft/LICENSE) trong repo. Quyền dùng tài liệu/đề nhập từ nguồn ngoài cần lưu riêng, không suy từ giấy phép mã nguồn.

@@ -1,0 +1,2622 @@
+{
+  "date": "2026-10-22",
+  "status": "Bảng kiểm nghiên cứu, không phải dữ liệu chương trình đã duyệt",
+  "rows": [
+    {
+      "grade": 1,
+      "subject": "Tiếng Việt",
+      "program": "TK-0003",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0001",
+        "NXB-0074"
+      ],
+      "sgk": 2,
+      "sgv": 2,
+      "exercise": 4,
+      "training": 4,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 1,
+      "subject": "Toán",
+      "program": "TK-0004",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0013",
+        "NXB-0113"
+      ],
+      "sgk": 2,
+      "sgv": 2,
+      "exercise": 2,
+      "training": 4,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 1,
+      "subject": "Đạo đức",
+      "program": "TK-0005",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0078"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 1,
+      "subject": "Âm nhạc",
+      "program": "TK-0010",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0120"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 1,
+      "subject": "Mĩ thuật",
+      "program": "TK-0011",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0088"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 1,
+      "subject": "Giáo dục thể chất",
+      "program": "TK-0012",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0112"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 0,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 1,
+      "subject": "Hoạt động trải nghiệm",
+      "program": "TK-0013",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0080"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 1,
+      "subject": "Tự nhiên và Xã hội",
+      "program": "TK-0021",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0053"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 1,
+      "subject": "Tiếng Anh",
+      "program": "TK-0028",
+      "mode": "Chương trình tự chọn hiện có; dự thảo 2026 chưa dùng làm quy định",
+      "bookPages": [
+        "NXB-0047"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 0,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 1,
+      "subject": "Giáo dục địa phương",
+      "program": "TK-0049–0054",
+      "mode": "Tích hợp ở tiểu học; cần địa bàn/năm",
+      "bookPages": [],
+      "sgk": 0,
+      "sgv": 0,
+      "exercise": 0,
+      "training": 0,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 2,
+      "subject": "Tiếng Việt",
+      "program": "TK-0003",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0002",
+        "NXB-0077"
+      ],
+      "sgk": 2,
+      "sgv": 2,
+      "exercise": 4,
+      "training": 4,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 2,
+      "subject": "Toán",
+      "program": "TK-0004",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0010",
+        "NXB-0103"
+      ],
+      "sgk": 2,
+      "sgv": 2,
+      "exercise": 2,
+      "training": 4,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 2,
+      "subject": "Đạo đức",
+      "program": "TK-0005",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0110"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 2,
+      "subject": "Âm nhạc",
+      "program": "TK-0010",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0151"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 2,
+      "subject": "Mĩ thuật",
+      "program": "TK-0011",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0122"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 2,
+      "subject": "Giáo dục thể chất",
+      "program": "TK-0012",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0158"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 0,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 2,
+      "subject": "Hoạt động trải nghiệm",
+      "program": "TK-0013",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0086"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 2,
+      "subject": "Tự nhiên và Xã hội",
+      "program": "TK-0021",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0054"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 2,
+      "subject": "Tiếng Anh",
+      "program": "TK-0028",
+      "mode": "Chương trình tự chọn hiện có; dự thảo 2026 chưa dùng làm quy định",
+      "bookPages": [
+        "NXB-0105"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 0,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 2,
+      "subject": "Giáo dục địa phương",
+      "program": "TK-0049–0054",
+      "mode": "Tích hợp ở tiểu học; cần địa bàn/năm",
+      "bookPages": [],
+      "sgk": 0,
+      "sgv": 0,
+      "exercise": 0,
+      "training": 0,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 3,
+      "subject": "Tiếng Việt",
+      "program": "TK-0003",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0006",
+        "NXB-0085"
+      ],
+      "sgk": 2,
+      "sgv": 2,
+      "exercise": 4,
+      "training": 4,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 3,
+      "subject": "Toán",
+      "program": "TK-0004",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0008",
+        "NXB-0099"
+      ],
+      "sgk": 2,
+      "sgv": 2,
+      "exercise": 2,
+      "training": 4,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 3,
+      "subject": "Đạo đức",
+      "program": "TK-0005",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0079"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 3,
+      "subject": "Âm nhạc",
+      "program": "TK-0010",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0133"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 3,
+      "subject": "Mĩ thuật",
+      "program": "TK-0011",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0129"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 3,
+      "subject": "Giáo dục thể chất",
+      "program": "TK-0012",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0154"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 0,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 3,
+      "subject": "Hoạt động trải nghiệm",
+      "program": "TK-0013",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0055"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 3,
+      "subject": "Tự nhiên và Xã hội",
+      "program": "TK-0021",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0038"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 3,
+      "subject": "Công nghệ",
+      "program": "TK-0008",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0049"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 3,
+      "subject": "Tin học",
+      "program": "TK-0009",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0048"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 3,
+      "subject": "Tiếng Anh",
+      "program": "TK-0014",
+      "mode": "NN1 nếu trường tổ chức ngôn ngữ này",
+      "bookPages": [
+        "NXB-0046",
+        "NXB-0195"
+      ],
+      "sgk": 2,
+      "sgv": 2,
+      "exercise": 0,
+      "training": 4,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 3,
+      "subject": "Giáo dục địa phương",
+      "program": "TK-0049–0054",
+      "mode": "Tích hợp ở tiểu học; cần địa bàn/năm",
+      "bookPages": [],
+      "sgk": 0,
+      "sgv": 0,
+      "exercise": 0,
+      "training": 0,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 4,
+      "subject": "Tiếng Việt",
+      "program": "TK-0003",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0003",
+        "NXB-0065"
+      ],
+      "sgk": 2,
+      "sgv": 2,
+      "exercise": 2,
+      "training": 3,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 4,
+      "subject": "Toán",
+      "program": "TK-0004",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0005",
+        "NXB-0051"
+      ],
+      "sgk": 2,
+      "sgv": 2,
+      "exercise": 2,
+      "training": 4,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 4,
+      "subject": "Đạo đức",
+      "program": "TK-0005",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0087"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 4,
+      "subject": "Âm nhạc",
+      "program": "TK-0010",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0137"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 4,
+      "subject": "Mĩ thuật",
+      "program": "TK-0011",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0114"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 4,
+      "subject": "Giáo dục thể chất",
+      "program": "TK-0012",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0163"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 0,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 4,
+      "subject": "Hoạt động trải nghiệm",
+      "program": "TK-0013",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0073"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 4,
+      "subject": "Khoa học",
+      "program": "TK-0022",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0032"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 4,
+      "subject": "Lịch sử và Địa lí",
+      "program": "TK-0023 + TK-0020",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0017"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 4,
+      "subject": "Công nghệ",
+      "program": "TK-0008",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0064"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 4,
+      "subject": "Tin học",
+      "program": "TK-0009",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0061"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 4,
+      "subject": "Tiếng Anh",
+      "program": "TK-0014",
+      "mode": "NN1 nếu trường tổ chức ngôn ngữ này",
+      "bookPages": [
+        "NXB-0096",
+        "NXB-0204"
+      ],
+      "sgk": 2,
+      "sgv": 2,
+      "exercise": 0,
+      "training": 4,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 4,
+      "subject": "Giáo dục địa phương",
+      "program": "TK-0049–0054",
+      "mode": "Tích hợp ở tiểu học; cần địa bàn/năm",
+      "bookPages": [],
+      "sgk": 0,
+      "sgv": 0,
+      "exercise": 0,
+      "training": 0,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 5,
+      "subject": "Tiếng Việt",
+      "program": "TK-0003",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0004",
+        "NXB-0056"
+      ],
+      "sgk": 2,
+      "sgv": 2,
+      "exercise": 2,
+      "training": 4,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 5,
+      "subject": "Toán",
+      "program": "TK-0004",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0007",
+        "NXB-0067"
+      ],
+      "sgk": 2,
+      "sgv": 2,
+      "exercise": 2,
+      "training": 4,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 5,
+      "subject": "Đạo đức",
+      "program": "TK-0005",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0094"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 5,
+      "subject": "Âm nhạc",
+      "program": "TK-0010",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0136"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 0,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 5,
+      "subject": "Mĩ thuật",
+      "program": "TK-0011",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0091"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 5,
+      "subject": "Giáo dục thể chất",
+      "program": "TK-0012",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0156"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 0,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 5,
+      "subject": "Hoạt động trải nghiệm",
+      "program": "TK-0013",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0066"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 0,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 5,
+      "subject": "Khoa học",
+      "program": "TK-0022",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0040"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 5,
+      "subject": "Lịch sử và Địa lí",
+      "program": "TK-0023 + TK-0020",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0020"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 5,
+      "subject": "Công nghệ",
+      "program": "TK-0008",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0068"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 5,
+      "subject": "Tin học",
+      "program": "TK-0009",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0081"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 5,
+      "subject": "Tiếng Anh",
+      "program": "TK-0014",
+      "mode": "NN1 nếu trường tổ chức ngôn ngữ này",
+      "bookPages": [
+        "NXB-0102",
+        "NXB-0207"
+      ],
+      "sgk": 2,
+      "sgv": 2,
+      "exercise": 0,
+      "training": 4,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 5,
+      "subject": "Giáo dục địa phương",
+      "program": "TK-0049–0054",
+      "mode": "Tích hợp ở tiểu học; cần địa bàn/năm",
+      "bookPages": [],
+      "sgk": 0,
+      "sgv": 0,
+      "exercise": 0,
+      "training": 0,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 6,
+      "subject": "Ngữ văn",
+      "program": "TK-0003",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0015",
+        "NXB-0143"
+      ],
+      "sgk": 2,
+      "sgv": 2,
+      "exercise": 2,
+      "training": 4,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 6,
+      "subject": "Toán",
+      "program": "TK-0004",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0014",
+        "NXB-0144"
+      ],
+      "sgk": 2,
+      "sgv": 2,
+      "exercise": 2,
+      "training": 10,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 6,
+      "subject": "Giáo dục công dân",
+      "program": "TK-0005",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0106"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 6,
+      "subject": "Khoa học tự nhiên",
+      "program": "TK-0007",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0024"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 5,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 6,
+      "subject": "Lịch sử và Địa lí",
+      "program": "TK-0006 + TK-0020",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0026"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 2,
+      "training": 3,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 6,
+      "subject": "Công nghệ",
+      "program": "TK-0008",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0119"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 6,
+      "subject": "Tin học",
+      "program": "TK-0009",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0082"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 6,
+      "subject": "Âm nhạc",
+      "program": "TK-0010",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0138"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 6,
+      "subject": "Mĩ thuật",
+      "program": "TK-0011",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0121"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 6,
+      "subject": "Giáo dục thể chất",
+      "program": "TK-0012",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0152"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 0,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 6,
+      "subject": "Hoạt động trải nghiệm, hướng nghiệp",
+      "program": "TK-0013",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0045"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 6,
+      "subject": "Tiếng Anh",
+      "program": "TK-0014",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0036",
+        "NXB-0193"
+      ],
+      "sgk": 2,
+      "sgv": 2,
+      "exercise": 0,
+      "training": 4,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 6,
+      "subject": "Giáo dục địa phương",
+      "program": "TK-0049–0054",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [],
+      "sgk": 0,
+      "sgv": 0,
+      "exercise": 0,
+      "training": 0,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 7,
+      "subject": "Ngữ văn",
+      "program": "TK-0003",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0030",
+        "NXB-0160"
+      ],
+      "sgk": 2,
+      "sgv": 2,
+      "exercise": 2,
+      "training": 4,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 7,
+      "subject": "Toán",
+      "program": "TK-0004",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0025",
+        "NXB-0153"
+      ],
+      "sgk": 2,
+      "sgv": 2,
+      "exercise": 2,
+      "training": 12,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 7,
+      "subject": "Giáo dục công dân",
+      "program": "TK-0005",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0134"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 7,
+      "subject": "Khoa học tự nhiên",
+      "program": "TK-0007",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0035"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 5,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 7,
+      "subject": "Lịch sử và Địa lí",
+      "program": "TK-0006 + TK-0020",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0039"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 2,
+      "training": 3,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 7,
+      "subject": "Công nghệ",
+      "program": "TK-0008",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0140"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 7,
+      "subject": "Tin học",
+      "program": "TK-0009",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0098"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 7,
+      "subject": "Âm nhạc",
+      "program": "TK-0010",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0169"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 7,
+      "subject": "Mĩ thuật",
+      "program": "TK-0011",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0090"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 0,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 7,
+      "subject": "Giáo dục thể chất",
+      "program": "TK-0012",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0188"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 0,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 7,
+      "subject": "Hoạt động trải nghiệm, hướng nghiệp",
+      "program": "TK-0013",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0093"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 7,
+      "subject": "Tiếng Anh",
+      "program": "TK-0014",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0072"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 0,
+      "training": 1,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 7,
+      "subject": "Giáo dục địa phương",
+      "program": "TK-0049–0054",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [],
+      "sgk": 0,
+      "sgv": 0,
+      "exercise": 0,
+      "training": 0,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 8,
+      "subject": "Ngữ văn",
+      "program": "TK-0003",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0029",
+        "NXB-0161"
+      ],
+      "sgk": 2,
+      "sgv": 2,
+      "exercise": 2,
+      "training": 3,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 8,
+      "subject": "Toán",
+      "program": "TK-0004",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0021",
+        "NXB-0146"
+      ],
+      "sgk": 2,
+      "sgv": 2,
+      "exercise": 2,
+      "training": 8,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 8,
+      "subject": "Giáo dục công dân",
+      "program": "TK-0005",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0128"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 0,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 8,
+      "subject": "Khoa học tự nhiên",
+      "program": "TK-0007",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0037"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 1,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 8,
+      "subject": "Lịch sử và Địa lí",
+      "program": "TK-0006 + TK-0020",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0019"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 2,
+      "training": 1,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 8,
+      "subject": "Công nghệ",
+      "program": "TK-0008",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0116"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 1,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 8,
+      "subject": "Tin học",
+      "program": "TK-0009",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0075"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 1,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 8,
+      "subject": "Âm nhạc",
+      "program": "TK-0010",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0175"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 0,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 8,
+      "subject": "Mĩ thuật",
+      "program": "TK-0011",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0150"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 1,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 8,
+      "subject": "Giáo dục thể chất",
+      "program": "TK-0012",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0191"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 0,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 8,
+      "subject": "Hoạt động trải nghiệm, hướng nghiệp",
+      "program": "TK-0013",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0092"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 1,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 8,
+      "subject": "Tiếng Anh",
+      "program": "TK-0014",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0069"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 8,
+      "subject": "Giáo dục địa phương",
+      "program": "TK-0049–0054",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [],
+      "sgk": 0,
+      "sgv": 0,
+      "exercise": 0,
+      "training": 0,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 9,
+      "subject": "Ngữ văn",
+      "program": "TK-0003",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0018",
+        "NXB-0147"
+      ],
+      "sgk": 2,
+      "sgv": 2,
+      "exercise": 2,
+      "training": 4,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 9,
+      "subject": "Toán",
+      "program": "TK-0004",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0012",
+        "NXB-0145"
+      ],
+      "sgk": 2,
+      "sgv": 2,
+      "exercise": 2,
+      "training": 8,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 9,
+      "subject": "Giáo dục công dân",
+      "program": "TK-0005",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0084"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 9,
+      "subject": "Khoa học tự nhiên",
+      "program": "TK-0007",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0023"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 5,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 9,
+      "subject": "Lịch sử và Địa lí",
+      "program": "TK-0006 + TK-0020",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0009"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 0,
+      "training": 3,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 9,
+      "subject": "Công nghệ",
+      "program": "TK-0008",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0027",
+        "NXB-0124",
+        "NXB-0173",
+        "NXB-0184"
+      ],
+      "sgk": 4,
+      "sgv": 4,
+      "exercise": 0,
+      "training": 12,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 9,
+      "subject": "Tin học",
+      "program": "TK-0009",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0089"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 0,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 9,
+      "subject": "Âm nhạc",
+      "program": "TK-0010",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0139"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 9,
+      "subject": "Mĩ thuật",
+      "program": "TK-0011",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0070"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 9,
+      "subject": "Giáo dục thể chất",
+      "program": "TK-0012",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0178"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 0,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 9,
+      "subject": "Hoạt động trải nghiệm, hướng nghiệp",
+      "program": "TK-0013",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0083"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 9,
+      "subject": "Tiếng Anh",
+      "program": "TK-0014",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0042"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 9,
+      "subject": "Giáo dục địa phương",
+      "program": "TK-0049–0054",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [],
+      "sgk": 0,
+      "sgv": 0,
+      "exercise": 0,
+      "training": 0,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "Ngữ văn",
+      "program": "TK-0003",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0011",
+        "NXB-0155"
+      ],
+      "sgk": 2,
+      "sgv": 2,
+      "exercise": 2,
+      "training": 4,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "Toán",
+      "program": "TK-0004",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0022",
+        "NXB-0165"
+      ],
+      "sgk": 2,
+      "sgv": 2,
+      "exercise": 2,
+      "training": 4,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "Lịch sử",
+      "program": "TK-0024 + TK-0019 + TK-0020",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0031"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "Địa lí",
+      "program": "TK-0025 + TK-0020",
+      "mode": "Môn lựa chọn; chuyên đề/nhánh sách kiểm riêng",
+      "bookPages": [
+        "NXB-0063"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "Giáo dục kinh tế và pháp luật",
+      "program": "TK-0005 + TK-0020",
+      "mode": "Môn lựa chọn; chuyên đề/nhánh sách kiểm riêng",
+      "bookPages": [
+        "NXB-0059"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "Vật lí",
+      "program": "TK-0015",
+      "mode": "Môn lựa chọn; chuyên đề/nhánh sách kiểm riêng",
+      "bookPages": [
+        "NXB-0044"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "Hóa học",
+      "program": "TK-0026",
+      "mode": "Môn lựa chọn; chuyên đề/nhánh sách kiểm riêng",
+      "bookPages": [
+        "NXB-0062"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "Sinh học",
+      "program": "TK-0027",
+      "mode": "Môn lựa chọn; chuyên đề/nhánh sách kiểm riêng",
+      "bookPages": [
+        "NXB-0101"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "Công nghệ",
+      "program": "TK-0008",
+      "mode": "Môn lựa chọn; chuyên đề/nhánh sách kiểm riêng",
+      "bookPages": [
+        "NXB-0131",
+        "NXB-0162"
+      ],
+      "sgk": 2,
+      "sgv": 2,
+      "exercise": 0,
+      "training": 4,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "Tin học",
+      "program": "TK-0009",
+      "mode": "Môn lựa chọn; chuyên đề/nhánh sách kiểm riêng",
+      "bookPages": [
+        "NXB-0058"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 0,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "Âm nhạc",
+      "program": "TK-0010",
+      "mode": "Môn lựa chọn; chuyên đề/nhánh sách kiểm riêng",
+      "bookPages": [
+        "NXB-0215"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 0,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "Mĩ thuật",
+      "program": "TK-0011",
+      "mode": "Môn lựa chọn; chuyên đề/nhánh sách kiểm riêng",
+      "bookPages": [
+        "NXB-0256",
+        "NXB-0257",
+        "NXB-0260",
+        "NXB-0263",
+        "NXB-0278",
+        "NXB-0286",
+        "NXB-0293",
+        "NXB-0296"
+      ],
+      "sgk": 8,
+      "sgv": 8,
+      "exercise": 0,
+      "training": 16,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "Giáo dục thể chất",
+      "program": "TK-0012",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0201",
+        "NXB-0209",
+        "NXB-0239",
+        "NXB-0246"
+      ],
+      "sgk": 4,
+      "sgv": 4,
+      "exercise": 0,
+      "training": 8,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "Giáo dục quốc phòng và an ninh",
+      "program": "TK-0035",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0071"
+      ],
+      "sgk": 1,
+      "sgv": 0,
+      "exercise": 0,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "Hoạt động trải nghiệm, hướng nghiệp",
+      "program": "TK-0013",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0052"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "Tiếng Anh",
+      "program": "TK-0014",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0033"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 0,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "Giáo dục địa phương",
+      "program": "TK-0049–0054",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [],
+      "sgk": 0,
+      "sgv": 0,
+      "exercise": 0,
+      "training": 0,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "Ngữ văn",
+      "program": "TK-0003",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0028",
+        "NXB-0164"
+      ],
+      "sgk": 2,
+      "sgv": 2,
+      "exercise": 0,
+      "training": 4,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "Toán",
+      "program": "TK-0004",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0050",
+        "NXB-0179"
+      ],
+      "sgk": 2,
+      "sgv": 2,
+      "exercise": 2,
+      "training": 4,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "Lịch sử",
+      "program": "TK-0024 + TK-0019 + TK-0020",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0060"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 1,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "Địa lí",
+      "program": "TK-0025 + TK-0020",
+      "mode": "Môn lựa chọn; chuyên đề/nhánh sách kiểm riêng",
+      "bookPages": [
+        "NXB-0109"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 1,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "Giáo dục kinh tế và pháp luật",
+      "program": "TK-0005 + TK-0020",
+      "mode": "Môn lựa chọn; chuyên đề/nhánh sách kiểm riêng",
+      "bookPages": [
+        "NXB-0100"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 0,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "Vật lí",
+      "program": "TK-0015",
+      "mode": "Môn lựa chọn; chuyên đề/nhánh sách kiểm riêng",
+      "bookPages": [
+        "NXB-0127"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 1,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "Hóa học",
+      "program": "TK-0026",
+      "mode": "Môn lựa chọn; chuyên đề/nhánh sách kiểm riêng",
+      "bookPages": [
+        "NXB-0130"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 3,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "Sinh học",
+      "program": "TK-0027",
+      "mode": "Môn lựa chọn; chuyên đề/nhánh sách kiểm riêng",
+      "bookPages": [
+        "NXB-0132"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 1,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "Công nghệ",
+      "program": "TK-0008",
+      "mode": "Môn lựa chọn; chuyên đề/nhánh sách kiểm riêng",
+      "bookPages": [
+        "NXB-0174",
+        "NXB-0200"
+      ],
+      "sgk": 2,
+      "sgv": 2,
+      "exercise": 0,
+      "training": 4,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "Tin học",
+      "program": "TK-0009",
+      "mode": "Môn lựa chọn; chuyên đề/nhánh sách kiểm riêng",
+      "bookPages": [
+        "NXB-0141"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "Âm nhạc",
+      "program": "TK-0010",
+      "mode": "Môn lựa chọn; chuyên đề/nhánh sách kiểm riêng",
+      "bookPages": [
+        "NXB-0252"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 0,
+      "training": 0,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "Mĩ thuật",
+      "program": "TK-0011",
+      "mode": "Môn lựa chọn; chuyên đề/nhánh sách kiểm riêng",
+      "bookPages": [
+        "NXB-0281",
+        "NXB-0284",
+        "NXB-0287",
+        "NXB-0288",
+        "NXB-0289",
+        "NXB-0291",
+        "NXB-0294",
+        "NXB-0295",
+        "NXB-0297",
+        "NXB-0300"
+      ],
+      "sgk": 10,
+      "sgv": 10,
+      "exercise": 0,
+      "training": 20,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "Giáo dục thể chất",
+      "program": "TK-0012",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0240",
+        "NXB-0254",
+        "NXB-0274",
+        "NXB-0283"
+      ],
+      "sgk": 4,
+      "sgv": 4,
+      "exercise": 0,
+      "training": 4,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "Giáo dục quốc phòng và an ninh",
+      "program": "TK-0035",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0104"
+      ],
+      "sgk": 1,
+      "sgv": 0,
+      "exercise": 0,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "Hoạt động trải nghiệm, hướng nghiệp",
+      "program": "TK-0013",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0126"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 1,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "Tiếng Anh",
+      "program": "TK-0014",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0107"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 0,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "Giáo dục địa phương",
+      "program": "TK-0049–0054",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [],
+      "sgk": 0,
+      "sgv": 0,
+      "exercise": 0,
+      "training": 0,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "Ngữ văn",
+      "program": "TK-0003",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0016",
+        "NXB-0149"
+      ],
+      "sgk": 2,
+      "sgv": 2,
+      "exercise": 2,
+      "training": 4,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "Toán",
+      "program": "TK-0004",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0043",
+        "NXB-0159"
+      ],
+      "sgk": 2,
+      "sgv": 2,
+      "exercise": 2,
+      "training": 4,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "Lịch sử",
+      "program": "TK-0024 + TK-0019 + TK-0020",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0034"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 1,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "Địa lí",
+      "program": "TK-0025 + TK-0020",
+      "mode": "Môn lựa chọn; chuyên đề/nhánh sách kiểm riêng",
+      "bookPages": [
+        "NXB-0041"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "Giáo dục kinh tế và pháp luật",
+      "program": "TK-0005 + TK-0020",
+      "mode": "Môn lựa chọn; chuyên đề/nhánh sách kiểm riêng",
+      "bookPages": [
+        "NXB-0111"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "Vật lí",
+      "program": "TK-0015",
+      "mode": "Môn lựa chọn; chuyên đề/nhánh sách kiểm riêng",
+      "bookPages": [
+        "NXB-0076"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "Hóa học",
+      "program": "TK-0026",
+      "mode": "Môn lựa chọn; chuyên đề/nhánh sách kiểm riêng",
+      "bookPages": [
+        "NXB-0115"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 6,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "Sinh học",
+      "program": "TK-0027",
+      "mode": "Môn lựa chọn; chuyên đề/nhánh sách kiểm riêng",
+      "bookPages": [
+        "NXB-0135"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "Công nghệ",
+      "program": "TK-0008",
+      "mode": "Môn lựa chọn; chuyên đề/nhánh sách kiểm riêng",
+      "bookPages": [
+        "NXB-0157",
+        "NXB-0189"
+      ],
+      "sgk": 2,
+      "sgv": 2,
+      "exercise": 0,
+      "training": 5,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "Tin học",
+      "program": "TK-0009",
+      "mode": "Môn lựa chọn; chuyên đề/nhánh sách kiểm riêng",
+      "bookPages": [
+        "NXB-0123"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 1,
+      "training": 3,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "Âm nhạc",
+      "program": "TK-0010",
+      "mode": "Môn lựa chọn; chuyên đề/nhánh sách kiểm riêng",
+      "bookPages": [
+        "NXB-0226"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 0,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "Mĩ thuật",
+      "program": "TK-0011",
+      "mode": "Môn lựa chọn; chuyên đề/nhánh sách kiểm riêng",
+      "bookPages": [
+        "NXB-0275",
+        "NXB-0282",
+        "NXB-0285",
+        "NXB-0298",
+        "NXB-0299",
+        "NXB-0301"
+      ],
+      "sgk": 6,
+      "sgv": 6,
+      "exercise": 0,
+      "training": 12,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "Giáo dục thể chất",
+      "program": "TK-0012",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0229",
+        "NXB-0245",
+        "NXB-0255",
+        "NXB-0290"
+      ],
+      "sgk": 4,
+      "sgv": 4,
+      "exercise": 0,
+      "training": 9,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "Giáo dục quốc phòng và an ninh",
+      "program": "TK-0035",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0118"
+      ],
+      "sgk": 1,
+      "sgv": 0,
+      "exercise": 0,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "Hoạt động trải nghiệm, hướng nghiệp",
+      "program": "TK-0013",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0108"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 0,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "Tiếng Anh",
+      "program": "TK-0014",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [
+        "NXB-0095"
+      ],
+      "sgk": 1,
+      "sgv": 1,
+      "exercise": 0,
+      "training": 2,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "Giáo dục địa phương",
+      "program": "TK-0049–0054",
+      "mode": "Theo chương trình áp dụng",
+      "bookPages": [],
+      "sgk": 0,
+      "sgv": 0,
+      "exercise": 0,
+      "training": 0,
+      "toc": "Chưa trích/kiểm mục lục",
+      "examPackage": "Chưa có bộ đề–đáp án–hướng dẫn chấm đã duyệt cho ô này",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    }
+  ]
+}

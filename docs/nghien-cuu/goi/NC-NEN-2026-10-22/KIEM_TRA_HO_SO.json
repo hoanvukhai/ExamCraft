@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-22",
+  "scope": "Chỉ kiểm tài liệu nghiên cứu; không test ứng dụng",
+  "registryRecords": 119,
+  "bookPages": 302,
+  "resourceURLs": 1876,
+  "coreGradeSubjectRows": 161,
+  "pdfHashesChecked": 5,
+  "grades": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "rowsWithoutBookPage": [
+    "1:Giáo dục địa phương",
+    "2:Giáo dục địa phương",
+    "3:Giáo dục địa phương",
+    "4:Giáo dục địa phương",
+    "5:Giáo dục địa phương",
+    "6:Giáo dục địa phương",
+    "7:Giáo dục địa phương",
+    "8:Giáo dục địa phương",
+    "9:Giáo dục địa phương",
+    "10:Giáo dục địa phương",
+    "11:Giáo dục địa phương",
+    "12:Giáo dục địa phương"
+  ],
+  "pagesWithNoResourceLinks": [],
+  "possibleBadPages": [],
+  "errors": [],
+  "brokenLocalLinks": []
+}
