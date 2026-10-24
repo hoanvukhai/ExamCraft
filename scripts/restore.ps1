@@ -1,47 +1,12 @@
-# ExamCraft v3.1 PostgreSQL Restore Script (Windows PowerShell)
-param(
-    [string]$BackupFile = "",
-    [string]$BackupDir = "backups",
-    [string]$ContainerName = "examcraft_postgres",
-    [string]$DbUser = "examcraft",
-    [string]$DbName = "examcraft"
-)
-
-$ErrorActionPreference = "Stop"
-
-Write-Host "==========================================" -ForegroundColor Cyan
-Write-Host " ExamCraft PostgreSQL Restore Service" -ForegroundColor Cyan
-Write-Host "==========================================" -ForegroundColor Cyan
-
-if (-not $BackupFile) {
-    if (-not (Test-Path $BackupDir)) {
-        Write-Host "[ERROR] Backup directory not found: $BackupDir" -ForegroundColor Red
-        exit 1
-    }
-
-    $LatestBackup = Get-ChildItem -Path $BackupDir -Filter "examcraft_backup_*.sql" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
-
-    if (-not $LatestBackup) {
-        Write-Host "[ERROR] No backup files found in $BackupDir" -ForegroundColor Red
-        exit 1
-    }
-
-    $BackupFile = $LatestBackup.FullName
-}
-
-if (-not (Test-Path $BackupFile)) {
-    Write-Host "[ERROR] Backup file does not exist: $BackupFile" -ForegroundColor Red
-    exit 1
-}
-
-Write-Host "[*] Restoring from file: $BackupFile" -ForegroundColor Yellow
-Write-Host "[*] Loading into '$DbName' on container '$ContainerName'..." -ForegroundColor Yellow
-
+# Restore only to an explicitly named NEW database. Default is validation/dry-run.
+param([string]$Package = '', [string]$TargetDatabase = '', [switch]$Execute)
+$ErrorActionPreference = 'Stop'
+if (-not $Package -or -not $TargetDatabase) { throw 'Supply -Package and -TargetDatabase examcraft_restore_...; automatic latest/overwrite restore is disabled.' }
+$taskRoot = Split-Path -Parent $PSScriptRoot
+Push-Location -LiteralPath $taskRoot
 try {
-    Get-Content $BackupFile | docker exec -i $ContainerName psql -U $DbUser -d $DbName
-    Write-Host "[OK] Database restore completed successfully!" -ForegroundColor Green
-}
-catch {
-    Write-Host "[ERROR] Failed to restore database: $_" -ForegroundColor Red
-    exit 1
-}
+    $taskArgs = @('scripts/restore-package.cjs', '--package', $Package, '--target', $TargetDatabase)
+    if ($Execute) { $taskArgs += @('--execute', '--confirm', $TargetDatabase) }
+    & node @taskArgs
+    if ($LASTEXITCODE -ne 0) { throw 'Restore did not complete. Source and partial artifacts retained.' }
+} finally { Pop-Location }
