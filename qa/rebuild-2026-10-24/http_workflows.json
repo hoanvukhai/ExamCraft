@@ -1,0 +1,25 @@
+{
+  "checkedAt": "2026-10-24T14:04:55.871Z",
+  "checks": [
+    "http-private-access-and-origin",
+    "http-key-create-private-idempotency",
+    "http-collaboration-cas-history-revoke",
+    "http-structural-cas-revoked-retry",
+    "http-legacy-preview-resume-idempotence-account",
+    "http-public-redaction-immutable-snapshot",
+    "http-share-copy-to-server-library",
+    "http-grade-history-owner-cursor-ties-and-new-events",
+    "http-attempt-capability-submit-and-manual-grade",
+    "http-saved-only-submit-keeps-acknowledged-draft",
+    "http-history-restore-cas-pending-zero-owner-idempotence",
+    "http-comment-only-feedback-restoration-without-numeric-score",
+    "http-knowledge-package-scope-revision-private-source",
+    "http-private-immutable-template-retry-source-snapshot",
+    "http-bank-passage-fork-cas-history-delete",
+    "http-private-memory-portability"
+  ],
+  "cleanupComplete": true,
+  "status": "PASS",
+  "environment": "isolated localhost:3117",
+  "realAiCalls": false
+}

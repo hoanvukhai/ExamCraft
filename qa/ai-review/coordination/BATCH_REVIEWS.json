@@ -1,0 +1,273 @@
+{
+  "format_version": 1,
+  "updated_at_utc": "2026-10-24T14:05:53.130Z",
+  "writer": "CODEX_ONLY",
+  "purpose": "Delivery review gates, not product checklist or proof of runtime completion",
+  "batches": [
+    {
+      "task_id": "CLAUDE-CONTINUOUS-BATCH",
+      "assignment_generation": 10,
+      "items": [
+        {
+          "id": "C01",
+          "decision": "RELEASED_FOR_INTEGRATION",
+          "submission_ref": [
+            "621e8ff",
+            "6503df0",
+            "5857238"
+          ],
+          "review_note": "Đã review bản sửa, root focused unit đạt; tích hợp a04e0fe/0db7ef8/887ccc4, hash các WIP root không đổi. Chấp nhận phần code với giới hạn UI/provider chưa kiểm; Codex giữ API/runtime/build cuối và quyền sửa C01. Không đóng CV.",
+          "reviewed_at_utc": "2026-10-24T13:19:57.693Z",
+          "review_history": [
+            {
+              "decision": "CHANGES_REQUESTED",
+              "submission_ref": [
+                "621e8ff",
+                "6503df0"
+              ],
+              "review_note": "Gate/context tốt nhưng chưa nhận: add response200 body null/thiếu key vẫn xóa form và báo lưu; chưa dùng clientRequestId hợp đồng mới; logGate/mainGate độc lập nên auth-loss ở gate này chưa vô hiệu receipt gate kia; requestClose chưa dispose đồng bộ. Xem tin review chi tiết. Chưa tích hợp, Claude giữ code.",
+              "reviewed_at_utc": "2026-10-24T13:13:11.299Z"
+            }
+          ],
+          "integration_commits": [
+            "a04e0fe",
+            "0db7ef8",
+            "887ccc4"
+          ]
+        },
+        {
+          "id": "C02",
+          "decision": "RELEASED_FOR_INTEGRATION",
+          "submission_ref": [
+            "fb6819b",
+            "402635e",
+            "3481b93"
+          ],
+          "review_note": "Đã tích hợp và mount parent bởi Codex12. Giữ owner/writer/base, chỉ chọn khôi phục tường minh, ACK khớp nội dung và ngữ cảnh mới dọn; không xóa writer khác. Build/kiểm thuần/render đạt; browser thực chưa kiểm vì CUA lỗi, không đóng CV. Chi tiết DRAFT_RECOVERY_INTEGRATION.md.",
+          "reviewed_at_utc": "2026-10-24T14:05:53.130Z",
+          "review_history": [
+            {
+              "decision": "CHANGES_REQUESTED",
+              "submission_ref": [
+                "fb6819b",
+                "402635e"
+              ],
+              "review_note": "Panel hiện malformed entry bất kể key/chủ (mine.filter !value) có thể lộ raw khi props cũ; ACK retirement không so revision/raw gốc nên có thể xóa nháp nền khác cùng nội dung; serialize rubric ngoài try có thể throw. Xem tin chi tiết. Chưa tích hợp/mount.",
+              "reviewed_at_utc": "2026-10-24T13:19:57.693Z"
+            },
+            {
+              "decision": "ACCEPTED_WITH_LIMITS",
+              "submission_ref": [
+                "fb6819b",
+                "402635e",
+                "3481b93"
+              ],
+              "review_note": "Đã đọc bản sửa và chạy unit thuần trực tiếp worktree, đạt. Chấp nhận helper/component bàn giao; chưa cherry-pick/mount vào UI root, chưa UI/storage browser thật/HTTP. Giữ freeze, Codex sẽ nhận quyền và tích hợp riêng khi nối parent; không đóng CV từ helper.",
+              "reviewed_at_utc": "2026-10-24T13:25:50.992Z"
+            }
+          ],
+          "integration_commits": [
+            "f49f75e",
+            "6faf787",
+            "db9c8da"
+          ]
+        },
+        {
+          "id": "C03",
+          "decision": "RELEASED_FOR_INTEGRATION",
+          "submission_ref": [
+            "674b4f3",
+            "c518564",
+            "e29feeb"
+          ],
+          "review_note": "Đã tích hợp và mount parent bởi Codex12. Giữ owner/writer/base, chỉ chọn khôi phục tường minh, ACK khớp nội dung và ngữ cảnh mới dọn; không xóa writer khác. Build/kiểm thuần/render đạt; browser thực chưa kiểm vì CUA lỗi, không đóng CV. Chi tiết DRAFT_RECOVERY_INTEGRATION.md.",
+          "reviewed_at_utc": "2026-10-24T14:05:53.130Z",
+          "review_history": [
+            {
+              "decision": "CHANGES_REQUESTED",
+              "submission_ref": [
+                "674b4f3",
+                "c518564"
+              ],
+              "review_note": "MemoryNoteDraftRecovery mine.filter(!entry.value||owner) hiển thị mọi malformed raw dù entry.key thuộc owner khác. Cần helper lọc namespace/owner cả malformed trước hiển thị/tải; unit đổi owner với entries stale. Chưa tích hợp/mount, Claude giữ code. C02 review trước áp dụng nếu liên quan.",
+              "reviewed_at_utc": "2026-10-24T13:21:43.617Z"
+            },
+            {
+              "decision": "ACCEPTED_WITH_LIMITS",
+              "submission_ref": [
+                "674b4f3",
+                "c518564",
+                "e29feeb"
+              ],
+              "review_note": "Đã đọc bản sửa và chạy unit thuần trực tiếp worktree, đạt. Chấp nhận helper/component bàn giao; chưa cherry-pick/mount vào UI root, chưa UI/storage browser thật/HTTP. Giữ freeze, Codex sẽ nhận quyền và tích hợp riêng khi nối parent; không đóng CV từ helper.",
+              "reviewed_at_utc": "2026-10-24T13:25:50.992Z"
+            }
+          ],
+          "integration_commits": [
+            "f5838a1",
+            "d732cf1",
+            "59aabb5"
+          ]
+        },
+        {
+          "id": "C04",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "submission_ref": {
+            "path": "qa/ai-review/CLAUDE_PUBLICATION_DESIGN.md",
+            "sha256": "90de8200a1c74473ce305c6b4e0efe8601c66c7c698b9ef224c555bd52ee7b6f"
+          },
+          "review_note": "Bản sửa đã tách snapshot/permission refs, expand→compatible reader→enable, fail-closed rollback; chấp nhận tài liệu thiết kế, chưa chốt rollout/thay schema/migration/ảnh hoặc nghiệm thu CV.",
+          "reviewed_at_utc": "2026-10-24T13:38:31.403Z",
+          "review_history": [
+            {
+              "decision": "CHANGES_REQUESTED",
+              "submission_ref": {
+                "path": "qa/ai-review/CLAUDE_PUBLICATION_DESIGN.md",
+                "sha256": "453db47478de0dd3d32f48e0db1eb21e7603c959a0ae7f549a0e55ccbae5a4eb"
+              },
+              "review_note": "Thiết kế tách snapshot hợp lý, chưa nhận vì rollback về live làm link đã chốt đổi nháp ngầm; khẳng định code/migration trước-sau đều an toàn không đúng Prisma thêm cột mà DB chưa migrate; invariant không đọc current questions mâu thuẫn ca thu hồi shareable. Cần fail-closed rollback, thứ tự deploy rõ, tách nội dung immutable với quyền nguồn còn hiệu lực.",
+              "reviewed_at_utc": "2026-10-24T13:23:07.174Z"
+            }
+          ]
+        },
+        {
+          "id": "C05",
+          "decision": "CHANGES_REQUESTED",
+          "submission_ref": {
+            "path": "qa/ai-review/CLAUDE_REGRADE_DESIGN.md",
+            "sha256": "19884fbb6e223539572b7b4401cd3ca6d6b235e03bbad45d4c9a14124b059149"
+          },
+          "review_note": "Thiết kế scope/CAS/giữ override tốt, nhưng rollback bỏ lớp đính chính có thể chấm lượt mới theo đáp án cũ dù điểm đã sửa; cần reader tương thích hoặc chặn submit có correction khi downgrade. matchingPairs chứa nội dung prompt, không được thay chữ trái/phải khi chỉ đính chính khóa; cần contract chỉ mapping trên choices bất biến hoặc defer. Làm rõ correction revision cố định cho preview/apply/nộp và effective solution read.",
+          "reviewed_at_utc": "2026-10-24T13:38:31.403Z"
+        },
+        {
+          "id": "C06",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "submission_ref": {
+            "path": "qa/ai-review/CLAUDE_BATCH_SUMMARY.md",
+            "sha256": "b7df64fc34f4e78cadf146072d778eb16beb401cf9bf5aef5526c6acabb639fe"
+          },
+          "review_note": "Chấp nhận bảng dẫn đường theo mốc lúc viết, không phải xác nhận nghiệm thu. Root đã mount C02/C03 sau mốc tệp này; C05 còn CHANGES_REQUESTED nên batch chưa DONE. Cập nhật lại summary sau khi C05 được sửa.",
+          "reviewed_at_utc": "2026-10-24T14:05:53.130Z"
+        }
+      ]
+    },
+    {
+      "task_id": "GEMINI-CONTINUOUS-BATCH",
+      "assignment_generation": 5,
+      "items": [
+        {
+          "id": "G01",
+          "decision": "CHANGES_REQUESTED",
+          "submission_ref": {
+            "path": "qa/ai-review/GEMINI_ACCOUNT_CALLERS.md",
+            "sha256": "5db92fdadbb739437aeb0accf6695f4e62076b113e649686d5e3935f269e84d8"
+          },
+          "review_note": "Bản sửa đã bỏ phần lớn tuyệt đối nhưng còn If-Match header trong exam CAS (thực tế body.baseVersion), questions GET/PUT thay vì PATCH, bảng deadline vẫn thiếu CAS/validbody/status nên kết luận200 quá rộng; sốtest vẫn ở audit. Sửa gọn theo handler.",
+          "reviewed_at_utc": "2026-10-24T13:41:23.483Z",
+          "review_history": [
+            {
+              "decision": "CHANGES_REQUESTED",
+              "submission_ref": {
+                "message": "gemini-codex-20261024T131035Z-e90fae21e0c14f758676b42b79d5ad87.md",
+                "files": [
+                  {
+                    "path": "qa/ai-review/GEMINI_ACCOUNT_CALLERS.md",
+                    "sha256": "97fac03f24059d9c7487803292ae2c8b22c7594725e22959511a5efbaf680a45"
+                  },
+                  {
+                    "path": "qa/ai-review/GEMINI_PUBLIC_POLICY_CASES.md",
+                    "sha256": "8f82d415b7cc024fc61bce110cbcec0f36ad9a512078b60651ee6ae4edff67f4"
+                  }
+                ]
+              },
+              "review_note": "Tệp hiện tại vẫn đầu đề Generation3 và các lỗi đã yêu cầu sửa: file:/// links, An toàn/không lỗ hổng, !mayReview gộp409, AFTER_CLOSE tự trả lời giải/BXH, số27 gán riêng một file. Tin bàn giao nói đã sửa memory/share nhưng nội dung chưa khớp. Chưa chấp nhận; sửa trực tiếp hai tệp rồi đọc lại trước gửi.",
+              "reviewed_at_utc": "2026-10-24T13:13:11.299Z"
+            }
+          ]
+        },
+        {
+          "id": "G02",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "submission_ref": {
+            "path": "qa/ai-review/GEMINI_DOC_LINKS.md",
+            "sha256": "9f159a71fd31db60825b4d13f94b862b6dbbc285e460aa6a72e6b76652aa4b89"
+          },
+          "review_note": "Root kiểm độc lập links local8tệp cốt lõi không thiếu và xác nhận8link lịch sử sai cấp, đích đề xuất có thật. Chấp nhận findings này; không chứng nhận toàn kho/anchor/URL ngoài hoặc baselinebb14bee là working tree hiện tại. Codex sửa8link lịch sử, không đổi nội dung cũ. G01 vẫn cần sửa như tin trước, ưu tiên rồi tiếp G03.",
+          "reviewed_at_utc": "2026-10-24T13:21:43.617Z"
+        },
+        {
+          "id": "G03",
+          "decision": "CHANGES_REQUESTED",
+          "submission_ref": {
+            "path": "qa/ai-review/GEMINI_MANUAL_TEST_CARDS.md",
+            "sha256": "fd5b2bf9705ae4084bfcba1ab3afe885c67b560148cfb3a421aa21b0c5b3c268"
+          },
+          "review_note": "Bản sửa đã nói template không tạo questions nhưng thẻ03 vẫn A4 có ô tương tác; thẻ09 nút Thêm/Lưu chỉ dẫn và lưu trữ ghi chú chưa khớp UI (archive API là import/export). Không mô tả clientRequestId là CAS grade/version. Cần nhãn có nguồn hoặc ghi chưa xác minh, tách A4 và student interaction; chưa sẵn gửi người dùng test.",
+          "reviewed_at_utc": "2026-10-24T14:05:53.130Z",
+          "review_history": [
+            {
+              "decision": "CHANGES_REQUESTED",
+              "submission_ref": {
+                "path": "qa/ai-review/GEMINI_MANUAL_TEST_CARDS.md",
+                "sha256": "19dc6c036ae4da15d32107a0b2c8cfecf131b22ab2fe941183338668a31f2ccb"
+              },
+              "review_note": "Thẻ có ích nhưng gán CV001/002/003 thành tạo/sửa/CAS và CV040 thành template sai checklist; template không tự sinh khung câu hỏi (applyPersonalTemplate chỉ metadata/sections); chuẩn BộGD chưa có nguồn duyệt; tên nút/flow chưa chứng minh, test giả không được xem là provider thật. Cần đối chiếu code/tiêu chí, không hướng dẫn user theo UI tưởng tượng.",
+              "reviewed_at_utc": "2026-10-24T13:25:50.992Z"
+            }
+          ]
+        },
+        {
+          "id": "G04",
+          "decision": "CHANGES_REQUESTED",
+          "submission_ref": {
+            "path": "qa/ai-review/GEMINI_CALLER_EVIDENCE.md",
+            "sha256": "4e09a3cb9a00eaf9f3790b09c293963eb60df06a74a4a2aa7a6481fb98e9394e"
+          },
+          "review_note": "Bảng có caller/path/field/hành vi không tồn tại: /api/user/keys/[id]/test (đúng /api/user/keys/test +body keyId), memory teacherId (đúng userId), archive archivedAt (thực tế import/export), hàm handleSaveNew/loadUsage tưởng tượng. Phải lần theo thân hàm thực tế; giảm số dòng, không bịa cho đủ.",
+          "reviewed_at_utc": "2026-10-24T13:41:23.483Z"
+        },
+        {
+          "id": "G05",
+          "decision": "CHANGES_REQUESTED",
+          "submission_ref": {
+            "path": "qa/ai-review/GEMINI_UI_WORDING.md",
+            "sha256": "44fb77d2125576010514c9b59cc70f00ab25d0e5c8eb81d8a48cac91303006fb"
+          },
+          "review_note": "Có findings sai/đề xuất đổi chính sách: link share không luôn lộ lời giải (showAnswers), copy phải allowCopy+đăng nhập; survey/comment_only đã ẩn ô điểm bằng numeric. Gợi ý rawJSON phải giữ đường xem/tải nguyên bản khi parse lỗi. Giữ các nhãn AI hứa quá mức có thật, bỏ suy đoán không nguồn.",
+          "reviewed_at_utc": "2026-10-24T13:41:23.483Z"
+        },
+        {
+          "id": "G06",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "submission_ref": {
+            "path": "qa/ai-review/GEMINI_CONTENT_COVERAGE.md",
+            "sha256": "24585b32e8ac99462be145d46ad56cb278fd62127340336ec9ceca118fd3f68a"
+          },
+          "review_note": "Chấp nhận đối chứng registry code: các ô còn needs_review, không suy fixture thành học liệu đã duyệt. Không xác nhận nội dung DB, quyền nguồn/hiệu lực/chuyên môn hoặc mọi đối chiếu môn/lớp. Các câu về DB chưa số hóa là chưa kiểm, không dùng làm kết luận nghiệm thu.",
+          "reviewed_at_utc": "2026-10-24T14:05:53.130Z"
+        },
+        {
+          "id": "G07",
+          "decision": "CHANGES_REQUESTED",
+          "submission_ref": {
+            "path": "qa/ai-review/GEMINI_VERIFICATION_INDEX.md",
+            "sha256": "4608b5796d23741fc238b5264b83f2a424948276dae0be1f19b9a7de226d4a0b"
+          },
+          "review_note": "Nhóm parse mô tả OCR/Word/AI như đã kiểm full HTTP dù mới schema/guard/fixtures, chưa provider thật. Key retry ID hash(owner,UUID), không hash key. Phân biệt code có/case test có/kết quả đã chạy; UI cũ có một phần đã kiểm, không phủ định toàn bộ từ CUA hiện tại.",
+          "reviewed_at_utc": "2026-10-24T13:41:23.483Z"
+        },
+        {
+          "id": "G08",
+          "decision": "CHANGES_REQUESTED",
+          "submission_ref": {
+            "path": "qa/ai-review/GEMINI_BATCH_SUMMARY.md",
+            "sha256": "2586cdb81eb47db7e86bc8895a3efc4f671c6d500d78621db02901075756286b"
+          },
+          "review_note": "Tổng hợp chưa được chấp nhận vì G01/G04/G05/G07 đang cần sửa, không gọi đã đủ100%/khôngnhậnđịnhchủquan. Cập nhật summary sau bản sửa và dùng status nguồn từ BATCH_REVIEWS.",
+          "reviewed_at_utc": "2026-10-24T13:41:23.483Z"
+        }
+      ]
+    }
+  ]
+}

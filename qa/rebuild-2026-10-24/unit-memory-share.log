@@ -1,0 +1,88 @@
+TAP version 13
+# Subtest: a second click while a request runs is refused; only the holder can free the slot
+ok 1 - a second click while a request runs is refused; only the holder can free the slot
+  ---
+  duration_ms: 1.5017
+  type: 'test'
+  ...
+# Subtest: closing the dialog aborts the request and nothing from it can touch state afterwards
+ok 2 - closing the dialog aborts the request and nothing from it can touch state afterwards
+  ---
+  duration_ms: 0.3614
+  type: 'test'
+  ...
+# Subtest: a response of the old gate (strict-mode re-run or reopen) can neither lock, release nor un-busy the new gate
+ok 3 - a response of the old gate (strict-mode re-run or reopen) can neither lock, release nor un-busy the new gate
+  ---
+  duration_ms: 0.2803
+  type: 'test'
+  ...
+# Subtest: a live account failure aborts the request, blocks every later one and still lets the failing request clear its own busy flag
+ok 4 - a live account failure aborts the request, blocks every later one and still lets the failing request clear its own busy flag
+  ---
+  duration_ms: 0.1117
+  type: 'test'
+  ...
+# Subtest: delete/activate need the same owner and a row of the list by id; position and other owners never count
+ok 5 - delete/activate need the same owner and a row of the list by id; position and other owners never count
+  ---
+  duration_ms: 0.1979
+  type: 'test'
+  ...
+# Subtest: list response is checked before it replaces the list: bad shape throws, bad or repeated rows are counted and dropped
+ok 6 - list response is checked before it replaces the list: bad shape throws, bad or repeated rows are counted and dropped
+  ---
+  duration_ms: 2.0408
+  type: 'test'
+  ...
+# Subtest: a save is only acknowledged when the saved note comes back with its id
+ok 7 - a save is only acknowledged when the saved note comes back with its id
+  ---
+  duration_ms: 1.297
+  type: 'test'
+  ...
+# Subtest: a retry after a failed save keeps the request ID; any edit, even whitespace-only is the same, a real change is new
+ok 8 - a retry after a failed save keeps the request ID; any edit, even whitespace-only is the same, a real change is new
+  ---
+  duration_ms: 0.3661
+  type: 'test'
+  ...
+# Subtest: late save receipt clears the form only if the teacher has not typed since pressing Save
+ok 9 - late save receipt clears the form only if the teacher has not typed since pressing Save
+  ---
+  duration_ms: 0.2974
+  type: 'test'
+  ...
+# Subtest: share copy keeps zero points and answers only when the link shows answers, and always resets review state
+ok 10 - share copy keeps zero points and answers only when the link shows answers, and always resets review state
+  ---
+  duration_ms: 4.8074
+  type: 'test'
+  ...
+# Subtest: share copy never carries answers, solutions, matching rights or order when the link hides answers
+ok 11 - share copy never carries answers, solutions, matching rights or order when the link hides answers
+  ---
+  duration_ms: 2.985
+  type: 'test'
+  ...
+# Subtest: share copy does not mutate its source
+ok 12 - share copy does not mutate its source
+  ---
+  duration_ms: 1.4326
+  type: 'test'
+  ...
+# Subtest: versioned copies keep legacy identity and separate source revisions without copying server identity
+ok 13 - versioned copies keep legacy identity and separate source revisions without copying server identity
+  ---
+  duration_ms: 1.7226
+  type: 'test'
+  ...
+1..13
+# tests 13
+# suites 0
+# pass 13
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 806.8059

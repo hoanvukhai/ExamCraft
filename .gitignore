@@ -48,5 +48,6 @@ next-env.d.ts
 *.sql
 !prisma/migrations/**/migration.sql
 tests/*.docx
+/qa/ai-review/*.zip
 
 

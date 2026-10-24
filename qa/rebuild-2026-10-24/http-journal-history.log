@@ -1,0 +1,131 @@
+
+> exam-craft@0.1.0 test:http
+> node --import tsx scripts/test-database.cjs http
+
+Validated test target: 127.0.0.1:5436/examcraft_test_20261022; action=http
+TAP version 13
+# Subtest: authentication revocation and limits on isolated local HTTP server
+    # Subtest: forced password change is enforced by APIs while account details remain readable
+    ok 1 - forced password change is enforced by APIs while account details remain readable
+      ---
+      duration_ms: 44.5344
+      type: 'test'
+      ...
+    # Subtest: changing password preserves current session and revokes every other session
+    ok 2 - changing password preserves current session and revokes every other session
+      ---
+      duration_ms: 300.8452
+      type: 'test'
+      ...
+    # Subtest: logout deletes the server session and old cookie cannot be reused
+    ok 3 - logout deletes the server session and old cookie cannot be reused
+      ---
+      duration_ms: 109.1729
+      type: 'test'
+      ...
+    # Subtest: admin reset and disable revoke sessions permanently, including after reenable
+    ok 4 - admin reset and disable revoke sessions permanently, including after reenable
+      ---
+      duration_ms: 563.7847
+      type: 'test'
+      ...
+    # Subtest: five failed logins block that account while another account remains usable
+    ok 5 - five failed logins block that account while another account remains usable
+      ---
+      duration_ms: 888.089
+      type: 'test'
+      ...
+    1..5
+ok 1 - authentication revocation and limits on isolated local HTTP server
+  ---
+  duration_ms: 3707.4789
+  type: 'test'
+  ...
+# Subtest: HTTP workflows on the isolated local server
+    # Subtest: anonymous, foreign owner and cross-origin writes are rejected
+    ok 1 - anonymous, foreign owner and cross-origin writes are rejected
+      ---
+      duration_ms: 2209.9669
+      type: 'test'
+      ...
+    # Subtest: collaboration honors view, edit, CAS, history and revocation
+    ok 2 - collaboration honors view, edit, CAS, history and revocation
+      ---
+      duration_ms: 431.5113
+      type: 'test'
+      ...
+    # Subtest: structural edits conflict without partial merges and revoked writers cannot retry
+    ok 3 - structural edits conflict without partial merges and revoked writers cannot retry
+      ---
+      duration_ms: 292.4724
+      type: 'test'
+      ...
+    # Subtest: legacy preview is read-only, import resumes per item and retries never overwrite teacher edits
+    ok 4 - legacy preview is read-only, import resumes per item and retries never overwrite teacher edits
+      ---
+      duration_ms: 2961.012
+      type: 'test'
+      ...
+    # Subtest: public share and assignment hide keys and assignment freezes the source
+    ok 5 - public share and assignment hide keys and assignment freezes the source
+      ---
+      duration_ms: 316.1391
+      type: 'test'
+      ...
+    # Subtest: a signed-in teacher copies a shared exam into their own server library without answers the link hides
+    ok 6 - a signed-in teacher copies a shared exam into their own server library without answers the link hides
+      ---
+      duration_ms: 362.9164
+      type: 'test'
+      ...
+    # Subtest: attempt cookie is required; submit is idempotent and essay remains pending
+    ok 7 - attempt cookie is required; submit is idempotent and essay remains pending
+      ---
+      duration_ms: 1229.725
+      type: 'test'
+      ...
+    # Subtest: saved-only submission preserves the server draft when another page has unsubmitted conflicting answers
+    ok 8 - saved-only submission preserves the server draft when another page has unsubmitted conflicting answers
+      ---
+      duration_ms: 142.7569
+      type: 'test'
+      ...
+    # Subtest: knowledge snapshot and scope survive HTTP saves, reject a changed revision and stay out of public shares
+    ok 9 - knowledge snapshot and scope survive HTTP saves, reject a changed revision and stay out of public shares
+      ---
+      duration_ms: 434.6439
+      type: 'test'
+      ...
+    # Subtest: personal templates are private immutable copies with source checks, retry safety and portable applied snapshots
+    ok 10 - personal templates are private immutable copies with source checks, retry safety and portable applied snapshots
+      ---
+      duration_ms: 772.0955
+      type: 'test'
+      ...
+    # Subtest: bank saves passages, forks privately and protects edit, history and soft delete with versions
+    ok 11 - bank saves passages, forks privately and protects edit, history and soft delete with versions
+      ---
+      duration_ms: 403.4791
+      type: 'test'
+      ...
+    # Subtest: private memory import is previewed, owner-isolated and inactive by default
+    ok 12 - private memory import is previewed, owner-isolated and inactive by default
+      ---
+      duration_ms: 90.2527
+      type: 'test'
+      ...
+    1..12
+ok 2 - HTTP workflows on the isolated local server
+  ---
+  duration_ms: 11110.6348
+  type: 'test'
+  ...
+1..2
+# tests 19
+# suites 0
+# pass 19
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 12451.8053

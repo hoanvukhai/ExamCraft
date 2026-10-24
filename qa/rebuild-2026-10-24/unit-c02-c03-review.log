@@ -1,0 +1,148 @@
+TAP version 13
+# Subtest: keys never collide across accounts and pages, even with separators in the ids
+ok 1 - keys never collide across accounts and pages, even with separators in the ids
+  ---
+  duration_ms: 2.2849
+  type: 'test'
+  ...
+# Subtest: account A's draft is never offered, applied or removed for account B
+ok 2 - account A's draft is never offered, applied or removed for account B
+  ---
+  duration_ms: 4.263
+  type: 'test'
+  ...
+# Subtest: the typed text comes back exactly, including spaces, new lines and characters that look like markup
+ok 3 - the typed text comes back exactly, including spaces, new lines and characters that look like markup
+  ---
+  duration_ms: 0.2829
+  type: 'test'
+  ...
+# Subtest: a form with nothing typed writes nothing and does not delete an earlier draft
+ok 4 - a form with nothing typed writes nothing and does not delete an earlier draft
+  ---
+  duration_ms: 0.3828
+  type: 'test'
+  ...
+# Subtest: two pages keep separate drafts; an acknowledgement only retires its own page and only the exact note
+ok 5 - two pages keep separate drafts; an acknowledgement only retires its own page and only the exact note
+  ---
+  duration_ms: 0.4887
+  type: 'test'
+  ...
+# Subtest: a late acknowledgement never removes text typed after the request was sent
+ok 6 - a late acknowledgement never removes text typed after the request was sent
+  ---
+  duration_ms: 0.3753
+  type: 'test'
+  ...
+# Subtest: storage denied, full or holding junk never throws and never destroys unreadable data
+ok 7 - storage denied, full or holding junk never throws and never destroys unreadable data
+  ---
+  duration_ms: 0.8021
+  type: 'test'
+  ...
+# Subtest: discarding one draft in the panel removes exactly what was shown, never a rewritten one
+ok 8 - discarding one draft in the panel removes exactly what was shown, never a rewritten one
+  ---
+  duration_ms: 0.2358
+  type: 'test'
+  ...
+# Subtest: putting a draft into the form never overwrites typed text without a confirmation step
+ok 9 - putting a draft into the form never overwrites typed text without a confirmation step
+  ---
+  duration_ms: 0.4024
+  type: 'test'
+  ...
+# Subtest: export keeps the stored bytes untouched and the file name carries no account id
+ok 10 - export keeps the stored bytes untouched and the file name carries no account id
+  ---
+  duration_ms: 0.5459
+  type: 'test'
+  ...
+# Subtest: a dialog shows only records under its own account namespace, readable or not, and keeps their raw bytes
+ok 11 - a dialog shows only records under its own account namespace, readable or not, and keeps their raw bytes
+  ---
+  duration_ms: 0.4006
+  type: 'test'
+  ...
+# Subtest: keys never collide across teacher, attempt, question and writer, even with separators in the ids
+ok 12 - keys never collide across teacher, attempt, question and writer, even with separators in the ids
+  ---
+  duration_ms: 1.042
+  type: 'test'
+  ...
+# Subtest: what the teacher typed comes back exactly: blank, 0, comma decimals, invalid text, comment lines and rubric null versus empty
+ok 13 - what the teacher typed comes back exactly: blank, 0, comma decimals, invalid text, comment lines and rubric null versus empty
+  ---
+  duration_ms: 4.6344
+  type: 'test'
+  ...
+# Subtest: blank is not 0 and invalid text is not 0; the parent can show which one the teacher actually typed
+ok 14 - blank is not 0 and invalid text is not 0; the parent can show which one the teacher actually typed
+  ---
+  duration_ms: 0.3398
+  type: 'test'
+  ...
+# Subtest: another teacher, attempt or question never sees or receives this draft; a record copied under another key is not trusted
+ok 15 - another teacher, attempt or question never sees or receives this draft; a record copied under another key is not trusted
+  ---
+  duration_ms: 0.3812
+  type: 'test'
+  ...
+# Subtest: two pages never overwrite or retire each other
+ok 16 - two pages never overwrite or retire each other
+  ---
+  duration_ms: 0.4077
+  type: 'test'
+  ...
+# Subtest: an acknowledgement retires the draft only when it is the request that was sent and the server holds exactly that
+ok 17 - an acknowledgement retires the draft only when it is the request that was sent and the server holds exactly that
+  ---
+  duration_ms: 0.5706
+  type: 'test'
+  ...
+# Subtest: a draft that moved to a newer base with the same words is not retired by the acknowledgement of the older request
+ok 18 - a draft that moved to a newer base with the same words is not retired by the acknowledgement of the older request
+  ---
+  duration_ms: 0.2969
+  type: 'test'
+  ...
+# Subtest: a panel shows only records of its own teacher and attempt, readable or not, and keeps their raw bytes
+ok 19 - a panel shows only records of its own teacher and attempt, readable or not, and keeps their raw bytes
+  ---
+  duration_ms: 0.6985
+  type: 'test'
+  ...
+# Subtest: typing that cannot be serialized or turned into a number never breaks the grading flow or becomes a score
+ok 20 - typing that cannot be serialized or turned into a number never breaks the grading flow or becomes a score
+  ---
+  duration_ms: 0.4266
+  type: 'test'
+  ...
+# Subtest: storage denied, full or hostile never throws and never destroys unreadable data
+ok 21 - storage denied, full or hostile never throws and never destroys unreadable data
+  ---
+  duration_ms: 5.3444
+  type: 'test'
+  ...
+# Subtest: opening a draft: same base is applicable, older base is comparison only, other teacher/attempt or a vanished question never
+ok 22 - opening a draft: same base is applicable, older base is comparison only, other teacher/attempt or a vanished question never
+  ---
+  duration_ms: 0.5294
+  type: 'test'
+  ...
+# Subtest: export keeps the stored bytes untouched, valid or not
+ok 23 - export keeps the stored bytes untouched, valid or not
+  ---
+  duration_ms: 0.3863
+  type: 'test'
+  ...
+1..23
+# tests 23
+# suites 0
+# pass 23
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 461.3832

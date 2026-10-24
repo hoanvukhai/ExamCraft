@@ -1,0 +1,70 @@
+TAP version 13
+# Subtest: share copy keeps zero points and answers only when the link shows answers, and always resets review state
+ok 1 - share copy keeps zero points and answers only when the link shows answers, and always resets review state
+  ---
+  duration_ms: 5.119
+  type: 'test'
+  ...
+# Subtest: share copy never carries answers, solutions, matching rights or order when the link hides answers
+ok 2 - share copy never carries answers, solutions, matching rights or order when the link hides answers
+  ---
+  duration_ms: 2.5802
+  type: 'test'
+  ...
+# Subtest: share copy does not mutate its source
+ok 3 - share copy does not mutate its source
+  ---
+  duration_ms: 0.8248
+  type: 'test'
+  ...
+# Subtest: versioned copies keep legacy identity and separate source revisions without copying server identity
+ok 4 - versioned copies keep legacy identity and separate source revisions without copying server identity
+  ---
+  duration_ms: 0.9429
+  type: 'test'
+  ...
+# Subtest: only one request runs at a time and a released slot can be taken again
+ok 5 - only one request runs at a time and a released slot can be taken again
+  ---
+  duration_ms: 1.5395
+  type: 'test'
+  ...
+# Subtest: closing the panel aborts the request and nothing from it counts as live afterwards
+ok 6 - closing the panel aborts the request and nothing from it counts as live afterwards
+  ---
+  duration_ms: 0.234
+  type: 'test'
+  ...
+# Subtest: losing the account stops the running request and blocks every later one
+ok 7 - losing the account stops the running request and blocks every later one
+  ---
+  duration_ms: 0.2259
+  type: 'test'
+  ...
+# Subtest: a context that was replaced by a new gate leaves the old responses dead
+ok 8 - a context that was replaced by a new gate leaves the old responses dead
+  ---
+  duration_ms: 0.1311
+  type: 'test'
+  ...
+# Subtest: account failure is exactly 401 or 409 ACCOUNT_CHANGED; ordinary conflicts stay retryable
+ok 9 - account failure is exactly 401 or 409 ACCOUNT_CHANGED; ordinary conflicts stay retryable
+  ---
+  duration_ms: 0.1894
+  type: 'test'
+  ...
+# Subtest: retry keeps the request ID while the body is unchanged; an edited body gets a new one, and going back is a new request too
+ok 10 - retry keeps the request ID while the body is unchanged; an edited body gets a new one, and going back is a new request too
+  ---
+  duration_ms: 0.2755
+  type: 'test'
+  ...
+1..10
+# tests 10
+# suites 0
+# pass 10
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 720.9572

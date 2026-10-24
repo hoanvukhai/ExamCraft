@@ -58,11 +58,11 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-02, YC-13. Nghiệm thu: NT-02, NT-04.
   - Đạt khi: Tạo/sửa/mở lại trên phiên khác đúng dữ liệu; lỗi mạng/HTTP không báo đã lưu; ID server cập nhật đúng.
 - [ ] **CV-010 — Nháp offline, version và chống ghi đè.**
-  - **Hiện trạng24/10:** có nháp theo tài khoản/đề và ô riêng từng writer (ghi ô riêng trước con trỏ chung, archive nháp khác trước khi thay, retire riêng, lỗi archive thì dừng ghi), lưu có baseVersion, phản hồi lưu đến muộn không đè bản mới hoặc tài khoản mới, server QA tắt rồi bật lại vẫn phục hồi và lưu thật, tab cũ báo xung đột thay vì ghi đè. Đã kiểm bằng hook React production với API giả, hai tab localStorage thật và app thật trên DB thử. Còn: offline thật (airplane mode, mở app khi server tắt), hai browser độc lập, storage không có giao dịch nguyên tử giữa các tab. Giữ mở. Bằng chứng: [DELAYED_SAVE](../../qa/rebuild-2026-10-23/DELAYED_SAVE.md), [NETWORK_OUTAGE](../../qa/rebuild-2026-10-23/NETWORK_OUTAGE.md), [WRITER_SLOTS](../../qa/rebuild-2026-10-23/WRITER_SLOTS.md), [TABS_AND_REVOCATION](../../qa/rebuild-2026-10-23/TABS_AND_REVOCATION.md), [RECOVERY](../../qa/rebuild-2026-10-23/RECOVERY.md).
+  - **Hiện trạng24/10:** Giữ nháp đề/writer và các bằng chứng trước. Bổ sung mount nháp chấm/ghi chú riêng theo owner và writer; khôi phục chủ động, giữ base cũ và raw lỗi, tải bản RAM khi storage lỗi. Helper/render tĩnh/build/API DB thử đạt; chưa thao tác reload/nhiều tab/storage lỗi trên parent React mới, offline thật và hai browser còn mở. [DRAFT_RECOVERY_INTEGRATION](../../qa/rebuild-2026-10-24/DRAFT_RECOVERY_INTEGRATION.md).
   - Phạm vi: YC-13. Nghiệm thu: NT-04, NT-20.
   - Đạt khi: Nháp phục hồi sau reload, tách tài khoản, có version conflict; bản đến muộn không ghi đè bản mới, không đồng bộ sang sai tài khoản.
 - [ ] **CV-011 — Quyền đối tượng và liên kết.**
-  - **Hiện trạng24/10:** pin tài khoản ở client và chặn sai tài khoản ở server cho đề (GET, cộng tác, góp ý, lịch sử), folder/lớp/ngân hàng/key/usage và Copilot/tweak/verify (chặn trước khi đọc body/khóa/provider, usage không tăng); thao tác ghi bắt buộc same-origin; lọc liên kết và số lượng theo chủ, chặn xóa folder chứa dữ liệu khác chủ; UI thêm học sinh rồi reload giữ danh sách. Còn mẫu (template), rà toàn bộ caller và phản hồi UI chậm. Giữ mở. Bằng chứng: [COPILOT_GUARDS](../../qa/rebuild-2026-10-23/COPILOT_GUARDS.md), [OBJECT_ACCESS](../../qa/rebuild-2026-10-23/OBJECT_ACCESS.md), [RECOVERY](../../qa/rebuild-2026-10-23/RECOVERY.md).
+  - **Hiện trạng24/10:** Giữ kiểm owner/link/C01/share đã có. C02/C03 đã tích hợp và mount: lọc namespace cả raw hỏng, gate tài khoản và ACK theo đúng ngữ cảnh; không dọn nháp từ receipt khác. Kiểm helper/render tĩnh/build/API DB thử đạt, không provider. UI đổi tài khoản mới chưa kiểm do CUA lỗi; giữ mở. [DRAFT_RECOVERY_INTEGRATION](../../qa/rebuild-2026-10-24/DRAFT_RECOVERY_INTEGRATION.md).
   - Phạm vi: YC-01, YC-19, YC-24. Nghiệm thu: NT-05, NT-06.
   - Đạt khi: Kiểm quyền folder/question/template/exam/group ở server, xét quyền cộng tác thay vì chỉ owner; thử hai giáo viên và dữ liệu riêng.
 - [x] **CV-012 — Đóng các đường lộ đáp án/ghi lượt không có quyền.**
@@ -79,7 +79,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-24, YC-30. Nghiệm thu: NT-03, NT-27.
   - Đạt khi: Đối chiếu số lượng/nội dung/quyền, import không nhân đôi, có báo mục lỗi và resume; restore thử trước chuyển thật.
 - [ ] **CV-015 — Hợp nhất kho đề/ngân hàng với nguồn server.**
-  - **Hiện trạng24/10:** đề và câu ngân hàng đối chiếu nguồn qua request sau; bản sao riêng có mã ổn định theo tài khoản/loại/nguồn/nội dung, bản giáo viên đã sửa và revision giữ nguyên. Export/xem trước đọc cả IndexedDB và3nguồn localStorage; sao chép local chỉ thêm ID thiếu, không ghi đè/xóa nguồn; ghi câu lỗi thì rollback cả đề mới. Còn UI hợp nhất đầy đủ kho/lọc/thùng rác/ngữ liệu; liên quan CV048 (bản sao từ link chia sẻ chỉ lưu trình duyệt). Giữ mở. Bằng chứng: [CROSS_IMPORT_AND_FULL_RESTORE](../../qa/rebuild-2026-10-23/CROSS_IMPORT_AND_FULL_RESTORE.md), [BROWSER_AND_INDEXEDDB](../../qa/rebuild-2026-10-23/BROWSER_AND_INDEXEDDB.md), [LEGACY_IMPORT](../../qa/rebuild-2026-10-23/LEGACY_IMPORT.md).
+  - **Hiện trạng24/10:** đề và câu ngân hàng đối chiếu nguồn qua request sau; bản sao riêng có mã ổn định theo tài khoản/loại/nguồn/nội dung, bản giáo viên đã sửa và revision giữ nguyên. Export/xem trước đọc cả IndexedDB và3nguồn localStorage; sao chép local chỉ thêm ID thiếu, không ghi đè/xóa nguồn; ghi câu lỗi thì rollback cả đề mới. Còn UI hợp nhất đầy đủ kho/lọc/thùng rác/ngữ liệu; liên quan CV048 (bản sao từ link chia sẻ đã lưu kho server; theo bản nguồn, giữ bản sửa riêng). Giữ mở. Bằng chứng: [CROSS_IMPORT_AND_FULL_RESTORE](../../qa/rebuild-2026-10-23/CROSS_IMPORT_AND_FULL_RESTORE.md), [BROWSER_AND_INDEXEDDB](../../qa/rebuild-2026-10-23/BROWSER_AND_INDEXEDDB.md), [LEGACY_IMPORT](../../qa/rebuild-2026-10-23/LEGACY_IMPORT.md).
   - Phạm vi: YC-02, YC-14, YC-30. Nghiệm thu: NT-02, NT-03.
   - Đạt khi: Fork hiện trong kho cá nhân, recent/filter/star/trash/restore đúng; không xóa dữ liệu local trước kiểm tra chuyển thành công.
 
@@ -104,7 +104,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-07, YC-09. Nghiệm thu: NT-13.
   - Đạt khi: Ma trận mục tiêu và thực tế so khớp, đặc tả lấy từ outcome; số câu 0 hợp lệ; xác định tổng điểm và quy tắc làm tròn.
 - [ ] **CV-021 — Mẫu có nguồn và bản sao cá nhân.**
-  - Đợt mẫu24/10: envelope phiên bản/nguồn tự khai, save-as-new bất biến/retry và quyền nguồn; snapshot không cấp quyền đọc mẫu riêng. Build46trang/SAFE184/HTTP17đạt. UI lưu→preview→Apply→tùy chỉnh→bản mới/retry đạt; DB thử đúng2mẫu, hash mẫu gốc/câu/phần/plan không đổi, giữ ảnh/lời giải/điểm0. Nguồn tự khai/legacy chưa là thư viện đã duyệt; toàn tiêu chí vẫn mở. [PERSONAL_TEMPLATES](../../qa/rebuild-2026-10-23/PERSONAL_TEMPLATES.md).
+  - **Hiện trạng24/10:** mẫu có envelope nguồn/phiên bản, save-as-new/replay, private source và cảnh báo nguồn như đợt trước. Claude4 đã bổ sung request context/abort, lock tài khoản đổi, validate list/open/save, retryID theo body và chặn bấm đúp Apply; Codex sửa receipt/finally cũ không lock/unbusy gate mới. Unit/build/HTTP thật khớp parser và lưu/mở mẫu. UI mới còn thiếu do CUA lỗi; chưa thư viện nguồn được duyệt. Giữ mở. [TEMPLATE_IMPORT_ACCOUNT](../../qa/rebuild-2026-10-24/TEMPLATE_IMPORT_ACCOUNT.md).
   - Phạm vi: YC-06, YC-07, YC-12, YC-25. Nghiệm thu: NT-11, NT-14.
   - Đạt khi: Mẫu hệ thống/trường/tham khảo/cá nhân rõ, ngày áp dụng/version; sửa tạo bản riêng và ghi lệch ràng buộc, không giữ nhãn phù hợp sai.
 - [ ] **CV-022 — Chuẩn bị dữ liệu tất cả nhóm môn.**
@@ -150,7 +150,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-03. Nghiệm thu: NT-09.
   - Đạt khi: Generate/tweak/OCR/Word/verify/memory đều lấy key theo người gọi và quyền dữ liệu; không fallback mock dưới nhãn kết quả AI thật.
 - [ ] **CV-032 — Quản lý key và sử dụng minh bạch.**
-  - **Hiện trạng24/10:** đã thống nhất model mặc định `gemini-3.5-flash` (mã, schema, `.env.example`; danh sách gợi ý có3.5-flash). DB chính: 6/6 tài khoản đang dùng3.5-flash nên không đổi dữ liệu người dùng, không migration. Gọi thử bằng khóa đã lưu: 3.5-flash/3.6-flash/3.5-flash-lite trả lời ~1s, 3.8-flash quá 90s không trả lời. Còn toàn tiêu chí quản lý key/usage. Giữ mở; [MODEL_DEFAULT_AND_BUILD_CPUS](../../qa/rebuild-2026-10-23/MODEL_DEFAULT_AND_BUILD_CPUS.md).
+  - **Hiện trạng24/10:** model mặc định theo báo cáo MODEL_DEFAULT_AND_BUILD_CPUS trước vẫn giữ. API lưu key có optional clientRequestId, concurrent/retry cùng nội dung trả cùng masked row, khác nội dung409, không bật lại key đã tắt; caller cũ giữ tương thích. C01 đã tích hợp sau sửa review, không xóa form từ receipt hỏng/lateACK. Build/SAFE/HTTP thử bằng khóa giả đạt, không Google/provider. Chưa UI/key thật/đầy đủ usage; giữ mở. [KEY_CREATE_RETRY_AND_BATCH_REVIEW](../../qa/rebuild-2026-10-24/KEY_CREATE_RETRY_AND_BATCH_REVIEW.md).
   - Phạm vi: YC-03. Nghiệm thu: NT-09, NT-10.
   - Đạt khi: Thêm/chọn/test/thay/xóa; usage theo ID không theo label; bỏ 1500*key, gói chưa xác minh ghi chưa biết; không hứa số dư thật.
 - [ ] **CV-033 — Hạn mức, chi phí và tác vụ nền.**
@@ -178,9 +178,11 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
 ## S5 — Nhập, trộn, xuất và trình chiếu
 
 - [ ] **CV-039 — Nhập text/LaTeX và xem trước hai phía.**
+  - **Hiện trạng24/10:** giữ nguồn và preview theo loại đầu vào; Word/ảnh/text AI nay gửi pin chủ tài khoản, server chặn sai tài khoản trước body/provider. Modal guard phản hồi/tệp cũ theo đích; lỗi cùng nguồn giữ preview, xác nhận nhập kiểm lại user và callback editor chỉ append đúng đề có quyền. Build/HTTP/kiểm thuần đạt; chưa UI mới/AI thật/chất lượng đa môn và import form bền qua reload. Giữ mở. [TEMPLATE_IMPORT_ACCOUNT](../../qa/rebuild-2026-10-24/TEMPLATE_IMPORT_ACCOUNT.md).
   - Phạm vi: YC-11. Nghiệm thu: NT-16.
   - Đạt khi: Nguồn giữ được, câu tách rõ, phần không hiểu có nhãn; sửa trước lưu, không tự giải giả thành đáp án trích nguồn.
 - [ ] **CV-040 — Nhập Word/ảnh và xử lý tài liệu dài.**
+  - **Hiện trạng24/10:** bổ sung pin/abort/context guard cho nhập Word và ảnh, dùng cùng quy tắc xác nhận riêng với text; request stale-account/body hỏng chặn trước đọc tệp/khóa/provider. Không gọi AI thật trong kiểm đợt này. Chưa xác nhận UI mới, Word/ảnh dài/phức tạp, kết quả OCR chuyên môn, mọi loại tài liệu. Giữ mở. [TEMPLATE_IMPORT_ACCOUNT](../../qa/rebuild-2026-10-24/TEMPLATE_IMPORT_ACCOUNT.md).
   - Phạm vi: YC-10, YC-11. Nghiệm thu: NT-16.
   - Đạt khi: Giữ hình/công thức/đoạn liên quan, thông báo cắt/thiếu, chia lô có thứ tự và chống trùng; OCR không đặt true mặc định.
 - [ ] **CV-041 — Quyền và nguồn nhập.**
@@ -211,7 +213,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-14, YC-19. Nghiệm thu: NT-06, NT-20.
   - Đạt khi: View/comment/edit/download/fork/publish phân biệt, mặc định private; public view không cấp edit/key; server kiểm từng thao tác.
 - [ ] **CV-048 — Link xem, thu hồi và phiên bản chia sẻ.**
-  - **Hiện trạng24/10:** nút sao chép ở `/share/[id]` đã chuyển sang route server `POST /api/public/share/[id]/copy` (đăng nhập, same-origin, ghim tài khoản, chỉ khi allowCopy; một bản/link/người; chỉ mang đáp án khi link hiện đáp án; bỏ gói kiến thức/kế hoạch). Unit, HTTP18/18 và UI thật đạt trên DB thử. Chủ dự án đã chốt giữ chính sách đáp án này (24/10). Còn: sao chép lại sau khi gốc đổi, hình ngoài kho, hai browser độc lập. Giữ mở; [SHARE_COPY](../../qa/rebuild-2026-10-23/SHARE_COPY.md).
+  - **Hiện trạng24/10:** Giữ copy theo version, khóa Exam/ShareLink/Question và kiểm quyền lại đã kiểm trên DB thử. C04 thiết kế publication được duyệt có giới hạn sau sửa reader tương thích/rollback fail-closed/permission refs; chưa triển khai schema hay migration. Ảnh ngoài kho/UI/hai browser vẫn mở. [DRAFT_RECOVERY_INTEGRATION](../../qa/rebuild-2026-10-24/DRAFT_RECOVERY_INTEGRATION.md).
   - Phạm vi: YC-19. Nghiệm thu: NT-06, NT-20.
   - Đạt khi: Link dùng ID/quyền riêng, chính sách đáp án, hết hạn/thu hồi; bản công bố không vô tình trỏ nháp.
 - [ ] **CV-049 — Cùng sửa đồng thời.**
@@ -242,27 +244,30 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-20, YC-21. Nghiệm thu: NT-21, NT-22.
   - Đạt khi: FREE_NAME/danh sách/mã có kiểm server, membership và PIN nếu bật; người biết ID không được đọc/sửa/nộp bài khác.
 - [ ] **CV-056 — Thời gian, số lượt và cạnh tranh start.**
+  - **Hiện trạng24/10:** HTTP/PG thử đã kiểm start đồng thời cùng học sinh chỉ tạo một lượt, cookie trình duyệt khác không chiếm lượt; opensAt tương lai/closesAt đã qua từ chối start. Nháp sau hạn bị chặn, nộp ngoài grace chỉ dùng draft đã nhận. Chưa UI thời gian thật/hai browser và đầy đủ gia hạn–mở lại, giữ mở. [PUBLIC_POLICIES_AND_NONNUMERIC](../../qa/rebuild-2026-10-24/PUBLIC_POLICIES_AND_NONNUMERIC.md).
   - Phạm vi: YC-20, YC-21. Nghiệm thu: NT-22.
   - Đạt khi: Kiểm opensAt/closesAt/deadline/status, lượt hết hạn xử lý rõ; start đồng thời không tạo trùng hoặc lỗi unique vô nghĩa.
 - [ ] **CV-057 — Lưu nháp và resume thật.**
-  - **Hiện trạng24/10:** nháp có CAS theo hash nội dung, row-lock cho draft và submit, client lưu tuần tự và dừng khi xung đột (tải JSON được). Mới thêm nhật ký trên trình duyệt cho câu chưa gửi: đóng tab/mất mạng rồi mở lại cùng trình duyệt thì khôi phục và tự lưu lại, không ghi đè khi máy chủ đã đổi (báo xung đột), xóa khi nộp; UI thật đạt trên DB thử. Còn: xung đột nhật ký chỉ kiểm bằng unit, hai browser độc lập/đổi máy, nhập lại JSON đã tải, hai tab cùng lượt, phản hồi chậm. Không đóng CV. [STUDENT_DRAFT_CAS](../../qa/rebuild-2026-10-23/STUDENT_DRAFT_CAS.md), [STUDENT_DRAFT_JOURNAL](../../qa/rebuild-2026-10-23/STUDENT_DRAFT_JOURNAL.md), [ASSIGNMENT_ACCESS_AND_STUDENT_FLOW](../../qa/rebuild-2026-10-23/ASSIGNMENT_ACCESS_AND_STUDENT_FLOW.md).
+  - **Hiện trạng24/10:** journal riêng từng trang, giữ nhiều bản/raw hỏng/nhập JSON chỉ xem-chọn và không rebase; tự nộp khi conflict chỉ dùng draft máy chủ. Thêm timeout bao gửi/đọc body, lỗi nộp có retry và tải bản dự phòng ngoài vùng khóa khi hết giờ; mobile thấy trạng thái lưu. Build/SAFE/HTTP thử đạt. UI mới, offline thật/hai browser/đổi máy/late ACK chưa kiểm do CUA lỗi. Không đóng CV. [RESTORE_NETWORK_SHARE](../../qa/rebuild-2026-10-24/RESTORE_NETWORK_SHARE.md).
   - Phạm vi: YC-21. Nghiệm thu: NT-04, NT-23.
   - Đạt khi: Method/body chuẩn, kiểm res.ok, trạng thái mạng; reload lấy đúng nháp, không ghi đè câu mới bởi request chậm.
 - [ ] **CV-058 — Giao diện làm bài đủ dạng.**
   - Phạm vi: YC-10, YC-21. Nghiệm thu: NT-16, NT-23.
   - Đạt khi: Tự luận có ô trả lời, đúng-sai/điền/ghép/sắp xếp dùng được, tệp/hình/âm thanh theo đề; cuộn/keyboard/mobile đúng.
 - [ ] **CV-059 — Chấm server và nộp lặp an toàn.**
+  - **Hiện trạng24/10:** giữ CAS/row-lock/retry nộp an toàn và response/snapshot. Đã sửa submit lưu tổng null cho survey/comment_only/rubric thay vì0 giả; bài scored tổng/tối đa0 vẫn giữ0. HTTP kiểm GET và submit lặp theo chính sách hiện tại, không sửa bài đã nộp. Nhánh student/group lưu trữ chặn cả nộp lặp. Chưa tổng nghiệm thu mọi dạng/UI, giữ mở. [PUBLIC_POLICIES_AND_NONNUMERIC](../../qa/rebuild-2026-10-24/PUBLIC_POLICIES_AND_NONNUMERIC.md).
   - Phạm vi: YC-09, YC-21, YC-22. Nghiệm thu: NT-24.
   - Đạt khi: Zero/false/blank phân biệt, số/biểu thức theo câu, đáp án thiếu không nhận blank đúng; submit đồng thời một kết quả, trả điểm đúng chính sách ở mọi nhánh.
 - [ ] **CV-060 — Chấm tay, đính chính và điểm chốt.**
-  - **Hiện trạng24/10:** API chấm tay có token nền điểm, nền cũ trả409`GRADE_CONFLICT` không đổi DB, lịch sử AuditLog cùng transaction (chủ bài xem50sự kiện gần nhất); HTTP đạt các ca chấm đồng thời, gửi lại sau mất receipt, đổi tài khoản và giáo viên khác. UI: phản hồi chi tiết đến muộn không lẫn sang bài khác, lỗi chấm giữ ô nhập và retry đúng. UI hai tab chấm cùng câu đã chạy 24/10 (A200, B từ nền cũ409 giữ ô và báo, A khôi phục điểm, lịch sử2bản); lint nhóm chạy lại: file mới sạch, chỉ trang giáo viên kế thừa. Chưa hai browser độc lập, chưa paging/khôi phục điểm từ lịch sử, đính chính đáp án/regrade. Mã tại commit `28d5d8e`. Không đóng CV. Bằng chứng: [MANUAL_GRADE_CAS_AND_HISTORY](../../qa/rebuild-2026-10-23/MANUAL_GRADE_CAS_AND_HISTORY.md), [TEACHER_DETAIL_REVIEW](../../qa/rebuild-2026-10-23/TEACHER_DETAIL_REVIEW.md).
+  - **Hiện trạng24/10:** Giữ restore lịch sử/CAS/row-lock/audit và phân biệt pending/điểm0 đã kiểm. Đã mount nháp chấm theo từng lần mở/writer: khôi phục giữ base, chặn rubric chưa hỗ trợ, đối chiếu GET sau lưu trước dọn bản gửi, giữ nháp nếu receipt khác/ngữ cảnh đổi. Có tải RAM. Unit/render tĩnh/build/API DB thử đạt; UI mới/hai browser/regrade còn mở. C05 thiết kế đang yêu cầu sửa, chưa triển khai. [DRAFT_RECOVERY_INTEGRATION](../../qa/rebuild-2026-10-24/DRAFT_RECOVERY_INTEGRATION.md).
   - Phạm vi: YC-22. Nghiệm thu: NT-24, NT-25.
   - Đạt khi: Tự luận pending, chỉnh rubric/điểm có lịch sử, regrade có phạm vi/phiên bản; bài cũ không đổi ngầm khi sửa ngân hàng.
 - [ ] **CV-061 — Theo dõi, phản hồi và bảng điểm.**
-  - **Hiện trạng24/10:** bảng điểm dùng dữ liệu thật (bỏ kết quả giả0), nhãn chờ chấm/số nộp đúng, chỉ điểm chốt tính trung bình, bảng xếp hạng mặc định tắt; CSV và hash nguồn đối chiếu đúng; trang chi tiết đọc được ghép/sắp xếp/đúng-sai, giữ0/false, câu chưa làm ghi "Chưa trả lời"; thống kê đổi đúng sau chấm tay (HTTP). Còn gia hạn/mở lại và nhiều chính sách nhận xét (UI hai tab chấm đã kiểm); raw JSON nguồn không nhận diện vẫn hiện nguyên để không đoán. Không đóng CV. Bằng chứng: [ASSIGNMENT_ACCESS_AND_STUDENT_FLOW](../../qa/rebuild-2026-10-23/ASSIGNMENT_ACCESS_AND_STUDENT_FLOW.md), [TEACHER_DETAIL_REVIEW](../../qa/rebuild-2026-10-23/TEACHER_DETAIL_REVIEW.md), [MANUAL_GRADE_CAS_AND_HISTORY](../../qa/rebuild-2026-10-23/MANUAL_GRADE_CAS_AND_HISTORY.md).
+  - **Hiện trạng24/10:** Giữ monitor/CSV bài không số và dữ liệu null đã kiểm. Panel nháp nhận xét không hiện điểm giả; có chọn khôi phục và tải bản đang nhập, không tự gửi điểm. Render tĩnh/build/API DB thử đạt, chưa thao tác đóng/mở/reload trên browser mới. Gia hạn/mở lại và các tiêu chí khác giữ mở. [DRAFT_RECOVERY_INTEGRATION](../../qa/rebuild-2026-10-24/DRAFT_RECOVERY_INTEGRATION.md).
   - Phạm vi: YC-20, YC-22. Nghiệm thu: NT-25.
   - Đạt khi: Danh sách bài/lượt, progress, gia hạn/mở lại có quyền, thống kê/CSV; leaderboard tùy chọn mặc định tắt và không lộ toàn lớp.
 - [ ] **CV-062 — Hồi quy link và toàn luồng học sinh.**
+  - **Hiện trạng24/10:** HTTP/PG thử bổ sung ma trận NEVER ở OPEN/CLOSED/ARCHIVED, AFTER_CLOSE theo trạng thái/thời gian, IMMEDIATE; GET và submit idempotent áp dụng quyền hiện tại. Link đề luôn bỏ lời giải, bảng xếp hạng không hiện khi ẩn điểm và top có ẩn tên; cookie thiếu/sai/lượt khác bị chặn. Student/group lưu trữ không dùng capability cũ, teacher vẫn xem dữ liệu. Chưa UI/hai browser/race archive đang ghi/toàn bộ reveal combinations, giữ mở. [PUBLIC_POLICIES_AND_NONNUMERIC](../../qa/rebuild-2026-10-24/PUBLIC_POLICIES_AND_NONNUMERIC.md).
   - Phạm vi: YC-19, YC-20, YC-21, YC-22. Nghiệm thu: NT-06, NT-21, NT-22, NT-24, NT-25.
   - Đạt khi: Thử khách, giáo viên khác, link cũ, đã đóng, đã nộp, AFTER_CLOSE/NEVER; không lộ lời giải trong payload/metadata/file khi chưa được phép.
 
@@ -272,6 +277,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-23, YC-25. Nghiệm thu: NT-26.
   - Đạt khi: Lưu nguồn/version/trang/câu, nhận xét/bằng chứng/điều chưa chắc; Markdown liên kết dữ liệu gốc, không chỉ một đoạn chat.
 - [ ] **CV-064 — Bộ nhớ cá nhân có quyền kiểm soát.**
+  - **Hiện trạng24/10:** Đã mount journal riêng từng owner/writer trong ghi chú AI: chọn khôi phục, xác nhận thay form, ACK đúng nội dung mới dọn bản gửi, giữ chữ gõ sau gửi; có tải raw/RAM. Nhãn ghi chú riêng không hứa AI tự học hay xác nhận chuyên môn. Helper/render tĩnh/build/API DB thử đạt; UI mới, chất lượng dùng ghi chú và tiêu chí còn lại chưa nghiệm thu. [DRAFT_RECOVERY_INTEGRATION](../../qa/rebuild-2026-10-24/DRAFT_RECOVERY_INTEGRATION.md).
   - Phạm vi: YC-23. Nghiệm thu: NT-26.
   - Đạt khi: Sở thích khác kiến thức đã duyệt, xem/sửa/xóa/không dùng lại; không tự gắn QUESTION_VERIFIED từ confidence.
 - [ ] **CV-065 — Đóng góp kho chung chủ động.**
@@ -287,6 +293,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-15, YC-16, YC-23, YC-27. Nghiệm thu: NT-15, NT-26, NT-28.
   - Đạt khi: So sánh cùng tập đánh giá độc lập, đúng scope/đáp án/điểm và tỷ lệ giáo viên sửa; không lấy số phân tích hoặc lượt dùng làm thước đo duy nhất.
 - [ ] **CV-069 — Xuất dữ liệu cá nhân và tái tạo chỉ mục.**
+  - **Hiện trạng24/10:** Giữ archive nhập/xuất theo tài khoản đã kiểm API, không tự bật hoặc ghi đè. Bổ sung tải journal/raw và bản RAM để giữ/đối chiếu khi storage lỗi; chưa có nhập tệp nháp và chưa kiểm tải thực trên browser. Không thay backup DB/tệp; tái tạo chỉ mục/chuyển máy giữ mở. [DRAFT_RECOVERY_INTEGRATION](../../qa/rebuild-2026-10-24/DRAFT_RECOVERY_INTEGRATION.md).
   - Phạm vi: YC-23, YC-24. Nghiệm thu: NT-26, NT-27.
   - Đạt khi: Bản sao giữ câu/đáp án/phân tích/tệp/nguồn/quyền cần thiết, không key; dữ liệu gốc đủ để dựng lại chỉ mục tìm kiếm.
 
@@ -395,6 +402,7 @@ Chỉ chuyển `[ ]` sang `[x]` sau khi tiêu chí đạt. Nếu có blocker, gi
 - Mỗi CV giữ đúng một dòng `**Hiện trạng<ngày>:**`, viết đè khi có đợt mới: đã có gì, còn thiếu gì, giữ mở hay đạt, và liên kết báo cáo nhóm. CV `[x]` giữ thêm dòng bằng chứng nghiệm thu. Ngày 24/10 đã gom các CV có từ hai dòng đợt trở lên; CV chỉ có một dòng đợt vẫn giữ nhãn cũ (dòng đó là hiện trạng) và đổi sang khuôn mới ở lần cập nhật kế tiếp.
 - Số test, tên log, thời điểm chạy và giới hạn chi tiết chỉ ghi trong báo cáo nhóm `qa/rebuild-<ngày>/`. Checklist, hồ sơ 02 và báo cáo tiến độ không chép lại các con số này.
 - Dòng cũ không còn là hiện trạng thì chuyển nguyên văn sang `docs/lich-su/` (hoặc để lịch sử Git), không xóa mất. Không xóa hoặc đổi "Phạm vi"/"Đạt khi" khi viết đè hiện trạng.
+- **Mức "đạt trong phạm vi pilot" (chủ dự án duyệt 24/10/2026, kế hoạch [04_MOC_PILOT](../phoi-hop-ai/04_MOC_PILOT.md)):** CV tiện ích có thể ghi dòng "Hiện trạng … đạt trong phạm vi pilot" khi có kiểm tự động trên giao diện, kiểm API/DB và danh sách giới hạn. CV về quyền, mất dữ liệu, lộ đáp án, sai điểm giữ tiêu chí đầy đủ. Mức này không đổi dấu `[x]`, không thay "Đạt khi", không thay tổng nghiệm thu CV078.
 
 Mẫu ghi cho mỗi CV:
 

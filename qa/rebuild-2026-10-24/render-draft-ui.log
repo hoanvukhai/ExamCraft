@@ -1,0 +1,22 @@
+TAP version 13
+# Subtest: the rendered recovery panels never show malformed raw bytes from another account
+ok 1 - the rendered recovery panels never show malformed raw bytes from another account
+  ---
+  duration_ms: 9.931
+  type: 'test'
+  ...
+# Subtest: comment-only recovery does not label an unsent comment as a pending numeric grade
+ok 2 - comment-only recovery does not label an unsent comment as a pending numeric grade
+  ---
+  duration_ms: 1.6859
+  type: 'test'
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 534.9101

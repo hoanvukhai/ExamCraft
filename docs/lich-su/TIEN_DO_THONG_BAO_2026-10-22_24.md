@@ -47,3 +47,35 @@ Nhóm vận hành23/10 đã hoàn tất kiểm local CV072: gói backup mới c�
 Đã bảo toàn dữ liệu và áp dụng cập nhật cấu trúc DB sau khi thử phục hồi/cài mới; 20 bảng cũ giữ nguyên số dòng và dấu kiểm nội dung. Phần gói kiến thức đã lưu/mở lại được: chọn phạm vi, loại trừ phần chưa học, giới hạn phương pháp và gắn kiến thức vào từng câu. Có cảnh báo khi câu nằm ngoài phạm vi hoặc gói đổi phiên bản.
 
 Đường sinh bản nháp đã mở lên 7 dạng câu, có bước xem đề xuất trước khi áp dụng và giữ tiêu đề riêng. Các kiểm thử cấu trúc dùng dữ liệu giả; chưa gọi AI thật hoặc duyệt nội dung chương trình toàn môn. Tại mốc22/10, kiểm thử mặc định đạt20+101, bản dựng và14/14 kiểm thử API đạt trên DB thử; không coi đây là vòng runtime mới23/10. Chưa hoàn tất S0–S9 và chưa yêu cầu chủ dự án tổng nghiệm thu.
+
+
+### Chuyển khi cập nhật journal và lịch sử24/10
+
+Đợt nháp học sinh 24/10: đã chặn trang cũ ghi đè nháp hoặc nộp đè bản mới; khi xung đột giữ câu đang nhập và tải bản sao được. Kiểm hai tab thật: A lưu bản mới, B bị chặn và tải được nội dung riêng, A nộp đúng; DB thử và dữ liệu nguồn giữ nguyên. Bản dựng, kiểm thử API và kiểm thử nền đạt. Chưa phục hồi nháp học sinh sau đóng trang/mất điện; chưa tổng nghiệm thu. [Báo cáo](../../qa/rebuild-2026-10-23/STUDENT_DRAFT_CAS.md).
+
+### Chuyển khi tích hợp restore/nhận xét24/10
+
+Đợt chấm tay, lưu Git và gọn hồ sơ 24/10: chấm từ trang cũ hoặc hai người chấm cùng lúc không còn ghi đè nhau; người gửi sau được báo xung đột và giữ điểm đang nhập. Mỗi lần chấm có lịch sử trước/sau, chỉ chủ bài xem được. Trang chi tiết đọc được câu ghép/sắp xếp/đúng-sai và không bị phản hồi chậm của bài khác chen vào. Bản dựng, kiểm thử nền và kiểm thử API đều đạt sau lần sửa mã cuối; chưa kiểm giao diện hai tab chấm cùng câu, lint nhóm này chưa kết luận. Toàn bộ thay đổi từ 22/10 đã commit local trên nhánh `rebuild/2026-10-local`, chưa push; `.env` và `backups/` không vào Git. Hồ sơ đã gọn: số liệu chỉ ghi ở báo cáo nhóm, nhật ký cũ chuyển vào `docs/lich-su/`. Phát hiện cần xử lý, đã ghi checklist: sao chép từ link chia sẻ chỉ lưu trên trình duyệt (CV048), model AI mặc định lệch (CV032). Chỉ DB thử, không AI thật. [Chấm tay](../../qa/rebuild-2026-10-23/MANUAL_GRADE_CAS_AND_HISTORY.md), [đọc chi tiết](../../qa/rebuild-2026-10-23/TEACHER_DETAIL_REVIEW.md).
+
+### Chuyển khi kiểm chính sách public/bài không số24/10
+
+Đợt dài 24/10 (chấm tay, sao chép từ link chia sẻ, giữ nháp học sinh): ba lỗi/thiếu sót đã xử lý. Chấm từ trang cũ hoặc hai người chấm cùng lúc không còn ghi đè nhau và mỗi lần chấm có lịch sử. Nút "Tạo bản sao để sửa" ở link chia sẻ trước chỉ lưu trên trình duyệt, nay tạo đề trong kho của giáo viên trên máy chủ; bản sao chỉ mang đáp án khi link cho hiện đáp án. Học sinh làm dở rồi đóng tab hoặc mất mạng, mở lại cùng trình duyệt sẽ thấy lại các câu đã làm. Kiểm trên giao diện thật với DB thử; bản dựng, kiểm thử nền và API đạt sau sửa cuối. Toàn bộ nằm trong các commit local trên nhánh `rebuild/2026-10-local`, chưa push. Chính sách đáp án của bản sao đã chốt giữ, model mặc định đã thống nhất ở đợt sau. [Tổng hợp](../../qa/rebuild-2026-10-23/TONG_HOP_DOT_2026-10-24.md).
+
+### Chuyển khi tích hợp template/nhập tài khoản24/10
+
+Đợt nháp nhiều trang và phối hợp AI24/10: đã tách bản nháp học sinh theo từng trang, giữ các bản chưa nộp và thêm mở lại tệp JSON để đối chiếu. Khi hết giờ mà nháp xung đột, hệ thống chỉ nộp bản đã lưu trên máy chủ. Đã tích hợp phần tải thêm lịch sử chấm do Claude làm; bản build và kiểm thử trên DB thử đạt. Giao diện mới còn cần kiểm vì công cụ điều khiển trình duyệt đang lỗi. Claude được giao tiếp phần khôi phục điểm từ lịch sử và soạn nhận xét có nút Lưu; Gemini rà trải nghiệm và ca kiểm. Tôi giữ tích hợp và kiểm thử chung, không ghi dữ liệu thật. Chưa tổng nghiệm thu. [Báo cáo](../../qa/rebuild-2026-10-24/STUDENT_WRITERS_IMPORT_AND_HISTORY.md).
+
+
+Đợt khôi phục điểm, nhận xét và nộp khi mất mạng24/10: đã tích hợp phần Claude làm, có xem trước/xác nhận khôi phục lịch sử và nút Lưu điểm/nhận xét. Kiểm trên DB thử cho thấy giữ nguyên bài làm, phân biệt chờ chấm với điểm0, không ghi đè điểm mới và không nhân lịch sử khi thử lại; bài chỉ nhận xét không bị tạo điểm số. Học sinh có đường thử nộp lại/tải bản dự phòng khi mất mạng lúc hết giờ và thấy trạng thái lưu trên điện thoại. Trang chia sẻ đã sửa nút Word và bỏ đường làm bài cũ. Bản build và kiểm thử nền/API đạt; giao diện mới còn chờ kiểm vì công cụ trình duyệt lỗi. Dữ liệu thật giữ nguyên, chưa tổng nghiệm thu. [Báo cáo](../../qa/rebuild-2026-10-24/RESTORE_NETWORK_SHARE.md).
+
+
+Đợt chính sách kết quả và bài không chấm điểm24/10: đã tìm và sửa lỗi khảo sát/nhận xét bị lưu điểm0 giả dù giao diện ẩn. Tổng mới dùng không áp dụng; dữ liệu cũ được giữ, các màn hình/thống kê/CSV đọc đúng chế độ và không biến thành điểm0. Bài chấm điểm thật có tổng0 vẫn giữ0. Link/cookie cũ không vượt trạng thái lưu trữ học sinh/lớp, giáo viên vẫn xem dữ liệu. Kiểm thử nền và HTTP trên DB thử đạt các ca công bố đáp án, nộp lặp, hết hạn và start đồng thời; giao diện mới chưa kiểm do công cụ lỗi. Claude đang xử lý mẫu cá nhân khi mạng chậm, Gemini đang rà caller tài khoản và chính sách public; tôi giữ tích hợp/kiểm cuối. [Báo cáo](../../qa/rebuild-2026-10-24/PUBLIC_POLICIES_AND_NONNUMERIC.md).
+
+
+Đợt mẫu cá nhân và nhập tài liệu24/10: đã tích hợp phần Claude làm để phản hồi chậm, thử lại và đổi tài khoản không làm áp dụng mẫu vào bản đề khác. Phần nhập Word/ảnh/văn bản nay kiểm đúng tài khoản trước xử lý AI và trước đưa câu vào đề, giữ bản xem trước khi lỗi. Bản build và kiểm thử nền/API trên DB thử đạt, không gọi AI thật hoặc ghi dữ liệu thật. Giao tiếp Claude phần ghi nhớ AI riêng; Gemini đính chính các nhận định audit sai sau đối chiếu mã và rà chính sách. Giao diện mới vẫn chưa kiểm do công cụ lỗi; chưa tổng nghiệm thu. [Báo cáo](../../qa/rebuild-2026-10-24/TEMPLATE_IMPORT_ACCOUNT.md).
+
+
+Đợt ghi chú AI riêng và sao chép đề24/10: đã tích hợp phần Claude làm, bổ sung kiểm đúng tài khoản, giữ nội dung khi lưu lỗi hoặc phản hồi chậm; xuất/nhập ghi chú chỉ vào kho riêng. Sao chép đề nay theo phiên bản nguồn, giữ bản cũ đã sửa và không tạo trùng khi hai yêu cầu đến cùng lúc. Build và kiểm thử nền/API trên DB thử đạt, giữ dữ liệu thật và không gọi AI thật. Giao tiếp Claude phần modal quản lý khóa AI, Gemini rà lại độ chính xác audit; chưa xác nhận hai nhiệm vụ mới bắt đầu. Giao diện mới vẫn chờ công cụ kiểm hoạt động, chưa tổng nghiệm thu. [Báo cáo](../../qa/rebuild-2026-10-24/MEMORY_AND_SHARE_VERSION.md).
+
+
+Đợt kiểm sao chép khi quyền thay đổi24/10: đã sửa để quyền chia sẻ và phiên bản đề được đọc lại cùng lúc tạo bản sao. Kiểm trên DB thử cả hai chiều cho thấy nguồn sửa/link thu hồi trước thì chặn copy; copy đã được phép chạy trước thì thu hồi chờ và giữ bản riêng hợp lệ. Build và kiểm thử API đạt, giữ nguyên dữ liệu thật. Claude/Gemini chưa xác nhận nhiệm vụ mới; phần kiểm giao diện vẫn còn chờ công cụ, chưa tổng nghiệm thu. [Báo cáo](../../qa/rebuild-2026-10-24/SHARE_TRANSACTION_REVALIDATION.md).

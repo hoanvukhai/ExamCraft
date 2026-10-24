@@ -1,0 +1,32 @@
+# Ghi nhớ AI riêng: ghim tài khoản và giữ nội dung khi mạng chậm — Claude, 24/10/2026
+
+Task CLAUDE-MEMORY-ACCOUNT-SAFETY (generation 6), CV011/063–069. Nhánh `ai/claude-grade-history`, worktree `tmp/ai-claude-grade-history`. Chưa push/merge. Commit MỚI sau f85712e, theo thứ tự:
+
+1. `b19745f` — `src/lib/ai-memory-request-context.ts` (mới), `tests/ai_memory_request_context.test.ts` (mới)
+2. `7d713b6` — `src/app/api/teacher/ai-memory/route.ts`, `archive/route.ts`, `analyze/route.ts`
+3. `d75bbea` — `src/components/AiLearningModal.tsx`
+
+Chỉ sửa tệp trong `allowed_code`. Không migration/schema/dependency; không DB/server/build/provider.
+
+## Máy chủ
+- Mọi handler (GET/POST/DELETE của `ai-memory`, GET/POST của `archive`, POST của `analyze`) dùng `requireRequestAuth(req)` **đầu tiên**: tài khoản (`x-examcraft-user` không khớp → 409 `ACCOUNT_CHANGED`) và cùng nguồn gốc (mọi method ghi) được chốt trước khi đọc body, DB, khóa hay nhà cung cấp. Chủ sở hữu luôn là user thực; body không có `userId`. Bỏ các nhánh `if (!user)` chết.
+- `ai-memory` POST: cập nhật (có `id`) dùng schema strict (`isActive/title/insight/category`), `updateMany` theo `{id, userId}` nên ghi chú không thuộc mình trả **404** (trước đây Prisma ném lỗi nên ra 500 chung). Tạo mới validate kiểu và độ dài, nhận `clientRequestId` (uuid, tùy chọn): ID ghi chú = hash(owner, clientRequestId). Gửi lại cùng mã và cùng nội dung → 200 `replayed:true` cùng ghi chú, không tạo bản trùng; cùng mã nhưng nội dung khác → 409. Không có `clientRequestId` thì hành vi cũ. GET và các thao tác ghi trả `Cache-Control: private, no-store`. DELETE trả `deleted` (xóa không có hàng vẫn 200, idempotent).
+- Giữ nguyên: private mặc định, xem trước nhập không ghi, nhập xác nhận chỉ tạo mục tắt (`isActive:false`), xuất `no-store`, ID nhập `memoryImportId`, `upsertTeacherAiMemory` cho phân tích, đề xuất AI `AI_ANALYSIS_PENDING` chưa tự bật; không tự xóa/bật/nâng thành chuẩn chung.
+
+## Cửa sổ (AiLearningModal)
+- `AiLearningModal` (vỏ) lấy `usePinnedAccount` (ghim tài khoản của trang); khi mở thì dựng `AiLearningDialog` với `key = ownerId`, nên mỗi lần mở hoặc đổi tài khoản là một ngữ cảnh mới, không thừa kế state/request cũ. `currentUser.id` nếu có mà khác tài khoản đã ghim thì khóa kèm thông báo. Chỉ gọi `accountFetch(ownerId, …)`; không lấy user mới rồi gửi tiếp. 401 hoặc 409 `ACCOUNT_CHANGED` → khóa mọi thao tác, báo tải lại trang, giữ nguyên nội dung đang soạn.
+- `MemoryGate`: một request một lúc (chặn bấm đúp thật, không chỉ `disabled`); token gắn với gate của nó. `dispose()` khi đóng/unmount abort fetch. **Mọi** cập nhật state sau `await`, kể cả lỗi và `finally`, kiểm token còn sống: `release()` chỉ trả true cho token đang giữ chỗ (token cũ không tắt "đang bận" của request mới), `lockAccount()` chỉ khóa gate của chính token và chỉ khi token còn sống. Gate được tạo trong effect (setup/cleanup), nên khi StrictMode chạy lại hoặc mở lại thì gate cũ đã chết, phản hồi của nó không khóa/unbusy gate mới. Tải ban đầu hoãn bằng `setTimeout 0` để lần setup đầu của StrictMode bị hủy thay vì gửi request thừa.
+- Danh sách lưu kèm owner; xóa/bật/tắt kiểm `canActOnMemory` (cùng owner và ID còn trong danh sách đã tải, không dùng chỉ số). Kết quả cập nhật theo ID bằng functional updater. Phản hồi danh sách/ghi chú được kiểm bằng `parseMemoryList/parseSavedMemory` (dòng hỏng/trùng bị bỏ và báo số lượng; lỗi thì giữ danh sách đang xem). Bỏ `alert()`, dùng khung lỗi tại chỗ; thêm nút "Tải lại".
+- Soạn quy tắc: nội dung giữ khi lỗi hoặc khóa; nút Lưu dùng `clientRequestId` ổn định theo nội dung (retry không trùng, sửa nội dung thì mã mới). Biên nhận đến muộn chỉ xóa form nếu form vẫn đúng như đã gửi (`shouldClearDraft`), chữ gõ thêm sau khi bấm Lưu được giữ. Đóng khi còn nội dung chưa lưu thì hỏi xác nhận.
+- Nhập: một token cho xem trước → xác nhận → nhập, kiểm token sống sau cả hộp xác nhận; không gửi bước ghi khi chưa xác nhận. Xuất: không tải tệp nếu phản hồi đã muộn hoặc ngữ cảnh đã đóng.
+
+## Đã chạy (thuần, từ worktree)
+- `tests/ai_memory_request_context.test.ts` **9/9**: cổng một-request và release đúng chủ; dispose abort; phản hồi gate cũ (StrictMode/mở lại) không lock, không release gate mới; lock sống chặn mọi request sau nhưng request lỗi vẫn tự nhả busy; `canActOnMemory` (owner khác, chưa xác nhận, ID biến mất, chỉ số); parser danh sách/lưu; retry giữ ID, đổi nội dung đổi ID (dùng `createRequestIdentity` của template); biên nhận muộn không đè chữ mới.
+- `tsc --noEmit` toàn dự án: không lỗi. ESLint 8 tệp trong phạm vi: sạch (trước đó modal có 4 cảnh báo import thừa, đã bỏ).
+
+## Chưa chạy / giới hạn
+- Chưa chạy HTTP, DB, giao diện, build. Hành vi React (gate trong effect, khóa nút, `key` theo owner) mới qua typecheck/lint. Hàm tạo ID cho `clientRequestId` nằm trong route (cần `node:crypto`, tránh đưa vào bundle client) nên chưa có unit; Codex kiểm bằng HTTP.
+- Test mới import `createRequestIdentity` từ `template-request-context` (đã có trên main sau 58509d0). Nếu Codex đổi chữ ký ở generation 5 thì chỉnh một dòng import.
+- **Codex cần kiểm HTTP (DB thử):** (a) mọi route với `x-examcraft-user` sai → 409 `ACCOUNT_CHANGED` trước khi đọc body/chạm DB/khóa; chưa đăng nhập 401; khác origin 403; (b) GET/POST/DELETE/archive/analyze chỉ thấy và chỉ đụng ghi chú của chính mình (tài khoản khác: danh sách rỗng, DELETE `deleted:0`, update 404); (c) tạo hai lần cùng `clientRequestId` và nội dung → một ghi chú, lần hai `replayed:true`; đổi nội dung cùng mã → 409; không mã → tạo như cũ; (d) body sai kiểu hoặc thiếu tiêu đề → 400, không 500; (e) ca `http-private-memory-portability` hiện có vẫn đạt (nhập tắt mặc định, xem trước không ghi); (f) analyze không gọi nhà cung cấp khi account sai.
+- **Codex cần kiểm UI:** mở cửa sổ → tải danh sách; đổi tài khoản ở tab khác rồi bấm bất kỳ nút → khóa, nội dung soạn còn; mạng chậm: bấm Lưu hai lần nhanh chỉ một request, đóng rồi mở lại khi đang tải không để "đang bận" kẹt; lưu lỗi rồi bấm lại dùng cùng mã (xem request) và không tạo trùng; gõ thêm chữ sau khi bấm Lưu → chữ mới còn sau biên nhận; xóa/bật ghi chú đã bị xóa ở tab khác → báo, không crash; phân tích chậm rồi đóng → không cập nhật; nhập tệp: hủy ở hộp xác nhận không ghi gì.
+- Giới hạn: đóng cửa sổ khi đang phân tích chỉ hủy phía trình duyệt, máy chủ vẫn có thể hoàn tất và lưu đề xuất (hiện ở lần mở sau, chưa bật); mọi thao tác xếp một hàng (bấm "Xóa" khi đang tải bị bỏ qua); xóa dùng hộp `confirm()` gốc; bật/tắt không có khóa phiên bản (ghi cuối thắng, vì chỉ là cờ của chính chủ).
