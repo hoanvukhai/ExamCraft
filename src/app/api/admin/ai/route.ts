@@ -64,6 +64,7 @@ export async function GET() {
     });
   } catch (error: unknown) {
     const err = error as Error;
+    if (err.message === 'MUST_CHANGE_PASSWORD') return NextResponse.json({ error: 'Vui lòng đổi mật khẩu trước khi tiếp tục', code: 'MUST_CHANGE_PASSWORD' }, { status: 403 });
     if (err.message === 'UNAUTHORIZED') {
       return NextResponse.json({ error: 'Chưa đăng nhập' }, { status: 401 });
     }
@@ -129,6 +130,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Thiếu thông số xử lý' }, { status: 400 });
   } catch (error: unknown) {
     const err = error as Error;
+    if (err.message === 'MUST_CHANGE_PASSWORD') return NextResponse.json({ error: 'Vui lòng đổi mật khẩu trước khi tiếp tục', code: 'MUST_CHANGE_PASSWORD' }, { status: 403 });
     if (err.message === 'UNAUTHORIZED') {
       return NextResponse.json({ error: 'Chưa đăng nhập' }, { status: 401 });
     }

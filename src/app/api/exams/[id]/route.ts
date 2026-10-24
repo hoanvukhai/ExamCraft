@@ -1,180 +1,56 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
+import { apiErrorResponse, ApiError } from '@/lib/api-error';
+import { updateExam, updateExamSchema, checkLinkedOwners, recordExamRevision } from '@/lib/exam-persistence';
+import { fromDatabaseExam } from '@/lib/exam-document';
+import { examAccess, lockExam } from '@/lib/exam-collaboration';
+import { isSameOriginMutation } from '@/lib/attempt-access';
+import { assertRequestAccount } from '@/lib/request-account';
+type Context = { params: Promise<{ id: string }> };
 
-const UpdateExamSchema = z.object({
-  title: z.string().min(1).optional(),
-  subject: z.string().optional(),
-  grade: z.number().int().min(1).max(12).optional(),
-  durationMinutes: z.number().int().min(1).optional(),
-  metadata: z.record(z.string(), z.any()).optional(),
-  sections: z.array(z.record(z.string(), z.any())).optional(),
-  variantCount: z.number().int().min(1).max(10).optional(),
-  questionItems: z
-    .array(
-      z.object({
-        questionId: z.string(),
-        sectionId: z.string(),
-        position: z.number().int(),
-        pointsOverride: z.number().optional(),
-      })
-    )
-    .optional(),
-});
-
-// GET: Lấy chi tiết đề thi kèm toàn bộ các câu hỏi trong đề
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(_req: NextRequest, { params }: Context) {
   try {
-    const user = await requireAuth();
-    const { id } = await params;
-
-    const exam = await prisma.exam.findFirst({
-      where: { id, deletedAt: null },
-      include: {
-        owner: { select: { id: true, name: true, email: true } },
-        items: {
-          include: {
-            question: true,
-          },
-          orderBy: { position: 'asc' },
-        },
-      },
-    });
-
-    if (!exam) {
-      return NextResponse.json({ error: 'Không tìm thấy đề thi' }, { status: 404 });
-    }
-
-    if (exam.ownerId !== user.id) {
-      return NextResponse.json({ error: 'Bạn không có quyền xem đề thi này' }, { status: 403 });
-    }
-
-    return NextResponse.json({ exam });
-  } catch (error: unknown) {
-    const err = error as Error;
-    if (err.message === 'UNAUTHORIZED') {
-      return NextResponse.json({ error: 'Chưa đăng nhập' }, { status: 401 });
-    }
-    console.error('Lỗi GET /api/exams/[id]:', error);
-    return NextResponse.json({ error: 'Lỗi máy chủ khi lấy chi tiết đề thi' }, { status: 500 });
-  }
+    const user = await requireAuth(), { id } = await params;
+    assertRequestAccount(_req.headers, user.id);
+    const exam = await prisma.exam.findFirst({ where: { id, deletedAt: null }, include: { items: { include: { question: { include: { passage: true } } }, orderBy: { position: 'asc' } } } });
+    if (!exam) throw new ApiError(404, 'Không tìm thấy đề thi');
+    const permissions = await examAccess(prisma, exam, user.id);
+    checkLinkedOwners(exam, exam.ownerId);
+    return NextResponse.json({ ...(permissions.canManage ? { exam } : {}), document: fromDatabaseExam(exam), permissions }, { headers: { 'Cache-Control': 'no-store' } });
+  } catch (error) { return apiErrorResponse(error, 'Không tải được đề thi'); }
 }
 
-// PATCH: Cập nhật đề thi
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(req: NextRequest, { params }: Context) {
   try {
-    const user = await requireAuth();
-    const { id } = await params;
-    const body = await req.json();
-    const parsed = UpdateExamSchema.safeParse(body);
-
-    if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0]?.message || 'Dữ liệu không hợp lệ' },
-        { status: 400 }
-      );
-    }
-
-    const currentExam = await prisma.exam.findFirst({
-      where: { id, deletedAt: null },
-    });
-
-    if (!currentExam) {
-      return NextResponse.json({ error: 'Không tìm thấy đề thi' }, { status: 404 });
-    }
-
-    if (currentExam.ownerId !== user.id) {
-      return NextResponse.json({ error: 'Bạn không có quyền sửa đề thi này' }, { status: 403 });
-    }
-
-    const { questionItems, ...updateData } = parsed.data;
-
-    const updatedExam = await prisma.$transaction(async (tx) => {
-      const exam = await tx.exam.update({
-        where: { id },
-        data: {
-          ...updateData,
-          version: currentExam.version + 1,
-        },
-      });
-
-      // Nếu có cập nhật danh sách câu hỏi trong đề
-      if (questionItems !== undefined) {
-        await tx.examQuestion.deleteMany({ where: { examId: id } });
-        if (questionItems.length > 0) {
-          await tx.examQuestion.createMany({
-            data: questionItems.map((item) => ({
-              examId: id,
-              questionId: item.questionId,
-              sectionId: item.sectionId,
-              position: item.position,
-              pointsOverride: item.pointsOverride,
-            })),
-          });
-        }
-      }
-
-      return exam;
-    });
-
-    return NextResponse.json({
-      success: true,
-      exam: updatedExam,
-      message: 'Cập nhật đề thi thành công!',
-    });
-  } catch (error: unknown) {
-    const err = error as Error;
-    if (err.message === 'UNAUTHORIZED') {
-      return NextResponse.json({ error: 'Chưa đăng nhập' }, { status: 401 });
-    }
-    console.error('Lỗi PATCH /api/exams/[id]:', error);
-    return NextResponse.json({ error: 'Lỗi máy chủ khi cập nhật đề thi' }, { status: 500 });
-  }
+    if (!isSameOriginMutation(req)) throw new ApiError(403, 'Yêu cầu không hợp lệ');
+    const user = await requireAuth(), { id } = await params;
+    assertRequestAccount(req.headers, user.id);
+    const parsed = updateExamSchema.safeParse(await req.json());
+    if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message ?? 'Dữ liệu không hợp lệ' }, { status: 400 });
+    const exam = await prisma.$transaction(tx => updateExam(tx, user.id, id, parsed.data), { timeout: 30000 });
+    const permissions = await examAccess(prisma, exam, user.id);
+    return NextResponse.json({ success: true, ...(permissions.canManage ? { exam } : {}), document: fromDatabaseExam(exam), permissions }, { headers: { 'Cache-Control': 'no-store' } });
+  } catch (error) { return apiErrorResponse(error, 'Chưa cập nhật được đề thi'); }
 }
 
-// DELETE: Xóa mềm đề thi
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(req: NextRequest, { params }: Context) {
   try {
-    const user = await requireAuth();
-    const { id } = await params;
-
-    const currentExam = await prisma.exam.findFirst({
-      where: { id, deletedAt: null },
+    if (!isSameOriginMutation(req)) throw new ApiError(403, 'Yêu cầu không hợp lệ');
+    const user = await requireAuth(), { id } = await params;
+    assertRequestAccount(req.headers, user.id);
+    const baseVersion = Number(req.headers.get('if-match')?.replaceAll('"', '') ?? new URL(req.url).searchParams.get('baseVersion'));
+    if (!Number.isInteger(baseVersion) || baseVersion < 1) throw new ApiError(428, 'Cần tải lại phiên bản đề trước khi chuyển vào thùng rác', 'VERSION_REQUIRED');
+    await prisma.$transaction(async tx => {
+      await lockExam(tx, id);
+      const exam = await tx.exam.findFirst({ where: { id, ownerId: user.id, deletedAt: null }, include: { items: { include: { question: { include: { passage: true } } }, orderBy: { position: 'asc' } } } });
+      if (!exam) throw new ApiError(404, 'Không tìm thấy đề thi của bạn');
+      await recordExamRevision(tx, exam, null, 'Bản nền trước khi chuyển vào thùng rác');
+      const result = await tx.exam.updateMany({ where: { id, ownerId: user.id, version: baseVersion, deletedAt: null }, data: { deletedAt: new Date(), version: { increment: 1 } } });
+      if (!result.count) throw new ApiError(409, 'Đề đã thay đổi; hãy tải lại danh sách', 'VERSION_CONFLICT');
+      const saved = { ...exam, version: exam.version + 1 };
+      await recordExamRevision(tx, saved, user.id, 'Chuyển vào thùng rác');
     });
-
-    if (!currentExam) {
-      return NextResponse.json({ error: 'Không tìm thấy đề thi' }, { status: 404 });
-    }
-
-    if (currentExam.ownerId !== user.id) {
-      return NextResponse.json({ error: 'Bạn không có quyền xóa đề thi này' }, { status: 403 });
-    }
-
-    await prisma.exam.update({
-      where: { id },
-      data: { deletedAt: new Date() },
-    });
-
-    return NextResponse.json({
-      success: true,
-      message: 'Đã xóa đề thi thành công!',
-    });
-  } catch (error: unknown) {
-    const err = error as Error;
-    if (err.message === 'UNAUTHORIZED') {
-      return NextResponse.json({ error: 'Chưa đăng nhập' }, { status: 401 });
-    }
-    console.error('Lỗi DELETE /api/exams/[id]:', error);
-    return NextResponse.json({ error: 'Lỗi máy chủ khi xóa đề thi' }, { status: 500 });
-  }
+    return NextResponse.json({ success: true });
+  } catch (error) { return apiErrorResponse(error, 'Chưa chuyển được đề vào thùng rác'); }
 }

@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
-import { Question } from '@/types/exam';
+import React, { useState, useRef, useEffect } from 'react';
+import { Question, Subject, Passage } from '@/types/exam';
+import { getCatalogSubjects } from '@/lib/education-catalog';
 import { parseExTestLatex, parseRawVietnameseText } from '@/lib/exam-parser';
 import { MathRenderer } from './MathRenderer';
 import { 
@@ -26,7 +27,8 @@ import {
 interface ImportModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onImportQuestions: (questions: Question[]) => void;
+  onImportQuestions: (questions: Question[], context: { subject: Subject; grade: number; passages?: Passage[] }) => void;
+  context?: { subject: Subject; grade: number };
   apiKey: string;
 }
 
@@ -37,7 +39,10 @@ export const ImportModal: React.FC<ImportModalProps> = ({
   onClose,
   onImportQuestions,
   apiKey,
+  context,
 }) => {
+  const [importGrade, setImportGrade] = useState(context?.grade ?? 0);
+  const [importSubject, setImportSubject] = useState<Subject | ''>(context?.subject ?? '');
   const [sourceType, setSourceType] = useState<ImportSourceType>('image');
   
   // State cho ảnh
@@ -51,12 +56,20 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 
   // State kết quả bóc tách
   const [parsedQuestions, setParsedQuestions] = useState<Question[]>([]);
+  const [parsedPassages, setParsedPassages] = useState<Passage[]>([]);
+  const [importWarnings, setImportWarnings] = useState<string[]>([]);
+  const parseRequest = useRef(0);
   const [isLoading, setIsLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const wordInputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    parseRequest.current += 1;
+    setParsedQuestions([]); setParsedPassages([]); setImportWarnings([]);
+    setStatusMessage(null); setErrorMessage(null); setIsLoading(false);
+  }, [sourceType, rawText, selectedImage, wordFile, isOpen]);
 
   if (!isOpen) return null;
 
@@ -107,6 +120,8 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 
   // Bắt đầu quá trình bóc tách
   const handleStartParsing = async () => {
+    const requestId = ++parseRequest.current;
+    setParsedQuestions([]); setParsedPassages([]); setImportWarnings([]);
     setIsLoading(true);
     setStatusMessage(null);
     setErrorMessage(null);
@@ -129,8 +144,11 @@ export const ImportModal: React.FC<ImportModalProps> = ({
         });
 
         const data = await res.json();
+        if (requestId !== parseRequest.current) return;
         if (data.success && data.questions) {
           setParsedQuestions(data.questions);
+          setParsedPassages(data.passages ?? []);
+          setImportWarnings(data.warnings ?? []);
           setStatusMessage(`AI Vision đã nhận diện thành công ${data.questions.length} câu hỏi từ ảnh chụp!`);
         } else {
           setErrorMessage(data.error || 'Không thể bóc tách câu hỏi từ ảnh.');
@@ -152,8 +170,11 @@ export const ImportModal: React.FC<ImportModalProps> = ({
         });
 
         const data = await res.json();
+        if (requestId !== parseRequest.current) return;
         if (data.success && data.questions) {
           setParsedQuestions(data.questions);
+          setParsedPassages(data.passages ?? []);
+          setImportWarnings(data.warnings ?? []);
           setStatusMessage(`Đã bóc tách thành công ${data.questions.length} câu hỏi từ file Word!`);
         } else {
           setErrorMessage(data.error || 'Không thể phân rã nội dung từ file Word.');
@@ -190,20 +211,23 @@ export const ImportModal: React.FC<ImportModalProps> = ({
         });
 
         const data = await res.json();
+        if (requestId !== parseRequest.current) return;
         if (data.success && data.questions) {
           setParsedQuestions(data.questions);
+          setParsedPassages(data.passages ?? []);
+          setImportWarnings(data.warnings ?? []);
           setStatusMessage(`AI đã chuyển đổi thành công ${data.questions.length} câu hỏi có công thức KaTeX!`);
         } else {
+          setErrorMessage(data.error || 'AI chưa đọc được tài liệu. Kết quả bên dưới chỉ là tách văn bản cơ bản, cần kiểm tra lại.');
           const fallback = parseRawVietnameseText(rawText);
           setParsedQuestions(fallback);
           setStatusMessage(`Bóc tách cơ bản ${fallback.length} câu hỏi theo mẫu tiếng Việt.`);
         }
       }
-    } catch (err: any) {
-      console.error('Lỗi phân tích:', err);
-      setErrorMessage(err.message || 'Đã xảy ra lỗi trong quá trình bóc tách đề thi.');
+    } catch (err: unknown) {
+      if (requestId === parseRequest.current) setErrorMessage(err instanceof Error ? err.message : 'Chưa đọc được tài liệu.');
     } finally {
-      setIsLoading(false);
+      if (requestId === parseRequest.current) setIsLoading(false);
     }
   };
 
@@ -214,8 +238,11 @@ export const ImportModal: React.FC<ImportModalProps> = ({
 
   // Thêm tất cả vào đề thi hiện tại
   const handleConfirmImport = () => {
+    if (!importGrade || !importSubject || !getCatalogSubjects(importGrade).some(s => s.key === importSubject)) {
+      setErrorMessage('Hãy chọn môn và lớp của tài liệu trước khi đưa câu hỏi vào đề.'); return;
+    }
     if (parsedQuestions.length > 0) {
-      onImportQuestions(parsedQuestions);
+      onImportQuestions(parsedQuestions.map(q => ({ ...q, id: `q_${crypto.randomUUID()}`, subject: importSubject, grade: importGrade, status: 'draft', verifiedBy: 'none' })), { subject: importSubject, grade: importGrade, passages: parsedPassages.filter(p => parsedQuestions.some(q => q.passageId === p.id)) });
       setParsedQuestions([]);
       onClose();
     }
@@ -249,10 +276,14 @@ export const ImportModal: React.FC<ImportModalProps> = ({
           </button>
         </div>
 
+        <div className="flex flex-wrap gap-3 py-2 text-sm">
+          <label>Lớp của tài liệu <select aria-label="Lớp tài liệu nhập" className="border rounded p-2 bg-transparent" value={importGrade} onChange={e => { setImportGrade(Number(e.target.value)); setImportSubject(''); }}><option value={0}>Chọn lớp</option>{Array.from({ length: 12 }, (_, i) => <option key={i + 1} value={i + 1}>Lớp {i + 1}</option>)}</select></label>
+          <label>Môn <select aria-label="Môn tài liệu nhập" className="border rounded p-2 bg-transparent" value={importSubject} onChange={e => setImportSubject(e.target.value as Subject)}><option value="">Chọn môn</option>{getCatalogSubjects(importGrade || undefined).map(s => <option key={s.key} value={s.key}>{s.label}</option>)}</select></label>
+        </div>
         {/* Thanh chọn 4 định dạng nguồn (Tabs) */}
         <div className="flex flex-wrap items-center gap-2 pt-3 pb-2 border-b border-[#dadce0] dark:border-[#3c4043]">
           <button
-            onClick={() => setSourceType('image')}
+            disabled={isLoading} onClick={() => setSourceType('image')}
             className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
               sourceType === 'image'
                 ? 'bg-[#1a73e8] text-white dark:bg-[#8ab4f8] dark:text-[#202124] shadow-xs'
@@ -264,7 +295,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
           </button>
 
           <button
-            onClick={() => setSourceType('word')}
+            disabled={isLoading} onClick={() => setSourceType('word')}
             className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
               sourceType === 'word'
                 ? 'bg-[#1a73e8] text-white dark:bg-[#8ab4f8] dark:text-[#202124] shadow-xs'
@@ -276,7 +307,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
           </button>
 
           <button
-            onClick={() => setSourceType('text')}
+            disabled={isLoading} onClick={() => setSourceType('text')}
             className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
               sourceType === 'text'
                 ? 'bg-[#1a73e8] text-white dark:bg-[#8ab4f8] dark:text-[#202124] shadow-xs'
@@ -288,7 +319,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
           </button>
 
           <button
-            onClick={() => setSourceType('latex')}
+            disabled={isLoading} onClick={() => setSourceType('latex')}
             className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
               sourceType === 'latex'
                 ? 'bg-[#1a73e8] text-white dark:bg-[#8ab4f8] dark:text-[#202124] shadow-xs'
@@ -473,6 +504,8 @@ export const ImportModal: React.FC<ImportModalProps> = ({
               </div>
             )}
 
+            {importWarnings.length > 0 && <div role="note" className="text-xs border border-amber-400 rounded p-2 my-2"><p className="font-semibold">Cần đối chiếu tài liệu gốc</p>{importWarnings.map((warning, i) => <p key={i}>{warning}</p>)}</div>}
+            {parsedPassages.length > 0 && <details className="my-2 text-sm"><summary>Ngữ liệu dùng chung ({parsedPassages.length})</summary>{parsedPassages.map(p => <div key={p.id} className="border rounded p-2 my-2"><strong>{p.title}</strong><p className="whitespace-pre-wrap">{p.content}</p></div>)}</details>}
             {/* Danh sách thẻ câu hỏi */}
             <div className="grow overflow-y-auto py-2 space-y-2.5 pr-1">
               {parsedQuestions.map((q, idx) => (
@@ -532,7 +565,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
                               ? 'bg-[#e6f4ea] dark:bg-[#0f291e] text-[#137333] dark:text-[#5bb98c] border border-[#ceead6] dark:border-[#1d4834]' 
                               : 'bg-[#fce8e6] dark:bg-[#371918] text-[#c5221f] dark:text-[#f28b82] border border-[#fad2cf] dark:border-[#5c2523]'
                           }`}>
-                            {sub.isCorrect ? 'ĐÚNG' : 'SAI'}
+                            {sub.isCorrect === undefined ? 'CHƯA ĐẶT' : sub.isCorrect ? 'ĐÚNG' : 'SAI'}
                           </span>
                           <MathRenderer content={sub.content} inline />
                         </div>

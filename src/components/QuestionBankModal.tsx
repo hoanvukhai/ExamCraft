@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Question, Subject, QuestionType, DifficultyLevel } from '@/types/exam';
+import { accountFetch } from '@/lib/account-fetch';
+import { Question, Subject, QuestionType, DifficultyLevel, Passage } from '@/types/exam';
 import { dbGetAllQuestionsFromBank, dbDeleteQuestionFromBank, dbSaveQuestionToBank } from '@/lib/db';
+import { bankPassage, type BankQuestion } from '@/lib/question-client';
 import { getAllSupportedSubjects } from '@/lib/subject-config';
 import { MathRenderer } from './MathRenderer';
 import { VariationTable } from './VariationTable';
@@ -26,12 +28,14 @@ import {
 } from 'lucide-react';
 
 interface QuestionBankModalProps {
+  ownerId: string;
   isOpen: boolean;
   onClose: () => void;
-  onInsertQuestion: (question: Question) => void;
+  onInsertQuestion: (question: BankQuestion, passage?: Passage) => void;
 }
 
 export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
+  ownerId,
   isOpen,
   onClose,
   onInsertQuestion,
@@ -58,7 +62,7 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
   const loadBankQuestions = async () => {
     setLoading(true);
     try {
-      const allQ = await dbGetAllQuestionsFromBank();
+      const allQ = await dbGetAllQuestionsFromBank(ownerId);
       setQuestions(allQ);
     } catch (err) {
       console.error('Lỗi khi nạp ngân hàng câu hỏi:', err);
@@ -71,7 +75,7 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
   const loadSharedQuestions = async () => {
     setLoadingShared(true);
     try {
-      const res = await fetch('/api/questions/shared');
+      const res = await accountFetch(ownerId, '/api/questions/shared');
       if (res.ok) {
         const data = await res.json();
         setSharedQuestions(data.questions || []);
@@ -96,7 +100,7 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
   // Nhân bản câu hỏi dùng chung về kho cá nhân
   const handleForkQuestion = async (q: any) => {
     try {
-      const res = await fetch(`/api/questions/${q.id}/fork`, { method: 'POST' });
+      const res = await accountFetch(ownerId, `/api/questions/${q.id}/fork`, { method: 'POST' });
       const data = await res.json();
       if (!res.ok) {
         showToast(data.error || 'Không thể nhân bản câu hỏi');
@@ -113,7 +117,7 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
   const handleDelete = async (id: string) => {
     if (!confirm('Bạn có chắc chắn muốn xóa câu hỏi này khỏi Ngân hàng cá nhân?')) return;
     try {
-      await dbDeleteQuestionFromBank(id);
+      await dbDeleteQuestionFromBank(id, ownerId);
       setQuestions(prev => prev.filter(q => q.id !== id));
     } catch (err) {
       console.error('Lỗi khi xóa câu hỏi:', err);
@@ -122,7 +126,9 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
 
   // Thêm vào đề thi hiện tại
   const handleInsert = (q: Question) => {
-    onInsertQuestion(q);
+    const passage = bankPassage((q as BankQuestion).passage);
+    if ((q as BankQuestion).passageUnavailable || (q.passageId && !passage)) { showToast('Câu này chưa có ngữ liệu được phép dùng. Hãy bổ sung ngữ liệu trước khi chèn.'); return; }
+    onInsertQuestion(q, passage);
     setInsertedIds(prev => new Set(prev).add(q.id));
     setTimeout(() => {
       setInsertedIds(prev => {
@@ -226,7 +232,7 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
     ];
 
     for (const q of sampleQuestions) {
-      await dbSaveQuestionToBank(q);
+      await dbSaveQuestionToBank(q, ownerId);
     }
     await loadBankQuestions();
   };

@@ -1,4 +1,5 @@
-import { Subject, Question, QuestionType, Exam } from '@/types/exam';
+import { Subject, Question, QuestionType } from '@/types/exam';
+import { AssessmentMode, getCatalogSubjects, getEducationReadiness, isValidGrade } from './education-catalog';
 
 import toanThpt from '@/config/subjects/toan_thpt.json';
 import vatLyThpt from '@/config/subjects/vat_ly_thpt.json';
@@ -33,6 +34,10 @@ export interface SubjectConfig {
   defaultDurationMinutes: number;
   sections: SubjectSectionConfig[];
   totalExamPoints: number;
+  assessmentMode?: AssessmentMode;
+  templateStatus?: 'example' | 'manual';
+  sourceIds?: string[];
+  warnings?: string[];
 }
 
 const CONFIG_MAP: Partial<Record<Subject, SubjectConfig>> = {
@@ -50,24 +55,22 @@ const CONFIG_MAP: Partial<Record<Subject, SubjectConfig>> = {
   khtn: khtnThcs as SubjectConfig,
   lich_su_dia_ly: lichSuDiaLyThcs as SubjectConfig,
   tieng_viet: tiengVietTh as SubjectConfig,
-  tu_nhien_xa_hoi: tiengVietTh as unknown as SubjectConfig,
-  khoa_hoc: khtnThcs as unknown as SubjectConfig,
-  tin_hoc_cong_nghe: tinHocThpt as unknown as SubjectConfig,
-  dao_duc: lichSuThpt as unknown as SubjectConfig,
-  giao_duc_cong_dan: gdktPlThpt as unknown as SubjectConfig,
 };
 
 /**
  * Lấy cấu hình đề thi theo môn học và khối lớp
  */
-export function getSubjectConfig(subject: Subject, grade: number = 12): SubjectConfig {
-  const config = CONFIG_MAP[subject];
-  if (config) {
-    return config;
+export function getSubjectConfig(subject: Subject | string | undefined, grade?: number): SubjectConfig {
+  const info = getCatalogSubjects().find(entry => entry.key === subject);
+  const readiness = getEducationReadiness(subject ?? '', grade ?? 0);
+  const configured = CONFIG_MAP[subject as Subject];
+  const warnings = [readiness.label];
+  if (!grade || !isValidGrade(grade) || !info?.grades.includes(grade)) warnings.push('Cần chọn đúng môn và lớp; không tự lấy mẫu môn khác');
+  if (configured && grade !== undefined && configured.applicableGrades.includes(grade)) {
+    return { ...configured, assessmentMode: info?.assessmentMode ?? 'scored', templateStatus: 'example', sourceIds: readiness.sourceIds, warnings };
   }
-
-  // Fallback mặc định theo chuẩn thi GDPT 2018 Toán
-  return toanThpt as SubjectConfig;
+  return { subject: subject as Subject, name: info?.label ?? 'Môn chưa có gói', applicableGrades: info?.grades ?? [], defaultDurationMinutes: 45,
+    sections: [], totalExamPoints: 0, assessmentMode: info?.assessmentMode ?? 'scored', templateStatus: 'manual', sourceIds: readiness.sourceIds, warnings };
 }
 
 export interface SubjectInfo {
@@ -77,143 +80,24 @@ export interface SubjectInfo {
   grades: number[];
 }
 
-/**
- * Lấy danh sách môn học chính xác theo từng khối lớp chuẩn GDPT 2018
- * (Căn cứ Thông tư 32/2018/TT-BGDĐT và sửa đổi Thông tư 13/2022/TT-BGDĐT)
- */
-export function getSubjectsForGrade(grade: number): SubjectInfo[] {
-  // Cấp 1: Tiểu học (Lớp 1 - 5)
-  if (grade >= 1 && grade <= 2) {
-    return [
-      { key: 'toan', label: 'Toán', category: 'Bắt buộc', grades: [grade] },
-      { key: 'tieng_viet', label: 'Tiếng Việt', category: 'Bắt buộc', grades: [grade] },
-      { key: 'tu_nhien_xa_hoi', label: 'Tự nhiên và Xã hội', category: 'Bắt buộc', grades: [grade] },
-      { key: 'dao_duc', label: 'Đạo đức', category: 'Bắt buộc', grades: [grade] },
-      { key: 'tieng_anh', label: 'Tiếng Anh (Tự chọn)', category: 'Tự chọn', grades: [grade] },
-    ];
-  }
+export function getSubjectsForGrade(grade: number): SubjectInfo[] { return getCatalogSubjects(grade); }
+export function getAllSupportedSubjects(): SubjectInfo[] { return getCatalogSubjects(); }
 
-  if (grade === 3) {
-    return [
-      { key: 'toan', label: 'Toán', category: 'Bắt buộc', grades: [3] },
-      { key: 'tieng_viet', label: 'Tiếng Việt', category: 'Bắt buộc', grades: [3] },
-      { key: 'tieng_anh', label: 'Tiếng Anh', category: 'Bắt buộc', grades: [3] },
-      { key: 'tu_nhien_xa_hoi', label: 'Tự nhiên và Xã hội', category: 'Bắt buộc', grades: [3] },
-      { key: 'tin_hoc_cong_nghe', label: 'Tin học và Công nghệ', category: 'Bắt buộc', grades: [3] },
-      { key: 'dao_duc', label: 'Đạo đức', category: 'Bắt buộc', grades: [3] },
-    ];
+export function getQuestionPointConfiguration(question: Question, subjectConfig?: SubjectConfig): { points: number; source: 'question' | 'template' } | null {
+  if (question.points !== undefined && question.points !== null) return Number.isFinite(question.points) && question.points >= 0 ? { points: question.points, source: 'question' } : null;
+  if (!subjectConfig) return null;
+  const config = subjectConfig;
+  if (config.assessmentMode && config.assessmentMode !== 'scored') return null;
+  const section = config.sections.find(section => section.type === question.type);
+  if (section?.pointsPerQuestion !== undefined && Number.isFinite(section.pointsPerQuestion) && section.pointsPerQuestion >= 0) return { points: section.pointsPerQuestion, source: 'template' };
+  if (section?.progressiveScoring?.length) {
+    const points = section.progressiveScoring[section.progressiveScoring.length - 1];
+    if (Number.isFinite(points) && points >= 0) return { points, source: 'template' };
   }
-
-  if (grade >= 4 && grade <= 5) {
-    return [
-      { key: 'toan', label: 'Toán', category: 'Bắt buộc', grades: [grade] },
-      { key: 'tieng_viet', label: 'Tiếng Việt', category: 'Bắt buộc', grades: [grade] },
-      { key: 'tieng_anh', label: 'Tiếng Anh', category: 'Bắt buộc', grades: [grade] },
-      { key: 'khoa_hoc', label: 'Khoa học', category: 'Bắt buộc', grades: [grade] },
-      { key: 'lich_su_dia_ly', label: 'Lịch sử và Địa lí', category: 'Bắt buộc', grades: [grade] },
-      { key: 'tin_hoc_cong_nghe', label: 'Tin học và Công nghệ', category: 'Bắt buộc', grades: [grade] },
-      { key: 'dao_duc', label: 'Đạo đức', category: 'Bắt buộc', grades: [grade] },
-    ];
-  }
-
-  // Cấp 2: THCS (Lớp 6 - 9)
-  if (grade >= 6 && grade <= 9) {
-    return [
-      { key: 'toan', label: 'Toán', category: 'Bắt buộc', grades: [grade] },
-      { key: 'ngu_van', label: 'Ngữ văn', category: 'Bắt buộc', grades: [grade] },
-      { key: 'tieng_anh', label: 'Tiếng Anh', category: 'Bắt buộc', grades: [grade] },
-      { key: 'khtn', label: 'Khoa học tự nhiên (Lý - Hóa - Sinh)', category: 'Bắt buộc', grades: [grade] },
-      { key: 'lich_su_dia_ly', label: 'Lịch sử và Địa lí', category: 'Bắt buộc', grades: [grade] },
-      { key: 'tin_hoc', label: 'Tin học', category: 'Bắt buộc', grades: [grade] },
-      { key: 'cong_nghe', label: 'Công nghệ', category: 'Bắt buộc', grades: [grade] },
-      { key: 'giao_duc_cong_dan', label: 'Giáo dục công dân', category: 'Bắt buộc', grades: [grade] },
-    ];
-  }
-
-  // Cấp 3: THPT (Lớp 10 - 12) - Theo Thông tư 13/2022/TT-BGDĐT
-  return [
-    // 4 Môn bắt buộc
-    { key: 'toan', label: 'Toán', category: 'Bắt buộc', grades: [grade] },
-    { key: 'ngu_van', label: 'Ngữ văn', category: 'Bắt buộc', grades: [grade] },
-    { key: 'tieng_anh', label: 'Tiếng Anh', category: 'Bắt buộc', grades: [grade] },
-    { key: 'lich_su', label: 'Lịch sử (Bắt buộc theo TT 13)', category: 'Bắt buộc', grades: [grade] },
-    // Các môn lựa chọn
-    { key: 'vat_ly', label: 'Vật lí (KHTN)', category: 'Lựa chọn', grades: [grade] },
-    { key: 'hoa_hoc', label: 'Hóa học (KHTN)', category: 'Lựa chọn', grades: [grade] },
-    { key: 'sinh_hoc', label: 'Sinh học (KHTN)', category: 'Lựa chọn', grades: [grade] },
-    { key: 'dia_ly', label: 'Địa lí (KHXH)', category: 'Lựa chọn', grades: [grade] },
-    { key: 'gdkt_pl', label: 'Giáo dục kinh tế & Pháp luật (KHXH)', category: 'Lựa chọn', grades: [grade] },
-    { key: 'tin_hoc', label: 'Tin học', category: 'Lựa chọn', grades: [grade] },
-    { key: 'cong_nghe', label: 'Công nghệ', category: 'Lựa chọn', grades: [grade] },
-  ];
+  return null;
 }
 
-/**
- * Danh sách toàn bộ các môn học đang được hệ thống hỗ trợ
- */
-export function getAllSupportedSubjects(): SubjectInfo[] {
-  return [
-    // Toán & Văn & Ngoại ngữ
-    { key: 'toan', label: 'Toán học', grades: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] },
-    { key: 'tieng_viet', label: 'Tiếng Việt', grades: [1, 2, 3, 4, 5] },
-    { key: 'ngu_van', label: 'Ngữ văn', grades: [6, 7, 8, 9, 10, 11, 12] },
-    { key: 'tieng_anh', label: 'Tiếng Anh', grades: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] },
-    // Tiểu học
-    { key: 'tu_nhien_xa_hoi', label: 'Tự nhiên và Xã hội', grades: [1, 2, 3] },
-    { key: 'khoa_hoc', label: 'Khoa học', grades: [4, 5] },
-    { key: 'tin_hoc_cong_nghe', label: 'Tin học và Công nghệ', grades: [3, 4, 5] },
-    { key: 'dao_duc', label: 'Đạo đức', grades: [1, 2, 3, 4, 5] },
-    // Tích hợp THCS & Lớp 4-5
-    { key: 'lich_su_dia_ly', label: 'Lịch sử và Địa lí', grades: [4, 5, 6, 7, 8, 9] },
-    { key: 'khtn', label: 'Khoa học tự nhiên', grades: [6, 7, 8, 9] },
-    { key: 'giao_duc_cong_dan', label: 'Giáo dục công dân', grades: [6, 7, 8, 9] },
-    // Tin học & Công nghệ THCS/THPT
-    { key: 'tin_hoc', label: 'Tin học', grades: [6, 7, 8, 9, 10, 11, 12] },
-    { key: 'cong_nghe', label: 'Công nghệ', grades: [6, 7, 8, 9, 10, 11, 12] },
-    // THPT độc lập
-    { key: 'lich_su', label: 'Lịch sử', grades: [10, 11, 12] },
-    { key: 'dia_ly', label: 'Địa lí', grades: [10, 11, 12] },
-    { key: 'gdkt_pl', label: 'Giáo dục kinh tế và Pháp luật', grades: [10, 11, 12] },
-    { key: 'vat_ly', label: 'Vật lí', grades: [10, 11, 12] },
-    { key: 'hoa_hoc', label: 'Hóa học', grades: [10, 11, 12] },
-    { key: 'sinh_hoc', label: 'Sinh học', grades: [10, 11, 12] },
-  ];
-}
-
-/**
- * Tính điểm cho một câu hỏi dựa trên cấu hình môn học hoặc thuộc tính câu hỏi
- */
+/** Use only explicit question points or a selected subject/grade template; missing points remain unconfigured. */
 export function getQuestionPoints(question: Question, subjectConfig?: SubjectConfig): number {
-  if (question.points !== undefined && question.points !== null) {
-    return question.points;
-  }
-
-  const config = subjectConfig || getSubjectConfig(question.subject || 'toan', question.grade || 12);
-  const section = config.sections.find(s => s.type === question.type);
-
-  if (section) {
-    if (section.pointsPerQuestion !== undefined) {
-      return section.pointsPerQuestion;
-    }
-    if (section.progressiveScoring && section.progressiveScoring.length > 0) {
-      // Điểm tối đa khi đúng cả 4 ý
-      return section.progressiveScoring[section.progressiveScoring.length - 1];
-    }
-  }
-
-  // Fallback an toàn
-  switch (question.type) {
-    case 'multiple_choice':
-      return 0.25;
-    case 'true_false_group':
-      return 1.0;
-    case 'short_answer':
-      return 0.5;
-    case 'essay':
-      return 1.0;
-    case 'fill_blank':
-      return 0.2;
-    default:
-      return 0.25;
-  }
+  return getQuestionPointConfiguration(question, subjectConfig)?.points ?? 0;
 }

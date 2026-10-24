@@ -1,79 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { Question } from '@/types/exam';
+import { getCurrentUser } from '@/lib/auth';
+import { fromDatabaseExam } from '@/lib/exam-document';
+import { sanitizeSnapshotForStudent, solutionForQuestion } from '@/lib/public-exam';
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = await params;
-
-    const examRecord = await prisma.exam.findFirst({
-      where: { id, deletedAt: null },
-      include: {
-        items: {
-          include: { question: true },
-          orderBy: { position: 'asc' },
-        },
-      },
-    });
-
-    if (!examRecord) {
-      return NextResponse.json(
-        { success: false, error: 'Đề thi không tồn tại hoặc đã bị xóa.' },
-        { status: 404 }
-      );
+    const { id: token } = await params;
+    const link = await prisma.shareLink.findUnique({ where: { token }, include: { exam: { include: { items: { include: { question: { include: { passage: true } } }, orderBy: { position: 'asc' } } } } } });
+    if (!link || link.revokedAt || (link.expiresAt && link.expiresAt <= new Date()) || link.exam.deletedAt || link.exam.items.some(item => item.question.deletedAt || !item.question.shareable || item.question.ownerId !== link.exam.ownerId)) {
+      return NextResponse.json({ success: false, error: 'Liên kết không tồn tại, đã hết hạn hoặc đã được thu hồi.' }, { status: 404 });
     }
-
-    const questions: Question[] = examRecord.items.map((item) => {
-      const q = item.question;
-      const payload = (q.payload || {}) as Record<string, any>;
-      return {
-        id: q.id,
-        sectionId: item.sectionId,
-        type: q.type.toLowerCase() as any,
-        difficulty: q.difficulty.toLowerCase() as any,
-        content: q.content,
-        figures: (q.figures as any) || undefined,
-        choices: payload.choices,
-        sub_questions: payload.sub_questions,
-        correct_answer: payload.correct,
-        step_by_step_solution: q.solution,
-        tags: q.tags,
-      };
-    });
-
-    const meta = (examRecord.metadata || {}) as Record<string, any>;
-
-    const formattedExam = {
-      id: examRecord.id,
-      title: examRecord.title,
-      subject: examRecord.subject,
-      grade: examRecord.grade,
-      durationMinutes: examRecord.durationMinutes || 90,
-      metadata: {
-        title: examRecord.title,
-        subject: examRecord.subject,
-        grade: examRecord.grade,
-        durationMinutes: examRecord.durationMinutes || 90,
-        ...meta,
-      },
-      sections: examRecord.sections,
-      questions,
-      createdAt: examRecord.createdAt.toISOString(),
-      updatedAt: examRecord.updatedAt.toISOString(),
+    const exam = link.exam;
+    const document = fromDatabaseExam(exam);
+    const raw = { ...document, id: exam.id, title: exam.title, subject: exam.subject, grade: exam.grade,
+      durationMinutes: exam.durationMinutes ?? document.metadata.durationMinutes,
+      sections: (document as { sections?: unknown }).sections ?? exam.sections,
     };
-
-    return NextResponse.json({
-      success: true,
-      exam: formattedExam,
-    });
+    const safe = sanitizeSnapshotForStudent(raw);
+    const questions = safe.questions.map((q, index) => ({ ...q, type: String(q.type).toLowerCase(), difficulty: String(q.difficulty).toLowerCase(),
+      ...(link.showAnswers ? { correct_answer: solutionForQuestion(raw.questions[index]).correct, sub_questions: solutionForQuestion(raw.questions[index]).sub_questions, step_by_step_solution: solutionForQuestion(raw.questions[index]).solution, matchingPairs: solutionForQuestion(raw.questions[index]).matchingPairs, correctOrder: solutionForQuestion(raw.questions[index]).correctOrder } : {}),
+    }));
+    const user = link.allowCopy ? await getCurrentUser() : null;
+    return NextResponse.json({ success: true, exam: { ...safe, questions }, permissions: { showAnswers: link.showAnswers, allowCopy: link.allowCopy && Boolean(user && !user.mustChangePassword) } }, { headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {
-    console.error('Lỗi GET /api/public/share/[id]:', error);
-    return NextResponse.json(
-      { success: false, error: 'Lỗi máy chủ khi tải đề thi chia sẻ' },
-      { status: 500 }
-    );
+    console.error('Load share failed', error);
+    return NextResponse.json({ success: false, error: 'Chưa thể tải đề chia sẻ' }, { status: 500 });
   }
 }

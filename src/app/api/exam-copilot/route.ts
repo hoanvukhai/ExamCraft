@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenAI } from '@google/genai';
 import { Exam, Question } from '@/types/exam';
-import { executeWithKeyRotation, getGeminiModel } from '@/lib/gemini-keys';
-import { syncQuestionFigures } from '@/lib/figure-sync';
-import { getCurrentUser } from '@/lib/auth';
+import { requestApiKey } from '@/lib/ai-policy';
+import { executeWithKeyRotation } from '@/lib/gemini-keys';
+import { normalizeExamDocument } from '@/lib/exam-document';
+import { validateCopilotResult } from '@/lib/copilot-result';
+import { requireAuth } from '@/lib/auth';
+import { assertRequestAccount } from '@/lib/request-account';
+import { isSameOriginMutation } from '@/lib/attempt-access';
+import { apiErrorResponse, ApiError } from '@/lib/api-error';
+import { getTeacherAiProfilePrompt } from '@/lib/teacher-profile';
 
 interface CopilotRequest {
   exam: Exam;
@@ -14,12 +20,24 @@ interface CopilotRequest {
 
 export async function POST(req: NextRequest) {
   try {
-    const currentUser = await getCurrentUser();
+    if (!isSameOriginMutation(req)) throw new ApiError(403, 'Yêu cầu không hợp lệ');
+    const currentUser = await requireAuth();
+    assertRequestAccount(req.headers, currentUser.id);
     const body: CopilotRequest = await req.json();
-    const { exam, command, targetQuestionId, customApiKey } = body;
+    const { command, targetQuestionId } = body;
+    let customApiKey: string | undefined;
+    try { customApiKey = requestApiKey(body); } catch { throw new ApiError(400, 'Khóa tạm không hợp lệ hoặc các trường khóa không trùng nhau'); }
+    if (typeof command !== 'string' || command.length > 12000) throw new ApiError(400, 'Yêu cầu cần là văn bản tối đa 12.000 ký tự');
+    const exam = normalizeExamDocument(body.exam);
 
     if (!command || !command.trim()) {
       return NextResponse.json({ success: false, error: 'Vui lòng nhập yêu cầu cho trợ lý AI.' }, { status: 400 });
+    }
+
+    let teacherPersonaPrompt = '';
+    if (currentUser) {
+      const persona = await getTeacherAiProfilePrompt(currentUser.id, exam.metadata.subject);
+      teacherPersonaPrompt = persona.instructionPrompt;
     }
 
     const currentQuestionsSummary = exam.questions.map((q, idx) => ({
@@ -33,6 +51,8 @@ export async function POST(req: NextRequest) {
     const systemPrompt = `
 Bạn là Trợ Lý AI Chuyên Sâu Biên Tập Đề Thi chuẩn GDPT 2018 cho giáo viên Việt Nam.
 Nhiệm vụ: Phân tích yêu cầu bằng ngôn ngữ tự nhiên của giáo viên đối với đề thi hiện tại.
+${teacherPersonaPrompt}
+
 
 CÓ 2 TRƯỜNG HỢP:
 
@@ -88,11 +108,10 @@ Nếu yêu cầu nhằm sửa 1 câu cụ thể, đây là chi tiết toàn bộ
 ${JSON.stringify(exam.questions, null, 2)}
 `;
 
-    const modelName = getGeminiModel();
 
     const responseText = await executeWithKeyRotation(
       customApiKey,
-      async (apiKey) => {
+      async (apiKey, modelName) => {
         const ai = new GoogleGenAI({ apiKey });
         const response = await ai.models.generateContent({
           model: modelName,
@@ -106,7 +125,7 @@ ${JSON.stringify(exam.questions, null, 2)}
         return response.text || '{}';
       },
       {
-        userId: currentUser?.id,
+        userId: currentUser.id,
         endpoint: 'exam.copilot',
       }
     );
@@ -116,62 +135,10 @@ ${JSON.stringify(exam.questions, null, 2)}
     if (cleanJson.startsWith('```')) cleanJson = cleanJson.slice(3);
     if (cleanJson.endsWith('```')) cleanJson = cleanJson.slice(0, -3);
 
-    const parsed = JSON.parse(cleanJson.trim());
-
-    if (parsed.type === 'action') {
-      if (parsed.action === 'modify_single_question' && parsed.modifiedQuestion) {
-        // Tìm câu hỏi gốc theo id hoặc index
-        let originalQ: Question | undefined;
-        if (parsed.targetQuestionId) {
-          originalQ = exam.questions.find((q) => q.id === parsed.targetQuestionId);
-        }
-        if (!originalQ && parsed.targetQuestionIndex && parsed.targetQuestionIndex >= 1 && parsed.targetQuestionIndex <= exam.questions.length) {
-          originalQ = exam.questions[parsed.targetQuestionIndex - 1];
-        }
-        if (!originalQ && targetQuestionId) {
-          originalQ = exam.questions.find((q) => q.id === targetQuestionId);
-        }
-
-        if (originalQ) {
-          // Bắt buộc giữ lại ID câu hỏi gốc
-          parsed.modifiedQuestion.id = originalQ.id;
-          // Đồng bộ và bảo toàn hình vẽ / đồ thị / bảng biến thiên
-          parsed.modifiedQuestion.figures = syncQuestionFigures(
-            originalQ.figures,
-            parsed.modifiedQuestion.content || ''
-          );
-        } else {
-          // Nếu không tìm thấy câu gốc, vẫn kiểm tra tạo đồ thị nếu có hàm số
-          parsed.modifiedQuestion.figures = syncQuestionFigures(
-            undefined,
-            parsed.modifiedQuestion.content || ''
-          );
-        }
-      } else if (parsed.action === 'add_question' && parsed.modifiedQuestion) {
-        if (!parsed.modifiedQuestion.id) {
-          parsed.modifiedQuestion.id = `q_${Date.now()}`;
-        }
-        parsed.modifiedQuestion.figures = syncQuestionFigures(
-          undefined,
-          parsed.modifiedQuestion.content || ''
-        );
-      }
-    }
+    const parsed = validateCopilotResult(JSON.parse(cleanJson.trim()), exam, targetQuestionId);
 
     return NextResponse.json({ success: true, result: parsed });
-  } catch (error: any) {
-    console.error('Lỗi Exam Copilot:', error);
-    let msg = error?.message || 'Có lỗi xảy ra khi xử lý yêu cầu với AI.';
-    if (typeof msg === 'string') {
-      if (msg.includes('503') || msg.includes('UNAVAILABLE') || msg.includes('high demand')) {
-        msg = 'Máy chủ Google AI hiện đang quá tải tạm thời (Spikes in demand 503). Hệ thống đã tự động thử xoay tua qua các API Key. Thầy/Cô vui lòng bấm gửi lại sau vài giây.';
-      } else if (msg.includes('429') || msg.includes('RESOURCE_EXHAUSTED')) {
-        msg = 'Các API Key hiện đã đạt hạn mức lượt gọi (Rate Limit 429). Thầy/Cô vui lòng đợi khoảng 15-30 giây rồi thử lại.';
-      }
-    }
-    return NextResponse.json(
-      { success: false, error: msg },
-      { status: 500 }
-    );
+  } catch (error: unknown) {
+    return apiErrorResponse(error, 'Không thể xử lý yêu cầu AI lúc này.');
   }
 }

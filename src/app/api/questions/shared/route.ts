@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { apiErrorResponse } from '@/lib/api-error';
 import prisma from '@/lib/prisma';
-import { requireAuth } from '@/lib/auth';
+import { requireRequestAuth } from '@/lib/request-auth';
 import { QuestionType, Difficulty, Visibility } from '@prisma/client';
 
 // GET: Lấy danh sách câu hỏi trong Ngân hàng dùng chung nội bộ giữa các giáo viên
 export async function GET(req: NextRequest) {
   try {
-    await requireAuth();
+    await requireRequestAuth(req);
     const { searchParams } = new URL(req.url);
 
     const subject = searchParams.get('subject') || undefined;
@@ -25,6 +26,7 @@ export async function GET(req: NextRequest) {
       visibility: Visibility.SHARED,
       shareable: true,
       deletedAt: null,
+      NOT: { tags: { has: '__workspace_only' } },
     };
 
     if (subject) whereClause.subject = subject;
@@ -42,8 +44,9 @@ export async function GET(req: NextRequest) {
       prisma.question.findMany({
         where: whereClause,
         include: {
+          passage: true,
           author: {
-            select: { id: true, name: true, email: true },
+            select: { id: true, name: true },
           },
         },
         orderBy: { createdAt: 'desc' },
@@ -54,7 +57,7 @@ export async function GET(req: NextRequest) {
     ]);
 
     return NextResponse.json({
-      questions,
+      questions: questions.filter(q => !q.passage || q.passage.ownerId === q.ownerId).map(q => ({ ...q, passage: q.passage ? { id: q.passage.id, title: q.passage.title, content: q.passage.content, source: q.passage.source, figures: q.passage.figures } : null })),
       pagination: {
         page,
         limit,
@@ -63,11 +66,6 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (error: unknown) {
-    const err = error as Error;
-    if (err.message === 'UNAUTHORIZED') {
-      return NextResponse.json({ error: 'Vui lòng đăng nhập để xem ngân hàng dùng chung' }, { status: 401 });
-    }
-    console.error('Lỗi GET /api/questions/shared:', error);
-    return NextResponse.json({ error: 'Lỗi máy chủ khi lấy ngân hàng câu hỏi chung' }, { status: 500 });
+    return apiErrorResponse(error, 'Không tải được ngân hàng dùng chung.');
   }
 }

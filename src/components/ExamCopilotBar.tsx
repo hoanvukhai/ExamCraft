@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Exam, Question } from '@/types/exam';
+import { AiProposalPreview } from './AiProposalPreview';
 import { 
   Sparkles, 
   Send, 
@@ -39,6 +40,19 @@ export const ExamCopilotBar: React.FC<ExamCopilotBarProps> = ({
   onBatchUpdateQuestions,
 }) => {
   const [command, setCommand] = useState('');
+  const liveExam = useRef(exam);
+  liveExam.current = exam;
+  const [proposal, setProposal] = useState<{ result: { action: string; modifiedQuestion?: Question; targetQuestionId?: string; explanation?: string }; base: string } | null>(null);
+  const acceptProposal = () => {
+    if (!proposal) return;
+    if (JSON.stringify(liveExam.current.questions) !== proposal.base) { setErrorMessage('Đề đã thay đổi. Hãy gửi lại yêu cầu để giữ các sửa đổi mới.'); setProposal(null); return; }
+    const result = proposal.result;
+    if (result.action === 'modify_single_question' && result.modifiedQuestion) onUpdateQuestion(result.modifiedQuestion);
+    else if (result.action === 'add_question' && result.modifiedQuestion) onAddQuestion(result.modifiedQuestion);
+    else if (result.action === 'delete_question' && result.targetQuestionId) onDeleteQuestion(result.targetQuestionId);
+    else { setErrorMessage('Đề xuất chưa đủ thông tin để áp dụng.'); return; }
+    setProposal(null); setSuccessMessage('Đã áp dụng đề xuất. Thầy/cô kiểm tra lại trước khi chốt.');
+  };
   const [isLoading, setIsLoading] = useState(false);
   const [clarification, setClarification] = useState<{
     message: string;
@@ -63,7 +77,9 @@ export const ExamCopilotBar: React.FC<ExamCopilotBarProps> = ({
     const textToSend = cmdText || command;
     if (!textToSend.trim()) return;
 
+    const base = JSON.stringify(exam.questions);
     setIsLoading(true);
+    setProposal(null);
     setClarification(null);
     setSuccessMessage(null);
     setErrorMessage(null);
@@ -99,21 +115,8 @@ export const ExamCopilotBar: React.FC<ExamCopilotBarProps> = ({
 
       // Trường hợp 2: AI thực hiện hành động
       if (result.type === 'action') {
-        if (result.action === 'modify_single_question' && result.modifiedQuestion) {
-          onUpdateQuestion(result.modifiedQuestion);
-          setSuccessMessage(result.explanation || 'Đã sửa câu hỏi thành công theo yêu cầu!');
-        } else if (result.action === 'add_question' && result.modifiedQuestion) {
-          onAddQuestion(result.modifiedQuestion);
-          setSuccessMessage(result.explanation || 'Đã tạo thêm câu hỏi mới thành công!');
-        } else if (result.action === 'delete_question' && result.targetQuestionId) {
-          onDeleteQuestion(result.targetQuestionId);
-          setSuccessMessage(result.explanation || 'Đã xóa câu hỏi khỏi đề thi!');
-        } else if (result.action === 'modify_all_numbers') {
-          setSuccessMessage('Đang cập nhật số liệu toàn bộ đề thi...');
-        } else {
-          setSuccessMessage(result.explanation || 'Đã áp dụng chỉnh sửa thành công!');
-        }
-
+        if (JSON.stringify(liveExam.current.questions) !== base) { setErrorMessage('Đề đã được sửa trong lúc AI xử lý. Hãy gửi lại yêu cầu.'); return; }
+        setProposal({ result, base });
         setCommand('');
       }
     } catch (err: any) {
@@ -132,6 +135,7 @@ export const ExamCopilotBar: React.FC<ExamCopilotBarProps> = ({
 
   return (
     <div className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl p-4 sm:p-5 text-[#202124] dark:text-[#e3e3e3] shadow-xs transition-all">
+      {proposal && <div className="m-3 p-3 border rounded-xl bg-amber-50 text-slate-900 text-sm" role="region" aria-label="Đề xuất AI chưa áp dụng"><p>{proposal.result.explanation || 'Đề xuất sửa đề'}</p>{proposal.result.modifiedQuestion && <AiProposalPreview question={proposal.result.modifiedQuestion} before={exam.questions.find(q => q.id === proposal.result.targetQuestionId)} />}<button type="button" onClick={acceptProposal} className="px-3 py-2 font-semibold">Áp dụng</button><button type="button" onClick={() => setProposal(null)} className="px-3 py-2">Bỏ đề xuất</button></div>}
       {/* Tiêu đề & Trạng thái */}
       <div className="flex items-center justify-between gap-2 mb-3">
         <div className="flex items-center gap-2">

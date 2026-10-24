@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
 import prisma from './prisma';
 import { Role } from '@prisma/client';
+import { isSessionUsable, reserveLoginAttempt } from './auth-security';
 
 export const SESSION_COOKIE_NAME = 'examcraft_session';
 const SESSION_DURATION_DAYS = 7;
@@ -29,30 +30,23 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
 
 // ───────────── QUẢN LÝ PHIÊN (SESSION) ─────────────
 
-export async function createSession(userId: string): Promise<{ token: string; expiresAt: Date }> {
+export async function createSession(userId: string, expectedPasswordHash?: string): Promise<{ token: string; expiresAt: Date }> {
   const token = crypto.randomBytes(32).toString('hex');
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + SESSION_DURATION_DAYS);
 
-  await prisma.session.create({
-    data: {
-      userId,
-      token,
-      expiresAt,
-    },
+  await prisma.$transaction(async tx => {
+    await tx.$queryRaw`SELECT "id" FROM "User" WHERE "id" = ${userId} FOR UPDATE`;
+    const user = await tx.user.findUnique({ where: { id: userId }, select: { isActive: true, passwordHash: true } });
+    if (!user?.isActive || (expectedPasswordHash !== undefined && user.passwordHash !== expectedPasswordHash)) throw new Error('UNAUTHORIZED');
+    await tx.session.create({ data: { userId, token, expiresAt } });
   });
 
   return { token, expiresAt };
 }
 
 export async function deleteSession(token: string): Promise<void> {
-  try {
-    await prisma.session.delete({
-      where: { token },
-    });
-  } catch {
-    // Phiên không tồn tại hoặc đã bị xóa trước đó
-  }
+  await prisma.session.deleteMany({ where: { token } });
 }
 
 /**
@@ -87,14 +81,7 @@ export async function getCurrentUser(): Promise<UserSession | null> {
     return null;
   }
 
-  // Kiểm tra phiên hết hạn
-  if (session.expiresAt < new Date()) {
-    await deleteSession(sessionToken);
-    return null;
-  }
-
-  // Nếu tài khoản bị vô hiệu hóa
-  if (!session.user.isActive) {
+  if (!isSessionUsable(session)) {
     await deleteSession(sessionToken);
     return null;
   }
@@ -146,70 +133,9 @@ export async function requireAdmin(): Promise<UserSession> {
 
 // ───────────── CHỐNG BRUTE FORCE ĐĂNG NHẬP ─────────────
 
-interface FailedAttempt {
-  count: number;
-  firstAttemptAt: number;
-  blockedUntil?: number;
-}
-
-const loginAttempts = new Map<string, FailedAttempt>();
-const MAX_ATTEMPTS = 5;
-const WINDOW_MS = 15 * 60 * 1000; // 15 phút
-const LOCKOUT_MS = 15 * 60 * 1000; // Khóa 15 phút nếu thử sai 5 lần
-
-export async function checkLoginRateLimit(key: string, ip?: string): Promise<{ allowed: boolean; waitMinutes?: number }> {
-  const now = Date.now();
-  const record = loginAttempts.get(key);
-
-  if (record && record.blockedUntil && record.blockedUntil > now) {
-    const waitMinutes = Math.ceil((record.blockedUntil - now) / 60000);
-    return { allowed: false, waitMinutes };
-  }
-
-  // Bổ sung kiểm tra bền vững qua PostgreSQL AuditLog (AUTH-BUG-001 - R18)
-  try {
-    const windowStart = new Date(now - WINDOW_MS);
-    const failedCount = await prisma.auditLog.count({
-      where: {
-        action: 'user.login_failed',
-        ...(ip ? { ip } : {}),
-        createdAt: { gte: windowStart },
-      },
-    });
-
-    if (failedCount >= MAX_ATTEMPTS) {
-      return { allowed: false, waitMinutes: 15 };
-    }
-  } catch (err) {
-    console.warn('Lỗi kiểm tra rate limit từ DB:', err);
-  }
-
-  // Đã hết thời gian cửa sổ kiểm tra
-  if (record && now - record.firstAttemptAt > WINDOW_MS) {
-    loginAttempts.delete(key);
-    return { allowed: true };
-  }
-
-  return { allowed: true };
-}
-
-export function recordFailedLogin(key: string): void {
-  const now = Date.now();
-  const record = loginAttempts.get(key);
-
-  if (!record || now - record.firstAttemptAt > WINDOW_MS) {
-    loginAttempts.set(key, { count: 1, firstAttemptAt: now });
-    return;
-  }
-
-  record.count += 1;
-  if (record.count >= MAX_ATTEMPTS) {
-    record.blockedUntil = now + LOCKOUT_MS;
-  }
-}
-
-export function clearLoginRateLimit(key: string): void {
-  loginAttempts.delete(key);
+/** Durable account bucket. Reserving a slot and checking the limits are atomic. */
+export async function checkLoginRateLimit(email: string, ip = 'local'): Promise<{ allowed: boolean; waitMinutes?: number }> {
+  return prisma.$transaction(tx => reserveLoginAttempt(tx, email, ip));
 }
 
 // ───────────── GHI AUDIT LOG ─────────────

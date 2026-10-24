@@ -30,6 +30,7 @@ function ShareExamContent({ params }: SharePageProps) {
   const [error, setError] = useState<string | null>(null);
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedToLocal, setCopiedToLocal] = useState(false);
+  const [allowCopy, setAllowCopy] = useState(false);
 
   useEffect(() => {
     async function loadSharedExam() {
@@ -39,6 +40,7 @@ function ShareExamContent({ params }: SharePageProps) {
         const data = await res.json();
         if (data.success && data.exam) {
           setExam(data.exam);
+          setAllowCopy(Boolean(data.permissions?.allowCopy));
         } else {
           setError(data.error || 'Đề thi không tồn tại hoặc đã bị xóa khỏi hệ thống chia sẻ.');
         }
@@ -58,10 +60,11 @@ function ShareExamContent({ params }: SharePageProps) {
   };
 
   const handleCloneToLocal = async () => {
-    if (!exam) return;
+    if (!exam || !allowCopy) return;
     try {
       const cloned: Exam = {
         ...exam,
+        version: undefined,
         id: `exam_clone_${Date.now()}`,
         metadata: {
           ...exam.metadata,
@@ -161,7 +164,7 @@ function ShareExamContent({ params }: SharePageProps) {
             </button>
 
             {/* Nút Sao chép đề về máy để sửa */}
-            <button
+            {allowCopy && <button
               onClick={handleCloneToLocal}
               disabled={copiedToLocal}
               className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold text-[#137333] dark:text-[#5bb98c] bg-[#e6f4ea] dark:bg-[#0f291e] hover:bg-[#ceead6] dark:hover:bg-[#1e4a34] border border-[#ceead6] dark:border-[#1e4a34] transition-all cursor-pointer"
@@ -178,6 +181,8 @@ function ShareExamContent({ params }: SharePageProps) {
                 </>
               )}
             </button>
+
+            }
 
             {/* Sao chép liên kết */}
             <button

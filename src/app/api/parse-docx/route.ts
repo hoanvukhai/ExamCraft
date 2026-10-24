@@ -1,84 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { importResponseSchema, parseImportedDocument, IMPORT_SOURCE_RULES } from '@/lib/import-document';
+import { requireAuth } from '@/lib/auth';
+import { apiErrorResponse, ApiError } from '@/lib/api-error';
+import { requestApiKey } from '@/lib/ai-policy';
+import { isSameOriginMutation } from '@/lib/attempt-access';
+
 import mammoth from 'mammoth';
-import { GoogleGenAI, Type } from '@google/genai';
-import { z } from 'zod';
-import { executeWithKeyRotation, getGeminiModel } from '@/lib/gemini-keys';
-
-const ChoiceItemZod = z.object({
-  key: z.string(),
-  text: z.string(),
-});
-
-const TrueFalseSubItemZod = z.object({
-  key: z.string(),
-  content: z.string(),
-  isCorrect: z.boolean().default(true),
-  explanation: z.string().optional(),
-});
-
-const DocxQuestionZod = z.object({
-  type: z.enum(['multiple_choice', 'true_false_group', 'short_answer', 'essay']).default('multiple_choice'),
-  difficulty: z.enum(['nhan_biet', 'thong_hieu', 'van_dung', 'van_dung_cao']).default('thong_hieu'),
-  content: z.string().min(1),
-  choices: z.array(ChoiceItemZod).optional(),
-  sub_questions: z.array(TrueFalseSubItemZod).optional(),
-  step_by_step_solution: z.string().default('Lời giải đang được cập nhật.'),
-  correct_answer: z.string().optional(),
-  tags: z.array(z.string()).optional(),
-});
-
-const DocxResponseZod = z.object({
-  questions: z.array(DocxQuestionZod),
-});
-
-const parseResponseSchema = {
-  type: Type.OBJECT,
-  properties: {
-    questions: {
-      type: Type.ARRAY,
-      items: {
-        type: Type.OBJECT,
-        properties: {
-          type: { type: Type.STRING, enum: ['multiple_choice', 'true_false_group', 'short_answer', 'essay'] },
-          difficulty: { type: Type.STRING, enum: ['nhan_biet', 'thong_hieu', 'van_dung', 'van_dung_cao'] },
-          content: { type: Type.STRING },
-          choices: {
-            type: Type.ARRAY,
-            items: {
-              type: Type.OBJECT,
-              properties: {
-                key: { type: Type.STRING, enum: ['A', 'B', 'C', 'D'] },
-                text: { type: Type.STRING },
-              },
-              required: ['key', 'text'],
-            },
-          },
-          sub_questions: {
-            type: Type.ARRAY,
-            items: {
-              type: Type.OBJECT,
-              properties: {
-                key: { type: Type.STRING, enum: ['a', 'b', 'c', 'd'] },
-                content: { type: Type.STRING },
-                explanation: { type: Type.STRING },
-                isCorrect: { type: Type.BOOLEAN },
-              },
-              required: ['key', 'content', 'isCorrect'],
-            },
-          },
-          step_by_step_solution: { type: Type.STRING },
-          correct_answer: { type: Type.STRING },
-          tags: { type: Type.ARRAY, items: { type: Type.STRING } },
-        },
-        required: ['type', 'difficulty', 'content', 'step_by_step_solution'],
-      },
-    },
-  },
-  required: ['questions'],
-};
+import { GoogleGenAI } from '@google/genai';
+import { executeWithKeyRotation } from '@/lib/gemini-keys';
 
 export async function POST(req: NextRequest) {
   try {
+    const currentUser = await requireAuth();
+    if (!isSameOriginMutation(req)) throw new ApiError(403, 'Yêu cầu không hợp lệ');
     let fileBuffer: Buffer | null = null;
     let userApiKey: string | undefined = undefined;
 
@@ -87,7 +21,8 @@ export async function POST(req: NextRequest) {
     if (contentType.includes('multipart/form-data')) {
       const formData = await req.formData();
       const file = formData.get('file') as File | null;
-      userApiKey = (formData.get('userApiKey') as string) || undefined;
+      userApiKey = requestApiKey(Object.fromEntries(['customApiKey', 'userApiKey', 'apiKey'].map(key => [key, formData.get(key)])));
+      if (file && file.size > 20 * 1024 * 1024) throw new ApiError(413, 'Tệp Word vượt 20 MB');
 
       if (!file) {
         return NextResponse.json(
@@ -107,7 +42,7 @@ export async function POST(req: NextRequest) {
         }
         fileBuffer = Buffer.from(clean, 'base64');
       }
-      userApiKey = body.userApiKey;
+      userApiKey = requestApiKey(body);
     }
 
     if (!fileBuffer || fileBuffer.length === 0) {
@@ -116,6 +51,8 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
+    if (fileBuffer.length > 20 * 1024 * 1024) throw new ApiError(413, 'Tệp Word vượt 20 MB');
 
     // 1. Dùng mammoth để trích xuất văn bản thô từ file docx
     const mammothResult = await mammoth.extractRawText({ buffer: fileBuffer });
@@ -128,42 +65,29 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (rawText.length > 45000) throw new ApiError(413, 'Văn bản Word vượt 45.000 ký tự. Hãy chia nhỏ tài liệu; hệ thống không tự cắt bỏ phần cuối.');
+
     // 2. Dùng Gemini AI để phân rã cấu trúc câu hỏi
-    const prompt = `
-Bạn là chuyên gia phân tích đề thi sư phạm chuẩn Bộ Giáo Dục Việt Nam.
-Hãy đọc kỹ đoạn văn bản trích xuất từ file Word dưới đây và chuyển đổi toàn bộ các câu hỏi thành danh sách JSON chuẩn:
+    const prompt = `Số hóa văn bản Word sau.
+${IMPORT_SOURCE_RULES}
+<source_document>
+${rawText}
+</source_document>`;
 
-QUY TẮC BẮT BUỘC:
-1. Nhận diện các câu hỏi: Câu 1, Câu 2, ..., các phương án A, B, C, D.
-2. Công thức toán, lí, hoá phải được bọc trong $...$ hoặc $$...$$.
-3. Với câu hỏi dạng Đúng/Sai (chuẩn GDPT 2018), tách thành 4 ý a), b), c), d) trong mảng sub_questions.
-4. Tự động xác định type (multiple_choice, true_false_group, short_answer, essay).
-5. Phân tích lời giải và tìm đáp án đúng (A/B/C/D hoặc số) gán vào correct_answer.
-6. ĐẶC BIỆT VỚI ĐỀ THI TỰ LUẬN PHÂN CẤP (như Đề Vào 10, Đề kiểm tra tự luận):
-   - Khi gặp cấu trúc phân cấp: "Câu I", "Câu II", "Câu III", "Bài 1", "Bài 2" có phần mở đầu/biểu thức chung và các ý nhỏ 1), 2), 3) hoặc a), b), c):
-   - BẮT BUỘC coi mỗi "Câu I", "Câu II" là MỘT CÂU HỎI TỰ LUẬN HOÀN CHỈNH (type: 'essay').
-   - Trong content: Giữ trọn vẹn phần dẫn chung và toàn bộ các ý con 1), 2), 3).
-   - TUYỆT ĐỐI KHÔNG xé nhỏ từng ý thành các câu hỏi riêng biệt.
 
-VĂN BẢN ĐỀ THI TỪ FILE WORD:
-${rawText.slice(0, 45000)}
-`;
-
-    const modelName = getGeminiModel();
-
-    const aiResult = await executeWithKeyRotation(userApiKey, async (apiKey: string) => {
+    const aiResult = await executeWithKeyRotation(userApiKey, async (apiKey: string, modelName: string) => {
       const ai = new GoogleGenAI({ apiKey });
       const response = await ai.models.generateContent({
         model: modelName,
         contents: prompt,
         config: {
           responseMimeType: 'application/json',
-          responseSchema: parseResponseSchema,
+          responseSchema: importResponseSchema,
           temperature: 0.2,
         },
       });
       return response.text || '{}';
-    });
+    }, { userId: currentUser.id, endpoint: 'parse.docx' });
 
     if (!aiResult || aiResult === '{}') {
       return NextResponse.json(
@@ -172,31 +96,11 @@ ${rawText.slice(0, 45000)}
       );
     }
 
-    const rawParsed = JSON.parse(aiResult);
-    const validated = DocxResponseZod.parse(rawParsed);
-
-    const questions = validated.questions.map((q, idx) => ({
-      ...q,
-      id: `docx_${Date.now()}_${idx + 1}`,
-      status: 'draft' as const,
-      aiGenerated: true,
-      source: 'Word (.docx) Ingestion',
-    }));
-
-    return NextResponse.json({
-      success: true,
-      rawTextSnippet: rawText.slice(0, 500),
-      questions,
-      totalCount: questions.length,
-    });
-  } catch (error: any) {
-    console.error('Lỗi khi bóc tách file Word:', error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: error.message || 'Không thể bóc tách nội dung file Word.',
-      },
-      { status: 500 }
-    );
+    const imported = parseImportedDocument(JSON.parse(aiResult), 'Word (.docx)');
+    imported.warnings.unshift('Luồng Word hiện đọc văn bản; ảnh, bảng phức tạp và công thức Word cần đối chiếu với tệp gốc và bổ sung thủ công.');
+    return NextResponse.json({ success: true, ...imported, totalCount: imported.questions.length });
+  } catch (error: unknown) {
+    if (error instanceof Error && ['API_KEY_INPUT_INVALID', 'API_KEY_INPUT_CONFLICT'].includes(error.message)) return NextResponse.json({ error: 'Thông tin khóa không hợp lệ hoặc có nhiều giá trị khác nhau' }, { status: 400 });
+    return apiErrorResponse(error, 'Chưa thể phân tích tệp Word');
   }
 }

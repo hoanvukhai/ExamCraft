@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { requireAuth } from '@/lib/auth';
+import { requireRequestAuth } from '@/lib/request-auth';
+import { ApiError, apiErrorResponse } from '@/lib/api-error';
 import { AssignmentStatus, AttemptStatus } from '@prisma/client';
+import { z } from 'zod';
+import { isSameOriginMutation } from '@/lib/attempt-access';
+const UpdateSchema = z.object({ status: z.nativeEnum(AssignmentStatus).optional(), closesAt: z.iso.datetime({ offset: true }).nullable().optional(), durationMinutes: z.number().int().min(1).max(1440).optional(), maxAttempts: z.number().int().min(1).max(10).optional() }).strict();
 
 // GET: Lấy thông tin bài giao, danh sách bài làm và phân tích thống kê theo câu hỏi
 export async function GET(
@@ -9,7 +13,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const user = await requireAuth();
+    const user = await requireRequestAuth(req);
     const { id } = await params;
 
     const assignment = await prisma.assignment.findFirst({
@@ -47,7 +51,7 @@ export async function GET(
 
     // Phân loại các lượt làm bài
     const submittedAttempts = assignment.attempts.filter(
-      (a) => a.status === AttemptStatus.SUBMITTED && a.score !== null
+      (a) => a.status === AttemptStatus.SUBMITTED && a.score !== null && !a.needsGrading
     );
     const inProgressAttempts = assignment.attempts.filter(
       (a) => a.status === AttemptStatus.IN_PROGRESS
@@ -55,10 +59,12 @@ export async function GET(
 
     // Tính toán phổ điểm và điểm trung bình
     const scores = submittedAttempts.map((a) => Number(a.score));
-    const totalSubmitted = scores.length;
-    const avgScore = totalSubmitted > 0 ? scores.reduce((sum, s) => sum + s, 0) / totalSubmitted : 0;
-    const maxScore = totalSubmitted > 0 ? Math.max(...scores) : 0;
-    const minScore = totalSubmitted > 0 ? Math.min(...scores) : 0;
+    const totalSubmitted = assignment.attempts.filter(a => a.status === AttemptStatus.SUBMITTED).length;
+    const totalPendingGrading = assignment.attempts.filter(a => a.status === AttemptStatus.SUBMITTED && a.needsGrading).length;
+    const totalGraded = scores.length;
+    const avgScore = totalGraded > 0 ? scores.reduce((sum, s) => sum + s, 0) / totalGraded : 0;
+    const maxScore = totalGraded > 0 ? Math.max(...scores) : 0;
+    const minScore = totalGraded > 0 ? Math.min(...scores) : 0;
 
     const distribution = {
       under5: scores.filter((s) => s < 5.0).length,
@@ -88,7 +94,7 @@ export async function GET(
         questionId: q.id,
         questionIndex: idx + 1,
         type: q.type,
-        points: q.points || 0.25,
+        points: q.points ?? 0.25,
         content: q.content,
         totalAnswered,
         correctCount,
@@ -118,6 +124,8 @@ export async function GET(
       stats: {
         totalStudents: assignment.group?.students.length || assignment.attempts.length,
         totalSubmitted,
+        totalPendingGrading,
+        totalGraded,
         totalInProgress: inProgressAttempts.length,
         avgScore: Math.round(avgScore * 100) / 100,
         maxScore,
@@ -137,10 +145,13 @@ export async function GET(
         submittedAt: att.submittedAt,
         deadlineAt: att.deadlineAt,
         answersCount: att.answers.length,
+        needsGrading: att.needsGrading,
       })),
     });
   } catch (error: unknown) {
+    if (error instanceof ApiError) return apiErrorResponse(error, 'Chưa đọc được bài giao');
     const err = error as Error;
+    if (err.message === 'MUST_CHANGE_PASSWORD') return NextResponse.json({ error: 'Vui lòng đổi mật khẩu trước khi tiếp tục' }, { status: 403 });
     if (err.message === 'UNAUTHORIZED') {
       return NextResponse.json({ error: 'Chưa đăng nhập' }, { status: 401 });
     }
@@ -155,9 +166,12 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const user = await requireAuth();
+    const user = await requireRequestAuth(req);
     const { id } = await params;
-    const body = await req.json();
+    if (!isSameOriginMutation(req)) return NextResponse.json({ error: 'Yêu cầu không hợp lệ' }, { status: 403 });
+    const parsed = UpdateSchema.safeParse(await req.json().catch(() => null));
+    if (!parsed.success) return NextResponse.json({ error: 'Cấu hình bài giao không hợp lệ' }, { status: 400 });
+    const body = parsed.data;
 
     const assignment = await prisma.assignment.findFirst({
       where: { id, ownerId: user.id },
@@ -167,6 +181,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Không tìm thấy bài giao' }, { status: 404 });
     }
 
+    if (body.closesAt && assignment.opensAt && new Date(body.closesAt) <= assignment.opensAt) return NextResponse.json({ error: 'Thời gian đóng phải sau thời gian mở' }, { status: 400 });
     const updatedData: Record<string, any> = {};
 
     if (body.status && Object.values(AssignmentStatus).includes(body.status)) {
@@ -196,7 +211,9 @@ export async function PATCH(
       message: 'Cập nhật bài giao thành công',
     });
   } catch (error: unknown) {
+    if (error instanceof ApiError) return apiErrorResponse(error, 'Chưa đổi được trạng thái bài giao');
     const err = error as Error;
+    if (err.message === 'MUST_CHANGE_PASSWORD') return NextResponse.json({ error: 'Vui lòng đổi mật khẩu trước khi tiếp tục' }, { status: 403 });
     if (err.message === 'UNAUTHORIZED') {
       return NextResponse.json({ error: 'Chưa đăng nhập' }, { status: 401 });
     }

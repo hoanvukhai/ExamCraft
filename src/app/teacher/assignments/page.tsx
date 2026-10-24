@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { usePinnedAccount } from '@/hooks/usePinnedAccount';
 import Link from 'next/link';
 import {
   BookOpen,
@@ -37,14 +38,16 @@ interface AssignmentItem {
 }
 
 export default function TeacherAssignmentsListPage() {
+  const { ownerId: accountOwnerId, error: accountError, request: accountRequest } = usePinnedAccount();
   const [assignments, setAssignments] = useState<AssignmentItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
 
-  const fetchAssignments = async () => {
+  const fetchAssignments = useCallback(async () => {
+    if (!accountOwnerId) return;
     try {
       setLoading(true);
-      const res = await fetch('/api/assignments');
+      const res = await accountRequest('/api/assignments', { cache: 'no-store' });
       const data = await res.json();
       if (res.ok) {
         setAssignments(data.assignments || []);
@@ -54,11 +57,13 @@ export default function TeacherAssignmentsListPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [accountOwnerId, accountRequest]);
 
   useEffect(() => {
     fetchAssignments();
-  }, []);
+  }, [fetchAssignments]);
+
+  if (accountError) return <div role="alert" className="p-6"><p>{accountError}</p><Link href="/">Về kho đề</Link></div>;
 
   const filtered = assignments.filter((asg) =>
     asg.title.toLowerCase().includes(search.toLowerCase()) ||

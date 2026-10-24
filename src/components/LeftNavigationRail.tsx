@@ -18,7 +18,8 @@ import {
   ChevronLeft, 
   ChevronRight,
   GraduationCap,
-  Bot
+  Bot,
+  Brain
 } from 'lucide-react';
 
 interface LeftNavigationRailProps {
@@ -41,6 +42,7 @@ interface LeftNavigationRailProps {
   isMatrixTabActive: boolean;
   submissionCount?: number;
   hasActiveKey?: boolean;
+  onOpenAiLearningModal?: () => void;
 }
 
 export const LeftNavigationRail: React.FC<LeftNavigationRailProps> = ({
@@ -63,11 +65,13 @@ export const LeftNavigationRail: React.FC<LeftNavigationRailProps> = ({
   isMatrixTabActive,
   submissionCount = 0,
   hasActiveKey = false,
+  onOpenAiLearningModal,
 }) => {
   return (
     <aside
-      className={`no-print select-none shrink-0 transition-all duration-300 ease-in-out flex flex-col justify-between border-r ${
-        isCollapsed ? 'w-16' : 'w-60'
+      aria-label="Bảng công cụ soạn đề"
+      className={`no-print select-none shrink-0 transition-all duration-300 ease-in-out flex-col justify-between border-r ${
+        isCollapsed ? 'hidden lg:flex lg:w-16' : 'absolute inset-y-0 left-0 flex w-60 lg:relative'
       } bg-white dark:bg-[#181818] border-[#dadce0] dark:border-[#3c4043] z-20 h-full shadow-xs`}
     >
       <div className="flex-1 overflow-y-auto px-2 py-3 space-y-4">
@@ -80,7 +84,7 @@ export const LeftNavigationRail: React.FC<LeftNavigationRailProps> = ({
                 ? 'bg-white dark:bg-[#282828] text-[#202124] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043] shadow-xs hover:shadow-md hover:bg-[#f8f9fa] dark:hover:bg-[#303134]'
                 : 'bg-white dark:bg-[#282828] text-[#202124] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043] shadow-xs hover:shadow-md hover:bg-[#f8f9fa] dark:hover:bg-[#303134]'
             }`}
-            title="Sinh đề thi chuẩn Bộ GD&ĐT bằng AI"
+            title="Tạo bản nháp đề để giáo viên kiểm tra và chỉnh sửa"
           >
             <Sparkles className="w-4 h-4 shrink-0 text-amber-500 animate-pulse" />
             {!isCollapsed && <span className="truncate font-semibold text-[#202124] dark:text-[#e3e3e3]">Sinh đề AI Mới</span>}
@@ -91,7 +95,7 @@ export const LeftNavigationRail: React.FC<LeftNavigationRailProps> = ({
         <div className="space-y-1">
           {!isCollapsed && (
             <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-[#5f6368] dark:text-[#9aa0a6] mb-1">
-              Soạn đề & Trợ lý
+              Biên tập & Công cụ
             </p>
           )}
 
@@ -109,6 +113,18 @@ export const LeftNavigationRail: React.FC<LeftNavigationRailProps> = ({
             {!isCollapsed && <span className="truncate">Trợ lý AI Copilot</span>}
           </button>
 
+          {/* Bộ Não AI Sư Phạm (Tự học & Phong cách) */}
+          {onOpenAiLearningModal && (
+            <button
+              onClick={onOpenAiLearningModal}
+              title="Xem và chọn ghi chú, cách trình bày riêng cho trợ lý"
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-full text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] transition-colors cursor-pointer"
+            >
+              <Brain className="w-4 h-4 shrink-0 text-purple-600 dark:text-purple-400" />
+              {!isCollapsed && <span className="truncate">Ghi chú riêng cho AI</span>}
+            </button>
+          )}
+
           {/* Trộn đề 4 mã */}
           <button
             onClick={onShuffleExam}
@@ -122,7 +138,7 @@ export const LeftNavigationRail: React.FC<LeftNavigationRailProps> = ({
           {/* Ma trận & Bản đặc tả CV 7991 */}
           <button
             onClick={onToggleMatrixTab}
-            title="Xem bảng Ma trận và Bản đặc tả theo Công văn 7991"
+            title="Xem phân bố câu hỏi và điểm của đề đang soạn"
             className={`w-full flex items-center gap-3 px-3 py-2 rounded-full text-xs font-medium transition-colors cursor-pointer ${
               isMatrixTabActive
                 ? 'bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] font-semibold'
@@ -130,7 +146,7 @@ export const LeftNavigationRail: React.FC<LeftNavigationRailProps> = ({
             }`}
           >
             <TableProperties className={`w-4 h-4 shrink-0 ${isMatrixTabActive ? 'text-[#1a73e8] dark:text-[#8ab4f8]' : 'text-[#5f6368] dark:text-[#9aa0a6]'}`} />
-            {!isCollapsed && <span className="truncate">Ma trận (CV 7991)</span>}
+            {!isCollapsed && <span className="truncate">Ma trận của đề</span>}
           </button>
 
           {/* Tiêu đề trường thi */}
@@ -144,40 +160,43 @@ export const LeftNavigationRail: React.FC<LeftNavigationRailProps> = ({
           </button>
         </div>
 
-        {/* NHÓM 2: XUẤT BẢN & IN ẤN */}
+        {/* NHÓM 2: DỮ LIỆU & NHẬP LIỆU VÀO ĐỀ */}
         <div className="space-y-1 pt-2 border-t border-[#f1f3f4] dark:border-[#3c4043]/60">
           {!isCollapsed && (
             <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-[#5f6368] dark:text-[#9aa0a6] mb-1">
-              Xuất bản & In
+              Ngân hàng & Nhập liệu
             </p>
           )}
 
-          {/* Tải Word */}
+          {/* Ngân hàng câu hỏi */}
           <button
-            onClick={onExportWord}
-            title="Xuất file Word (.docx) chuẩn công thức OMML và hình vẽ"
+            onClick={onOpenQuestionBankModal}
+            title="Chọn câu hỏi từ Ngân hàng chèn vào đề"
             className="w-full flex items-center gap-3 px-3 py-2 rounded-full text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] transition-colors cursor-pointer"
           >
-            <Download className="w-4 h-4 shrink-0 text-[#1a73e8] dark:text-[#8ab4f8]" />
-            {!isCollapsed && <span className="truncate">Tải file Word (.docx)</span>}
+            <Database className="w-4 h-4 shrink-0 text-[#5f6368] dark:text-[#9aa0a6]" />
+            {!isCollapsed && <span className="truncate">Ngân hàng câu hỏi</span>}
           </button>
 
-          {/* In PDF A4 */}
+          {/* Nhập đề Word/Ảnh */}
+          <button onClick={onOpenLibraryModal} title="Sao lưu đề kèm ảnh và nhập kho cũ" className="w-full flex items-center gap-3 px-3 py-2 rounded-full text-xs font-medium hover:bg-[#f1f3f4] dark:hover:bg-[#282828]">
+            <Download className="w-4 h-4 shrink-0" />{!isCollapsed && <span>Sao lưu · Nhập kho cũ</span>}
+          </button>
           <button
-            onClick={onPrintPdf}
-            title="In đề thi hoặc xuất ra PDF trang A4 chuẩn"
+            onClick={onOpenImportModal}
+            title="Bóc tách câu hỏi từ file Word / Ảnh chụp đưa thêm vào đề"
             className="w-full flex items-center gap-3 px-3 py-2 rounded-full text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] transition-colors cursor-pointer"
           >
-            <Printer className="w-4 h-4 shrink-0 text-[#5f6368] dark:text-[#9aa0a6]" />
-            {!isCollapsed && <span className="truncate">In ấn / Lưu PDF</span>}
+            <Upload className="w-4 h-4 shrink-0 text-[#5f6368] dark:text-[#9aa0a6]" />
+            {!isCollapsed && <span className="truncate">Nhập đề (Word/Ảnh)</span>}
           </button>
         </div>
 
-        {/* NHÓM 3: KHẢO THÍ & LỚP HỌC */}
+        {/* NHÓM 3: KHẢO THÍ & BẢNG ĐIỂM */}
         <div className="space-y-1 pt-2 border-t border-[#f1f3f4] dark:border-[#3c4043]/60">
           {!isCollapsed && (
             <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-[#5f6368] dark:text-[#9aa0a6] mb-1">
-              Khảo thí & Lớp
+              Khảo thí Online
             </p>
           )}
 
@@ -207,55 +226,6 @@ export const LeftNavigationRail: React.FC<LeftNavigationRailProps> = ({
               </span>
             )}
           </button>
-
-          {/* Quản lý Lớp học */}
-          <Link
-            href="/teacher/groups"
-            title="Quản lý lớp dạy thêm và danh sách học sinh"
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-full text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] transition-colors"
-          >
-            <GraduationCap className="w-4 h-4 shrink-0 text-[#5f6368] dark:text-[#9aa0a6]" />
-            {!isCollapsed && <span className="truncate">Quản lý Lớp học</span>}
-          </Link>
-        </div>
-
-        {/* NHÓM 4: DỮ LIỆU & THƯ VIỆN */}
-        <div className="space-y-1 pt-2 border-t border-[#f1f3f4] dark:border-[#3c4043]/60">
-          {!isCollapsed && (
-            <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-[#5f6368] dark:text-[#9aa0a6] mb-1">
-              Thư viện câu hỏi
-            </p>
-          )}
-
-          {/* Ngân hàng câu hỏi */}
-          <button
-            onClick={onOpenQuestionBankModal}
-            title="Ngân hàng câu hỏi phân loại chuẩn ma trận"
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-full text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] transition-colors cursor-pointer"
-          >
-            <Database className="w-4 h-4 shrink-0 text-[#5f6368] dark:text-[#9aa0a6]" />
-            {!isCollapsed && <span className="truncate">Ngân hàng câu hỏi</span>}
-          </button>
-
-          {/* Nhập đề Word/Ảnh */}
-          <button
-            onClick={onOpenImportModal}
-            title="Nhập đề từ file Word, Ảnh chụp OCR hoặc Văn bản thô"
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-full text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] transition-colors cursor-pointer"
-          >
-            <Upload className="w-4 h-4 shrink-0 text-[#5f6368] dark:text-[#9aa0a6]" />
-            {!isCollapsed && <span className="truncate">Nhập đề (Word/Ảnh)</span>}
-          </button>
-
-          {/* Kho đề cá nhân */}
-          <button
-            onClick={onOpenLibraryModal}
-            title="Xem lại các đề thi đã lưu"
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-full text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] transition-colors cursor-pointer"
-          >
-            <BookMarked className="w-4 h-4 shrink-0 text-[#5f6368] dark:text-[#9aa0a6]" />
-            {!isCollapsed && <span className="truncate">Kho đề đã lưu</span>}
-          </button>
         </div>
       </div>
 
@@ -264,7 +234,7 @@ export const LeftNavigationRail: React.FC<LeftNavigationRailProps> = ({
         {/* Quản lý API Key */}
         <button
           onClick={onOpenApiKeyModal}
-          title="Kho lưu trữ API Key cá nhân (Mã hóa AES-256-GCM, kiểm tra dung lượng/lượt dùng)"
+          title="Quản lý khóa AI cá nhân và lượt dùng trong ứng dụng"
           className={`w-full flex items-center justify-between px-3 py-2 rounded-full text-xs font-medium transition-colors cursor-pointer ${
             hasActiveKey
               ? 'text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828]'

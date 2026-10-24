@@ -1,0 +1,2933 @@
+{
+  "date": "2026-10-22",
+  "sourceRegistry": "docs/nghien-cuu/05_DANH_MUC_HOP_NHAT.json",
+  "rows": [
+    {
+      "grade": 1,
+      "subject": "tieng_viet",
+      "label": "Tiếng Việt",
+      "programSourceIds": [
+        "TK-0003"
+      ],
+      "bookPageIds": [
+        "NXB-0001",
+        "NXB-0074"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 1,
+      "subject": "toan",
+      "label": "Toán",
+      "programSourceIds": [
+        "TK-0004"
+      ],
+      "bookPageIds": [
+        "NXB-0013",
+        "NXB-0113"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 1,
+      "subject": "dao_duc",
+      "label": "Đạo đức",
+      "programSourceIds": [
+        "TK-0005"
+      ],
+      "bookPageIds": [
+        "NXB-0078"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 1,
+      "subject": "am_nhac",
+      "label": "Âm nhạc",
+      "programSourceIds": [
+        "TK-0010"
+      ],
+      "bookPageIds": [
+        "NXB-0120"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 1,
+      "subject": "mi_thuat",
+      "label": "Mĩ thuật",
+      "programSourceIds": [
+        "TK-0011"
+      ],
+      "bookPageIds": [
+        "NXB-0088"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 1,
+      "subject": "giao_duc_the_chat",
+      "label": "Giáo dục thể chất",
+      "programSourceIds": [
+        "TK-0012"
+      ],
+      "bookPageIds": [
+        "NXB-0112"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 1,
+      "subject": "hoat_dong_trai_nghiem",
+      "label": "Hoạt động trải nghiệm",
+      "programSourceIds": [
+        "TK-0013"
+      ],
+      "bookPageIds": [
+        "NXB-0080"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 1,
+      "subject": "tu_nhien_xa_hoi",
+      "label": "Tự nhiên và Xã hội",
+      "programSourceIds": [
+        "TK-0021"
+      ],
+      "bookPageIds": [
+        "NXB-0053"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 1,
+      "subject": "tieng_anh",
+      "label": "Tiếng Anh",
+      "programSourceIds": [
+        "TK-0028"
+      ],
+      "bookPageIds": [
+        "NXB-0047"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 1,
+      "subject": "giao_duc_dia_phuong",
+      "label": "Giáo dục địa phương",
+      "programSourceIds": [
+        "TK-0049",
+        "TK-0050",
+        "TK-0051",
+        "TK-0052",
+        "TK-0053",
+        "TK-0054"
+      ],
+      "bookPageIds": [],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 2,
+      "subject": "tieng_viet",
+      "label": "Tiếng Việt",
+      "programSourceIds": [
+        "TK-0003"
+      ],
+      "bookPageIds": [
+        "NXB-0002",
+        "NXB-0077"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 2,
+      "subject": "toan",
+      "label": "Toán",
+      "programSourceIds": [
+        "TK-0004"
+      ],
+      "bookPageIds": [
+        "NXB-0010",
+        "NXB-0103"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 2,
+      "subject": "dao_duc",
+      "label": "Đạo đức",
+      "programSourceIds": [
+        "TK-0005"
+      ],
+      "bookPageIds": [
+        "NXB-0110"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 2,
+      "subject": "am_nhac",
+      "label": "Âm nhạc",
+      "programSourceIds": [
+        "TK-0010"
+      ],
+      "bookPageIds": [
+        "NXB-0151"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 2,
+      "subject": "mi_thuat",
+      "label": "Mĩ thuật",
+      "programSourceIds": [
+        "TK-0011"
+      ],
+      "bookPageIds": [
+        "NXB-0122"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 2,
+      "subject": "giao_duc_the_chat",
+      "label": "Giáo dục thể chất",
+      "programSourceIds": [
+        "TK-0012"
+      ],
+      "bookPageIds": [
+        "NXB-0158"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 2,
+      "subject": "hoat_dong_trai_nghiem",
+      "label": "Hoạt động trải nghiệm",
+      "programSourceIds": [
+        "TK-0013"
+      ],
+      "bookPageIds": [
+        "NXB-0086"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 2,
+      "subject": "tu_nhien_xa_hoi",
+      "label": "Tự nhiên và Xã hội",
+      "programSourceIds": [
+        "TK-0021"
+      ],
+      "bookPageIds": [
+        "NXB-0054"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 2,
+      "subject": "tieng_anh",
+      "label": "Tiếng Anh",
+      "programSourceIds": [
+        "TK-0028"
+      ],
+      "bookPageIds": [
+        "NXB-0105"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 2,
+      "subject": "giao_duc_dia_phuong",
+      "label": "Giáo dục địa phương",
+      "programSourceIds": [
+        "TK-0049",
+        "TK-0050",
+        "TK-0051",
+        "TK-0052",
+        "TK-0053",
+        "TK-0054"
+      ],
+      "bookPageIds": [],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 3,
+      "subject": "tieng_viet",
+      "label": "Tiếng Việt",
+      "programSourceIds": [
+        "TK-0003"
+      ],
+      "bookPageIds": [
+        "NXB-0006",
+        "NXB-0085"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 3,
+      "subject": "toan",
+      "label": "Toán",
+      "programSourceIds": [
+        "TK-0004"
+      ],
+      "bookPageIds": [
+        "NXB-0008",
+        "NXB-0099"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 3,
+      "subject": "dao_duc",
+      "label": "Đạo đức",
+      "programSourceIds": [
+        "TK-0005"
+      ],
+      "bookPageIds": [
+        "NXB-0079"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 3,
+      "subject": "am_nhac",
+      "label": "Âm nhạc",
+      "programSourceIds": [
+        "TK-0010"
+      ],
+      "bookPageIds": [
+        "NXB-0133"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 3,
+      "subject": "mi_thuat",
+      "label": "Mĩ thuật",
+      "programSourceIds": [
+        "TK-0011"
+      ],
+      "bookPageIds": [
+        "NXB-0129"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 3,
+      "subject": "giao_duc_the_chat",
+      "label": "Giáo dục thể chất",
+      "programSourceIds": [
+        "TK-0012"
+      ],
+      "bookPageIds": [
+        "NXB-0154"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 3,
+      "subject": "hoat_dong_trai_nghiem",
+      "label": "Hoạt động trải nghiệm",
+      "programSourceIds": [
+        "TK-0013"
+      ],
+      "bookPageIds": [
+        "NXB-0055"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 3,
+      "subject": "tu_nhien_xa_hoi",
+      "label": "Tự nhiên và Xã hội",
+      "programSourceIds": [
+        "TK-0021"
+      ],
+      "bookPageIds": [
+        "NXB-0038"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 3,
+      "subject": "cong_nghe",
+      "label": "Công nghệ",
+      "programSourceIds": [
+        "TK-0008"
+      ],
+      "bookPageIds": [
+        "NXB-0049"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 3,
+      "subject": "tin_hoc",
+      "label": "Tin học",
+      "programSourceIds": [
+        "TK-0009"
+      ],
+      "bookPageIds": [
+        "NXB-0048"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 3,
+      "subject": "tieng_anh",
+      "label": "Tiếng Anh",
+      "programSourceIds": [
+        "TK-0014"
+      ],
+      "bookPageIds": [
+        "NXB-0046",
+        "NXB-0195"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 3,
+      "subject": "giao_duc_dia_phuong",
+      "label": "Giáo dục địa phương",
+      "programSourceIds": [
+        "TK-0049",
+        "TK-0050",
+        "TK-0051",
+        "TK-0052",
+        "TK-0053",
+        "TK-0054"
+      ],
+      "bookPageIds": [],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 4,
+      "subject": "tieng_viet",
+      "label": "Tiếng Việt",
+      "programSourceIds": [
+        "TK-0003"
+      ],
+      "bookPageIds": [
+        "NXB-0003",
+        "NXB-0065"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 4,
+      "subject": "toan",
+      "label": "Toán",
+      "programSourceIds": [
+        "TK-0004"
+      ],
+      "bookPageIds": [
+        "NXB-0005",
+        "NXB-0051"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 4,
+      "subject": "dao_duc",
+      "label": "Đạo đức",
+      "programSourceIds": [
+        "TK-0005"
+      ],
+      "bookPageIds": [
+        "NXB-0087"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 4,
+      "subject": "am_nhac",
+      "label": "Âm nhạc",
+      "programSourceIds": [
+        "TK-0010"
+      ],
+      "bookPageIds": [
+        "NXB-0137"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 4,
+      "subject": "mi_thuat",
+      "label": "Mĩ thuật",
+      "programSourceIds": [
+        "TK-0011"
+      ],
+      "bookPageIds": [
+        "NXB-0114"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 4,
+      "subject": "giao_duc_the_chat",
+      "label": "Giáo dục thể chất",
+      "programSourceIds": [
+        "TK-0012"
+      ],
+      "bookPageIds": [
+        "NXB-0163"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 4,
+      "subject": "hoat_dong_trai_nghiem",
+      "label": "Hoạt động trải nghiệm",
+      "programSourceIds": [
+        "TK-0013"
+      ],
+      "bookPageIds": [
+        "NXB-0073"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 4,
+      "subject": "khoa_hoc",
+      "label": "Khoa học",
+      "programSourceIds": [
+        "TK-0022"
+      ],
+      "bookPageIds": [
+        "NXB-0032"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 4,
+      "subject": "lich_su_dia_ly",
+      "label": "Lịch sử và Địa lí",
+      "programSourceIds": [
+        "TK-0023",
+        "TK-0020"
+      ],
+      "bookPageIds": [
+        "NXB-0017"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 4,
+      "subject": "cong_nghe",
+      "label": "Công nghệ",
+      "programSourceIds": [
+        "TK-0008"
+      ],
+      "bookPageIds": [
+        "NXB-0064"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 4,
+      "subject": "tin_hoc",
+      "label": "Tin học",
+      "programSourceIds": [
+        "TK-0009"
+      ],
+      "bookPageIds": [
+        "NXB-0061"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 4,
+      "subject": "tieng_anh",
+      "label": "Tiếng Anh",
+      "programSourceIds": [
+        "TK-0014"
+      ],
+      "bookPageIds": [
+        "NXB-0096",
+        "NXB-0204"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 4,
+      "subject": "giao_duc_dia_phuong",
+      "label": "Giáo dục địa phương",
+      "programSourceIds": [
+        "TK-0049",
+        "TK-0050",
+        "TK-0051",
+        "TK-0052",
+        "TK-0053",
+        "TK-0054"
+      ],
+      "bookPageIds": [],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 5,
+      "subject": "tieng_viet",
+      "label": "Tiếng Việt",
+      "programSourceIds": [
+        "TK-0003"
+      ],
+      "bookPageIds": [
+        "NXB-0004",
+        "NXB-0056"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 5,
+      "subject": "toan",
+      "label": "Toán",
+      "programSourceIds": [
+        "TK-0004"
+      ],
+      "bookPageIds": [
+        "NXB-0007",
+        "NXB-0067"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 5,
+      "subject": "dao_duc",
+      "label": "Đạo đức",
+      "programSourceIds": [
+        "TK-0005"
+      ],
+      "bookPageIds": [
+        "NXB-0094"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 5,
+      "subject": "am_nhac",
+      "label": "Âm nhạc",
+      "programSourceIds": [
+        "TK-0010"
+      ],
+      "bookPageIds": [
+        "NXB-0136"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 5,
+      "subject": "mi_thuat",
+      "label": "Mĩ thuật",
+      "programSourceIds": [
+        "TK-0011"
+      ],
+      "bookPageIds": [
+        "NXB-0091"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 5,
+      "subject": "giao_duc_the_chat",
+      "label": "Giáo dục thể chất",
+      "programSourceIds": [
+        "TK-0012"
+      ],
+      "bookPageIds": [
+        "NXB-0156"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 5,
+      "subject": "hoat_dong_trai_nghiem",
+      "label": "Hoạt động trải nghiệm",
+      "programSourceIds": [
+        "TK-0013"
+      ],
+      "bookPageIds": [
+        "NXB-0066"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 5,
+      "subject": "khoa_hoc",
+      "label": "Khoa học",
+      "programSourceIds": [
+        "TK-0022"
+      ],
+      "bookPageIds": [
+        "NXB-0040"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 5,
+      "subject": "lich_su_dia_ly",
+      "label": "Lịch sử và Địa lí",
+      "programSourceIds": [
+        "TK-0023",
+        "TK-0020"
+      ],
+      "bookPageIds": [
+        "NXB-0020"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 5,
+      "subject": "cong_nghe",
+      "label": "Công nghệ",
+      "programSourceIds": [
+        "TK-0008"
+      ],
+      "bookPageIds": [
+        "NXB-0068"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 5,
+      "subject": "tin_hoc",
+      "label": "Tin học",
+      "programSourceIds": [
+        "TK-0009"
+      ],
+      "bookPageIds": [
+        "NXB-0081"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 5,
+      "subject": "tieng_anh",
+      "label": "Tiếng Anh",
+      "programSourceIds": [
+        "TK-0014"
+      ],
+      "bookPageIds": [
+        "NXB-0102",
+        "NXB-0207"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 5,
+      "subject": "giao_duc_dia_phuong",
+      "label": "Giáo dục địa phương",
+      "programSourceIds": [
+        "TK-0049",
+        "TK-0050",
+        "TK-0051",
+        "TK-0052",
+        "TK-0053",
+        "TK-0054"
+      ],
+      "bookPageIds": [],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 6,
+      "subject": "ngu_van",
+      "label": "Ngữ văn",
+      "programSourceIds": [
+        "TK-0003"
+      ],
+      "bookPageIds": [
+        "NXB-0015",
+        "NXB-0143"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 6,
+      "subject": "toan",
+      "label": "Toán",
+      "programSourceIds": [
+        "TK-0004"
+      ],
+      "bookPageIds": [
+        "NXB-0014",
+        "NXB-0144"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 6,
+      "subject": "giao_duc_cong_dan",
+      "label": "Giáo dục công dân",
+      "programSourceIds": [
+        "TK-0005"
+      ],
+      "bookPageIds": [
+        "NXB-0106"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 6,
+      "subject": "khtn",
+      "label": "Khoa học tự nhiên",
+      "programSourceIds": [
+        "TK-0007"
+      ],
+      "bookPageIds": [
+        "NXB-0024"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 6,
+      "subject": "lich_su_dia_ly",
+      "label": "Lịch sử và Địa lí",
+      "programSourceIds": [
+        "TK-0006",
+        "TK-0020"
+      ],
+      "bookPageIds": [
+        "NXB-0026"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 6,
+      "subject": "cong_nghe",
+      "label": "Công nghệ",
+      "programSourceIds": [
+        "TK-0008"
+      ],
+      "bookPageIds": [
+        "NXB-0119"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 6,
+      "subject": "tin_hoc",
+      "label": "Tin học",
+      "programSourceIds": [
+        "TK-0009"
+      ],
+      "bookPageIds": [
+        "NXB-0082"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 6,
+      "subject": "am_nhac",
+      "label": "Âm nhạc",
+      "programSourceIds": [
+        "TK-0010"
+      ],
+      "bookPageIds": [
+        "NXB-0138"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 6,
+      "subject": "mi_thuat",
+      "label": "Mĩ thuật",
+      "programSourceIds": [
+        "TK-0011"
+      ],
+      "bookPageIds": [
+        "NXB-0121"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 6,
+      "subject": "giao_duc_the_chat",
+      "label": "Giáo dục thể chất",
+      "programSourceIds": [
+        "TK-0012"
+      ],
+      "bookPageIds": [
+        "NXB-0152"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 6,
+      "subject": "hoat_dong_trai_nghiem_huong_nghiep",
+      "label": "Hoạt động trải nghiệm, hướng nghiệp",
+      "programSourceIds": [
+        "TK-0013"
+      ],
+      "bookPageIds": [
+        "NXB-0045"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 6,
+      "subject": "tieng_anh",
+      "label": "Tiếng Anh",
+      "programSourceIds": [
+        "TK-0014"
+      ],
+      "bookPageIds": [
+        "NXB-0036",
+        "NXB-0193"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 6,
+      "subject": "giao_duc_dia_phuong",
+      "label": "Giáo dục địa phương",
+      "programSourceIds": [
+        "TK-0049",
+        "TK-0050",
+        "TK-0051",
+        "TK-0052",
+        "TK-0053",
+        "TK-0054"
+      ],
+      "bookPageIds": [],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 7,
+      "subject": "ngu_van",
+      "label": "Ngữ văn",
+      "programSourceIds": [
+        "TK-0003"
+      ],
+      "bookPageIds": [
+        "NXB-0030",
+        "NXB-0160"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 7,
+      "subject": "toan",
+      "label": "Toán",
+      "programSourceIds": [
+        "TK-0004"
+      ],
+      "bookPageIds": [
+        "NXB-0025",
+        "NXB-0153"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 7,
+      "subject": "giao_duc_cong_dan",
+      "label": "Giáo dục công dân",
+      "programSourceIds": [
+        "TK-0005"
+      ],
+      "bookPageIds": [
+        "NXB-0134"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 7,
+      "subject": "khtn",
+      "label": "Khoa học tự nhiên",
+      "programSourceIds": [
+        "TK-0007"
+      ],
+      "bookPageIds": [
+        "NXB-0035"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 7,
+      "subject": "lich_su_dia_ly",
+      "label": "Lịch sử và Địa lí",
+      "programSourceIds": [
+        "TK-0006",
+        "TK-0020"
+      ],
+      "bookPageIds": [
+        "NXB-0039"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 7,
+      "subject": "cong_nghe",
+      "label": "Công nghệ",
+      "programSourceIds": [
+        "TK-0008"
+      ],
+      "bookPageIds": [
+        "NXB-0140"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 7,
+      "subject": "tin_hoc",
+      "label": "Tin học",
+      "programSourceIds": [
+        "TK-0009"
+      ],
+      "bookPageIds": [
+        "NXB-0098"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 7,
+      "subject": "am_nhac",
+      "label": "Âm nhạc",
+      "programSourceIds": [
+        "TK-0010"
+      ],
+      "bookPageIds": [
+        "NXB-0169"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 7,
+      "subject": "mi_thuat",
+      "label": "Mĩ thuật",
+      "programSourceIds": [
+        "TK-0011"
+      ],
+      "bookPageIds": [
+        "NXB-0090"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 7,
+      "subject": "giao_duc_the_chat",
+      "label": "Giáo dục thể chất",
+      "programSourceIds": [
+        "TK-0012"
+      ],
+      "bookPageIds": [
+        "NXB-0188"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 7,
+      "subject": "hoat_dong_trai_nghiem_huong_nghiep",
+      "label": "Hoạt động trải nghiệm, hướng nghiệp",
+      "programSourceIds": [
+        "TK-0013"
+      ],
+      "bookPageIds": [
+        "NXB-0093"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 7,
+      "subject": "tieng_anh",
+      "label": "Tiếng Anh",
+      "programSourceIds": [
+        "TK-0014"
+      ],
+      "bookPageIds": [
+        "NXB-0072"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 7,
+      "subject": "giao_duc_dia_phuong",
+      "label": "Giáo dục địa phương",
+      "programSourceIds": [
+        "TK-0049",
+        "TK-0050",
+        "TK-0051",
+        "TK-0052",
+        "TK-0053",
+        "TK-0054"
+      ],
+      "bookPageIds": [],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 8,
+      "subject": "ngu_van",
+      "label": "Ngữ văn",
+      "programSourceIds": [
+        "TK-0003"
+      ],
+      "bookPageIds": [
+        "NXB-0029",
+        "NXB-0161"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 8,
+      "subject": "toan",
+      "label": "Toán",
+      "programSourceIds": [
+        "TK-0004"
+      ],
+      "bookPageIds": [
+        "NXB-0021",
+        "NXB-0146"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 8,
+      "subject": "giao_duc_cong_dan",
+      "label": "Giáo dục công dân",
+      "programSourceIds": [
+        "TK-0005"
+      ],
+      "bookPageIds": [
+        "NXB-0128"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 8,
+      "subject": "khtn",
+      "label": "Khoa học tự nhiên",
+      "programSourceIds": [
+        "TK-0007"
+      ],
+      "bookPageIds": [
+        "NXB-0037"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 8,
+      "subject": "lich_su_dia_ly",
+      "label": "Lịch sử và Địa lí",
+      "programSourceIds": [
+        "TK-0006",
+        "TK-0020"
+      ],
+      "bookPageIds": [
+        "NXB-0019"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 8,
+      "subject": "cong_nghe",
+      "label": "Công nghệ",
+      "programSourceIds": [
+        "TK-0008"
+      ],
+      "bookPageIds": [
+        "NXB-0116"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 8,
+      "subject": "tin_hoc",
+      "label": "Tin học",
+      "programSourceIds": [
+        "TK-0009"
+      ],
+      "bookPageIds": [
+        "NXB-0075"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 8,
+      "subject": "am_nhac",
+      "label": "Âm nhạc",
+      "programSourceIds": [
+        "TK-0010"
+      ],
+      "bookPageIds": [
+        "NXB-0175"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 8,
+      "subject": "mi_thuat",
+      "label": "Mĩ thuật",
+      "programSourceIds": [
+        "TK-0011"
+      ],
+      "bookPageIds": [
+        "NXB-0150"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 8,
+      "subject": "giao_duc_the_chat",
+      "label": "Giáo dục thể chất",
+      "programSourceIds": [
+        "TK-0012"
+      ],
+      "bookPageIds": [
+        "NXB-0191"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 8,
+      "subject": "hoat_dong_trai_nghiem_huong_nghiep",
+      "label": "Hoạt động trải nghiệm, hướng nghiệp",
+      "programSourceIds": [
+        "TK-0013"
+      ],
+      "bookPageIds": [
+        "NXB-0092"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 8,
+      "subject": "tieng_anh",
+      "label": "Tiếng Anh",
+      "programSourceIds": [
+        "TK-0014"
+      ],
+      "bookPageIds": [
+        "NXB-0069"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 8,
+      "subject": "giao_duc_dia_phuong",
+      "label": "Giáo dục địa phương",
+      "programSourceIds": [
+        "TK-0049",
+        "TK-0050",
+        "TK-0051",
+        "TK-0052",
+        "TK-0053",
+        "TK-0054"
+      ],
+      "bookPageIds": [],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 9,
+      "subject": "ngu_van",
+      "label": "Ngữ văn",
+      "programSourceIds": [
+        "TK-0003"
+      ],
+      "bookPageIds": [
+        "NXB-0018",
+        "NXB-0147"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 9,
+      "subject": "toan",
+      "label": "Toán",
+      "programSourceIds": [
+        "TK-0004"
+      ],
+      "bookPageIds": [
+        "NXB-0012",
+        "NXB-0145"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 9,
+      "subject": "giao_duc_cong_dan",
+      "label": "Giáo dục công dân",
+      "programSourceIds": [
+        "TK-0005"
+      ],
+      "bookPageIds": [
+        "NXB-0084"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 9,
+      "subject": "khtn",
+      "label": "Khoa học tự nhiên",
+      "programSourceIds": [
+        "TK-0007"
+      ],
+      "bookPageIds": [
+        "NXB-0023"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 9,
+      "subject": "lich_su_dia_ly",
+      "label": "Lịch sử và Địa lí",
+      "programSourceIds": [
+        "TK-0006",
+        "TK-0020"
+      ],
+      "bookPageIds": [
+        "NXB-0009"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 9,
+      "subject": "cong_nghe",
+      "label": "Công nghệ",
+      "programSourceIds": [
+        "TK-0008"
+      ],
+      "bookPageIds": [
+        "NXB-0027",
+        "NXB-0124",
+        "NXB-0173",
+        "NXB-0184"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 9,
+      "subject": "tin_hoc",
+      "label": "Tin học",
+      "programSourceIds": [
+        "TK-0009"
+      ],
+      "bookPageIds": [
+        "NXB-0089"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 9,
+      "subject": "am_nhac",
+      "label": "Âm nhạc",
+      "programSourceIds": [
+        "TK-0010"
+      ],
+      "bookPageIds": [
+        "NXB-0139"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 9,
+      "subject": "mi_thuat",
+      "label": "Mĩ thuật",
+      "programSourceIds": [
+        "TK-0011"
+      ],
+      "bookPageIds": [
+        "NXB-0070"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 9,
+      "subject": "giao_duc_the_chat",
+      "label": "Giáo dục thể chất",
+      "programSourceIds": [
+        "TK-0012"
+      ],
+      "bookPageIds": [
+        "NXB-0178"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 9,
+      "subject": "hoat_dong_trai_nghiem_huong_nghiep",
+      "label": "Hoạt động trải nghiệm, hướng nghiệp",
+      "programSourceIds": [
+        "TK-0013"
+      ],
+      "bookPageIds": [
+        "NXB-0083"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 9,
+      "subject": "tieng_anh",
+      "label": "Tiếng Anh",
+      "programSourceIds": [
+        "TK-0014"
+      ],
+      "bookPageIds": [
+        "NXB-0042"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 9,
+      "subject": "giao_duc_dia_phuong",
+      "label": "Giáo dục địa phương",
+      "programSourceIds": [
+        "TK-0049",
+        "TK-0050",
+        "TK-0051",
+        "TK-0052",
+        "TK-0053",
+        "TK-0054"
+      ],
+      "bookPageIds": [],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "ngu_van",
+      "label": "Ngữ văn",
+      "programSourceIds": [
+        "TK-0003"
+      ],
+      "bookPageIds": [
+        "NXB-0011",
+        "NXB-0155"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "toan",
+      "label": "Toán",
+      "programSourceIds": [
+        "TK-0004"
+      ],
+      "bookPageIds": [
+        "NXB-0022",
+        "NXB-0165"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "lich_su",
+      "label": "Lịch sử",
+      "programSourceIds": [
+        "TK-0024",
+        "TK-0019",
+        "TK-0020"
+      ],
+      "bookPageIds": [
+        "NXB-0031"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "dia_ly",
+      "label": "Địa lí",
+      "programSourceIds": [
+        "TK-0025",
+        "TK-0020"
+      ],
+      "bookPageIds": [
+        "NXB-0063"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "gdkt_pl",
+      "label": "Giáo dục kinh tế và pháp luật",
+      "programSourceIds": [
+        "TK-0005",
+        "TK-0020"
+      ],
+      "bookPageIds": [
+        "NXB-0059"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "vat_ly",
+      "label": "Vật lí",
+      "programSourceIds": [
+        "TK-0015"
+      ],
+      "bookPageIds": [
+        "NXB-0044"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "hoa_hoc",
+      "label": "Hóa học",
+      "programSourceIds": [
+        "TK-0026"
+      ],
+      "bookPageIds": [
+        "NXB-0062"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "sinh_hoc",
+      "label": "Sinh học",
+      "programSourceIds": [
+        "TK-0027"
+      ],
+      "bookPageIds": [
+        "NXB-0101"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "cong_nghe",
+      "label": "Công nghệ",
+      "programSourceIds": [
+        "TK-0008"
+      ],
+      "bookPageIds": [
+        "NXB-0131",
+        "NXB-0162"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "tin_hoc",
+      "label": "Tin học",
+      "programSourceIds": [
+        "TK-0009"
+      ],
+      "bookPageIds": [
+        "NXB-0058"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "am_nhac",
+      "label": "Âm nhạc",
+      "programSourceIds": [
+        "TK-0010"
+      ],
+      "bookPageIds": [
+        "NXB-0215"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "mi_thuat",
+      "label": "Mĩ thuật",
+      "programSourceIds": [
+        "TK-0011"
+      ],
+      "bookPageIds": [
+        "NXB-0256",
+        "NXB-0257",
+        "NXB-0260",
+        "NXB-0263",
+        "NXB-0278",
+        "NXB-0286",
+        "NXB-0293",
+        "NXB-0296"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "giao_duc_the_chat",
+      "label": "Giáo dục thể chất",
+      "programSourceIds": [
+        "TK-0012"
+      ],
+      "bookPageIds": [
+        "NXB-0201",
+        "NXB-0209",
+        "NXB-0239",
+        "NXB-0246"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "giao_duc_quoc_phong_an_ninh",
+      "label": "Giáo dục quốc phòng và an ninh",
+      "programSourceIds": [
+        "TK-0035"
+      ],
+      "bookPageIds": [
+        "NXB-0071"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "hoat_dong_trai_nghiem_huong_nghiep",
+      "label": "Hoạt động trải nghiệm, hướng nghiệp",
+      "programSourceIds": [
+        "TK-0013"
+      ],
+      "bookPageIds": [
+        "NXB-0052"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "tieng_anh",
+      "label": "Tiếng Anh",
+      "programSourceIds": [
+        "TK-0014"
+      ],
+      "bookPageIds": [
+        "NXB-0033"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 10,
+      "subject": "giao_duc_dia_phuong",
+      "label": "Giáo dục địa phương",
+      "programSourceIds": [
+        "TK-0049",
+        "TK-0050",
+        "TK-0051",
+        "TK-0052",
+        "TK-0053",
+        "TK-0054"
+      ],
+      "bookPageIds": [],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "ngu_van",
+      "label": "Ngữ văn",
+      "programSourceIds": [
+        "TK-0003"
+      ],
+      "bookPageIds": [
+        "NXB-0028",
+        "NXB-0164"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "toan",
+      "label": "Toán",
+      "programSourceIds": [
+        "TK-0004"
+      ],
+      "bookPageIds": [
+        "NXB-0050",
+        "NXB-0179"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "lich_su",
+      "label": "Lịch sử",
+      "programSourceIds": [
+        "TK-0024",
+        "TK-0019",
+        "TK-0020"
+      ],
+      "bookPageIds": [
+        "NXB-0060"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "dia_ly",
+      "label": "Địa lí",
+      "programSourceIds": [
+        "TK-0025",
+        "TK-0020"
+      ],
+      "bookPageIds": [
+        "NXB-0109"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "gdkt_pl",
+      "label": "Giáo dục kinh tế và pháp luật",
+      "programSourceIds": [
+        "TK-0005",
+        "TK-0020"
+      ],
+      "bookPageIds": [
+        "NXB-0100"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "vat_ly",
+      "label": "Vật lí",
+      "programSourceIds": [
+        "TK-0015"
+      ],
+      "bookPageIds": [
+        "NXB-0127"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "hoa_hoc",
+      "label": "Hóa học",
+      "programSourceIds": [
+        "TK-0026"
+      ],
+      "bookPageIds": [
+        "NXB-0130"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "sinh_hoc",
+      "label": "Sinh học",
+      "programSourceIds": [
+        "TK-0027"
+      ],
+      "bookPageIds": [
+        "NXB-0132"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "cong_nghe",
+      "label": "Công nghệ",
+      "programSourceIds": [
+        "TK-0008"
+      ],
+      "bookPageIds": [
+        "NXB-0174",
+        "NXB-0200"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "tin_hoc",
+      "label": "Tin học",
+      "programSourceIds": [
+        "TK-0009"
+      ],
+      "bookPageIds": [
+        "NXB-0141"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "am_nhac",
+      "label": "Âm nhạc",
+      "programSourceIds": [
+        "TK-0010"
+      ],
+      "bookPageIds": [
+        "NXB-0252"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "mi_thuat",
+      "label": "Mĩ thuật",
+      "programSourceIds": [
+        "TK-0011"
+      ],
+      "bookPageIds": [
+        "NXB-0281",
+        "NXB-0284",
+        "NXB-0287",
+        "NXB-0288",
+        "NXB-0289",
+        "NXB-0291",
+        "NXB-0294",
+        "NXB-0295",
+        "NXB-0297",
+        "NXB-0300"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "giao_duc_the_chat",
+      "label": "Giáo dục thể chất",
+      "programSourceIds": [
+        "TK-0012"
+      ],
+      "bookPageIds": [
+        "NXB-0240",
+        "NXB-0254",
+        "NXB-0274",
+        "NXB-0283"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "giao_duc_quoc_phong_an_ninh",
+      "label": "Giáo dục quốc phòng và an ninh",
+      "programSourceIds": [
+        "TK-0035"
+      ],
+      "bookPageIds": [
+        "NXB-0104"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "hoat_dong_trai_nghiem_huong_nghiep",
+      "label": "Hoạt động trải nghiệm, hướng nghiệp",
+      "programSourceIds": [
+        "TK-0013"
+      ],
+      "bookPageIds": [
+        "NXB-0126"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "tieng_anh",
+      "label": "Tiếng Anh",
+      "programSourceIds": [
+        "TK-0014"
+      ],
+      "bookPageIds": [
+        "NXB-0107"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 11,
+      "subject": "giao_duc_dia_phuong",
+      "label": "Giáo dục địa phương",
+      "programSourceIds": [
+        "TK-0049",
+        "TK-0050",
+        "TK-0051",
+        "TK-0052",
+        "TK-0053",
+        "TK-0054"
+      ],
+      "bookPageIds": [],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "ngu_van",
+      "label": "Ngữ văn",
+      "programSourceIds": [
+        "TK-0003"
+      ],
+      "bookPageIds": [
+        "NXB-0016",
+        "NXB-0149"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "toan",
+      "label": "Toán",
+      "programSourceIds": [
+        "TK-0004"
+      ],
+      "bookPageIds": [
+        "NXB-0043",
+        "NXB-0159"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "lich_su",
+      "label": "Lịch sử",
+      "programSourceIds": [
+        "TK-0024",
+        "TK-0019",
+        "TK-0020"
+      ],
+      "bookPageIds": [
+        "NXB-0034"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "dia_ly",
+      "label": "Địa lí",
+      "programSourceIds": [
+        "TK-0025",
+        "TK-0020"
+      ],
+      "bookPageIds": [
+        "NXB-0041"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "gdkt_pl",
+      "label": "Giáo dục kinh tế và pháp luật",
+      "programSourceIds": [
+        "TK-0005",
+        "TK-0020"
+      ],
+      "bookPageIds": [
+        "NXB-0111"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "vat_ly",
+      "label": "Vật lí",
+      "programSourceIds": [
+        "TK-0015"
+      ],
+      "bookPageIds": [
+        "NXB-0076"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "hoa_hoc",
+      "label": "Hóa học",
+      "programSourceIds": [
+        "TK-0026"
+      ],
+      "bookPageIds": [
+        "NXB-0115"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "sinh_hoc",
+      "label": "Sinh học",
+      "programSourceIds": [
+        "TK-0027"
+      ],
+      "bookPageIds": [
+        "NXB-0135"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "cong_nghe",
+      "label": "Công nghệ",
+      "programSourceIds": [
+        "TK-0008"
+      ],
+      "bookPageIds": [
+        "NXB-0157",
+        "NXB-0189"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "tin_hoc",
+      "label": "Tin học",
+      "programSourceIds": [
+        "TK-0009"
+      ],
+      "bookPageIds": [
+        "NXB-0123"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "am_nhac",
+      "label": "Âm nhạc",
+      "programSourceIds": [
+        "TK-0010"
+      ],
+      "bookPageIds": [
+        "NXB-0226"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "mi_thuat",
+      "label": "Mĩ thuật",
+      "programSourceIds": [
+        "TK-0011"
+      ],
+      "bookPageIds": [
+        "NXB-0275",
+        "NXB-0282",
+        "NXB-0285",
+        "NXB-0298",
+        "NXB-0299",
+        "NXB-0301"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "giao_duc_the_chat",
+      "label": "Giáo dục thể chất",
+      "programSourceIds": [
+        "TK-0012"
+      ],
+      "bookPageIds": [
+        "NXB-0229",
+        "NXB-0245",
+        "NXB-0255",
+        "NXB-0290"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "giao_duc_quoc_phong_an_ninh",
+      "label": "Giáo dục quốc phòng và an ninh",
+      "programSourceIds": [
+        "TK-0035"
+      ],
+      "bookPageIds": [
+        "NXB-0118"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "hoat_dong_trai_nghiem_huong_nghiep",
+      "label": "Hoạt động trải nghiệm, hướng nghiệp",
+      "programSourceIds": [
+        "TK-0013"
+      ],
+      "bookPageIds": [
+        "NXB-0108"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "tieng_anh",
+      "label": "Tiếng Anh",
+      "programSourceIds": [
+        "TK-0014"
+      ],
+      "bookPageIds": [
+        "NXB-0095"
+      ],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    },
+    {
+      "grade": 12,
+      "subject": "giao_duc_dia_phuong",
+      "label": "Giáo dục địa phương",
+      "programSourceIds": [
+        "TK-0049",
+        "TK-0050",
+        "TK-0051",
+        "TK-0052",
+        "TK-0053",
+        "TK-0054"
+      ],
+      "bookPageIds": [],
+      "readiness": "needs_review",
+      "next": "Kiểm ấn bản, mục lục và bộ mẫu đúng lớp/môn; liên kết nguồn tại danh mục NXB"
+    }
+  ],
+  "sources": [
+    {
+      "id": "SRC-001",
+      "title": "CV 7991, bản sao PDF",
+      "url": "https://cdn.thuvienphapluat.vn/phap-luat/2022-2/PNHP/thang-12/19/file/cong-van-7991-huong-dan-KTDGDK.pdf",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-002",
+      "title": "TT 27/2020, Công báo",
+      "url": "https://congbaocdn.chinhphu.vn/CongBaoCP/VanBan/2020/9/32035/32512-1-2020883-88427-2020-tt-bgddt.pdf",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-003",
+      "title": "Chương trình Toán, ứng viên bản lưu tại Đại học Cần Thơ",
+      "url": "https://se.ctu.edu.vn/images/upload/thongbao/TT32.pdf",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-004",
+      "title": "Thông tư 32/2018 trên CSDL văn bản Bộ GDĐT",
+      "url": "https://vbpl.moj.gov.vn/bogiaoducdaotao/Pages/vbpq-toanvan.aspx?ItemID=146721",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-005",
+      "title": "Bản hợp nhất chương trình tổng thể trên cổng Bộ GDĐT",
+      "url": "https://moet.gov.vn/content/vanban/Lists/VBPQ/Attachments/1483/vbhn-chuong-trinh-tong-the.pdf",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-006",
+      "title": "Chương trình GDPT trên cổng Bộ GDĐT",
+      "url": "https://moet.gov.vn/content/tintuc/Lists/News/Attachments/8421/chuong-trinh-tong-the-ctgdpt-2018.pdf",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-007",
+      "title": "Đường dẫn chuẩn hóa của bài về TT 13/2022 — chưa xác nhận truy cập",
+      "url": "https://www.moet.gov.vn/tintuc/Pages/CT-GDPT-Tong-The.aspx?ItemID=8013",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-008",
+      "title": "Thông tin chương trình Ngoại ngữ 1 Nga, Nhật, Pháp, Trung",
+      "url": "https://ngoainguquocgia.moet.gov.vn/ban-hanh-chuong-trinh-giao-duc-pho-thong-mon-ngoai-ngu-1-tieng-nga-nhat-phap-trung-quoc-2258705.html",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-009",
+      "title": "PDF trên website Đại học Cần Thơ",
+      "url": "https://se.ctu.edu.vn/images/upload/thongbao/TT32.pdf",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-010",
+      "title": "Trang giới thiệu bộ Cánh Diều có mục Chương trình môn học",
+      "url": "https://www.hoc10.vn/bo-sgk-canh-dieu/",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-038",
+      "title": "PDF trên kho văn bản Bộ GDĐT, hồ sơ 1453",
+      "url": "https://moet.gov.vn/content/vanban/Lists/VBPQ/Attachments/1453/vbhn-322018-202021-ttbgddt-trinh-ky-xt.pdf",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-039",
+      "title": "Kho dữ liệu Bộ GDĐT",
+      "url": "https://data.moet.gov.vn/index.php/s/KNfGVJAhcwuS2Uk#pdfviewer",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-044",
+      "title": "Trang chương trình, tài liệu, học liệu Ngoại ngữ quốc gia",
+      "url": "https://ngoainguquocgia.moet.gov.vn/chuong-trinh-tai-lieu-hoc-lieu-115500.html",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-011",
+      "title": "Hành trang số/NXB Giáo dục Việt Nam",
+      "url": "https://hanhtrangso.nxbgd.vn/sach-dien-tu/",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-012",
+      "title": "Trường học số quốc gia/NXB Giáo dục Việt Nam",
+      "url": "https://truonghocsoquocgia.nxbgd.vn/",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-013",
+      "title": "Hoc10 – kho sách và học liệu Cánh Diều",
+      "url": "https://www.hoc10.vn/tu-sach",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-014",
+      "title": "Trang bộ sách Cánh Diều",
+      "url": "https://www.hoc10.vn/bo-sgk-canh-dieu/",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-015",
+      "title": "Kho mục lục tổng hợp theo lớp/bộ/môn",
+      "url": "https://sachgiaokhoa.aistudybuddy.vn/muc-luc",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-016",
+      "title": "Chân trời sáng tạo – trang giới thiệu kho sách",
+      "url": "https://chantroisangtao.com.vn/gioi-thieu/",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-017",
+      "title": "Kho học liệu số Giáo dục",
+      "url": "https://elearning.stid.gov.vn/Sach-giao-khoa/",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-018",
+      "title": "Danh mục sách giáo khoa đã phê duyệt – ví dụ Quyết định 704/QĐ-BGDĐT",
+      "url": "https://thuvienphapluat.vn/van-ban/giao-duc/quyet-dinh-704-qd-bgddt-2024-bo-sung-sach-giao-khoa-lop-12-trong-co-so-giao-duc-pho-thong-609334.aspx",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-019",
+      "title": "Ví dụ danh mục SGK lớp 12 gắn với quyết định địa phương",
+      "url": "https://congbao.sonla.gov.vn/congbao.nsf/87A75E0EA954D34B47258B4E002C23FA/%24file/21.%20THPT%20MAI%20SON-Phu%20luc%20Du%20thao%20UBND%20tinh%20duyet%20SGK%202024-2025.pdf",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-048",
+      "title": "NXBGDVN: thông báo sử dụng SGK năm học 2026–2027",
+      "url": "https://test.nxbgd.vn/bai-viet/nha-xuat-ban-giao-duc-viet-nam-thong-bao-ve-viec-su-dung-sach-giao-khoa-nam-hoc-2026-2027",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-049",
+      "title": "NXBGDVN: thông báo quyết định chọn SGK thống nhất",
+      "url": "https://www.nxbgd.vn/bai-viet/bo-gddt-quyet-dinh-bo-sach-giao-khoa-giao-duc-pho-thong-su-dung-thong-nhat-toan-quoc",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-020",
+      "title": "Thông tư 27/2020 – bản Công báo",
+      "url": "https://congbaocdn.chinhphu.vn/CongBaoCP/VanBan/2020/9/32035/32512-1-2020883-88427-2020-tt-bgddt.pdf",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-021",
+      "title": "Hồ sơ gốc Thông tư 22/2021/TT-BGDĐT trên CSDL quốc gia",
+      "url": "https://vbpl.moj.gov.vn/bogiaoducdaotao/Pages/vbpq-van-ban-goc.aspx?ItemID=150073",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-022",
+      "title": "Một tài liệu hướng dẫn chuyên môn trên cổng Bộ",
+      "url": "https://moet.gov.vn/content/vanban/Lists/VBDH/Attachments/3713/5-mon-giao-duc-ktpl-ban-chinh-thuc-chot-ngay-31-8-2024signed.pdf",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-023",
+      "title": "Tài liệu hướng dẫn Hóa học 11 trên cổng Bộ",
+      "url": "https://moet.gov.vn/content/vanban/Lists/VBDH/Attachments/3713/7mon-hoa-hoc-lop-11-ban-chinh-thuc-chot-ngay-392024signed.pdf",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-024",
+      "title": "Cục Quản lý chất lượng: tập huấn vận dụng SEA-PLM",
+      "url": "https://vqa.moet.gov.vn/vi/news/tin-tuc-su-kien/cuc-quan-ly-chat-luong-trien-khai-tap-huan-van-dung-chuong-trinh-danh-gia-ket-qua-hoc-tap-cua-hoc-sinh-tieu-hoc-khu-vuc-dong-nam-a-sea-plm-chu-ky-2024-156.html",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-025",
+      "title": "Thông tư 08/2026 – thông tin Cục Quản lý chất lượng",
+      "url": "https://vqa.moet.gov.vn/vi/news/tin-tuc-su-kien/mot-so-diem-moi-thong-tu-so-08-2026-tt-bgddt-ban-hanh-quy-dinh-ve-danh-gia-dien-rong-cap-quoc-gia-chat-luong-giao-duc-pho-thong-247.html",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-026",
+      "title": "Chỉ thị của Thủ tướng về kiểm tra, đánh giá và thi",
+      "url": "https://vqa.moet.gov.vn/vi/news/tin-tuc-su-kien/chi-thi-cua-thu-tuong-ve-tang-cuong-phong-chong-gian-lan-thi-cu-kiem-tra-danh-gia-trong-giao-duc-va-dao-tao-302.html",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-045",
+      "title": "Cục QLCL: hướng dẫn nhiệm vụ năm học 2026–2027",
+      "url": "https://vqa.moet.gov.vn/vi/news/tin-tuc-su-kien/bo-gddt-huong-dan-thuc-hien-nhiem-vu-quan-ly-chat-luong-nam-hoc-2026-2027-294.html",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-027",
+      "title": "Đề và đáp án HSG quốc gia THPT 2025–2026 – Cục QLCL",
+      "url": "https://vqa.moet.gov.vn/vi/news/tin-tuc-su-kien/de-thi-dap-an-ky-thi-chon-hoc-sinh-gioi-quoc-gia-thpt-nam-hoc-2025-2026-242.html",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-028",
+      "title": "Ví dụ đáp án và thang điểm Ngữ văn 2023 – Cục QLCL",
+      "url": "https://vqa.moet.gov.vn/vi/thong-bao-quan-ly-khao-thi/thong-bao/thi-tot-nghiep-thpt-2023-dap-an-va-thang-diem-bai-thi-ngu-van-28.html?download=1&id=1",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-029",
+      "title": "Thông tin Bộ về phương án thi từ 2025",
+      "url": "https://vqa.moet.gov.vn/vi/thong-bao-quan-ly-khao-thi/thong-bao/tu-nam-2025-thi-tot-nghiep-thpt-phai-phu-hop-chuong-trinh-giao-duc-pho-thong-nam-2018-12.html",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-030",
+      "title": "Hội thảo Cục QLCL về chuẩn bị đề thi từ 2025",
+      "url": "https://vqa.moet.gov.vn/vi/news/tin-tuc-su-kien/hoi-thao-ve-cong-tac-chuan-bi-de-thi-tot-nghiep-thpt-tu-nam-2025-88.html",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-031",
+      "title": "SRC-031",
+      "url": "",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-032",
+      "title": "SRC-032",
+      "url": "",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-033",
+      "title": "SRC-033",
+      "url": "",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-034",
+      "title": "SRC-034",
+      "url": "",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-035",
+      "title": "SRC-035",
+      "url": "",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-036",
+      "title": "SRC-036",
+      "url": "",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-037",
+      "title": "SRC-037",
+      "url": "",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-040",
+      "title": "Đề Toán HSG lớp 9 Hà Tĩnh 2025–2026",
+      "url": "https://file.toan12.edu.vn/file-pdf/de-chon-hoc-sinh-gioi-tinh-toan-9-nam-2025-2026-so-gd-dt-ha-tinh.pdf",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-041",
+      "title": "Đề Toán giữa kỳ lớp 6 của trường THCS Nguyễn Gia Thiều",
+      "url": "https://file.giaitoan.edu.vn/file-pdf/de-giua-ki-1-toan-6-nam-2024-2025-truong-thcs-nguyen-gia-thieu-tp-hcm.pdf",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-042",
+      "title": "Đề Toán giữa kỳ lớp 5 – Trường Tiểu học Đồng Hòa",
+      "url": "https://thdonghoa.haiphong.edu.vn/de-kiem-tra/de-kiem-tra-giua-hoc-ki-2-mon-toan-lop-5-nam-hoc-2025-2026/ctmb/18909/681969",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-043",
+      "title": "Tài liệu KHTN THCS, bản đăng trên website trường",
+      "url": "https://c12binhchuongbs.quangngai.edu.vn/wp-content/uploads/2022/08/KHTN-THCS.pdf",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-046",
+      "title": "Cục QLCL: chuẩn bị đề thi tốt nghiệp từ 2025",
+      "url": "https://vqa.moet.gov.vn/vi/news/tin-tuc-su-kien/hoi-thao-ve-cong-tac-chuan-bi-de-thi-tot-nghiep-thpt-tu-nam-2025-88.html",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-047",
+      "title": "Cổng Trường Tiểu học Nguyễn Văn Trỗi – trang đề lớp 5",
+      "url": "https://thnguyenvantroi.haiphong.edu.vn/lop-5/c/17160/-7897",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-050",
+      "title": "Hồ sơ Thông tư 17/2023/TT-BGDĐT trên CSDL văn bản",
+      "url": "https://vbpl.moj.gov.vn/quangngai/Pages/vbpq-luocdo.aspx?ItemID=164233",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-051",
+      "title": "OECD: PISA 2022 released mathematics items",
+      "url": "https://www.oecd.org/content/dam/oecd/en/about/programmes/edu/pisa/pisa-test/CY8_TST_PISA2022_MS_Released_MAT_Items_FINAL_IH.pdf",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "SRC-052",
+      "title": "SEA-PLM: Compendium of reading and mathematics items",
+      "url": "https://www.seaplm.org/index.php/component/k2/item/101-sea-plm-compendium-of-items-advancing-foundational-skills-in-reading-and-mathematics",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0001",
+      "title": "TK-0001",
+      "url": "https://edu.viettel.vn/ldg-thcsdailao/van-ban-cong-van/van-ban-cap-tinh-bo/thong-tu-32-2018-tt-bgddt-ban-hanh-chuong-trinh-giao-duc-pho-thong..html",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0002",
+      "title": "TK-0002",
+      "url": "https://edu.viettel.vn/ldg-thcsdailao/van-ban-cong-van/van-ban-cap-tinh-bo/thong-tu-32-2018-tt-bgddt-ban-hanh-chuong-trinh-giao-duc-pho-thong..html",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0003",
+      "title": "TK-0003",
+      "url": "https://edu.viettel.vn/ldg-thcsdailao/van-ban-cong-van/van-ban-cap-tinh-bo/thong-tu-32-2018-tt-bgddt-ban-hanh-chuong-trinh-giao-duc-pho-thong..html",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0004",
+      "title": "TK-0004",
+      "url": "https://edu.viettel.vn/ldg-thcsdailao/van-ban-cong-van/van-ban-cap-tinh-bo/thong-tu-32-2018-tt-bgddt-ban-hanh-chuong-trinh-giao-duc-pho-thong..html",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0005",
+      "title": "TK-0005",
+      "url": "https://edu.viettel.vn/ldg-thcsdailao/van-ban-cong-van/van-ban-cap-tinh-bo/thong-tu-32-2018-tt-bgddt-ban-hanh-chuong-trinh-giao-duc-pho-thong..html",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0006",
+      "title": "TK-0006",
+      "url": "https://edu.viettel.vn/ldg-thcsdailao/van-ban-cong-van/van-ban-cap-tinh-bo/thong-tu-32-2018-tt-bgddt-ban-hanh-chuong-trinh-giao-duc-pho-thong..html",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0007",
+      "title": "TK-0007",
+      "url": "https://edu.viettel.vn/ldg-thcsdailao/van-ban-cong-van/van-ban-cap-tinh-bo/thong-tu-32-2018-tt-bgddt-ban-hanh-chuong-trinh-giao-duc-pho-thong..html",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0008",
+      "title": "TK-0008",
+      "url": "https://edu.viettel.vn/ldg-thcsdailao/van-ban-cong-van/van-ban-cap-tinh-bo/thong-tu-32-2018-tt-bgddt-ban-hanh-chuong-trinh-giao-duc-pho-thong..html",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0009",
+      "title": "TK-0009",
+      "url": "https://edu.viettel.vn/ldg-thcsdailao/van-ban-cong-van/van-ban-cap-tinh-bo/thong-tu-32-2018-tt-bgddt-ban-hanh-chuong-trinh-giao-duc-pho-thong..html",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0010",
+      "title": "TK-0010",
+      "url": "https://edu.viettel.vn/ldg-thcsdailao/van-ban-cong-van/van-ban-cap-tinh-bo/thong-tu-32-2018-tt-bgddt-ban-hanh-chuong-trinh-giao-duc-pho-thong..html",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0011",
+      "title": "TK-0011",
+      "url": "https://edu.viettel.vn/ldg-thcsdailao/van-ban-cong-van/van-ban-cap-tinh-bo/thong-tu-32-2018-tt-bgddt-ban-hanh-chuong-trinh-giao-duc-pho-thong..html",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0012",
+      "title": "TK-0012",
+      "url": "https://edu.viettel.vn/ldg-thcsdailao/van-ban-cong-van/van-ban-cap-tinh-bo/thong-tu-32-2018-tt-bgddt-ban-hanh-chuong-trinh-giao-duc-pho-thong..html",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0013",
+      "title": "TK-0013",
+      "url": "https://edu.viettel.vn/ldg-thcsdailao/van-ban-cong-van/van-ban-cap-tinh-bo/thong-tu-32-2018-tt-bgddt-ban-hanh-chuong-trinh-giao-duc-pho-thong..html",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0014",
+      "title": "TK-0014",
+      "url": "https://edu.viettel.vn/ldg-thcsdailao/van-ban-cong-van/van-ban-cap-tinh-bo/thong-tu-32-2018-tt-bgddt-ban-hanh-chuong-trinh-giao-duc-pho-thong..html",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0015",
+      "title": "TK-0015",
+      "url": "https://edu.viettel.vn/ldg-thcsdailao/van-ban-cong-van/van-ban-cap-tinh-bo/thong-tu-32-2018-tt-bgddt-ban-hanh-chuong-trinh-giao-duc-pho-thong..html",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0016",
+      "title": "TK-0016",
+      "url": "https://congbao.chinhphu.vn/van-ban/thong-tu-so-02-2017-tt-bgddt-22186.htm",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0017",
+      "title": "TK-0017",
+      "url": "https://congbao.chinhphu.vn/van-ban/thong-tu-so-19-2021-tt-bgddt-34061.htm",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0018",
+      "title": "TK-0018",
+      "url": "https://congbao.chinhphu.vn/van-ban/thong-tu-so-20-2021-tt-bgddt-34076.htm",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0019",
+      "title": "TK-0019",
+      "url": "https://vanban.chinhphu.vn/?docid=206343&pageid=27160",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0020",
+      "title": "TK-0020",
+      "url": "https://vbpl.vn/bogiaoducdaotao/Pages/vbpq-toanvan.aspx?ItemID=183284",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0021",
+      "title": "TK-0021",
+      "url": "https://thbausen.hcm.edu.vn/chuong-trinh-chinh-thuc/chuong-trinh-giao-duc-pho-thong-2018-mon-tu-nhien-va-xa-hoi/ct/85329/442900",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0022",
+      "title": "TK-0022",
+      "url": "https://thbausen.hcm.edu.vn/chuong-trinh-chinh-thuc/chuong-trinh-giao-duc-pho-thong-2018-mon-khoa-hoc/ct/85329/442881",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0023",
+      "title": "TK-0023",
+      "url": "https://thbausen.hcm.edu.vn/chuong-trinh-chinh-thuc/chuong-trinh-giao-duc-pho-thong-2018-mon-lich-su-va-dia-li/ctmb/85329/442901",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0024",
+      "title": "TK-0024",
+      "url": "https://boiduonghanoi.edu.vn/mod/folder/view.php?id=19",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0025",
+      "title": "TK-0025",
+      "url": "https://boiduonghanoi.edu.vn/mod/folder/view.php?id=19",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0026",
+      "title": "TK-0026",
+      "url": "https://boiduonghanoi.edu.vn/mod/folder/view.php?id=19",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0027",
+      "title": "TK-0027",
+      "url": "https://boiduonghanoi.edu.vn/mod/folder/view.php?id=19",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0028",
+      "title": "TK-0028",
+      "url": "https://boiduonghanoi.edu.vn/mod/folder/view.php?id=19",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0029",
+      "title": "TK-0029",
+      "url": "https://boiduonghanoi.edu.vn/mod/folder/view.php?id=19",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0030",
+      "title": "TK-0030",
+      "url": "https://boiduonghanoi.edu.vn/mod/folder/view.php?id=19",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0031",
+      "title": "TK-0031",
+      "url": "https://boiduonghanoi.edu.vn/mod/folder/view.php?id=19",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0032",
+      "title": "TK-0032",
+      "url": "https://boiduonghanoi.edu.vn/mod/folder/view.php?id=19",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0033",
+      "title": "TK-0033",
+      "url": "https://boiduonghanoi.edu.vn/mod/folder/view.php?id=19",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0034",
+      "title": "TK-0034",
+      "url": "https://boiduonghanoi.edu.vn/mod/folder/view.php?id=19",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0035",
+      "title": "TK-0035",
+      "url": "https://chinhphu.vn/default.aspx?docid=201927&pageid=27160",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0036",
+      "title": "TK-0036",
+      "url": "https://vanban.chinhphu.vn/default.aspx?docid=201320&pageid=27160",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0037",
+      "title": "TK-0037",
+      "url": "https://vanban.chinhphu.vn/default.aspx?docid=201320&pageid=27160",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0038",
+      "title": "TK-0038",
+      "url": "https://vanban.chinhphu.vn/default.aspx?docid=201320&pageid=27160",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0039",
+      "title": "TK-0039",
+      "url": "https://vanban.chinhphu.vn/default.aspx?docid=201320&pageid=27160",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0040",
+      "title": "TK-0040",
+      "url": "https://vanban.chinhphu.vn/default.aspx?docid=201320&pageid=27160",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0041",
+      "title": "TK-0041",
+      "url": "https://vanban.chinhphu.vn/default.aspx?docid=201320&pageid=27160",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0042",
+      "title": "TK-0042",
+      "url": "https://vanban.chinhphu.vn/default.aspx?docid=201320&pageid=27160",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0043",
+      "title": "TK-0043",
+      "url": "https://vanban.chinhphu.vn/default.aspx?docid=201320&pageid=27160",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0044",
+      "title": "TK-0044",
+      "url": "https://vanban.chinhphu.vn/default.aspx?docid=201320&pageid=27160",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0045",
+      "title": "TK-0045",
+      "url": "https://vanban.chinhphu.vn/default.aspx?docid=203762&pageid=27160",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0046",
+      "title": "TK-0046",
+      "url": "https://vanban.chinhphu.vn/default.aspx?docid=203762&pageid=27160",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0047",
+      "title": "TK-0047",
+      "url": "https://vanban.chinhphu.vn/default.aspx?docid=203762&pageid=27160",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0048",
+      "title": "TK-0048",
+      "url": "https://vanban.chinhphu.vn/default.aspx?docid=203762&pageid=27160",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0049",
+      "title": "TK-0049",
+      "url": "https://thcsnguyendugovap.hcm.edu.vn/tai-lieu-doi-moi-chuong-trinh-gdpt/van-ban-so-1106bgddt-gdtrh-ve-viec-bien-soan-va-to-chuc-thuc-hien-noi-dung-giao/ctmb/84882/414644",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0050",
+      "title": "TK-0050",
+      "url": "https://thtanduong.haiphong.edu.vn/van-ban/cong-van-3536bgddt-gdth/vbctmb/1600/15738",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0051",
+      "title": "TK-0051",
+      "url": "https://vanban.chinhphu.vn/?docid=201222&pageid=27160",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0052",
+      "title": "TK-0052",
+      "url": "https://thuvienphapluat.vn/van-ban/Giao-duc/Ke-hoach-274-KH-UBND-2019-bien-soan-noi-dung-giao-duc-dia-phuong-giao-duc-pho-thong-Ha-Noi-435257.aspx?ac=emails",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0053",
+      "title": "TK-0053",
+      "url": "https://thhaitay.ninhbinh.edu.vn/van-ban/quyet-dinh-ve-viec-ban-hanh-khung-noi-dung-giao-duc-dia-phuong-cap-tieu-hoc-tinh-ninh-binh-trong-chuong-trinh-giao-duc-pho-thong",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0054",
+      "title": "TK-0054",
+      "url": "https://thhaitay.ninhbinh.edu.vn/van-ban/quyet-dinh-ve-viec-ban-hanh-khung-noi-dung-giao-duc-dia-phuong-cap-tieu-hoc-tinh-ninh-binh-trong-chuong-trinh-giao-duc-pho-thong",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0055",
+      "title": "TT89/2026 sửa quy định đánh giá",
+      "url": "https://dienbien.tnu.edu.vn/uploads/files/moet/moet-20261016-89-2026-tt-bgddt-thong-tu-sua-doi-bo-sung-mot-so-dieu-cua-quy-dinh-danh-gia-hoc-sinh-tieu-hoc-ban-hanh-kem-theo-thong-tu-so-27-2020-tt-bg-5e36b986d1.pdf",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0056",
+      "title": "QĐ2904/2022 đính chính TT27",
+      "url": "https://datafiles.chinhphu.vn/cpp/files/vbpq/2022/10/2904-bgddt.signed.pdf",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0057",
+      "title": "QĐ3588/2025 danh mục SGK",
+      "url": "https://c2dinhbolinh-draybhang.daklak.edu.vn/wp-content/uploads/2026/03/3588_QD_SGK_THONG_NHAT_20251227_23h00_FN_74856.pdf",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0058",
+      "title": "QĐ185/2026 bổ sung SGK",
+      "url": "https://c2dinhbolinh-draybhang.daklak.edu.vn/wp-content/uploads/2026/03/QD_185_bo_sung_SGK_su_dung_thong_nhat_toan_quoc_aef3f.pdf",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0059",
+      "title": "Cổng tập huấn NXB và hồ sơ học liệu",
+      "url": "https://taphuan.nxbgd.vn/tap-huan",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0060",
+      "title": "TT14/2026 chương trình Tiếng Raglai",
+      "url": "https://congbao.cdnchinhphu.vn/180507251028987904/2026/4/2/cong-bao-so-179-ngay-03-04-47095_1775113721_signed.pdf",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0061",
+      "title": "Dự thảo sửa chương trình2026",
+      "url": "https://xaydungchinhsach.chinhphu.vn/toan-van-du-thao-thong-tu-sua-doi-bo-sung-mot-so-noi-dung-trong-chuong-trinh-giao-duc-pho-thong-119260820174117596.htm",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0062",
+      "title": "VBHN02/2026 quy chế thi tốt nghiệp",
+      "url": "https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/4/02-vbhn-bgddt.pdf",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0063",
+      "title": "Đề Toán1 cuối HKI2025–26",
+      "url": "https://thnguyenvantroi.haiphong.edu.vn/giao-an-de-kiem-tra/de-kiem-tra-cuoi-hoc-ki-1-mon-toan-lop-1-nam-hoc-2025-2026/ct/17225/564402",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0064",
+      "title": "Đề Tiếng Việt2 cuối kỳ2",
+      "url": "https://thvinhphong-tienphong.haiphong.edu.vn/khoi-2/de-kiem-tra-tieng-viet-cuoi-ki-2-lop-2/ctmb/23719/331023",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0065",
+      "title": "Đề Công nghệ8 giữa HKI",
+      "url": "https://th-thcslekhaccan.haiphong.edu.vn/thu-vien-de-kiem-tra/kiem-tra-giua-ki-1-mo-cong-nghe-8/ctmb/9160/522449",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0066",
+      "title": "Đề và đáp án Ngữ văn11 cuối HKII2025–26",
+      "url": "https://thptthanhmienii.haiphong.edu.vn/van-the-mi/de-dap-an-kiem-tra-cuoi-ki-2-mon-ngu-van-lop-11-2025-2026/vbct/42494/663657",
+      "reviewStatus": "referenced_not_approved"
+    },
+    {
+      "id": "TK-0067",
+      "title": "Ứng viên đề Âm nhạc6–9 HKI2024–25",
+      "url": "https://thcslythuongkiet.edu.vn/files/CUOI%20HKI/%C4%90%E1%BB%81%20ki%E1%BB%83m%20tra%20cu%E1%BB%91i%20k%E1%BB%B3%20I%20NH%E1%BA%A0C_%206%2C7%2C8%2C9%20%2824-25%29.pdf",
+      "reviewStatus": "referenced_not_approved"
+    }
+  ]
+}

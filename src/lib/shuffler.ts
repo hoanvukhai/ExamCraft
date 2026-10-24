@@ -1,4 +1,5 @@
 import { Exam, Question, ShuffledExamVariant, ChoiceItem } from '@/types/exam';
+import { matchingDefinition, orderingDefinition } from './structured-question';
 
 /**
  * Thuật toán sinh số ngẫu nhiên có Seed (Mulberry32)
@@ -41,11 +42,13 @@ function shuffleMultipleChoiceQuestion(question: Question, randomFn: () => numbe
   if (!question.choices || question.choices.length === 0) return question;
 
   // Nếu có phương án phụ thuộc ("Cả A và B"), giữ nguyên thứ tự các phương án để không sai logic
-  if (hasDependentChoices(question.choices)) {
+  if (hasDependentChoices(question.choices) || question.choices.some(choice => choice.pinned)) {
     return question;
   }
 
-  const oldCorrectKey = question.correct_answer || 'A';
+  const oldCorrectKey = question.correct_answer;
+  if (!oldCorrectKey || !question.choices.some(c => c.key === oldCorrectKey)) return question;
+  if (new Set(question.choices.map(c => c.text)).size !== question.choices.length) return question;
   const originalCorrectChoice = question.choices.find(c => c.key === oldCorrectKey);
   const correctText = originalCorrectChoice ? originalCorrectChoice.text : '';
 
@@ -93,7 +96,7 @@ export function generateShuffledExams(
   const part1 = baseExam.questions.filter(q => q.type === 'multiple_choice');
   const part2 = baseExam.questions.filter(q => q.type === 'true_false_group');
   const part3 = baseExam.questions.filter(q => q.type === 'short_answer');
-  const part4 = baseExam.questions.filter(q => q.type === 'essay');
+  const part4 = baseExam.questions.filter(q => !['multiple_choice', 'true_false_group', 'short_answer'].includes(q.type));
 
   const rootSeed = baseSeed !== undefined ? baseSeed : 123456789;
 
@@ -108,12 +111,17 @@ export function generateShuffledExams(
     const shuffledPart3 = shuffleArray(part3, randomFn);
     const shuffledPart4 = part4; // Tự luận giữ nguyên cấu trúc
 
-    const allShuffledQuestions = [
+    const reorderedQuestions = [
       ...shuffledPart1,
       ...shuffledPart2,
       ...shuffledPart3,
       ...shuffledPart4,
     ];
+
+    // Shared passages and explicit sections keep their author-defined order.
+    const allShuffledQuestions = baseExam.passages?.length || baseExam.questions.some(q => q.passageId || q.sectionId)
+      ? baseExam.questions.map(q => q.type === 'multiple_choice' ? shuffleMultipleChoiceQuestion(q, randomFn) : q)
+      : reorderedQuestions;
 
     // Tạo bảng đáp án chi tiết cho mã đề này
     const answerKey: Record<number, string> = {};
@@ -122,10 +130,17 @@ export function generateShuffledExams(
       if (q.type === 'multiple_choice') {
         answerKey[qNum] = q.correct_answer || '-';
       } else if (q.type === 'true_false_group') {
-        const tf = q.sub_questions?.map(sq => `${sq.key}:${sq.isCorrect ? 'Đ' : 'S'}`).join(' ') || '-';
+        const tf = q.sub_questions?.map(sq => `${sq.key}:${sq.isCorrect === undefined ? '?' : sq.isCorrect ? 'Đ' : 'S'}`).join(' ') || '-';
         answerKey[qNum] = tf;
-      } else if (q.type === 'short_answer') {
-        answerKey[qNum] = q.correct_answer || '-';
+      } else if (q.type === 'short_answer' || q.type === 'fill_blank') {
+        answerKey[qNum] = q.correct_answer || q.accepted_answers?.filter(Boolean).join(' / ') || '-';
+      } else if (q.type === 'matching') {
+        const matching = matchingDefinition(q);
+        answerKey[qNum] = matching ? matching.display.left.map((left, i) => `${i + 1}–${matching.display.right.findIndex(right => right.key === matching.answerKey[left.key]) + 1}`).join('; ') : '-';
+      } else if (q.type === 'ordering') {
+        const ordering = orderingDefinition(q);
+        const used = new Set<string>();
+        answerKey[qNum] = ordering ? ordering.expected.map(text => { const index = ordering.display.items.findIndex(item => item.text === text && !used.has(item.key)); used.add(ordering.display.items[index].key); return index + 1; }).join(' → ') : '-';
       } else {
         answerKey[qNum] = 'Tự luận';
       }
@@ -134,6 +149,8 @@ export function generateShuffledExams(
     const variantExam: Exam = {
       ...baseExam,
       id: `${baseExam.id}-v${code}`,
+      serverId: undefined,
+      version: undefined,
       metadata: {
         ...baseExam.metadata,
         examCode: code,

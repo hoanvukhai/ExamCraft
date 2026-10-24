@@ -1,8 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, use } from 'react';
+import React, { useState, useEffect, useCallback, useRef, use } from 'react';
 import Link from 'next/link';
+import { usePinnedAccount } from '@/hooks/usePinnedAccount';
 import { MathRenderer } from '@/components/MathRenderer';
+import { studentResponseText } from '@/lib/student-response-text';
 import {
   Users,
   Clock,
@@ -31,6 +33,8 @@ import {
 interface AssignmentStats {
   totalStudents: number;
   totalSubmitted: number;
+  totalPendingGrading: number;
+  totalGraded: number;
   totalInProgress: number;
   avgScore: number;
   maxScore: number;
@@ -66,6 +70,7 @@ interface StudentAttemptItem {
   submittedAt?: string;
   deadlineAt?: string;
   answersCount: number;
+  needsGrading: boolean;
 }
 
 interface AttemptDetailQuestion {
@@ -74,17 +79,25 @@ interface AttemptDetailQuestion {
   type: string;
   difficulty?: string;
   content: string;
-  payload?: any;
+  payload?: Record<string, unknown>;
   solution?: string;
   points: number;
-  studentResponse: any;
-  isCorrect: boolean;
+  studentResponse: unknown;
+  isCorrect: boolean | null;
   earned: number;
   teacherComment?: string | null;
+  gradeRevision: string;
+}
+
+interface GradeHistoryItem {
+  id: string;
+  createdAt: string;
+  meta: { questionKey: string; before: { earned: number; comment: string | null }; after: { earned: number; comment: string | null } };
 }
 
 function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
+  const { ownerId: accountOwnerId, error: accountError, request: accountRequest } = usePinnedAccount();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -105,14 +118,25 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
   const [attemptDetail, setAttemptDetail] = useState<{
     attempt: any;
     questions: AttemptDetailQuestion[];
+    gradingHistory?: GradeHistoryItem[];
+    historyHasMore?: boolean;
   } | null>(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [savingGrade, setSavingGrade] = useState(false);
+  const [detailError, setDetailError] = useState('');
+  const detailRequestRef = useRef(0);
+  const selectedAttemptRef = useRef<string | null>(null);
+  const gradingRef = useRef(false);
+  const closeAttemptDetail = () => {
+    selectedAttemptRef.current = null; detailRequestRef.current++;
+    setSelectedAttemptId(null); setAttemptDetail(null); setDetailError('');
+  };
 
   // Tải dữ liệu bài thi
   const fetchAssignmentData = useCallback(async () => {
+    if (!accountOwnerId) return;
     try {
-      const res = await fetch(`/api/teacher/assignments/${id}`);
+      const res = await accountRequest(`/api/teacher/assignments/${id}`, { cache: 'no-store' });
       const data = await res.json();
 
       if (!res.ok) {
@@ -137,7 +161,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [id, accountOwnerId, accountRequest]);
 
   useEffect(() => {
     fetchAssignmentData();
@@ -158,7 +182,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
     if (!assignment) return;
     const newStatus = assignment.status === 'OPEN' ? 'CLOSED' : 'OPEN';
     try {
-      const res = await fetch(`/api/teacher/assignments/${id}`, {
+      const res = await accountRequest(`/api/teacher/assignments/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus }),
@@ -173,42 +197,55 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
 
   // Mở modal xem chi tiết bài làm
   const handleOpenAttemptDetail = async (attemptId: string) => {
+    const requestId = ++detailRequestRef.current;
+    selectedAttemptRef.current = attemptId;
     setSelectedAttemptId(attemptId);
+    setAttemptDetail(null); setDetailError('');
     try {
       setLoadingDetail(true);
-      const res = await fetch(`/api/teacher/attempts/${attemptId}`);
+      const res = await accountRequest(`/api/teacher/attempts/${attemptId}`, { cache: 'no-store' });
       const data = await res.json();
+      if (requestId !== detailRequestRef.current || selectedAttemptRef.current !== attemptId) return;
       if (res.ok) {
         setAttemptDetail(data);
-      }
+      } else setDetailError(data.error || 'Chưa tải được bài làm. Hãy đóng rồi mở lại bài này.');
     } catch (err) {
       console.error(err);
+      if (requestId === detailRequestRef.current) setDetailError('Chưa tải được bài làm. Hãy kiểm tra kết nối rồi mở lại.');
     } finally {
-      setLoadingDetail(false);
+      if (requestId === detailRequestRef.current) setLoadingDetail(false);
     }
   };
 
   // Chấm tay hoặc điều chỉnh điểm
   const handleSaveGrade = async (questionKey: string, earned: number, comment?: string) => {
-    if (!selectedAttemptId) return;
+    if (!selectedAttemptId || gradingRef.current || attemptDetail?.attempt.id !== selectedAttemptId) return;
+    const gradingAttemptId = selectedAttemptId;
+    const question = attemptDetail.questions.find(item => item.questionId === questionKey);
+    if (!question?.gradeRevision) { setDetailError('Chưa có phiên bản điểm để lưu an toàn. Giữ số đang nhập rồi mở lại bài.'); return; }
     try {
+      gradingRef.current = true;
       setSavingGrade(true);
-      const res = await fetch(`/api/teacher/attempts/${selectedAttemptId}`, {
+      setDetailError('');
+      const res = await accountRequest(`/api/teacher/attempts/${selectedAttemptId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           questionKey,
           earned,
           teacherComment: comment,
+          baseGradeRevision: question.gradeRevision,
         }),
       });
-      if (res.ok) {
-        handleOpenAttemptDetail(selectedAttemptId);
-        fetchAssignmentData();
-      }
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Chưa lưu được điểm. Số đang nhập vẫn giữ trong ô.');
+      if (selectedAttemptRef.current === gradingAttemptId) await handleOpenAttemptDetail(gradingAttemptId);
+      fetchAssignmentData();
     } catch (err) {
       console.error(err);
+      if (selectedAttemptRef.current === gradingAttemptId) setDetailError(err instanceof Error ? err.message : 'Chưa lưu được điểm. Hãy kiểm tra kết nối.');
     } finally {
+      gradingRef.current = false;
       setSavingGrade(false);
     }
   };
@@ -219,14 +256,13 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
       return;
     }
     try {
-      const res = await fetch(`/api/teacher/attempts/${attemptId}`, {
+      const res = await accountRequest(`/api/teacher/attempts/${attemptId}`, {
         method: 'DELETE',
       });
       if (res.ok) {
         fetchAssignmentData();
         if (selectedAttemptId === attemptId) {
-          setSelectedAttemptId(null);
-          setAttemptDetail(null);
+          closeAttemptDetail();
         }
       }
     } catch (err) {
@@ -242,9 +278,20 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
     setTimeout(() => setCopiedLink(false), 2000);
   };
 
+  const downloadCsv = async () => {
+    try {
+      const response = await accountRequest(`/api/teacher/assignments/${id}/export-csv`, { cache: 'no-store' });
+      if (!response.ok) { const data = await response.json().catch(() => null); throw Error(data?.error || 'Chưa xuất được bảng điểm.'); }
+      const url = URL.createObjectURL(await response.blob()), link = document.createElement('a');
+      link.href = url; link.download = 'ExamCraft-bang-diem.csv'; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (error) { alert(error instanceof Error ? error.message : 'Chưa tải được bảng điểm.'); }
+  };
+
   const filteredAttempts = attempts.filter((att) =>
     att.studentName.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  if (accountError) return <div role="alert" className="p-6"><p>{accountError}</p><Link href="/">Về kho đề</Link></div>;
 
   if (loading && !assignment) {
     return (
@@ -369,13 +416,13 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
             </button>
 
             {/* Nút Xuất Bảng Điểm CSV */}
-            <a
-              href={`/api/teacher/assignments/${id}/export-csv`}
-              download
+            <button
+              type="button"
+              onClick={() => void downloadCsv()}
               className="px-4 py-1.5 bg-[#137333] hover:bg-[#0f5c29] text-white rounded-full text-xs font-semibold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
             >
               <FileSpreadsheet className="w-3.5 h-3.5" /> Xuất Excel (CSV)
-            </a>
+            </button>
           </div>
         </div>
 
@@ -389,18 +436,19 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
             <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-4 text-center shadow-xs">
               <span className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] block mb-1">Đã nộp bài</span>
               <span className="text-2xl font-bold text-[#137333] dark:text-[#5bb98c]">{stats.totalSubmitted}</span>
+              <span className="text-[11px] block text-[#b06000]">{stats.totalPendingGrading} bài chờ chấm</span>
             </div>
             <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-4 text-center shadow-xs">
               <span className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] block mb-1">Đang làm bài</span>
               <span className="text-2xl font-bold text-[#b06000] dark:text-[#fdd663]">{stats.totalInProgress}</span>
             </div>
             <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-4 text-center shadow-xs">
-              <span className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] block mb-1">Điểm trung bình</span>
-              <span className="text-2xl font-bold text-[#1a73e8] dark:text-[#8ab4f8]">{stats.avgScore}</span>
+              <span className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] block mb-1">Điểm trung bình đã chốt</span>
+              <span className="text-2xl font-bold text-[#1a73e8] dark:text-[#8ab4f8]">{stats.totalGraded ? stats.avgScore : '—'}</span>
             </div>
             <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-4 text-center shadow-xs">
               <span className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] block mb-1">Điểm cao nhất</span>
-              <span className="text-2xl font-bold text-[#137333] dark:text-[#5bb98c]">{stats.maxScore}</span>
+              <span className="text-2xl font-bold text-[#137333] dark:text-[#5bb98c]">{stats.totalGraded ? stats.maxScore : '—'}</span>
             </div>
             <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-4 text-center shadow-xs">
               <span className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] block mb-1">Điểm giỏi (≥ 8.0)</span>
@@ -504,6 +552,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                                   }`}
                                 >
                                   {att.score}
+                                  {att.needsGrading && <span className="block text-[10px]">Tạm tính · chờ chấm</span>}
                                   <span className="text-[10px] font-normal opacity-70 ml-0.5">
                                     /{att.maxScore}
                                   </span>
@@ -634,16 +683,14 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                   </p>
                 </div>
                 <button
-                  onClick={() => {
-                    setSelectedAttemptId(null);
-                    setAttemptDetail(null);
-                  }}
+                  onClick={closeAttemptDetail}
                   className="p-1.5 rounded-full text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] hover:text-[#202124] dark:hover:text-[#e3e3e3] transition-colors cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
+              {detailError && <p role="alert" className="p-3 my-3 rounded-xl bg-amber-50 text-amber-900 border border-amber-300">{detailError}</p>}
               {loadingDetail ? (
                 <div className="py-20 flex flex-col items-center justify-center text-[#5f6368] dark:text-[#9aa0a6]">
                   <div className="w-8 h-8 border-3 border-[#1a73e8] dark:border-[#8ab4f8] border-t-transparent rounded-full animate-spin mb-3" />
@@ -662,12 +709,14 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                         </span>
                         <span
                           className={`text-xs font-semibold px-2.5 py-0.5 rounded-full border ${
-                            q.isCorrect
+                            q.isCorrect === null
+                              ? 'bg-[#fef7e0] text-[#b06000] border-[#feefc3]'
+                              : q.isCorrect
                               ? 'bg-[#e6f4ea] dark:bg-[#0f291e] text-[#137333] dark:text-[#5bb98c] border-[#ceead6] dark:border-[#1e4d38]'
                               : 'bg-[#fce8e6] dark:bg-[#371918] text-[#c5221f] dark:text-[#f28b82] border-[#fad2cf] dark:border-[#5c2523]'
                           }`}
                         >
-                          {q.isCorrect ? 'Đúng' : 'Sai'} ({q.earned}đ)
+                          {q.isCorrect === null ? 'Chờ chấm' : q.isCorrect ? 'Đúng' : q.earned > 0 ? 'Đạt một phần' : 'Sai'} ({q.earned}đ)
                         </span>
                       </div>
 
@@ -679,12 +728,10 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                         <div>
                           <span className="text-[#5f6368] dark:text-[#9aa0a6]">Học sinh chọn: </span>
                           <span className="font-semibold text-[#202124] dark:text-[#e3e3e3]">
-                            {typeof q.studentResponse === 'object'
-                              ? JSON.stringify(q.studentResponse)
-                              : String(q.studentResponse || 'Chưa làm')}
+                            {studentResponseText(q, q.studentResponse)}
                           </span>
                         </div>
-                        {q.payload?.correct && (
+                        {(typeof q.payload?.correct === 'string' || typeof q.payload?.correct === 'number') && (
                           <div>
                             <span className="text-[#137333] dark:text-[#5bb98c]">Đáp án chuẩn: </span>
                             <span className="font-bold text-[#137333] dark:text-[#5bb98c]">{q.payload.correct}</span>
@@ -705,6 +752,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                           <input
                             type="number"
                             step="0.05"
+                            disabled={savingGrade}
                             defaultValue={q.earned}
                             onBlur={(e) => {
                               const val = parseFloat(e.target.value);
@@ -726,12 +774,18 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                 </div>
               ) : null}
 
+              {attemptDetail && <details className="my-4 border rounded-xl p-3 text-xs">
+                <summary className="cursor-pointer font-semibold">Lịch sử chấm gần đây ({attemptDetail.gradingHistory?.length ?? 0})</summary>
+                {!attemptDetail.gradingHistory?.length && <p className="mt-2">Chưa có lần sửa điểm được ghi từ khi bật lịch sử. Điểm cũ vẫn được giữ.</p>}
+                <ol className="space-y-2 mt-2">{attemptDetail.gradingHistory?.map(entry => <li key={entry.id} className="border-t pt-2">
+                  <p>{new Date(entry.createdAt).toLocaleString('vi-VN')} · Câu {attemptDetail.questions.find(item => item.questionId === entry.meta.questionKey)?.index ?? 'trong bản đề'}: {entry.meta.before.earned} → {entry.meta.after.earned} điểm</p>
+                  {entry.meta.after.comment !== entry.meta.before.comment && <p>Nhận xét mới: {entry.meta.after.comment || '(để trống)'}</p>}
+                </li>)}</ol>
+                {attemptDetail.historyHasMore && <p className="mt-2">Hiển thị 50 lần gần nhất; các lần cũ hơn vẫn được giữ trong dữ liệu.</p>}
+              </details>}
               <div className="pt-4 border-t border-[#dadce0] dark:border-[#3c4043] flex justify-end">
                 <button
-                  onClick={() => {
-                    setSelectedAttemptId(null);
-                    setAttemptDetail(null);
-                  }}
+                  onClick={closeAttemptDetail}
                   className="px-5 py-2 bg-[#f1f3f4] hover:bg-[#e8eaed] dark:bg-[#282828] dark:hover:bg-[#333538] text-[#202124] dark:text-[#e3e3e3] text-xs font-semibold rounded-full cursor-pointer transition-colors"
                 >
                   Đóng

@@ -1,321 +1,111 @@
-import { Exam, Question, DifficultyLevel } from '@/types/exam';
-import { getDefaultPointsForQuestion } from '@/lib/scoring';
-import {
-  Table,
-  TableRow,
-  TableCell,
-  Paragraph,
-  TextRun,
-  WidthType,
-  AlignmentType,
-  BorderStyle,
-  ShadingType,
-} from 'docx';
+import type { Exam, Question } from '@/types/exam';
+import { getDefaultPointsForQuestion } from './scoring';
+import { getCognitiveFramework, getEducationReadiness, requiresNumericScore } from './education-catalog';
+import { Table, TableRow, TableCell, Paragraph, TextRun, WidthType, AlignmentType, BorderStyle, ShadingType } from 'docx';
 
+type Counts = { part1: number; part2: number; part3: number; part4: number };
+const emptyCounts = (): Counts => ({ part1: 0, part2: 0, part3: 0, part4: 0 });
+const sumCounts = (counts: Counts) => Object.values(counts).reduce((sum, count) => sum + count, 0);
 export interface MatrixTopicRow {
-  index: number;
-  topicName: string;
-  // Số câu theo từng mức độ nhận thức
-  nbCount: { part1: number; part2: number; part3: number; part4: number };
-  thCount: { part1: number; part2: number; part3: number; part4: number };
-  vdCount: { part1: number; part2: number; part3: number; part4: number };
-  vdcCount: { part1: number; part2: number; part3: number; part4: number };
-  totalQuestions: number;
-  totalPoints: number;
-  percentage: number;
+  index: number; topicName: string; nbCount: Counts; thCount: Counts; vdCount: Counts; vdcCount: Counts;
+  cognitiveCounts: Record<string, Counts>; unmappedCount: number;
+  totalQuestions: number; totalPoints: number; percentage: number;
 }
-
 export interface ExamMatrixData {
-  rows: MatrixTopicRow[];
-  totalNbPoints: number;
-  totalThPoints: number;
-  totalVdPoints: number;
-  totalVdcPoints: number;
-  totalExamPoints: number;
-  totalPart1: number;
-  totalPart2: number;
-  totalPart3: number;
-  totalPart4: number;
-  totalQuestions: number;
+  rows: MatrixTopicRow[]; totalNbPoints: number; totalThPoints: number; totalVdPoints: number; totalVdcPoints: number;
+  totalExamPoints: number; totalPart1: number; totalPart2: number; totalPart3: number; totalPart4: number; totalQuestions: number;
+  cognitiveFrameworkId: string | null; cognitiveLabels: { id: string; label: string }[];
+  cognitiveTotals: { id: string; label: string; count: number; points: number }[];
+  unmappedCognitiveCount: number; warnings: string[]; assessmentMode: string;
+  scoreState: 'configured' | 'unconfigured' | 'not_scored';
 }
-
 export interface SpecRow {
-  index: number;
-  topicName: string;
-  subTopic: string;
-  requirement: string;
-  nbQuestions: number[]; // Danh sách số thứ tự câu trong đề
-  thQuestions: number[];
-  vdQuestions: number[];
-  vdcQuestions: number[];
+  index: number; topicName: string; subTopic: string; requirement: string;
+  nbQuestions: number[]; thQuestions: number[]; vdQuestions: number[]; vdcQuestions: number[];
+  cognitiveQuestions: Record<string, number[]>; unmappedQuestions: number[];
+}
+function topic(q: Question) { return q.topics?.find(t => t.trim())?.trim() || q.tags?.find(t => t.trim())?.replace(/_/g, ' ') || 'Chưa phân loại chủ đề'; }
+const part = (q: Question): keyof Counts => q.type === 'multiple_choice' ? 'part1' : q.type === 'true_false_group' ? 'part2' : q.type === 'short_answer' ? 'part3' : 'part4';
+const round = (n: number) => Math.round(n * 100) / 100;
+function frameworkFor(exam: Exam) {
+  const framework = getCognitiveFramework(exam.metadata.cognitiveFrameworkId);
+  return framework?.grades.includes(exam.metadata.grade) ? framework : undefined;
 }
 
-/**
- * Trích xuất chủ đề của câu hỏi dựa trên topics, tags hoặc fallback
- */
-function getQuestionTopic(q: Question): string {
-  if (q.topics && q.topics.length > 0 && q.topics[0].trim()) {
-    return q.topics[0].trim();
-  }
-  if (q.tags && q.tags.length > 0 && q.tags[0].trim()) {
-    const rawTag = q.tags[0].replace(/_/g, ' ');
-    return rawTag.charAt(0).toUpperCase() + rawTag.slice(1);
-  }
-  return 'Kiến thức tổng hợp';
-}
-
-/**
- * Tính toán ma trận đề kiểm tra 2D chuẩn theo hướng dẫn của Bộ GD&ĐT (CV 7991)
- */
+/** Descriptive matrix of the actual document; legacy difficulty is never treated as an approved cognitive mapping. */
 export function computeExamMatrix(exam: Exam): ExamMatrixData {
-  const topicMap = new Map<string, Question[]>();
-
-  // Nhóm các câu hỏi theo chủ đề
-  exam.questions.forEach((q) => {
-    const topic = getQuestionTopic(q);
-    if (!topicMap.has(topic)) {
-      topicMap.set(topic, []);
+  const framework = frameworkFor(exam);
+  const labels = framework?.levels ?? [];
+  const grouped = new Map<string, Question[]>();
+  for (const q of exam.questions) { const name = topic(q); grouped.set(name, [...(grouped.get(name) ?? []), q]); }
+  const cognitiveTotals = labels.map(level => ({ ...level, count: 0, points: 0 }));
+  const totalExamPoints = round(exam.questions.reduce((sum, q) => sum + getDefaultPointsForQuestion(q, exam), 0));
+  let unmappedCognitiveCount = 0;
+  const rows: MatrixTopicRow[] = [...grouped].map(([topicName, questions], i) => {
+    const cognitiveCounts = Object.fromEntries(labels.map(level => [level.id, emptyCounts()]));
+    let unmappedCount = 0;
+    for (const q of questions) {
+      const level = cognitiveTotals.find(level => level.id === q.cognitiveLevel);
+      if (!level) { unmappedCount++; unmappedCognitiveCount++; continue; }
+      cognitiveCounts[level.id][part(q)]++;
+      level.count++; level.points += getDefaultPointsForQuestion(q, exam);
     }
-    topicMap.get(topic)!.push(q);
-  });
-
-  const totalExamPoints = exam.questions.reduce((sum, q) => sum + getDefaultPointsForQuestion(q, exam), 0) || 10.0;
-
-  const rows: MatrixTopicRow[] = [];
-  let topicIdx = 1;
-
-  let totalNbPoints = 0;
-  let totalThPoints = 0;
-  let totalVdPoints = 0;
-  let totalVdcPoints = 0;
-
-  let totalPart1 = 0;
-  let totalPart2 = 0;
-  let totalPart3 = 0;
-  let totalPart4 = 0;
-
-  topicMap.forEach((questions, topicName) => {
-    const row: MatrixTopicRow = {
-      index: topicIdx++,
-      topicName,
-      nbCount: { part1: 0, part2: 0, part3: 0, part4: 0 },
-      thCount: { part1: 0, part2: 0, part3: 0, part4: 0 },
-      vdCount: { part1: 0, part2: 0, part3: 0, part4: 0 },
-      vdcCount: { part1: 0, part2: 0, part3: 0, part4: 0 },
-      totalQuestions: questions.length,
-      totalPoints: 0,
-      percentage: 0,
+    const totalPoints = round(questions.reduce((sum, q) => sum + getDefaultPointsForQuestion(q, exam), 0));
+    return { index: i + 1, topicName, cognitiveCounts, unmappedCount,
+      nbCount: cognitiveCounts.nhan_biet ?? cognitiveCounts.biet ?? emptyCounts(),
+      thCount: cognitiveCounts.thong_hieu ?? cognitiveCounts.hieu ?? emptyCounts(),
+      vdCount: cognitiveCounts.van_dung ?? emptyCounts(), vdcCount: cognitiveCounts.van_dung_cao ?? emptyCounts(),
+      totalQuestions: questions.length, totalPoints, percentage: totalExamPoints > 0 ? round(totalPoints / totalExamPoints * 100) : 0,
     };
-
-    questions.forEach((q) => {
-      const pts = getDefaultPointsForQuestion(q, exam);
-      row.totalPoints += pts;
-
-      const diff = q.difficulty || 'thong_hieu';
-      const typeKey =
-        q.type === 'multiple_choice' ? 'part1' :
-        q.type === 'true_false_group' ? 'part2' :
-        q.type === 'short_answer' ? 'part3' : 'part4';
-
-      if (typeKey === 'part1') totalPart1++;
-      else if (typeKey === 'part2') totalPart2++;
-      else if (typeKey === 'part3') totalPart3++;
-      else totalPart4++;
-
-      if (diff === 'nhan_biet') {
-        row.nbCount[typeKey]++;
-        totalNbPoints += pts;
-      } else if (diff === 'thong_hieu') {
-        row.thCount[typeKey]++;
-        totalThPoints += pts;
-      } else if (diff === 'van_dung') {
-        row.vdCount[typeKey]++;
-        totalVdPoints += pts;
-      } else {
-        row.vdcCount[typeKey]++;
-        totalVdcPoints += pts;
-      }
-    });
-
-    row.percentage = Math.round((row.totalPoints / totalExamPoints) * 100);
-    rows.push(row);
   });
-
-  return {
-    rows,
-    totalNbPoints: Math.round(totalNbPoints * 10) / 10,
-    totalThPoints: Math.round(totalThPoints * 10) / 10,
-    totalVdPoints: Math.round(totalVdPoints * 10) / 10,
-    totalVdcPoints: Math.round(totalVdcPoints * 10) / 10,
-    totalExamPoints: Math.round(totalExamPoints * 10) / 10,
-    totalPart1,
-    totalPart2,
-    totalPart3,
-    totalPart4,
-    totalQuestions: exam.questions.length,
+  const warnings = [getEducationReadiness(exam.metadata.subject, exam.metadata.grade).label];
+  if (!framework) warnings.push('Chưa chọn khung nhận thức phù hợp lớp; nhãn độ khó cũ được giữ riêng.');
+  if (unmappedCognitiveCount) warnings.push(unmappedCognitiveCount + ' câu chưa gắn mức nhận thức trong khung đang chọn.');
+  if (exam.questions.some(q => !q.learningOutcome?.trim())) warnings.push('Còn câu chưa gắn yêu cầu cần đạt; bản đặc tả cần giáo viên bổ sung.');
+  const numeric = requiresNumericScore(exam.metadata.assessmentMode);
+  const scoreState = !numeric ? 'not_scored' : totalExamPoints > 0 || exam.questions.every(q => q.points === 0) && exam.questions.length > 0 ? 'configured' : 'unconfigured';
+  if (scoreState === 'unconfigured') warnings.push('Chưa cấu hình điểm; hệ thống không tự quy về thang 10.');
+  const pointsFor = (...ids: string[]) => round(cognitiveTotals.filter(level => ids.includes(level.id)).reduce((sum, level) => sum + level.points, 0));
+  const allParts = exam.questions.map(part);
+  return { rows, totalNbPoints: pointsFor('nhan_biet', 'biet'), totalThPoints: pointsFor('thong_hieu', 'hieu'), totalVdPoints: pointsFor('van_dung'), totalVdcPoints: pointsFor('van_dung_cao'),
+    totalExamPoints, totalPart1: allParts.filter(p => p === 'part1').length, totalPart2: allParts.filter(p => p === 'part2').length,
+    totalPart3: allParts.filter(p => p === 'part3').length, totalPart4: allParts.filter(p => p === 'part4').length,
+    totalQuestions: exam.questions.length, cognitiveFrameworkId: framework?.id ?? null, cognitiveLabels: labels,
+    cognitiveTotals: cognitiveTotals.map(level => ({ ...level, points: round(level.points) })), unmappedCognitiveCount, warnings,
+    assessmentMode: exam.metadata.assessmentMode ?? 'scored', scoreState,
   };
 }
 
-/**
- * Tính toán bản đặc tả đề kiểm tra theo CV 7991
- */
 export function computeExamSpecification(exam: Exam): SpecRow[] {
-  const topicMap = new Map<string, { q: Question; questionNumber: number }[]>();
-
-  exam.questions.forEach((q, idx) => {
-    const topic = getQuestionTopic(q);
-    if (!topicMap.has(topic)) {
-      topicMap.set(topic, []);
+  const levels = frameworkFor(exam)?.levels ?? [];
+  const grouped = new Map<string, { q: Question; number: number }[]>();
+  exam.questions.forEach((q, i) => { const name = topic(q); grouped.set(name, [...(grouped.get(name) ?? []), { q, number: i + 1 }]); });
+  return [...grouped].map(([topicName, questions], i) => {
+    const cognitiveQuestions = Object.fromEntries(levels.map(level => [level.id, [] as number[]]));
+    const unmappedQuestions: number[] = [];
+    for (const { q, number } of questions) {
+      if (q.cognitiveLevel && cognitiveQuestions[q.cognitiveLevel]) cognitiveQuestions[q.cognitiveLevel].push(number);
+      else unmappedQuestions.push(number);
     }
-    topicMap.get(topic)!.push({ q, questionNumber: idx + 1 });
+    const requirements = [...new Set(questions.map(item => item.q.learningOutcome?.trim()).filter(Boolean))];
+    return { index: i + 1, topicName, subTopic: topicName,
+      requirement: requirements.length ? requirements.join('; ') : 'Chưa gắn yêu cầu cần đạt; giáo viên cần bổ sung.',
+      nbQuestions: cognitiveQuestions.nhan_biet ?? cognitiveQuestions.biet ?? [], thQuestions: cognitiveQuestions.thong_hieu ?? cognitiveQuestions.hieu ?? [], vdQuestions: cognitiveQuestions.van_dung ?? [], vdcQuestions: cognitiveQuestions.van_dung_cao ?? [], cognitiveQuestions, unmappedQuestions,
+    };
   });
-
-  const specRows: SpecRow[] = [];
-  let index = 1;
-
-  topicMap.forEach((items, topicName) => {
-    const nbQuestions: number[] = [];
-    const thQuestions: number[] = [];
-    const vdQuestions: number[] = [];
-    const vdcQuestions: number[] = [];
-
-    items.forEach(({ q, questionNumber }) => {
-      const diff = q.difficulty || 'thong_hieu';
-      if (diff === 'nhan_biet') nbQuestions.push(questionNumber);
-      else if (diff === 'thong_hieu') thQuestions.push(questionNumber);
-      else if (diff === 'van_dung') vdQuestions.push(questionNumber);
-      else vdcQuestions.push(questionNumber);
-    });
-
-    specRows.push({
-      index: index++,
-      topicName,
-      subTopic: `${topicName} trong chương trình`,
-      requirement: `Nhận biết định nghĩa, tính chất; Thông hiểu các liên hệ giải tích/hình học; Vận dụng giải các bài toán thực tế và nâng cao.`,
-      nbQuestions,
-      thQuestions,
-      vdQuestions,
-      vdcQuestions,
-    });
-  });
-
-  return specRows;
 }
 
-/**
- * Tạo bảng Word Document (Docx Table) cho Ma trận đề kiểm tra CV 7991
- */
 export function generateDocxMatrixTable(matrix: ExamMatrixData): Table {
-  const borderNone = { style: BorderStyle.NONE, size: 0, color: 'auto' };
-  const borderThin = { style: BorderStyle.SINGLE, size: 4, color: '000000' };
-
-  const cellBorders = {
-    top: borderThin,
-    bottom: borderThin,
-    left: borderThin,
-    right: borderThin,
-  };
-
-  const createCell = (
-    text: string,
-    widthPercent: number,
-    isHeader = false,
-    align: (typeof AlignmentType)[keyof typeof AlignmentType] = AlignmentType.CENTER
-  ) => {
-    return new TableCell({
-      width: { size: widthPercent, type: WidthType.PERCENTAGE },
-      borders: cellBorders,
-      shading: isHeader
-        ? { type: ShadingType.CLEAR, fill: 'E2E8F0' }
-        : undefined,
-      children: [
-        new Paragraph({
-          alignment: align,
-          spacing: { before: 40, after: 40 },
-          children: [
-            new TextRun({
-              text,
-              bold: isHeader,
-              size: 18,
-              font: 'Times New Roman',
-            }),
-          ],
-        }),
-      ],
-    });
-  };
-
-  const rows: TableRow[] = [];
-
-  // Header hàng 1
-  rows.push(
-    new TableRow({
-      children: [
-        createCell('TT', 6, true),
-        createCell('Chủ đề / Mạch kiến thức', 30, true, AlignmentType.LEFT),
-        createCell('Mức độ đánh giá (Số câu)', 34, true),
-        createCell('Tổng câu', 10, true),
-        createCell('Điểm số', 10, true),
-        createCell('Tỉ lệ %', 10, true),
-      ],
-    })
-  );
-
-  // Header hàng 2: chi tiết mức độ
-  rows.push(
-    new TableRow({
-      children: [
-        createCell('', 6, true),
-        createCell('', 30, true),
-        createCell('NB (P1/P2/P3) | TH (P1/P2/P3) | VD (P1/P2/P3) | VDC', 34, true),
-        createCell('', 10, true),
-        createCell('', 10, true),
-        createCell('', 10, true),
-      ],
-    })
-  );
-
-  // Dữ liệu từng chủ đề
-  matrix.rows.forEach((r) => {
-    const nbStr = `${r.nbCount.part1}/${r.nbCount.part2}/${r.nbCount.part3}`;
-    const thStr = `${r.thCount.part1}/${r.thCount.part2}/${r.thCount.part3}`;
-    const vdStr = `${r.vdCount.part1}/${r.vdCount.part2}/${r.vdCount.part3}`;
-    const vdcStr = `${r.vdcCount.part1 + r.vdcCount.part2 + r.vdcCount.part3}`;
-    const countsSummary = `NB: ${nbStr}  |  TH: ${thStr}  |  VD: ${vdStr}  |  VDC: ${vdcStr}`;
-
-    rows.push(
-      new TableRow({
-        children: [
-          createCell(r.index.toString(), 6),
-          createCell(r.topicName, 30, false, AlignmentType.LEFT),
-          createCell(countsSummary, 34, false),
-          createCell(r.totalQuestions.toString(), 10),
-          createCell(r.totalPoints.toFixed(1), 10),
-          createCell(`${r.percentage}%`, 10),
-        ],
-      })
-    );
+  const border = { style: BorderStyle.SINGLE, size: 4, color: '000000' };
+  const cell = (text: string, header = false) => new TableCell({ borders: { top: border, bottom: border, left: border, right: border },
+    shading: header ? { type: ShadingType.CLEAR, fill: 'E2E8F0' } : undefined,
+    children: [new Paragraph({ alignment: AlignmentType.LEFT, children: [new TextRun({ text, bold: header, size: 18, font: 'Times New Roman' })] })],
   });
-
-  // Hàng Tổng kết
-  rows.push(
-    new TableRow({
-      children: [
-        createCell('TỔNG', 36, true, AlignmentType.CENTER),
-        createCell(
-          `NB: ${matrix.totalNbPoints}đ | TH: ${matrix.totalThPoints}đ | VD: ${matrix.totalVdPoints}đ | VDC: ${matrix.totalVdcPoints}đ`,
-          34,
-          true
-        ),
-        createCell(matrix.totalQuestions.toString(), 10, true),
-        createCell(matrix.totalExamPoints.toFixed(1), 10, true),
-        createCell('100%', 10, true),
-      ],
-    })
-  );
-
-  return new Table({
-    width: { size: 100, type: WidthType.PERCENTAGE },
-    rows,
-  });
+  const numeric = matrix.scoreState !== 'not_scored';
+  const rows = [new TableRow({ children: ['TT', 'Chủ đề', ...matrix.cognitiveLabels.map(level => level.label), 'Chưa gắn mức', 'Tổng câu', numeric ? 'Điểm' : 'Đánh giá'].map(label => cell(label, true)) })];
+  for (const row of matrix.rows) rows.push(new TableRow({ children: [String(row.index), row.topicName,
+    ...matrix.cognitiveLabels.map(level => String(sumCounts(row.cognitiveCounts[level.id]))), String(row.unmappedCount), String(row.totalQuestions), numeric ? String(row.totalPoints) : 'Nhận xét / rubric',
+  ].map(value => cell(value)) }));
+  rows.push(new TableRow({ children: ['Tổng', '', ...matrix.cognitiveTotals.map(level => String(level.count)), String(matrix.unmappedCognitiveCount), String(matrix.totalQuestions), numeric ? String(matrix.totalExamPoints) : 'Không tính điểm'].map(value => cell(value, true)) }));
+  return new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows });
 }

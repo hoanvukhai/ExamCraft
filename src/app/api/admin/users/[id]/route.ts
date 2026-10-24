@@ -3,6 +3,7 @@ import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import { requireAdmin, hashPassword, logAudit } from '@/lib/auth';
 import { Role } from '@prisma/client';
+import { isSameOriginMutation } from '@/lib/attempt-access';
 
 const UpdateUserSchema = z.object({
   isActive: z.boolean().optional(),
@@ -17,6 +18,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    if (!isSameOriginMutation(req)) return NextResponse.json({ error: 'Yêu cầu không hợp lệ' }, { status: 403 });
     const admin = await requireAdmin();
     const { id } = await params;
     const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || '127.0.0.1';
@@ -69,7 +71,9 @@ export async function PATCH(
       updateData.mustChangePassword = true; // Bắt buộc đổi lại khi đăng nhập
     }
 
-    const updated = await prisma.user.update({
+    const updated = await prisma.$transaction(async tx => {
+      await tx.$queryRaw`SELECT "id" FROM "User" WHERE "id" = ${id} FOR UPDATE`;
+      const updated = await tx.user.update({
       where: { id },
       data: updateData,
       select: {
@@ -83,13 +87,9 @@ export async function PATCH(
         updatedAt: true,
       },
     });
-
-    // Nếu đặt lại mật khẩu hoặc khóa tài khoản, xóa mọi phiên đăng nhập cũ của user đó
-    if (parsed.data.resetPassword || parsed.data.isActive === false) {
-      await prisma.session.deleteMany({
-        where: { userId: id },
-      });
-    }
+      if (parsed.data.resetPassword || parsed.data.isActive === false || parsed.data.role !== undefined) await tx.session.deleteMany({ where: { userId: id } });
+      return updated;
+    });
 
     await logAudit({
       actorId: admin.id,
@@ -113,6 +113,7 @@ export async function PATCH(
     });
   } catch (error: unknown) {
     const err = error as Error;
+    if (err.message === 'MUST_CHANGE_PASSWORD') return NextResponse.json({ error: 'Vui lòng đổi mật khẩu trước khi tiếp tục', code: 'MUST_CHANGE_PASSWORD' }, { status: 403 });
     if (err.message === 'UNAUTHORIZED') {
       return NextResponse.json({ error: 'Chưa đăng nhập' }, { status: 401 });
     }

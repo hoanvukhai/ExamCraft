@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { randomUUID } from 'node:crypto';
+import { forkPayload } from '@/lib/question-history';
+import { ApiError, apiErrorResponse } from '@/lib/api-error';
+import { isSameOriginMutation } from '@/lib/attempt-access';
 import { z } from 'zod';
 import prisma from '@/lib/prisma';
-import { requireAuth } from '@/lib/auth';
+import { requireRequestAuth } from '@/lib/request-auth';
 import { QuestionType, Difficulty, Visibility, SourceKind } from '@prisma/client';
 
 const CreateQuestionSchema = z.object({
+  passageId: z.string().min(1).optional(),
+  passage: z.object({ title: z.string().max(500).optional(), content: z.string().min(1).max(500000), source: z.string().max(4000).optional(), figures: z.unknown().optional() }).optional(),
   subject: z.string().min(1, 'Mã môn học là bắt buộc'),
   grade: z.number().int().min(1).max(12),
   type: z.nativeEnum(QuestionType),
@@ -13,7 +19,7 @@ const CreateQuestionSchema = z.object({
   figures: z.any().optional(),
   payload: z.record(z.string(), z.any()), // choices, sub_questions, correct, accepted_answers...
   solution: z.string().default(''),
-  points: z.number().optional(),
+  points: z.number().finite().nonnegative().max(999.99).optional(),
   topics: z.array(z.string()).default([]),
   tags: z.array(z.string()).default([]),
   visibility: z.nativeEnum(Visibility).default(Visibility.PRIVATE),
@@ -27,7 +33,7 @@ const CreateQuestionSchema = z.object({
 // GET: Lấy danh sách câu hỏi của giáo viên đang đăng nhập
 export async function GET(req: NextRequest) {
   try {
-    const user = await requireAuth();
+    const user = await requireRequestAuth(req);
     const { searchParams } = new URL(req.url);
 
     const subject = searchParams.get('subject') || undefined;
@@ -45,6 +51,7 @@ export async function GET(req: NextRequest) {
     const whereClause: Record<string, unknown> = {
       ownerId: user.id,
       deletedAt: null,
+      NOT: { tags: { has: '__workspace_only' } },
     };
 
     if (subject) whereClause.subject = subject;
@@ -62,8 +69,9 @@ export async function GET(req: NextRequest) {
       prisma.question.findMany({
         where: whereClause,
         include: {
+          passage: true,
           author: {
-            select: { id: true, name: true, email: true },
+            select: { id: true, name: true },
           },
         },
         orderBy: { updatedAt: 'desc' },
@@ -74,7 +82,7 @@ export async function GET(req: NextRequest) {
     ]);
 
     return NextResponse.json({
-      questions,
+      questions: questions.map(q => ({ ...q, passage: q.passage && q.passage.ownerId === q.ownerId ? { id: q.passage.id, title: q.passage.title, content: q.passage.content, source: q.passage.source, figures: q.passage.figures } : null, passageUnavailable: !!q.passage && q.passage.ownerId !== q.ownerId })),
       pagination: {
         page,
         limit,
@@ -83,6 +91,7 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (error: unknown) {
+    if (error instanceof ApiError) return apiErrorResponse(error, 'Yêu cầu tải ngân hàng bị từ chối');
     const err = error as Error;
     if (err.message === 'UNAUTHORIZED') {
       return NextResponse.json({ error: 'Vui lòng đăng nhập để xem danh sách câu hỏi' }, { status: 401 });
@@ -98,7 +107,8 @@ export async function GET(req: NextRequest) {
 // POST: Tạo câu hỏi mới trong ngân hàng của giáo viên
 export async function POST(req: NextRequest) {
   try {
-    const user = await requireAuth();
+    if (!isSameOriginMutation(req)) throw new ApiError(403, 'Yêu cầu không hợp lệ');
+    const user = await requireRequestAuth(req);
     const body = await req.json();
     const parsed = CreateQuestionSchema.safeParse(body);
 
@@ -116,9 +126,19 @@ export async function POST(req: NextRequest) {
 
     // Tạo câu hỏi kèm revision đầu tiên (version 1) trong transaction
     const question = await prisma.$transaction(async (tx) => {
+      let passageId: string | undefined;
+      if (data.passage) {
+        const passage = await tx.passage.create({ data: { ownerId: user.id, title: data.passage.title, content: data.passage.content, source: data.passage.source, figures: data.passage.figures == null ? undefined : JSON.parse(JSON.stringify(data.passage.figures)) } });
+        passageId = passage.id;
+      } else if (data.passageId) {
+        const passage = await tx.passage.findFirst({ where: { id: data.passageId, ownerId: user.id }, select: { id: true } });
+        if (!passage) throw new ApiError(400, 'Chưa có ngữ liệu trong kho riêng; hãy truyền cả nội dung ngữ liệu khi lưu câu hỏi');
+        passageId = passage.id;
+      }
+      const id = `q_${randomUUID()}`;
       const q = await tx.question.create({
         data: {
-          ownerId: user.id,
+          id, ownerId: user.id, passageId,
           authorId: user.id,
           subject: data.subject,
           grade: data.grade,
@@ -126,11 +146,11 @@ export async function POST(req: NextRequest) {
           difficulty: data.difficulty,
           content: data.content,
           figures: data.figures ? JSON.parse(JSON.stringify(data.figures)) : undefined,
-          payload: data.payload,
+          payload: forkPayload(data.payload, id, passageId ?? null),
           solution: data.solution,
           points: data.points !== undefined ? data.points : undefined,
           topics: data.topics,
-          tags: data.tags,
+          tags: data.tags.filter(tag => tag !== '__workspace_only'),
           visibility: data.visibility,
           sourceKind: data.sourceKind,
           sourceUrl: data.sourceUrl,
@@ -140,8 +160,9 @@ export async function POST(req: NextRequest) {
           version: 1,
         },
         include: {
+          passage: true,
           author: {
-            select: { id: true, name: true, email: true },
+            select: { id: true, name: true },
           },
         },
       });
@@ -164,15 +185,5 @@ export async function POST(req: NextRequest) {
       question,
       message: 'Tạo câu hỏi thành công!',
     });
-  } catch (error: unknown) {
-    const err = error as Error;
-    if (err.message === 'UNAUTHORIZED') {
-      return NextResponse.json({ error: 'Vui lòng đăng nhập để tạo câu hỏi' }, { status: 401 });
-    }
-    if (err.message === 'MUST_CHANGE_PASSWORD') {
-      return NextResponse.json({ error: 'Tài khoản bắt buộc phải đổi mật khẩu trước khi tiếp tục', code: 'MUST_CHANGE_PASSWORD' }, { status: 403 });
-    }
-    console.error('Lỗi POST /api/questions:', error);
-    return NextResponse.json({ error: 'Lỗi máy chủ khi tạo câu hỏi' }, { status: 500 });
-  }
+  } catch (error) { return apiErrorResponse(error, 'Chưa tạo được câu hỏi'); }
 }

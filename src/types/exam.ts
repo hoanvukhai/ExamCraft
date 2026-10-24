@@ -1,4 +1,13 @@
-export type Subject = 
+import type { KnowledgePackage, KnowledgeScope } from '@/lib/knowledge-package';
+import type { ExamPlan } from '@/lib/exam-plan';
+import type { HeaderLayout } from '@/lib/header-layout';
+import type { TemplateApplication } from '@/lib/exam-template';
+
+export type Subject =
+  | 'am_nhac' | 'mi_thuat' | 'giao_duc_the_chat'
+  | 'hoat_dong_trai_nghiem' | 'hoat_dong_trai_nghiem_huong_nghiep'
+  | 'giao_duc_dia_phuong' | 'giao_duc_quoc_phong_an_ninh'
+  | 'ngoai_ngu_khac' | 'tieng_dan_toc'
   // Môn chung xuyên suốt
   | 'toan'
   | 'tieng_anh'
@@ -53,6 +62,7 @@ export interface Passage {
   content: string;       // Ngữ liệu dùng chung cho chùm câu hỏi đọc hiểu
   source?: string;       // Nguồn trích dẫn văn bản
   figureIds?: string[];
+  figures?: Figure[];
 }
 
 export interface ChoiceItem {
@@ -64,7 +74,7 @@ export interface ChoiceItem {
 export interface TrueFalseSubItem {
   key: string;           // 'a' | 'b' | 'c' | 'd'
   content: string;
-  isCorrect: boolean;    // true = Đúng, false = Sai
+  isCorrect?: boolean;    // undefined = chưa đặt đáp án; true = Đúng, false = Sai
   explanation?: string;
 }
 
@@ -75,6 +85,14 @@ export interface RubricItem {
 
 export interface Question {
   id: string;
+  cognitiveLevel?: string;
+  learningOutcome?: string;
+  knowledgeIds?: string[];
+  outcomeIds?: string[];
+  knowledgeReference?: { packageId: string; packageRevision: string };
+  sectionId?: string;
+  matchingPairs?: { id: string; left: string; right: string }[];
+  correctOrder?: string[];
   subject?: Subject;
   grade?: number;        // 1 -> 12
   type: QuestionType;
@@ -109,6 +127,18 @@ export interface Question {
 }
 
 export interface ExamMetadata {
+  templateApplication?: TemplateApplication;
+  headerLayout?: HeaderLayout;
+  examPlan?: ExamPlan;
+  knowledgePackage?: KnowledgePackage;
+  knowledgeScope?: KnowledgeScope;
+  assessmentMode?: 'scored' | 'comment_only' | 'rubric' | 'survey';
+  cognitiveFrameworkId?: string;
+  sourcePackageId?: string;
+  language?: string;
+  languageRole?: 'NN1' | 'NN2' | 'ETHNIC';
+  locality?: string;
+  curriculumVersion?: string;
   title: string;
   schoolName: string;
   departmentName: string;
@@ -123,10 +153,25 @@ export interface ExamMetadata {
   curriculumTrack?: 'core' | 'advanced_topic';
 }
 
-export interface Exam {
+export interface ExamSection {
   id: string;
+  name: string;
+  title?: string;
+  label?: string;
+  type?: QuestionType;
+  pointsPerQuestion?: number;
+  progressiveScoring?: number[];
+}
+
+export interface Exam {
+  /** Runtime permissions from the server; never sent as authority when saving. */
+  access?: { role: string; canRead: boolean; canEdit: boolean; canComment: boolean; canManage: boolean; canPublish: boolean };
+  id: string;
+  /** Set only by an acknowledged server response; browser versions are not server versions. */
+  serverId?: string;
   metadata: ExamMetadata;
   passages?: Passage[];
+  sections?: ExamSection[];
   questions: Question[];
   createdAt: string;
   updatedAt: string;
@@ -152,6 +197,9 @@ export interface GenerationParams {
   numTrueFalse: number;
   numShortAnswer: number;
   numEssay: number;
+  numFillBlank?: number;
+  numMatching?: number;
+  numOrdering?: number;
   difficultyRatio: {
     nhan_biet: number;
     thong_hieu: number;

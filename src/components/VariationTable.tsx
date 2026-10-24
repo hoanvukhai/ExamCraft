@@ -31,22 +31,15 @@ export const VariationTable: React.FC<VariationTableProps> = ({
   const { theme } = useTheme();
   const isDark = !forceLight && theme === 'dark';
 
-  // Mẫu bảng biến thiên mặc định cho hàm bậc 3 nếu không truyền data
-  const defaultData: VariationTableData = {
-    xValues: ['-\\infty', '0', '2', '+\\infty'],
-    yPrimeSigns: ['+', '0', '-', '0', '+'],
-    yValues: [
-      { type: 'value', val: '-\\infty' },
-      { type: 'up' },
-      { type: 'value', val: '2' },
-      { type: 'down' },
-      { type: 'value', val: '-2' },
-      { type: 'up' },
-      { type: 'value', val: '+\\infty' },
-    ],
-  };
-
-  const tableData = data || defaultData;
+  if (!data || !Array.isArray(data.xValues) || data.xValues.length < 2 ||
+      !Array.isArray(data.yPrimeSigns) || data.yPrimeSigns.length === 0 ||
+      !Array.isArray(data.yValues) || data.yValues.length === 0 ||
+      data.xValues.some(value => typeof value !== 'string' || !value.trim()) ||
+      data.yPrimeSigns.some(value => !['+', '-', '0', '||'].includes(value)) ||
+      data.yValues.some(value => !value || !['up', 'down', 'value'].includes(value.type) || (value.type === 'value' && typeof value.val !== 'string'))) {
+    return <div role="note" className={`my-3 border border-amber-300 rounded p-3 text-sm ${className}`}>Chưa có dữ liệu bảng biến thiên. Hãy bổ sung trước khi sử dụng câu hỏi.</div>;
+  }
+  const tableData = data;
 
   const containerClasses = isDark
     ? 'border-[#3c4043] bg-[#1e1e1e] text-[#e3e3e3] shadow-xs'

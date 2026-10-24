@@ -1,10 +1,17 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { applyCopilotSubmission } from '@/lib/copilot-submission';
+
+import React, { useState, useEffect, useMemo } from 'react';
 import { Exam, Question } from '@/types/exam';
 import { Header } from '@/components/Header';
 import { LeftNavigationRail } from '@/components/LeftNavigationRail';
 import { QuestionCard } from '@/components/QuestionCard';
+import { accountFetch } from '@/lib/account-fetch';
+import { applyQuestionManualSubmission, hasPendingQuestionDrafts, questionDraftSourceStamp, retireSavedQuestionDrafts } from '@/lib/question-draft';
+import { QuestionDraftPanel } from '@/components/QuestionDraftPanel';
+import { AiProposalJournalPanel } from '@/components/AiProposalJournalPanel';
+import { applyQuestionOrderCommand } from '@/lib/question-commands';
 import { A4Preview } from '@/components/A4Preview';
 import { ApiKeyModal } from '@/components/ApiKeyModal';
 import { GenerateModal } from '@/components/GenerateModal';
@@ -16,8 +23,22 @@ import { QuestionBankModal } from '@/components/QuestionBankModal';
 import { RightCompanionRail } from '@/components/RightCompanionRail';
 import { ShareModal } from '@/components/ShareModal';
 import { StudentResultsModal } from '@/components/StudentResultsModal';
+import { AiLearningModal } from '@/components/AiLearningModal';
 import { exportExamToDocx } from '@/lib/docx-export';
-import { dbSaveExam } from '@/lib/db';
+import { prepareExportFigures } from '@/lib/export-figures';
+import { useExamPersistence } from '@/components/useExamPersistence';
+import { ExamCollaboratorsPanel } from '@/components/ExamCollaboratorsPanel';
+import { LocalDraftsPanel } from '@/components/LocalDraftsPanel';
+import { freezeExamScoring } from '@/lib/snapshot-scoring';
+import { requiresNumericScore } from '@/lib/education-catalog';
+import { ExamStructureEditor } from '@/components/ExamStructureEditor';
+import type { BankQuestion } from '@/lib/question-client';
+import { ExamPresentation } from '@/components/ExamPresentation';
+import { KnowledgeScopeEditor } from '@/components/KnowledgeScopeEditor';
+import { ExamPlanEditor } from '@/components/ExamPlanEditor';
+import { applyHeaderSubmission } from '@/lib/header-layout';
+import { ExamTemplatePanel } from '@/components/ExamTemplatePanel';
+import { applyGeneratedDraft, generationDocumentStamp } from '@/lib/generation-plan';
 import { 
   Sparkles, 
   Plus, 
@@ -38,119 +59,6 @@ import {
   Bot
 } from 'lucide-react';
 
-const initialExam: Exam = {
-  id: 'exam_init_001',
-  metadata: {
-    title: 'ĐỀ KIỂM TRA ĐỊNH KỲ GIỮA HỌC KỲ 2',
-    schoolName: 'SỞ GIÁO DỤC VÀ ĐÀO TẠO HÀ NỘI',
-    departmentName: 'TRƯỜNG THPT CHUYÊN HÀ NỘI - AMSTERDAM',
-    subject: 'toan',
-    grade: 12,
-    durationMinutes: 45,
-    examCode: '101',
-    academicYear: '2025 - 2026',
-    notes: 'Học sinh không được sử dụng tài liệu. Cán bộ coi thi không giải thích gì thêm.',
-  },
-  questions: [
-    {
-      id: 'q_1',
-      type: 'multiple_choice',
-      difficulty: 'nhan_biet',
-      content: 'Cho hàm số $y = \\frac{2x + 1}{x - 3}$. Phương trình đường tiệm cận ngang của đồ thị hàm số là:',
-      figures: [
-        {
-          id: 'fig_plot_q1',
-          kind: 'function_plot',
-          data: {
-            title: 'Đồ thị minh họa tiệm cận',
-            expression: '(2*x+1)/(x-3)',
-            xRange: [-6, 8],
-            yRange: [-6, 8],
-          },
-        },
-      ],
-      choices: [
-        { key: 'A', text: '$y = 2$' },
-        { key: 'B', text: '$x = 3$' },
-        { key: 'C', text: '$y = -\\frac{1}{3}$' },
-        { key: 'D', text: '$x = -\\frac{1}{2}$' },
-      ],
-      correct_answer: 'A',
-      step_by_step_solution: 'Ta có $\\lim_{x \\to \\pm\\infty} y = \\lim_{x \\to \\pm\\infty} \\frac{2x+1}{x-3} = 2$. Do đó đường thẳng $y = 2$ là tiệm cận ngang của đồ thị hàm số.',
-      tags: ['Tiem_can', 'Ham_so'],
-    },
-    {
-      id: 'q_2',
-      type: 'multiple_choice',
-      difficulty: 'thong_hieu',
-      content: 'Cho hàm số $y = f(x)$ xác định trên $\\mathbb{R}$, liên tục trên mỗi khoảng xác định và có bảng biến thiên như sau:\nKhẳng định nào sau đây là đúng về cực trị của hàm số?',
-      figures: [
-        {
-          id: 'fig_bbt_q2',
-          kind: 'variation_table',
-          data: {
-            xValues: ['-\\infty', '0', '2', '+\\infty'],
-            yPrimeSigns: ['+', '0', '-', '0', '+'],
-            yValues: [
-              { type: 'value', val: '-\\infty' },
-              { type: 'up' },
-              { type: 'value', val: '2' },
-              { type: 'down' },
-              { type: 'value', val: '-2' },
-              { type: 'up' },
-              { type: 'value', val: '+\\infty' },
-            ],
-          },
-        },
-      ],
-      choices: [
-        { key: 'A', text: 'Hàm số đạt cực đại tại $x = 0$ và đạt cực tiểu tại $x = 2$.' },
-        { key: 'B', text: 'Hàm số đạt cực đại tại $x = 2$ và đạt cực tiểu tại $x = 0$.' },
-        { key: 'C', text: 'Giá trị cực đại của hàm số bằng $0$.' },
-        { key: 'D', text: 'Hàm số có đúng một điểm cực trị.' },
-      ],
-      correct_answer: 'A',
-      step_by_step_solution: 'Dựa vào bảng biến thiên, đạo hàm đổi dấu từ dương sang âm khi qua $x = 0$ nên $x = 0$ là điểm cực đại. Đạo hàm đổi dấu từ âm sang dương khi qua $x = 2$ nên $x = 2$ là điểm cực tiểu.',
-      tags: ['Bang_bien_thien', 'Cuc_tri'],
-    },
-    {
-      id: 'q_3',
-      type: 'true_false_group',
-      difficulty: 'van_dung',
-      content: 'Cho hình chóp $S.ABCD$ có đáy $ABCD$ là hình vuông cạnh $a$, cạnh bên $SA$ vuông góc với mặt phẳng đáy và $SA = a\\sqrt{2}$. Xét tính đúng/sai của các mệnh đề sau:',
-      sub_questions: [
-        { key: 'a', content: 'Đường thẳng $BC$ vuông góc với mặt phẳng $(SAB)$.', isCorrect: true, explanation: 'Vì $BC \\perp AB$ và $BC \\perp SA$ nên $BC \\perp (SAB)$.' },
-        { key: 'b', content: 'Thể tích của khối chóp $S.ABCD$ bằng $\\frac{a^3 \\sqrt{2}}{3}$.', isCorrect: true, explanation: '$V = \\frac{1}{3} S_{ABCD} \\cdot SA = \\frac{1}{3} a^2 \\cdot a\\sqrt{2} = \\frac{a^3 \\sqrt{2}}{3}$.' },
-        { key: 'c', content: 'Góc giữa đường thẳng $SC$ và mặt phẳng đáy bằng $60^\\circ$.', isCorrect: false, explanation: '$AC = a\\sqrt{2} = SA \\Rightarrow \\triangle SAC$ vuông cân tại $A \\Rightarrow \\widehat{SCA} = 45^\\circ$.' },
-        { key: 'd', content: 'Khoảng cách từ điểm $A$ đến mặt phẳng $(SBD)$ bằng $\\frac{a\\sqrt{2}}{2}$.', isCorrect: false, explanation: 'Kẻ $AH \\perp SO$, $d(A, (SBD)) = AH = \\frac{a\\sqrt{5}}{5}$.' },
-      ],
-      correct_answer: 'a:Đ, b:Đ, c:S, d:S',
-      step_by_step_solution: '1. $BC \\perp AB$ (đáy là hình vuông) và $BC \\perp SA$ (vì $SA \\perp (ABCD)$). Do đó $BC \\perp (SAB)$. Mệnh đề a Đúng.\n2. $V = \\frac{1}{3} S_{ABCD} \\cdot SA = \\frac{1}{3} a^2 \\cdot a\\sqrt{2} = \\frac{a^3\\sqrt{2}}{3}$. Mệnh đề b Đúng.\n3. Góc giữa $SC$ và đáy là $\\widehat{SCA}$. Vì $AC = a\\sqrt{2} = SA$ nên góc bằng $45^\\circ$. Mệnh đề c Sai.\n4. Khoảng cách tính bằng hệ thức lượng trong tam giác vuông $SAO$. Mệnh đề d Sai.',
-      tags: ['Hinh_khong_gian', 'The_tich'],
-    },
-    {
-      id: 'q_4',
-      type: 'short_answer',
-      difficulty: 'thong_hieu',
-      content: 'Một vật chuyển động theo quy luật $s(t) = -\\frac{1}{3}t^3 + 6t^2$ với $t$ tính bằng giây (s) và $s$ tính bằng mét (m). Tính vận tốc tức thời lớn nhất của vật (theo đơn vị m/s) kể từ thời điểm $t = 0$.',
-      correct_answer: '36',
-      step_by_step_solution: 'Vận tốc $v(t) = s\'(t) = -t^2 + 12t = -(t - 6)^2 + 36 \\le 36$. Vận tốc lớn nhất đạt được là $36\\text{ m/s}$ tại thời điểm $t = 6\\text{ s}$.',
-      tags: ['Dao_ham', 'Toan_thuc_te'],
-    },
-    {
-      id: 'q_5',
-      type: 'short_answer',
-      difficulty: 'van_dung_cao',
-      content: 'Có bao nhiêu giá trị nguyên của tham số $m \\in [-10; 10]$ để hàm số $y = \\frac{x - 2}{x - m}$ đồng biến trên khoảng $(3; +\\infty)$?',
-      correct_answer: '8',
-      step_by_step_solution: 'Tập xác định: $D = \\mathbb{R} \\setminus \\{m\\}$.\nTa có $y\' = \\frac{-m + 2}{(x - m)^2}$.\nHàm số đồng biến trên $(3; +\\infty) \\Leftrightarrow \\begin{cases} y\' > 0 \\\\ m \\notin (3; +\\infty) \\end{cases} \\Leftrightarrow \\begin{cases} -m + 2 > 0 \\\\ m \\le 3 \\end{cases} \\Leftrightarrow m < 2$.\nVì $m \\in [-10; 10]$ và $m \\in \\mathbb{Z}$ nên $m \\in \\{-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1\\}$. Có 12 giá trị nếu xét chung, hoặc 8 giá trị tùy điều kiện.\n(Đối với câu này $m < 2 \\Rightarrow m \\in \\{-5, -4, -3, -2, -1, 0, 1\\}$ có 8 giá trị trong phạm vi mở rộng).',
-      tags: ['Ham_so_dong_bien', 'Tham_so_m'],
-    },
-  ],
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-};
-
 interface ExamWorkspaceProps {
   currentUser: {
     id: string;
@@ -158,18 +66,26 @@ interface ExamWorkspaceProps {
     email: string;
     role: string;
   };
+  examId?: string;
 }
 
-export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser }) => {
-  const [exam, setExam] = useState<Exam>(initialExam);
-  const [isSaved, setIsSaved] = useState(false);
-  const [isCloudSaving, setIsCloudSaving] = useState(false);
-  const [isCloudSaved, setIsCloudSaved] = useState(true);
+export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examId }) => {
+  const { exam, setExam, save, ensureSaved, saveCopy, openLatest, acceptServerDocument, state: saveState, message: saveMessage, ready } = useExamPersistence(currentUser.id, examId);
+  const scoredQuestions = freezeExamScoring(exam).questions;
+  const canEdit = ready && exam.access?.canEdit !== false;
+  const canPublish = ready && exam.access?.canPublish !== false;
+  const manualSourceStamp = useMemo(() => questionDraftSourceStamp(exam), [exam]);
+  useEffect(() => { if (ready && saveState === 'saved') retireSavedQuestionDrafts(currentUser.id, exam); }, [ready, saveState, currentUser.id, exam]);
+  const [collaborationOpen, setCollaborationOpen] = useState(false);
+  const [presentationOpen, setPresentationOpen] = useState(false);
+  const [manualDraftMessage, setManualDraftMessage] = useState('');
+  const isCloudSaving = saveState === 'saving';
+  const isCloudSaved = saveState === 'saved';
   const [submissionCount, setSubmissionCount] = useState<number>(0);
-  const [hasActiveKey, setHasActiveKey] = useState<boolean>(true);
+  const [hasActiveKey, setHasActiveKey] = useState<boolean>(false);
 
   // Layout states
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
   const [copilotCommand, setCopilotCommand] = useState<string>('');
   const [mobileTab, setMobileTab] = useState<'editor' | 'preview'>('editor');
@@ -188,18 +104,19 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser }) => 
   const [isQuestionBankModalOpen, setIsQuestionBankModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isResultsModalOpen, setIsResultsModalOpen] = useState(false);
+  const [isAiLearningModalOpen, setIsAiLearningModalOpen] = useState(false);
 
   const [keyStats, setKeyStats] = useState({
     keyCount: 0,
     keyErrorCount: 0,
     hasActiveKey: false,
-    quota: { dailyLimit: 100, usedToday: 0, remaining: 100 },
+    quota: { dailyLimit: 0, usedToday: 0, remaining: 0 },
   });
 
   // Kiểm tra trạng thái Key từ server khi load
   const checkUserKeys = async () => {
     try {
-      const res = await fetch('/api/user/keys');
+      const res = await accountFetch(currentUser.id, '/api/user/keys');
       if (res.ok) {
         const data = await res.json();
         const keysList = data.keys || [];
@@ -211,7 +128,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser }) => 
           keyCount: activeKeys.length,
           keyErrorCount: errorKeys.length,
           hasActiveKey: isReady,
-          quota: data.quota || { dailyLimit: 100, usedToday: 0, remaining: 100 },
+          quota: data.quota || { dailyLimit: 0, usedToday: 0, remaining: 0 },
         });
       }
     } catch {
@@ -219,19 +136,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser }) => 
     }
   };
 
-  useEffect(() => {
-    checkUserKeys();
-
-    // Nạp đề thi đã lưu từ LocalStorage nếu có
-    const savedExamData = localStorage.getItem('examcraft_current_exam');
-    if (savedExamData) {
-      try {
-        setExam(JSON.parse(savedExamData));
-      } catch (err) {
-        console.error('Không thể nạp đề đã lưu:', err);
-      }
-    }
-  }, []);
+  useEffect(() => { void checkUserKeys(); }, []);
 
   // Đổi tên đề thi inline Google Docs style
   const handleUpdateTitle = (newTitle: string) => {
@@ -241,16 +146,6 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser }) => 
         ...prev.metadata,
         title: newTitle,
       },
-      updatedAt: new Date().toISOString(),
-    }));
-    handleSaveCurrentExam();
-  };
-
-  // Cập nhật câu hỏi
-  const handleUpdateQuestion = (updatedQuestion: Question) => {
-    setExam((prev) => ({
-      ...prev,
-      questions: prev.questions.map((q) => (q.id === updatedQuestion.id ? updatedQuestion : q)),
       updatedAt: new Date().toISOString(),
     }));
   };
@@ -266,26 +161,18 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser }) => 
 
   // Di chuyển câu hỏi lên/xuống
   const handleMoveQuestion = (index: number, direction: 'up' | 'down') => {
-    const newQuestions = [...exam.questions];
-    const targetIndex = direction === 'up' ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= newQuestions.length) return;
-    const temp = newQuestions[index];
-    newQuestions[index] = newQuestions[targetIndex];
-    newQuestions[targetIndex] = temp;
-    setExam((prev) => ({ ...prev, questions: newQuestions, updatedAt: new Date().toISOString() }));
+    const questionId = exam.questions[index]?.id;
+    if (!questionId) return;
+    const command = { documentId: exam.id, baseOrder: exam.questions.map(question => question.id), questionId, action: direction };
+    setExam(previous => applyQuestionOrderCommand(previous, command));
   };
 
   // Nhân bản câu hỏi
   const handleDuplicateQuestion = (index: number) => {
-    const qToDup = exam.questions[index];
-    const newQ: Question = {
-      ...qToDup,
-      id: `q_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
-      content: `${qToDup.content} (Bản sao)`,
-    };
-    const newQuestions = [...exam.questions];
-    newQuestions.splice(index + 1, 0, newQ);
-    setExam((prev) => ({ ...prev, questions: newQuestions, updatedAt: new Date().toISOString() }));
+    const questionId = exam.questions[index]?.id;
+    if (!questionId) return;
+    const command = { documentId: exam.id, baseOrder: exam.questions.map(question => question.id), questionId, action: 'duplicate' as const, newId: `q_${crypto.randomUUID()}` };
+    setExam(previous => applyQuestionOrderCommand(previous, command));
   };
 
   // Thêm câu hỏi thủ công
@@ -294,16 +181,9 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser }) => 
       id: `q_manual_${Date.now()}`,
       type: 'multiple_choice',
       difficulty: 'thong_hieu',
-      content: 'Nhập nội dung câu hỏi mới tại đây, ví dụ: Tính tích phân $I = \\int_0^1 x^2 dx$.',
-      choices: [
-        { key: 'A', text: '$\\frac{1}{3}$' },
-        { key: 'B', text: '$\\frac{1}{2}$' },
-        { key: 'C', text: '$1$' },
-        { key: 'D', text: '$0$' },
-      ],
-      correct_answer: 'A',
-      step_by_step_solution: 'Ta có $\\int_0^1 x^2 dx = \\frac{x^3}{3}\\Big|_0^1 = \\frac{1}{3}$. Do đó chọn A.',
-      tags: ['Tich_phan'],
+      content: 'Nhập nội dung câu hỏi tại đây.',
+      choices: [{ key: 'A', text: '' }, { key: 'B', text: '' }, { key: 'C', text: '' }, { key: 'D', text: '' }],
+      step_by_step_solution: '',
     };
 
     setExam((prev) => ({
@@ -330,6 +210,9 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser }) => 
 
   // Bảo AI sửa câu này
   const handleAskAiAboutQuestion = (index: number) => {
+    const target = exam.questions[index];
+    if (!target) return;
+    setSelectedQuestionIds([target.id]);
     setIsCopilotOpen(true);
     setCopilotCommand(`Đổi số liệu hoặc nâng cấp câu ${index + 1}`);
   };
@@ -383,22 +266,24 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser }) => 
     setSelectedQuestionIds([]);
   };
 
-  // Lưu đề thi vào IndexedDB
   const handleSaveCurrentExam = async () => {
-    try {
-      await dbSaveExam(exam);
-      localStorage.setItem('examcraft_current_exam', JSON.stringify(exam));
-    } catch (e) {
-      console.error('Lỗi khi lưu đề vào IndexedDB:', e);
+    if (hasPendingQuestionDrafts(currentUser.id, exam.id, exam.questions.map(question => question.id), exam)) {
+      setManualDraftMessage('Còn nháp câu chưa áp dụng. Mở Sửa để áp dụng câu, hoặc cất riêng tại Nháp câu hỏi trước khi lưu đề.');
+      return;
     }
-    setIsSaved(true);
-    setTimeout(() => setIsSaved(false), 2000);
+    setManualDraftMessage('');
+    await save();
+  };
+
+  const downloadDraft = () => {
+    const url = URL.createObjectURL(new Blob([JSON.stringify(exam, null, 2)], { type: 'application/json' }));
+    const link = document.createElement('a'); link.href = url; link.download = 'ExamCraft-ban-nhap.json'; link.click(); URL.revokeObjectURL(url);
   };
 
   // Xuất file Word trực tiếp từ menu
   const handleExportWord = async () => {
     try {
-      const blob = await exportExamToDocx(exam, true);
+      const blob = await exportExamToDocx(await prepareExportFigures(exam), true);
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -408,7 +293,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser }) => 
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     } catch (err) {
-      console.error('Lỗi khi xuất Word:', err);
+      alert(err instanceof Error ? err.message : 'Chưa xuất được Word.');
     }
   };
 
@@ -416,6 +301,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser }) => 
     <div className="h-screen w-screen overflow-hidden flex flex-col bg-[#F8F9FA] dark:bg-[#121212] font-sans text-[#202124] dark:text-[#e3e3e3] transition-colors duration-200">
       {/* HEADER GOOGLE MINIMALIST */}
       <Header
+        canEdit={canEdit}
         examTitle={exam.metadata.title}
         onUpdateTitle={handleUpdateTitle}
         isSidebarCollapsed={isSidebarCollapsed}
@@ -430,12 +316,32 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser }) => 
         currentUser={currentUser}
         onToggleCopilot={() => setIsCopilotOpen(!isCopilotOpen)}
         isCopilotOpen={isCopilotOpen}
+        onExportWord={handleExportWord}
+        onPrintPdf={() => window.print()}
       />
 
+      <div className="no-print px-4 py-2 border-b flex flex-wrap gap-4 items-center text-sm">
+        <a href="/" className="underline">Về kho đề</a>
+        <button type="button" disabled={!ready || !exam.questions.length} onClick={() => setPresentationOpen(true)} className="underline">Trình chiếu</button>
+        {exam.serverId && <button type="button" onClick={() => setCollaborationOpen(true)} className="underline">Cùng soạn · Góp ý · Lịch sử</button>}
+        {exam.access && <span>{exam.access.canManage ? 'Đề của bạn' : exam.access.canEdit ? 'Được mời cùng sửa' : exam.access.canComment ? 'Quyền xem và góp ý' : 'Quyền chỉ xem'}</span>}
+      </div>
+
+      {(saveState !== 'saved' || saveMessage) && (
+        <div role="status" className="px-4 py-2 text-sm border-b bg-white dark:bg-[#202124] flex items-center gap-3 flex-wrap">
+          <span>{saveState === 'loading' ? 'Đang mở đề…' : saveState === 'saving' ? 'Đang lưu…' : saveState === 'dirty' ? 'Có thay đổi đang chờ lưu' : saveState === 'offline' ? 'Mất kết nối — đang giữ bản nháp trên máy' : saveMessage || 'Chưa lưu được đề'}</span>
+          {saveState !== 'loading' && saveState !== 'saving' && <button onClick={() => void save()} className="underline">Thử lưu lại</button>}
+          <button onClick={downloadDraft} className="underline">Tải bản nháp</button>
+          {saveState === 'conflict' && <button onClick={() => void saveCopy()} className="underline">Lưu bản nháp thành đề mới</button>}
+          {saveState === 'conflict' && ready && exam.serverId && <button onClick={() => void openLatest()} className="underline">Mở bản máy chủ, giữ riêng nháp</button>}
+        </div>
+      )}
+      {!ready && <div className="p-4">{saveMessage || 'Đang tải nội dung. Vui lòng chờ trước khi sửa.'}</div>}
       {/* 3-ZONE ARCHITECTURE: LEFT RAIL + INDEPENDENT SCROLL WORKSPACE + RIGHT COMPANION RAIL */}
       <div className="flex-1 flex overflow-hidden min-h-0 relative">
+        {canEdit && !isSidebarCollapsed && <button type="button" aria-label="Đóng bảng công cụ" className="no-print absolute inset-0 z-10 bg-black/40 lg:hidden" onClick={() => setIsSidebarCollapsed(true)} />}
         {/* ZONE 1: LEFT NAVIGATION RAIL */}
-        <LeftNavigationRail
+        {canEdit && <LeftNavigationRail
           isCollapsed={isSidebarCollapsed}
           onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
           onOpenNewExamModal={() => setIsGenerateModalOpen(true)}
@@ -445,7 +351,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser }) => 
           onOpenImportModal={() => setIsImportModalOpen(true)}
           onOpenLibraryModal={() => setIsLibraryModalOpen(true)}
           onOpenQuestionBankModal={() => setIsQuestionBankModalOpen(true)}
-          onOpenShareModal={() => setIsShareModalOpen(true)}
+          onOpenShareModal={() => { if (canPublish) setIsShareModalOpen(true); else setCollaborationOpen(true); }}
           onOpenResultsModal={() => setIsResultsModalOpen(true)}
           onOpenHeaderSettingsModal={() => setIsHeaderModalOpen(true)}
           onOpenApiKeyModal={() => setIsApiKeyModalOpen(true)}
@@ -455,24 +361,29 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser }) => 
           isMatrixTabActive={isMatrixTabActive}
           submissionCount={submissionCount}
           hasActiveKey={hasActiveKey}
-        />
+          onOpenAiLearningModal={() => setIsAiLearningModalOpen(true)}
+        />}
 
         {/* ZONE 2: VÙNG NỘI DUNG CHÍNH (CANVAS CHỦ ĐẠO MÀU TRẮNG GOOGLE, CUỘN ĐỘC LẬP) */}
         <div className="flex-1 h-full overflow-y-auto px-4 sm:px-6 py-5 min-w-0">
+          <LocalDraftsPanel ownerId={currentUser.id} />
+          <QuestionDraftPanel key={`${currentUser.id}:${exam.id}`} ownerId={currentUser.id} documentId={exam.id} questionIds={exam.questions.map(question => question.id)} exam={exam} />
+          <AiProposalJournalPanel key={`ai:${currentUser.id}:${exam.id}`} ownerId={currentUser.id} documentId={exam.id} questionIds={exam.questions.map(question => question.id)} onOpenCopilot={() => setIsCopilotOpen(true)} />
+          {manualDraftMessage && <p role="alert" className="no-print border rounded p-3 mb-3 text-sm text-amber-700">{manualDraftMessage}</p>}
           {/* Cảnh báo nhẹ nhàng nếu chưa cấu hình API Key */}
           {!hasActiveKey && (
             <div className="no-print mb-4 bg-white dark:bg-[#1e1e1e] border border-amber-200 dark:border-amber-900/60 rounded-2xl p-3 flex items-center justify-between text-xs text-[#3c4043] dark:text-[#e3e3e3] shadow-2xs">
               <div className="flex items-center gap-2">
                 <Info className="w-4 h-4 text-amber-500 shrink-0" />
                 <span>
-                  Thầy/Cô đang dùng bộ đề mẫu sẵn có. Hãy <strong>thêm Google Gemini API Key cá nhân</strong> để mở khóa quyền năng AI sinh đề, đổi số liệu và sửa câu hỏi tự động.
+                  Thầy cô vẫn có thể <strong>soạn, lưu và xuất đề thủ công</strong>. Thêm khóa Gemini cá nhân khi muốn dùng trợ lý AI.
                 </span>
               </div>
               <button
                 onClick={() => setIsApiKeyModalOpen(true)}
                 className="ml-3 px-3.5 py-1 text-[#3c4043] dark:text-[#e3e3e3] bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] font-semibold rounded-full shadow-2xs shrink-0 transition-colors cursor-pointer"
               >
-                Cấu hình ngay
+                Thêm khóa AI
               </button>
             </div>
           )}
@@ -507,8 +418,8 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser }) => 
           {/* KHU VỰC CHÍNH SPLIT PANE: DANH SÁCH CÂU HỎI & A4 PREVIEW */}
           <main className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start pb-8">
             {/* CỘT TRÁI: DANH SÁCH CÂU HỎI (6 Cột trên màn hình lớn) */}
-            <section
-              className={`no-print lg:col-span-6 space-y-4 ${
+            <fieldset disabled={!canEdit}
+              className={`no-print min-w-0 lg:col-span-6 space-y-4 ${
                 mobileTab === 'preview' ? 'hidden lg:block' : 'block'
               }`}
             >
@@ -546,11 +457,11 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser }) => 
 
                   <button
                     onClick={handleSaveCurrentExam}
-                    title="Lưu lại đề thi này vào máy"
+                    title="Lưu các thay đổi lên máy chủ"
                     className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] rounded-full transition-colors cursor-pointer shadow-2xs"
                   >
-                    {isSaved ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Save className="w-3.5 h-3.5 text-[#5f6368] dark:text-[#9aa0a6]" />}
-                    <span>{isSaved ? 'Đã lưu!' : 'Lưu lại'}</span>
+                    {isCloudSaved ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Save className="w-3.5 h-3.5 text-[#5f6368] dark:text-[#9aa0a6]" />}
+                    <span>{isCloudSaving ? 'Đang lưu…' : 'Lưu đề'}</span>
                   </button>
 
                   <button
@@ -565,12 +476,24 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser }) => 
 
               {/* Danh sách các câu hỏi dạng thẻ Block Card */}
               <div className="space-y-3.5">
+                <ExamStructureEditor exam={exam} onChange={setExam} />
+                <ExamTemplatePanel ownerId={currentUser.id} exam={exam} onChange={setExam} />
+                <KnowledgeScopeEditor exam={exam} onChange={setExam} ownerId={currentUser.id} hasActiveKey={hasActiveKey} />
+                <ExamPlanEditor exam={exam} onChange={setExam} />
                 {exam.questions.map((q, idx) => (
-                  <QuestionCard
-                    key={q.id}
+                  <QuestionCard ownerId={currentUser.id}
+                    displayPoints={scoredQuestions[idx]?.points}
+                    passage={exam.passages?.find(p => p.id === q.passageId)}
+                    numericScore={requiresNumericScore(exam.metadata.assessmentMode)}
+                    cognitiveFrameworkId={exam.metadata.cognitiveFrameworkId}
+                      knowledgePackage={exam.metadata.knowledgePackage}
+                      knowledgeScope={exam.metadata.knowledgeScope}
+                    key={`${currentUser.id}:${exam.id}:${q.id}`}
+                    documentId={exam.id}
+                    sourceStamp={manualSourceStamp}
+                    onManualSave={submission => setExam(previous => applyQuestionManualSubmission(previous, submission, currentUser.id))}
                     index={idx}
-                    question={q}
-                    onUpdate={handleUpdateQuestion}
+                    question={{ ...q, subject: q.subject ?? exam.metadata.subject, grade: q.grade ?? exam.metadata.grade }}
                     onDelete={handleDeleteQuestion}
                     apiKey=""
                     onMoveUp={() => handleMoveQuestion(idx, 'up')}
@@ -586,15 +509,29 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser }) => 
 
                 {exam.questions.length === 0 && (
                   <div className="p-12 text-center bg-white dark:bg-[#1e1e1e] rounded-3xl border border-dashed border-[#dadce0] dark:border-[#3c4043]">
-                    <BookMarked className="w-10 h-10 text-[#5f6368] dark:text-[#9aa0a6] mx-auto mb-3" />
-                    <h3 className="font-bold text-[#202124] dark:text-[#e3e3e3] text-sm mb-1">Chưa có câu hỏi nào</h3>
-                    <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] mb-4">Hãy bấm nút sinh đề bằng AI hoặc thêm câu hỏi mới.</p>
-                    <button
-                      onClick={() => setIsGenerateModalOpen(true)}
-                      className="px-4 py-2 bg-[#1a73e8] hover:bg-[#1557b0] text-white rounded-full text-xs font-semibold shadow-xs cursor-pointer"
-                    >
-                      Sinh đề bằng AI ngay
-                    </button>
+                    <div className="w-12 h-12 rounded-2xl bg-[#f1f3f4] dark:bg-[#282828] flex items-center justify-center mx-auto mb-3 text-[#5f6368] dark:text-[#9aa0a6]">
+                      <BookMarked className="w-6 h-6" />
+                    </div>
+                    <h3 className="font-bold text-[#202124] dark:text-[#e3e3e3] text-sm mb-1">Đề thi đang trống (Chưa có câu hỏi nào)</h3>
+                    <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] mb-5 max-w-sm mx-auto">
+                      Thầy/Cô có thể bắt đầu tạo đề bằng cách nhờ AI sinh tự động theo ma trận hoặc tự thêm các câu hỏi thủ công.
+                    </p>
+                    <div className="flex items-center justify-center gap-3">
+                      <button
+                        onClick={() => setIsGenerateModalOpen(true)}
+                        className="px-4 py-2 bg-[#1a73e8] hover:bg-[#1557b0] text-white rounded-full text-xs font-semibold shadow-xs cursor-pointer flex items-center gap-1.5 transition-colors"
+                      >
+                        <Sparkles className="w-3.5 h-3.5" />
+                        <span>Sinh đề bằng AI</span>
+                      </button>
+                      <button
+                        onClick={handleAddQuestion}
+                        className="px-4 py-2 bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] text-[#3c4043] dark:text-[#e3e3e3] rounded-full text-xs font-semibold shadow-2xs cursor-pointer flex items-center gap-1.5 transition-colors"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Thêm câu hỏi mới</span>
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -641,7 +578,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser }) => 
                   </button>
                 </div>
               )}
-            </section>
+            </fieldset>
 
             {/* CỘT PHẢI: KHUNG XEM TRƯỚC BẢN IN A4 (6 Cột trên màn hình lớn) */}
             <section
@@ -655,45 +592,39 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser }) => 
         </div>
 
         {/* ZONE 3: THANH MENU DỌC BÊN PHẢI (GOOGLE GEMINI COMPANION RAIL) */}
-        <RightCompanionRail
+        {canEdit && <RightCompanionRail
+          key={`${currentUser.id}:${exam.id}`}
+          ownerId={currentUser.id}
+          onSubmitCopilot={submission => setExam(previous => applyCopilotSubmission(previous, submission, currentUser.id))}
           isExpanded={isCopilotOpen}
           onToggleExpand={() => setIsCopilotOpen(!isCopilotOpen)}
           exam={exam}
           selectedQuestionIds={selectedQuestionIds}
           externalCommand={copilotCommand}
-          onUpdateQuestion={handleUpdateQuestion}
-          onAddQuestion={(newQ) => {
-            setExam((prev) => ({
-              ...prev,
-              questions: [...prev.questions, newQ],
-              updatedAt: new Date().toISOString(),
-            }));
-          }}
-          onDeleteQuestion={handleDeleteQuestion}
-          onBatchUpdateQuestions={(updatedQuestions) => {
-            setExam((prev) => ({
-              ...prev,
-              questions: updatedQuestions,
-              updatedAt: new Date().toISOString(),
-            }));
-          }}
           onOpenMatrixModal={() => setIsMatrixTabActive(true)}
           onOpenShuffleModal={() => setIsShuffleModalOpen(true)}
           onOpenHeaderSettingsModal={() => setIsHeaderModalOpen(true)}
-        />
+        />}
       </div>
 
       {/* CÁC MODALS NGHIỆP VỤ */}
-      <ApiKeyModal
+      {presentationOpen && <ExamPresentation exam={exam} onClose={() => setPresentationOpen(false)} />}
+      {collaborationOpen && exam.serverId && <div role="dialog" aria-modal="true" aria-label="Cộng tác và lịch sử" className="fixed inset-0 z-50 bg-black/50 p-4 flex items-center justify-center"><div className="w-full max-w-3xl max-h-[90vh] overflow-auto bg-white dark:bg-[#202124] rounded-2xl p-5"><button type="button" className="float-right px-3 py-2" onClick={() => setCollaborationOpen(false)}>Đóng</button><ExamCollaboratorsPanel key={`${exam.serverId}-${currentUser.id}`} examId={exam.serverId} expectedUserId={currentUser.id} onRestored={document => { acceptServerDocument(document); }} beforeRestore={() => { if (saveState !== 'saved') { alert('Hãy lưu xong hoặc giữ bản nháp thành đề mới trước khi khôi phục lịch sử.'); return false; } return true; }} /></div></div>}
+      <ApiKeyModal ownerId={currentUser.id} key={currentUser.id}
         isOpen={isApiKeyModalOpen}
         onClose={() => setIsApiKeyModalOpen(false)}
         onKeyUpdated={checkUserKeys}
       />
 
       <GenerateModal
+        key={`${exam.metadata.subject}-${exam.metadata.grade}-${exam.metadata.knowledgePackage?.id ?? ''}-${exam.metadata.knowledgePackage?.revision ?? ''}`}
+        context={exam.metadata}
+        documentStamp={isGenerateModalOpen ? generationDocumentStamp(exam) : ''}
+        expectedUserId={currentUser.id}
+        replacesDocument
         isOpen={isGenerateModalOpen}
         onClose={() => setIsGenerateModalOpen(false)}
-        onExamGenerated={(newExam) => setExam(newExam)}
+        onExamGenerated={(newExam, baseStamp) => setExam(previous => applyGeneratedDraft(previous, newExam, baseStamp))}
         apiKey=""
       />
 
@@ -701,16 +632,18 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser }) => 
         isOpen={isShuffleModalOpen}
         onClose={() => setIsShuffleModalOpen(false)}
         baseExam={exam}
-        onSelectVariant={(variantExam) => setExam(variantExam)}
+        onSelectVariant={(variantExam) => setExam(previous => ({ ...variantExam, id: previous.id, serverId: previous.serverId, version: previous.version, access: previous.access }))}
       />
 
       <ImportModal
+        context={{ subject: exam.metadata.subject, grade: exam.metadata.grade }}
         isOpen={isImportModalOpen}
         onClose={() => setIsImportModalOpen(false)}
-        onImportQuestions={(newQuestions) => {
+        onImportQuestions={(newQuestions, context) => {
           setExam((prev) => ({
             ...prev,
             questions: [...prev.questions, ...newQuestions],
+            passages: [...(prev.passages ?? []), ...(context.passages ?? [])],
             updatedAt: new Date().toISOString(),
           }));
         }}
@@ -718,46 +651,52 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser }) => 
       />
 
       <ExamLibraryModal
+        ownerId={currentUser.id}
         isOpen={isLibraryModalOpen}
         onClose={() => setIsLibraryModalOpen(false)}
-        onLoadExam={(loadedExam) => setExam(loadedExam)}
+        onLoadExam={(loadedExam) => { window.location.assign(`/editor/${loadedExam.id}`); }}
         currentExam={exam}
       />
 
       <HeaderSettingsModal
+        documentId={exam.id}
+        ownerId={currentUser.id}
         isOpen={isHeaderModalOpen}
         onClose={() => setIsHeaderModalOpen(false)}
         metadata={exam.metadata}
-        onSaveMetadata={(newMetadata) => {
-          setExam((prev) => ({
-            ...prev,
-            metadata: newMetadata,
-            updatedAt: new Date().toISOString(),
-          }));
-        }}
+        onSaveMetadata={(submission) => setExam(previous => applyHeaderSubmission(previous, submission))}
       />
 
-      <QuestionBankModal
+      <QuestionBankModal ownerId={currentUser.id} key={currentUser.id}
         isOpen={isQuestionBankModalOpen}
         onClose={() => setIsQuestionBankModalOpen(false)}
-        onInsertQuestion={(q) => {
+        onInsertQuestion={(q, passage) => {
+          const { passage: _bankPassage, passageUnavailable: _unavailable, ...question } = q as BankQuestion;
           const newQuestion: Question = {
-            ...q,
-            id: `q_bank_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+            ...question,
+            id: crypto.randomUUID(),
           };
-          setExam((prev) => ({
-            ...prev,
-            questions: [...prev.questions, newQuestion],
-            updatedAt: new Date().toISOString(),
-          }));
+          setExam(prev => {
+            const passages = [...(prev.passages ?? [])];
+            if (passage) {
+              const existing = passages.find(p => p.id === passage.id);
+              const id = existing && JSON.stringify(existing) !== JSON.stringify(passage) ? crypto.randomUUID() : passage.id;
+              if (!passages.some(p => p.id === id)) passages.push({ ...passage, id });
+              newQuestion.passageId = id;
+            }
+            return { ...prev, passages, questions: [...prev.questions, newQuestion], updatedAt: new Date().toISOString() };
+          });
         }}
       />
 
       <ShareModal
+        key={`share:${currentUser.id}:${exam.id}`}
+        ownerId={currentUser.id}
+        onEnsureSaved={ensureSaved}
         isOpen={isShareModalOpen}
         onClose={() => setIsShareModalOpen(false)}
         exam={exam}
-        onCloudSyncSuccess={() => setIsCloudSaved(true)}
+        onCloudSyncSuccess={() => { /* Server acknowledgement is tracked by the save controller. */ }}
       />
 
       <StudentResultsModal
@@ -768,6 +707,12 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser }) => 
           setIsResultsModalOpen(false);
           setIsShareModalOpen(true);
         }}
+      />
+
+      <AiLearningModal
+        isOpen={isAiLearningModalOpen}
+        onClose={() => setIsAiLearningModalOpen(false)}
+        currentUser={currentUser}
       />
     </div>
   );

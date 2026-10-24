@@ -20,11 +20,16 @@ import {
   AlertCircle,
   CheckCircle2,
   ExternalLink,
-  Sparkles
+  Sparkles,
+  ArrowLeft,
+  Download,
+  Printer
 } from 'lucide-react';
 import { useTheme } from './ThemeProvider';
+import { logoutSession } from '@/lib/auth-client';
 
 interface HeaderProps {
+  canEdit?: boolean;
   examTitle: string;
   onUpdateTitle: (newTitle: string) => void;
   isSidebarCollapsed: boolean;
@@ -48,9 +53,12 @@ interface HeaderProps {
   } | null;
   onToggleCopilot?: () => void;
   isCopilotOpen?: boolean;
+  onExportWord?: () => void;
+  onPrintPdf?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
+  canEdit = true,
   examTitle,
   onUpdateTitle,
   isSidebarCollapsed,
@@ -65,12 +73,16 @@ export const Header: React.FC<HeaderProps> = ({
   currentUser = null,
   onToggleCopilot,
   isCopilotOpen = false,
+  onExportWord,
+  onPrintPdf,
 }) => {
   const router = useRouter();
   const { theme, toggleTheme } = useTheme();
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [tempTitle, setTempTitle] = useState(examTitle);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [logoutError, setLogoutError] = useState('');
+  const [loggingOut, setLoggingOut] = useState(false);
 
   // Cập nhật tempTitle khi examTitle từ props đổi
   useEffect(() => {
@@ -87,13 +99,13 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   const handleLogout = async () => {
+    if (loggingOut) return;
+    setLoggingOut(true); setLogoutError('');
     try {
-      await fetch('/api/auth/logout', { method: 'POST' });
-    } catch {
-      // ignore
-    }
-    router.push('/login');
-    router.refresh();
+      await logoutSession(currentUser?.id);
+      router.push('/login'); router.refresh();
+    } catch (error) { setLogoutError(error instanceof Error ? error.message : 'Chưa đăng xuất được. Vui lòng thử lại.'); }
+    finally { setLoggingOut(false); }
   };
 
   const usagePercent = quota.dailyLimit > 0 
@@ -123,6 +135,16 @@ export const Header: React.FC<HeaderProps> = ({
           </span>
         </Link>
 
+        {/* Nút Quay lại Kho đề của tôi */}
+        <Link
+          href="/"
+          title="Quay về Kho đề của tôi (Lưu tự động)"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-[#5f6368] hover:text-[#1a73e8] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] transition-colors cursor-pointer shrink-0"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline">Kho đề</span>
+        </Link>
+
         {/* Ngăn cách thanh mảnh */}
         <div className="h-5 w-[1px] bg-[#dadce0] dark:bg-[#3c4043] hidden sm:block shrink-0" />
 
@@ -146,6 +168,7 @@ export const Header: React.FC<HeaderProps> = ({
             />
           ) : (
             <button
+              disabled={!canEdit}
               onClick={() => {
                 setTempTitle(examTitle);
                 setIsEditingTitle(true);
@@ -168,7 +191,7 @@ export const Header: React.FC<HeaderProps> = ({
             ) : isCloudSaved ? (
               <span className="flex items-center gap-1 text-[#5f6368] dark:text-[#9aa0a6]">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                <span>Đã lưu đám mây</span>
+                <span>Đã lưu trên máy chủ</span>
               </span>
             ) : (
               <span className="flex items-center gap-1 text-amber-500">
@@ -182,6 +205,30 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* KHU VỰC PHẢI: Dark Mode, Nút Khóa AI, Gemini Toggle, Avatar User & Menu Giám sát */}
       <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+        {/* Nút xuất bản nhanh lên Header */}
+        <div className="hidden sm:flex items-center gap-2 pr-2 border-r border-[#dadce0] dark:border-[#3c4043]">
+          {onExportWord && (
+            <button
+              onClick={onExportWord}
+              title="Tải file Word (.docx) chuẩn công thức OMML"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-[#1a73e8] hover:bg-[#1557b0] text-white shadow-2xs transition-colors cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">Tải Word (.docx)</span>
+            </button>
+          )}
+          {onPrintPdf && (
+            <button
+              onClick={onPrintPdf}
+              title="In đề thi hoặc xuất ra PDF"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f8f9fa] shadow-2xs transition-colors cursor-pointer"
+            >
+              <Printer className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">In / PDF</span>
+            </button>
+          )}
+        </div>
+
         {/* Nút bật/tắt Bảng Trợ lý AI Gemini (Right Companion Rail) */}
         {onToggleCopilot && (
           <button
@@ -359,11 +406,13 @@ export const Header: React.FC<HeaderProps> = ({
                   <div className="pt-1">
                     <button
                       onClick={handleLogout}
+                        disabled={loggingOut}
                       className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-full text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
                     >
                       <LogOut className="w-4 h-4" />
                       <span>Đăng xuất tài khoản</span>
                     </button>
+                      {logoutError && <p role="alert" className="mt-2 text-xs text-red-600 dark:text-red-300">{logoutError}</p>}
                   </div>
                 </div>
               </>

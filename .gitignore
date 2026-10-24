@@ -44,6 +44,7 @@ next-env.d.ts
 # backups & generated test docs
 /backups
 *.sql
+!prisma/migrations/**/migration.sql
 tests/*.docx
 
 

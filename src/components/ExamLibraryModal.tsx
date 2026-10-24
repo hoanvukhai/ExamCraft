@@ -1,404 +1,87 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { Exam } from '@/types/exam';
-import { exportExamToDocx } from '@/lib/docx-export';
-import { 
-  dbGetAllExams, 
-  dbSaveExam, 
-  dbDeleteExam, 
-  dbExportDatabaseToJson, 
-  dbImportDatabaseFromJson 
-} from '@/lib/db';
-import { 
-  X, 
-  BookMarked, 
-  Search, 
-  FolderOpen, 
-  Copy, 
-  Trash2, 
-  Download, 
-  Upload,
-  CloudUpload,
-  Clock, 
-  Calendar,
-  Layers,
-  Database,
-  CheckCircle2,
-  AlertCircle
-} from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import type { Exam } from '@/types/exam';
+import { loadExam, persistExam } from '@/lib/exam-client';
+import { dbExportDatabaseToJson } from '@/lib/db';
+import { portableExamBackup } from '@/lib/portable-backup';
+import { BACKUP_FILE_MAX_BYTES, parseBackupText, splitBackupFiles } from '@/lib/backup-files';
 
-interface ExamLibraryModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onLoadExam: (exam: Exam) => void;
-  currentExam: Exam;
-}
+interface Props { isOpen: boolean; onClose: () => void; onLoadExam: (exam: Exam) => void; currentExam: Exam; ownerId: string }
+interface Summary { permissions?: Exam['access']; id: string; title: string; subject: string; grade: number; version: number }
+interface ImportReport { dryRun: boolean; errorCount: number; results: { kind: string; index: number; status: string; error?: string; canImportCopy?: boolean; copy?: boolean }[]; message: string }
+type Backup = { exams: unknown[]; questions: unknown[] };
 
-export const ExamLibraryModal: React.FC<ExamLibraryModalProps> = ({
-  isOpen,
-  onClose,
-  onLoadExam,
-  currentExam,
-}) => {
-  const [savedExams, setSavedExams] = useState<Exam[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Tải danh sách đề từ IndexedDB
-  const loadSavedExams = async () => {
-    try {
-      const exams = await dbGetAllExams();
-      if (exams.length > 0) {
-        setSavedExams(exams);
-      } else {
-        // Tự động lưu đề hiện tại làm mẫu đầu tiên nếu thư viện rỗng
-        await dbSaveExam(currentExam);
-        setSavedExams([currentExam]);
-      }
-    } catch (e) {
-      console.error('Lỗi khi nạp thư viện đề từ IndexedDB:', e);
+export function ExamLibraryModal({ isOpen, onClose, onLoadExam, ownerId }: Props) {
+  const [exams, setExams] = useState<Summary[]>([]), [query, setQuery] = useState('');
+  const [busy, setBusy] = useState(false), [message, setMessage] = useState('');
+  const [pending, setPending] = useState<Backup | null>(null), [report, setReport] = useState<ImportReport | null>(null);
+  const [confirmImport, setConfirmImport] = useState(false);
+  const [copyConflicts, setCopyConflicts] = useState(false);
+  const [preparedDownloads, setPreparedDownloads] = useState<{ url: string; name: string; examCount: number }[]>([]);
+  useEffect(() => () => { for (const file of preparedDownloads) URL.revokeObjectURL(file.url); }, [preparedDownloads]);
+  const upload = useRef<HTMLInputElement>(null);
+  async function list() {
+    const all: Summary[] = [];
+    for (let page = 1; ; page++) {
+      const response = await fetch(`/api/exams?limit=100&page=${page}`, { cache: 'no-store', headers: { 'x-examcraft-user': ownerId } });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error ?? 'Không tải được kho đề');
+      all.push(...data.exams);
+      if (page >= data.pagination.totalPages) break;
     }
-  };
-
-  useEffect(() => {
-    if (isOpen) {
-      loadSavedExams();
-    }
-  }, [isOpen]);
-
+    setExams(all); return all;
+  }
+  useEffect(() => { if (isOpen) { setMessage(''); void list().catch(e => setMessage(e.message)); } }, [isOpen]);
   if (!isOpen) return null;
-
-  // Xóa đề
-  const handleDelete = async (id: string) => {
-    try {
-      await dbDeleteExam(id);
-      const updated = savedExams.filter(e => e.id !== id);
-      setSavedExams(updated);
-      setNotification({ type: 'success', message: 'Đã xóa đề thi khỏi cơ sở dữ liệu máy.' });
-      setTimeout(() => setNotification(null), 3000);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  // Nhân bản đề (Clone)
-  const handleClone = async (exam: Exam) => {
-    try {
-      const cloned: Exam = {
-        ...exam,
-        id: `exam_cloned_${Date.now()}`,
-        metadata: {
-          ...exam.metadata,
-          title: `${exam.metadata.title} (Bản sao)`,
-        },
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      await dbSaveExam(cloned);
-      setSavedExams([cloned, ...savedExams]);
-      setNotification({ type: 'success', message: 'Đã tạo bản sao đề thi thành công.' });
-      setTimeout(() => setNotification(null), 3000);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  // Xuất bản sao lưu JSON toàn bộ kho đề
-  const handleExportBackup = async () => {
-    try {
-      const jsonString = await dbExportDatabaseToJson();
-      const blob = new Blob([jsonString], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `ExamCraft_Backup_${new Date().toISOString().slice(0, 10)}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      setNotification({ type: 'success', message: 'Đã tải về file sao lưu JSON an toàn.' });
-      setTimeout(() => setNotification(null), 3000);
-    } catch (err) {
-      console.error('Lỗi khi sao lưu JSON:', err);
-    }
-  };
-
-  // Phục hồi kho đề từ file sao lưu JSON
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    try {
-      const text = await file.text();
-      const res = await dbImportDatabaseFromJson(text);
-      await loadSavedExams();
-      setNotification({
-        type: 'success',
-        message: `Phục hồi thành công ${res.examsCount} đề thi và ${res.questionsCount} câu hỏi!`,
-      });
-      setTimeout(() => setNotification(null), 4000);
-    } catch (err) {
-      console.error('Lỗi khi phục hồi JSON:', err);
-      setNotification({ type: 'error', message: 'File sao lưu không hợp lệ hoặc bị lỗi định dạng.' });
-      setTimeout(() => setNotification(null), 4000);
-    } finally {
-      if (fileInputRef.current) fileInputRef.current.value = '';
-    }
-  };
-
-  // Tải file Word trực tiếp từ thư viện
-  const handleExportDocx = async (exam: Exam) => {
-    try {
-      const blob = await exportExamToDocx(exam, true);
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${exam.metadata.title.replace(/\s+/g, '_')}.docx`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  const [isMigrating, setIsMigrating] = useState(false);
-
-  // Chuyển toàn bộ dữ liệu từ IndexedDB bản cũ sang PostgreSQL server
-  const handleMigrateToServer = async () => {
-    try {
-      setIsMigrating(true);
-      const jsonString = await dbExportDatabaseToJson();
-      const backupData = JSON.parse(jsonString);
-
-      const res = await fetch('/api/migration/import-legacy', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(backupData),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        setNotification({
-          type: 'error',
-          message: data.error || 'Vui lòng đăng nhập tài khoản giáo viên trước khi đồng bộ lên máy chủ!',
-        });
-        setTimeout(() => setNotification(null), 4000);
-        return;
-      }
-
-      setNotification({
-        type: 'success',
-        message: data.message || 'Đã đồng bộ thành công kho đề cũ lên cơ sở dữ liệu PostgreSQL!',
-      });
-      setTimeout(() => setNotification(null), 5000);
-    } catch (err) {
-      console.error('Lỗi khi đồng bộ dữ liệu cũ lên server:', err);
-      setNotification({ type: 'error', message: 'Lỗi kết nối khi đồng bộ lên máy chủ.' });
-      setTimeout(() => setNotification(null), 4000);
-    } finally {
-      setIsMigrating(false);
-    }
-  };
-
-  const filteredExams = savedExams.filter(e =>
-    e.metadata.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    e.metadata.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    `lop ${e.metadata.grade}`.includes(searchQuery.toLowerCase())
-  );
-
-  return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-[#1e1e1e] rounded-3xl max-w-4xl w-full p-6 shadow-2xl border border-[#dadce0] dark:border-[#3c4043] relative max-h-[90vh] flex flex-col text-[#202124] dark:text-[#e3e3e3] animate-in fade-in zoom-in-95 duration-150">
-        {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-[#dadce0] dark:border-[#3c4043]">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] border border-[#d2e3fc] dark:border-[#29425e] flex items-center justify-center shadow-xs">
-              <BookMarked className="w-5 h-5 text-[#1a73e8] dark:text-[#8ab4f8]" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="font-bold text-[#202124] dark:text-[#e3e3e3] text-lg">Kho Đề Thi Cá Nhân (IndexedDB)</h3>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#e6f4ea] dark:bg-[#0f291e] text-[#137333] dark:text-[#5bb98c] border border-[#ceead6] dark:border-[#1d4834] flex items-center gap-1">
-                  <Database className="w-3 h-3" />
-                  <span>Offline Storage</span>
-                </span>
-              </div>
-              <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">Lưu trữ không giới hạn dung lượng trên máy tính của bạn</p>
-            </div>
-          </div>
-
-          <button
-            onClick={onClose}
-            className="p-1.5 text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] rounded-full hover:bg-[#f1f3f4] dark:hover:bg-[#282828] transition-colors cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Thông báo Toast */}
-        {notification && (
-          <div
-            className={`mt-3 p-3 rounded-2xl text-xs font-semibold flex items-center gap-2 transition-all ${
-              notification.type === 'success'
-                ? 'bg-[#e6f4ea] dark:bg-[#0f291e] text-[#137333] dark:text-[#5bb98c] border border-[#ceead6] dark:border-[#1d4834]'
-                : 'bg-[#fce8e6] dark:bg-[#371918] text-[#c5221f] dark:text-[#f28b82] border border-[#fad2cf] dark:border-[#5c2523]'
-            }`}
-          >
-            {notification.type === 'success' ? (
-              <CheckCircle2 className="w-4 h-4 shrink-0" />
-            ) : (
-              <AlertCircle className="w-4 h-4 shrink-0" />
-            )}
-            <span>{notification.message}</span>
-          </div>
-        )}
-
-        {/* Thanh tìm kiếm & Nút Sao lưu / Phục hồi */}
-        <div className="pt-4 pb-2 flex flex-col sm:flex-row items-center gap-2.5">
-          <div className="relative grow w-full">
-            <Search className="w-4 h-4 text-[#5f6368] dark:text-[#9aa0a6] absolute left-3.5 top-3" />
-            <input
-              type="text"
-              placeholder="Tìm kiếm theo tên đề thi, môn học, khối lớp..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full text-xs pl-10 pr-4 py-2.5 bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] rounded-full focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] focus:ring-1 focus:ring-[#1a73e8] dark:focus:ring-[#8ab4f8] outline-hidden transition-all"
-            />
-          </div>
-
-          <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 justify-end">
-            <button
-              onClick={handleMigrateToServer}
-              disabled={isMigrating}
-              title="Chuyển dữ liệu đề thi trên máy này vào tài khoản PostgreSQL trên máy chủ"
-              className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-white bg-[#1a73e8] hover:bg-[#1557b0] dark:bg-[#8ab4f8] dark:hover:bg-[#a8c7fa] dark:text-[#202124] rounded-full transition-all shadow-xs cursor-pointer disabled:opacity-50"
-            >
-              <CloudUpload className={`w-3.5 h-3.5 ${isMigrating ? 'animate-bounce' : ''}`} />
-              <span>{isMigrating ? 'Đang đồng bộ...' : 'Đồng bộ lên Server'}</span>
-            </button>
-
-            <button
-              onClick={handleExportBackup}
-              title="Xuất file sao lưu JSON toàn bộ kho đề"
-              className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] bg-white dark:bg-[#282828] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] rounded-full border border-[#dadce0] dark:border-[#3c4043] transition-colors cursor-pointer"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>Sao lưu JSON</span>
-            </button>
-
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              title="Phục hồi kho đề từ file JSON"
-              className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] bg-white dark:bg-[#282828] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] rounded-full border border-[#dadce0] dark:border-[#3c4043] transition-colors cursor-pointer"
-            >
-              <Upload className="w-3.5 h-3.5" />
-              <span>Phục hồi JSON</span>
-            </button>
-
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".json"
-              onChange={handleFileChange}
-              className="hidden"
-            />
-          </div>
-        </div>
-
-        {/* Danh sách đề thi */}
-        <div className="grow overflow-y-auto py-3 space-y-3 pr-1">
-          {filteredExams.map((ex) => (
-            <div
-              key={ex.id}
-              className="p-4 rounded-2xl border border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#282828]/50 hover:border-[#1a73e8] dark:hover:border-[#8ab4f8] transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
-            >
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="font-bold text-sm text-[#202124] dark:text-[#e3e3e3]">{ex.metadata.title}</span>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] border border-[#d2e3fc] dark:border-[#29425e]">
-                    {ex.metadata.subject} {ex.metadata.grade}
-                  </span>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-3 text-xs text-[#5f6368] dark:text-[#9aa0a6]">
-                  <span className="flex items-center gap-1">
-                    <Layers className="w-3.5 h-3.5 text-[#5f6368] dark:text-[#9aa0a6]" />
-                    <span>{ex.questions.length} câu hỏi</span>
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5 text-[#5f6368] dark:text-[#9aa0a6]" />
-                    <span>{ex.metadata.durationMinutes} phút</span>
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5 text-[#5f6368] dark:text-[#9aa0a6]" />
-                    <span>{new Date(ex.updatedAt || ex.createdAt).toLocaleDateString('vi-VN')}</span>
-                  </span>
-                </div>
-              </div>
-
-              {/* Nút hành động */}
-              <div className="flex items-center gap-1.5 shrink-0 w-full sm:w-auto justify-end pt-2 sm:pt-0 border-t sm:border-t-0 border-[#dadce0] dark:border-[#3c4043]/60">
-                <button
-                  onClick={() => {
-                    onLoadExam(ex);
-                    onClose();
-                  }}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium text-white bg-[#1a73e8] hover:bg-[#1557b0] dark:bg-[#8ab4f8] dark:hover:bg-[#a8c7fa] dark:text-[#202124] rounded-full shadow-xs transition-all cursor-pointer"
-                >
-                  <FolderOpen className="w-3.5 h-3.5" />
-                  <span>Mở biên tập</span>
-                </button>
-
-                <button
-                  onClick={() => handleExportDocx(ex)}
-                  title="Xuất file Word"
-                  className="p-1.5 text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3] bg-white dark:bg-[#282828] hover:bg-[#f1f3f4] dark:hover:bg-[#303134] border border-[#dadce0] dark:border-[#3c4043] rounded-full transition-colors cursor-pointer"
-                >
-                  <Download className="w-4 h-4" />
-                </button>
-
-                <button
-                  onClick={() => handleClone(ex)}
-                  title="Tạo bản sao đề này"
-                  className="p-1.5 text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3] bg-white dark:bg-[#282828] hover:bg-[#f1f3f4] dark:hover:bg-[#303134] border border-[#dadce0] dark:border-[#3c4043] rounded-full transition-colors cursor-pointer"
-                >
-                  <Copy className="w-4 h-4" />
-                </button>
-
-                <button
-                  onClick={() => handleDelete(ex.id)}
-                  title="Xóa đề này"
-                  className="p-1.5 text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#c5221f] dark:hover:text-[#f28b82] hover:bg-[#fce8e6] dark:hover:bg-[#371918] rounded-full transition-colors cursor-pointer"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          ))}
-
-          {filteredExams.length === 0 && (
-            <div className="p-12 text-center text-[#5f6368] dark:text-[#9aa0a6]">
-              <BookMarked className="w-10 h-10 text-[#5f6368] dark:text-[#9aa0a6] mx-auto mb-2 opacity-50" />
-              <p className="text-xs">Không tìm thấy đề thi nào phù hợp.</p>
-            </div>
-          )}
-        </div>
-
-        {/* Footer */}
-        <div className="pt-4 border-t border-[#dadce0] dark:border-[#3c4043] flex justify-between items-center text-xs text-[#5f6368] dark:text-[#9aa0a6]">
-          <span>Tổng số đề lưu trong IndexedDB: {savedExams.length}</span>
-          <button
-            onClick={onClose}
-            className="px-4 py-2 font-medium text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] rounded-full transition-colors cursor-pointer"
-          >
-            Đóng
-          </button>
-        </div>
+  async function action(fn: () => Promise<void>) {
+    setBusy(true); setMessage('');
+    try { await fn(); } catch (error) { setMessage(error instanceof Error ? error.message : 'Chưa hoàn tất thao tác'); } finally { setBusy(false); }
+  }
+  function prepareDownloads(archive: Awaited<ReturnType<typeof portableExamBackup>>) {
+    const files = splitBackupFiles(archive), links: typeof preparedDownloads = [];
+    try { for (const file of files) links.push({ url: URL.createObjectURL(new Blob([file.text], { type: 'application/json' })), name: file.name, examCount: file.examCount }); }
+    catch (error) { for (const link of links) URL.revokeObjectURL(link.url); throw error; }
+    setPreparedDownloads(links);
+    return files.length;
+  }
+  async function inspect(data: Backup, asCopies = false) {
+    setConfirmImport(false);
+    setCopyConflicts(false); setPending(null); setReport(null);
+    const response = await fetch('/api/migration/import-legacy', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-examcraft-user': ownerId }, body: JSON.stringify({ ...data, dryRun: true, copyConflicts: asCopies }) });
+    const result = await response.json(); if (!response.ok) throw new Error(result.error);
+    setCopyConflicts(asCopies); setPending(data); setReport(result); setMessage('Đã xem trước. Chỉ nhập các tài liệu thuộc quyền của bạn. Nguồn cũ được giữ nguyên.');
+  }
+  return <div role="dialog" aria-modal="true" aria-label="Kho đề và chuyển dữ liệu cũ" className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+    <div className="bg-white dark:bg-[#202124] rounded-2xl p-5 max-w-4xl w-full max-h-[90vh] overflow-auto space-y-4">
+      <div className="flex justify-between"><h2 className="text-lg font-bold">Kho đề trên máy chủ</h2><button onClick={onClose} aria-label="Đóng kho đề">Đóng</button></div>
+      <p className="text-sm">Kho này thuộc tài khoản đang đăng nhập. Bản nháp trên máy được giữ riêng cho từng tài khoản.</p>
+      <div className="flex gap-3 flex-wrap text-sm">
+        <button disabled={busy} onClick={() => void action(async () => { setPreparedDownloads([]); const all = await list(); const documents = []; for (const item of all) documents.push(await loadExam(item.id, ownerId)); const backup = await portableExamBackup(documents); const parts = prepareDownloads(backup); setMessage(`Đã chuẩn bị ${parts} tệp chứa ${documents.length} đề và ${backup.embeddedImages} ảnh. Tải đủ các phần bên dưới; khi khôi phục, nhập lần lượt từng tệp. Đây không thay bản sao lưu vận hành DB và tệp.`); })}>Chuẩn bị sao lưu kèm ảnh</button>
+        <button disabled={busy} onClick={() => upload.current?.click()}>Nhập tệp sao lưu</button>
+        <button disabled={busy} onClick={() => void action(async () => { const old = JSON.parse(await dbExportDatabaseToJson()); const current = localStorage.getItem('examcraft_current_exam'); if (current) { const doc = JSON.parse(current); if (!old.exams.some((e: Exam) => e.id === doc.id)) old.exams.push(doc); } await inspect({ exams: old.exams ?? [], questions: old.questions ?? [] }); })}>Xem dữ liệu cũ trên trình duyệt</button>
+        <input ref={upload} aria-label="Chọn tệp sao lưu JSON" type="file" accept=".json,application/json" className="hidden" onChange={event => { const file = event.target.files?.[0]; if (file) { setPending(null); setReport(null); setConfirmImport(false); void action(async () => { if (file.size > BACKUP_FILE_MAX_BYTES) throw Error('Tệp vượt 30 MB. Hãy chọn từng phần sao lưu để nhập.'); await inspect(parseBackupText(await file.text())); }); } event.target.value = ''; }} />
       </div>
+      {message && <p role="status" className="text-sm bg-blue-50 dark:bg-slate-800 p-3 rounded">{message}</p>}
+      {preparedDownloads.map((file, index) => <a key={file.url} href={file.url} download={file.name} className="mr-2 inline-block rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white">{preparedDownloads.length === 1 ? 'Tải tệp sao lưu đã chuẩn bị' : `Tải phần ${index + 1}/${preparedDownloads.length} (${file.examCount} đề)`}</a>)}
+      {report && <section className="border rounded p-3 text-sm space-y-2">
+        <h3 className="font-semibold">{report.dryRun ? 'Xem trước bản nhập' : 'Kết quả nhập'}</h3>
+        <p>{report.results.filter(r => r.status === (report.dryRun ? 'ready' : 'imported')).length} {report.dryRun ? 'mục sẵn sàng' : 'mục vừa nhập'}; {report.results.filter(r => r.status === 'already_imported').length} mục đã chuyển trước đó; {report.errorCount} mục cần xử lý.</p>
+        {report.results.filter(r => r.error).map(r => <p key={`${r.kind}-${r.index}`}>{r.kind === 'exam' ? 'Đề' : 'Câu'} {r.index + 1}: {r.error}</p>)}
+        {report.dryRun && pending && report.results.some(r => r.canImportCopy) && <div><p>Có bản khác nội dung hoặc chưa đủ dấu đối chiếu. Thầy cô có thể giữ chúng thành bản sao riêng; bản đang lưu không bị thay đổi.</p><button disabled={busy} onClick={() => void action(() => inspect(pending, true))} className="font-semibold underline">Xem trước các bản sao riêng</button></div>}
+        {report.results.some(r => r.copy) && <p>{report.results.filter(r => r.copy && r.status === (report.dryRun ? 'ready' : 'imported')).length} bản sao riêng {report.dryRun ? 'sẽ được tạo khi xác nhận nhập' : 'vừa được tạo'}. Các bản đang lưu được giữ nguyên.</p>}
+        {pending && report.dryRun && <div className="space-y-2"><label className="flex items-start gap-2"><input type="checkbox" checked={confirmImport} onChange={e => setConfirmImport(e.target.checked)} />Tôi có quyền sử dụng các tài liệu này và muốn nhập vào tài khoản hiện tại.</label><button disabled={busy || !confirmImport} onClick={() => void action(async () => { const response = await fetch('/api/migration/import-legacy', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-examcraft-user': ownerId }, body: JSON.stringify({ ...pending, dryRun: false, copyConflicts }) }); const data = await response.json(); if (!response.ok) throw new Error(data.error); setReport(data); setMessage(data.message); await list(); })} className="font-semibold underline disabled:opacity-50">Nhập các mục hợp lệ</button></div>}
+      </section>}
+      <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Tìm tên đề" aria-label="Tìm tên đề" className="border rounded p-2 w-full" />
+      <ul className="space-y-2">{exams.filter(e => e.title.toLowerCase().includes(query.toLowerCase())).map(item => <li key={item.id} className="border rounded p-3 flex items-center justify-between gap-3">
+        <div><strong>{item.title}</strong><p className="text-sm">{item.subject} · Lớp {item.grade}</p></div>
+        <div className="flex gap-3 text-sm">
+          <button disabled={busy} onClick={() => void action(async () => { onLoadExam(await loadExam(item.id, ownerId)); onClose(); })}>Mở</button>
+          <button disabled={busy} onClick={() => void action(async () => { const source = await loadExam(item.id, ownerId); await persistExam({ ...source, id: `draft_${crypto.randomUUID()}`, serverId: undefined, version: undefined, metadata: { ...source.metadata, title: `${source.metadata.title} (Bản sao)` } }, ownerId); await list(); })}>Nhân bản</button>
+          <button disabled={busy || item.permissions?.canManage === false} onClick={() => void action(async () => { if (!confirm('Chuyển đề vào thùng rác? Có thể khôi phục tại trang quản lý.')) return; const response = await fetch(`/api/exams/${item.id}`, { method: 'DELETE', headers: { 'If-Match': String(item.version), 'x-examcraft-user': ownerId } }); const data = await response.json(); if (!response.ok) throw new Error(data.error); await list(); })}>Thùng rác</button>
+        </div>
+      </li>)}</ul>
+      {!exams.length && <p>Chưa có đề đã lưu trên máy chủ.</p>}
     </div>
-  );
-};
+  </div>;
+}

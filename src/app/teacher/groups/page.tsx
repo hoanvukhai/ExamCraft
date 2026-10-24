@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { accountFetch } from '@/lib/account-fetch';
 import {
   Users,
   Plus,
@@ -36,6 +37,9 @@ interface Group {
 }
 
 export default function TeacherGroupsPage() {
+  const [ownerId, setOwnerId] = useState('');
+  const [accountMessage, setAccountMessage] = useState('');
+  const scopedFetch = (input: RequestInfo | URL, init?: RequestInit) => accountFetch(ownerId, input, init);
   const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -56,14 +60,14 @@ export default function TeacherGroupsPage() {
   // Trạng thái copy
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
-  const fetchGroups = async () => {
+  const fetchGroups = async (expectedOwner = ownerId) => {
     try {
       setLoading(true);
-      const res = await fetch('/api/groups');
+      const res = await accountFetch(expectedOwner, '/api/groups');
       const data = await res.json();
       if (res.ok) {
         setGroups(data.groups || []);
-      }
+      } else setAccountMessage(data.error || 'Chưa tải được lớp học.');
     } catch (err) {
       console.error('Lỗi tải danh sách lớp:', err);
     } finally {
@@ -72,7 +76,17 @@ export default function TeacherGroupsPage() {
   };
 
   useEffect(() => {
-    fetchGroups();
+    let cancelled = false;
+    void (async () => {
+      try {
+        const response = await fetch('/api/auth/me', { cache: 'no-store' });
+        const data = await response.json();
+        if (!response.ok || !data.user?.id) throw Error('Vui lòng đăng nhập lại để quản lý lớp.');
+        if (cancelled) return;
+        setOwnerId(data.user.id); await fetchGroups(data.user.id);
+      } catch { if (!cancelled) { setAccountMessage('Chưa kiểm tra được tài khoản. Hãy tải lại hoặc đăng nhập lại trước khi quản lý lớp.'); setLoading(false); } }
+    })();
+    return () => { cancelled = true; };
   }, []);
 
   const handleCreateGroup = async (e: React.FormEvent) => {
@@ -86,7 +100,7 @@ export default function TeacherGroupsPage() {
         .map((s) => s.trim())
         .filter((s) => s.length > 0);
 
-      const res = await fetch('/api/groups', {
+      const res = await scopedFetch('/api/groups', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -119,7 +133,7 @@ export default function TeacherGroupsPage() {
     setSelectedGroup(group);
     try {
       setLoadingStudents(true);
-      const res = await fetch(`/api/groups/${group.id}`);
+      const res = await scopedFetch(`/api/groups/${group.id}`);
       const data = await res.json();
       if (res.ok) {
         setGroupStudents(data.group?.students || []);
@@ -136,16 +150,16 @@ export default function TeacherGroupsPage() {
     if (!selectedGroup || !newStudentName.trim()) return;
 
     try {
-      const res = await fetch(`/api/groups/${selectedGroup.id}`, {
-        method: 'PUT',
+      const res = await scopedFetch(`/api/groups/${selectedGroup.id}`, {
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ addStudentName: newStudentName.trim() }),
+        body: JSON.stringify({ newStudentNames: [newStudentName.trim()] }),
       });
       if (res.ok) {
         setNewStudentName('');
         handleOpenGroupDetails(selectedGroup);
         fetchGroups();
-      }
+      } else { const data = await res.json(); setAccountMessage(data.error || 'Chưa thêm được học sinh.'); }
     } catch (err) {
       console.error(err);
     }
@@ -166,6 +180,7 @@ export default function TeacherGroupsPage() {
   return (
     <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#181818] text-[#202124] dark:text-[#e3e3e3] py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto space-y-6">
+        {accountMessage && <p role="alert" className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">{accountMessage}</p>}
         {/* Navigation & Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#dadce0] dark:border-[#3c4043]">
           <div>

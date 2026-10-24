@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isSameOriginMutation } from '@/lib/attempt-access';
 import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import { requireAdmin, hashPassword, logAudit } from '@/lib/auth';
@@ -41,6 +42,7 @@ export async function GET() {
     return NextResponse.json({ users });
   } catch (error: unknown) {
     const err = error as Error;
+    if (err.message === 'MUST_CHANGE_PASSWORD') return NextResponse.json({ error: 'Vui lòng đổi mật khẩu trước khi tiếp tục', code: 'MUST_CHANGE_PASSWORD' }, { status: 403 });
     if (err.message === 'UNAUTHORIZED') {
       return NextResponse.json({ error: 'Chưa đăng nhập' }, { status: 401 });
     }
@@ -54,6 +56,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
+    if (!isSameOriginMutation(req)) return NextResponse.json({ error: 'Yêu cầu không hợp lệ' }, { status: 403 });
     const admin = await requireAdmin();
     const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || '127.0.0.1';
     const body = await req.json();
@@ -120,6 +123,7 @@ export async function POST(req: NextRequest) {
     });
   } catch (error: unknown) {
     const err = error as Error;
+    if (err.message === 'MUST_CHANGE_PASSWORD') return NextResponse.json({ error: 'Vui lòng đổi mật khẩu trước khi tiếp tục', code: 'MUST_CHANGE_PASSWORD' }, { status: 403 });
     if (err.message === 'UNAUTHORIZED') {
       return NextResponse.json({ error: 'Chưa đăng nhập' }, { status: 401 });
     }

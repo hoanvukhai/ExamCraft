@@ -1,19 +1,21 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Exam, Figure } from '@/types/exam';
 import { MathRenderer } from './MathRenderer';
-import { VariationTable } from './VariationTable';
-import { FunctionPlot } from './FunctionPlot';
+import { FigureView } from './FigureView';
 import { exportExamToDocx } from '@/lib/docx-export';
+import { prepareExportFigures } from '@/lib/export-figures';
 import { 
-  getDefaultPointsForQuestion, 
   formatPointsString, 
-  calculateExamTotalPoints, 
-  getExamScoreBreakdown 
+  calculateExamTotalPoints 
 } from '@/lib/scoring';
 import { getSubjectConfig } from '@/lib/subject-config';
+import { requiresNumericScore } from '@/lib/education-catalog';
+import { matchingDisplay, orderingDisplay } from '@/lib/structured-question';
 import { computeExamMatrix, computeExamSpecification } from '@/lib/matrix-spec-generator';
+import { examPlanOutput } from '@/lib/exam-plan-output';
+import { resolveHeaderLines } from '@/lib/header-layout';
 import { 
   Printer, 
   Download, 
@@ -27,30 +29,15 @@ import {
   TableProperties
 } from 'lucide-react';
 
-const renderPreviewFigure = (fig: Figure) => {
-  if (fig.kind === 'variation_table') {
-    return <VariationTable key={fig.id} data={fig.data as any} forceLight={true} />;
-  }
-  if (fig.kind === 'function_plot') {
-    return <FunctionPlot key={fig.id} data={fig.data as any} forceLight={true} />;
-  }
-  if (fig.kind === 'image') {
-    const src = (fig.data as any)?.url || fig.renderedBase64 || (typeof fig.data === 'string' ? fig.data : '');
-    if (src) {
-      return (
-        <div key={fig.id} className="my-1.5 text-center">
-          <img
-            src={src}
-            alt={fig.caption || 'Hình vẽ đính kèm'}
-            className="max-h-48 max-w-full rounded border border-[#dadce0] object-contain mx-auto"
-          />
-          {fig.caption && <div className="text-[9pt] text-[#5f6368] italic text-center mt-0.5">{fig.caption}</div>}
-        </div>
-      );
-    }
-  }
+const renderPreviewFigure = (figure: Figure) => <FigureView key={figure.id} figure={figure} forceLight />;
+
+function renderStructuredPrompt(question: Exam['questions'][number]) {
+  const matching = matchingDisplay(question);
+  if (matching) return <div className="grid grid-cols-2 gap-4 border border-black p-3 my-2 text-[11pt]"><div><strong>Cột A</strong>{matching.left.map((item, i) => <p key={item.key}>{i + 1}. <MathRenderer content={item.text} inline /></p>)}</div><div><strong>Cột B</strong>{matching.right.map((item, i) => <p key={item.key}>{i + 1}. <MathRenderer content={item.text} inline /></p>)}</div></div>;
+  const ordering = orderingDisplay(question);
+  if (ordering) return <div className="border border-black p-3 my-2 text-[11pt]">{ordering.items.map((item, i) => <p key={item.key}>{i + 1}. <MathRenderer content={item.text} inline /></p>)}<p className="mt-2">Thứ tự em chọn: ........................................</p></div>;
   return null;
-};
+}
 
 interface A4PreviewProps {
   exam: Exam;
@@ -60,21 +47,26 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
   const [viewMode, setViewMode] = useState<'exam' | 'answers' | 'solutions' | 'matrix'>('exam');
   const [zoom, setZoom] = useState<number>(100);
   const [isExporting, setIsExporting] = useState<boolean>(false);
+  const scrollArea = useRef<HTMLDivElement>(null);
+  const [fitScale, setFitScale] = useState(1);
+  useEffect(() => {
+    const area = scrollArea.current;
+    if (!area) return;
+    const observer = new ResizeObserver(entries => {
+      const width = entries[0]?.contentRect.width ?? 794;
+      setFitScale(Math.min(1, Math.max(0.2, (width - 8) / 794)));
+    });
+    observer.observe(area); return () => observer.disconnect();
+  }, []);
 
   const { metadata, questions, passages } = exam;
   const subjectConfig = getSubjectConfig(metadata.subject, metadata.grade);
-
-  // Lọc câu hỏi theo từng phần
-  const part1 = questions.filter(q => q.type === 'multiple_choice');
-  const part2 = questions.filter(q => q.type === 'true_false_group');
-  const part3 = questions.filter(q => q.type === 'short_answer');
-  const part4 = questions.filter(q => !['multiple_choice', 'true_false_group', 'short_answer'].includes(q.type));
 
   // Xử lý xuất file Word
   const handleExportDocx = async () => {
     try {
       setIsExporting(true);
-      const blob = await exportExamToDocx(exam, true);
+      const blob = await exportExamToDocx(await prepareExportFigures(exam), viewMode !== 'exam' && viewMode !== 'matrix', viewMode === 'matrix', viewMode);
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -84,7 +76,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     } catch (err) {
-      console.error('Lỗi khi xuất Word:', err);
+      alert(err instanceof Error ? err.message : 'Chưa xuất được tệp Word.');
     } finally {
       setIsExporting(false);
     }
@@ -92,13 +84,17 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
 
   const matrixData = computeExamMatrix(exam);
   const specData = computeExamSpecification(exam);
+  const planOutput = examPlanOutput(exam);
+  const headerLines = resolveHeaderLines(exam);
+  const headerAreas = (['left', 'right'] as const).filter(area => headerLines.some(line => line.area === area));
 
   const handlePrint = () => {
     window.print();
   };
 
   const totalPoints = calculateExamTotalPoints(exam);
-  const scoreBreakdown = getExamScoreBreakdown(exam);
+  const numericScore = requiresNumericScore(metadata.assessmentMode);
+
 
   return (
     <div className="a4-preview-container flex flex-col h-full bg-[#f1f3f4] dark:bg-[#181818] rounded-3xl border border-[#dadce0] dark:border-[#3c4043] overflow-hidden shadow-xs">
@@ -151,7 +147,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
             }`}
           >
             <TableProperties className="w-3.5 h-3.5" />
-            <span>Ma trận & Đặc tả (CV 7991)</span>
+            <span>Ma trận & Đặc tả</span>
           </button>
         </div>
 
@@ -203,34 +199,15 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
       </div>
 
       {/* Vùng cuộn hiển thị trang A4 */}
-      <div className="a4-scroll-area grow overflow-auto p-4 sm:p-8 flex justify-center items-start">
+      <div ref={scrollArea} className="a4-scroll-area grow overflow-auto p-4 sm:p-8 flex justify-center items-start">
         <div
-          style={{ transform: `scale(${zoom / 100})`, transformOrigin: 'top center' }}
-          className="a4-paper w-[210mm] min-h-[297mm] bg-white text-black p-[18mm] shadow-xl border border-[#dadce0] font-serif leading-normal transition-transform duration-200"
+          style={{ zoom: fitScale * zoom / 100 }}
+          className="a4-paper shrink-0 w-[210mm] min-h-[297mm] bg-white text-black p-[18mm] shadow-xl border border-[#dadce0] font-serif leading-normal"
         >
           {/* VIEW: ĐỀ THI */}
           {viewMode === 'exam' && (
             <div className="space-y-4 text-[13pt]">
-              {/* Tiêu đề 2 cột chuẩn thi cử Việt Nam */}
-              <div className="grid grid-cols-2 gap-4 pb-3 border-b border-black">
-                <div className="text-center font-bold">
-                  <div className="uppercase text-[12pt]">{metadata.schoolName || 'SỞ GIÁO DỤC VÀ ĐÀO TẠO'}</div>
-                  <div className="uppercase text-[12pt]">{metadata.departmentName || 'TRƯỜNG THPT CHUYÊN'}</div>
-                  <div className="text-[#1a73e8] font-extrabold text-[13pt] mt-1">
-                    MÃ ĐỀ THI: {metadata.examCode || '101'}
-                  </div>
-                </div>
-
-                <div className="text-center">
-                  <div className="uppercase font-bold text-[13pt]">{metadata.title || 'ĐỀ KIỂM TRA ĐỊNH KỲ'}</div>
-                  <div className="font-semibold text-[12pt]">
-                    MÔN: {subjectConfig.name.toUpperCase()} - KHỐI {metadata.grade}
-                  </div>
-                  <div className="italic text-[11pt]">
-                    Thời gian làm bài: {metadata.durationMinutes} phút - <strong className="not-italic text-black font-bold">Tổng {totalPoints} điểm</strong>
-                  </div>
-                </div>
-              </div>
+              {headerAreas.length > 0 && <div className={`grid ${headerAreas.length > 1 ? 'grid-cols-2' : 'grid-cols-1'} gap-4 pb-3 border-b border-black`}>{headerAreas.map(area => <div key={area}>{headerLines.filter(line => line.area === area).map(line => <div key={line.id} data-header-line={line.id} className={`text-[12pt] whitespace-pre-wrap break-words ${line.bold ? 'font-bold' : ''} ${line.italic ? 'italic' : ''}`} style={{ textAlign: line.align, minHeight: '1.2em' }}>{line.text}</div>)}</div>)}</div>}
 
               {/* Thông tin học sinh */}
               <div className="text-[12pt] italic py-1 flex justify-between">
@@ -245,6 +222,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
                     <div key={p.id} className="p-3 bg-[#f8f9fa] border border-[#dadce0] rounded-lg text-[11pt]">
                       <div className="font-bold text-black mb-1">{p.title || 'NGỮ LIỆU ĐỌC HIỂU:'}</div>
                       <div className="italic text-[#202124] leading-relaxed whitespace-pre-line">{p.content}</div>
+                      {p.figures?.map(renderPreviewFigure)}
                       {p.source && <div className="text-right text-[10pt] text-[#5f6368] mt-1">({p.source})</div>}
                     </div>
                   ))}
@@ -252,468 +230,124 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
               )}
 
               {/* Nội dung đề thi */}
-              {/* PHẦN I */}
-              {part1.length > 0 && (
-                <div className="pt-2">
-                  <div className="font-bold text-[12pt] pb-2">
-                    PHẦN I. Thí sinh trả lời từ câu 1 đến câu {part1.length}. Mỗi câu hỏi thí sinh chỉ chọn một phương án.
-                  </div>
-                  <div className="space-y-3">
-                    {part1.map((q, idx) => (
-                      <div key={q.id} className="question-item text-[12pt]">
-                        <div className="leading-relaxed">
-                          <span className="font-bold">Câu {idx + 1} </span>
-                          <span className="italic text-[11pt]">({formatPointsString(getDefaultPointsForQuestion(q, exam))}): </span>
-                          <MathRenderer content={q.content} inline />
-                        </div>
-
-                        {/* Render Figure nếu có */}
-                        {q.figures && q.figures.length > 0 && (
-                          <div className="my-1.5 space-y-1">
-                            {q.figures.map(renderPreviewFigure)}
-                          </div>
-                        )}
-
-                        {q.choices && (
-                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 pl-4">
-                            {q.choices.map((c) => (
-                              <div key={c.key} className="flex items-baseline gap-1">
-                                <span className="font-bold">{c.key}.</span>
-                                <MathRenderer content={c.text} inline />
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
+              {questions.length === 0 ? (
+                <div className="py-24 text-center text-[#5f6368] italic text-[11pt]">
+                  (Đề thi hiện chưa có câu hỏi nào. Hãy bấm &quot;Thêm câu hỏi&quot; hoặc &quot;Sinh đề AI Mới&quot; ở bảng bên trái để bắt đầu soạn đề.)
                 </div>
-              )}
-
-              {/* PHẦN II */}
-              {part2.length > 0 && (
-                <div className="pt-3">
-                  <div className="font-bold text-[12pt] pb-2">
-                    PHẦN II. Câu hỏi trắc nghiệm Đúng/Sai. Thí sinh trả lời từ câu {part1.length + 1} đến câu {part1.length + part2.length}. (Đúng 1 ý được 0,1đ; đúng 2 ý được 0,25đ; đúng 3 ý được 0,5đ; đúng 4 ý được 1,0đ)
-                  </div>
-                  <div className="space-y-3">
-                    {part2.map((q, idx) => (
-                      <div key={q.id} className="question-item text-[12pt]">
-                        <div className="leading-relaxed">
-                          <span className="font-bold">Câu {part1.length + idx + 1} </span>
-                          <span className="italic text-[11pt]">({formatPointsString(getDefaultPointsForQuestion(q, exam))}): </span>
-                          <MathRenderer content={q.content} inline />
-                        </div>
-
-                        {/* Render Figure nếu có */}
-                        {q.figures && q.figures.length > 0 && (
-                          <div className="my-1.5 space-y-1">
-                            {q.figures.map(renderPreviewFigure)}
-                          </div>
-                        )}
-
-                        {q.sub_questions && (
-                          <div className="pl-6 space-y-1 pt-1">
-                            {q.sub_questions.map((sub) => (
-                              <div key={sub.key} className="flex items-baseline gap-2">
-                                <span className="font-bold">{sub.key})</span>
-                                <MathRenderer content={sub.content} inline />
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* PHẦN III */}
-              {part3.length > 0 && (
-                <div className="pt-3">
-                  <div className="font-bold text-[12pt] pb-2">
-                    PHẦN III. Câu trắc nghiệm trả lời ngắn. Thí sinh trả lời từ câu {part1.length + part2.length + 1} đến câu {part1.length + part2.length + part3.length}.
-                  </div>
-                  <div className="space-y-3">
-                    {part3.map((q, idx) => (
-                      <div key={q.id} className="question-item text-[12pt]">
-                        <div className="leading-relaxed">
-                          <span className="font-bold">Câu {part1.length + part2.length + idx + 1} </span>
-                          <span className="italic text-[11pt]">({formatPointsString(getDefaultPointsForQuestion(q, exam))}): </span>
-                          <MathRenderer content={q.content} inline />
-                        </div>
-
-                        {/* Render Figure nếu có */}
-                        {q.figures && q.figures.length > 0 && (
-                          <div className="my-1.5 space-y-1">
-                            {q.figures.map(renderPreviewFigure)}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* PHẦN IV: TỰ LUẬN / PHẦN MỞ RỘNG */}
-              {part4.length > 0 && (
-                <div className="pt-3">
-                  <div className="font-bold text-[12pt] pb-2">
-                    PHẦN IV. TỰ LUẬN / PHẦN MỞ RỘNG (Trình bày chi tiết lời giải)
-                  </div>
-                  <div className="space-y-3">
-                    {part4.map((q, idx) => (
-                      <div key={q.id} className="question-item text-[12pt]">
-                        <div className="leading-relaxed">
-                          <span className="font-bold">Câu {part1.length + part2.length + part3.length + idx + 1}: </span>
-                          <MathRenderer content={q.content} inline />
-                        </div>
-
-                        {/* Render Figure nếu có */}
-                        {q.figures && q.figures.length > 0 && (
-                          <div className="my-1.5 space-y-1">
-                            {q.figures.map(renderPreviewFigure)}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Chân trang đề thi */}
-              <div className="text-center text-[12pt] font-bold pt-8 border-t border-black mt-8">
-                ---------- HẾT ----------
-              </div>
-            </div>
-          )}
-
-          {/* VIEW: BẢNG ĐÁP ÁN & BAREM */}
-          {viewMode === 'answers' && (
-            <div className="space-y-6 text-[12pt]">
-              <div className="text-center border-b border-black pb-3">
-                <h2 className="text-[14pt] font-bold uppercase">BẢNG ĐÁP ÁN VÀ THANG ĐIỂM CHUẨN</h2>
-                <p className="italic text-[11pt]">Đề kiểm tra: {metadata.title} - Mã đề: {metadata.examCode || '101'}</p>
-                <p className="font-semibold text-[#1a73e8] mt-1">Tổng điểm toàn bài: {totalPoints} điểm</p>
-              </div>
-
-              {/* Ma trận thống kê điểm */}
-              <div className="bg-[#f8f9fa] p-4 rounded-xl border border-[#dadce0]">
-                <h4 className="font-bold text-xs uppercase tracking-wider text-[#5f6368] mb-2">Cơ cấu phân bổ điểm số:</h4>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                  <div className="bg-white p-2.5 rounded-lg border border-[#dadce0]">
-                    <span className="text-[#5f6368] block">Phần I (Nhiều lựa chọn):</span>
-                    <strong className="text-sm text-[#1a73e8]">{scoreBreakdown.part1Count} câu ({scoreBreakdown.part1Points}đ)</strong>
-                  </div>
-                  <div className="bg-white p-2.5 rounded-lg border border-[#dadce0]">
-                    <span className="text-[#5f6368] block">Phần II (Đúng/Sai):</span>
-                    <strong className="text-sm text-[#1a73e8]">{scoreBreakdown.part2Count} câu ({scoreBreakdown.part2Points}đ)</strong>
-                  </div>
-                  <div className="bg-white p-2.5 rounded-lg border border-[#dadce0]">
-                    <span className="text-[#5f6368] block">Phần III (Trả lời ngắn):</span>
-                    <strong className="text-sm text-[#1a73e8]">{scoreBreakdown.part3Count} câu ({scoreBreakdown.part3Points}đ)</strong>
-                  </div>
-                  <div className="bg-white p-2.5 rounded-lg border border-[#dadce0]">
-                    <span className="text-[#5f6368] block">Tự luận / Khác:</span>
-                    <strong className="text-sm text-[#1a73e8]">{scoreBreakdown.part4Count} câu ({scoreBreakdown.part4Points}đ)</strong>
-                  </div>
-                </div>
-              </div>
-
-              {/* Bảng đáp án Phần I */}
-              {part1.length > 0 && (
-                <div>
-                  <h3 className="font-bold text-[12pt] mb-2 text-[#1a73e8]">PHẦN I: ĐÁP ÁN TRẮC NGHIỆM 4 LỰA CHỌN</h3>
-                  <table className="w-full border-collapse border border-black text-center text-[11pt]">
-                    <thead>
-                      <tr className="bg-[#f1f3f4] font-bold">
-                        <th className="border border-black p-1">Câu</th>
-                        {part1.map((_, i) => (
-                          <th key={i} className="border border-black p-1">{i + 1}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td className="border border-black p-1 font-bold bg-[#f8f9fa]">Chọn</td>
-                        {part1.map((q, i) => (
-                          <td key={i} className="border border-black p-1 font-bold text-[#1a73e8]">
-                            {q.correct_answer || 'A'}
-                          </td>
-                        ))}
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              )}
-
-              {/* Bảng đáp án Phần II */}
-              {part2.length > 0 && (
-                <div>
-                  <h3 className="font-bold text-[12pt] mb-2 text-[#1a73e8]">PHẦN II: ĐÁP ÁN ĐÚNG / SAI</h3>
-                  <table className="w-full border-collapse border border-black text-center text-[11pt]">
-                    <thead>
-                      <tr className="bg-[#f1f3f4] font-bold">
-                        <th className="border border-black p-1">Câu</th>
-                        <th className="border border-black p-1">Lệnh hỏi a)</th>
-                        <th className="border border-black p-1">Lệnh hỏi b)</th>
-                        <th className="border border-black p-1">Lệnh hỏi c)</th>
-                        <th className="border border-black p-1">Lệnh hỏi d)</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {part2.map((q, i) => (
-                        <tr key={q.id}>
-                          <td className="border border-black p-1 font-bold bg-[#f8f9fa]">Câu {part1.length + i + 1}</td>
-                          {['a', 'b', 'c', 'd'].map(key => {
-                            const sub = q.sub_questions?.find(s => s.key === key);
-                            return (
-                              <td key={key} className="border border-black p-1 font-semibold">
-                                {sub ? (sub.isCorrect ? <span className="text-emerald-700 font-bold">Đ</span> : <span className="text-red-700 font-bold">S</span>) : '-'}
-                              </td>
-                            );
-                          })}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-
-              {/* Bảng đáp án Phần III */}
-              {part3.length > 0 && (
-                <div>
-                  <h3 className="font-bold text-[12pt] mb-2 text-[#1a73e8]">PHẦN III: ĐÁP SỐ TRẢ LỜI NGẮN</h3>
-                  <table className="w-full border-collapse border border-black text-center text-[11pt]">
-                    <thead>
-                      <tr className="bg-[#f1f3f4] font-bold">
-                        <th className="border border-black p-1">Câu</th>
-                        {part3.map((_, i) => (
-                          <th key={i} className="border border-black p-1">{part1.length + part2.length + i + 1}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td className="border border-black p-1 font-bold bg-[#f8f9fa]">Đáp số</td>
-                        {part3.map((q, i) => (
-                          <td key={i} className="border border-black p-1 font-bold text-[#1a73e8]">
-                            {q.correct_answer || '-'}
-                          </td>
-                        ))}
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              )}
-
-              {/* Bảng đáp án & Barem Phần IV (Tự luận / Câu hỏi mở) */}
-              {part4.length > 0 && (
-                <div>
-                  <h3 className="font-bold text-[12pt] mb-2 text-[#1a73e8]">PHẦN IV: BAREM CHẤM ĐIỂM TỰ LUẬN / PHẦN KHÁC</h3>
+              ) : (
+                <>
                   <div className="space-y-4">
-                    {part4.map((q, idx) => (
-                      <div key={q.id} className="border border-black p-3 rounded-lg bg-[#f8f9fa]">
-                        <div className="font-bold text-[11pt] mb-1">
-                          Câu {part1.length + part2.length + part3.length + idx + 1} ({formatPointsString(getDefaultPointsForQuestion(q, exam))}):
-                        </div>
-                        {q.rubric && q.rubric.length > 0 ? (
-                          <table className="w-full border-collapse border border-black text-left text-[10pt] bg-white mt-1">
-                            <thead>
-                              <tr className="bg-[#f1f3f4] font-bold">
-                                <th className="border border-black p-1.5">Tiêu chí chấm điểm / Yêu cầu cần đạt</th>
-                                <th className="border border-black p-1.5 text-center w-24">Điểm tối đa</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {q.rubric.map((r, rIdx) => (
-                                <tr key={rIdx}>
-                                  <td className="border border-black p-1.5">{r.criterion}</td>
-                                  <td className="border border-black p-1.5 text-center font-bold">{r.maxPoints}đ</td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        ) : (
-                          <div className="text-[11pt] text-[#202124]">
-                            {q.correct_answer ? <span>Đáp án: <strong>{q.correct_answer}</strong></span> : <span>Chấm theo nội dung yêu cầu bài làm.</span>}
-                          </div>
-                        )}
-                      </div>
-                    ))}
+                    {questions.map((q, index) => <div key={q.id} className="question-item text-[12pt]">
+                      {q.sectionId && questions[index - 1]?.sectionId !== q.sectionId && <h3 className="font-bold my-3">{exam.sections?.find(s => s.id === q.sectionId)?.title ?? exam.sections?.find(s => s.id === q.sectionId)?.label ?? exam.sections?.find(s => s.id === q.sectionId)?.name}</h3>}
+                      <p className="leading-relaxed"><b>Câu {index + 1}:</b> {numericScore && q.points !== undefined && <span className="italic">({formatPointsString(q.points)}) </span>}<MathRenderer content={q.content} inline /></p>
+                      {q.passageId && <p className="italic text-[10pt]">Theo ngữ liệu: {passages?.find(p => p.id === q.passageId)?.title ?? q.passageId}</p>}
+                      {q.choices && q.type === 'multiple_choice' && <div className="grid grid-cols-2 gap-3 pl-4 py-2">{q.choices.map(choice => <p key={choice.key}><b>{choice.key}.</b> <MathRenderer content={choice.text} inline /></p>)}</div>}
+                      {q.sub_questions && q.type === 'true_false_group' && <div className="pl-4 space-y-1">{q.sub_questions.map(sub => <p key={sub.key}><b>{sub.key})</b> <MathRenderer content={sub.content} inline /> <span className="whitespace-nowrap">□ Đúng □ Sai</span></p>)}</div>}
+                      {renderStructuredPrompt(q)}
+                      {q.figures?.map(renderPreviewFigure)}
+                      {['short_answer', 'fill_blank'].includes(q.type) && <p className="mt-2">Trả lời: ................................................................................</p>}
+                    </div>)}
                   </div>
-                </div>
+
+                  {headerLines.filter(line => line.area === 'footer').map(line => <div key={line.id} data-header-line={line.id} className={`text-[11pt] whitespace-pre-wrap break-words ${line.bold ? 'font-bold' : ''} ${line.italic ? 'italic' : ''}`} style={{ textAlign: line.align, minHeight: '1.2em' }}>{line.text}</div>)}
+                  {/* Chân trang đề thi */}
+                  <div className="text-center text-[12pt] font-bold pt-8 border-t border-black mt-8">
+                    ---------- HẾT ----------
+                  </div>
+                </>
               )}
             </div>
           )}
+
+          {viewMode === 'exam' && questions.length === 0 && headerLines.filter(line => line.area === 'footer').map(line => <div key={line.id} data-header-line={line.id} className={`text-[11pt] whitespace-pre-wrap break-words ${line.bold ? 'font-bold' : ''} ${line.italic ? 'italic' : ''}`} style={{ textAlign: line.align, minHeight: '1.2em' }}>{line.text}</div>)}
+          {viewMode === 'answers' && <div className="space-y-5 text-[12pt]">
+            <h2 className="font-bold text-center text-[14pt]">{metadata.assessmentMode === 'survey' ? 'PHIẾU KHẢO SÁT — KHÔNG CHẤM ĐÚNG SAI' : 'ĐÁP ÁN VÀ TIÊU CHÍ ĐÁNH GIÁ'}</h2>
+            <p className="text-center">{metadata.title}{metadata.examCode ? ' — Mã đề: ' + metadata.examCode : ''}</p>
+            <p>{numericScore ? 'Tổng điểm đã cấu hình: ' + totalPoints : 'Không tính điểm'}</p>
+            {metadata.assessmentMode !== 'survey' && questions.map((q, index) => <section key={q.id} className="question-item border-b pb-3">
+              <p><b>Câu {index + 1}:</b> {q.type === 'true_false_group' ? q.sub_questions?.map(sub => sub.key + ') ' + (sub.isCorrect === undefined ? 'Chưa có đáp án' : sub.isCorrect ? 'Đúng' : 'Sai')).join('; ') : q.type === 'matching' ? q.matchingPairs?.map(pair => pair.left + ' → ' + pair.right).join('; ') || q.correct_answer || 'Chưa thiết lập cặp đúng' : q.type === 'ordering' ? q.correctOrder?.join(' → ') || q.correct_answer || 'Chưa thiết lập thứ tự đúng' : q.correct_answer || (q.type === 'essay' ? 'Giáo viên đánh giá theo tiêu chí' : 'Chưa đặt đáp án')}</p>
+              {q.accepted_answers?.filter(Boolean).length ? <p>Chấp nhận: {q.accepted_answers.filter(Boolean).join('; ')}</p> : null}
+              {q.rubric?.map((row, i) => <p key={i}>• {row.criterion}{numericScore ? ': ' + row.maxPoints + ' điểm' : ''}</p>)}
+            </section>)}
+          </div>}
 
           {/* VIEW: HƯỚNG DẪN GIẢI CHI TIẾT */}
           {viewMode === 'solutions' && (
             <div className="space-y-6 text-[12pt]">
               <div className="page-break text-center border-b border-black pb-3">
                 <h2 className="text-[14pt] font-bold uppercase">HƯỚNG DẪN GIẢI CHI TIẾT TỪNG BƯỚC</h2>
-                <p className="italic text-[11pt]">Đề kiểm tra: {metadata.title} - Mã đề: {metadata.examCode || '101'}</p>
+                <p className="italic text-[11pt]">Đề kiểm tra: {metadata.title} - Mã đề: {metadata.examCode || ''}</p>
               </div>
 
-              <div className="space-y-6">
-                {questions.map((q, idx) => (
-                  <div key={q.id} className="question-item pb-4 border-b border-[#dadce0] last:border-b-0">
-                    <div className="font-bold text-[12pt] text-[#202124]">
-                      Câu {idx + 1}: {' '}
-                      {q.type === 'multiple_choice' && (
-                        <span className="text-emerald-700">Đáp án đúng là {q.correct_answer || 'A'}</span>
-                      )}
-                      {q.type === 'true_false_group' && (
-                        <span className="text-emerald-700">
-                          Đáp án: {q.sub_questions?.map(sq => `${sq.key}) ${sq.isCorrect ? 'Đúng' : 'Sai'}`).join('   ') || q.correct_answer}
-                        </span>
-                      )}
-                      {q.type === 'short_answer' && (
-                        <span className="text-emerald-700">Đáp số: {q.correct_answer}</span>
-                      )}
-                    </div>
-                    {q.type === 'true_false_group' && q.sub_questions && (
-                      <div className="pl-4 space-y-1 my-2 text-[11pt]">
-                        {q.sub_questions.map(sq => (
-                          <div key={sq.key} className="text-[#202124]">
-                            <strong>Ý {sq.key}) ({sq.isCorrect ? 'Đúng' : 'Sai'}):</strong>{' '}
-                            <MathRenderer content={sq.explanation || sq.content} inline />
-                          </div>
-                        ))}
+              {questions.length === 0 ? (
+                <div className="py-16 text-center text-[#5f6368] italic text-[11pt]">
+                  (Chưa có câu hỏi nào để hiển thị lời giải chi tiết.)
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {questions.map((q, idx) => (
+                    <div key={q.id} className="question-item pb-4 border-b border-[#dadce0] last:border-b-0">
+                      <div className="font-bold text-[12pt] text-[#202124]">
+                        Câu {idx + 1}: {' '}
+                        {q.type === 'multiple_choice' && (
+                          <span className="text-emerald-700">Đáp án đúng là {q.correct_answer ?? 'Chưa có đáp án'}</span>
+                        )}
+                        {q.type === 'true_false_group' && (
+                          <span className="text-emerald-700">
+                            Đáp án: {q.sub_questions?.map(sq => `${sq.key}) ${typeof sq.isCorrect === 'boolean' ? (sq.isCorrect ? 'Đúng' : 'Sai') : 'Chưa có đáp án'}`).join('   ') || q.correct_answer}
+                          </span>
+                        )}
+                        {q.type === 'short_answer' && (
+                          <span className="text-emerald-700">Đáp số: {q.correct_answer}</span>
+                        )}
                       </div>
-                    )}
-                    <div className="text-[12pt] text-[#202124] leading-relaxed pl-4">
-                      <MathRenderer content={q.step_by_step_solution} />
+                      {q.type === 'true_false_group' && q.sub_questions && (
+                        <div className="pl-4 space-y-1 my-2 text-[11pt]">
+                          {q.sub_questions.map(sq => (
+                            <div key={sq.key} className="text-[#202124]">
+                              <strong>Ý {sq.key}) ({typeof sq.isCorrect === 'boolean' ? (sq.isCorrect ? 'Đúng' : 'Sai') : 'Chưa có đáp án'}):</strong>{' '}
+                              <MathRenderer content={sq.explanation || sq.content} inline />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      <div className="text-[12pt] text-[#202124] leading-relaxed pl-4">
+                        <MathRenderer content={q.step_by_step_solution || 'Chưa có lời giải'} />
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
           {/* VIEW: MA TRẬN & BẢN ĐẶC TẢ THEO CV 7991 */}
           {viewMode === 'matrix' && (
-            <div className="space-y-8 text-[11pt]">
-              {/* Tiêu đề Ma trận */}
-              <div className="text-center border-b border-black pb-3">
-                <h2 className="text-[13pt] font-bold uppercase">
-                  KHUNG MA TRẬN ĐỀ KIỂM TRA ĐỊNH KỲ (THEO CÔNG VĂN 7991/BGDĐT)
-                </h2>
-                <p className="italic text-[10pt]">
-                  Môn: {subjectConfig.name} - Khối: {metadata.grade} - Thời gian: {metadata.durationMinutes} phút
-                </p>
-              </div>
-
-              {/* Bảng Ma trận */}
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse border border-black text-center text-[10pt]">
-                  <thead>
-                    <tr className="bg-[#f1f3f4] font-bold">
-                      <th rowSpan={2} className="border border-black p-2 w-10">TT</th>
-                      <th rowSpan={2} className="border border-black p-2 text-left">Chủ đề / Mạch kiến thức</th>
-                      <th colSpan={4} className="border border-black p-1">Mức độ nhận thức (Số câu)</th>
-                      <th rowSpan={2} className="border border-black p-2 w-16">Tổng câu</th>
-                      <th rowSpan={2} className="border border-black p-2 w-16">Điểm số</th>
-                      <th rowSpan={2} className="border border-black p-2 w-16">Tỉ lệ %</th>
-                    </tr>
-                    <tr className="bg-[#f8f9fa] font-semibold text-[9pt]">
-                      <th className="border border-black p-1">Nhận biết</th>
-                      <th className="border border-black p-1">Thông hiểu</th>
-                      <th className="border border-black p-1">Vận dụng</th>
-                      <th className="border border-black p-1">Vận dụng cao</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {matrixData.rows.map((row) => (
-                      <tr key={row.index} className="hover:bg-[#f8f9fa]">
-                        <td className="border border-black p-1.5 font-bold">{row.index}</td>
-                        <td className="border border-black p-1.5 text-left font-medium">{row.topicName}</td>
-                        <td className="border border-black p-1.5">
-                          {row.nbCount.part1 + row.nbCount.part2 + row.nbCount.part3 > 0
-                            ? `${row.nbCount.part1 + row.nbCount.part2 + row.nbCount.part3} câu`
-                            : '-'}
-                        </td>
-                        <td className="border border-black p-1.5">
-                          {row.thCount.part1 + row.thCount.part2 + row.thCount.part3 > 0
-                            ? `${row.thCount.part1 + row.thCount.part2 + row.thCount.part3} câu`
-                            : '-'}
-                        </td>
-                        <td className="border border-black p-1.5">
-                          {row.vdCount.part1 + row.vdCount.part2 + row.vdCount.part3 > 0
-                            ? `${row.vdCount.part1 + row.vdCount.part2 + row.vdCount.part3} câu`
-                            : '-'}
-                        </td>
-                        <td className="border border-black p-1.5">
-                          {row.vdcCount.part1 + row.vdcCount.part2 + row.vdcCount.part3 > 0
-                            ? `${row.vdcCount.part1 + row.vdcCount.part2 + row.vdcCount.part3} câu`
-                            : '-'}
-                        </td>
-                        <td className="border border-black p-1.5 font-bold">{row.totalQuestions}</td>
-                        <td className="border border-black p-1.5 font-bold text-[#1a73e8]">{row.totalPoints.toFixed(1)}</td>
-                        <td className="border border-black p-1.5 font-bold">{row.percentage}%</td>
-                      </tr>
-                    ))}
-                    <tr className="bg-[#f1f3f4] font-bold border-t-2 border-black">
-                      <td colSpan={2} className="border border-black p-2 text-center">TỔNG CỘNG</td>
-                      <td className="border border-black p-2">{matrixData.totalNbPoints}đ</td>
-                      <td className="border border-black p-2">{matrixData.totalThPoints}đ</td>
-                      <td className="border border-black p-2">{matrixData.totalVdPoints}đ</td>
-                      <td className="border border-black p-2">{matrixData.totalVdcPoints}đ</td>
-                      <td className="border border-black p-2 text-[#1a73e8]">{matrixData.totalQuestions}</td>
-                      <td className="border border-black p-2 text-[#1a73e8]">{matrixData.totalExamPoints.toFixed(1)}đ</td>
-                      <td className="border border-black p-2">100%</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Bản đặc tả chi tiết */}
-              <div className="pt-4 border-t border-black">
-                <div className="text-center pb-3">
-                  <h3 className="text-[12pt] font-bold uppercase">
-                    BẢN ĐẶC TẢ ĐỀ KIỂM TRA ĐỊNH KỲ
-                  </h3>
-                </div>
-
-                <div className="overflow-x-auto">
-                  <table className="w-full border-collapse border border-black text-[10pt]">
-                    <thead>
-                      <tr className="bg-[#f1f3f4] font-bold text-center">
-                        <th className="border border-black p-2 w-10">TT</th>
-                        <th className="border border-black p-2 text-left w-36">Chủ đề</th>
-                        <th className="border border-black p-2 text-left">Yêu cầu cần đạt</th>
-                        <th className="border border-black p-1 w-20">Nhận biết</th>
-                        <th className="border border-black p-1 w-20">Thông hiểu</th>
-                        <th className="border border-black p-1 w-20">Vận dụng</th>
-                        <th className="border border-black p-1 w-20">Vận dụng cao</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {specData.map((spec) => (
-                        <tr key={spec.index} className="align-top">
-                          <td className="border border-black p-1.5 text-center font-bold">{spec.index}</td>
-                          <td className="border border-black p-1.5 font-bold text-[#202124]">{spec.topicName}</td>
-                          <td className="border border-black p-1.5 text-[#5f6368] text-[9.5pt] leading-relaxed">
-                            {spec.requirement}
-                          </td>
-                          <td className="border border-black p-1.5 text-center font-mono font-bold text-emerald-700">
-                            {spec.nbQuestions.length > 0 ? spec.nbQuestions.map(n => `C${n}`).join(', ') : '-'}
-                          </td>
-                          <td className="border border-black p-1.5 text-center font-mono font-bold text-blue-700">
-                            {spec.thQuestions.length > 0 ? spec.thQuestions.map(n => `C${n}`).join(', ') : '-'}
-                          </td>
-                          <td className="border border-black p-1.5 text-center font-mono font-bold text-amber-700">
-                            {spec.vdQuestions.length > 0 ? spec.vdQuestions.map(n => `C${n}`).join(', ') : '-'}
-                          </td>
-                          <td className="border border-black p-1.5 text-center font-mono font-bold text-[#1a73e8]">
-                            {spec.vdcQuestions.length > 0 ? spec.vdcQuestions.map(n => `C${n}`).join(', ') : '-'}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+            <div className="space-y-6 text-[10pt]">
+              {planOutput && <section className="space-y-2">
+                <h2 className="text-center font-bold text-[12pt]">{planOutput.title}</h2>
+                <p>{planOutput.disclaimer}</p><p className="font-bold">{planOutput.status}</p>
+                {planOutput.summaries.map(summary => <p key={summary}>{summary}</p>)}
+                {planOutput.headers.length > 0 && <table className="w-full table-fixed border-collapse border border-black text-[9pt]"><thead><tr>{planOutput.headers.map(header => <th key={header} className="border border-black p-1 break-words">{header}</th>)}</tr></thead><tbody>{planOutput.rows.map((row, index) => <tr key={index}>{row.map((cell, column) => <td key={column} className="border border-black p-1 align-top break-words">{cell}</td>)}</tr>)}</tbody></table>}
+                {planOutput.warnings.length > 0 && <div className="border border-black p-2"><strong>Cần rà soát</strong>{planOutput.warnings.map((warning, index) => <p key={index}>{warning}</p>)}</div>}
+              </section>}
+              <h2 className="text-center font-bold text-[13pt]">MA TRẬN TỪ NỘI DUNG ĐANG SOẠN</h2>
+              <p>Môn: {subjectConfig.name} · Lớp {metadata.grade}</p>
+              <div className="border rounded-xl p-3 text-[10pt] space-y-1">{matrixData.warnings.map(warning => <p key={warning}>{warning}</p>)}</div>
+              <table className="w-full border-collapse border border-black text-center">
+                <thead><tr>{['Chủ đề', ...matrixData.cognitiveLabels.map(level => level.label), 'Chưa gắn mức', 'Tổng câu', numericScore ? 'Điểm' : 'Đánh giá'].map(label => <th key={label} className="border border-black p-2">{label}</th>)}</tr></thead>
+                <tbody>{matrixData.rows.map(row => <tr key={row.index}>
+                  <td className="border border-black p-2 text-left">{row.topicName}</td>
+                  {matrixData.cognitiveLabels.map(level => <td key={level.id} className="border border-black p-2">{Object.values(row.cognitiveCounts[level.id]).reduce((sum, count) => sum + count, 0)}</td>)}
+                  <td className="border border-black p-2">{row.unmappedCount}</td><td className="border border-black p-2">{row.totalQuestions}</td><td className="border border-black p-2">{numericScore ? row.totalPoints : 'Nhận xét'}</td>
+                </tr>)}</tbody>
+                <tfoot><tr><th className="border border-black p-2">Tổng</th>{matrixData.cognitiveTotals.map(level => <td key={level.id} className="border border-black p-2">{level.count}</td>)}<td className="border border-black p-2">{matrixData.unmappedCognitiveCount}</td><td className="border border-black p-2">{matrixData.totalQuestions}</td><td className="border border-black p-2">{numericScore ? matrixData.totalExamPoints : 'Không tính điểm'}</td></tr></tfoot>
+              </table>
+              <h3 className="font-bold text-center text-[12pt]">BẢN ĐẶC TẢ ĐANG SOẠN</h3>
+              <table className="w-full border-collapse border border-black">
+                <thead><tr><th className="border border-black p-2">Chủ đề</th><th className="border border-black p-2">Yêu cầu cần đạt</th>{matrixData.cognitiveLabels.map(level => <th key={level.id} className="border border-black p-2">{level.label}</th>)}<th className="border border-black p-2">Chưa gắn mức</th></tr></thead>
+                <tbody>{specData.map(spec => <tr key={spec.index}><td className="border border-black p-2">{spec.topicName}</td><td className="border border-black p-2">{spec.requirement}</td>{matrixData.cognitiveLabels.map(level => <td key={level.id} className="border border-black p-2">{spec.cognitiveQuestions[level.id]?.map(number => 'C' + number).join(', ') || '—'}</td>)}<td className="border border-black p-2">{spec.unmappedQuestions.map(number => 'C' + number).join(', ') || '—'}</td></tr>)}</tbody>
+              </table>
             </div>
           )}
         </div>

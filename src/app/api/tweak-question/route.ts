@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth } from '@/lib/auth';
+import { assertRequestAccount } from '@/lib/request-account';
+import { apiErrorResponse, ApiError } from '@/lib/api-error';
+import { requestApiKey } from '@/lib/ai-policy';
+import { isSameOriginMutation } from '@/lib/attempt-access';
+
 import { GoogleGenAI, Type } from '@google/genai';
 import { z } from 'zod';
 import { Question } from '@/types/exam';
-import { executeWithKeyRotation, getGeminiModel, getAllGeminiKeys } from '@/lib/gemini-keys';
+import { executeWithKeyRotation } from '@/lib/gemini-keys';
 import { syncQuestionFigures } from '@/lib/figure-sync';
 
 export type TweakAction = 
@@ -106,8 +112,11 @@ const QuestionZodSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    const currentUser = await requireAuth();
+    assertRequestAccount(req.headers, currentUser.id);
+    if (!isSameOriginMutation(req)) throw new ApiError(403, 'Yêu cầu không hợp lệ');
     const body = await req.json();
-    const { question, action, customPrompt, customInstruction, customApiKey } = body as {
+    const { question, action, customPrompt, customInstruction } = body as {
       question: Question;
       action: TweakAction;
       customPrompt?: string;
@@ -115,25 +124,8 @@ export async function POST(req: NextRequest) {
       customApiKey?: string;
     };
 
-    const allKeys = getAllGeminiKeys();
-    const hasKeys = (customApiKey && customApiKey.trim()) || allKeys.length > 0;
-
-    if (!hasKeys) {
-      // Giả lập biến đổi câu hỏi nếu chưa nhập API Key
-      if (action === 'change_numbers') {
-        const tweaked = { ...question };
-        tweaked.id = `q_tweaked_${Date.now()}`;
-        tweaked.content = question.content.replace(/2x \+ 1/g, '3x - 2').replace(/x - 3/g, 'x + 1');
-        tweaked.step_by_step_solution = 'Số liệu đã được cập nhật mô phỏng (Vui lòng nhập API Key để AI tính toán tự động chính xác nhất).';
-        return NextResponse.json({ success: true, question: tweaked, isFallback: true });
-      }
-
-      return NextResponse.json({
-        success: true,
-        question: { ...question, id: `q_tweaked_${Date.now()}` },
-        isFallback: true,
-      });
-    }
+    const customApiKey = requestApiKey(body);
+    if (!question || typeof question.content !== 'string') throw new ApiError(400, 'Thiếu câu hỏi gốc');
 
     let actionInstruction = '';
     switch (action) {
@@ -172,9 +164,8 @@ Yêu cầu chỉnh sửa:
 ${actionInstruction}
 `;
 
-    const modelName = getGeminiModel();
 
-    const responseText = await executeWithKeyRotation(customApiKey, async (apiKey) => {
+    const responseText = await executeWithKeyRotation(customApiKey, async (apiKey, modelName) => {
       const ai = new GoogleGenAI({ apiKey });
       const response = await ai.models.generateContent({
         model: modelName,
@@ -187,7 +178,7 @@ ${actionInstruction}
         },
       });
       return response.text || '{}';
-    });
+    }, { userId: currentUser.id, endpoint: 'question.tweak' });
 
     const parsedRaw = JSON.parse(responseText);
     const validationResult = QuestionZodSchema.safeParse(parsedRaw);
@@ -216,22 +207,7 @@ ${actionInstruction}
       isFallback: false,
     });
   } catch (error: unknown) {
-    const err = error as Error;
-    console.error('API Tweak Question Error:', err);
-    let msg = err.message || 'Lỗi khi biến đổi câu hỏi bằng AI';
-    if (typeof msg === 'string') {
-      if (msg.includes('503') || msg.includes('UNAVAILABLE') || msg.includes('high demand')) {
-        msg = 'Máy chủ Google AI hiện đang quá tải tạm thời (Spikes in demand 503). Hệ thống đã tự động thử xoay tua qua các API Key. Thầy/Cô vui lòng bấm thử lại sau vài giây.';
-      } else if (msg.includes('429') || msg.includes('RESOURCE_EXHAUSTED')) {
-        msg = 'Các API Key hiện đã đạt hạn mức lượt gọi (Rate Limit 429). Thầy/Cô vui lòng đợi khoảng 15-30 giây rồi thử lại.';
-      }
-    }
-    return NextResponse.json(
-      {
-        success: false,
-        error: msg,
-      },
-      { status: 500 }
-    );
+    if (error instanceof Error && ['API_KEY_INPUT_INVALID', 'API_KEY_INPUT_CONFLICT'].includes(error.message)) return NextResponse.json({ error: 'Thông tin khóa không hợp lệ hoặc có nhiều giá trị khác nhau' }, { status: 400 });
+    return apiErrorResponse(error, 'Chưa thể sửa câu hỏi bằng AI');
   }
 }

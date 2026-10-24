@@ -1,493 +1,117 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Subject, GenerationParams, Exam } from '@/types/exam';
-import { getSubjectsForGrade } from '@/lib/subject-config';
-import { Sparkles, X, BookOpen, Clock, Layers, Sliders, AlertCircle, RefreshCw } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import type { Subject, GenerationParams, Exam } from '@/types/exam';
+import { getSubjectConfig, getSubjectsForGrade } from '@/lib/subject-config';
+import { COGNITIVE_FRAMEWORKS, getCognitiveFramework, getEducationReadiness, LANGUAGE_PACKAGES, type AssessmentMode } from '@/lib/education-catalog';
+import { X, Sparkles } from 'lucide-react';
+import { knowledgeScopeContext } from '@/lib/knowledge-package';
+import { MathRenderer } from './MathRenderer';
 
-interface GenerateModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onExamGenerated: (exam: Exam) => void;
-  apiKey: string;
-}
+interface Props { isOpen: boolean; onClose: () => void; onExamGenerated: (exam: Exam, baseStamp: string) => void | Promise<void>; apiKey: string; context?: Exam['metadata']; documentStamp: string; expectedUserId: string; replacesDocument?: boolean; }
+const inputClass = 'block w-full rounded-xl border border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#282828] p-2.5 text-sm mt-1';
 
-export const GenerateModal: React.FC<GenerateModalProps> = ({
-  isOpen,
-  onClose,
-  onExamGenerated,
-  apiKey,
-}) => {
-  const [subject, setSubject] = useState<Subject>('toan');
-  const [grade, setGrade] = useState<number>(12);
-  const [duration, setDuration] = useState<number>(45);
-  const [topic, setTopic] = useState<string>('Khảo sát sự biến thiên và đồ thị của hàm số, tiệm cận, cực trị');
-  const [numMC, setNumMC] = useState<number>(4);
-  const [numTF, setNumTF] = useState<number>(1);
-  const [numSA, setNumSA] = useState<number>(1);
-  const [customInstructions, setCustomInstructions] = useState<string>('');
-  const [integratedSubBranch, setIntegratedSubBranch] = useState<'all' | 'physics' | 'chemistry' | 'biology' | 'history' | 'geography'>('all');
-  const [curriculumTrack, setCurriculumTrack] = useState<'core' | 'advanced_topic'>('core');
-
+export const GenerateModal: React.FC<Props> = ({ isOpen, onClose, onExamGenerated, apiKey, context, documentStamp, expectedUserId, replacesDocument = false }) => {
+  const [subject, setSubject] = useState<Subject>(context?.subject ?? 'toan');
+  const [grade, setGrade] = useState(context?.grade ?? 6);
+  const [duration, setDuration] = useState(45);
+  const [topic, setTopic] = useState('');
+  const [counts, setCounts] = useState({ multiple_choice: 4, true_false_group: 0, short_answer: 0, essay: 1, fill_blank: 0, matching: 0, ordering: 0 });
+  const [assessmentMode, setAssessmentMode] = useState<AssessmentMode>(context?.assessmentMode ?? 'scored');
+  const [frameworkId, setFrameworkId] = useState(context?.cognitiveFrameworkId ?? '');
+  const [usePackage, setUsePackage] = useState(Boolean(context?.knowledgePackage));
+  const previousContext = useRef({ subject, grade });
+  const [purpose, setPurpose] = useState('practice');
+  const [usingExample, setUsingExample] = useState(false);
+  const [language, setLanguage] = useState('');
+  const [languageRole, setLanguageRole] = useState<'NN1' | 'NN2' | 'ETHNIC'>('NN1');
+  const [locality, setLocality] = useState('');
+  const [customInstructions, setCustomInstructions] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
+  const [error, setError] = useState('');
+  const [proposal, setProposal] = useState<{ exam: Exam; baseStamp: string } | null>(null);
+  const controller = useRef<AbortController | null>(null), requestId = useRef(0);
+  useEffect(() => () => { controller.current?.abort(); }, [isOpen]);
+  const close = () => { requestId.current += 1; controller.current?.abort(); setIsLoading(false); setProposal(null); onClose(); };
+  const config = getSubjectConfig(subject, grade);
+  const readiness = getEducationReadiness(subject, grade);
+  const total = Object.values(counts).reduce((sum, count) => sum + count, 0);
+  const isLanguage = subject === 'ngoai_ngu_khac' || subject === 'tieng_dan_toc';
+  useEffect(() => {
+    if (previousContext.current.subject === subject && previousContext.current.grade === grade) return;
+    previousContext.current = { subject, grade };
+    setAssessmentMode(getSubjectConfig(subject, grade).assessmentMode ?? 'scored');
+    setFrameworkId('');
+    setUsingExample(false);
+    setLanguage('');
+    setLanguageRole(subject === 'tieng_dan_toc' ? 'ETHNIC' : 'NN1');
+  }, [subject, grade]);
   if (!isOpen) return null;
 
-  // Preset mẫu phổ biến
-  const applyPreset = (type: '15min' | '45min' | 'new_gdpt') => {
-    if (type === '15min') {
-      setDuration(15);
-      setNumMC(6);
-      setNumTF(0);
-      setNumSA(1);
-    } else if (type === '45min') {
-      setDuration(45);
-      setNumMC(8);
-      setNumTF(1);
-      setNumSA(2);
-    } else if (type === 'new_gdpt') {
-      setDuration(90);
-      setNumMC(12);
-      setNumTF(4);
-      setNumSA(6);
-    }
+  const applyExample = () => {
+    setUsingExample(true);
+    setDuration(config.defaultDurationMinutes);
+    const count = (type: keyof typeof counts) => config.sections.filter(s => s.type === type).reduce((n, s) => n + s.questionCount, 0);
+    setCounts({ multiple_choice: count('multiple_choice'), true_false_group: count('true_false_group'), short_answer: count('short_answer'), essay: count('essay'), fill_blank: count('fill_blank'), matching: count('matching'), ordering: count('ordering') });
   };
-
-  const handleGenerate = async () => {
+  const generate = async () => {
+    if (isLoading) return;
+    setError('');
+    let scope;
+    if (usePackage && context?.knowledgePackage) {
+      if (subject !== context.knowledgePackage.subject || grade !== context.knowledgePackage.grade) { setError('Phạm vi đang thuộc môn/lớp khác. Hãy chọn đúng môn/lớp hoặc bỏ dùng gói cho lần soạn này.'); return; }
+      try { scope = knowledgeScopeContext(context.knowledgePackage, context.knowledgeScope); }
+      catch (cause) { setError(cause instanceof Error ? cause.message : 'Hãy chọn phạm vi trong gói trước khi soạn.'); return; }
+    }
+    const effectiveTopic = topic.trim() || scope?.knowledge.map(item => item.title).join('; ').slice(0, 12000) || '';
+    if (!effectiveTopic || !Number.isInteger(duration) || duration < 1 || duration > 1440 || total < 1 || total > 100 || Object.values(counts).some(n => !Number.isInteger(n) || n < 0)) { setError('Hãy chọn hoặc nhập phạm vi nội dung, thời lượng 1–1440 phút và tổng 1–100 câu.'); return; }
+    if (isLanguage && !language.trim()) { setError('Hãy chọn ngôn ngữ và chương trình phù hợp.'); return; }
+    if (subject === 'giao_duc_dia_phuong' && !locality.trim()) { setError('Hãy nhập địa phương và năm tài liệu.'); return; }
     setIsLoading(true);
-    setErrorMessage(null);
-
-    const params: GenerationParams = {
-      subject,
-      grade,
-      topic,
-      durationMinutes: duration,
-      numMultipleChoice: numMC,
-      numTrueFalse: numTF,
-      numShortAnswer: numSA,
-      numEssay: 0,
-      difficultyRatio: {
-        nhan_biet: 40,
-        thong_hieu: 30,
-        van_dung: 20,
-        van_dung_cao: 10,
-      },
-      customInstructions,
-      integratedSubBranch: (grade <= 9 && (subject === 'khtn' || subject === 'lich_su_dia_ly')) ? integratedSubBranch : undefined,
-      curriculumTrack: grade >= 10 ? curriculumTrack : undefined,
+    setProposal(null);
+    const request = ++requestId.current, baseStamp = documentStamp;
+    controller.current = new AbortController();
+    const framework = getCognitiveFramework(frameworkId);
+    const education = { assessmentMode, cognitiveFrameworkId: frameworkId || undefined, sourcePackageId: scope?.packageId ?? 'baseline-' + subject + '-' + grade, language: isLanguage ? language : undefined, languageRole: isLanguage ? languageRole : undefined, locality: subject === 'giao_duc_dia_phuong' ? locality : undefined, knowledgePackage: scope ? context?.knowledgePackage : undefined, knowledgeScope: scope ? context?.knowledgeScope : undefined };
+    const params: GenerationParams & typeof education = {
+      subject, grade, topic: effectiveTopic, durationMinutes: duration,
+      numMultipleChoice: counts.multiple_choice, numTrueFalse: counts.true_false_group, numShortAnswer: counts.short_answer, numEssay: counts.essay,
+      numFillBlank: counts.fill_blank, numMatching: counts.matching, numOrdering: counts.ordering,
+      // Compatibility difficulty labels are separate from the selected cognitive framework.
+      difficultyRatio: { nhan_biet: 25, thong_hieu: 25, van_dung: 25, van_dung_cao: 25 },
+      ...education,
+      customInstructions: [customInstructions, 'Mục đích: ' + purpose, 'Chế độ đánh giá: ' + assessmentMode,
+        framework ? 'Khung nhận thức được chọn: ' + framework.label + '; cognitiveLevel chỉ dùng: ' + framework.levels.map(l => l.id).join(', ') : 'Chưa chọn khung nhận thức; không tự suy từ difficulty.',
+        'Nguồn hiện mới là đầu mối, chưa có nội dung được duyệt. Không tự nhận đề chuẩn hay trích sách chưa đọc. Tạo bản nháp để giáo viên kiểm tra.',
+        isLanguage ? 'Ngôn ngữ: ' + language + '; vai trò: ' + languageRole : '', locality ? 'Địa phương/tài liệu: ' + locality : '',
+      ].filter(Boolean).join('\n'),
     };
-
     try {
-      const res = await fetch('/api/generate-exam', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          params,
-          customApiKey: apiKey,
-        }),
-      });
-
-      const data = await res.json();
-      if (data.success && data.exam) {
-        onExamGenerated(data.exam);
-        onClose();
-      } else {
-        setErrorMessage(data.error || 'Có lỗi xảy ra khi sinh đề');
-      }
-    } catch (err) {
-      console.error(err);
-      setErrorMessage('Không thể kết nối đến máy chủ sinh đề.');
-    } finally {
-      setIsLoading(false);
-    }
+      const response = await fetch('/api/generate-exam', { method: 'POST', signal: controller.current.signal, headers: { 'Content-Type': 'application/json', 'x-examcraft-user': expectedUserId }, body: JSON.stringify({ params, ...(apiKey.trim() ? { customApiKey: apiKey } : {}) }) });
+      const data = await response.json();
+      if (!response.ok || !data.success || !data.exam) throw new Error(data.error || 'Chưa tạo được bản nháp');
+      const generated = { ...data.exam, ...(usingExample ? { sections: config.sections } : {}), metadata: { ...data.exam.metadata, ...education } };
+      if (request === requestId.current) setProposal({ exam: generated, baseStamp });
+    } catch (cause) { if (request === requestId.current && !controller.current?.signal.aborted) setError(cause instanceof Error ? cause.message : 'Chưa kết nối được dịch vụ AI'); }
+    finally { if (request === requestId.current) setIsLoading(false); }
   };
-
-  return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-[#1e1e1e] rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-[#dadce0] dark:border-[#3c4043] relative max-h-[90vh] flex flex-col text-[#202124] dark:text-[#e3e3e3] animate-in fade-in zoom-in-95 duration-150">
-        {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-[#dadce0] dark:border-[#3c4043]">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] border border-[#d2e3fc] dark:border-[#29425e] flex items-center justify-center shadow-xs">
-              <Sparkles className="w-5 h-5 text-[#1a73e8] dark:text-[#8ab4f8]" />
-            </div>
-            <div>
-              <h3 className="font-bold text-[#202124] dark:text-[#e3e3e3] text-lg">Thiết Lập Sinh Đề Thi Bằng AI</h3>
-              <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">Soạn đề chuẩn ma trận kiến thức GDPT 2018</p>
-            </div>
-          </div>
-
-          <button
-            onClick={onClose}
-            className="p-1.5 text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] rounded-full hover:bg-[#f1f3f4] dark:hover:bg-[#282828] transition-colors cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Form Body */}
-        <div className="grow overflow-y-auto py-4 space-y-4 pr-1">
-          {/* Mẫu nhanh */}
-          <div>
-            <label className="text-xs font-bold uppercase tracking-wider text-[#5f6368] dark:text-[#9aa0a6] block mb-2">
-              Chọn cấu trúc mẫu nhanh:
-            </label>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-              <button
-                type="button"
-                onClick={() => applyPreset('15min')}
-                className="p-3 rounded-2xl border border-[#dadce0] dark:border-[#3c4043] hover:border-[#1a73e8] dark:hover:border-[#8ab4f8] bg-[#f8f9fa] dark:bg-[#282828] hover:bg-[#e8f0fe]/40 dark:hover:bg-[#1e2a38]/60 text-left transition-all cursor-pointer"
-              >
-                <div className="font-bold text-xs text-[#202124] dark:text-[#e3e3e3]">Kiểm tra 15 phút</div>
-                <div className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] mt-0.5">6 trắc nghiệm + 1 điền số</div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => applyPreset('45min')}
-                className="p-3 rounded-2xl border border-[#1a73e8] dark:border-[#8ab4f8] bg-[#e8f0fe]/60 dark:bg-[#1e2a38]/80 text-left transition-all cursor-pointer shadow-xs"
-              >
-                <div className="font-bold text-xs text-[#1a73e8] dark:text-[#8ab4f8]">Kiểm tra 1 tiết (45p)</div>
-                <div className="text-[11px] text-[#1a73e8]/80 dark:text-[#8ab4f8]/80 mt-0.5">8 trắc nghiệm + 1 Đ/S + 2 điền số</div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => applyPreset('new_gdpt')}
-                className="p-3 rounded-2xl border border-[#dadce0] dark:border-[#3c4043] hover:border-[#1a73e8] dark:hover:border-[#8ab4f8] bg-[#f8f9fa] dark:bg-[#282828] hover:bg-[#e8f0fe]/40 dark:hover:bg-[#1e2a38]/60 text-left transition-all cursor-pointer"
-              >
-                <div className="font-bold text-xs text-[#202124] dark:text-[#e3e3e3]">Chuẩn thi mới 2025 (90p)</div>
-                <div className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] mt-0.5">12 TN + 4 Đ/S + 6 điền số</div>
-              </button>
-            </div>
-          </div>
-
-          {/* Chọn Môn & Lớp */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div>
-              <label className="text-xs font-semibold text-[#3c4043] dark:text-[#e3e3e3] block mb-1">Môn học (chuẩn GDPT 2018):</label>
-              <select
-                value={subject}
-                onChange={(e) => setSubject(e.target.value as Subject)}
-                className="w-full text-xs font-medium p-2.5 bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] rounded-xl focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] focus:ring-1 focus:ring-[#1a73e8] dark:focus:ring-[#8ab4f8] outline-hidden cursor-pointer"
-              >
-                {getSubjectsForGrade(grade).map((s) => (
-                  <option key={s.key} value={s.key}>
-                    {s.label} {s.category ? `[${s.category}]` : ''}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="text-xs font-semibold text-[#3c4043] dark:text-[#e3e3e3] block mb-1">Khối lớp:</label>
-              <select
-                value={grade}
-                onChange={(e) => {
-                  const newGrade = Number(e.target.value);
-                  setGrade(newGrade);
-                  const validSubjects = getSubjectsForGrade(newGrade);
-                  if (!validSubjects.some(s => s.key === subject)) {
-                    setSubject(validSubjects[0].key);
-                  }
-                }}
-                className="w-full text-xs font-medium p-2.5 bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] rounded-xl focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] focus:ring-1 focus:ring-[#1a73e8] dark:focus:ring-[#8ab4f8] outline-hidden cursor-pointer"
-              >
-                <optgroup label="Cấp Tiểu học (Lớp 1 - 5)">
-                  {[1, 2, 3, 4, 5].map((g) => (
-                    <option key={g} value={g}>Lớp {g}</option>
-                  ))}
-                </optgroup>
-                <optgroup label="Cấp THCS (Lớp 6 - 9)">
-                  {[6, 7, 8, 9].map((g) => (
-                    <option key={g} value={g}>Lớp {g}</option>
-                  ))}
-                </optgroup>
-                <optgroup label="Cấp THPT (Lớp 10 - 12)">
-                  {[10, 11, 12].map((g) => (
-                    <option key={g} value={g}>Lớp {g}</option>
-                  ))}
-                </optgroup>
-              </select>
-            </div>
-
-            <div>
-              <label className="text-xs font-semibold text-[#3c4043] dark:text-[#e3e3e3] block mb-1">Thời gian làm bài:</label>
-              <select
-                value={duration}
-                onChange={(e) => setDuration(Number(e.target.value))}
-                className="w-full text-xs font-medium p-2.5 bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] rounded-xl focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] focus:ring-1 focus:ring-[#1a73e8] dark:focus:ring-[#8ab4f8] outline-hidden cursor-pointer"
-              >
-                <option value={15}>15 phút</option>
-                <option value={45}>45 phút</option>
-                <option value={60}>60 phút</option>
-                <option value={90}>90 phút</option>
-              </select>
-            </div>
-          </div>
-
-          {/* PHẠM VI PHÂN MÔN THCS (Dành cho KHTN & Lịch sử - Địa lí) */}
-          {grade <= 9 && (subject === 'khtn' || subject === 'lich_su_dia_ly') && (
-            <div className="p-3 bg-[#e6f4ea]/60 dark:bg-[#0f291e]/60 border border-[#ceead6] dark:border-[#1d4834] rounded-2xl space-y-2">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-[#137333] dark:text-[#5bb98c] flex items-center gap-1.5">
-                  <Layers className="w-3.5 h-3.5" />
-                  <span>Phạm vi phân môn (Dành cho GV THCS):</span>
-                </label>
-                <span className="text-[11px] text-[#137333] dark:text-[#5bb98c] italic">Kiểm tra chuyên môn</span>
-              </div>
-              {subject === 'khtn' ? (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-xs">
-                  <button
-                    type="button"
-                    onClick={() => setIntegratedSubBranch('all')}
-                    className={`px-3 py-1.5 rounded-full font-medium transition-all text-center cursor-pointer ${
-                      integratedSubBranch === 'all'
-                        ? 'bg-[#137333] text-white dark:bg-[#5bb98c] dark:text-[#0f291e] font-bold shadow-xs'
-                        : 'bg-white dark:bg-[#282828] text-[#137333] dark:text-[#5bb98c] border border-[#ceead6] dark:border-[#1d4834] hover:bg-[#e6f4ea] dark:hover:bg-[#163829]'
-                    }`}
-                  >
-                    Đề tích hợp cả 3
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setIntegratedSubBranch('physics')}
-                    className={`px-3 py-1.5 rounded-full font-medium transition-all text-center cursor-pointer ${
-                      integratedSubBranch === 'physics'
-                        ? 'bg-[#137333] text-white dark:bg-[#5bb98c] dark:text-[#0f291e] font-bold shadow-xs'
-                        : 'bg-white dark:bg-[#282828] text-[#137333] dark:text-[#5bb98c] border border-[#ceead6] dark:border-[#1d4834] hover:bg-[#e6f4ea] dark:hover:bg-[#163829]'
-                    }`}
-                  >
-                    Phân môn Vật lí
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setIntegratedSubBranch('chemistry')}
-                    className={`px-3 py-1.5 rounded-full font-medium transition-all text-center cursor-pointer ${
-                      integratedSubBranch === 'chemistry'
-                        ? 'bg-[#137333] text-white dark:bg-[#5bb98c] dark:text-[#0f291e] font-bold shadow-xs'
-                        : 'bg-white dark:bg-[#282828] text-[#137333] dark:text-[#5bb98c] border border-[#ceead6] dark:border-[#1d4834] hover:bg-[#e6f4ea] dark:hover:bg-[#163829]'
-                    }`}
-                  >
-                    Phân môn Hóa học
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setIntegratedSubBranch('biology')}
-                    className={`px-3 py-1.5 rounded-full font-medium transition-all text-center cursor-pointer ${
-                      integratedSubBranch === 'biology'
-                        ? 'bg-[#137333] text-white dark:bg-[#5bb98c] dark:text-[#0f291e] font-bold shadow-xs'
-                        : 'bg-white dark:bg-[#282828] text-[#137333] dark:text-[#5bb98c] border border-[#ceead6] dark:border-[#1d4834] hover:bg-[#e6f4ea] dark:hover:bg-[#163829]'
-                    }`}
-                  >
-                    Phân môn Sinh học
-                  </button>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5 text-xs">
-                  <button
-                    type="button"
-                    onClick={() => setIntegratedSubBranch('all')}
-                    className={`px-3 py-1.5 rounded-full font-medium transition-all text-center cursor-pointer ${
-                      integratedSubBranch === 'all'
-                        ? 'bg-[#137333] text-white dark:bg-[#5bb98c] dark:text-[#0f291e] font-bold shadow-xs'
-                        : 'bg-white dark:bg-[#282828] text-[#137333] dark:text-[#5bb98c] border border-[#ceead6] dark:border-[#1d4834] hover:bg-[#e6f4ea] dark:hover:bg-[#163829]'
-                    }`}
-                  >
-                    Đề tích hợp Sử - Địa
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setIntegratedSubBranch('history')}
-                    className={`px-3 py-1.5 rounded-full font-medium transition-all text-center cursor-pointer ${
-                      integratedSubBranch === 'history'
-                        ? 'bg-[#137333] text-white dark:bg-[#5bb98c] dark:text-[#0f291e] font-bold shadow-xs'
-                        : 'bg-white dark:bg-[#282828] text-[#137333] dark:text-[#5bb98c] border border-[#ceead6] dark:border-[#1d4834] hover:bg-[#e6f4ea] dark:hover:bg-[#163829]'
-                    }`}
-                  >
-                    Phân môn Lịch sử
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setIntegratedSubBranch('geography')}
-                    className={`px-3 py-1.5 rounded-full font-medium transition-all text-center cursor-pointer ${
-                      integratedSubBranch === 'geography'
-                        ? 'bg-[#137333] text-white dark:bg-[#5bb98c] dark:text-[#0f291e] font-bold shadow-xs'
-                        : 'bg-white dark:bg-[#282828] text-[#137333] dark:text-[#5bb98c] border border-[#ceead6] dark:border-[#1d4834] hover:bg-[#e6f4ea] dark:hover:bg-[#163829]'
-                    }`}
-                  >
-                    Phân môn Địa lí
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* KHUNG CHƯƠNG TRÌNH THPT (Cốt lõi vs Cụm chuyên đề) */}
-          {grade >= 10 && (
-            <div className="p-3 bg-[#e8f0fe]/50 dark:bg-[#1e2a38]/60 border border-[#d2e3fc] dark:border-[#29425e] rounded-2xl space-y-2">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-[#1a73e8] dark:text-[#8ab4f8] flex items-center gap-1.5">
-                  <BookOpen className="w-3.5 h-3.5" />
-                  <span>Khung chương trình THPT (GDPT 2018):</span>
-                </label>
-                <span className="text-[10px] bg-[#d2e3fc] dark:bg-[#29425e] text-[#1a73e8] dark:text-[#8ab4f8] px-2 py-0.5 rounded-md font-semibold">
-                  TT 17/2025 Cập nhật
-                </span>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                <button
-                  type="button"
-                  onClick={() => setCurriculumTrack('core')}
-                  className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
-                    curriculumTrack === 'core'
-                      ? 'bg-white dark:bg-[#1e1e1e] border-[#1a73e8] dark:border-[#8ab4f8] ring-2 ring-[#1a73e8]/20 dark:ring-[#8ab4f8]/20 text-[#202124] dark:text-[#e3e3e3] shadow-xs'
-                      : 'bg-white/60 dark:bg-[#282828]/60 border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-white dark:hover:bg-[#282828]'
-                  }`}
-                >
-                  <div className="font-bold text-[#202124] dark:text-[#e3e3e3]">📘 Chương trình Cốt lõi (70 tiết)</div>
-                  <div className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] mt-0.5">Kiểm tra định kỳ kiến thức phổ thông</div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCurriculumTrack('advanced_topic')}
-                  className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
-                    curriculumTrack === 'advanced_topic'
-                      ? 'bg-white dark:bg-[#1e1e1e] border-[#1a73e8] dark:border-[#8ab4f8] ring-2 ring-[#1a73e8]/20 dark:ring-[#8ab4f8]/20 text-[#202124] dark:text-[#e3e3e3] shadow-xs'
-                      : 'bg-white/60 dark:bg-[#282828]/60 border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-white dark:hover:bg-[#282828]'
-                  }`}
-                >
-                  <div className="font-bold text-[#1a73e8] dark:text-[#8ab4f8]">🚀 Cụm Chuyên đề Học tập (35 tiết)</div>
-                  <div className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] mt-0.5">Kiểm tra 3 chuyên đề nâng cao / thi ĐH</div>
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Nhập chủ đề / yêu cầu */}
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="text-xs font-semibold text-[#3c4043] dark:text-[#e3e3e3]">Chủ đề & Nội dung kiến thức:</label>
-            </div>
-            <textarea
-              rows={2}
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
-              placeholder="Ví dụ: Khảo sát hàm số, bài toán cực trị, ứng dụng thực tế..."
-              className="w-full text-xs p-3 bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] rounded-xl focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] focus:ring-1 focus:ring-[#1a73e8] dark:focus:ring-[#8ab4f8] outline-hidden leading-relaxed"
-            />
-          </div>
-
-          {/* Cấu hình số lượng từng loại câu hỏi */}
-          <div>
-            <label className="text-xs font-bold uppercase tracking-wider text-[#5f6368] dark:text-[#9aa0a6] block mb-2">
-              Số lượng câu hỏi từng phần:
-            </label>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-[#f8f9fa] dark:bg-[#282828]/50 p-3 rounded-2xl border border-[#dadce0] dark:border-[#3c4043]">
-              <div>
-                <span className="text-xs text-[#3c4043] dark:text-[#e3e3e3] block mb-1">Phần I (Trắc nghiệm 4 LC):</span>
-                <input
-                  type="number"
-                  min={1}
-                  max={40}
-                  value={numMC}
-                  onChange={(e) => setNumMC(Number(e.target.value))}
-                  className="w-full text-xs font-bold p-2 bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] rounded-lg text-center outline-hidden focus:border-[#1a73e8] dark:focus:border-[#8ab4f8]"
-                />
-              </div>
-
-              <div>
-                <span className="text-xs text-[#3c4043] dark:text-[#e3e3e3] block mb-1">Phần II (Đúng / Sai 4 ý):</span>
-                <input
-                  type="number"
-                  min={0}
-                  max={8}
-                  value={numTF}
-                  onChange={(e) => setNumTF(Number(e.target.value))}
-                  className="w-full text-xs font-bold p-2 bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] rounded-lg text-center outline-hidden focus:border-[#1a73e8] dark:focus:border-[#8ab4f8]"
-                />
-              </div>
-
-              <div>
-                <span className="text-xs text-[#3c4043] dark:text-[#e3e3e3] block mb-1">Phần III (Điền số / kết quả):</span>
-                <input
-                  type="number"
-                  min={0}
-                  max={10}
-                  value={numSA}
-                  onChange={(e) => setNumSA(Number(e.target.value))}
-                  className="w-full text-xs font-bold p-2 bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] rounded-lg text-center outline-hidden focus:border-[#1a73e8] dark:focus:border-[#8ab4f8]"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Ghi chú thêm cho AI */}
-          <div>
-            <label className="text-xs font-semibold text-[#3c4043] dark:text-[#e3e3e3] block mb-1">
-              Yêu cầu sư phạm bổ sung (tùy chọn):
-            </label>
-            <input
-              type="text"
-              value={customInstructions}
-              onChange={(e) => setCustomInstructions(e.target.value)}
-              placeholder="Ví dụ: Tránh nghiệm vô tỉ phức tạp, thêm 1 câu liên hệ thực tế..."
-              className="w-full text-xs p-2.5 bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] rounded-xl focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] focus:ring-1 focus:ring-[#1a73e8] dark:focus:ring-[#8ab4f8] outline-hidden"
-            />
-          </div>
-
-          {/* Thông tin pháp lý GDPT 2018 & QĐ 764/QĐ-BGDĐT */}
-          <div className="p-3 bg-[#f8f9fa] dark:bg-[#282828]/60 border border-[#dadce0] dark:border-[#3c4043] rounded-2xl text-[11px] text-[#5f6368] dark:text-[#9aa0a6] flex items-start gap-2.5">
-            <span className="text-[#137333] dark:text-[#5bb98c] font-bold shrink-0 mt-0.5">✓</span>
-            <div>
-              <strong className="text-[#202124] dark:text-[#e3e3e3]">Chuẩn hóa GDPT 2018 & Quyết định 764/QĐ-BGDĐT:</strong> Cấu trúc định dạng đề thi chuẩn Bộ GD&ĐT, tự động cập nhật địa giới hành chính, số liệu thống kê mới và quy định pháp luật hiện hành.
-            </div>
-          </div>
-
-          {/* Cảnh báo lỗi nếu có */}
-          {errorMessage && (
-            <div className="p-3 bg-[#fce8e6] dark:bg-[#371918] border border-[#fad2cf] dark:border-[#5c2523] text-[#c5221f] dark:text-[#f28b82] rounded-2xl text-xs flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0" />
-              <span>{errorMessage}</span>
-            </div>
-          )}
-        </div>
-
-        {/* Footer */}
-        <div className="pt-4 border-t border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between">
-          <span className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">
-            Tổng cộng: <strong className="text-[#1a73e8] dark:text-[#8ab4f8] font-bold">{numMC + numTF + numSA}</strong> câu hỏi
-          </span>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={onClose}
-              disabled={isLoading}
-              className="px-4 py-2 text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] rounded-full transition-colors cursor-pointer"
-            >
-              Hủy
-            </button>
-            <button
-              onClick={handleGenerate}
-              disabled={isLoading}
-              className="flex items-center gap-2 px-5 py-2.5 text-xs font-medium text-white bg-[#1a73e8] hover:bg-[#1557b0] dark:bg-[#8ab4f8] dark:hover:bg-[#a8c7fa] dark:text-[#202124] rounded-full shadow-xs hover:shadow-md transition-all cursor-pointer disabled:opacity-50"
-            >
-              {isLoading ? (
-                <>
-                  <RefreshCw className="w-4 h-4 animate-spin" />
-                  <span>AI đang biên soạn đề...</span>
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-4 h-4" />
-                  <span>Bắt đầu sinh đề ngay</span>
-                </>
-              )}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  return <div className="fixed inset-0 z-50 bg-black/60 p-4 flex items-center justify-center"><section role="dialog" aria-modal="true" aria-label="Soạn bản nháp với AI" className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl p-6 bg-white dark:bg-[#1e1e1e] text-[#202124] dark:text-[#e3e3e3] space-y-4">
+    <header className="flex items-center justify-between"><h2 className="font-bold text-lg">Soạn bản nháp với AI</h2><button onClick={close} aria-label="Đóng"><X /></button></header>
+    <div className="grid grid-cols-2 gap-3"><label>Lớp<select className={inputClass} value={grade} onChange={e => { const value = Number(e.target.value); setGrade(value); if (!getSubjectsForGrade(value).some(s => s.key === subject)) setSubject(getSubjectsForGrade(value)[0].key); }}>{Array.from({ length: 12 }, (_, i) => i + 1).map(g => <option key={g} value={g}>Lớp {g}</option>)}</select></label><label>Môn / hoạt động<select className={inputClass} value={subject} onChange={e => setSubject(e.target.value as Subject)}>{getSubjectsForGrade(grade).map(s => <option key={s.key} value={s.key}>{s.label}</option>)}</select></label></div>
+    <label className="block">Phạm vi bài / chương / yêu cầu cần đạt<textarea className={inputClass} rows={3} value={topic} onChange={e => setTopic(e.target.value)} placeholder="Nhập phần kiến thức muốn soạn; có thể dán yêu cầu cần đạt đã kiểm tra." /></label>
+    {context?.knowledgePackage && <label className="block text-sm border rounded p-3"><input type="checkbox" checked={usePackage} onChange={e => setUsePackage(e.target.checked)} /> Dùng phạm vi đã chọn trong đề · {context.knowledgePackage.title}<span className="block text-xs mt-1">Gói chờ duyệt. Phạm vi và giới hạn phương pháp được kiểm lại tại máy chủ; AI không được tự thêm mã ngoài tập đã chọn.</span></label>}
+    <div className="grid grid-cols-2 gap-3"><label>Mục đích<select className={inputClass} value={purpose} onChange={e => setPurpose(e.target.value)}><option value="practice">Luyện tập / bài tập</option><option value="periodic">Kiểm tra định kỳ</option><option value="survey">Khảo sát</option><option value="advanced">Bồi dưỡng / học sinh giỏi</option><option value="free">Tự do</option></select></label><label>Đánh giá<select className={inputClass} value={assessmentMode} onChange={e => setAssessmentMode(e.target.value as AssessmentMode)}><option value="scored">Có điểm</option><option value="comment_only">Nhận xét</option><option value="rubric">Theo tiêu chí / rubric</option><option value="survey">Khảo sát không chấm</option></select></label></div>
+    {isLanguage && <div className="grid grid-cols-2 gap-3"><label>Chương trình<select className={inputClass} value={languageRole} onChange={e => { setLanguageRole(e.target.value as typeof languageRole); setLanguage(''); }}>{subject === 'tieng_dan_toc' ? <option value="ETHNIC">Tiếng dân tộc</option> : <><option value="NN1">Ngoại ngữ 1</option><option value="NN2">Ngoại ngữ 2</option></>}</select></label><label>Ngôn ngữ<select className={inputClass} value={language} onChange={e => setLanguage(e.target.value)}><option value="">Chọn ngôn ngữ</option>{LANGUAGE_PACKAGES.find(p => p.role === languageRole)?.languages.map(l => <option key={l}>{l}</option>)}</select></label><p className="col-span-2 text-xs">Cần ghi thêm trình độ và tài liệu áp dụng trong phạm vi nội dung; không tự lấy số quyển làm lớp.</p></div>}
+    {subject === 'giao_duc_dia_phuong' && <label className="block">Địa phương và năm / phiên bản tài liệu<input className={inputClass} value={locality} onChange={e => setLocality(e.target.value)} /></label>}
+    <details className="rounded-xl border p-3 text-sm"><summary>Khung nhận thức và nguồn tham khảo</summary><label className="block mt-2">Khung nhận thức<select className={inputClass} value={frameworkId} onChange={e => setFrameworkId(e.target.value)}><option value="">Chưa gắn khung — sẽ phân loại sau</option>{COGNITIVE_FRAMEWORKS.filter(f => f.grades.includes(grade)).map(f => <option key={f.id} value={f.id}>{f.label}</option>)}</select></label><p className="mt-2">{readiness.label}</p><ul className="list-disc pl-5">{readiness.sources.map(source => <li key={source.id}><a href={source.url} target="_blank" rel="noreferrer" className="text-blue-600 underline">{source.title}</a></li>)}</ul><p className="mt-2 text-xs">Khung nhận thức và nhãn độ khó được lưu riêng. Chưa có gói nội dung được giáo viên duyệt đầy đủ.</p></details>
+    <div className="flex items-center justify-between"><label>Thời lượng (phút)<input type="number" min={1} max={1440} className={inputClass} value={duration} onChange={e => setDuration(Number(e.target.value))} /></label>{config.templateStatus === 'example' && <button onClick={applyExample} className="text-sm text-blue-600">Dùng cấu trúc tham khảo</button>}</div>
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">{([{ key: 'multiple_choice', label: 'Trắc nghiệm' }, { key: 'true_false_group', label: 'Đúng / sai' }, { key: 'short_answer', label: 'Trả lời ngắn' }, { key: 'essay', label: 'Tự luận / mở' }] as const).map(({ key, label }) => <label key={key} className="text-sm">{label}<input className={inputClass} type="number" min={0} max={100} value={counts[key]} onChange={e => setCounts(current => ({ ...current, [key]: Number(e.target.value) }))} /></label>)}</div>
+    <details className="border rounded-xl p-3 text-sm"><summary className="cursor-pointer">Thêm dạng câu: điền khuyết, ghép nối, sắp xếp</summary><div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3">{([{ key: 'fill_blank', label: 'Điền khuyết' }, { key: 'matching', label: 'Ghép nối' }, { key: 'ordering', label: 'Sắp xếp' }] as const).map(({ key, label }) => <label key={key}>{label}<input className={inputClass} type="number" min={0} max={100} value={counts[key]} onChange={e => setCounts(current => ({ ...current, [key]: Number(e.target.value) }))} /></label>)}</div><p className="text-xs mt-2">Điền khuyết hiện dùng một ô trả lời mỗi câu; ghép nối có ít nhất hai cặp, sắp xếp có ít nhất hai mục. Để 0 nếu không dùng dạng đó.</p></details>
+    <label className="block text-sm">Yêu cầu thêm (nếu có)<textarea className={inputClass} value={customInstructions} onChange={e => setCustomInstructions(e.target.value)} /></label>
+    <p className="text-xs">AI có thể sai. Giáo viên kiểm tra câu hỏi, đáp án và nguồn trước khi sử dụng.</p>
+    {isLoading && <p className="text-xs">Có thể đóng để ngừng chờ. Yêu cầu đã gửi có thể vẫn được nhà cung cấp xử lý và tính lượt.</p>}
+    {error && <p role="alert" className="text-red-600 text-sm">{error}</p>}
+    {proposal && <section className="border rounded-xl p-3 space-y-3 text-sm" aria-label="Đề xuất bản nháp AI"><p>Đã nhận {proposal.exam.questions.length} câu. {replacesDocument ? 'Chưa thay đề hiện tại. Khi áp dụng, câu hỏi, ngữ liệu và cấu trúc phần được thay bằng bản mới; tên đề, trường, năm học và ghi chú của bạn được giữ.' : 'Xem trước rồi tạo đề mới; các đề đã có trong kho được giữ nguyên.'}</p><div className="max-h-64 overflow-auto space-y-2">{proposal.exam.questions.map((q, index) => <details key={q.id}><summary>{index + 1}. {q.content.slice(0, 120)}</summary><div className="space-y-2 p-2"><MathRenderer content={q.content} />{q.choices?.map(choice => <p key={choice.key}>{choice.key}. {choice.text}</p>)}{q.sub_questions?.map(item => <p key={item.key}>{item.key}. {item.content}{item.isCorrect === undefined ? '' : item.isCorrect ? ' — Đúng' : ' — Sai'}</p>)}{q.correct_answer && <p>Đáp án: {q.correct_answer}</p>}{q.accepted_answers?.length ? <p>Chấp nhận: {q.accepted_answers.join('; ')}</p> : null}{q.matchingPairs?.map(pair => <p key={pair.id}>{pair.left} → {pair.right}</p>)}{q.correctOrder?.map((item, order) => <p key={order}>{order + 1}. {item}</p>)}{q.step_by_step_solution && <MathRenderer content={q.step_by_step_solution} />}{q.rubric?.map((criterion, criterionIndex) => <p key={criterionIndex}>{criterion.criterion}: {criterion.maxPoints} điểm</p>)}</div></details>)}</div>{documentStamp !== proposal.baseStamp && <p role="alert">Đề đã đổi trong khi AI soạn; hãy tải bản đề xuất để giữ lại hoặc soạn lại.</p>}<div className="flex gap-3"><button type="button" className="bg-blue-600 text-white rounded p-2 disabled:opacity-50" disabled={documentStamp !== proposal.baseStamp} onClick={async () => { try { await onExamGenerated(proposal.exam, proposal.baseStamp); close(); } catch (cause) { setError(cause instanceof Error ? cause.message : 'Chưa áp dụng được bản nháp'); } }}>{replacesDocument ? 'Áp dụng thay câu trong đề' : 'Tạo đề mới từ đề xuất'}</button><button type="button" className="underline" onClick={() => { const url = URL.createObjectURL(new Blob([JSON.stringify(proposal.exam, null, 2)], { type: 'application/json' })); const a = document.createElement('a'); a.href = url; a.download = 'ExamCraft-de-xuat-AI.json'; a.click(); URL.revokeObjectURL(url); }}>Tải bản đề xuất JSON</button><button type="button" onClick={() => setProposal(null)}>Bỏ đề xuất</button></div></section>}
+    <footer className="flex justify-between items-center"><span>{total} câu</span><button disabled={isLoading || total < 1} onClick={generate} className="flex items-center gap-2 rounded-full px-5 py-3 bg-blue-600 text-white disabled:opacity-50"><Sparkles size={16} />{isLoading ? 'Đang soạn…' : 'Tạo bản nháp'}</button></footer>
+  </section></div>;
 };

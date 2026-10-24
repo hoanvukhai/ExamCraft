@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import crypto from 'crypto';
 import prisma from '@/lib/prisma';
-import { requireAuth } from '@/lib/auth';
+import { requireRequestAuth } from '@/lib/request-auth';
+import { ApiError, apiErrorResponse } from '@/lib/api-error';
 
 const CreateGroupSchema = z.object({
   name: z.string().min(1, 'Tên lớp học không được để trống'),
@@ -24,9 +25,9 @@ function generateGroupCode(name: string): string {
 }
 
 // GET: Lấy danh sách lớp học của giáo viên
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const user = await requireAuth();
+    const user = await requireRequestAuth(req);
 
     const groups = await prisma.group.findMany({
       where: {
@@ -36,8 +37,8 @@ export async function GET() {
       include: {
         _count: {
           select: {
-            students: true,
-            assignments: true,
+            students: { where: { archivedAt: null } },
+            assignments: { where: { ownerId: user.id } },
           },
         },
       },
@@ -46,7 +47,9 @@ export async function GET() {
 
     return NextResponse.json({ groups });
   } catch (error: unknown) {
+    if (error instanceof ApiError) return apiErrorResponse(error, 'Yêu cầu bị từ chối');
     const err = error as Error;
+    if (err.message === 'MUST_CHANGE_PASSWORD') return NextResponse.json({ error: 'Vui lòng đổi mật khẩu trước khi tiếp tục', code: 'MUST_CHANGE_PASSWORD' }, { status: 403 });
     if (err.message === 'UNAUTHORIZED') {
       return NextResponse.json({ error: 'Chưa đăng nhập' }, { status: 401 });
     }
@@ -58,7 +61,7 @@ export async function GET() {
 // POST: Tạo lớp học mới và danh sách học sinh
 export async function POST(req: NextRequest) {
   try {
-    const user = await requireAuth();
+    const user = await requireRequestAuth(req);
     const body = await req.json();
     const parsed = CreateGroupSchema.safeParse(body);
 
@@ -132,7 +135,9 @@ export async function POST(req: NextRequest) {
       message: `Đã tạo lớp ${name} thành công với ${cleanedNames.length} học sinh!`,
     });
   } catch (error: unknown) {
+    if (error instanceof ApiError) return apiErrorResponse(error, 'Yêu cầu bị từ chối');
     const err = error as Error;
+    if (err.message === 'MUST_CHANGE_PASSWORD') return NextResponse.json({ error: 'Vui lòng đổi mật khẩu trước khi tiếp tục', code: 'MUST_CHANGE_PASSWORD' }, { status: 403 });
     if (err.message === 'UNAUTHORIZED') {
       return NextResponse.json({ error: 'Chưa đăng nhập' }, { status: 401 });
     }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { requireAuth } from '@/lib/auth';
+import { requireRequestAuth } from '@/lib/request-auth';
+import { ApiError, apiErrorResponse } from '@/lib/api-error';
 import { AttemptStatus } from '@prisma/client';
 
 // Hàm làm sạch chuỗi chống tấn công CSV Injection (Formula Injection)
@@ -23,7 +24,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const user = await requireAuth();
+    const user = await requireRequestAuth(req);
     const { id } = await params;
 
     const assignment = await prisma.assignment.findFirst({
@@ -70,6 +71,7 @@ export async function GET(
       const questionColumns = questions.map((q) => {
         const a = answersMap.get(q.id);
         if (!a) return 'Chưa làm';
+        if (a.isCorrect === null) return 'Chờ chấm';
         return a.isCorrect ? `Đúng (${a.earned}đ)` : `Sai (${a.earned}đ)`;
       });
 
@@ -79,7 +81,7 @@ export async function GET(
         sanitizeCsvCell(assignment.group?.name || 'Tự do'),
         sanitizeCsvCell(`Lần ${att.attemptNo}`),
         sanitizeCsvCell(att.status === AttemptStatus.SUBMITTED ? 'Đã nộp' : 'Đang làm'),
-        sanitizeCsvCell(att.score !== null ? `${att.score} / ${att.maxScore || 10}` : 'Chưa có'),
+        sanitizeCsvCell(att.needsGrading ? 'Chờ giáo viên chấm' : att.score !== null ? `${att.score} / ${att.maxScore || 10}` : 'Chưa có'),
         sanitizeCsvCell(
           att.submittedAt ? new Date(att.submittedAt).toLocaleString('vi-VN') : ''
         ),
@@ -104,7 +106,9 @@ export async function GET(
       },
     });
   } catch (error: unknown) {
+    if (error instanceof ApiError) return apiErrorResponse(error, 'Chưa xuất được bảng điểm');
     const err = error as Error;
+    if (err.message === 'MUST_CHANGE_PASSWORD') return NextResponse.json({ error: 'Vui lòng đổi mật khẩu trước khi tiếp tục', code: 'MUST_CHANGE_PASSWORD' }, { status: 403 });
     if (err.message === 'UNAUTHORIZED') {
       return NextResponse.json({ error: 'Chưa đăng nhập' }, { status: 401 });
     }

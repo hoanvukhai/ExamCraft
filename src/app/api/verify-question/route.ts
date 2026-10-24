@@ -2,9 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenAI, Type } from '@google/genai';
 import { z } from 'zod';
 import { Question } from '@/types/exam';
-import { getCurrentUser } from '@/lib/auth';
+import { requireAuth } from '@/lib/auth';
+import { assertRequestAccount } from '@/lib/request-account';
+import { isSameOriginMutation } from '@/lib/attempt-access';
+import { apiErrorResponse } from '@/lib/api-error';
+import { normalizeQuestion } from '@/lib/exam-document';
+import { compareAnswerReview } from '@/lib/answer-review';
 import prisma from '@/lib/prisma';
-import { executeWithKeyRotation, getGeminiModel } from '@/lib/gemini-keys';
+import { requestApiKey } from '@/lib/ai-policy';
+import { executeWithKeyRotation } from '@/lib/gemini-keys';
 
 const geminiVerifySchema = {
   type: Type.OBJECT,
@@ -59,7 +65,7 @@ const geminiVerifySchema = {
 
 const verifyZodSchema = z.object({
   solvedAnswer: z.string(),
-  confidence: z.number().default(90),
+  confidence: z.number().min(0).max(100),
   solutionSteps: z.string(),
   subQuestionsAssessment: z.array(z.object({
     key: z.string(),
@@ -67,14 +73,17 @@ const verifyZodSchema = z.object({
     reason: z.string(),
   })).optional(),
   discrepancies: z.array(z.string()).default([]),
-  recommendation: z.enum(['match', 'discrepancy', 'error_in_question', 'ambiguous']).default('match'),
+  recommendation: z.enum(['match', 'discrepancy', 'error_in_question', 'ambiguous']),
 });
 
 export async function POST(req: NextRequest) {
   try {
-    const currentUser = await getCurrentUser();
+    if (!isSameOriginMutation(req)) return NextResponse.json({ error: 'Yêu cầu không hợp lệ' }, { status: 403 });
+    const currentUser = await requireAuth();
+    assertRequestAccount(req.headers, currentUser.id);
     const body = await req.json();
-    const { question, customApiKey } = body as { question: Question; customApiKey?: string };
+    const customApiKey = requestApiKey(body);
+    const question = normalizeQuestion(body.question);
 
     if (!question || !question.content) {
       return NextResponse.json({ error: 'Thiếu dữ liệu câu hỏi cần kiểm tra' }, { status: 400 });
@@ -110,9 +119,9 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const prompt = `Bạn là một Chuyên gia Thẩm định Đề thi Quốc gia (Senior Exam Verification Auditor) thuộc Bộ Giáo dục & Đào tạo Việt Nam.
+    const prompt = `Bạn hỗ trợ giáo viên giải độc lập và rà soát câu hỏi. Không tự nhận đại diện cơ quan quản lý; kết quả cần giáo viên kiểm tra.
 Nhiệm vụ của bạn là giải độc lập câu hỏi dưới đây từ các tiên đề cơ bản nhất để kiểm định chất lượng:
-1. Giải bài toán từng bước một cách chặt chẽ, chính xác tuyệt đối.
+1. Giải bài toán từng bước một cách chặt chẽ, nêu rõ điều kiện và điều chưa chắc chắn.
 2. Đưa ra kết luận đáp án độc lập (solvedAnswer).
 3. Đánh giá xem đề bài có bị thiếu điều kiện xác định, thiếu dữ kiện, hoặc câu từ mơ hồ gây tranh cãi hay không.
 
@@ -122,10 +131,10 @@ Yêu cầu xuất ra cấu trúc JSON hợp lệ theo Schema đã cung cấp.`;
 
     const responseText = await executeWithKeyRotation(
       customApiKey,
-      async (apiKey) => {
+      async (apiKey, model) => {
         const ai = new GoogleGenAI({ apiKey });
         const response = await ai.models.generateContent({
-          model: getGeminiModel(),
+          model,
           contents: prompt,
           config: {
             responseMimeType: 'application/json',
@@ -136,7 +145,7 @@ Yêu cầu xuất ra cấu trúc JSON hợp lệ theo Schema đã cung cấp.`;
         return response.text || '{}';
       },
       {
-        userId: currentUser?.id,
+        userId: currentUser.id,
         endpoint: 'question.verify',
       }
     );
@@ -144,46 +153,14 @@ Yêu cầu xuất ra cấu trúc JSON hợp lệ theo Schema đã cung cấp.`;
     const parsedJson = JSON.parse(responseText);
     const verifiedData = verifyZodSchema.parse(parsedJson);
 
-    // Tiến hành so khớp với đáp án hiện tại của câu hỏi
-    let isMatch = false;
-    const discrepancies: string[] = [...verifiedData.discrepancies];
-
-    if (question.type === 'multiple_choice') {
-      const solvedKey = verifiedData.solvedAnswer.trim().toUpperCase().replace(/[^ABCD]/g, '');
-      const currentKey = (question.correct_answer || '').trim().toUpperCase();
-      isMatch = solvedKey === currentKey;
-      if (!isMatch) {
-        discrepancies.push(`Đáp án hiện tại là "${currentKey}", nhưng AI thẩm định giải ra "${solvedKey}".`);
-      }
-    } else if (question.type === 'true_false_group' && question.sub_questions && verifiedData.subQuestionsAssessment) {
-      let allSubMatch = true;
-      for (const sq of question.sub_questions) {
-        const aiAssessment = verifiedData.subQuestionsAssessment.find(a => a.key.toLowerCase() === sq.key.toLowerCase());
-        if (aiAssessment) {
-          if (aiAssessment.isCorrect !== sq.isCorrect) {
-            allSubMatch = false;
-            discrepancies.push(`Ý ${sq.key}): Hiện tại là "${sq.isCorrect ? 'Đúng' : 'Sai'}", nhưng thẩm định là "${aiAssessment.isCorrect ? 'Đúng' : 'Sai'}". Lý do: ${aiAssessment.reason}`);
-          }
-        }
-      }
-      isMatch = allSubMatch;
-    } else {
-      // short_answer hoặc essay
-      const normSolved = verifiedData.solvedAnswer.trim().toLowerCase().replace(/\s+/g, '');
-      const normCurrent = (question.correct_answer || '').trim().toLowerCase().replace(/\s+/g, '');
-      isMatch = normSolved === normCurrent;
-      if (!isMatch && question.accepted_answers) {
-        const matchesAccepted = question.accepted_answers.some(ans => ans.trim().toLowerCase() === normSolved);
-        if (matchesAccepted) isMatch = true;
-      }
-      if (!isMatch) {
-        discrepancies.push(`Đáp án hiện tại là "${question.correct_answer}", nhưng AI thẩm định giải ra "${verifiedData.solvedAnswer}".`);
-      }
-    }
+    const { complete, isMatch, discrepancies } = compareAnswerReview(question, verifiedData);
 
     return NextResponse.json({
       success: true,
       isMatch,
+      complete,
+      reviewedQuestionId: question.id,
+      reviewedVersion: question.version,
       solvedAnswer: verifiedData.solvedAnswer,
       confidence: verifiedData.confidence,
       solutionSteps: verifiedData.solutionSteps,
@@ -193,8 +170,6 @@ Yêu cầu xuất ra cấu trúc JSON hợp lệ theo Schema đã cung cấp.`;
       originalAnswer: question.correct_answer,
     });
   } catch (error: unknown) {
-    console.error('Error verifying question:', error);
-    const message = error instanceof Error ? error.message : 'Lỗi hệ thống khi thẩm định câu hỏi';
-    return NextResponse.json({ error: message }, { status: 500 });
+    return apiErrorResponse(error, 'Không thể rà soát câu hỏi lúc này.');
   }
 }

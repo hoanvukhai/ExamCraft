@@ -2,6 +2,9 @@
 
 import React, { useState, useEffect, useCallback, useRef, use } from 'react';
 import { MathRenderer } from '@/components/MathRenderer';
+import { VariationTable, VariationTableData } from '@/components/VariationTable';
+import { FunctionPlot, FunctionPlotData } from '@/components/FunctionPlot';
+import type { Figure } from '@/types/exam';
 import {
   Clock,
   CheckCircle2,
@@ -20,11 +23,14 @@ import {
 interface Question {
   id: string;
   sectionId?: string;
+  passageId?: string;
   position: number;
-  type: 'MULTIPLE_CHOICE' | 'TRUE_FALSE_GROUP' | 'SHORT_ANSWER' | 'ESSAY';
+  type: 'MULTIPLE_CHOICE' | 'TRUE_FALSE_GROUP' | 'SHORT_ANSWER' | 'ESSAY' | 'FILL_BLANK' | 'MATCHING' | 'ORDERING';
   difficulty?: string;
   content: string;
-  figures?: Array<{ url: string; caption?: string }>;
+  figures?: Array<Figure & { url?: string }>;
+  matching?: { left: { key: string; text: string }[]; right: { key: string; text: string }[] };
+  ordering?: { items: { key: string; text: string }[] };
   payload?: {
     choices?: Array<{ key: string; text: string }>;
     sub_questions?: Array<{ key: string; content: string }>;
@@ -45,12 +51,14 @@ interface AssignmentData {
   title: string;
   publicId: string;
   mode: string;
-  identityMode: 'PICK_FROM_LIST' | 'FREE_NAME';
+  assessmentMode?: 'scored' | 'comment_only' | 'rubric' | 'survey';
+  identityMode: 'PICK_FROM_LIST' | 'FREE_NAME' | 'PERSONAL_LINK';
   durationMinutes?: number;
   maxAttempts: number;
   opensAt?: string;
   closesAt?: string;
   requirePin: boolean;
+  requireJoinCode?: boolean;
   leaderboard: string;
   group?: {
     id: string;
@@ -65,25 +73,45 @@ interface AttemptData {
   startedAt: string;
   deadlineAt?: string;
   draft: Record<string, any>;
+  draftRevision: string;
   studentName: string;
 }
 
 interface SubmitResult {
   score: number | null;
   maxScore: number | null;
+  needsGrading?: boolean;
   submittedAt: string;
   studentName: string;
   leaderboard?: {
     top: Array<{ rank: number; name: string; score: number }>;
-    me: { rank: number; total: number; score: number };
+    me: { rank: number | null; total: number; score: number | null };
   } | null;
   solutions?: Array<{
     id: string;
     correct?: string;
     sub_questions?: Array<{ key: string; isCorrect: boolean; explanation?: string }>;
     solution?: string;
+    matchingPairs?: { id?: string; left: string; right: string }[];
+    correctOrder?: string[];
   }> | null;
   message: string;
+}
+
+function responseText(question: Question, response: unknown): string {
+  if (question.matching && response && typeof response === 'object' && !Array.isArray(response)) return question.matching.left.map(left => left.text + ' → ' + (question.matching!.right.find(right => right.key === (response as Record<string, unknown>)[left.key])?.text || 'Chưa chọn')).join('; ');
+  if (question.ordering && Array.isArray(response)) return response.map(key => question.ordering!.items.find(item => item.key === key)?.text || '').filter(Boolean).join(' → ') || 'Chưa sắp xếp';
+  if (response && typeof response === 'object') return Object.entries(response).map(([key, value]) => key + ': ' + (typeof value === 'boolean' ? (value ? 'Đúng' : 'Sai') : value)).join('; ');
+  return response === null || response === undefined || response === '' ? 'Chưa trả lời' : String(response);
+}
+function StructuredAnswer({ question, value, onChange }: { question: Question; value: unknown; onChange: (value: unknown) => void }) {
+  if (question.matching) return <div className="space-y-3 mt-4"><p className="text-xs">Chọn vế phải cho mỗi nội dung bên trái.</p>{question.matching.left.map(left => <label key={left.key} className="grid md:grid-cols-2 gap-3 items-center border rounded-xl p-3"><MathRenderer content={left.text} /><select aria-label={'Ghép cho ' + left.text} value={value && typeof value === 'object' && !Array.isArray(value) ? String((value as Record<string, unknown>)[left.key] || '') : ''} onChange={event => onChange({ ...(value && typeof value === 'object' && !Array.isArray(value) ? value : {}), [left.key]: event.target.value })} className="border rounded-xl p-2 bg-transparent"><option value="">Chọn nội dung phù hợp</option>{question.matching!.right.map(right => <option key={right.key} value={right.key}>{right.text}</option>)}</select></label>)}</div>;
+  if (question.ordering) {
+    const selected = Array.isArray(value) ? value.filter(key => typeof key === 'string' && question.ordering!.items.some(item => item.key === key)) as string[] : [];
+    const move = (i: number, offset: number) => { const target = i + offset; if (target < 0 || target >= selected.length) return; const next = [...selected]; [next[i], next[target]] = [next[target], next[i]]; onChange(next); };
+    return <div className="space-y-3 mt-4"><p className="text-xs">Thêm các mục theo thứ tự mong muốn; dùng nút lên/xuống để sửa.</p><ol className="space-y-2">{selected.map((key, i) => <li key={key} className="border rounded-xl p-3 flex items-center gap-3"><span>{i + 1}.</span><div className="flex-1"><MathRenderer content={question.ordering!.items.find(item => item.key === key)!.text} /></div><button type="button" aria-label={'Đưa mục ' + (i + 1) + ' lên'} disabled={i === 0} onClick={() => move(i, -1)}>↑</button><button type="button" aria-label={'Đưa mục ' + (i + 1) + ' xuống'} disabled={i === selected.length - 1} onClick={() => move(i, 1)}>↓</button><button type="button" onClick={() => onChange(selected.filter(item => item !== key))}>Bỏ</button></li>)}</ol><div className="space-y-2">{question.ordering.items.filter(item => !selected.includes(item.key)).map(item => <button key={item.key} type="button" onClick={() => onChange([...selected, item.key])} className="block text-left w-full border rounded-xl p-3"><span className="text-xs text-blue-600">Thêm vào thứ tự: </span><MathRenderer content={item.text} inline /></button>)}</div></div>;
+  }
+  return null;
 }
 
 function StudentExamContent({
@@ -99,11 +127,16 @@ function StudentExamContent({
   const [assignment, setAssignment] = useState<AssignmentData | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [sections, setSections] = useState<Section[]>([]);
+  const [passages, setPassages] = useState<Array<{ id: string; title?: string; content: string }>>([]);
 
   // Trạng thái vào thi
   const [selectedStudentId, setSelectedStudentId] = useState('');
   const [freeName, setFreeName] = useState('');
   const [starting, setStarting] = useState(false);
+  const [pin, setPin] = useState('');
+  const [joinCode, setJoinCode] = useState('');
+  const [personalToken, setPersonalToken] = useState('');
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   // Trạng thái đang làm bài
   const [attempt, setAttempt] = useState<AttemptData | null>(null);
@@ -116,12 +149,19 @@ function StudentExamContent({
 
   // Trạng thái kết quả sau khi nộp
   const [submitResult, setSubmitResult] = useState<SubmitResult | null>(null);
+  const [canStartAnother, setCanStartAnother] = useState(false);
 
   const answersRef = useRef(answers);
   answersRef.current = answers;
+  const draftRevisionRef = useRef('');
+  const activeAttemptRef = useRef<string | null>(null);
+  const draftSaveRef = useRef<Promise<void> | null>(null);
+  const draftConflictRef = useRef(false);
+  const submittingRef = useRef(false);
 
   // 1. Tải thông tin đề bài từ Server
   useEffect(() => {
+    setPersonalToken(new URLSearchParams(window.location.search).get('token') || '');
     async function loadAssignment() {
       try {
         setLoading(true);
@@ -135,8 +175,15 @@ function StudentExamContent({
         }
 
         setAssignment(data.assignment);
+        setCanStartAnother(Boolean(data.canStartAnother));
         setQuestions(data.exam?.questions || []);
         setSections(data.exam?.sections || []);
+        setPassages(data.exam?.passages || []);
+        if (data.myAttempt?.status === 'SUBMITTED') {
+          const resultResponse = await fetch('/api/public/attempts/' + data.myAttempt.id + '/submit');
+          const result = await resultResponse.json();
+          if (resultResponse.ok) { setSubmitResult(result); setAnswers(result.responses || {}); }
+        }
       } catch (err) {
         console.error(err);
         setError('Lỗi kết nối máy chủ, vui lòng thử lại.');
@@ -169,6 +216,8 @@ function StudentExamContent({
         body: JSON.stringify({
           studentId: assignment.identityMode === 'PICK_FROM_LIST' ? selectedStudentId : undefined,
           freeName: assignment.identityMode === 'FREE_NAME' ? freeName.trim() : undefined,
+          personalToken: assignment.identityMode === 'PERSONAL_LINK' ? personalToken : undefined,
+          pin: pin || undefined, joinCode: joinCode || undefined,
         }),
       });
 
@@ -178,13 +227,20 @@ function StudentExamContent({
         return;
       }
 
+      activeAttemptRef.current = data.attempt.id;
+      draftRevisionRef.current = data.attempt.draftRevision;
+      draftSaveRef.current = null;
+      draftConflictRef.current = false;
+      setSaveError(null); setLastSaved(null); setIsSaving(false);
       setAttempt(data.attempt);
+      setCanStartAnother(data.attempt.attemptNo < assignment.maxAttempts);
+      if (data.exam) { setQuestions(data.exam.questions || []); setSections(data.exam.sections || []); setPassages(data.exam.passages || []); }
       setAnswers(data.attempt.draft || {});
 
       // Tính toán thời gian đếm ngược
       if (data.attempt.deadlineAt) {
         const deadline = new Date(data.attempt.deadlineAt).getTime();
-        const now = Date.now();
+        const now = data.serverNow ? new Date(data.serverNow).getTime() : Date.now();
         const seconds = Math.max(0, Math.floor((deadline - now) / 1000));
         setTimeLeft(seconds);
       }
@@ -199,14 +255,25 @@ function StudentExamContent({
   // 3. Tự động lưu nháp (Auto-Save Draft)
   const saveDraft = useCallback(
     async (currentAnswers: Record<string, any>) => {
-      if (!attempt?.id) return;
+      if (!attempt?.id || draftSaveRef.current || draftConflictRef.current || submittingRef.current) return;
+      const savingAttemptId = attempt.id;
+      const operation = (async () => {
       try {
         setIsSaving(true);
-        await fetch(`/api/public/attempts/${attempt.id}/draft`, {
-          method: 'POST',
+        const response = await fetch(`/api/public/attempts/${attempt.id}/draft`, {
+          method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ draft: currentAnswers }),
+          body: JSON.stringify({ draft: currentAnswers, baseDraftRevision: draftRevisionRef.current }),
         });
+        const result = await response.json();
+        if (activeAttemptRef.current !== savingAttemptId) return;
+        if (!response.ok) {
+          if (result.code === 'DRAFT_CONFLICT' || result.code === 'DRAFT_REVISION_REQUIRED') draftConflictRef.current = true;
+          throw new Error(result.error || 'Chưa lưu được bản nháp');
+        }
+        if (typeof result.draftRevision !== 'string') throw new Error('Chưa nhận được xác nhận phiên bản nháp. Bản đang nhập vẫn giữ trên trang này.');
+        draftRevisionRef.current = result.draftRevision;
+        setSaveError(null);
         const now = new Date();
         setLastSaved(
           `${now.getHours().toString().padStart(2, '0')}:${now
@@ -215,10 +282,16 @@ function StudentExamContent({
             .padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`
         );
       } catch (err) {
+        if (activeAttemptRef.current !== savingAttemptId) return;
+        setSaveError(err instanceof Error ? err.message : 'Chưa lưu được bản nháp');
         console.error('Lỗi tự động lưu nháp:', err);
       } finally {
-        setIsSaving(false);
+        if (activeAttemptRef.current === savingAttemptId) setIsSaving(false);
       }
+      })();
+      draftSaveRef.current = operation;
+      await operation;
+      if (draftSaveRef.current === operation) draftSaveRef.current = null;
     },
     [attempt?.id]
   );
@@ -245,14 +318,14 @@ function StudentExamContent({
 
   // 4. Đồng hồ đếm ngược (Countdown Timer)
   useEffect(() => {
-    if (timeLeft === null || timeLeft <= 0 || submitResult) return;
+    if (timeLeft === null || submitResult) return;
+    if (timeLeft <= 0) { handleFinalSubmit(true); return; }
 
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev === null || prev <= 1) {
           clearInterval(timer);
-          // Hết giờ -> Tự động nộp bài
-          handleFinalSubmit(true);
+          // The zero-time effect submits once after this pure state update.
           return 0;
         }
         return prev - 1;
@@ -298,25 +371,30 @@ function StudentExamContent({
 
   // 6. Nộp bài thi
   const handleFinalSubmit = async (isAuto = false) => {
-    if (!attempt?.id || submitting) return;
+    if (!attempt?.id || submittingRef.current) return;
+    if (draftConflictRef.current && !isAuto) { setSaveError('Nháp đã thay đổi ở trang khác. Hãy tải bản đang nhập trước khi mở lại; chưa nộp bản cũ.'); setShowSubmitModal(false); return; }
 
     try {
+      submittingRef.current = true;
       setSubmitting(true);
       setShowSubmitModal(false);
+      await draftSaveRef.current;
 
       const res = await fetch(`/api/public/attempts/${attempt.id}/submit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ answers: answersRef.current }),
+        body: JSON.stringify({ answers: answersRef.current, baseDraftRevision: draftRevisionRef.current }),
       });
 
       const data = await res.json();
       if (!res.ok) {
+        if (data.code === 'DRAFT_CONFLICT' || data.code === 'DRAFT_REVISION_REQUIRED') { draftConflictRef.current = true; setSaveError(data.error); }
         alert(data.error || 'Lỗi khi nộp bài.');
         return;
       }
 
       setSubmitResult(data);
+      setAnswers(data.responses || {});
       if (isAuto) {
         alert('Đã hết giờ làm bài! Bài thi của em đã được nộp tự động.');
       }
@@ -324,6 +402,7 @@ function StudentExamContent({
       console.error(err);
       alert('Không thể kết nối đến máy chủ để nộp bài. Vui lòng kiểm tra mạng!');
     } finally {
+      submittingRef.current = false;
       setSubmitting(false);
     }
   };
@@ -332,8 +411,10 @@ function StudentExamContent({
   const answeredCount = questions.reduce((acc, q) => {
     const ans = answers[q.id];
     if (!ans) return acc;
+    if (q.type === 'ORDERING' && Array.isArray(ans) && ans.length) return acc + 1;
+    if (q.type === 'MATCHING' && typeof ans === 'object' && !Array.isArray(ans) && Object.values(ans).some(value => typeof value === 'string' && value)) return acc + 1;
     if (q.type === 'MULTIPLE_CHOICE' && typeof ans === 'string' && ans.trim()) return acc + 1;
-    if (q.type === 'SHORT_ANSWER' && typeof ans === 'string' && ans.trim()) return acc + 1;
+    if (['SHORT_ANSWER', 'FILL_BLANK', 'ESSAY', 'MATCHING', 'ORDERING'].includes(q.type) && typeof ans === 'string' && ans.trim()) return acc + 1;
     if (q.type === 'TRUE_FALSE_GROUP' && typeof ans === 'object') {
       const keys = Object.keys(ans);
       if (keys.length > 0) return acc + 1;
@@ -388,7 +469,7 @@ function StudentExamContent({
             {submitResult.score !== null ? (
               <div className="inline-block bg-[#f8f9fa] dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl px-8 py-5 my-2 shadow-xs">
                 <span className="text-xs uppercase tracking-wider text-[#5f6368] dark:text-[#9aa0a6] font-semibold block mb-1">
-                  Điểm số đạt được
+                  {submitResult.needsGrading ? 'Điểm tạm tính — còn câu chờ giáo viên chấm' : 'Điểm số đạt được'}
                 </span>
                 <div className="text-5xl font-black text-[#137333] dark:text-[#5bb98c] tracking-tight">
                   {submitResult.score}
@@ -406,6 +487,8 @@ function StudentExamContent({
               {new Date(submitResult.submittedAt).toLocaleDateString('vi-VN')}
             </p>
           </div>
+
+          {canStartAnother && <button onClick={() => { setSubmitResult(null); setAttempt(null); setAnswers({}); setTimeLeft(null); }} className="px-5 py-3 rounded-full bg-blue-600 text-white">Làm lượt tiếp theo</button>}
 
           {/* Bảng xếp hạng Top & Me */}
           {submitResult.leaderboard && (
@@ -449,12 +532,12 @@ function StudentExamContent({
                   <div>
                     <span className="text-xs text-[#1a73e8] dark:text-[#8ab4f8] font-semibold block">Vị trí của em</span>
                     <span className="text-sm font-bold text-[#202124] dark:text-[#e3e3e3]">
-                      Hạng #{submitResult.leaderboard.me.rank} / {submitResult.leaderboard.me.total} bạn
+                      {submitResult.leaderboard.me.rank === null ? 'Chưa xếp hạng — chờ điểm chốt' : `Hạng #${submitResult.leaderboard.me.rank} / ${submitResult.leaderboard.me.total} bạn`}
                     </span>
                   </div>
                 </div>
                 <span className="text-base font-bold text-[#1a73e8] dark:text-[#8ab4f8]">
-                  {submitResult.leaderboard.me.score} đ
+                  {submitResult.leaderboard.me.score === null ? 'Chờ chấm' : `${submitResult.leaderboard.me.score} đ`}
                 </span>
               </div>
             </div>
@@ -478,7 +561,7 @@ function StudentExamContent({
                         <span className="text-xs font-bold px-2.5 py-1 bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] rounded-full">
                           Câu {idx + 1}
                         </span>
-                        <span className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">{q.points || 0.25} điểm</span>
+                        <span className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">{assignment.assessmentMode === undefined || assignment.assessmentMode === 'scored' ? (q.points ?? 0) + ' điểm' : 'Nhận xét / rubric'}</span>
                       </div>
 
                       <div className="text-sm text-[#202124] dark:text-[#e3e3e3]">
@@ -489,7 +572,7 @@ function StudentExamContent({
                         <div>
                           <span className="text-[#5f6368] dark:text-[#9aa0a6]">Đáp án em chọn: </span>
                           <span className="font-semibold text-[#202124] dark:text-[#e3e3e3]">
-                            {typeof studentAns === 'object' ? JSON.stringify(studentAns) : String(studentAns || 'Chưa trả lời')}
+                            {responseText(q, studentAns)}
                           </span>
                         </div>
                         {sol?.correct && (
@@ -498,6 +581,8 @@ function StudentExamContent({
                             <span className="font-bold text-[#137333] dark:text-[#5bb98c]">{sol.correct}</span>
                           </div>
                         )}
+                        {sol?.matchingPairs?.length ? <p>Ghép đúng: {sol.matchingPairs.map(pair => pair.left + ' → ' + pair.right).join('; ')}</p> : null}
+                        {sol?.correctOrder?.length ? <p>Thứ tự đúng: {sol.correctOrder.join(' → ')}</p> : null}
                         {sol?.solution && (
                           <div className="p-3 bg-white dark:bg-[#1e1e1e] rounded-xl border border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] mt-2">
                             <span className="text-[#1a73e8] dark:text-[#8ab4f8] font-semibold block mb-1">Hướng dẫn giải:</span>
@@ -540,8 +625,13 @@ function StudentExamContent({
             <span>Tối đa: {assignment.maxAttempts} lượt làm</span>
           </div>
 
+          <p className="text-xs mb-4">Hết giờ, hệ thống tự gửi bài. Máy chủ dành tối đa 15 giây để nhận bài khi đường truyền chậm; không nhận bản nháp sửa sau giờ làm.</p>
           <form onSubmit={handleStartExam} className="space-y-5">
-            {assignment.identityMode === 'PICK_FROM_LIST' && assignment.group?.students ? (
+            {assignment.requirePin && <label className="block text-sm">PIN do giáo viên cấp<input type="password" required value={pin} onChange={e => setPin(e.target.value)} className="w-full border rounded-xl px-4 py-2 mt-2" /></label>}
+            {assignment.requireJoinCode && <label className="block text-sm">Mã vào bài<input required value={joinCode} onChange={e => setJoinCode(e.target.value)} className="w-full border rounded-xl px-4 py-2 mt-2" /></label>}
+            {assignment.identityMode === 'PERSONAL_LINK' ? (
+              <label className="block text-sm">Mã link cá nhân<input required value={personalToken} onChange={e => setPersonalToken(e.target.value)} className="w-full border rounded-xl px-4 py-2 mt-2" /></label>
+            ) : assignment.identityMode === 'PICK_FROM_LIST' && assignment.group?.students ? (
               <div>
                 <label className="block text-xs font-semibold text-[#5f6368] dark:text-[#9aa0a6] uppercase tracking-wider mb-2">
                   Chọn tên của em trong danh sách lớp:
@@ -631,7 +721,7 @@ function StudentExamContent({
                 <>
                   <Save className="w-3.5 h-3.5 animate-spin text-[#b06000] dark:text-[#fdd663]" /> Đang lưu...
                 </>
-              ) : lastSaved ? (
+              ) : saveError ? (<span role="alert" className="text-red-600">{saveError}</span>) : lastSaved ? (
                 <>
                   <CheckCircle2 className="w-3.5 h-3.5 text-[#137333] dark:text-[#5bb98c]" /> Lưu nháp {lastSaved}
                 </>
@@ -650,8 +740,18 @@ function StudentExamContent({
         </div>
       </header>
 
+      {saveError && <div role="alert" className="max-w-6xl mx-auto w-full px-4 py-3 text-sm bg-amber-50 text-amber-900 border border-amber-300 rounded-xl">
+        <p>{saveError}</p>
+        <p>Bản đang nhập vẫn ở trang này. Tải bản sao trước khi đóng hoặc tải lại trang; tệp này dùng để đối chiếu, chưa thay cho bài đã nộp.</p>
+        <button type="button" className="underline font-semibold mt-2" onClick={() => {
+          const blob = new Blob([JSON.stringify({ format: 'examcraft-student-answers-v1', assignmentTitle: assignment?.title, attemptId: attempt?.id, exportedAt: new Date().toISOString(), responses: answersRef.current }, null, 2)], { type: 'application/json' });
+          const url = URL.createObjectURL(blob), link = document.createElement('a');
+          link.href = url; link.download = `examcraft-bai-lam-${attempt?.id}.json`; link.click();
+          setTimeout(() => URL.revokeObjectURL(url), 30_000);
+        }}>Tải bản câu trả lời đang nhập</button>
+      </div>}
       {/* Thân bài thi */}
-      <main className="max-w-6xl mx-auto w-full p-4 md:p-6 flex-1 flex flex-col md:flex-row gap-6">
+      <main inert={timeLeft === 0 || submitting} className="max-w-6xl mx-auto w-full p-4 md:p-6 flex-1 flex flex-col md:flex-row gap-6">
         {/* Danh sách câu hỏi */}
         <div className="flex-1 space-y-6">
           {questions.map((q, index) => {
@@ -679,9 +779,10 @@ function StudentExamContent({
                         : 'Câu hỏi'}
                     </span>
                   </div>
-                  {q.points && <span className="text-xs text-[#5f6368] dark:text-[#9aa0a6] font-medium">{q.points} điểm</span>}
+                  {(assignment.assessmentMode === undefined || assignment.assessmentMode === 'scored') && q.points !== undefined && <span className="text-xs text-[#5f6368] dark:text-[#9aa0a6] font-medium">{q.points} điểm</span>}
                 </div>
 
+                {q.passageId && passages.some(p => p.id === q.passageId) && <div className="mb-4 border rounded-xl p-4 bg-blue-50/30"><h3 className="font-semibold text-sm mb-2">{passages.find(p => p.id === q.passageId)?.title || 'Ngữ liệu dùng chung'}</h3><MathRenderer content={passages.find(p => p.id === q.passageId)?.content || ''} /></div>}
                 {/* Nội dung câu hỏi KaTeX */}
                 <div className="text-sm md:text-base text-[#202124] dark:text-[#e3e3e3] leading-relaxed mb-4">
                   <MathRenderer content={q.content} />
@@ -693,7 +794,7 @@ function StudentExamContent({
                     {q.figures.map((fig, fIdx) => (
                       <div key={fIdx} className="bg-[#f8f9fa] dark:bg-[#202124] p-2 rounded-2xl border border-[#dadce0] dark:border-[#3c4043]">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={fig.url} alt={fig.caption || `Hình ${fIdx + 1}`} className="max-h-60 rounded-xl" />
+                        <>{fig.kind === 'variation_table' ? <VariationTable data={fig.data as VariationTableData} /> : fig.kind === 'function_plot' ? <FunctionPlot data={fig.data as FunctionPlotData} /> : <img src={fig.url || (typeof fig.data === 'string' ? fig.data : (fig.data as { url?: string })?.url) || fig.renderedBase64} alt={fig.caption || `Hình ${fIdx + 1}`} className="max-h-60 rounded-xl" />}</>
                         {fig.caption && <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] text-center mt-1">{fig.caption}</p>}
                       </div>
                     ))}
@@ -783,8 +884,10 @@ function StudentExamContent({
                   </div>
                 )}
 
+                {(q.matching || q.ordering) && <StructuredAnswer question={q} value={currentAns} onChange={value => setAnswers(current => ({ ...current, [q.id]: value }))} />}
+                {(q.type === 'ESSAY' || q.type === 'MATCHING' && !q.matching || q.type === 'ORDERING' && !q.ordering) && <label className="block text-sm mt-4">Trình bày câu trả lời (giáo viên sẽ chấm)<textarea value={typeof currentAns === 'string' ? currentAns : ''} onChange={e => handleShortAnswerChange(q.id, e.target.value)} rows={6} className="block w-full border rounded-xl p-3 mt-2 bg-transparent" /></label>}
                 {/* DẠNG 3: TRẢ LỜI NGẮN (SHORT_ANSWER) */}
-                {q.type === 'SHORT_ANSWER' && (
+                {(q.type === 'SHORT_ANSWER' || q.type === 'FILL_BLANK') && (
                   <div className="mt-4">
                     <label className="block text-xs text-[#5f6368] dark:text-[#9aa0a6] mb-2">Điền câu trả lời hoặc số:</label>
                     <input
@@ -814,9 +917,9 @@ function StudentExamContent({
             <div className="grid grid-cols-5 gap-2 max-h-80 overflow-y-auto pr-1">
               {questions.map((q, idx) => {
                 const ans = answers[q.id];
-                let isFilled = false;
+                let isFilled = q.type === 'ORDERING' && Array.isArray(ans) && ans.length > 0 || q.type === 'MATCHING' && ans && typeof ans === 'object' && !Array.isArray(ans) && Object.values(ans).some(value => typeof value === 'string' && value);
                 if (q.type === 'MULTIPLE_CHOICE' && ans) isFilled = true;
-                if (q.type === 'SHORT_ANSWER' && ans) isFilled = true;
+                if (['SHORT_ANSWER', 'FILL_BLANK', 'ESSAY', 'MATCHING', 'ORDERING'].includes(q.type) && typeof ans === 'string' && ans.trim()) isFilled = true;
                 if (q.type === 'TRUE_FALSE_GROUP' && typeof ans === 'object' && Object.keys(ans).length > 0)
                   isFilled = true;
 

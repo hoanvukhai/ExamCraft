@@ -3,8 +3,15 @@
 import React, { useState } from 'react';
 import { Question } from '@/types/exam';
 import { MathRenderer } from './MathRenderer';
-import { VariationTable } from './VariationTable';
-import { FunctionPlot } from './FunctionPlot';
+import { QuestionEditor } from './QuestionEditor';
+import { QuestionAiReview } from './QuestionAiReview';
+import { captureQuestionAiBase, questionAiBaseMatches, type QuestionAiBase } from '@/lib/question-ai-review';
+import { createAiProposal } from '@/lib/ai-proposal-journal';
+import { useAiProposal } from '@/hooks/useAiProposal';
+import { accountFetch } from '@/lib/account-fetch';
+import { normalizeQuestion } from '@/lib/exam-document';
+import { getCognitiveFramework } from '@/lib/education-catalog';
+import { FigureView } from './FigureView';
 import { 
   Sparkles, 
   RefreshCw, 
@@ -29,13 +36,26 @@ import {
   ArrowDown,
   Copy
 } from 'lucide-react';
-import { getDefaultPointsForQuestion, formatPointsString } from '@/lib/scoring';
+import { formatPointsString } from '@/lib/scoring';
 import { dbSaveQuestionToBank } from '@/lib/db';
+import type { BankPassage } from '@/lib/question-client';
+import type { KnowledgePackage, KnowledgeScope } from '@/lib/knowledge-package';
+import { questionValueStamp, type QuestionManualSubmission } from '@/lib/question-draft';
+import { confirmedUndoHistory, prepareQuestionUndo, type QuestionUndoEntry } from '@/lib/question-commands';
 
 interface QuestionCardProps {
+  ownerId: string;
+  documentId: string;
+  sourceStamp: string;
+  onManualSave: (submission: QuestionManualSubmission) => void;
   question: Question;
+  cognitiveFrameworkId?: string;
+  knowledgePackage?: KnowledgePackage;
+  knowledgeScope?: KnowledgeScope;
+  displayPoints?: number;
+  numericScore?: boolean;
+  passage?: BankPassage;
   index: number;
-  onUpdate: (updatedQuestion: Question) => void;
   onDelete: (id: string) => void;
   apiKey?: string;
   onMoveUp?: () => void;
@@ -49,9 +69,18 @@ interface QuestionCardProps {
 }
 
 export const QuestionCard: React.FC<QuestionCardProps> = ({
+  ownerId,
+  documentId,
+  sourceStamp,
+  onManualSave,
   question,
+  cognitiveFrameworkId,
+  knowledgePackage,
+  knowledgeScope,
+  displayPoints,
+  numericScore = true,
+  passage,
   index,
-  onUpdate,
   onDelete,
   apiKey,
   onMoveUp,
@@ -71,32 +100,35 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
   const [aiActionMessage, setAiActionMessage] = useState<string | null>(null);
 
   // Quản lý Diff Preview & Undo
-  const [pendingNewQuestion, setPendingNewQuestion] = useState<Question | null>(null);
-  const [undoHistory, setUndoHistory] = useState<Question[]>([]);
+  const proposalJournal = useAiProposal(ownerId, documentId, 'question', question.id);
+  const pendingNewQuestion = proposalJournal.entry?.record?.kind === 'question' ? proposalJournal.entry.record : null;
+  const [undoHistory, setUndoHistory] = useState<QuestionUndoEntry[]>([]);
+  const [pendingUndo, setPendingUndo] = useState<QuestionManualSubmission | null>(null);
+  const [undoMessage, setUndoMessage] = useState('');
+  const activeUndoHistory = confirmedUndoHistory(undoHistory, pendingUndo ? questionValueStamp(pendingUndo.value) : undefined, question);
   const [bankSavedNotification, setBankSavedNotification] = useState(false);
 
   // Quản lý Thẩm định AI (Dual-Solve Verifier)
   const [isVerifying, setIsVerifying] = useState(false);
-  const [verifyResult, setVerifyResult] = useState<{
+  const [verification, setVerification] = useState<{ base: QuestionAiBase; result: {
     isMatch: boolean;
     confidence: number;
     solvedAnswer: string;
     solutionSteps: string;
     discrepancies: string[];
     recommendation: string;
-  } | null>(null);
+  } } | null>(null);
   const [showVerifyDetails, setShowVerifyDetails] = useState(false);
-
-  // Edit form state
-  const [editContent, setEditContent] = useState(question.content);
-  const [editSolution, setEditSolution] = useState(question.step_by_step_solution);
-  const [editAnswer, setEditAnswer] = useState(question.correct_answer || 'A');
+  const verificationCurrent = verification && questionAiBaseMatches(verification.base, ownerId, documentId, sourceStamp, question);
+  const verifyResult = verification && verificationCurrent ? verification.result : null;
 
   // Xử lý gọi AI biến đổi vi mô
   const handleAiTweak = async (
     action: 'change_numbers' | 'similar_question' | 'increase_difficulty' | 'decrease_difficulty' | 'custom',
     customInstruction?: string
   ) => {
+    if (pendingNewQuestion || isLoadingAi) return;
+    const base = captureQuestionAiBase(ownerId, documentId, sourceStamp, question);
     setIsLoadingAi(true);
     const actionNames: Record<string, string> = {
       change_numbers: 'Đang đổi số liệu bài toán...',
@@ -108,11 +140,11 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
     setAiActionMessage(actionNames[action]);
 
     try {
-      const res = await fetch('/api/tweak-question', {
+      const res = await accountFetch(ownerId, '/api/tweak-question', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          question,
+          question: base.question,
           action,
           customInstruction,
           customApiKey: apiKey,
@@ -121,9 +153,9 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
 
       const data = await res.json();
       if (data.success && data.question) {
-        // Thay vì ghi đè thẳng, hiển thị khung Diff Preview để giáo viên duyệt
-        setPendingNewQuestion(data.question);
-      }
+        normalizeQuestion({ ...data.question, id: base.question.id });
+        createAiProposal({ kind: 'question', base, question: data.question });
+      } else { alert(data.error || 'Chưa tạo được đề xuất sửa câu.'); }
     } catch (err) {
       console.error('Tweak failed:', err);
     } finally {
@@ -134,65 +166,54 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
     }
   };
 
-  // Chấp nhận câu hỏi mới từ AI
-  const handleAcceptPendingQuestion = () => {
-    if (!pendingNewQuestion) return;
-    // Lưu bản cũ vào Undo stack
-    setUndoHistory(prev => [...prev, question]);
-    onUpdate(pendingNewQuestion);
-    setPendingNewQuestion(null);
-  };
-
   // Hủy bỏ bản mới, giữ lại bản cũ
   const handleDiscardPendingQuestion = () => {
-    setPendingNewQuestion(null);
+    proposalJournal.archive();
   };
 
   // Hoàn tác (Undo) về phiên bản trước
   const handleUndo = () => {
-    if (undoHistory.length === 0) return;
-    const previousQuestion = undoHistory[undoHistory.length - 1];
-    setUndoHistory(prev => prev.slice(0, prev.length - 1));
-    onUpdate(previousQuestion);
+    const entry = activeUndoHistory[activeUndoHistory.length - 1];
+    if (!entry) return;
+    const submission = prepareQuestionUndo(question, sourceStamp, entry, ownerId, documentId);
+    if (!submission) { setUndoMessage('Câu hoặc cấu hình đã đổi sau lần sửa này. Chưa hoàn tác để giữ bản mới; hãy đối chiếu trong Lịch sử.'); return; }
+    setUndoHistory(activeUndoHistory); setPendingUndo(submission); setUndoMessage('');
+    onManualSave(submission);
   };
 
   // Lưu câu hỏi vào Ngân hàng câu hỏi cá nhân
   const handleSaveToBank = async () => {
     try {
-      await dbSaveQuestionToBank(question);
+      await dbSaveQuestionToBank(question, ownerId, passage);
       setBankSavedNotification(true);
       setTimeout(() => setBankSavedNotification(false), 2500);
     } catch (err) {
       console.error('Lỗi khi lưu vào ngân hàng:', err);
+      alert(err instanceof Error ? err.message : 'Chưa lưu được câu hỏi vào ngân hàng');
     }
   };
 
   // Thẩm định đáp án câu hỏi bằng AI Dual-Solve
   const handleVerifyQuestion = async () => {
+    const base = captureQuestionAiBase(ownerId, documentId, sourceStamp, question);
     setIsVerifying(true);
     try {
-      const res = await fetch('/api/verify-question', {
+      const res = await accountFetch(ownerId, '/api/verify-question', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question, customApiKey: apiKey }),
+        body: JSON.stringify({ question: base.question, customApiKey: apiKey }),
       });
       const data = await res.json();
       if (data.success) {
-        setVerifyResult({
+        setVerification({ base, result: {
           isMatch: data.isMatch,
           confidence: data.confidence,
           solvedAnswer: data.solvedAnswer,
           solutionSteps: data.solutionSteps,
           discrepancies: data.discrepancies || [],
           recommendation: data.recommendation,
-        });
+        } });
         setShowVerifyDetails(true);
-        const updated: Question = {
-          ...question,
-          status: data.isMatch ? 'verified' : 'draft',
-          verifiedBy: 'dual_solve',
-        };
-        onUpdate(updated);
       } else {
         alert(data.error || 'Kiểm định câu hỏi thất bại');
       }
@@ -201,17 +222,6 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
     } finally {
       setIsVerifying(false);
     }
-  };
-
-  const handleSaveEdit = () => {
-    setUndoHistory(prev => [...prev, question]);
-    onUpdate({
-      ...question,
-      content: editContent,
-      step_by_step_solution: editSolution,
-      correct_answer: editAnswer,
-    });
-    setIsEditing(false);
   };
 
   // Badge màu theo mức độ nhận thức Google Minimalist
@@ -275,20 +285,20 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
             {index + 1}
           </span>
           {getTypeBadge(question.type)}
-          {getDifficultyBadge(question.difficulty)}
+          {question.cognitiveLevel && <span className="px-2 py-1 text-xs rounded bg-blue-50 text-blue-800">{getCognitiveFramework(cognitiveFrameworkId)?.levels.find(level => level.id === question.cognitiveLevel)?.label ?? 'Mức cần kiểm tra'}</span>}
           <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800">
-            {formatPointsString(getDefaultPointsForQuestion(question))}
+            {numericScore ? displayPoints === undefined ? 'Chưa đặt điểm' : formatPointsString(displayPoints) : 'Không chấm điểm số'}
           </span>
 
           {/* Nút Hoàn tác (Undo) nếu có lịch sử */}
-          {undoHistory.length > 0 && (
+          {activeUndoHistory.length > 0 && (
             <button
               onClick={handleUndo}
-              title={`Hoàn tác về phiên bản trước (còn ${undoHistory.length} bản lưu)`}
+              title={`Hoàn tác về phiên bản trước (còn ${activeUndoHistory.length} bản lưu)`}
               className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#f1f3f4] dark:bg-[#282828] text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#e8eaed] dark:hover:bg-[#383a3d] border border-[#dadce0] dark:border-[#3c4043] transition-colors"
             >
               <Undo2 className="w-3 h-3" />
-              <span>Hoàn tác ({undoHistory.length})</span>
+              <span>Hoàn tác ({activeUndoHistory.length})</span>
             </button>
           )}
 
@@ -303,6 +313,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
         <div className="flex items-center gap-1.5 flex-wrap">
           <button
             onClick={() => handleAiTweak('change_numbers')}
+            disabled={isLoadingAi || !!pendingNewQuestion}
             title="Đổi số liệu bài toán bằng AI"
             className="flex items-center gap-1.5 px-3 py-1 text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] bg-white dark:bg-[#282828] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] rounded-full transition-colors border border-[#dadce0] dark:border-[#3c4043] shadow-2xs cursor-pointer"
           >
@@ -312,6 +323,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
 
           <button
             onClick={() => handleAiTweak('similar_question')}
+            disabled={isLoadingAi || !!pendingNewQuestion}
             title="Tạo câu hỏi tương đương bằng AI"
             className="flex items-center gap-1.5 px-3 py-1 text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] bg-white dark:bg-[#282828] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] rounded-full transition-colors border border-[#dadce0] dark:border-[#3c4043] shadow-2xs cursor-pointer"
           >
@@ -423,6 +435,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
       </div>
 
       {/* KHUNG KẾT QUẢ THẨM ĐỊNH DUAL-SOLVE AI */}
+      {verification && !verificationCurrent && <p role="alert" className="m-3 text-sm text-amber-700">Câu hoặc phạm vi đã đổi từ khi rà soát. Kết quả AI cũ chưa được dùng cho bản hiện tại; hãy rà soát lại khi cần.</p>}
       {verifyResult && showVerifyDetails && (
         <div className={`m-3 p-3.5 rounded-xl border text-xs space-y-2.5 transition-all ${
           verifyResult.isMatch
@@ -434,7 +447,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
               {verifyResult.isMatch ? (
                 <>
                   <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                  <span>KẾT QUẢ THẨM ĐỊNH AI: ĐÁP ÁN TRÙNG KHỚP 100% (Độ tin cậy: {verifyResult.confidence}%)</span>
+                  <span>AI đề xuất đáp án khớp — cần giáo viên duyệt</span>
                 </>
               ) : (
                 <>
@@ -485,149 +498,30 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
 
       {/* KHUNG DIFF PREVIEW: SO SÁNH BẢN CŨ VS BẢN MỚI TỪ AI */}
       {pendingNewQuestion && (
-        <div className="m-3 p-3.5 bg-amber-50/80 dark:bg-amber-950/40 border-2 border-amber-300 dark:border-amber-700 rounded-xl space-y-3">
-          <div className="flex items-center justify-between pb-2 border-b border-amber-200 dark:border-amber-800">
-            <div className="flex items-center gap-1.5 font-bold text-xs text-amber-900 dark:text-amber-200">
-              <Sparkles className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-              <span>AI ĐÃ TẠO BẢN THAY ĐỔI MỚI (Xem trước khác biệt):</span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleAcceptPendingQuestion}
-                className="flex items-center gap-1 px-4 py-1.5 bg-[#137333] hover:bg-[#0f5a28] text-white font-semibold text-xs rounded-full shadow-xs transition-colors cursor-pointer"
-              >
-                <Check className="w-3.5 h-3.5" />
-                <span>Chấp nhận thay đổi</span>
-              </button>
-
-              <button
-                onClick={handleDiscardPendingQuestion}
-                className="flex items-center gap-1 px-3 py-1.5 bg-[#f1f3f4] dark:bg-[#282828] hover:bg-[#e8eaed] dark:hover:bg-[#303134] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043] font-medium text-xs rounded-full transition-colors cursor-pointer"
-              >
-                <X className="w-3.5 h-3.5" />
-                <span>Giữ câu gốc</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-            {/* Cột bản cũ */}
-            <div className="p-2.5 bg-red-50/60 dark:bg-red-950/30 rounded-xl border border-red-200 dark:border-red-800 space-y-1.5">
-              <span className="font-bold text-red-800 dark:text-red-300 text-[11px] uppercase tracking-wider block">Bản câu hỏi hiện tại:</span>
-              <div className="text-[#202124] dark:text-[#e3e3e3] leading-relaxed">
-                <MathRenderer content={question.content} inline />
-              </div>
-              <div className="text-[#5f6368] dark:text-[#9aa0a6] font-semibold text-[11px] pt-1">
-                Đáp án: {question.correct_answer || 'Chưa có'}
-              </div>
-            </div>
-
-            {/* Cột bản mới */}
-            <div className="p-2.5 bg-emerald-50/80 dark:bg-emerald-950/30 rounded-xl border border-emerald-300 dark:border-emerald-800 space-y-1.5">
-              <span className="font-bold text-emerald-800 dark:text-emerald-300 text-[11px] uppercase tracking-wider block">Bản câu hỏi mới đề xuất:</span>
-              <div className="text-[#202124] dark:text-[#e3e3e3] leading-relaxed font-medium">
-                <MathRenderer content={pendingNewQuestion.content} inline />
-              </div>
-              <div className="text-emerald-800 dark:text-emerald-300 font-bold text-[11px] pt-1">
-                Đáp án mới: {pendingNewQuestion.correct_answer || 'Chưa có'}
-              </div>
-            </div>
-          </div>
-        </div>
+        <QuestionAiReview key={proposalJournal.entry!.key} base={pendingNewQuestion.base} candidate={pendingNewQuestion.question} ownerId={ownerId} documentId={documentId} sourceStamp={sourceStamp} question={question}
+          onSubmit={submission => { setUndoHistory(activeUndoHistory); setPendingUndo(null); onManualSave(submission); }}
+          onApplied={(before, after) => { setUndoHistory([...activeUndoHistory, { before, afterStamp: questionValueStamp(after), sourceStamp }]); setPendingUndo(null); setUndoMessage(''); setVerification(null); proposalJournal.archive(); }}
+          onDiscard={handleDiscardPendingQuestion} />
       )}
 
       {/* Nội dung câu hỏi chính */}
+      {proposalJournal.notice && <p role="status" className="m-3 text-sm text-amber-700">{proposalJournal.notice}</p>}
       <div className="p-4 space-y-3">
+        {undoMessage && <p role="alert" className="text-sm text-amber-700">{undoMessage}</p>}
         {isEditing ? (
-          <div className="space-y-3">
-            <div>
-              <label className="text-xs font-semibold text-[#202124] dark:text-[#e3e3e3] block mb-1">Nội dung câu hỏi (hỗ trợ LaTeX $...$):</label>
-              <textarea
-                value={editContent}
-                onChange={(e) => setEditContent(e.target.value)}
-                rows={3}
-                className="w-full text-sm p-3 border border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#242424] text-[#202124] dark:text-[#e3e3e3] rounded-xl focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] outline-hidden font-mono"
-              />
-            </div>
-            <div>
-              <label className="text-xs font-semibold text-[#202124] dark:text-[#e3e3e3] block mb-1">Lời giải chi tiết:</label>
-              <textarea
-                value={editSolution}
-                onChange={(e) => setEditSolution(e.target.value)}
-                rows={3}
-                className="w-full text-sm p-3 border border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#242424] text-[#202124] dark:text-[#e3e3e3] rounded-xl focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] outline-hidden font-mono"
-              />
-            </div>
-            <div className="flex items-center gap-3">
-              <div>
-                <label className="text-xs font-semibold text-[#202124] dark:text-[#e3e3e3] block mb-1">Đáp án đúng:</label>
-                <input
-                  type="text"
-                  value={editAnswer}
-                  onChange={(e) => setEditAnswer(e.target.value)}
-                  className="w-24 text-sm p-2 border border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#242424] text-[#202124] dark:text-[#e3e3e3] rounded-xl text-center font-bold focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] outline-hidden"
-                />
-              </div>
-              <div className="grow flex justify-end gap-2 pt-5">
-                <button
-                  onClick={() => setIsEditing(false)}
-                  className="px-4 py-1.5 text-xs font-semibold text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] rounded-full transition-colors cursor-pointer"
-                >
-                  Hủy
-                </button>
-                <button
-                  onClick={handleSaveEdit}
-                  className="px-5 py-1.5 text-xs font-semibold text-white bg-[#1a73e8] hover:bg-[#1557b0] dark:bg-[#8ab4f8] dark:text-[#181818] dark:hover:bg-[#a8c7fa] rounded-full shadow-xs transition-colors cursor-pointer"
-                >
-                  Lưu thay đổi
-                </button>
-              </div>
-            </div>
-          </div>
+          <QuestionEditor ownerId={ownerId} documentId={documentId} sourceStamp={sourceStamp} question={question} frameworkId={cognitiveFrameworkId} knowledgePackage={knowledgePackage} knowledgeScope={knowledgeScope} onCancel={() => setIsEditing(false)} onSave={submission => { setUndoHistory(activeUndoHistory); setPendingUndo(null); onManualSave(submission); }} onApplied={previous => { setUndoHistory([...activeUndoHistory, { before: previous, afterStamp: questionValueStamp(question), sourceStamp }]); setPendingUndo(null); setUndoMessage(''); setVerification(null); setIsEditing(false); }} />
         ) : (
           <div className="text-sm text-[#202124] dark:text-[#e3e3e3] leading-relaxed font-serif">
             <MathRenderer content={question.content} />
           </div>
         )}
 
+        {!isEditing && question.passageId && <details className="border rounded p-3"><summary className="cursor-pointer text-sm">{passage?.title || 'Ngữ liệu dùng chung'}</summary>{passage ? <><MathRenderer content={passage.content} />{passage.figures?.map(figure => <FigureView key={figure.id} figure={figure} />)}{passage.source && <p className="text-xs italic">{passage.source}</p>}</> : <p role="note">Chưa tìm thấy ngữ liệu liên kết. Hãy bổ sung trong phần ngữ liệu của đề.</p>}</details>}
+
         {/* Render Hình vẽ / Bảng biến thiên (figures) nếu có */}
         {!isEditing && question.figures && question.figures.length > 0 && (
           <div className="my-2 space-y-2">
-            {question.figures.map((fig) => {
-              if (fig.kind === 'variation_table') {
-                return (
-                  <div key={fig.id} className="overflow-x-auto py-1">
-                    <VariationTable data={fig.data as any} />
-                    {fig.caption && <div className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] italic mt-0.5">{fig.caption}</div>}
-                  </div>
-                );
-              }
-              if (fig.kind === 'function_plot') {
-                return (
-                  <div key={fig.id} className="overflow-x-auto py-1">
-                    <FunctionPlot data={fig.data as any} />
-                    {fig.caption && <div className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] italic mt-0.5">{fig.caption}</div>}
-                  </div>
-                );
-              }
-              if (fig.kind === 'image') {
-                const src = (fig.data as any)?.url || fig.renderedBase64 || (typeof fig.data === 'string' ? fig.data : '');
-                if (src) {
-                  return (
-                    <div key={fig.id} className="py-2">
-                      <img
-                        src={src}
-                        alt={fig.caption || 'Hình vẽ / sơ đồ đính kèm'}
-                        className="max-h-64 max-w-full rounded-xl border border-[#dadce0] dark:border-[#3c4043] shadow-xs object-contain bg-white dark:bg-[#242424]"
-                      />
-                      {fig.caption && <div className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] italic mt-1">{fig.caption}</div>}
-                    </div>
-                  );
-                }
-              }
-              return null;
-            })}
+            {question.figures.map(figure => <FigureView key={figure.id} figure={figure} />)}
           </div>
         )}
 
@@ -687,7 +581,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
                     ? 'bg-[#e6f4ea] dark:bg-[#0f291e] text-[#137333] dark:text-[#5bb98c] border border-[#ceead6] dark:border-[#1e4a34]'
                     : 'bg-[#fce8e6] dark:bg-[#371918] text-[#c5221f] dark:text-[#f28b82] border border-[#fad2cf] dark:border-[#5c2725]'
                 }`}>
-                  {sub.isCorrect ? 'ĐÚNG' : 'SAI'}
+                  {sub.isCorrect === undefined ? 'CHƯA CÓ ĐÁP ÁN' : sub.isCorrect ? 'ĐÚNG' : 'SAI'}
                 </span>
               </div>
             ))}
@@ -755,7 +649,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
           <div className="p-3 bg-[#e8f0fe]/80 dark:bg-[#1e2a38] border border-[#d2e3fc] dark:border-[#2a3f58] rounded-xl space-y-2 text-xs">
             <span className="font-bold text-[#1a73e8] dark:text-[#8ab4f8] block">Ghép nối tương ứng:</span>
             <div className="text-[#1a73e8] dark:text-[#8ab4f8] font-mono font-bold">
-              {question.correct_answer || '1-A, 2-B, 3-C, 4-D'}
+              {question.matchingPairs?.map(pair => `${pair.left} → ${pair.right}`).join('; ') || question.correct_answer || 'Chưa thiết lập'}
             </div>
           </div>
         )}

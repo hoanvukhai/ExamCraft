@@ -1,205 +1,74 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import prisma from '@/lib/prisma';
-import { getCurrentUser } from '@/lib/auth';
-import { encryptApiKey, maskApiKey } from '@/lib/crypto';
+import { requireRequestAuth } from '@/lib/request-auth';
+import { ApiError, apiErrorResponse } from '@/lib/api-error';
+import { encryptApiKey } from '@/lib/crypto';
+import { AVAILABLE_GEMINI_MODELS, checkUserAiQuota, resolveModelId } from '@/lib/gemini-keys';
+import { applicationDayStart, normalizeModelId } from '@/lib/ai-policy';
+import { isSameOriginMutation } from '@/lib/attempt-access';
 
-/**
- * GET /api/user/keys
- * Lấy danh sách API Key cá nhân của người dùng hiện tại kèm thông tin dung lượng/lượt dùng
- */
+const selection = { id: true, label: true, keyMasked: true, isActive: true, createdAt: true, lastUsedAt: true, errorCount: true } as const;
+const CreateSchema = z.object({ apiKey: z.string().trim().min(10).max(500), label: z.string().trim().min(1).max(120).optional() });
+function failure(error: unknown) {
+  if (error instanceof ApiError) return apiErrorResponse(error, 'Yêu cầu quản lý khóa bị từ chối');
+  const message = error instanceof Error ? error.message : '';
+  if (message === 'UNAUTHORIZED') return NextResponse.json({ error: 'Chưa đăng nhập' }, { status: 401 });
+  if (message === 'MUST_CHANGE_PASSWORD') return NextResponse.json({ error: 'Vui lòng đổi mật khẩu trước khi quản lý khóa' }, { status: 403 });
+  console.warn('AI key operation failed');
+  return NextResponse.json({ error: 'Chưa thể xử lý khóa AI. Kiểm tra cấu hình và thử lại.' }, { status: 500 });
+}
 export async function GET(req: NextRequest) {
-  const user = await getCurrentUser();
-  if (!user) {
-    return NextResponse.json({ error: 'Chưa đăng nhập' }, { status: 401 });
-  }
-
-  // Lấy các key đã lưu của user
-  const keys = await prisma.userApiKey.findMany({
-    where: { userId: user.id },
-    orderBy: { createdAt: 'desc' },
-    select: {
-      id: true,
-      label: true,
-      keyMasked: true,
-      isActive: true,
-      createdAt: true,
-      lastUsedAt: true,
-      errorCount: true,
-    },
-  });
-
-  // Tính số lượt AI đã dùng trong ngày hôm nay
-  const startOfDay = new Date();
-  startOfDay.setHours(0, 0, 0, 0);
-
-  const usedToday = await prisma.aiUsageLog.count({
-    where: {
-      userId: user.id,
-      createdAt: { gte: startOfDay },
-      httpStatus: 200,
-    },
-  });
-
-  return NextResponse.json({
-    keys,
-    quota: {
-      dailyLimit: user.aiDailyLimit,
-      usedToday,
-      remaining: Math.max(0, user.aiDailyLimit - usedToday),
-    },
-    hasActiveKey: keys.some((k) => k.isActive),
-  });
+  try {
+    const user = await requireRequestAuth(req);
+    const [keys, quota, usage, settings] = await Promise.all([
+      prisma.userApiKey.findMany({ where: { userId: user.id }, orderBy: { createdAt: 'desc' }, select: selection }),
+      checkUserAiQuota(user.id),
+      prisma.aiUsageLog.groupBy({ by: ['keyAlias'], where: { userId: user.id, createdAt: { gte: applicationDayStart() }, httpStatus: 200 }, _count: { id: true } }),
+      prisma.user.findUnique({ where: { id: user.id }, select: { selectedAiModel: true } }),
+    ]);
+    const used = new Map(usage.map(row => [row.keyAlias, row._count.id]));
+    return NextResponse.json({ keys: keys.map(key => ({ ...key, usedToday: used.get('user_key:' + key.id) ?? 0 })),
+      poolQuota: { activeKeyCount: quota.activeKeyCount, limit: quota.limit, usedToday: quota.used, remaining: quota.remaining, percentageUsed: quota.percentageUsed, source: 'application', resetsAt: quota.resetsAt },
+      providerQuota: null, selectedAiModel: resolveModelId(settings?.selectedAiModel), availableModels: AVAILABLE_GEMINI_MODELS,
+      hasActiveKey: keys.some(key => key.isActive), providerQuotaMessage: 'Quota và billing của Google phụ thuộc project/model; kiểm tra trong AI Studio. Nhiều khóa cùng project không nhân hạn mức.',
+    }, { headers: { 'Cache-Control': 'no-store' } });
+  } catch (error) { return failure(error); }
 }
-
-/**
- * POST /api/user/keys
- * Mã hóa và lưu API Key mới vào Database bằng AES-256-GCM
- */
 export async function POST(req: NextRequest) {
-  const user = await getCurrentUser();
-  if (!user) {
-    return NextResponse.json({ error: 'Chưa đăng nhập' }, { status: 401 });
-  }
-
+  if (!isSameOriginMutation(req)) return NextResponse.json({ error: 'Yêu cầu không hợp lệ' }, { status: 403 });
   try {
-    const body = await req.json();
-    const { apiKey, label } = body;
-
-    if (!apiKey || typeof apiKey !== 'string' || apiKey.trim().length < 10) {
-      return NextResponse.json(
-        { error: 'API Key không hợp lệ. Vui lòng nhập đúng Google Gemini API Key (bắt đầu bằng AIza...)' },
-        { status: 400 }
-      );
-    }
-
-    const trimmedKey = apiKey.trim();
-
-    // Mã hóa bằng AES-256-GCM với IV và Auth Tag
-    const encryptedData = encryptApiKey(trimmedKey);
-
-    const keyLabel = label && typeof label === 'string' && label.trim().length > 0 
-      ? label.trim() 
-      : `Google Gemini Key ${new Date().toLocaleDateString('vi-VN')}`;
-
-    const newKey = await prisma.userApiKey.create({
-      data: {
-        userId: user.id,
-        label: keyLabel,
-        keyEncrypted: encryptedData.keyEncrypted,
-        keyIv: encryptedData.keyIv,
-        keyTag: encryptedData.keyTag,
-        keyMasked: encryptedData.keyMasked,
-        isActive: true,
-      },
-      select: {
-        id: true,
-        label: true,
-        keyMasked: true,
-        isActive: true,
-        createdAt: true,
-        lastUsedAt: true,
-        errorCount: true,
-      },
-    });
-
-    return NextResponse.json({
-      success: true,
-      key: newKey,
-      message: 'Đã lưu và mã hóa API Key an toàn vào hệ thống!',
-    });
-  } catch (err: unknown) {
-    console.error('Lỗi khi lưu API Key:', err);
-    return NextResponse.json(
-      { error: 'Không thể mã hóa và lưu API Key. Vui lòng thử lại.' },
-      { status: 500 }
-    );
-  }
+    const user = await requireRequestAuth(req);
+    const parsed = CreateSchema.safeParse(await req.json().catch(() => null));
+    if (!parsed.success) return NextResponse.json({ error: 'Khóa hoặc tên khóa không hợp lệ' }, { status: 400 });
+    const encrypted = encryptApiKey(parsed.data.apiKey);
+    const key = await prisma.userApiKey.create({ data: { userId: user.id, label: parsed.data.label ?? 'Khóa Gemini', ...encrypted, isActive: true }, select: selection });
+    return NextResponse.json({ success: true, key }, { headers: { 'Cache-Control': 'no-store' } });
+  } catch (error) { return failure(error); }
 }
-
-/**
- * DELETE /api/user/keys
- * Xóa một API Key khỏi tài khoản
- */
 export async function DELETE(req: NextRequest) {
-  const user = await getCurrentUser();
-  if (!user) {
-    return NextResponse.json({ error: 'Chưa đăng nhập' }, { status: 401 });
-  }
-
+  if (!isSameOriginMutation(req)) return NextResponse.json({ error: 'Yêu cầu không hợp lệ' }, { status: 403 });
   try {
-    const { searchParams } = new URL(req.url);
-    const id = searchParams.get('id');
-
-    if (!id) {
-      return NextResponse.json({ error: 'Thiếu ID của API Key cần xóa' }, { status: 400 });
-    }
-
-    // Kiểm tra quyền sở hữu
-    const existingKey = await prisma.userApiKey.findUnique({
-      where: { id },
-    });
-
-    if (!existingKey || existingKey.userId !== user.id) {
-      return NextResponse.json({ error: 'Không tìm thấy API Key hoặc bạn không có quyền xóa' }, { status: 404 });
-    }
-
-    await prisma.userApiKey.delete({
-      where: { id },
-    });
-
-    return NextResponse.json({ success: true, message: 'Đã xóa API Key' });
-  } catch (err) {
-    console.error('Lỗi khi xóa API Key:', err);
-    return NextResponse.json({ error: 'Lỗi server khi xóa API Key' }, { status: 500 });
-  }
+    const user = await requireRequestAuth(req); const id = new URL(req.url).searchParams.get('id');
+    if (!id) return NextResponse.json({ error: 'Thiếu mã khóa' }, { status: 400 });
+    const result = await prisma.userApiKey.deleteMany({ where: { id, userId: user.id } });
+    return NextResponse.json(result.count ? { success: true } : { error: 'Không tìm thấy khóa của bạn' }, { status: result.count ? 200 : 404 });
+  } catch (error) { return failure(error); }
 }
-
-/**
- * PATCH /api/user/keys
- * Bật/tắt trạng thái hoạt động hoặc cập nhật nhãn của API Key
- */
 export async function PATCH(req: NextRequest) {
-  const user = await getCurrentUser();
-  if (!user) {
-    return NextResponse.json({ error: 'Chưa đăng nhập' }, { status: 401 });
-  }
-
+  if (!isSameOriginMutation(req)) return NextResponse.json({ error: 'Yêu cầu không hợp lệ' }, { status: 403 });
   try {
-    const body = await req.json();
-    const { id, isActive, label } = body;
-
-    if (!id) {
-      return NextResponse.json({ error: 'Thiếu ID của API Key' }, { status: 400 });
+    const user = await requireRequestAuth(req); const body = await req.json().catch(() => null);
+    if (body?.action === 'set_model') {
+      const model = normalizeModelId(body.model);
+      if (!model) return NextResponse.json({ error: 'Mã model không hợp lệ' }, { status: 400 });
+      await prisma.user.update({ where: { id: user.id }, data: { selectedAiModel: model } });
+      return NextResponse.json({ success: true, selectedAiModel: model, verified: false });
     }
-
-    const existingKey = await prisma.userApiKey.findUnique({
-      where: { id },
-    });
-
-    if (!existingKey || existingKey.userId !== user.id) {
-      return NextResponse.json({ error: 'Không tìm thấy API Key' }, { status: 404 });
-    }
-
-    const updated = await prisma.userApiKey.update({
-      where: { id },
-      data: {
-        ...(typeof isActive === 'boolean' ? { isActive } : {}),
-        ...(typeof label === 'string' && label.trim() ? { label: label.trim() } : {}),
-      },
-      select: {
-        id: true,
-        label: true,
-        keyMasked: true,
-        isActive: true,
-        createdAt: true,
-        lastUsedAt: true,
-        errorCount: true,
-      },
-    });
-
-    return NextResponse.json({ success: true, key: updated });
-  } catch (err) {
-    console.error('Lỗi khi cập nhật API Key:', err);
-    return NextResponse.json({ error: 'Lỗi server khi cập nhật API Key' }, { status: 500 });
-  }
+    const parsed = z.object({ id: z.string().min(1), isActive: z.boolean().optional(), label: z.string().trim().min(1).max(120).optional() }).strict().safeParse(body);
+    if (!parsed.success) return NextResponse.json({ error: 'Dữ liệu cập nhật không hợp lệ' }, { status: 400 });
+    const result = await prisma.userApiKey.updateMany({ where: { id: parsed.data.id, userId: user.id }, data: { isActive: parsed.data.isActive, label: parsed.data.label } });
+    if (!result.count) return NextResponse.json({ error: 'Không tìm thấy khóa của bạn' }, { status: 404 });
+    return NextResponse.json({ success: true });
+  } catch (error) { return failure(error); }
 }

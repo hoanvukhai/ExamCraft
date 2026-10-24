@@ -16,37 +16,11 @@ import {
   PageBreak,
   ImageRun,
 } from 'docx';
-import { Exam, Question, Figure } from '@/types/exam';
-import { getDefaultPointsForQuestion, formatPointsString } from '@/lib/scoring';
+import { Exam, Figure } from '@/types/exam';
 import { computeExamMatrix, generateDocxMatrixTable } from './matrix-spec-generator';
-
-/**
- * Ánh xạ mã môn nội bộ sang tên môn tiếng Việt chuẩn
- */
-function getSubjectDisplayName(subject: string): string {
-  const map: Record<string, string> = {
-    toan: 'TOÁN HỌC',
-    vat_ly: 'VẬT LÍ',
-    hoa_hoc: 'HÓA HỌC',
-    sinh_hoc: 'SINH HỌC',
-    khtn: 'KHOA HỌC TỰ NHIÊN',
-    ngu_van: 'NGỮ VĂN',
-    lich_su: 'LỊCH SỬ',
-    dia_ly: 'ĐỊA LÍ',
-    lich_su_dia_ly: 'LỊCH SỬ VÀ ĐỊA LÍ',
-    tieng_anh: 'TIẾNG ANH',
-    tieng_viet: 'TIẾNG VIỆT',
-    tu_nhien_xa_hoi: 'TỰ NHIÊN VÀ XÃ HỘI',
-    khoa_hoc: 'KHOA HỌC',
-    gdkt_pl: 'GIÁO DỤC KINH TẾ VÀ PHÁP LUẬT',
-    giao_duc_cong_dan: 'GIÁO DỤC CÔNG DÂN',
-    dao_duc: 'ĐẠO ĐỨC',
-    tin_hoc: 'TIN HỌC',
-    cong_nghe: 'CÔNG NGHỆ',
-    tin_hoc_cong_nghe: 'TIN HỌC VÀ CÔNG NGHỆ',
-  };
-  return map[subject?.toLowerCase()] || subject?.toUpperCase() || 'MÔN HỌC';
-}
+import { matchingDisplay, orderingDisplay } from './structured-question';
+import { examPlanOutput } from './exam-plan-output';
+import { resolveHeaderLines } from './header-layout';
 
 /**
  * Xóa bỏ ký hiệu LaTeX thô hoặc làm sạch chuẩn xác để hiển thị trong Word
@@ -280,19 +254,20 @@ export function renderFiguresForDocx(figures?: Figure[]): (Paragraph | Table)[] 
               new ImageRun({
                 data: imgBuffer,
                 transformation: {
-                  width: 380,
-                  height: 200,
+                  width: (fig as Figure & { exportSize?: { width: number } }).exportSize?.width ?? 380,
+                  height: (fig as Figure & { exportSize?: { height: number } }).exportSize?.height ?? 240,
                 },
-                type: 'png',
+                type: fig.renderedBase64.startsWith('data:image/jpeg') ? 'jpg' : fig.renderedBase64.startsWith('data:image/gif') ? 'gif' : 'png',
               }),
             ],
           })
         );
-      } catch (err) {
-        console.warn('Lỗi chèn ImageRun cho figure:', err);
+      } catch {
+        throw new Error(`Không chèn được hình “${fig.caption ?? fig.id}” vào Word. Dữ liệu gốc vẫn được giữ.`);
       }
     } else if (fig.kind === 'variation_table' && fig.data) {
       const vData = fig.data as any;
+      if (!Array.isArray(vData.xValues) || vData.xValues.length < 2 || !Array.isArray(vData.yPrimeSigns) || !vData.yPrimeSigns.length || !Array.isArray(vData.yValues) || !vData.yValues.length) throw new Error(`Bảng biến thiên “${fig.caption ?? fig.id}” chưa đủ dữ liệu.`);
       if (Array.isArray(vData.xValues) && Array.isArray(vData.yPrimeSigns)) {
         // Tạo bảng biến thiên dạng Table trong docx
         const totalWidth = 8500; // dxa
@@ -403,6 +378,8 @@ export function renderFiguresForDocx(figures?: Figure[]): (Paragraph | Table)[] 
         });
         elements.push(varTable);
       }
+    } else {
+      throw new Error(`Hình “${fig.caption ?? fig.id}” chưa có ảnh để xuất Word. Hãy xuất từ bàn soạn sau khi kiểm tra hình.`);
     }
 
     if (fig.caption) {
@@ -432,105 +409,22 @@ export function renderFiguresForDocx(figures?: Figure[]): (Paragraph | Table)[] 
 export async function exportExamToDocx(
   exam: Exam, 
   includeSolutions: boolean = true, 
-  includeMatrix: boolean = true
+  includeMatrix: boolean = true,
+  view: 'all' | 'exam' | 'answers' | 'solutions' | 'matrix' = 'all'
 ): Promise<Blob> {
   const { metadata, questions } = exam;
 
-  // Bảng Header tiêu đề trường và kỳ thi
-  const headerTable = new Table({
-    width: { size: 100, type: WidthType.PERCENTAGE },
-    borders: {
-      top: { style: BorderStyle.NONE },
-      bottom: { style: BorderStyle.NONE },
-      left: { style: BorderStyle.NONE },
-      right: { style: BorderStyle.NONE },
-      insideHorizontal: { style: BorderStyle.NONE },
-      insideVertical: { style: BorderStyle.NONE },
-    },
-    rows: [
-      new TableRow({
-        children: [
-          new TableCell({
-            width: { size: 50, type: WidthType.PERCENTAGE },
-            children: [
-              new Paragraph({
-                alignment: AlignmentType.CENTER,
-                children: [
-                  new TextRun({
-                    text: (metadata.schoolName || 'SỞ GIÁO DỤC VÀ ĐÀO TẠO').toUpperCase(),
-                    bold: true,
-                    size: 22,
-                    font: 'Times New Roman',
-                  }),
-                ],
-              }),
-              new Paragraph({
-                alignment: AlignmentType.CENTER,
-                children: [
-                  new TextRun({
-                    text: (metadata.departmentName || 'TRƯỜNG THPT').toUpperCase(),
-                    bold: true,
-                    size: 22,
-                    font: 'Times New Roman',
-                  }),
-                ],
-              }),
-              new Paragraph({
-                alignment: AlignmentType.CENTER,
-                children: [
-                  new TextRun({
-                    text: metadata.examCode ? `MÃ ĐỀ: ${metadata.examCode}` : 'ĐỀ THI TIÊU CHUẨN',
-                    bold: true,
-                    size: 22,
-                    color: '1E3A8A',
-                    font: 'Times New Roman',
-                  }),
-                ],
-              }),
-            ],
-          }),
-          new TableCell({
-            width: { size: 50, type: WidthType.PERCENTAGE },
-            children: [
-              new Paragraph({
-                alignment: AlignmentType.CENTER,
-                children: [
-                  new TextRun({
-                    text: (metadata.title || 'ĐỀ THI HỌC KỲ').toUpperCase(),
-                    bold: true,
-                    size: 24,
-                    font: 'Times New Roman',
-                  }),
-                ],
-              }),
-              new Paragraph({
-                alignment: AlignmentType.CENTER,
-                children: [
-                  new TextRun({
-                    text: `Môn: ${getSubjectDisplayName(metadata.subject)} - Khối: ${metadata.grade}`,
-                    bold: true,
-                    size: 22,
-                    font: 'Times New Roman',
-                  }),
-                ],
-              }),
-              new Paragraph({
-                alignment: AlignmentType.CENTER,
-                children: [
-                  new TextRun({
-                    text: `Thời gian làm bài: ${metadata.durationMinutes} phút (Không kể phát đề)`,
-                    italics: true,
-                    size: 20,
-                    font: 'Times New Roman',
-                  }),
-                ],
-              }),
-            ],
-          }),
-        ],
-      }),
-    ],
+  const headerLines = resolveHeaderLines(exam);
+  const headerParagraph = (line: ReturnType<typeof resolveHeaderLines>[number]) => new Paragraph({
+    alignment: line.align === 'left' ? AlignmentType.LEFT : line.align === 'right' ? AlignmentType.RIGHT : AlignmentType.CENTER,
+    children: [new TextRun({ text: line.text, bold: line.bold, italics: line.italic, font: 'Times New Roman', size: 22 })],
   });
+  const headerAreas = ['left', 'right'].filter(area => headerLines.some(line => line.area === area));
+  const headerBlocks: (Paragraph | Table)[] = headerAreas.length ? [new Table({
+    width: { size: 100, type: WidthType.PERCENTAGE },
+    borders: { top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE }, left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE }, insideHorizontal: { style: BorderStyle.NONE }, insideVertical: { style: BorderStyle.NONE } },
+    rows: [new TableRow({ children: headerAreas.map(area => new TableCell({ width: { size: 100 / headerAreas.length, type: WidthType.PERCENTAGE }, children: headerLines.filter(line => line.area === area).map(headerParagraph) })) })],
+  })] : [];
 
   // Thông tin học sinh & số báo danh
   const studentInfoTable = new Table({
@@ -581,23 +475,27 @@ export async function exportExamToDocx(
     ],
   });
 
-  // Gom các phần câu hỏi
-  const part1 = questions.filter(q => q.type === 'multiple_choice');
-  const part2 = questions.filter(q => q.type === 'true_false_group');
-  const part3 = questions.filter(q => q.type === 'short_answer');
-  const part4 = questions.filter(q => !['multiple_choice', 'true_false_group', 'short_answer'].includes(q.type));
-
   const docChildren: (Paragraph | Table)[] = [];
 
   // Nếu bật tùy chọn Ma trận: Chèn bảng Ma trận CV 7991 lên trang đầu
   if (includeMatrix) {
+    const plan = examPlanOutput(exam);
+    if (plan) {
+      const text = (value: string, bold = false) => new Paragraph({ spacing: { before: 60, after: 60 }, children: [new TextRun({ text: value, bold, font: 'Times New Roman', size: 19 })] });
+      docChildren.push(text(plan.title, true), text(plan.disclaimer), text(plan.status, true), ...plan.summaries.map(value => text(value)));
+      if (plan.headers.length) {
+        const row = (cells: string[], header = false) => new TableRow({ tableHeader: header, children: cells.map(value => new TableCell({ width: { size: 25, type: WidthType.PERCENTAGE }, children: [text(value, header)] })) });
+        docChildren.push(new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [row(plan.headers, true), ...plan.rows.map(cells => row(cells))] }));
+      }
+      if (plan.warnings.length) docChildren.push(text('Cần rà soát', true), ...plan.warnings.map(value => text(value)));
+    }
     docChildren.push(
       new Paragraph({
         alignment: AlignmentType.CENTER,
         spacing: { before: 100, after: 140 },
         children: [
           new TextRun({
-            text: 'KHUNG MA TRẬN ĐỀ KIỂM TRA ĐỊNH KỲ (THEO CÔNG VĂN 7991/BGDĐT)',
+            text: 'BẢNG PHÂN BỔ CÂU HỎI — THEO KHUNG ĐÃ CHỌN',
             bold: true,
             size: 24,
             font: 'Times New Roman',
@@ -612,8 +510,9 @@ export async function exportExamToDocx(
     );
   }
 
+  const questionBodyStart = docChildren.length;
   docChildren.push(
-    headerTable,
+    ...headerBlocks,
     new Paragraph({ spacing: { before: 100, after: 100 } }),
     studentInfoTable,
     new Paragraph({ spacing: { before: 150, after: 100 } }),
@@ -647,245 +546,44 @@ export async function exportExamToDocx(
           ],
         })
       );
+      docChildren.push(...renderFiguresForDocx(p.figures));
+      if (p.source) docChildren.push(new Paragraph({ children: [new TextRun({ text: p.source, italics: true, size: 20 })] }));
     }
   }
 
-  let currentQuestionNum = 1;
-
-  // PHẦN I: TRẮC NGHIỆM NHIỀU LỰA CHỌN
-  if (part1.length > 0) {
-    docChildren.push(
-      new Paragraph({
-        spacing: { before: 200, after: 120 },
-        children: [
-          new TextRun({
-            text: 'PHẦN I. Thí sinh trả lời từ câu ' + currentQuestionNum + ' đến câu ' + (currentQuestionNum + part1.length - 1) + '. Mỗi câu hỏi thí sinh chỉ chọn một phương án.',
-            bold: true,
-            size: 22,
-            font: 'Times New Roman',
-          }),
-        ],
-      })
-    );
-
-    for (const q of part1) {
-      const qPts = formatPointsString(getDefaultPointsForQuestion(q, exam));
-      docChildren.push(
-        new Paragraph({
-          spacing: { before: 100, after: 60 },
-          keepNext: true,
-          keepLines: true,
-          children: [
-            new TextRun({
-              text: `Câu ${currentQuestionNum} `,
-              bold: true,
-              font: 'Times New Roman',
-              size: 22,
-            }),
-            new TextRun({
-              text: `(${qPts}): `,
-              italics: true,
-              font: 'Times New Roman',
-              size: 20,
-            }),
-            ...renderLatexRunsForWord(q.content, { fontSize: 22 }),
-          ],
-        })
-      );
-
-      // Chèn hình vẽ, đồ thị, bảng biến thiên (EXP-BUG-001)
-      docChildren.push(...renderFiguresForDocx(q.figures));
-
-      // Hiển thị các phương án A, B, C, D
-      if (q.choices && q.choices.length > 0) {
-        const choiceRuns: (TextRun | Math)[] = [];
-        q.choices.forEach((c, i) => {
-          choiceRuns.push(
-            new TextRun({
-              text: `${c.key}. `,
-              bold: true,
-              font: 'Times New Roman',
-              size: 22,
-            })
-          );
-          choiceRuns.push(...renderLatexRunsForWord(c.text, { fontSize: 22 }));
-          if (i < q.choices!.length - 1) {
-            choiceRuns.push(new TextRun({ text: '          ', font: 'Times New Roman', size: 22 }));
-          }
-        });
-
-        docChildren.push(
-          new Paragraph({
-            indent: { left: 400 },
-            spacing: { after: 120 },
-            keepLines: true,
-            children: choiceRuns,
-          })
-        );
-      }
-
-      currentQuestionNum++;
+  // Follow the editor's ordering so answer numbers and shared passages remain linked.
+  const sections = (exam as Exam & { sections?: { id: string; title?: string; label?: string; name?: string }[] }).sections ?? [];
+  let previousSection: string | undefined;
+  questions.forEach((q, index) => {
+    if (q.sectionId && q.sectionId !== previousSection) {
+      const section = sections.find(section => section.id === q.sectionId);
+      if (section?.title || section?.label || section?.name) docChildren.push(new Paragraph({ children: [new TextRun({ text: section.title ?? section.label ?? section.name!, bold: true, size: 23 })], spacing: { before: 200, after: 100 } }));
+      previousSection = q.sectionId;
     }
-  }
-
-  // PHẦN II: TRẮC NGHIỆM ĐÚNG/SAI
-  if (part2.length > 0) {
-    docChildren.push(
-      new Paragraph({
-        spacing: { before: 300, after: 120 },
-        keepNext: true,
-        children: [
-          new TextRun({
-            text: 'PHẦN II. Thí sinh trả lời từ câu ' + currentQuestionNum + ' đến câu ' + (currentQuestionNum + part2.length - 1) + '. Trong mỗi ý a), b), c), d) ở mỗi câu, thí sinh chọn Đúng hoặc Sai. (Đúng 1 ý được 0,1 điểm; đúng 2 ý được 0,25 điểm; đúng 3 ý được 0,5 điểm; đúng cả 4 ý được 1,0 điểm)',
-            bold: true,
-            size: 22,
-            font: 'Times New Roman',
-          }),
-        ],
-      })
-    );
-
-    for (const q of part2) {
-      const qPts = formatPointsString(getDefaultPointsForQuestion(q, exam));
-      docChildren.push(
-        new Paragraph({
-          spacing: { before: 100, after: 60 },
-          keepNext: true,
-          keepLines: true,
-          children: [
-            new TextRun({
-              text: `Câu ${currentQuestionNum} `,
-              bold: true,
-              font: 'Times New Roman',
-              size: 22,
-            }),
-            new TextRun({
-              text: `(${qPts}): `,
-              italics: true,
-              font: 'Times New Roman',
-              size: 20,
-            }),
-            ...renderLatexRunsForWord(q.content, { fontSize: 22 }),
-          ],
-        })
-      );
-
-      // Chèn hình vẽ, đồ thị, bảng biến thiên (EXP-BUG-001)
-      docChildren.push(...renderFiguresForDocx(q.figures));
-
-      if (q.sub_questions && q.sub_questions.length > 0) {
-        for (let sIdx = 0; sIdx < q.sub_questions.length; sIdx++) {
-          const sq = q.sub_questions[sIdx];
-          const isLast = sIdx === q.sub_questions.length - 1;
-          docChildren.push(
-            new Paragraph({
-              indent: { left: 400 },
-              spacing: { after: isLast ? 120 : 40 },
-              keepNext: !isLast,
-              keepLines: true,
-              children: [
-                new TextRun({
-                  text: `${sq.key}) `,
-                  bold: true,
-                  font: 'Times New Roman',
-                  size: 22,
-                }),
-                ...renderLatexRunsForWord(sq.content, { fontSize: 22 }),
-              ],
-            })
-          );
-        }
-      }
-
-      currentQuestionNum++;
+    docChildren.push(new Paragraph({ spacing: { before: 140, after: 80 }, children: [new TextRun({ text: 'Câu ' + (index + 1) + ': ', bold: true, size: 22 }), ...renderLatexRunsForWord(q.content, { fontSize: 22 })] }));
+    if (q.passageId) {
+      const passage = exam.passages?.find(p => p.id === q.passageId);
+      docChildren.push(new Paragraph({ children: [new TextRun({ text: passage ? 'Theo ngữ liệu: ' + (passage.title ?? passage.id) : '[Thiếu ngữ liệu liên kết: ' + q.passageId + ']', italics: true, size: 20 })] }));
     }
-  }
-
-  // PHẦN III: TRẢ LỜI NGẮN
-  if (part3.length > 0) {
-    docChildren.push(
-      new Paragraph({
-        spacing: { before: 300, after: 120 },
-        children: [
-          new TextRun({
-            text: 'PHẦN III. Thí sinh trả lời các câu hỏi sau bằng cách điền đáp số vào phiếu trả lời.',
-            bold: true,
-            size: 22,
-            font: 'Times New Roman',
-          }),
-        ],
-      })
-    );
-
-    for (const q of part3) {
-      const qPts = formatPointsString(getDefaultPointsForQuestion(q, exam));
-      docChildren.push(
-        new Paragraph({
-          spacing: { before: 100, after: 80 },
-          keepLines: true,
-          children: [
-            new TextRun({
-              text: `Câu ${currentQuestionNum} `,
-              bold: true,
-              font: 'Times New Roman',
-              size: 22,
-            }),
-            new TextRun({
-              text: `(${qPts}): `,
-              italics: true,
-              font: 'Times New Roman',
-              size: 20,
-            }),
-            ...renderLatexRunsForWord(q.content, { fontSize: 22 }),
-          ],
-        })
-      );
-
-      // Chèn hình vẽ, đồ thị, bảng biến thiên (EXP-BUG-001)
-      docChildren.push(...renderFiguresForDocx(q.figures));
-
-      currentQuestionNum++;
+    if (q.type === 'multiple_choice') q.choices?.forEach(choice => docChildren.push(new Paragraph({ indent: { left: 300 }, children: [new TextRun({ text: choice.key + '. ', bold: true, size: 22 }), ...renderLatexRunsForWord(choice.text, { fontSize: 22 })] })));
+    if (q.type === 'true_false_group') q.sub_questions?.forEach(sub => docChildren.push(new Paragraph({ indent: { left: 300 }, children: [new TextRun({ text: sub.key + ') ', bold: true, size: 22 }), ...renderLatexRunsForWord(sub.content, { fontSize: 22 }), new TextRun({ text: '    □ Đúng    □ Sai', size: 20 })] })));
+    if (q.type === 'matching') {
+      const matching = matchingDisplay(q);
+      if (matching) {
+        const row = (left: string, right: string) => new TableRow({ children: [left, right].map(text => new TableCell({ width: { size: 50, type: WidthType.PERCENTAGE }, children: [new Paragraph({ children: renderLatexRunsForWord(text, { fontSize: 22 }) })] })) });
+        docChildren.push(new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [row('Cột trái', 'Cột phải'), ...Array.from({ length: globalThis.Math.max(matching.left.length, matching.right.length) }, (_, i) => row(matching.left[i] ? (i + 1) + '. ' + matching.left[i].text : '', matching.right[i] ? String.fromCharCode(65 + i) + '. ' + matching.right[i].text : ''))] }));
+      } else docChildren.push(new Paragraph('[Chưa thiết lập hai cột ghép nối]'));
     }
-  }
-
-  // PHẦN IV: TỰ LUẬN / NGOẠI NGỮ
-  if (part4.length > 0) {
-    docChildren.push(
-      new Paragraph({
-        spacing: { before: 300, after: 120 },
-        children: [
-          new TextRun({
-            text: 'PHẦN IV. TỰ LUẬN / PHẦN MỞ RỘNG (Trình bày chi tiết)',
-            bold: true,
-            size: 22,
-            font: 'Times New Roman',
-          }),
-        ],
-      })
-    );
-
-    for (const q of part4) {
-      docChildren.push(
-        new Paragraph({
-          spacing: { before: 100, after: 80 },
-          children: [
-            new TextRun({
-              text: `Câu ${currentQuestionNum}: `,
-              bold: true,
-              font: 'Times New Roman',
-              size: 22,
-            }),
-            ...renderLatexRunsForWord(q.content, { fontSize: 22 }),
-          ],
-        })
-      );
-
-      // Chèn hình vẽ, đồ thị, bảng biến thiên (EXP-BUG-001)
-      docChildren.push(...renderFiguresForDocx(q.figures));
-
-      currentQuestionNum++;
+    if (q.type === 'ordering') {
+      const ordering = orderingDisplay(q);
+      if (ordering) ordering.items.forEach((item, i) => docChildren.push(new Paragraph({ children: [new TextRun({ text: '[' + (i + 1) + '] ', bold: true }), ...renderLatexRunsForWord(item.text, { fontSize: 22 })] })));
+      else docChildren.push(new Paragraph('[Chưa thiết lập các mục sắp xếp]'));
     }
-  }
+    if (['short_answer', 'fill_blank', 'ordering', 'matching'].includes(q.type)) docChildren.push(new Paragraph('Trả lời: ................................................................................'));
+    docChildren.push(...renderFiguresForDocx(q.figures));
+  });
+
+  docChildren.push(...headerLines.filter(line => line.area === 'footer').map(headerParagraph));
 
   // Cuối đề thi
   docChildren.push(
@@ -903,11 +601,13 @@ export async function exportExamToDocx(
     })
   );
 
+  if (['answers', 'solutions', 'matrix'].includes(view)) docChildren.splice(questionBodyStart);
+
   // NẾU CÓ ĐÁP ÁN & LỜI GIẢI CHI TIẾT
-  if (includeSolutions) {
+  if (includeSolutions && view !== 'exam' && view !== 'matrix') {
     docChildren.push(
       new Paragraph({
-        pageBreakBefore: true,
+        pageBreakBefore: view === 'all',
         alignment: AlignmentType.CENTER,
         spacing: { before: 200, after: 200 },
         children: [
@@ -925,14 +625,18 @@ export async function exportExamToDocx(
     questions.forEach((q, idx) => {
       let answerLabel = '';
       if (q.type === 'multiple_choice') {
-        answerLabel = `Đáp án đúng: ${q.correct_answer || 'A'}`;
+        answerLabel = `Đáp án đúng: ${q.correct_answer || 'Chưa đặt đáp án'}`;
       } else if (q.type === 'true_false_group') {
         const tfDetails = q.sub_questions
-          ?.map(sq => `${sq.key}) ${sq.isCorrect ? 'Đúng' : 'Sai'}`)
+          ?.map(sq => `${sq.key}) ${sq.isCorrect === undefined ? 'Chưa có đáp án' : sq.isCorrect ? 'Đúng' : 'Sai'}`)
           .join('   ') || '';
         answerLabel = `Đáp án: ${tfDetails || (q.correct_answer || '')}`;
-      } else if (q.type === 'short_answer') {
+      } else if (q.type === 'short_answer' || q.type === 'fill_blank') {
         answerLabel = `Đáp số: ${q.correct_answer || ''}`;
+      } else if (q.type === 'matching') {
+        answerLabel = 'Cặp đúng: ' + (q.matchingPairs?.map(pair => pair.left + ' → ' + pair.right).join('; ') || q.correct_answer || 'Chưa đặt đáp án');
+      } else if (q.type === 'ordering') {
+        answerLabel = 'Thứ tự đúng: ' + (q.correctOrder?.join(' → ') || q.correct_answer || 'Chưa đặt đáp án');
       } else {
         answerLabel = 'Hướng dẫn chấm / Lời giải:';
       }
@@ -968,7 +672,7 @@ export async function exportExamToDocx(
                 spacing: { after: 30 },
                 children: [
                   new TextRun({
-                    text: `Ý ${sq.key}) (${sq.isCorrect ? 'Đúng' : 'Sai'}): `,
+                    text: `Ý ${sq.key}) (${sq.isCorrect === undefined ? 'Chưa có đáp án' : sq.isCorrect ? 'Đúng' : 'Sai'}): `,
                     bold: true,
                     font: 'Times New Roman',
                     size: 20,
@@ -1037,7 +741,7 @@ export async function exportExamToDocx(
         );
       }
 
-      if (q.step_by_step_solution) {
+      if (q.step_by_step_solution && view !== 'answers') {
         docChildren.push(
           new Paragraph({
             indent: { left: 400 },

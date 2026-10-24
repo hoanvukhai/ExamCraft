@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import crypto from 'crypto';
 import prisma from '@/lib/prisma';
-import { requireAuth } from '@/lib/auth';
+import { requireRequestAuth } from '@/lib/request-auth';
+import { ApiError, apiErrorResponse } from '@/lib/api-error';
+import { fromDatabaseExam } from '@/lib/exam-document';
+import { freezeExamScoring } from '@/lib/snapshot-scoring';
 import {
   AssignmentMode,
   IdentityMode,
@@ -17,8 +20,8 @@ const CreateAssignmentSchema = z.object({
   title: z.string().min(1, 'Tiêu đề bài giao không được để trống'),
   mode: z.nativeEnum(AssignmentMode).default(AssignmentMode.HOMEWORK),
   identityMode: z.nativeEnum(IdentityMode).default(IdentityMode.PICK_FROM_LIST),
-  opensAt: z.string().optional(),
-  closesAt: z.string().optional(),
+  opensAt: z.iso.datetime({ offset: true }).optional(),
+  closesAt: z.iso.datetime({ offset: true }).optional(),
   durationMinutes: z.number().int().min(1).optional(),
   maxAttempts: z.number().int().min(1).max(10).default(1),
   shuffleQuestions: z.boolean().default(false),
@@ -32,15 +35,17 @@ const CreateAssignmentSchema = z.object({
   leaderboardAnonymous: z.boolean().default(false),
 });
 
+type ExamWithSections = { sections?: unknown };
+
 function generatePublicId(): string {
   // Sinh mã slug 10 ký tự thân thiện dễ dùng trên URL
-  return crypto.randomBytes(5).toString('hex');
+  return crypto.randomBytes(16).toString('hex');
 }
 
 // GET: Lấy danh sách bài giao của giáo viên
 export async function GET(req: NextRequest) {
   try {
-    const user = await requireAuth();
+    const user = await requireRequestAuth(req);
     const { searchParams } = new URL(req.url);
     const groupId = searchParams.get('groupId') || undefined;
 
@@ -60,7 +65,9 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ assignments });
   } catch (error: unknown) {
+    if (error instanceof ApiError) return apiErrorResponse(error, 'Chưa đọc được bài giao');
     const err = error as Error;
+    if (err.message === 'MUST_CHANGE_PASSWORD') return NextResponse.json({ error: 'Vui lòng đổi mật khẩu trước khi tiếp tục' }, { status: 403 });
     if (err.message === 'UNAUTHORIZED') {
       return NextResponse.json({ error: 'Chưa đăng nhập' }, { status: 401 });
     }
@@ -72,7 +79,7 @@ export async function GET(req: NextRequest) {
 // POST: Giáo viên giao bài (tự động chụp snapshot đề thi bất biến)
 export async function POST(req: NextRequest) {
   try {
-    const user = await requireAuth();
+    const user = await requireRequestAuth(req);
     const body = await req.json();
     const parsed = CreateAssignmentSchema.safeParse(body);
 
@@ -87,10 +94,10 @@ export async function POST(req: NextRequest) {
 
     // Lấy đề thi gốc kèm toàn bộ câu hỏi để tạo snapshot bất biến
     const exam = await prisma.exam.findFirst({
-      where: { id: data.examId, deletedAt: null },
+      where: { id: data.examId, ownerId: user.id, deletedAt: null },
       include: {
         items: {
-          include: { question: true },
+          include: { question: { include: { passage: true } } },
           orderBy: { position: 'asc' },
         },
       },
@@ -100,29 +107,27 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Không tìm thấy đề thi cần giao' }, { status: 404 });
     }
 
-    // Tạo bản chụp bất biến (SNAPSHOT)
+    if (exam.items.length === 0 || exam.items.some(item => item.question.deletedAt || item.question.ownerId !== user.id)) {
+      return NextResponse.json({ error: 'Đề phải có câu hỏi hợp lệ thuộc quyền sở hữu của bạn' }, { status: 400 });
+    }
+    const opensAt = data.opensAt ? new Date(data.opensAt) : new Date();
+    const closesAt = data.closesAt ? new Date(data.closesAt) : null;
+    if (closesAt && closesAt <= opensAt) return NextResponse.json({ error: 'Thời gian đóng phải sau thời gian mở' }, { status: 400 });
+    if (data.identityMode !== 'FREE_NAME' && !data.groupId) return NextResponse.json({ error: 'Hãy chọn lớp cho chế độ nhận diện này hoặc chọn tự nhập tên' }, { status: 400 });
+    if (data.groupId) {
+      const group = await prisma.group.findFirst({ where: { id: data.groupId, ownerId: user.id, archivedAt: null } });
+      if (!group) return NextResponse.json({ error: 'Không tìm thấy lớp thuộc quyền quản lý của bạn' }, { status: 404 });
+    }
+
+    const document = fromDatabaseExam(exam);
+    const frozen = freezeExamScoring(document, (document as ExamWithSections).sections ?? exam.sections);
+    if (frozen.missing.length) return NextResponse.json({ error: 'Còn ' + frozen.missing.length + ' câu chưa có điểm. Hãy đặt điểm hoặc chọn nhận xét/khảo sát trước khi giao bài.' }, { status: 400 });
     const snapshot = {
-      examId: exam.id,
-      title: exam.title,
-      subject: exam.subject,
-      grade: exam.grade,
+      ...document,
+      examId: exam.id, title: exam.title, subject: exam.subject, grade: exam.grade,
       durationMinutes: data.durationMinutes || exam.durationMinutes || 60,
-      metadata: exam.metadata,
-      sections: exam.sections,
+      sections: frozen.sections, questions: frozen.questions,
       snapshotAt: new Date().toISOString(),
-      questions: exam.items.map((item) => ({
-        id: item.question.id,
-        sectionId: item.sectionId,
-        position: item.position,
-        pointsOverride: item.pointsOverride,
-        type: item.question.type,
-        difficulty: item.question.difficulty,
-        content: item.question.content,
-        figures: item.question.figures,
-        payload: item.question.payload,
-        solution: item.question.solution,
-        points: item.pointsOverride ?? item.question.points,
-      })),
     };
 
     let publicId = generatePublicId();
@@ -142,9 +147,9 @@ export async function POST(req: NextRequest) {
         identityMode: data.identityMode,
         publicId,
         snapshot: JSON.parse(JSON.stringify(snapshot)),
-        opensAt: data.opensAt ? new Date(data.opensAt) : new Date(),
-        closesAt: data.closesAt ? new Date(data.closesAt) : null,
-        durationMinutes: data.durationMinutes || exam.durationMinutes,
+        opensAt,
+        closesAt,
+        durationMinutes: data.durationMinutes || exam.durationMinutes || 60,
         maxAttempts: data.maxAttempts,
         shuffleQuestions: data.shuffleQuestions,
         shuffleChoices: data.shuffleChoices,
@@ -168,7 +173,9 @@ export async function POST(req: NextRequest) {
       message: 'Giao bài thành công! Bản chụp đề thi bất biến đã được tạo an toàn.',
     });
   } catch (error: unknown) {
+    if (error instanceof ApiError) return apiErrorResponse(error, 'Chưa tạo được bài giao');
     const err = error as Error;
+    if (err.message === 'MUST_CHANGE_PASSWORD') return NextResponse.json({ error: 'Vui lòng đổi mật khẩu trước khi tiếp tục' }, { status: 403 });
     if (err.message === 'UNAUTHORIZED') {
       return NextResponse.json({ error: 'Chưa đăng nhập' }, { status: 401 });
     }

@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { logoutSession } from '@/lib/auth-client';
 import {
   Users,
   UserPlus,
@@ -20,7 +22,10 @@ import {
   AlertCircle,
   X,
   Sliders,
+  Sun,
+  Moon,
 } from 'lucide-react';
+import { useTheme } from '@/components/ThemeProvider';
 
 interface TeacherUser {
   id: string;
@@ -41,10 +46,12 @@ interface TeacherUser {
 
 export default function AdminUsersPage() {
   const router = useRouter();
+  const { theme, toggleTheme } = useTheme();
   const [users, setUsers] = useState<TeacherUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentUser, setCurrentUser] = useState<{ id: string; email: string; name: string } | null>(null);
+  const [logoutError, setLogoutError] = useState('');
 
   // Modal states
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -115,8 +122,9 @@ export default function AdminUsersPage() {
   }, []);
 
   const handleLogout = async () => {
-    await fetch('/api/auth/logout', { method: 'POST' });
-    router.push('/login');
+    setLogoutError('');
+    try { await logoutSession(currentUser?.id); router.push('/login'); router.refresh(); }
+    catch (error) { setLogoutError(error instanceof Error ? error.message : 'Chưa đăng xuất được.'); }
   };
 
   const generateRandomPassword = () => {
@@ -268,7 +276,7 @@ export default function AdminUsersPage() {
   const totalExams = users.reduce((acc, u) => acc + (u._count?.exams || 0), 0);
 
   return (
-    <div className="min-h-screen bg-[#181818] text-[#e3e3e3] flex flex-col">
+    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#181818] text-[#202124] dark:text-[#e3e3e3] flex flex-col transition-colors duration-200">
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed top-5 right-5 z-50 bg-[#137333] text-white px-4 py-3 rounded-full shadow-2xl flex items-center gap-2.5 animate-in slide-in-from-top-3 duration-200 text-sm font-medium">
@@ -278,41 +286,60 @@ export default function AdminUsersPage() {
       )}
 
       {/* Top Navbar */}
-      <header className="border-b border-[#3c4043] bg-[#1e1e1e]/80 backdrop-blur-md sticky top-0 z-30 px-4 sm:px-8 py-3.5 flex items-center justify-between">
+      <header className="border-b border-[#dadce0] dark:border-[#3c4043] bg-white/80 dark:bg-[#1e1e1e]/80 backdrop-blur-md sticky top-0 z-30 px-4 sm:px-8 py-3.5 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-2xl bg-[#8ab4f8] text-[#181818] flex items-center justify-center shadow-md">
+          <div className="w-9 h-9 rounded-2xl bg-[#1a73e8] dark:bg-[#8ab4f8] text-white dark:text-[#181818] flex items-center justify-center shadow-md">
             <Sparkles className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-bold text-base tracking-tight text-[#e3e3e3]">ExamCraft</span>
-              <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[#1e2a38] text-[#8ab4f8] font-semibold uppercase tracking-wider border border-[#8ab4f8]/30">
+              <span className="font-bold text-base tracking-tight text-[#202124] dark:text-[#e3e3e3]">ExamCraft</span>
+              <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] font-semibold uppercase tracking-wider border border-[#1a73e8]/20 dark:border-[#8ab4f8]/30">
                 Admin Panel
               </span>
             </div>
-            <p className="text-[11px] text-[#9aa0a6]">Quản trị người dùng & hệ thống v3.1</p>
+            <p className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6]">Quản trị người dùng & hệ thống v3.1</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          {/* Link to AI Hub */}
+          <Link
+            href="/admin/ai"
+            className="text-xs text-[#1a73e8] hover:text-[#1557b0] dark:text-[#8ab4f8] dark:hover:text-[#aecbfa] px-3.5 py-1.5 rounded-full border border-[#1a73e8]/30 dark:border-[#8ab4f8]/30 bg-[#e8f0fe] dark:bg-[#1e2a38] transition-colors flex items-center gap-1.5"
+          >
+            <Bot className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Giám sát AI Keys</span>
+          </Link>
+
           <button
             onClick={() => router.push('/')}
-            className="text-xs text-[#e3e3e3] hover:text-white px-3.5 py-1.5 rounded-full border border-[#3c4043] hover:border-[#5f6368] bg-[#242424] transition-colors cursor-pointer"
+            className="text-xs text-[#3c4043] dark:text-[#e3e3e3] hover:text-black dark:hover:text-white px-3.5 py-1.5 rounded-full border border-[#dadce0] dark:border-[#3c4043] hover:border-[#bdc1c6] dark:hover:border-[#5f6368] bg-white dark:bg-[#242424] transition-colors cursor-pointer"
           >
             ← Về trang Soạn Đề
           </button>
 
+          {/* Theme Toggle Button */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            title={theme === 'dark' ? 'Chuyển sang giao diện Sáng' : 'Chuyển sang giao diện Tối'}
+            className="p-2 rounded-full border border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#242424] text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] transition-colors cursor-pointer"
+          >
+            {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-[#5f6368]" />}
+          </button>
+
           {currentUser && (
-            <div className="hidden sm:flex items-center gap-2 bg-[#242424] border border-[#3c4043] px-3.5 py-1.5 rounded-full text-xs">
-              <ShieldCheck className="w-4 h-4 text-[#8ab4f8]" />
-              <span className="text-[#e3e3e3] font-medium">{currentUser.email}</span>
+            <div className="hidden sm:flex items-center gap-2 bg-white dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] px-3.5 py-1.5 rounded-full text-xs">
+              <ShieldCheck className="w-4 h-4 text-[#1a73e8] dark:text-[#8ab4f8]" />
+              <span className="text-[#3c4043] dark:text-[#e3e3e3] font-medium">{currentUser.email}</span>
             </div>
           )}
 
           <button
             onClick={handleLogout}
             title="Đăng xuất"
-            className="p-2 rounded-full text-[#9aa0a6] hover:text-[#f28b82] hover:bg-[#371918] transition-colors cursor-pointer"
+            className="p-2 rounded-full text-[#5f6368] dark:text-[#9aa0a6] hover:text-rose-600 dark:hover:text-[#f28b82] hover:bg-rose-50 dark:hover:bg-[#371918] transition-colors cursor-pointer"
           >
             <LogOut className="w-4 h-4" />
           </button>
@@ -320,49 +347,53 @@ export default function AdminUsersPage() {
       </header>
 
       {/* Main Content */}
+      {logoutError && <p role="alert" className="px-4 py-2 text-sm text-red-600">{logoutError}</p>}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-8 space-y-6">
         {/* Stat Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="bg-[#1e1e1e] border border-[#3c4043] rounded-2xl p-5 shadow-xs">
-            <div className="flex items-center justify-between text-[#9aa0a6] mb-2">
+          <div className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-5 shadow-xs">
+            <div className="flex items-center justify-between text-[#5f6368] dark:text-[#9aa0a6] mb-2">
               <span className="text-xs font-medium">Tổng giáo viên</span>
-              <Users className="w-4 h-4 text-[#8ab4f8]" />
+              <Users className="w-4 h-4 text-[#1a73e8] dark:text-[#8ab4f8]" />
             </div>
-            <div className="text-2xl font-bold text-[#e3e3e3]">{totalTeachers}</div>
-            <div className="text-[11px] text-[#5bb98c] mt-1 flex items-center gap-1">
+            <div className="text-2xl font-bold text-[#202124] dark:text-[#e3e3e3]">{totalTeachers}</div>
+            <div className="text-[11px] text-emerald-600 dark:text-[#5bb98c] mt-1 flex items-center gap-1">
               <span>{activeTeachers} đang hoạt động</span>
             </div>
           </div>
 
-          <div className="bg-[#1e1e1e] border border-[#3c4043] rounded-2xl p-5 shadow-xs">
-            <div className="flex items-center justify-between text-[#9aa0a6] mb-2">
+          <div className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-5 shadow-xs">
+            <div className="flex items-center justify-between text-[#5f6368] dark:text-[#9aa0a6] mb-2">
               <span className="text-xs font-medium">Đề thi trên hệ thống</span>
-              <FileText className="w-4 h-4 text-[#8ab4f8]" />
+              <FileText className="w-4 h-4 text-[#1a73e8] dark:text-[#8ab4f8]" />
             </div>
-            <div className="text-2xl font-bold text-[#e3e3e3]">{totalExams}</div>
-            <div className="text-[11px] text-[#9aa0a6] mt-1">Lưu trữ trên PostgreSQL server</div>
+            <div className="text-2xl font-bold text-[#202124] dark:text-[#e3e3e3]">{totalExams}</div>
+            <div className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] mt-1">Lưu trữ trên PostgreSQL server</div>
           </div>
 
-          <div className="bg-[#1e1e1e] border border-[#3c4043] rounded-2xl p-5 shadow-xs">
-            <div className="flex items-center justify-between text-[#9aa0a6] mb-2">
+          <Link
+            href="/admin/ai"
+            className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] hover:border-[#1a73e8]/40 dark:hover:border-[#8ab4f8]/40 rounded-2xl p-5 shadow-xs transition-colors block cursor-pointer group"
+          >
+            <div className="flex items-center justify-between text-[#5f6368] dark:text-[#9aa0a6] mb-2">
               <span className="text-xs font-medium">Hạ tầng AI</span>
-              <Bot className="w-4 h-4 text-[#fdd663]" />
+              <Bot className="w-4 h-4 text-amber-500 dark:text-[#fdd663] group-hover:scale-110 transition-transform" />
             </div>
-            <div className="text-2xl font-bold text-[#e3e3e3]">7 Gemini Keys</div>
-            <div className="text-[11px] text-[#5bb98c] mt-1">Hệ thống xoay tua chống nghẽn 429</div>
-          </div>
+            <div className="text-2xl font-bold text-[#202124] dark:text-[#e3e3e3]">7 Gemini Keys</div>
+            <div className="text-[11px] text-emerald-600 dark:text-[#5bb98c] mt-1">Hệ thống xoay tua chống nghẽn 429 →</div>
+          </Link>
         </div>
 
         {/* Toolbar */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
           <div className="relative flex-1 max-w-md">
-            <Search className="w-4 h-4 text-[#9aa0a6] absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-[#5f6368] dark:text-[#9aa0a6] absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Tìm theo tên hoặc email giáo viên..."
-              className="w-full bg-[#242424] border border-[#3c4043] rounded-full pl-10 pr-4 py-2.5 text-xs text-[#e3e3e3] placeholder-[#5f6368] focus:outline-none focus:border-[#8ab4f8]"
+              className="w-full bg-white dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-full pl-10 pr-4 py-2.5 text-xs text-[#202124] dark:text-[#e3e3e3] placeholder-[#9aa0a6] dark:placeholder-[#5f6368] focus:outline-none focus:border-[#1a73e8] dark:focus:border-[#8ab4f8]"
             />
           </div>
 
@@ -370,7 +401,7 @@ export default function AdminUsersPage() {
             <button
               onClick={fetchUsers}
               title="Tải lại"
-              className="p-2.5 rounded-full bg-[#242424] border border-[#3c4043] text-[#9aa0a6] hover:text-white transition-colors cursor-pointer"
+              className="p-2.5 rounded-full bg-white dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-white transition-colors cursor-pointer"
             >
               <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
             </button>
@@ -380,7 +411,7 @@ export default function AdminUsersPage() {
                 setCreatePassword(generateRandomPassword());
                 setShowCreateModal(true);
               }}
-              className="px-4 py-2.5 rounded-full bg-[#8ab4f8] hover:bg-[#aecbfa] text-[#181818] text-xs font-semibold shadow-xs flex items-center gap-2 transition-all cursor-pointer"
+              className="px-4 py-2.5 rounded-full bg-[#1a73e8] hover:bg-[#1557b0] text-white dark:bg-[#8ab4f8] dark:hover:bg-[#aecbfa] dark:text-[#181818] text-xs font-semibold shadow-xs flex items-center gap-2 transition-all cursor-pointer"
             >
               <UserPlus className="w-4 h-4" />
               <span>Cấp tài khoản giáo viên mới</span>
@@ -389,10 +420,10 @@ export default function AdminUsersPage() {
         </div>
 
         {/* Teachers Table Card */}
-        <div className="bg-[#1e1e1e] border border-[#3c4043] rounded-2xl overflow-hidden shadow-xs">
+        <div className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-[#242424] border-b border-[#3c4043] text-[#9aa0a6] uppercase tracking-wider text-[11px]">
+              <thead className="bg-[#f8f9fa] dark:bg-[#242424] border-b border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] uppercase tracking-wider text-[11px]">
                 <tr>
                   <th className="px-5 py-3.5 font-medium">Giáo viên</th>
                   <th className="px-4 py-3.5 font-medium">Vai trò</th>
@@ -403,31 +434,31 @@ export default function AdminUsersPage() {
                   <th className="px-5 py-3.5 font-medium text-right">Thao tác</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#3c4043]">
+              <tbody className="divide-y divide-[#dadce0] dark:divide-[#3c4043]">
                 {isLoading ? (
                   <tr>
-                    <td colSpan={7} className="px-5 py-12 text-center text-[#9aa0a6]">
+                    <td colSpan={7} className="px-5 py-12 text-center text-[#5f6368] dark:text-[#9aa0a6]">
                       <div className="flex items-center justify-center gap-2">
-                        <div className="w-4 h-4 border-2 border-[#8ab4f8]/30 border-t-[#8ab4f8] rounded-full animate-spin" />
+                        <div className="w-4 h-4 border-2 border-[#1a73e8] dark:border-[#8ab4f8] border-t-transparent rounded-full animate-spin" />
                         <span>Đang tải danh sách tài khoản...</span>
                       </div>
                     </td>
                   </tr>
                 ) : filteredUsers.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-5 py-12 text-center text-[#9aa0a6]">
+                    <td colSpan={7} className="px-5 py-12 text-center text-[#5f6368] dark:text-[#9aa0a6]">
                       Không tìm thấy giáo viên nào phù hợp với từ khóa.
                     </td>
                   </tr>
                 ) : (
                   filteredUsers.map((u) => (
-                    <tr key={u.id} className="hover:bg-[#282828] transition-colors">
+                    <tr key={u.id} className="hover:bg-[#f8f9fa] dark:hover:bg-[#282828] transition-colors">
                       {/* Teacher Column */}
                       <td className="px-5 py-4">
-                        <div className="font-medium text-[#e3e3e3]">{u.name}</div>
-                        <div className="text-[11px] text-[#9aa0a6]">{u.email}</div>
+                        <div className="font-medium text-[#202124] dark:text-[#e3e3e3]">{u.name}</div>
+                        <div className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6]">{u.email}</div>
                         {u.mustChangePassword && (
-                          <span className="inline-block mt-1 text-[10px] px-2 py-0.5 rounded-full bg-[#33250b] text-[#fdd663] border border-[#4d380e]">
+                          <span className="inline-block mt-1 text-[10px] px-2 py-0.5 rounded-full bg-amber-50 dark:bg-[#33250b] text-amber-700 dark:text-[#fdd663] border border-amber-200 dark:border-[#4d380e]">
                             Chờ đổi mật khẩu lần đầu
                           </span>
                         )}
@@ -436,11 +467,11 @@ export default function AdminUsersPage() {
                       {/* Role Column */}
                       <td className="px-4 py-4">
                         {u.role === 'SUPER_ADMIN' ? (
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#1e2a38] text-[#8ab4f8] border border-[#8ab4f8]/30">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] border border-[#1a73e8]/20 dark:border-[#8ab4f8]/30">
                             SUPER ADMIN
                           </span>
                         ) : (
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#0f291e] text-[#5bb98c] border border-[#1e4d38]">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 dark:bg-[#0f291e] text-emerald-700 dark:text-[#5bb98c] border border-emerald-200 dark:border-[#1e4d38]">
                             GIÁO VIÊN
                           </span>
                         )}
@@ -449,39 +480,39 @@ export default function AdminUsersPage() {
                       {/* Status Column */}
                       <td className="px-4 py-4">
                         {u.isActive ? (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-[#0f291e] text-[#5bb98c] border border-[#1e4d38]">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#5bb98c] animate-pulse" />
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 dark:bg-[#0f291e] text-emerald-700 dark:text-[#5bb98c] border border-emerald-200 dark:border-[#1e4d38]">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-[#5bb98c] animate-pulse" />
                             Đang hoạt động
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-[#371918] text-[#f28b82] border border-[#5c2523]">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#f28b82]" />
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-rose-50 dark:bg-[#371918] text-rose-700 dark:text-[#f28b82] border border-rose-200 dark:border-[#5c2523]">
+                            <span className="w-1.5 h-1.5 rounded-full bg-rose-500 dark:bg-[#f28b82]" />
                             Đã khóa
                           </span>
                         )}
                       </td>
 
                       {/* Stats Column */}
-                      <td className="px-4 py-4 text-[#e3e3e3]">
+                      <td className="px-4 py-4 text-[#202124] dark:text-[#e3e3e3]">
                         <div>{u._count.exams} đề thi</div>
-                        <div className="text-[11px] text-[#9aa0a6]">{u._count.questions} câu hỏi</div>
+                        <div className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6]">{u._count.questions} câu hỏi</div>
                       </td>
 
                       {/* AI Quota Column */}
                       <td className="px-4 py-4">
-                        <span className="font-mono text-[#e3e3e3]">{u.aiDailyLimit}</span>
-                        <span className="text-[11px] text-[#9aa0a6]"> lệnh/ngày</span>
+                        <span className="font-mono text-[#202124] dark:text-[#e3e3e3]">{u.aiDailyLimit}</span>
+                        <span className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6]"> lệnh/ngày</span>
                       </td>
 
                       {/* Last Login Column */}
-                      <td className="px-4 py-4 text-[#9aa0a6] text-[11px]">
+                      <td className="px-4 py-4 text-[#5f6368] dark:text-[#9aa0a6] text-[11px]">
                         {u.lastLoginAt ? (
                           new Date(u.lastLoginAt).toLocaleString('vi-VN', {
                             dateStyle: 'short',
                             timeStyle: 'short',
                           })
                         ) : (
-                          <span className="text-[#5f6368]">Chưa đăng nhập</span>
+                          <span className="text-[#9aa0a6] dark:text-[#5f6368]">Chưa đăng nhập</span>
                         )}
                       </td>
 
@@ -495,8 +526,8 @@ export default function AdminUsersPage() {
                               title={u.isActive ? 'Khóa tài khoản' : 'Mở khóa tài khoản'}
                               className={`p-2 rounded-full transition-colors cursor-pointer ${
                                 u.isActive
-                                  ? 'text-[#9aa0a6] hover:text-[#f28b82] hover:bg-[#371918]'
-                                  : 'text-[#5bb98c] hover:bg-[#0f291e]'
+                                  ? 'text-[#5f6368] dark:text-[#9aa0a6] hover:text-rose-600 dark:hover:text-[#f28b82] hover:bg-rose-50 dark:hover:bg-[#371918]'
+                                  : 'text-emerald-600 dark:text-[#5bb98c] hover:bg-emerald-50 dark:hover:bg-[#0f291e]'
                               }`}
                             >
                               {u.isActive ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
@@ -510,7 +541,7 @@ export default function AdminUsersPage() {
                               setShowResetModal(u);
                             }}
                             title="Cấp lại mật khẩu tạm"
-                            className="p-2 rounded-full text-[#9aa0a6] hover:text-[#fdd663] hover:bg-[#33250b] transition-colors cursor-pointer"
+                            className="p-2 rounded-full text-[#5f6368] dark:text-[#9aa0a6] hover:text-amber-600 dark:hover:text-[#fdd663] hover:bg-amber-50 dark:hover:bg-[#33250b] transition-colors cursor-pointer"
                           >
                             <KeyRound className="w-4 h-4" />
                           </button>
@@ -523,7 +554,7 @@ export default function AdminUsersPage() {
                               setShowEditModal(u);
                             }}
                             title="Chỉnh sửa thông tin & hạn mức"
-                            className="p-2 rounded-full text-[#9aa0a6] hover:text-[#8ab4f8] hover:bg-[#1e2a38] transition-colors cursor-pointer"
+                            className="p-2 rounded-full text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#1a73e8] dark:hover:text-[#8ab4f8] hover:bg-blue-50 dark:hover:bg-[#1e2a38] transition-colors cursor-pointer"
                           >
                             <Sliders className="w-4 h-4" />
                           </button>
@@ -541,26 +572,26 @@ export default function AdminUsersPage() {
       {/* Modal: Tạo tài khoản giáo viên mới */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="w-full max-w-md bg-[#1e1e1e] border border-[#3c4043] rounded-3xl shadow-2xl p-6 sm:p-7 relative">
+          <div className="w-full max-w-md bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl shadow-2xl p-6 sm:p-7 relative">
             <button
               onClick={() => setShowCreateModal(false)}
-              className="absolute right-4 top-4 text-[#9aa0a6] hover:text-white p-1 rounded-full cursor-pointer"
+              className="absolute right-4 top-4 text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-white p-1 rounded-full cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="flex items-center gap-3 mb-5">
-              <div className="p-2.5 rounded-2xl bg-[#1e2a38] text-[#8ab4f8] border border-[#8ab4f8]/30">
+              <div className="p-2.5 rounded-2xl bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] border border-[#1a73e8]/20 dark:border-[#8ab4f8]/30">
                 <UserPlus className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-[#e3e3e3]">Cấp tài khoản giáo viên</h3>
-                <p className="text-xs text-[#9aa0a6]">Giáo viên sẽ bắt buộc đổi mật khẩu khi đăng nhập lần đầu</p>
+                <h3 className="text-base font-bold text-[#202124] dark:text-[#e3e3e3]">Cấp tài khoản giáo viên</h3>
+                <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">Giáo viên sẽ bắt buộc đổi mật khẩu khi đăng nhập lần đầu</p>
               </div>
             </div>
 
             {createError && (
-              <div className="mb-4 p-3 rounded-2xl bg-[#371918] border border-[#5c2523] text-[#f28b82] text-xs flex items-center gap-2">
+              <div className="mb-4 p-3 rounded-2xl bg-[#fce8e6] dark:bg-[#371918] border border-[#f5c2c7] dark:border-[#5c2523] text-[#c5221f] dark:text-[#f28b82] text-xs flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{createError}</span>
               </div>
@@ -568,7 +599,7 @@ export default function AdminUsersPage() {
 
             <form onSubmit={handleCreateTeacher} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-[#9aa0a6] mb-1 uppercase tracking-wider">
+                <label className="block text-xs font-semibold text-[#5f6368] dark:text-[#9aa0a6] mb-1 uppercase tracking-wider">
                   Họ và tên giáo viên
                 </label>
                 <input
@@ -577,12 +608,12 @@ export default function AdminUsersPage() {
                   value={createName}
                   onChange={(e) => setCreateName(e.target.value)}
                   placeholder="Ví dụ: Thầy Nguyễn Văn An"
-                  className="w-full bg-[#242424] border border-[#3c4043] rounded-full px-4 py-2 text-xs text-[#e3e3e3] placeholder-[#5f6368] focus:outline-none focus:border-[#8ab4f8]"
+                  className="w-full bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2 text-xs text-[#202124] dark:text-[#e3e3e3] placeholder-[#9aa0a6] dark:placeholder-[#5f6368] focus:outline-none focus:border-[#1a73e8] dark:focus:border-[#8ab4f8]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#9aa0a6] mb-1 uppercase tracking-wider">
+                <label className="block text-xs font-semibold text-[#5f6368] dark:text-[#9aa0a6] mb-1 uppercase tracking-wider">
                   Email đăng nhập
                 </label>
                 <input
@@ -591,17 +622,17 @@ export default function AdminUsersPage() {
                   value={createEmail}
                   onChange={(e) => setCreateEmail(e.target.value)}
                   placeholder="giaovien@school.edu.vn"
-                  className="w-full bg-[#242424] border border-[#3c4043] rounded-full px-4 py-2 text-xs text-[#e3e3e3] placeholder-[#5f6368] focus:outline-none focus:border-[#8ab4f8]"
+                  className="w-full bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2 text-xs text-[#202124] dark:text-[#e3e3e3] placeholder-[#9aa0a6] dark:placeholder-[#5f6368] focus:outline-none focus:border-[#1a73e8] dark:focus:border-[#8ab4f8]"
                 />
               </div>
 
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs font-semibold text-[#9aa0a6] uppercase tracking-wider">Mật khẩu tạm</label>
+                  <label className="text-xs font-semibold text-[#5f6368] dark:text-[#9aa0a6] uppercase tracking-wider">Mật khẩu tạm</label>
                   <button
                     type="button"
                     onClick={() => setCreatePassword(generateRandomPassword())}
-                    className="text-[11px] text-[#8ab4f8] hover:text-[#aecbfa] flex items-center gap-1 cursor-pointer"
+                    className="text-[11px] text-[#1a73e8] hover:text-[#1557b0] dark:text-[#8ab4f8] dark:hover:text-[#aecbfa] flex items-center gap-1 cursor-pointer"
                   >
                     <RefreshCw className="w-3 h-3" /> Sinh ngẫu nhiên
                   </button>
@@ -611,12 +642,12 @@ export default function AdminUsersPage() {
                   required
                   value={createPassword}
                   onChange={(e) => setCreatePassword(e.target.value)}
-                  className="w-full bg-[#242424] border border-[#3c4043] rounded-full px-4 py-2 text-xs font-mono text-[#5bb98c] placeholder-[#5f6368] focus:outline-none focus:border-[#8ab4f8]"
+                  className="w-full bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2 text-xs font-mono text-emerald-600 dark:text-[#5bb98c] placeholder-[#9aa0a6] dark:placeholder-[#5f6368] focus:outline-none focus:border-[#1a73e8] dark:focus:border-[#8ab4f8]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#9aa0a6] mb-1 uppercase tracking-wider">
+                <label className="block text-xs font-semibold text-[#5f6368] dark:text-[#9aa0a6] mb-1 uppercase tracking-wider">
                   Hạn mức gọi AI tối đa (lệnh / ngày)
                 </label>
                 <input
@@ -625,7 +656,7 @@ export default function AdminUsersPage() {
                   max={1000}
                   value={createAiLimit}
                   onChange={(e) => setCreateAiLimit(parseInt(e.target.value) || 100)}
-                  className="w-full bg-[#242424] border border-[#3c4043] rounded-full px-4 py-2 text-xs text-[#e3e3e3] placeholder-[#5f6368] focus:outline-none focus:border-[#8ab4f8]"
+                  className="w-full bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2 text-xs text-[#202124] dark:text-[#e3e3e3] placeholder-[#9aa0a6] dark:placeholder-[#5f6368] focus:outline-none focus:border-[#1a73e8] dark:focus:border-[#8ab4f8]"
                 />
               </div>
 
@@ -633,7 +664,7 @@ export default function AdminUsersPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-2.5 px-4 rounded-full bg-[#8ab4f8] hover:bg-[#aecbfa] text-[#181818] text-xs font-semibold shadow-xs flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
+                  className="w-full py-2.5 px-4 rounded-full bg-[#1a73e8] hover:bg-[#1557b0] text-white dark:bg-[#8ab4f8] dark:hover:bg-[#aecbfa] dark:text-[#181818] text-xs font-semibold shadow-xs flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
                 >
                   {isSubmitting ? 'Đang tạo...' : 'Tạo tài khoản và cấp quyền'}
                 </button>
@@ -646,26 +677,26 @@ export default function AdminUsersPage() {
       {/* Modal: Đặt lại mật khẩu tạm */}
       {showResetModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="w-full max-w-md bg-[#1e1e1e] border border-[#3c4043] rounded-3xl shadow-2xl p-6 relative">
+          <div className="w-full max-w-md bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl shadow-2xl p-6 relative">
             <button
               onClick={() => setShowResetModal(null)}
-              className="absolute right-4 top-4 text-[#9aa0a6] hover:text-white p-1 rounded-full cursor-pointer"
+              className="absolute right-4 top-4 text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-white p-1 rounded-full cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="flex items-center gap-3 mb-4">
-              <div className="p-2.5 rounded-2xl bg-[#33250b] text-[#fdd663] border border-[#4d380e]">
+              <div className="p-2.5 rounded-2xl bg-amber-50 dark:bg-[#33250b] text-amber-700 dark:text-[#fdd663] border border-amber-200 dark:border-[#4d380e]">
                 <KeyRound className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-[#e3e3e3]">Cấp lại mật khẩu tạm</h3>
-                <p className="text-xs text-[#9aa0a6]">Giáo viên: {showResetModal.name}</p>
+                <h3 className="text-base font-bold text-[#202124] dark:text-[#e3e3e3]">Cấp lại mật khẩu tạm</h3>
+                <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">Giáo viên: {showResetModal.name}</p>
               </div>
             </div>
 
             {resetError && (
-              <div className="mb-4 p-3 rounded-2xl bg-[#371918] border border-[#5c2523] text-[#f28b82] text-xs">
+              <div className="mb-4 p-3 rounded-2xl bg-[#fce8e6] dark:bg-[#371918] border border-[#f5c2c7] dark:border-[#5c2523] text-[#c5221f] dark:text-[#f28b82] text-xs">
                 {resetError}
               </div>
             )}
@@ -673,11 +704,11 @@ export default function AdminUsersPage() {
             <form onSubmit={handleResetPassword} className="space-y-4">
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs font-semibold text-[#9aa0a6] uppercase tracking-wider">Mật khẩu tạm mới</label>
+                  <label className="text-xs font-semibold text-[#5f6368] dark:text-[#9aa0a6] uppercase tracking-wider">Mật khẩu tạm mới</label>
                   <button
                     type="button"
                     onClick={() => setResetPasswordVal(generateRandomPassword())}
-                    className="text-[11px] text-[#8ab4f8] hover:text-[#aecbfa] flex items-center gap-1 cursor-pointer"
+                    className="text-[11px] text-[#1a73e8] hover:text-[#1557b0] dark:text-[#8ab4f8] dark:hover:text-[#aecbfa] flex items-center gap-1 cursor-pointer"
                   >
                     <RefreshCw className="w-3 h-3" /> Sinh ngẫu nhiên
                   </button>
@@ -687,9 +718,9 @@ export default function AdminUsersPage() {
                   required
                   value={resetPasswordVal}
                   onChange={(e) => setResetPasswordVal(e.target.value)}
-                  className="w-full bg-[#242424] border border-[#3c4043] rounded-full px-4 py-2 text-xs font-mono text-[#fdd663] focus:outline-none focus:border-[#fdd663]"
+                  className="w-full bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2 text-xs font-mono text-amber-600 dark:text-[#fdd663] focus:outline-none focus:border-amber-500"
                 />
-                <p className="text-[11px] text-[#9aa0a6] mt-1.5">
+                <p className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] mt-1.5">
                   Tất cả các phiên đăng nhập hiện tại của giáo viên sẽ bị hủy và bắt buộc đổi mật khẩu ở lần đăng nhập tiếp theo.
                 </p>
               </div>
@@ -698,14 +729,14 @@ export default function AdminUsersPage() {
                 <button
                   type="button"
                   onClick={() => setShowResetModal(null)}
-                  className="px-4 py-2 rounded-full text-xs text-[#e3e3e3] hover:bg-[#282828] border border-[#3c4043] cursor-pointer"
+                  className="px-4 py-2 rounded-full text-xs text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] cursor-pointer"
                 >
                   Hủy
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-4 py-2 rounded-full bg-[#8ab4f8] hover:bg-[#aecbfa] text-[#181818] text-xs font-semibold cursor-pointer"
+                  className="px-4 py-2 rounded-full bg-[#1a73e8] hover:bg-[#1557b0] text-white dark:bg-[#8ab4f8] dark:hover:bg-[#aecbfa] dark:text-[#181818] text-xs font-semibold cursor-pointer"
                 >
                   {isSubmitting ? 'Đang lưu...' : 'Xác nhận cấp lại'}
                 </button>
@@ -718,27 +749,27 @@ export default function AdminUsersPage() {
       {/* Modal: Chỉnh sửa thông tin & Hạn mức */}
       {showEditModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="w-full max-w-md bg-[#1e1e1e] border border-[#3c4043] rounded-3xl shadow-2xl p-6 relative">
+          <div className="w-full max-w-md bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl shadow-2xl p-6 relative">
             <button
               onClick={() => setShowEditModal(null)}
-              className="absolute right-4 top-4 text-[#9aa0a6] hover:text-white p-1 rounded-full cursor-pointer"
+              className="absolute right-4 top-4 text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-white p-1 rounded-full cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="flex items-center gap-3 mb-4">
-              <div className="p-2.5 rounded-2xl bg-[#1e2a38] text-[#8ab4f8] border border-[#8ab4f8]/30">
+              <div className="p-2.5 rounded-2xl bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] border border-[#1a73e8]/20 dark:border-[#8ab4f8]/30">
                 <Sliders className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-[#e3e3e3]">Chỉnh sửa thông tin</h3>
-                <p className="text-xs text-[#9aa0a6]">{showEditModal.email}</p>
+                <h3 className="text-base font-bold text-[#202124] dark:text-[#e3e3e3]">Chỉnh sửa thông tin</h3>
+                <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">{showEditModal.email}</p>
               </div>
             </div>
 
             <form onSubmit={handleEditUser} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-[#9aa0a6] mb-1 uppercase tracking-wider">
+                <label className="block text-xs font-semibold text-[#5f6368] dark:text-[#9aa0a6] mb-1 uppercase tracking-wider">
                   Họ và tên
                 </label>
                 <input
@@ -746,12 +777,12 @@ export default function AdminUsersPage() {
                   required
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full bg-[#242424] border border-[#3c4043] rounded-full px-4 py-2 text-xs text-[#e3e3e3] focus:outline-none focus:border-[#8ab4f8]"
+                  className="w-full bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2 text-xs text-[#202124] dark:text-[#e3e3e3] focus:outline-none focus:border-[#1a73e8] dark:focus:border-[#8ab4f8]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#9aa0a6] mb-1 uppercase tracking-wider">
+                <label className="block text-xs font-semibold text-[#5f6368] dark:text-[#9aa0a6] mb-1 uppercase tracking-wider">
                   Hạn mức AI mỗi ngày
                 </label>
                 <input
@@ -760,7 +791,7 @@ export default function AdminUsersPage() {
                   max={2000}
                   value={editAiLimit}
                   onChange={(e) => setEditAiLimit(parseInt(e.target.value) || 100)}
-                  className="w-full bg-[#242424] border border-[#3c4043] rounded-full px-4 py-2 text-xs text-[#e3e3e3] focus:outline-none focus:border-[#8ab4f8]"
+                  className="w-full bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2 text-xs text-[#202124] dark:text-[#e3e3e3] focus:outline-none focus:border-[#1a73e8] dark:focus:border-[#8ab4f8]"
                 />
               </div>
 
@@ -768,14 +799,14 @@ export default function AdminUsersPage() {
                 <button
                   type="button"
                   onClick={() => setShowEditModal(null)}
-                  className="px-4 py-2 rounded-full text-xs text-[#e3e3e3] hover:bg-[#282828] border border-[#3c4043] cursor-pointer"
+                  className="px-4 py-2 rounded-full text-xs text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] cursor-pointer"
                 >
                   Hủy
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-4 py-2 rounded-full bg-[#8ab4f8] hover:bg-[#aecbfa] text-[#181818] text-xs font-semibold cursor-pointer"
+                  className="px-4 py-2 rounded-full bg-[#1a73e8] hover:bg-[#1557b0] text-white dark:bg-[#8ab4f8] dark:hover:bg-[#aecbfa] dark:text-[#181818] text-xs font-semibold cursor-pointer"
                 >
                   {isSubmitting ? 'Đang lưu...' : 'Lưu thay đổi'}
                 </button>

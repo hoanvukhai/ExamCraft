@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { accountFetch } from '@/lib/account-fetch';
 import { Exam } from '@/types/exam';
+import { persistExam } from '@/lib/exam-client';
 import Link from 'next/link';
 import {
   Share2,
@@ -28,18 +30,24 @@ interface GroupItem {
 }
 
 interface ShareModalProps {
+  ownerId: string;
   isOpen: boolean;
   onClose: () => void;
   exam: Exam;
+  onEnsureSaved?: () => Promise<Exam | null>;
   onCloudSyncSuccess?: () => void;
 }
 
 export const ShareModal: React.FC<ShareModalProps> = ({
+  ownerId,
   isOpen,
   onClose,
   exam,
+  onEnsureSaved,
   onCloudSyncSuccess,
 }) => {
+  const active = useRef(isOpen);
+  useEffect(() => { active.current = isOpen; return () => { active.current = false; }; }, [isOpen]);
   const [activeTab, setActiveTab] = useState<'assign' | 'share'>('assign');
   const [origin, setOrigin] = useState('');
 
@@ -52,20 +60,26 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   const [assignmentTitle, setAssignmentTitle] = useState(
     exam?.metadata?.title || 'Bài kiểm tra trực tuyến'
   );
-  const [mode, setMode] = useState<'HOMEWORK' | 'IN_CLASS' | 'EXAM'>('IN_CLASS');
+  const [mode, setMode] = useState<'HOMEWORK' | 'CLASSWORK' | 'EXAM'>('CLASSWORK');
   const [identityMode, setIdentityMode] = useState<'PICK_FROM_LIST' | 'FREE_NAME'>('PICK_FROM_LIST');
   const [durationMinutes, setDurationMinutes] = useState<number>(
     exam?.metadata?.durationMinutes || 45
   );
   const [showResult, setShowResult] = useState<'IMMEDIATE' | 'AFTER_CLOSE' | 'NEVER'>('IMMEDIATE');
   const [showSolution, setShowSolution] = useState<'IMMEDIATE' | 'AFTER_CLOSE' | 'NEVER'>('AFTER_CLOSE');
-  const [enableLeaderboard, setEnableLeaderboard] = useState<boolean>(true);
+  const [enableLeaderboard, setEnableLeaderboard] = useState<boolean>(false);
 
   // Trạng thái giao bài
   const [assigning, setAssigning] = useState(false);
   const [createdPublicLink, setCreatedPublicLink] = useState<string | null>(null);
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedShareLink, setCopiedShareLink] = useState(false);
+  const [sharePath, setSharePath] = useState('');
+  const [shareLinkId, setShareLinkId] = useState('');
+  const [shareExamId, setShareExamId] = useState('');
+  const [sharing, setSharing] = useState(false);
+  const [shareAnswers, setShareAnswers] = useState(false);
+  const [shareCopy, setShareCopy] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -81,12 +95,14 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 
   // Tải danh sách lớp của giáo viên
   useEffect(() => {
+    const controller = new AbortController();
     if (isOpen) {
       async function loadGroups() {
         try {
           setLoadingGroups(true);
-          const res = await fetch('/api/groups');
+          const res = await accountFetch(ownerId, '/api/groups', { signal: controller.signal, cache: 'no-store' });
           const data = await res.json();
+          if (controller.signal.aborted) return;
           if (res.ok && data.groups) {
             setGroups(data.groups);
             if (data.groups.length > 0) {
@@ -96,12 +112,13 @@ export const ShareModal: React.FC<ShareModalProps> = ({
         } catch (err) {
           console.error(err);
         } finally {
-          setLoadingGroups(false);
+          if (!controller.signal.aborted) setLoadingGroups(false);
         }
       }
       loadGroups();
     }
-  }, [isOpen]);
+    return () => controller.abort();
+  }, [isOpen, ownerId]);
 
   if (!isOpen) return null;
 
@@ -111,23 +128,13 @@ export const ShareModal: React.FC<ShareModalProps> = ({
     try {
       setAssigning(true);
 
-      // 1. Đồng bộ đề thi lên server nếu cần
-      let serverExamId = exam.id;
-      const syncRes = await fetch('/api/migration/import-legacy', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          exams: [exam],
-          questions: [],
-        }),
-      });
-      const syncData = await syncRes.json();
-      if (syncData.examIds && syncData.examIds[0]) {
-        serverExamId = syncData.examIds[0];
-      }
+      const savedExam = onEnsureSaved ? await onEnsureSaved() : await persistExam(exam, ownerId);
+      if (!active.current) return;
+      if (!savedExam) throw new Error('Đề chưa được lưu. Hãy xử lý trạng thái lưu trước khi giao bài.');
+      const serverExamId = savedExam.id;
 
       // 2. Tạo Assignment với snapshot bất biến
-      const assignRes = await fetch('/api/assignments', {
+      const assignRes = await accountFetch(ownerId, '/api/assignments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -135,7 +142,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
           groupId: selectedGroupId || undefined,
           title: assignmentTitle.trim(),
           mode,
-          identityMode,
+          identityMode: selectedGroupId ? identityMode : 'FREE_NAME',
           durationMinutes: Number(durationMinutes) || undefined,
           maxAttempts: mode === 'EXAM' ? 1 : 3,
           showResult,
@@ -155,7 +162,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
       if (onCloudSyncSuccess) onCloudSyncSuccess();
     } catch (err) {
       console.error('Lỗi khi giao bài:', err);
-      alert('Không thể kết nối đến máy chủ.');
+      alert(err instanceof Error ? err.message : 'Không thể kết nối đến máy chủ.');
     } finally {
       setAssigning(false);
     }
@@ -173,7 +180,25 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   };
 
   const fullAssignUrl = createdPublicLink ? `${origin}${createdPublicLink}` : '';
-  const shareWordUrl = `${origin}/share/${exam.id}`;
+  const shareWordUrl = sharePath ? origin + sharePath : '';
+  const createShareLink = async () => {
+    setSharing(true);
+    try {
+      const saved = onEnsureSaved ? await onEnsureSaved() : await persistExam(exam, ownerId);
+      if (!active.current) return;
+      if (!saved) throw new Error('Đề chưa được lưu. Hãy xử lý trạng thái lưu trước khi chia sẻ.');
+      const id = saved.id;
+      const response = await accountFetch(ownerId, '/api/exams/' + id + '/share', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ showAnswers: shareAnswers, allowCopy: shareCopy, expiresAt: new Date(Date.now() + 7 * 86400000).toISOString() }) });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Chưa tạo được link');
+      setSharePath(data.publicLink); setShareLinkId(data.link.id); setShareExamId(id); onCloudSyncSuccess?.();
+    } catch (error) { alert(error instanceof Error ? error.message : 'Chưa tạo được link'); }
+    finally { setSharing(false); }
+  };
+  const revokeShareLink = async () => {
+    const response = await accountFetch(ownerId, '/api/exams/' + shareExamId + '/share', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ linkId: shareLinkId }) });
+    if (response.ok) { setSharePath(''); setShareLinkId(''); } else alert('Chưa thu hồi được link, hãy thử lại');
+  };
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
@@ -308,6 +333,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                     </Link>
                   </div>
                   <select
+                    aria-label="Giao cho lớp học"
                     value={selectedGroupId}
                     onChange={(e) => setSelectedGroupId(e.target.value)}
                     className="w-full bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-[#202124] dark:text-[#e3e3e3] focus:outline-hidden focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] focus:ring-1 focus:ring-[#1a73e8] dark:focus:ring-[#8ab4f8] cursor-pointer"
@@ -350,13 +376,13 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                   <button
                     type="button"
                     onClick={() => {
-                      setMode('IN_CLASS');
+                      setMode('CLASSWORK');
                       setDurationMinutes(45);
                       setShowResult('IMMEDIATE');
                       setShowSolution('AFTER_CLOSE');
                     }}
                     className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
-                      mode === 'IN_CLASS'
+                      mode === 'CLASSWORK'
                         ? 'bg-[#e8f0fe] dark:bg-[#1e2a38] border-[#1a73e8] dark:border-[#8ab4f8] text-[#1a73e8] dark:text-[#8ab4f8] shadow-xs'
                         : 'bg-[#f8f9fa] dark:bg-[#282828] border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#e8eaed] dark:hover:bg-[#303134]'
                     }`}
@@ -453,13 +479,18 @@ export const ShareModal: React.FC<ShareModalProps> = ({
         {/* TAB 2: LINK XEM & TẢI FILE WORD (.DOCX) */}
         {activeTab === 'share' && (
           <div className="space-y-4">
+            <p className="text-xs">Link xem có hiệu lực 7 ngày. Ai có link đều xem được nội dung bạn cho phép.</p>
+            <label className="block text-sm"><input type="checkbox" checked={shareAnswers} onChange={e => setShareAnswers(e.target.checked)} /> Kèm đáp án và lời giải</label>
+            <label className="block text-sm"><input type="checkbox" checked={shareCopy} onChange={e => setShareCopy(e.target.checked)} /> Cho giáo viên đã đăng nhập tạo bản sao</label>
+            <button disabled={sharing} onClick={createShareLink} className="px-4 py-2 rounded-full bg-blue-600 text-white disabled:opacity-50">{sharing ? 'Đang tạo…' : 'Tạo link chia sẻ'}</button>
+            {sharePath && <button onClick={revokeShareLink} className="ml-3 text-sm text-red-600">Thu hồi link này</button>}
             <div className="p-4 rounded-2xl bg-[#f8f9fa] dark:bg-[#282828]/60 border border-[#dadce0] dark:border-[#3c4043] space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-[#202124] dark:text-[#e3e3e3] flex items-center gap-1.5">
                   <FileDown className="w-4 h-4 text-[#1a73e8] dark:text-[#8ab4f8]" /> Link Xem, In A4 & Tải file Word:
                 </span>
                 <a
-                  href={shareWordUrl}
+                  href={shareWordUrl || undefined}
                   target="_blank"
                   rel="noreferrer"
                   className="text-[11px] font-medium text-[#1a73e8] dark:text-[#8ab4f8] hover:underline flex items-center gap-1"
@@ -477,7 +508,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                   className="grow bg-transparent text-xs text-[#5f6368] dark:text-[#9aa0a6] font-mono px-2 outline-none select-all truncate"
                 />
                 <button
-                  onClick={() => copyToClipboard(shareWordUrl, 'share')}
+                  disabled={!shareWordUrl} onClick={() => copyToClipboard(shareWordUrl, 'share')}
                   className="px-3.5 py-1.5 bg-[#1a73e8] hover:bg-[#1557b0] dark:bg-[#8ab4f8] dark:hover:bg-[#a8c7fa] text-white dark:text-[#202124] rounded-full text-xs font-medium flex items-center gap-1 shrink-0 transition-all cursor-pointer shadow-xs"
                 >
                   {copiedShareLink ? (

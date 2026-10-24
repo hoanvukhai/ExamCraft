@@ -1,22 +1,23 @@
 import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import { getCurrentUser } from '@/lib/auth';
-import ExamWorkspace from '@/components/ExamWorkspace';
+import { TeacherDashboard } from '@/components/TeacherDashboard';
 
 export const metadata = {
-  title: 'ExamCraft - Không Gian Soạn Đề AI Cho Giáo Viên',
-  description: 'Trợ lý AI biên soạn đề thi, tổ chức khảo thí trực tuyến chuẩn GDPT 2018 theo phong cách Google Workspace tối giản.',
+  title: 'ExamCraft - Kho Đề & Quản Lý Đề Thi Giáo Viên',
+  description: 'Không gian quản lý thư mục đề thi, ngân hàng câu hỏi và biên soạn đề kiểm tra chuẩn GDPT 2018.',
 };
 
-async function AuthenticatedWorkspace() {
+async function AuthenticatedDashboard() {
   const user = await getCurrentUser();
 
   // Bắt buộc xác thực: Nếu chưa đăng nhập, chuyển hướng ngay về trang Đăng nhập
   if (!user) {
     redirect('/login?redirect=/');
   }
+  if (user.mustChangePassword) redirect('/login?change=required');
 
-  return <ExamWorkspace currentUser={user} />;
+  return <TeacherDashboard currentUser={user} />;
 }
 
 export default function Page() {
@@ -24,11 +25,11 @@ export default function Page() {
     <Suspense
       fallback={
         <div className="h-screen w-screen bg-[#F8F9FA] dark:bg-[#181818] flex items-center justify-center text-sm font-medium text-[#5f6368] dark:text-[#9aa0a6]">
-          Đang tải không gian soạn đề ExamCraft...
+          Đang tải kho đề thi ExamCraft...
         </div>
       }
     >
-      <AuthenticatedWorkspace />
+      <AuthenticatedDashboard />
     </Suspense>
   );
 }

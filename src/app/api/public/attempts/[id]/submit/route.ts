@@ -1,231 +1,91 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { attemptDraftRevision, validDraftRevision } from '@/lib/attempt-draft-revision';
+import { Prisma } from '@prisma/client';
 import prisma from '@/lib/prisma';
-import { AttemptStatus, RevealPolicy, LeaderboardMode } from '@prisma/client';
+import { hasAttemptAccess, canAcceptSubmissionAnswers, isPolicyVisible, isSameOriginMutation } from '@/lib/attempt-access';
+import { asObject, snapshotQuestions, solutionForQuestion, validateResponses } from '@/lib/public-exam';
+import { gradeSnapshot } from '@/lib/attempt-grading';
+import { requiresNumericScore, type AssessmentMode } from '@/lib/education-catalog';
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+const include = { assignment: { include: { group: true } }, student: { select: { displayName: true } } } as const;
+type AttemptWithRelations = Prisma.AttemptGetPayload<{ include: typeof include }>;
+
+async function resultResponse(attempt: AttemptWithRelations, idempotent: boolean) {
+  const assignment = attempt.assignment;
+  const answers = await prisma.attemptAnswer.findMany({ where: { attemptId: attempt.id }, select: { questionKey: true, response: true } });
+  const mode = asObject(asObject(assignment.snapshot).metadata).assessmentMode as AssessmentMode | undefined;
+  const numeric = requiresNumericScore(mode);
+  const showResult = numeric && isPolicyVisible(assignment.showResult, assignment);
+  const showSolution = mode !== 'survey' && isPolicyVisible(assignment.showSolution, assignment);
+  let leaderboard = null;
+  if (showResult && assignment.leaderboard === 'TOP_AND_ME' && isPolicyVisible(assignment.leaderboardReveal, assignment)) {
+    const ranked = await prisma.attempt.findMany({ where: { assignmentId: assignment.id, status: 'SUBMITTED', needsGrading: false, score: { not: null } }, select: { studentId: true, score: true, student: { select: { displayName: true } } }, orderBy: [{ score: 'desc' }, { submittedAt: 'asc' }] });
+    const best = [...new Map(ranked.map(a => [a.studentId, ranked.find(row => row.studentId === a.studentId)!])).values()];
+    const rank = best.findIndex(a => a.studentId === attempt.studentId) + 1;
+    leaderboard = { top: best.slice(0, assignment.leaderboardTopN).map((a, i) => ({ rank: i + 1, name: assignment.leaderboardAnonymous ? 'Học sinh ' + (i + 1) : a.student.displayName, score: Number(a.score) })), me: { rank: rank || null, total: best.length, score: attempt.needsGrading ? null : Number(attempt.score) } };
+  }
+  return NextResponse.json({ success: true, idempotent, score: showResult ? attempt.score : null, maxScore: showResult ? attempt.maxScore : null,
+    responses: Object.fromEntries(answers.map(answer => [answer.questionKey, answer.response])),
+    needsGrading: attempt.needsGrading, submittedAt: attempt.submittedAt, studentName: attempt.student.displayName,
+    leaderboard, solutions: showSolution ? snapshotQuestions(assignment.snapshot).map(solutionForQuestion) : null,
+    message: mode === 'survey' ? 'Phản hồi của em đã được ghi nhận.' : attempt.needsGrading ? 'Bài làm đã lưu; một số câu đang chờ giáo viên chấm.' : 'Bài làm đã được ghi nhận.',
+  }, { headers: { 'Cache-Control': 'no-store' } });
+}
+
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
-    const body = await req.json().catch(() => ({}));
-    const answers = body.answers || {};
-
-    const attempt = await prisma.attempt.findUnique({
-      where: { id },
-      include: {
-        assignment: true,
-        student: { select: { id: true, displayName: true } },
-      },
-    });
-
-    if (!attempt) {
-      return NextResponse.json({ error: 'Không tìm thấy lượt làm bài' }, { status: 404 });
-    }
-
-    // TÍNH BẢO VỆ IDEMPOTENT: Nếu đã nộp trước đó thì trả kết quả ngay, không chấm lại
-    if (attempt.status === AttemptStatus.SUBMITTED) {
-      return NextResponse.json({
-        success: true,
-        idempotent: true,
-        score: attempt.score,
-        maxScore: attempt.maxScore,
-        submittedAt: attempt.submittedAt,
-        message: 'Bài thi đã được ghi nhận trước đó.',
-      });
-    }
-
-    // Lấy đề thi từ snapshot bất biến
-    const snapshot = attempt.assignment.snapshot as any;
-    const questions: any[] = snapshot?.questions || [];
-    const sections: any[] = snapshot?.sections || [];
-
-    // Map section id -> section config
-    const sectionMap = new Map<string, any>(sections.map((s) => [s.id, s]));
-
-    let totalScore = 0;
-    let maxScore = 0;
-    const gradedAnswers: any[] = [];
-
-    // Hợp nhất câu trả lời từ body và bản nháp đã lưu
-    const studentAnswers = {
-      ...((attempt.draft as Record<string, any>) || {}),
-      ...answers,
-    };
-
-    for (const q of questions) {
-      const section = sectionMap.get(q.sectionId);
-      const studentResponse = studentAnswers[q.id];
-      const qType = q.type;
-
-      let isCorrect = false;
-      let earnedPoints = 0;
-      let questionMaxPoints = Number(q.points || section?.pointsPerQuestion || 0.25);
-
-      if (qType === 'MULTIPLE_CHOICE') {
-        const correctChoice = q.payload?.correct || q.payload?.correct_answer;
-        isCorrect = String(studentResponse || '').trim().toUpperCase() === String(correctChoice || '').trim().toUpperCase();
-        earnedPoints = isCorrect ? questionMaxPoints : 0;
-        maxScore += questionMaxPoints;
-      } else if (qType === 'TRUE_FALSE_GROUP') {
-        // Chấm lũy tiến theo số ý đúng (chuẩn Bộ GD&ĐT)
-        const subQuestions: any[] = q.payload?.sub_questions || [];
-        const progressiveScoring: number[] = section?.progressiveScoring || [0.0, 0.1, 0.25, 0.5, 1.0];
-        questionMaxPoints = progressiveScoring[progressiveScoring.length - 1] || 1.0;
-        maxScore += questionMaxPoints;
-
-        let correctSubCount = 0;
-        const subAnswers = typeof studentResponse === 'object' && studentResponse !== null ? studentResponse : {};
-
-        subQuestions.forEach((sub: any) => {
-          const expected = Boolean(sub.isCorrect);
-          const actual = subAnswers[sub.key];
-          if (typeof actual === 'boolean' && actual === expected) {
-            correctSubCount++;
-          }
-        });
-
-        isCorrect = correctSubCount === subQuestions.length;
-        earnedPoints = progressiveScoring[correctSubCount] ?? 0;
-      } else if (qType === 'SHORT_ANSWER') {
-        // Trả lời ngắn / điền số: chuẩn hóa dấu phẩy, khoảng trắng
-        maxScore += questionMaxPoints;
-        const correctVal = String(q.payload?.correct || q.payload?.correct_answer || '').trim();
-        const acceptedList: string[] = q.payload?.accepted_answers || [correctVal];
-
-        const normalize = (str: string) => str.trim().replace(/\s+/g, '').replace(/,/g, '.').toLowerCase();
-        const normalizedStudent = normalize(String(studentResponse || ''));
-
-        isCorrect = acceptedList.some((ans) => normalize(ans) === normalizedStudent);
-        earnedPoints = isCorrect ? questionMaxPoints : 0;
-      } else {
-        // Tự luận / khác: mặc định chờ chấm tay
-        maxScore += questionMaxPoints;
-        earnedPoints = 0;
-      }
-
-      totalScore += earnedPoints;
-
-      gradedAnswers.push({
-        questionKey: q.id,
-        response: studentResponse ? JSON.parse(JSON.stringify(studentResponse)) : null,
-        isCorrect,
-        earned: earnedPoints,
-      });
-    }
-
-    // Làm tròn 2 chữ số thập phân
-    totalScore = Math.round(totalScore * 100) / 100;
-    maxScore = Math.round(maxScore * 100) / 100;
-
-    // Cập nhật Attempt và lưu chi tiết AttemptAnswer trong transaction
-    await prisma.$transaction(async (tx) => {
-      await tx.attempt.update({
-        where: { id },
-        data: {
-          status: AttemptStatus.SUBMITTED,
-          score: totalScore,
-          maxScore,
-          submittedAt: new Date(),
-        },
-      });
-
-      for (const ga of gradedAnswers) {
-        await tx.attemptAnswer.upsert({
-          where: {
-            attemptId_questionKey: {
-              attemptId: id,
-              questionKey: ga.questionKey,
-            },
-          },
-          create: {
-            attemptId: id,
-            questionKey: ga.questionKey,
-            response: ga.response,
-            isCorrect: ga.isCorrect,
-            earned: ga.earned,
-          },
-          update: {
-            response: ga.response,
-            isCorrect: ga.isCorrect,
-            earned: ga.earned,
-          },
-        });
-      }
-    });
-
-    // Tính toán dữ liệu trả về theo chính sách hiển thị của bài giao
-    const showResult = attempt.assignment.showResult === RevealPolicy.IMMEDIATE;
-    const showSolution = attempt.assignment.showSolution === RevealPolicy.IMMEDIATE;
-
-    // Tính Bảng Xếp Hạng Top & Me nếu được bật
-    let leaderboardData: any = null;
-    if (attempt.assignment.leaderboard === LeaderboardMode.TOP_AND_ME) {
-      const topN = attempt.assignment.leaderboardTopN || 3;
-
-      // Lấy danh sách điểm cao nhất của từng học sinh trong bài giao này
-      const allSubmittedAttempts = await prisma.attempt.findMany({
-        where: {
-          assignmentId: attempt.assignmentId,
-          status: AttemptStatus.SUBMITTED,
-          score: { not: null },
-        },
-        include: {
-          student: { select: { id: true, displayName: true } },
-        },
-        orderBy: { score: 'desc' },
-      });
-
-      // Nhóm theo từng học sinh để lấy điểm cao nhất
-      const studentBestMap = new Map<string, { studentId: string; name: string; score: number }>();
-      for (const att of allSubmittedAttempts) {
-        const currentBest = studentBestMap.get(att.studentId);
-        const scoreVal = Number(att.score);
-        if (!currentBest || scoreVal > currentBest.score) {
-          studentBestMap.set(att.studentId, {
-            studentId: att.studentId,
-            name: att.student.displayName,
-            score: scoreVal,
-          });
-        }
-      }
-
-      const sortedStudents = Array.from(studentBestMap.values()).sort((a, b) => b.score - a.score);
-      const myRank = sortedStudents.findIndex((s) => s.studentId === attempt.studentId) + 1;
-
-      leaderboardData = {
-        top: sortedStudents.slice(0, topN).map((s, index) => ({
-          rank: index + 1,
-          name: attempt.assignment.leaderboardAnonymous ? `Học sinh ${index + 1}` : s.name,
-          score: s.score,
-        })),
-        me: {
-          rank: myRank || 1,
-          total: sortedStudents.length,
-          score: totalScore,
-        },
-      };
-    }
-
-    return NextResponse.json({
-      success: true,
-      score: showResult ? totalScore : null,
-      maxScore: showResult ? maxScore : null,
-      submittedAt: new Date().toISOString(),
-      studentName: attempt.student.displayName,
-      leaderboard: leaderboardData,
-      solutions: showSolution
-        ? questions.map((q) => ({
-            id: q.id,
-            correct: q.payload?.correct || q.payload?.correct_answer,
-            sub_questions: q.payload?.sub_questions,
-            solution: q.solution,
-          }))
-        : null,
-      message: 'Chúc mừng em đã hoàn thành bài thi thành công!',
-    });
+    const attempt = await prisma.attempt.findUnique({ where: { id }, include });
+    if (!attempt || !hasAttemptAccess(req, attempt)) return NextResponse.json({ error: 'Không có quyền xem lượt làm bài' }, { status: 403 });
+    if (attempt.status !== 'SUBMITTED') return NextResponse.json({ error: 'Bài chưa được nộp' }, { status: 409 });
+    return resultResponse(attempt, true);
   } catch (error) {
-    console.error('Lỗi POST submit attempt:', error);
-    return NextResponse.json({ error: 'Lỗi máy chủ khi nộp bài thi' }, { status: 500 });
+    console.error('Read attempt result failed', error);
+    return NextResponse.json({ error: 'Chưa thể tải kết quả' }, { status: 500 });
+  }
+}
+
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  if (!isSameOriginMutation(req)) return NextResponse.json({ error: 'Yêu cầu không hợp lệ' }, { status: 403 });
+  try {
+    const { id } = await params;
+    const body = await req.json().catch(() => null);
+    if (!body || typeof body !== 'object' || Array.isArray(body)) return NextResponse.json({ error: 'Dữ liệu nộp bài không hợp lệ' }, { status: 400 });
+    for (let retry = 0; retry < 3; retry++) {
+      try {
+        const outcome = await prisma.$transaction(async tx => {
+          await tx.$queryRaw`SELECT id FROM "Attempt" WHERE id = ${id} FOR UPDATE`;
+          const attempt = await tx.attempt.findUnique({ where: { id }, include });
+          if (!attempt || !hasAttemptAccess(req, attempt)) return { error: 'Không có quyền truy cập lượt làm bài', status: 403 } as const;
+          if (attempt.status === 'SUBMITTED') return { attempt, idempotent: true };
+          if (attempt.status !== 'IN_PROGRESS') return { error: 'Lượt này đã hết hiệu lực', status: 409 } as const;
+          if (!validateResponses(body.answers ?? {}, attempt.assignment.snapshot)) return { error: 'Câu trả lời không hợp lệ', status: 400 } as const;
+          // After the server deadline plus the fixed 15-second transport allowance, only the on-time draft can be finalized.
+          const acceptNewAnswers = canAcceptSubmissionAnswers(attempt, attempt.assignment);
+          if (acceptNewAnswers && !validDraftRevision(body.baseDraftRevision)) return { error: 'Thiếu phiên bản nháp. Hãy giữ câu trả lời rồi mở lại lượt làm.', status: 400, code: 'DRAFT_REVISION_REQUIRED' } as const;
+          if (acceptNewAnswers && body.baseDraftRevision !== attemptDraftRevision(attempt.draft)) return { error: 'Nháp đã được sửa ở trang khác. Chưa nộp bản cũ; hãy tải bản đang nhập để đối chiếu.', status: 409, code: 'DRAFT_CONFLICT' } as const;
+          const answers = { ...asObject(attempt.draft), ...(acceptNewAnswers ? asObject(body.answers) : {}) };
+          const grade = gradeSnapshot(attempt.assignment.snapshot, answers);
+          const submittedAt = new Date();
+          const updated = await tx.attempt.updateMany({ where: { id, status: 'IN_PROGRESS' }, data: { status: 'SUBMITTED', score: grade.score, maxScore: grade.maxScore, needsGrading: grade.needsGrading, submittedAt } });
+          if (!updated.count) throw new Error('ATTEMPT_WRITE_CONFLICT');
+          for (const answer of grade.gradedAnswers) {
+            await tx.attemptAnswer.create({ data: { attemptId: id, questionKey: answer.questionKey,
+              response: answer.response === null ? Prisma.JsonNull : answer.response as Prisma.InputJsonValue,
+              isCorrect: answer.isCorrect, earned: answer.earned,
+            } });
+          }
+          return { attempt: { ...attempt, status: 'SUBMITTED' as const, score: new Prisma.Decimal(grade.score), maxScore: new Prisma.Decimal(grade.maxScore), needsGrading: grade.needsGrading, submittedAt }, idempotent: false };
+        }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
+        if ('error' in outcome) return NextResponse.json({ error: outcome.error, code: 'code' in outcome ? outcome.code : undefined }, { status: outcome.status });
+        return resultResponse(outcome.attempt, outcome.idempotent);
+      } catch (error) {
+        if (retry < 2 && (error instanceof Prisma.PrismaClientKnownRequestError && ['P2034', 'P2002'].includes(error.code) || error instanceof Error && error.message === 'ATTEMPT_WRITE_CONFLICT')) continue;
+        throw error;
+      }
+    }
+  } catch (error) {
+    console.error('Submit attempt failed', error);
+    return NextResponse.json({ error: 'Chưa ghi nhận được bài nộp. Em có thể thử nộp lại an toàn.' }, { status: 503 });
   }
 }

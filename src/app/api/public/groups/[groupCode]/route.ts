@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { AssignmentStatus, AttemptStatus } from '@prisma/client';
+import { hasAttemptAccess, isPolicyVisible } from '@/lib/attempt-access';
 
 export async function GET(
   req: NextRequest,
@@ -20,11 +21,12 @@ export async function GET(
           orderBy: { displayName: 'asc' },
         },
         assignments: {
-          where: { status: AssignmentStatus.OPEN },
+          where: { status: AssignmentStatus.OPEN, AND: [{ OR: [{ opensAt: null }, { opensAt: { lte: new Date() } }] }, { OR: [{ closesAt: null }, { closesAt: { gt: new Date() } }] }] },
           orderBy: { createdAt: 'desc' },
           select: {
             id: true,
             title: true,
+            ownerId: true,
             publicId: true,
             mode: true,
             identityMode: true,
@@ -32,12 +34,13 @@ export async function GET(
             opensAt: true,
             closesAt: true,
             showResult: true,
+            status: true,
           },
         },
       },
     });
 
-    if (!group) {
+    if (!group || group.archivedAt) {
       return NextResponse.json({ error: 'Lớp học không tồn tại hoặc mã lớp không đúng' }, { status: 404 });
     }
 
@@ -52,6 +55,7 @@ export async function GET(
         select: {
           id: true,
           assignmentId: true,
+          studentId: true,
           attemptNo: true,
           status: true,
           score: true,
@@ -63,7 +67,7 @@ export async function GET(
         orderBy: { attemptNo: 'desc' },
       });
 
-      attempts.forEach((att) => {
+      attempts.filter(att => hasAttemptAccess(req, att)).forEach((att) => {
         if (!studentAttempts[att.assignmentId]) {
           studentAttempts[att.assignmentId] = [];
         }
@@ -71,19 +75,19 @@ export async function GET(
       });
     }
 
-    const assignmentsWithStatus = group.assignments.map((asg) => {
+    const assignmentsWithStatus = group.assignments.filter(asg => asg.ownerId === group.ownerId).map((asg) => {
       const attempts = studentAttempts[asg.id] || [];
       const latestAttempt = attempts[0] || null;
 
       return {
-        ...asg,
+        id: asg.id, title: asg.title, publicId: asg.publicId, mode: asg.mode, identityMode: asg.identityMode, durationMinutes: asg.durationMinutes, opensAt: asg.opensAt, closesAt: asg.closesAt,
         attemptsCount: attempts.length,
         latestAttempt: latestAttempt
           ? {
               id: latestAttempt.id,
               status: latestAttempt.status,
-              score: asg.showResult === 'IMMEDIATE' && latestAttempt.status === AttemptStatus.SUBMITTED ? latestAttempt.score : null,
-              maxScore: latestAttempt.maxScore,
+              score: isPolicyVisible(asg.showResult, asg) && latestAttempt.status === AttemptStatus.SUBMITTED ? latestAttempt.score : null,
+              maxScore: isPolicyVisible(asg.showResult, asg) && latestAttempt.status === AttemptStatus.SUBMITTED ? latestAttempt.maxScore : null,
               submittedAt: latestAttempt.submittedAt,
             }
           : null,
@@ -98,7 +102,7 @@ export async function GET(
         students: group.students,
         assignments: assignmentsWithStatus,
       },
-    });
+    }, { headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {
     console.error('Lỗi GET /api/public/groups/[groupCode]:', error);
     return NextResponse.json({ error: 'Lỗi máy chủ khi lấy thông tin lớp học' }, { status: 500 });

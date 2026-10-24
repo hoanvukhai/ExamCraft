@@ -4,7 +4,8 @@ import crypto from 'crypto';
  * Lấy khóa mã hóa 32-byte từ SESSION_SECRET của hệ thống
  */
 function getMasterEncryptionKey(): Buffer {
-  const secret = process.env.SESSION_SECRET || 'examcraft-secret-master-encryption-key-2026';
+  const secret = process.env.SESSION_SECRET;
+  if (!secret) throw new Error('SESSION_SECRET_REQUIRED_FOR_KEY_ENCRYPTION');
   return crypto.createHash('sha256').update(secret).digest();
 }
 
@@ -22,7 +23,7 @@ export function maskApiKey(rawKey: string): string {
 }
 
 /**
- * Mã hóa API Key 2 chiều bằng chuẩn quân sự AES-256-GCM
+ * Mã hóa API Key bằng AES-256-GCM
  * Trả về chuỗi ciphertext, vector khởi tạo (IV) và Auth Tag để lưu vào Database.
  */
 export function encryptApiKey(plainKey: string): {

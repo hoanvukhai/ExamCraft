@@ -1,148 +1,47 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
+import { apiErrorResponse } from '@/lib/api-error';
+import { createExam, createExamSchema } from '@/lib/exam-persistence';
+import { collaborationPermissions } from '@/lib/exam-collaboration';
+import { fromDatabaseExam } from '@/lib/exam-document';
+import { ApiError } from '@/lib/api-error';
+import { isSameOriginMutation } from '@/lib/attempt-access';
+import { assertRequestAccount } from '@/lib/request-account';
 
-const CreateExamSchema = z.object({
-  title: z.string().min(1, 'Tiêu đề đề thi không được để trống'),
-  subject: z.string().min(1, 'Mã môn học là bắt buộc'),
-  grade: z.number().int().min(1).max(12),
-  durationMinutes: z.number().int().min(1).optional(),
-  templateId: z.string().optional(),
-  metadata: z.record(z.string(), z.any()).default({}),
-  sections: z.array(z.record(z.string(), z.any())).min(1, 'Cần ít nhất một phần cấu trúc đề'),
-  variantCount: z.number().int().min(1).max(10).default(1),
-  questionItems: z
-    .array(
-      z.object({
-        questionId: z.string(),
-        sectionId: z.string(),
-        position: z.number().int(),
-        pointsOverride: z.number().optional(),
-      })
-    )
-    .optional(),
-});
-
-// GET: Lấy danh sách đề thi của giáo viên
 export async function GET(req: NextRequest) {
   try {
     const user = await requireAuth();
-    const { searchParams } = new URL(req.url);
-
-    const subject = searchParams.get('subject') || undefined;
-    const gradeParam = searchParams.get('grade');
-    const grade = gradeParam ? parseInt(gradeParam, 10) : undefined;
-    const search = searchParams.get('search') || undefined;
-    const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
-    const limit = Math.min(50, Math.max(1, parseInt(searchParams.get('limit') || '20', 10)));
-    const skip = (page - 1) * limit;
-
-    const whereClause: Record<string, unknown> = {
-      ownerId: user.id,
-      deletedAt: null,
-    };
-
-    if (subject) whereClause.subject = subject;
-    if (grade) whereClause.grade = grade;
-    if (search) {
-      whereClause.title = { contains: search, mode: 'insensitive' };
-    }
-
+    assertRequestAccount(req.headers, user.id);
+    const params = new URL(req.url).searchParams;
+    const integer = (key: string, fallback: number, max: number) => { const n = Number(params.get(key) ?? fallback); return Number.isInteger(n) && n > 0 ? Math.min(n, max) : fallback; };
+    const page = integer('page', 1, 100000), limit = integer('limit', 20, 100);
+    const folder = params.get('folderId'), grade = params.get('grade');
+    const ownedOnly = params.get('isTrash') === 'true' || (folder && folder !== 'all') || params.get('isStarred') === 'true';
+    const where = { ...(ownedOnly ? { ownerId: user.id } : { OR: [{ ownerId: user.id }, { collaborators: { some: { userId: user.id, revokedAt: null } } }] }), deletedAt: params.get('isTrash') === 'true' ? { not: null } : null,
+      ...(params.get('subject') ? { subject: params.get('subject')! } : {}),
+      ...(grade && Number.isInteger(Number(grade)) ? { grade: Number(grade) } : {}),
+      ...(params.get('search') ? { title: { contains: params.get('search')!, mode: 'insensitive' as const } } : {}),
+      ...(folder && folder !== 'all' ? { folderId: ['root', 'none'].includes(folder) ? null : folder } : {}),
+      ...(params.get('isStarred') === 'true' ? { isStarred: true } : {}) };
     const [exams, totalCount] = await Promise.all([
-      prisma.exam.findMany({
-        where: whereClause,
-        include: {
-          _count: {
-            select: {
-              items: true,
-              assignments: true,
-            },
-          },
-        },
-        orderBy: { updatedAt: 'desc' },
-        skip,
-        take: limit,
-      }),
-      prisma.exam.count({ where: whereClause }),
+      prisma.exam.findMany({ where, select: { ownerId: true, collaborators: { where: { userId: user.id, revokedAt: null }, select: { role: true } }, id: true, title: true, subject: true, grade: true, durationMinutes: true, version: true, folderId: true, isStarred: true, createdAt: true, updatedAt: true, deletedAt: true,
+        folder: { select: { id: true, name: true, color: true } }, _count: { select: { items: true, assignments: true } } }, orderBy: { updatedAt: 'desc' }, skip: (page - 1) * limit, take: limit }),
+      prisma.exam.count({ where }),
     ]);
-
-    return NextResponse.json({
-      exams,
-      pagination: {
-        page,
-        limit,
-        totalCount,
-        totalPages: Math.ceil(totalCount / limit),
-      },
-    });
-  } catch (error: unknown) {
-    const err = error as Error;
-    if (err.message === 'UNAUTHORIZED') {
-      return NextResponse.json({ error: 'Chưa đăng nhập' }, { status: 401 });
-    }
-    console.error('Lỗi GET /api/exams:', error);
-    return NextResponse.json({ error: 'Lỗi máy chủ khi lấy danh sách đề thi' }, { status: 500 });
-  }
+    // A revoke may finish between the main query and relation loading. Omit that row.
+    return NextResponse.json({ exams: exams.flatMap(({ ownerId, collaborators, ...exam }) => ownerId !== user.id && !collaborators[0] ? [] : [{ ...exam, ...(ownerId !== user.id ? { folder: null, folderId: null, isStarred: false, _count: { items: exam._count.items, assignments: 0 } } : {}), permissions: collaborationPermissions(ownerId === user.id ? 'OWNER' : collaborators[0].role) }]), pagination: { page, limit, totalCount, totalPages: Math.ceil(totalCount / limit) } }, { headers: { 'Cache-Control': 'no-store' } });
+  } catch (error) { return apiErrorResponse(error, 'Không tải được kho đề'); }
 }
 
-// POST: Tạo đề thi mới và lưu vào PostgreSQL
 export async function POST(req: NextRequest) {
   try {
+    if (!isSameOriginMutation(req)) throw new ApiError(403, 'Yêu cầu không hợp lệ');
     const user = await requireAuth();
-    const body = await req.json();
-    const parsed = CreateExamSchema.safeParse(body);
-
-    if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0]?.message || 'Dữ liệu đề thi không hợp lệ' },
-        { status: 400 }
-      );
-    }
-
-    const data = parsed.data;
-
-    const exam = await prisma.$transaction(async (tx) => {
-      const created = await tx.exam.create({
-        data: {
-          ownerId: user.id,
-          title: data.title,
-          subject: data.subject,
-          grade: data.grade,
-          durationMinutes: data.durationMinutes,
-          templateId: data.templateId,
-          metadata: data.metadata,
-          sections: data.sections,
-          variantCount: data.variantCount,
-        },
-      });
-
-      if (data.questionItems && data.questionItems.length > 0) {
-        await tx.examQuestion.createMany({
-          data: data.questionItems.map((item) => ({
-            examId: created.id,
-            questionId: item.questionId,
-            sectionId: item.sectionId,
-            position: item.position,
-            pointsOverride: item.pointsOverride,
-          })),
-        });
-      }
-
-      return created;
-    });
-
-    return NextResponse.json({
-      success: true,
-      exam,
-      message: 'Lưu đề thi thành công vào cơ sở dữ liệu!',
-    });
-  } catch (error: unknown) {
-    const err = error as Error;
-    if (err.message === 'UNAUTHORIZED') {
-      return NextResponse.json({ error: 'Chưa đăng nhập' }, { status: 401 });
-    }
-    console.error('Lỗi POST /api/exams:', error);
-    return NextResponse.json({ error: 'Lỗi máy chủ khi tạo đề thi' }, { status: 500 });
-  }
+    assertRequestAccount(req.headers, user.id);
+    const parsed = createExamSchema.safeParse(await req.json());
+    if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message ?? 'Dữ liệu không hợp lệ' }, { status: 400 });
+    const exam = await prisma.$transaction(tx => createExam(tx, user.id, parsed.data), { timeout: 30000 });
+    return NextResponse.json({ success: true, exam, document: fromDatabaseExam(exam) });
+  } catch (error) { return apiErrorResponse(error, 'Chưa lưu được đề thi'); }
 }

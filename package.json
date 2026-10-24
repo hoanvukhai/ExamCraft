@@ -3,15 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
     "start": "next start",
-    "lint": "next lint",
-    "test": "npx tsx tests/run_all_v3_tests.ts",
-    "test:unit": "npx tsx tests/unit_tests.mjs",
-    "test:all": "npx tsx tests/run_all_v3_tests.ts",
-    "test:audit": "npx tsx tests_e2e/test_vong2_http_audit.ts",
-    "postinstall": "prisma generate"
+    "lint": "eslint .",
+    "test": "npm run test:safe",
+    "test:unit": "node --import tsx tests/unit_tests.mjs",
+    "test:all": "npm run test:safe",
+    "test:audit": "node --import tsx tests/run_guarded_http_audit.ts",
+    "postinstall": "prisma generate",
+    "test:safe": "npm run test:unit && node --import tsx --test tests/safety_guard.test.ts tests/public_access.test.ts tests/persistence_permissions.test.ts tests/generation_and_drafts.test.ts tests/education.test.ts tests/ai_policy.test.ts tests/answer_review_and_shuffle.test.ts tests/structured_grading.test.ts tests/portable_and_exports.test.ts tests/question_history.test.ts tests/manual_grading.test.ts tests/auth_security.test.ts tests/import_document.test.ts tests/knowledge_package.test.ts tests/backup_package.test.ts tests/scope_chat.test.ts tests/exam_plan.test.ts tests/exam_plan_exports.test.ts tests/header_layout.test.ts tests/exam_template.test.ts tests/question_draft.test.ts tests/question_commands.test.ts tests/question_canonical_clear.test.ts tests/question_ai_review.test.ts tests/copilot_submission.test.ts tests/ai_proposal_journal.test.ts tests/copilot_history.test.ts tests/attempt_draft_revision.test.ts tests/student_response_text.test.ts tests/manual_grade_revision.test.ts",
+    "test:integration": "node --import tsx scripts/test-database.cjs run",
+    "test:integration:legacy": "node --import tsx tests/run_all_v3_tests.ts",
+    "test:http": "node --import tsx scripts/test-database.cjs http"
   },
   "dependencies": {
     "@google/genai": "^2.30.0",
@@ -30,6 +34,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
     "@tailwindcss/turbopack": "^4",
     "@types/bcryptjs": "^2.4.6",
     "@types/katex": "^0.16.8",

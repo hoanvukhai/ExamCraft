@@ -1,5 +1,7 @@
 import Dexie, { Table } from 'dexie';
 import { Exam, Question, Subject, QuestionType, DifficultyLevel } from '@/types/exam';
+import { type BankPassage, listBankQuestions, saveBankQuestion, deleteBankQuestion } from './question-client';
+import { insertLegacyIfMissing, legacyRecords, collectLegacyBrowserExams } from './legacy-local';
 
 export interface AppConfigRecord {
   key: string;
@@ -43,18 +45,15 @@ export async function migrateFromLocalStorageIfNeeded(): Promise<number> {
       return 0;
     }
 
-    const legacyExams: Exam[] = JSON.parse(libraryRaw);
-    if (!Array.isArray(legacyExams) || legacyExams.length === 0) {
+    const legacyExams = legacyRecords(JSON.parse(libraryRaw)) as Exam[];
+    if (legacyExams.length === 0) {
       localStorage.setItem('examcraft_dexie_migrated_v1', 'true');
       return 0;
     }
 
     await db.transaction('rw', db.exams, async () => {
       for (const exam of legacyExams) {
-        if (exam.id) {
-          await db.exams.put(exam);
-          count++;
-        }
+        if (await insertLegacyIfMissing(db.exams, exam)) count++;
       }
     });
 
@@ -108,33 +107,23 @@ export async function dbDeleteExam(id: string): Promise<void> {
 /**
  * Lưu một câu hỏi vào Ngân hàng câu hỏi nguyên tử
  */
-export async function dbSaveQuestionToBank(question: Question): Promise<void> {
+export async function dbSaveQuestionToBank(question: Question, ownerId: string, passage?: BankPassage): Promise<void> {
   if (typeof window === 'undefined') return;
-  const qToSave: Question = {
-    ...question,
-    updatedAt: new Date().toISOString(),
-    status: question.status || 'verified',
-  };
-  await db.questions.put(qToSave);
+  await saveBankQuestion(question, ownerId, passage);
 }
 
 /**
  * Lấy câu hỏi từ Ngân hàng câu hỏi theo bộ lọc
  */
-export async function dbGetQuestionsFromBank(filters?: {
+export async function dbGetQuestionsFromBank(ownerId: string, filters?: {
   subject?: Subject;
   grade?: number;
   type?: QuestionType;
   difficulty?: DifficultyLevel;
 }): Promise<Question[]> {
   if (typeof window === 'undefined') return [];
-  let collection = db.questions.toCollection();
-
-  if (filters?.subject) {
-    collection = db.questions.where('subject').equals(filters.subject);
-  }
-
-  let results = await collection.toArray();
+  let results = await listBankQuestions(ownerId);
+  if (filters?.subject) results = results.filter(q => q.subject === filters.subject);
 
   if (filters?.grade) {
     results = results.filter(q => q.grade === filters.grade);
@@ -152,25 +141,25 @@ export async function dbGetQuestionsFromBank(filters?: {
 /**
  * Lấy toàn bộ câu hỏi trong Ngân hàng câu hỏi
  */
-export async function dbGetAllQuestionsFromBank(): Promise<Question[]> {
+export async function dbGetAllQuestionsFromBank(ownerId: string): Promise<Question[]> {
   if (typeof window === 'undefined') return [];
-  return db.questions.orderBy('updatedAt').reverse().toArray();
+  return listBankQuestions(ownerId);
 }
 
 /**
  * Xóa một câu hỏi khỏi Ngân hàng câu hỏi
  */
-export async function dbDeleteQuestionFromBank(id: string): Promise<void> {
+export async function dbDeleteQuestionFromBank(id: string, ownerId: string): Promise<void> {
   if (typeof window === 'undefined') return;
-  await db.questions.delete(id);
+  await deleteBankQuestion(id, ownerId);
 }
 
 /**
  * Đếm số lượng câu hỏi hiện có trong Ngân hàng
  */
-export async function dbGetQuestionBankCount(): Promise<number> {
+export async function dbGetQuestionBankCount(ownerId: string): Promise<number> {
   if (typeof window === 'undefined') return 0;
-  return db.questions.count();
+  return (await listBankQuestions(ownerId)).length;
 }
 
 /**
@@ -178,7 +167,7 @@ export async function dbGetQuestionBankCount(): Promise<number> {
  */
 export async function dbExportDatabaseToJson(): Promise<string> {
   if (typeof window === 'undefined') return '{}';
-  const exams = await db.exams.toArray();
+  const exams = collectLegacyBrowserExams(localStorage, await db.exams.toArray());
   const questions = await db.questions.toArray();
   const configs = await db.configs.toArray();
 
@@ -200,28 +189,15 @@ export async function dbExportDatabaseToJson(): Promise<string> {
 export async function dbImportDatabaseFromJson(jsonString: string): Promise<{ examsCount: number; questionsCount: number }> {
   if (typeof window === 'undefined') return { examsCount: 0, questionsCount: 0 };
   const data = JSON.parse(jsonString);
+  const exams = data.exams === undefined ? [] : legacyRecords(data.exams) as Exam[];
+  const questions = data.questions === undefined ? [] : legacyRecords(data.questions) as Question[];
 
   let examsCount = 0;
   let questionsCount = 0;
 
   await db.transaction('rw', [db.exams, db.questions], async () => {
-    if (Array.isArray(data.exams)) {
-      for (const exam of data.exams) {
-        if (exam.id) {
-          await db.exams.put(exam);
-          examsCount++;
-        }
-      }
-    }
-
-    if (Array.isArray(data.questions)) {
-      for (const q of data.questions) {
-        if (q.id) {
-          await db.questions.put(q);
-          questionsCount++;
-        }
-      }
-    }
+    for (const exam of exams) if (await insertLegacyIfMissing(db.exams, exam)) examsCount++;
+    for (const question of questions) if (await insertLegacyIfMissing(db.questions, question)) questionsCount++;
   });
 
   return { examsCount, questionsCount };
