@@ -27,7 +27,7 @@ Luồng phải chạy trơn từ đầu đến cuối (mỗi luồng có kiểm 
 **P1 — nên có trước khi mở rộng:** 008✔, 015, 028, 029, 030, 040, 041, 042, 044, 047, 048, 051, 031, 032, 033, 074, 076.
 **Hoãn sau pilot:** 004–007, 016–022, 025, 034–039, 045, 046, 049, 050, 052, 053, 063–071, 075, 077, 078 (các CV nội dung đầy đủ theo môn/lớp, AI sinh/kiểm, cộng tác nâng cao, phân tích/memory, tổng nghiệm thu). Không bỏ khỏi phạm vi; chỉ không chặn pilot.
 
-"Pilot-ready" cho một CV P0: (1) có ca HTTP/DB hoặc unit chạy mới; (2) có ca kiểm tự động trên giao diện trong luồng F; (3) giới hạn còn lại ghi trong báo cáo nhóm. **Đề xuất chờ chủ dự án duyệt:** CV tiện ích được ghi "đạt trong phạm vi pilot" khi (1)–(3) xong; CV về quyền, mất dữ liệu, lộ đáp án, sai điểm giữ tiêu chí đầy đủ của 03. Đến khi duyệt, không đóng CV theo cách mới.
+"Pilot-ready" cho một CV P0: (1) có ca HTTP/DB hoặc unit chạy mới; (2) có ca kiểm tự động trên giao diện trong luồng F; (3) giới hạn còn lại ghi trong báo cáo nhóm. **Chủ dự án đã duyệt 24/10/2026:** CV tiện ích được ghi "đạt trong phạm vi pilot" khi có kiểm tự động, kiểm API/DB và ghi giới hạn. CV về quyền, mất dữ liệu, lộ đáp án, sai điểm giữ tiêu chí đầy đủ của 03. Mức "đạt trong phạm vi pilot" **không** đổi `[ ]` thành `[x]` trong 03 và không thay tiêu chí "Đạt khi"; nó chỉ ghi ở dòng "Hiện trạng" của CV, kèm danh sách giới hạn, và không dùng để tuyên bố nghiệm thu hay phát hành.
 
 ## 4. Đóng băng
 - **Không thêm** bảng/nhật ký khôi phục nháp mới. Những cái đã mount (chấm, ghi chú AI, khóa, mẫu, học sinh) giữ nguyên, commit, ghi giới hạn; chỉ sửa khi người dùng thật báo mất dữ liệu hoặc test pilot lộ lỗi.
