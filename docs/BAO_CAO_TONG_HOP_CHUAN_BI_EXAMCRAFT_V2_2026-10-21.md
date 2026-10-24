@@ -1,10 +1,10 @@
 # ExamCraft — Báo cáo tổng hợp để chốt hướng sửa đổi và chuẩn bị xây dựng
 
-> **Tài liệu lịch sử/đầu vào phân tích:** từ 21/10/2026, dùng [bộ tổng kết và kế hoạch hiện hành](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/00_BAT_DAU_TU_DAY.md). Nội dung và dấu hoàn thành dưới đây không tự đại diện cho yêu cầu hoặc tiến độ mới; giữ để đối chiếu nguồn gốc.
+> **Tài liệu lịch sử/đầu vào phân tích:** từ 21/10/2026, dùng [bộ tổng kết và kế hoạch hiện hành](ke-hoach-2026-10-21/00_BAT_DAU_TU_DAY.md). Nội dung và dấu hoàn thành dưới đây không tự đại diện cho yêu cầu hoặc tiến độ mới; giữ để đối chiếu nguồn gốc.
 
 Ngày cập nhật: **21/10/2026**. Phiên bản: **V2 — phân tích, chưa triển khai**.
 
-> **Cập nhật sau phản hồi mới:** đọc [bản bổ sung V3](F:/Workspace/Zazz/ExamCraft/docs/BO_SUNG_CHOT_HUONG_EXAMCRAFT_V3_2026-10-21.md) trước khi chốt. V3 điều chỉnh phạm vi thành đầy đủ các môn, Toán là tuyến kiểm thử sớm; bổ sung quản lý key, bài tùy chỉnh, sao lưu và mẫu trình bày. Những điểm V3 thay đổi được ưu tiên hơn nội dung tương ứng bên dưới.
+> **Cập nhật sau phản hồi mới:** đọc [bản bổ sung V3](BO_SUNG_CHOT_HUONG_EXAMCRAFT_V3_2026-10-21.md) trước khi chốt. V3 điều chỉnh phạm vi thành đầy đủ các môn, Toán là tuyến kiểm thử sớm; bổ sung quản lý key, bài tùy chỉnh, sao lưu và mẫu trình bày. Những điểm V3 thay đổi được ưu tiên hơn nội dung tương ứng bên dưới.
 
 Bản này tổng hợp báo cáo trước, các hội thoại, báo cáo kiểm toán bổ sung và những câu trả lời mới của chủ dự án. Khi khác nhau về yêu cầu sản phẩm, **ý kiến mới của chủ dự án trong cuộc trò chuyện này được ưu tiên**. Các hướng kỹ thuật dưới đây là đề xuất để đọc và chốt; chưa phải checklist thi công, lịch triển khai hay chứng nhận chất lượng.
 
@@ -34,7 +34,7 @@ Phạm vi ưu tiên đã được bạn chọn: **Toán đầy đủ lớp 1–1
 |---|---|
 | [Hội thoại TXT](<F:/Downloads/Xây Dựng Web Soạn Đề AI.txt>) | Lịch sử yêu cầu, phương án dữ liệu và những lần điều chỉnh hướng |
 | [Hội thoại ChatGPT được chia sẻ](https://chatgpt.com/share/6ad84d64-fcf8-83ec-89c0-a17d2646a480) | Các lựa chọn sản phẩm và yêu cầu đơn giản hóa khung tri thức đã đọc ở lượt trước |
-| [Báo cáo phân tích V1](F:/Workspace/Zazz/ExamCraft/docs/BAO_CAO_PHAN_TICH_DINH_HUONG_2026-10-21.md) | Baseline, phát hiện R01–R16 và mô hình scope/ma trận/kiểm định |
+| [Báo cáo phân tích V1](BAO_CAO_PHAN_TICH_DINH_HUONG_2026-10-21.md) | Baseline, phát hiện R01–R16 và mô hình scope/ma trận/kiểm định |
 | [Báo cáo kiểm toán AI bổ sung](F:/Downloads/EXAMCRAFT_MASTER_AUDIT_AND_ROADMAP.md) | Nguồn giả thuyết lỗi và các đề xuất cần đối chiếu |
 | [Nhật ký AI bạn gửi](<C:/Users/ACER/.codex/attachments/e23ddfae-dc07-4585-9d3c-95555ee9a6e8/Pasted text.txt>) | Mô tả hoạt động và kết luận của đợt kiểm toán khác; không thay cho log HTTP hoặc bằng chứng chạy mới |
 | Mã nguồn hiện tại và schema | Đối chiếu đường đi dữ liệu, lưu đề, BYOK, chia sẻ, làm bài, bộ nhớ AI |
@@ -400,7 +400,7 @@ Nếu AI sinh câu nằm ngoài phạm vi hoặc thiếu lời giải, hệ th�
 | R15 | Nhiều đường tính điểm; hàm chấm cũ chưa thấy caller trong `src` | Gom quy tắc tính điểm, không quy lỗi hàm không dùng cho luồng đang chạy |
 | R16 | Một số test kiểm tra nông; runner luôn in thông báo 100% | Cần bằng chứng hành vi và kết quả thất bại có ý nghĩa |
 
-Chi tiết code, giới hạn và ca kiểm định nằm trong [mục 5 và 11 của V1](F:/Workspace/Zazz/ExamCraft/docs/BAO_CAO_PHAN_TICH_DINH_HUONG_2026-10-21.md). Đây là hồ sơ vấn đề, chưa phải danh sách công việc đã được giao làm.
+Chi tiết code, giới hạn và ca kiểm định nằm trong [mục 5 và 11 của V1](BAO_CAO_PHAN_TICH_DINH_HUONG_2026-10-21.md). Đây là hồ sơ vấn đề, chưa phải danh sách công việc đã được giao làm.
 
 ### 12.2. Phát hiện trong báo cáo mới đã đối chiếu trực tiếp
 
@@ -408,14 +408,14 @@ Chi tiết code, giới hạn và ca kiểm định nằm trong [mục 5 và 11 
 |---|---|---|
 | Dữ liệu server khác dữ liệu editor | Đường mở đề có thao tác trải `it.question` nhưng không chuẩn hóa đầy đủ loại câu và payload. Có nguy cơ mất lựa chọn/sai phân loại khi đi vào UI/xuất/trộn; không gán tỷ lệ “100% mọi đề” khi chưa thử từng đường. | [ExamWorkspace](F:/Workspace/Zazz/ExamCraft/src/components/ExamWorkspace.tsx:130) |
 | Lưu nháp học sinh sai hợp đồng | UI gửi POST, API chỉ có PATCH. Body hiện tại đã là `{draft: currentAnswers}`; báo cáo nói `{answers}` là chi tiết cũ. UI không kiểm tra HTTP thành công trước cập nhật giờ đã lưu. | [Trang làm bài](F:/Workspace/Zazz/ExamCraft/src/app/a/[publicId]/page.tsx:198), [API draft](F:/Workspace/Zazz/ExamCraft/src/app/api/public/attempts/[id]/draft/route.ts:5) |
-| ShareModal không đồng nhất | Có `IN_CLASS` so với enum `CLASSWORK`; đọc `examIds` không có trong phản hồi import; chế độ nhận diện mặc định dễ lệch lựa chọn không lớp. Đây là lỗi hợp đồng cần tái lập theo trường hợp cụ thể. | [ShareModal](F:/Workspace/Zazz/ExamCraft/src/components/ShareModal.tsx:55), [import legacy](F:/Workspace/Zazz/ExamCraft/src/app/api/migration/import-legacy/route.ts) |
-| Sửa câu/OCR/Word không dùng key tài khoản nhất quán | Thiếu user context trên các đường đã đọc. Tuy nhiên tweak có nhánh key truyền trực tiếp, nên “100% không gọi AI thật” là quá rộng. | [Tweak](F:/Workspace/Zazz/ExamCraft/src/app/api/tweak-question/route.ts), [OCR](F:/Workspace/Zazz/ExamCraft/src/app/api/ocr-exam-image/route.ts), [Word](F:/Workspace/Zazz/ExamCraft/src/app/api/parse-docx/route.ts) |
-| Chia sẻ công khai trả đáp án | Route đọc exam bằng ID và trả dữ liệu đáp án/lời giải, chưa thấy áp quyền ShareLink. Đây là rủi ro phải xử lý trước phát hành link thật. | [Public share](F:/Workspace/Zazz/ExamCraft/src/app/api/public/share/[id]/route.ts) |
-| Submit không thực thi đầy đủ hạn/ẩn điểm | Không thấy chặn deadline/closesAt/status trước chấm; nhánh đã nộp trả score trực tiếp. Cần kiểm chứng HTTP rồi thống nhất chính sách ở server. | [Submit](F:/Workspace/Zazz/ExamCraft/src/app/api/public/attempts/[id]/submit/route.ts) |
-| Quyền thao tác lượt làm yếu | Group endpoint trả latestAttempt.id theo studentId; draft/submit không thấy xác thực quyền trên lượt làm. Biết ID có thể trở thành khả năng ghi bài, cần token/phiên được ràng buộc phù hợp. | [Public group](F:/Workspace/Zazz/ExamCraft/src/app/api/public/groups/[groupCode]/route.ts), draft/submit nêu trên |
+| ShareModal không đồng nhất | Có `IN_CLASS` so với enum `CLASSWORK`; đọc `examIds` không có trong phản hồi import; chế độ nhận diện mặc định dễ lệch lựa chọn không lớp. Đây là lỗi hợp đồng cần tái lập theo trường hợp cụ thể. | [ShareModal](F:/Workspace/Zazz/ExamCraft/src/components/ShareModal.tsx:55), [import legacy](../src/app/api/migration/import-legacy/route.ts) |
+| Sửa câu/OCR/Word không dùng key tài khoản nhất quán | Thiếu user context trên các đường đã đọc. Tuy nhiên tweak có nhánh key truyền trực tiếp, nên “100% không gọi AI thật” là quá rộng. | [Tweak](../src/app/api/tweak-question/route.ts), [OCR](../src/app/api/ocr-exam-image/route.ts), [Word](../src/app/api/parse-docx/route.ts) |
+| Chia sẻ công khai trả đáp án | Route đọc exam bằng ID và trả dữ liệu đáp án/lời giải, chưa thấy áp quyền ShareLink. Đây là rủi ro phải xử lý trước phát hành link thật. | [Public share](../src/app/api/public/share/[id]/route.ts) |
+| Submit không thực thi đầy đủ hạn/ẩn điểm | Không thấy chặn deadline/closesAt/status trước chấm; nhánh đã nộp trả score trực tiếp. Cần kiểm chứng HTTP rồi thống nhất chính sách ở server. | [Submit](../src/app/api/public/attempts/[id]/submit/route.ts) |
+| Quyền thao tác lượt làm yếu | Group endpoint trả latestAttempt.id theo studentId; draft/submit không thấy xác thực quyền trên lượt làm. Biết ID có thể trở thành khả năng ghi bài, cần token/phiên được ràng buộc phù hợp. | [Public group](../src/app/api/public/groups/[groupCode]/route.ts), draft/submit nêu trên |
 | Tạo lượt sau khi hết giờ | Đếm lượt đã nộp để tính attemptNo có thể trùng lượt hết hạn còn IN_PROGRESS và vi phạm unique. Không gọi là “vĩnh viễn” vì còn phụ thuộc trạng thái và cách xử lý. | [Start](F:/Workspace/Zazz/ExamCraft/src/app/api/public/assignments/[publicId]/start/route.ts:90) |
-| Start và GET kiểm tra khác nhau | Start đã đọc chưa kiểm opensAt như GET; chưa thấy kiểm PIN, identityMode hoặc tư cách studentId thuộc nhóm ngay tại đường bắt đầu. Báo cáo nói “API start đã yêu cầu PIN” không khớp code hiện tại. | [Start](F:/Workspace/Zazz/ExamCraft/src/app/api/public/assignments/[publicId]/start/route.ts), [GET bài giao](F:/Workspace/Zazz/ExamCraft/src/app/api/public/assignments/[publicId]/route.ts) |
-| Chấm thiếu đáp án/tự luận | So sánh đáp án rỗng có nguy cơ nhận bài bỏ trống là đúng; tự luận cần trạng thái chờ chấm. Không gom mọi phân số/biểu thức thành một quy tắc chuỗi duy nhất. | [Submit](F:/Workspace/Zazz/ExamCraft/src/app/api/public/attempts/[id]/submit/route.ts) |
+| Start và GET kiểm tra khác nhau | Start đã đọc chưa kiểm opensAt như GET; chưa thấy kiểm PIN, identityMode hoặc tư cách studentId thuộc nhóm ngay tại đường bắt đầu. Báo cáo nói “API start đã yêu cầu PIN” không khớp code hiện tại. | [Start](../src/app/api/public/assignments/[publicId]/start/route.ts), [GET bài giao](../src/app/api/public/assignments/[publicId]/route.ts) |
+| Chấm thiếu đáp án/tự luận | So sánh đáp án rỗng có nguy cơ nhận bài bỏ trống là đúng; tự luận cần trạng thái chờ chấm. Không gom mọi phân số/biểu thức thành một quy tắc chuỗi duy nhất. | [Submit](../src/app/api/public/attempts/[id]/submit/route.ts) |
 | UI sinh đề chưa mở tự luận | GenerateModal gửi `numEssay: 0`; muốn soạn đầy đủ phải xét cả giao diện và toàn bộ luồng. | [GenerateModal](F:/Workspace/Zazz/ExamCraft/src/components/GenerateModal.tsx:71) |
 
 Các phát hiện quyền ở đây là phân tích tĩnh, chưa phải báo cáo đã khai thác thực tế. Chúng vẫn đủ quan trọng để đặt điều kiện sửa trước khi dùng với dữ liệu và bài kiểm tra thật.

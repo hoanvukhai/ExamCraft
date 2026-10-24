@@ -1,9 +1,9 @@
 # Danh mục tài liệu đã tìm thấy cho ExamCraft
 
-**Cập nhật 22/10/2026:** đã hợp nhất bàn giao đợt01–03. Dùng [báo cáo hiện hành](F:/Workspace/Zazz/ExamCraft/docs/nghien-cuu/04_TONG_HOP_VA_DINH_CHINH_2026-10-22.md), [danh mục SRC+TK](F:/Workspace/Zazz/ExamCraft/docs/nghien-cuu/05_DANH_MUC_HOP_NHAT.md) và [việc tiếp theo](F:/Workspace/Zazz/ExamCraft/docs/nghien-cuu/06_VIEC_TIEP_THEO.md). Nội dung bên dưới là mốc nghiên cứu trước; không dùng số52 hoặc hàng đợi cũ làm tiến độ toàn kho.
+**Cập nhật 22/10/2026:** đã hợp nhất bàn giao đợt01–03. Dùng [báo cáo hiện hành](04_TONG_HOP_VA_DINH_CHINH_2026-10-22.md), [danh mục SRC+TK](05_DANH_MUC_HOP_NHAT.md) và [việc tiếp theo](06_VIEC_TIEP_THEO.md). Nội dung bên dưới là mốc nghiên cứu trước; không dùng số52 hoặc hàng đợi cũ làm tiến độ toàn kho.
 
 
-**Rà soát lại ngày 21/10/2026:** sổ chung có 52 mã ghi nhận, gồm 45 dòng có URL và 7 dòng nhu cầu tìm thêm (SRC-031–037). Trong 45 dòng có 4 cặp trùng URL; còn 41 URL khác nhau, bao gồm cả cổng sách, bài tin và link chưa mở được. Đây không phải 52 tài liệu riêng biệt đã thu. Giữ mã cũ để truy vết, đánh dấu các dòng trùng. Xem [biên bản rà soát](F:/Workspace/Zazz/ExamCraft/docs/nghien-cuu/03_RA_SOAT_DANH_MUC.md) và [prompt chỉ cần dán](F:/Workspace/Zazz/ExamCraft/docs/nghien-cuu/02_PROMPT_CHI_CAN_DAN.md).
+**Rà soát lại ngày 21/10/2026:** sổ chung có 52 mã ghi nhận, gồm 45 dòng có URL và 7 dòng nhu cầu tìm thêm (SRC-031–037). Trong 45 dòng có 4 cặp trùng URL; còn 41 URL khác nhau, bao gồm cả cổng sách, bài tin và link chưa mở được. Đây không phải 52 tài liệu riêng biệt đã thu. Giữ mã cũ để truy vết, đánh dấu các dòng trùng. Xem [biên bản rà soát](03_RA_SOAT_DANH_MUC.md) và [prompt chỉ cần dán](02_PROMPT_CHI_CAN_DAN.md).
 
 Ngày cập nhật: 21/10/2026. Phạm vi lượt này: **tìm nguồn và lập danh mục**. Các đường dẫn bên dưới là ứng viên tài liệu; việc xác minh nội dung, hiệu lực, độ tin cậy và quyền sử dụng được để sang lượt đánh giá tiếp theo. Không hiểu trạng thái “tìm thấy” là “đã đọc/đã duyệt”.
 
@@ -148,4 +148,4 @@ Các nhãn này chỉ là danh mục để tìm. Lượt đánh giá sau sẽ x�
 
 Đây là danh mục nguồn tìm thấy ban đầu, **chưa đủ để gọi là đã thu thập đầy đủ tài liệu cho mọi môn, lớp và thể loại**. Một số cổng chỉ có bộ lọc chứ chưa có inventory từng cuốn; một số hồ sơ chưa lấy được URL tệp gốc; đề địa phương/chuyên biệt chưa được gom. Các link bên thứ ba, bài tin và tệp hướng dẫn mới là đầu mối tìm kiếm. Chưa đọc sâu, đánh giá hiệu lực/nội dung, chọn tài liệu chuẩn, tải kho hàng loạt hay tổng hợp kết luận chuyên môn.
 
-Trạng thái và ID được theo dõi ở [sổ nguồn và gói nghiên cứu](F:/Workspace/Zazz/ExamCraft/docs/nghien-cuu/NGUON_VA_GOI.md). Nội dung này chỉ phục vụ giai đoạn thu thập; khi người dùng chuyển bước, mới kiểm từng nguồn và ghi nhận/loại bỏ có lý do.
+Trạng thái và ID được theo dõi ở [sổ nguồn và gói nghiên cứu](NGUON_VA_GOI.md). Nội dung này chỉ phục vụ giai đoạn thu thập; khi người dùng chuyển bước, mới kiểm từng nguồn và ghi nhận/loại bỏ có lý do.

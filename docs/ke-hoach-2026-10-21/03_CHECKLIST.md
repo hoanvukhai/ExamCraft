@@ -12,7 +12,7 @@
 
 ND01–07 ở hồ sơ08 là các gói biên tập nguồn thực hiện trong CV016/017/021/022/070/071, không phải việc đã xong hoặc78CV mới. Nghiên cứu có302trang sách được mở và1876URL học liệu, chưa có nghĩa những gói nội dung này được duyệt.
 
-Ngày: 21/10/2026. [Mục lục](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/00_BAT_DAU_TU_DAY.md).
+Ngày: 21/10/2026. [Mục lục](00_BAT_DAU_TU_DAY.md).
 
 **Đã bắt đầu triển khai22/10/2026; trạng thái theo từng mục và [báo cáo tiến độ](../TIEN_DO_CAI_TIEN_EXAMCRAFT.md).** Có sẵn code không đủ đánh dấu xong. Chủ trì kỹ thuật là người/AI thực hiện; chủ dự án chốt sản phẩm/chi phí, người duyệt chuyên môn ký phần nội dung.
 
@@ -319,7 +319,8 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
 - [ ] **CV-077 — Dọn đường cũ và cập nhật tài liệu.**
   - **Hiện trạng24/10 (dọn hồ sơ):**
     - Đã làm: ghi chú mốc chuẩn bị đã qua ở đầu 08/05/07; sửa nơi lưu bằng chứng trong checklist; `.rgignore` đưa báo cáo lịch sử, `qa/` gốc, log/DOM dump và danh mục nghiên cứu lớn ra khỏi tìm kiếm mặc định (không xóa); `tmp/` vào `.gitignore`; nhật ký theo đợt của checklist, hồ sơ 02 cũ và thông báo tiến độ cũ chuyển nguyên văn vào `docs/lich-su/`.
-    - Còn mở: `/test/[id]` có nút dẫn tới `/room` không tồn tại (404). 120 liên kết tuyệt đối `F:/Workspace/...` trong21tệp (README, bộ kế hoạch, nghiên cứu) hỏng khi đổi máy/xem trên GitHub; 7 liên kết trỏ ra ngoài repo (`F:/Downloads`, `.codex`). Khoảng25 báo cáo cũ ở `qa/` gốc có chữ "100%" nhưng chưa có banner lịch sử; `qa/FIX_REPORT.md` trùng y hệt `qa/BAO_CAO_SUA_LOI.md`. Chưa rà caller/dữ liệu để dọn đường cũ.
+    - Đã làm thêm cùng ngày: `/test/[id]` bỏ nút dẫn tới `/room` không tồn tại; 103 liên kết tuyệt đối `F:/…` trong22tệp đổi thành liên kết tương đối (còn 18 tham chiếu `tệp:dòng` cũ trong báo cáo V1–V3 và7liên kết trỏ ra ngoài repo `F:/Downloads`, `.codex`, giữ nguyên vì là nguồn gốc); 38 báo cáo cũ trong `qa/` gốc và `qa/reports/` có ghi chú lịch sử đầu tệp (`FIX_REPORT.md` có nội dung gốc trùng `BAO_CAO_SUA_LOI.md`, giữ cả hai).
+    - Còn mở: chưa rà caller/dữ liệu để dọn đường cũ (route `/c/[groupCode]`, `db.ts` cục bộ, hàm trùng); chưa đổi tên/tách hồ sơ V1–V3 sang thư mục lưu trữ.
   - Phạm vi: YC-29, YC-30. Nghiệm thu: NT-01, NT-03, NT-31.
   - Đạt khi: Rà caller/dữ liệu/link trước bỏ; tài liệu không còn hứa 7-key/100% sai; xóa/hạ schema chỉ sau migration/rollback đã kiểm.
 - [ ] **CV-078 — Tổng nghiệm thu và quyết định phát hành.**
@@ -413,7 +414,7 @@ Nơi lưu bằng chứng: báo cáo nhóm và tệp bằng chứng trong `qa/reb
 
 ## Tiêu chí bổ sung từ bàn giao22/10/2026
 
-Không đổi dấu hoàn thành các CV. Việc nghiên cứu đã làm và chưa làm ghi riêng ở [06—Việc tiếp theo](F:/Workspace/Zazz/ExamCraft/docs/nghien-cuu/06_VIEC_TIEP_THEO.md).
+Không đổi dấu hoàn thành các CV. Việc nghiên cứu đã làm và chưa làm ghi riêng ở [06—Việc tiếp theo](../nghien-cuu/06_VIEC_TIEP_THEO.md).
 
 - CV-004, CV-007 / YC-04,07,25,27 / NT-11,12,28: ví dụ phải có năm học/phiên bản; NN1 và NN2 cùng ngôn ngữ không trùng; chương trình theo trình độ không bị ép lớp.
 - CV-007 / YC-25 / NT-11: phân biệt văn bản, phụ lục, tệp và bản lưu; minh họa bốn phụ lục trong hai PDF và nhiều bản lưu cùng văn bản.

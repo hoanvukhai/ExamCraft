@@ -10,20 +10,20 @@ Ngày lập: **21/10/2026**. Trạng thái tại lúc lập: **đã tổng hợp
 
 Đây là mục lục kế hoạch; điểm vào tiếp nối hiện hành ở hồ sơ bàn giao nêu trên. Yêu cầu mới nhất của chủ dự án được ưu tiên; bộ kế hoạch này thay thế vai trò định hướng của các bản thiết kế và checklist cũ. Báo cáo cũ được giữ làm bằng chứng lịch sử, không cộng các dấu hoàn thành cũ vào tiến độ mới.
 
-**Bổ sung22/10/2026:** đã tiếp nhận5 nội dung bàn giao và hai chat, hợp nhất52 mãSRC +54 mãTK. Đọc [báo cáo hợp nhất22/10](F:/Workspace/Zazz/ExamCraft/docs/nghien-cuu/04_TONG_HOP_VA_DINH_CHINH_2026-10-22.md) và [hàng đợi nghiên cứu](F:/Workspace/Zazz/ExamCraft/docs/nghien-cuu/06_VIEC_TIEP_THEO.md). Chưa đủ học liệu toàn môn/lớp; chưa bắt đầu sửa ứng dụng.
+**Bổ sung22/10/2026:** đã tiếp nhận5 nội dung bàn giao và hai chat, hợp nhất52 mãSRC +54 mãTK. Đọc [báo cáo hợp nhất22/10](../nghien-cuu/04_TONG_HOP_VA_DINH_CHINH_2026-10-22.md) và [hàng đợi nghiên cứu](../nghien-cuu/06_VIEC_TIEP_THEO.md). Chưa đủ học liệu toàn môn/lớp; chưa bắt đầu sửa ứng dụng.
 
 ## Đọc theo nhu cầu
 
 | Tài liệu | Dùng để làm gì? |
 |---|---|
-| [01 — Tổng kết dự án và phạm vi](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/01_TONG_KET_DU_AN.md) | Bản chính để chủ dự án đọc: sản phẩm, chức năng, giữ/thêm/sửa/bỏ và các quyết định |
-| [02 — Lộ trình và phụ thuộc](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/02_LO_TRINH.md) | Thứ tự làm, đầu ra từng đợt và điều kiện chuyển bước |
-| [03 — Checklist thực hiện](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/03_CHECKLIST.md) | Danh sách có mã, tiêu chí hoàn thành và nơi ghi bằng chứng |
-| [04 — Kiểm thử và nghiệm thu](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/04_NGHIEM_THU.md) | Các tình huống kiểm tra thực tế, môn học, dữ liệu, quyền và file xuất |
-| [05 — Chuẩn bị, rủi ro và nguồn](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/05_CHUAN_BI_VA_NGUON.md) | Cần chuẩn bị gì, ai làm, phần nào còn thiếu; liên kết báo cáo/nguồn gốc |
-| [06 — Khung dữ liệu và ví dụ](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/06_KHUNG_DU_LIEU.md) | Hợp đồng khái niệm trước khi sửa schema/API, ví dụ câu–đáp án–mẫu–phiên bản |
-| [07 — Nghiên cứu tài liệu và bộ prompt](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/07_NGHIEN_CUU_VA_PROMPT.md) | Ai tra cứu, cách tự tìm, prompt giao AI khác, nơi nhận và hợp nhất kết quả |
-| [Danh mục tài liệu đã tìm thấy](F:/Workspace/Zazz/ExamCraft/docs/nghien-cuu/01_DANH_MUC_TAI_LIEU_TU_TIM.md) | Nguồn theo chương trình, lớp, môn, sách, kiểm tra và thể loại; trạng thái/thiếu sót được ghi rõ |
+| [01 — Tổng kết dự án và phạm vi](01_TONG_KET_DU_AN.md) | Bản chính để chủ dự án đọc: sản phẩm, chức năng, giữ/thêm/sửa/bỏ và các quyết định |
+| [02 — Lộ trình và phụ thuộc](02_LO_TRINH.md) | Thứ tự làm, đầu ra từng đợt và điều kiện chuyển bước |
+| [03 — Checklist thực hiện](03_CHECKLIST.md) | Danh sách có mã, tiêu chí hoàn thành và nơi ghi bằng chứng |
+| [04 — Kiểm thử và nghiệm thu](04_NGHIEM_THU.md) | Các tình huống kiểm tra thực tế, môn học, dữ liệu, quyền và file xuất |
+| [05 — Chuẩn bị, rủi ro và nguồn](05_CHUAN_BI_VA_NGUON.md) | Cần chuẩn bị gì, ai làm, phần nào còn thiếu; liên kết báo cáo/nguồn gốc |
+| [06 — Khung dữ liệu và ví dụ](06_KHUNG_DU_LIEU.md) | Hợp đồng khái niệm trước khi sửa schema/API, ví dụ câu–đáp án–mẫu–phiên bản |
+| [07 — Nghiên cứu tài liệu và bộ prompt](07_NGHIEN_CUU_VA_PROMPT.md) | Ai tra cứu, cách tự tìm, prompt giao AI khác, nơi nhận và hợp nhất kết quả |
+| [Danh mục tài liệu đã tìm thấy](../nghien-cuu/01_DANH_MUC_TAI_LIEU_TU_TIM.md) | Nguồn theo chương trình, lớp, môn, sách, kiểm tra và thể loại; trạng thái/thiếu sót được ghi rõ |
 
 Chủ dự án có thể đọc 01 rồi 02 và phần cần cung cấp ở 05. Khi thực hiện, dùng 03 và 04; không yêu cầu giáo viên đọc tài liệu kỹ thuật này để dùng sản phẩm.
 

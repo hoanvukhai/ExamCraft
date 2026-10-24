@@ -5,15 +5,15 @@ Ngày 22/10/2026. **Đã hợp nhất các danh mục cũ và mới; chưa đủ
 ## 1. Đọc bản nào từ bây giờ?
 
 - Báo cáo này: kết luận, điều cần sửa và ảnh hưởng đến dự án.
-- [Danh mục hợp nhất](F:/Workspace/Zazz/ExamCraft/docs/nghien-cuu/05_DANH_MUC_HOP_NHAT.md): tra cả mã SRC cũ và TK mới; không bỏ nguồn cũ.
-- [Việc tiếp theo và tiêu chí đủ tài liệu](F:/Workspace/Zazz/ExamCraft/docs/nghien-cuu/06_VIEC_TIEP_THEO.md): danh sách công việc nghiên cứu trước triển khai.
-- [Bộ kế hoạch sản phẩm](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/00_BAT_DAU_TU_DAY.md): vẫn là kế hoạch chính; cập nhật nghiên cứu này bổ sung vào đó, không tạo một bản master cạnh tranh.
+- [Danh mục hợp nhất](05_DANH_MUC_HOP_NHAT.md): tra cả mã SRC cũ và TK mới; không bỏ nguồn cũ.
+- [Việc tiếp theo và tiêu chí đủ tài liệu](06_VIEC_TIEP_THEO.md): danh sách công việc nghiên cứu trước triển khai.
+- [Bộ kế hoạch sản phẩm](../ke-hoach-2026-10-21/00_BAT_DAU_TU_DAY.md): vẫn là kế hoạch chính; cập nhật nghiên cứu này bổ sung vào đó, không tạo một bản master cạnh tranh.
 
 ## 2. Đã nhận gì và kiểm đến đâu?
 
 Đọc hai chat chia sẻ: [Lập danh mục tài liệu](https://chatgpt.com/share/6ad8f27a-20a0-83ec-b6b1-da7a2be549b5) chứa đợt 01–02 và bàn giao; [Tiếp tục tìm tài liệu](https://chatgpt.com/share/6ad8f51b-0900-83ec-8da7-dcc353d07e32) chứa đợt 03 và 14 mục bổ sung. Công cụ đọc web trực tiếp lỗi, nhưng trình duyệt mở được nội dung. Lời AI trong chat là bằng chứng về quá trình thu thập, không thay tài liệu gốc.
 
-Đã đối chiếu 10 tệp Markdown ở năm đường dẫn riêng và hai thư mục: có **5 nội dung tệp khác nhau**, mỗi nội dung có hai bản giống nhau theo SHA-256. Lưu một bản nguyên trạng mỗi nội dung trong [thư mục bàn giao](F:/Workspace/Zazz/ExamCraft/docs/nghien-cuu/inbox/2026-10-22-ban-giao/manifest.json), kèm đường dẫn và hash cả 10 bản. Không sửa các bản Downloads.
+Đã đối chiếu 10 tệp Markdown ở năm đường dẫn riêng và hai thư mục: có **5 nội dung tệp khác nhau**, mỗi nội dung có hai bản giống nhau theo SHA-256. Lưu một bản nguyên trạng mỗi nội dung trong [thư mục bàn giao](inbox/2026-10-22-ban-giao/manifest.json), kèm đường dẫn và hash cả 10 bản. Không sửa các bản Downloads.
 
 Kiểm cấu trúc cho thấy 40 hàng TK đầu trong danh mục 54 hàng giữ nguyên từng dòng so với danh mục đợt 01–02. Tệp bàn giao ban đầu còn nhúng danh mục 40 mục; không đếm phần nhúng lần nữa. Không có PDF nguồn thực tế trong các tệp bàn giao được cung cấp.
 
@@ -102,7 +102,7 @@ Việc thu chương trình mọi môn giúp mô hình dữ liệu đúng hơn; c
 
 Đầu ra cần có trước khi chốt dữ liệu cho triển khai: nguồn nào dùng được cho phạm vi nào, phiên bản nào; phần nào chỉ tham khảo; những mâu thuẫn chưa giải quyết; một số hồ sơ mẫu xuyên suốt từ chương trình → bài sách → loại bài → câu/đáp án/rubric. Các mẫu do AI đề xuất giữ trạng thái chờ giáo viên chuyên môn duyệt.
 
-Chủ dự án hiện chưa cần tìm lại các tệp hoặc chuyển qua Gemini/Claude. Tôi có thể tiếp tục tra ngay tại chat dự án theo [danh sách đã chuẩn bị](F:/Workspace/Zazz/ExamCraft/docs/nghien-cuu/06_VIEC_TIEP_THEO.md). Việc cần chủ dự án hỗ trợ về sau là người thử/duyệt chuyên môn; chưa có người không chặn việc thu nguồn và phân tích, nhưng không gắn nhãn đã được giáo viên nghiệm thu.
+Chủ dự án hiện chưa cần tìm lại các tệp hoặc chuyển qua Gemini/Claude. Tôi có thể tiếp tục tra ngay tại chat dự án theo [danh sách đã chuẩn bị](06_VIEC_TIEP_THEO.md). Việc cần chủ dự án hỗ trợ về sau là người thử/duyệt chuyên môn; chưa có người không chặn việc thu nguồn và phân tích, nhưng không gắn nhãn đã được giáo viên nghiệm thu.
 # Mốc tiếp nối sau báo cáo hợp nhất
 
 Đọc [báo cáo07](07_CHOT_NGUON_NEN_VA_DANH_GIA.md) để xem lượt kiểm nguồn nền,302trang sách,161ô lớp–môn và các đính chính mới. Báo cáo04 bên dưới giữ mốc tiếp nhận, không dùng số106 để mô tả toàn bộ sổ sau bổ sung. Điểm dừng hiện tại: [hồ sơ trước code](../ke-hoach-2026-10-21/08_HO_SO_TRUOC_KHI_CODE.md).

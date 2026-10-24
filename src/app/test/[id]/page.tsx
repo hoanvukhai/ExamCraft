@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ShieldAlert, ArrowRight, Home } from 'lucide-react';
+import { ShieldAlert, Home } from 'lucide-react';
 
 export default function LegacyTestRedirectPage() {
   return (
@@ -13,16 +13,9 @@ export default function LegacyTestRedirectPage() {
         </div>
         <h1 className="text-xl font-bold text-[#202124] dark:text-[#e3e3e3]">Chuyển Tiếp Phòng Thi Chuẩn v3.1</h1>
         <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] leading-relaxed">
-          Đường dẫn thi cũ không còn được hỗ trợ để đảm bảo an toàn đề thi và chống gian lận. Thí sinh vui lòng sử dụng <strong>Mã Phòng Thi</strong> do Giáo viên cung cấp để tham gia làm bài tại phòng thi trực tuyến bảo mật.
+          Đường dẫn thi cũ không còn được hỗ trợ để đảm bảo an toàn đề thi và chống gian lận. Em hãy mở lại đúng liên kết bài giao do giáo viên gửi (dạng /a/…) hoặc hỏi giáo viên để được cấp liên kết mới.
         </p>
         <div className="pt-2 flex flex-col gap-2.5">
-          <Link
-            href="/room"
-            className="w-full py-3 bg-[#1a73e8] hover:bg-[#1557b0] text-white dark:bg-[#8ab4f8] dark:hover:bg-[#a8c7fa] dark:text-[#181818] font-bold text-xs rounded-full flex items-center justify-center gap-2 transition-colors shadow-xs"
-          >
-            <span>Đến Phòng Thi Trực Tuyến</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
           <Link
             href="/"
             className="w-full py-2.5 bg-white hover:bg-[#f1f3f4] text-[#3c4043] dark:bg-[#282828] dark:hover:bg-[#303134] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043] font-semibold text-xs rounded-full flex items-center justify-center gap-2 transition-colors"

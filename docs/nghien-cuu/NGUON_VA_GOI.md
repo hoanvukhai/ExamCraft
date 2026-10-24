@@ -1,9 +1,9 @@
 # Sổ nguồn và gói nghiên cứu
 
-**Cập nhật 22/10/2026:** đã hợp nhất bàn giao đợt01–03. Dùng [báo cáo hiện hành](F:/Workspace/Zazz/ExamCraft/docs/nghien-cuu/04_TONG_HOP_VA_DINH_CHINH_2026-10-22.md), [danh mục SRC+TK](F:/Workspace/Zazz/ExamCraft/docs/nghien-cuu/05_DANH_MUC_HOP_NHAT.md) và [việc tiếp theo](F:/Workspace/Zazz/ExamCraft/docs/nghien-cuu/06_VIEC_TIEP_THEO.md). Nội dung bên dưới là mốc nghiên cứu trước; không dùng số52 hoặc hàng đợi cũ làm tiến độ toàn kho.
+**Cập nhật 22/10/2026:** đã hợp nhất bàn giao đợt01–03. Dùng [báo cáo hiện hành](04_TONG_HOP_VA_DINH_CHINH_2026-10-22.md), [danh mục SRC+TK](05_DANH_MUC_HOP_NHAT.md) và [việc tiếp theo](06_VIEC_TIEP_THEO.md). Nội dung bên dưới là mốc nghiên cứu trước; không dùng số52 hoặc hàng đợi cũ làm tiến độ toàn kho.
 
 
-**Đính chính sau rà soát:** 52 mã là số mục quản lý; 7 mục là nhu cầu chưa có URL, 4 cặp trùng URL. Có 41 URL khác nhau, gồm cả trang đầu mối, bài tin và link chưa mở được; không phải 52 tài liệu đã thu. Xem [biên bản rà soát](F:/Workspace/Zazz/ExamCraft/docs/nghien-cuu/03_RA_SOAT_DANH_MUC.md). Giữ mã cũ để truy vết; không cộng dòng trùng hoặc dòng nhu cầu vào số tài liệu mới.
+**Đính chính sau rà soát:** 52 mã là số mục quản lý; 7 mục là nhu cầu chưa có URL, 4 cặp trùng URL. Có 41 URL khác nhau, gồm cả trang đầu mối, bài tin và link chưa mở được; không phải 52 tài liệu đã thu. Xem [biên bản rà soát](03_RA_SOAT_DANH_MUC.md). Giữ mã cũ để truy vết; không cộng dòng trùng hoặc dòng nhu cầu vào số tài liệu mới.
 
 Ngày khởi tạo: 21/10/2026. Đây là sổ nghiên cứu, không chứng nhận hiệu lực đầy đủ hay chuyên môn.
 
@@ -17,9 +17,9 @@ Ngày khởi tạo: 21/10/2026. Đây là sổ nghiên cứu, không chứng nh�
 | SRC-002 | [TT 27/2020, Công báo](https://congbaocdn.chinhphu.vn/CongBaoCP/VanBan/2020/9/32035/32512-1-2020883-88427-2020-tt-bgddt.pdf) | Đã đọc phần liên quan ngày 21/10/2026 | Điều 7.1.c, PDF trang 7, mô tả các mức thiết kế câu hỏi tiểu học | Chưa hợp nhất tất cả sửa đổi đến thời điểm triển khai; không tự nạp thành quy tắc máy |
 | SRC-003 | [Chương trình Toán, ứng viên bản lưu tại Đại học Cần Thơ](https://se.ctu.edu.vn/images/upload/thongbao/TT32.pdf) | Tìm thấy; thử mở không thành công do công cụ giới hạn kích thước PDF | Chỉ có metadata/kết quả tìm kiếm; chưa dùng để trích yêu cầu cần đạt | CHUA_DOC; cần bản truy cập được hoặc tệp được cung cấp |
 
-Đợt tìm nguồn tiếp theo đã bổ sung **SRC-004–SRC-052** trong [danh mục thu thập theo lớp, môn, bộ sách và thể loại](F:/Workspace/Zazz/ExamCraft/docs/nghien-cuu/01_DANH_MUC_TAI_LIEU_TU_TIM.md). Các nguồn mới được ghi ở mức đã tìm thấy/đầu mối, không chuyển thành “đã đọc” chỉ vì công cụ tìm kiếm trích một đoạn. Mục này còn các lỗ hổng rõ ràng: chưa lập inventory từng cuốn SGK, chưa thu đủ mẫu đề theo môn/lớp và chưa bao phủ đề địa phương.
+Đợt tìm nguồn tiếp theo đã bổ sung **SRC-004–SRC-052** trong [danh mục thu thập theo lớp, môn, bộ sách và thể loại](01_DANH_MUC_TAI_LIEU_TU_TIM.md). Các nguồn mới được ghi ở mức đã tìm thấy/đầu mối, không chuyển thành “đã đọc” chỉ vì công cụ tìm kiếm trích một đoạn. Mục này còn các lỗ hổng rõ ràng: chưa lập inventory từng cuốn SGK, chưa thu đủ mẫu đề theo môn/lớp và chưa bao phủ đề địa phương.
 
-Không có bản PDF nào ở trên đã được tải vào repo trong lượt này. Link nguồn cũ khác tiếp tục nằm ở [danh mục chuẩn bị](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/05_CHUAN_BI_VA_NGUON.md); chưa giả định mọi nguồn trong danh mục đã được kiểm lại ở lượt mới.
+Không có bản PDF nào ở trên đã được tải vào repo trong lượt này. Link nguồn cũ khác tiếp tục nằm ở [danh mục chuẩn bị](../ke-hoach-2026-10-21/05_CHUAN_BI_VA_NGUON.md); chưa giả định mọi nguồn trong danh mục đã được kiểm lại ở lượt mới.
 
 ## Gói nghiên cứu
 

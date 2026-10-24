@@ -2,7 +2,7 @@
 
 **Cụ thể hóa22/10/2026:** đọc [08](08_HO_SO_TRUOC_KHI_CODE.md), mục6–10, cho bàn giao từng đợt, gói dữ liệuND01–07, fixtureFX01–12 và các điểm chặn. S0–S9 dưới đây vẫn là lộ trình chính. Nghiên cứu trên giấy đã đủ để xin bắt đầu local; các nguồn chưa đủ được theo dõi tiếp, không đánh dấuNC05–14 hoàn thành toàn bộ. Chủ dự án đã duyệt triển khai; bắt đầu code ngày22/10/2026, tiến độ thực theo báo cáo chung và checklist.
 
-Ngày: 21/10/2026. [Điểm vào bộ tài liệu](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/00_BAT_DAU_TU_DAY.md).
+Ngày: 21/10/2026. [Điểm vào bộ tài liệu](00_BAT_DAU_TU_DAY.md).
 
 **Đã nhận phản hồi:** chưa có nơi triển khai/ngân sách và chưa có giáo viên/tài liệu mẫu thực tế. Vì vậy bắt đầu trên local với dữ liệu thử; không mua dịch vụ hoặc đưa dữ liệu thật lên mạng. Tìm mẫu và người duyệt nằm trong luồng chuẩn bị, không chặn mọi việc kỹ thuật.
 
@@ -82,6 +82,6 @@ Mỗi phần hoàn thành ghi: CV nào, đổi gì, lý do, dữ liệu/phiên b
 
 ## Cập nhật chuẩn bị nguồn22/10/2026
 
-Trước khi chốt dữ liệu S2, thực hiện NC-05–NC-14 trong [hàng đợi nghiên cứu](F:/Workspace/Zazz/ExamCraft/docs/nghien-cuu/06_VIEC_TIEP_THEO.md). Nghiên cứu có thể đánh giá từng nhóm đủ hồ sơ trong khi tìm bù nhóm khác; không đợi mọi tỉnh đầy đủ. Điều này không tự cho phép bắt đầu code: lượt hiện tại chỉ sửa bộ chuẩn bị.
+Trước khi chốt dữ liệu S2, thực hiện NC-05–NC-14 trong [hàng đợi nghiên cứu](../nghien-cuu/06_VIEC_TIEP_THEO.md). Nghiên cứu có thể đánh giá từng nhóm đủ hồ sơ trong khi tìm bù nhóm khác; không đợi mọi tỉnh đầy đủ. Điều này không tự cho phép bắt đầu code: lượt hiện tại chỉ sửa bộ chuẩn bị.
 
 G2 bổ sung: xác định năm học/phiên bản áp dụng; phân biệt NN1/NN2 và trình độ; một PDF nhiều phụ lục được quản lý đúng; chuỗi sửa đổi không làm đổi đề đã chốt. G9 vẫn cần độ phủ từng lớp/môn; vài mẫu đại diện chỉ đủ thử mô hình.

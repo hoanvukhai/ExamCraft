@@ -1,6 +1,6 @@
 # Bộ nghiệm thu và dữ liệu kiểm thử
 
-Ngày: 21/10/2026. Đây là **thiết kế kiểm thử**, chưa phải kết quả chạy. [Checklist](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/03_CHECKLIST.md).
+Ngày: 21/10/2026. Đây là **thiết kế kiểm thử**, chưa phải kết quả chạy. [Checklist](03_CHECKLIST.md).
 
 ## 1. Quy tắc bằng chứng
 

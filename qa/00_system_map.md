@@ -1,5 +1,7 @@
 # BÁO CÁO G0.1 & G0.3: BẢN ĐỒ HỆ THỐNG VÀ KIỂM ĐẾM THỰC TẾ (SYSTEM MAP)
 
+> **Báo cáo lịch sử trước đợt rebuild 22/10/2026, không phải trạng thái hiện tại.** Số liệu, "100%" và kết luận ở đây mô tả cây mã commit `ef8d34b`/phiên QA cũ, không dùng làm tiến độ. Trạng thái hiện tại: [hồ sơ 02](../docs/ban-giao/02_TRANG_THAI_TIEP_NOI.md); bằng chứng hiện hành: `qa/rebuild-2026-10-22/`, `qa/rebuild-2026-10-23/`.
+
 - **Thời điểm lập bản đồ**: 2026-10-18 11:17 UTC+7
 - **Người thực hiện**: TEST DIRECTOR (DIR) & RECON (REC)
 - **Cơ sở đối chiếu**: Mã nguồn thực tế tại commit `ef8d34b` so với tuyên bố tại `docs/BAO_CAO_TOAN_DIEN_V3.md` và `docs/CHECKLIST_TIEN_DO.md`.

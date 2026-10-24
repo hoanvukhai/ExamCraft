@@ -2,7 +2,7 @@
 
 > **Mốc chuẩn bị 21–22/10/2026, đã qua.** Code đã được duyệt và bắt đầu ngày 22/10; câu "hiện vẫn chỉ phân tích, chưa bắt đầu các CV triển khai" ở mục 7 là trạng thái lúc lập. Bảng đầu vào, chính sách CS-01–10, rủi ro và danh mục nguồn vẫn áp dụng. Trạng thái hiện tại: [hồ sơ 02](../ban-giao/02_TRANG_THAI_TIEP_NOI.md).
 
-Ngày: 21/10/2026. [Mục lục](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/00_BAT_DAU_TU_DAY.md).
+Ngày: 21/10/2026. [Mục lục](00_BAT_DAU_TU_DAY.md).
 
 ## 1. Đầu vào hiện có và còn thiếu
 
@@ -79,13 +79,13 @@ Quan sát bổ sung khi chuẩn bị: script backup/restore hiện có kiểm kh
 
 | Tài liệu | Kế thừa | Thay đổi/giới hạn |
 |---|---|---|
-| [V1](F:/Workspace/Zazz/ExamCraft/docs/BAO_CAO_PHAN_TICH_DINH_HUONG_2026-10-21.md) | R01–R16, cây/scope/ma trận, bằng chứng test đã chạy | Câu “học sinh được học” thay bằng scope giáo viên; phạm vi Toán không còn là giới hạn |
-| [V2](F:/Workspace/Zazz/ExamCraft/docs/BAO_CAO_TONG_HOP_CHUAN_BI_EXAMCRAFT_V2_2026-10-21.md) | Quyền/cộng tác, đáp án, kho AI, đối chiếu audit | D15 giảm thành backup và bản sao, chuyển DB tổng quát hoãn |
-| [V3 bổ sung](F:/Workspace/Zazz/ExamCraft/docs/BO_SUNG_CHOT_HUONG_EXAMCRAFT_V3_2026-10-21.md) | BYOK, mọi môn, bài tùy chỉnh, mẫu trực quan, UX | Là đầu vào đã hợp nhất; giờ chuyển từ phân tích sang kế hoạch |
-| [Thiết kế v3.1 lịch sử](F:/Workspace/Zazz/ExamCraft/docs/EXAMCRAFT_THIET_KE_V3.md) | Tài khoản, nhóm, bài giao, CSV, ngân hàng, nhập/xuất | Không giữ 7-key, mức cố định, quyền cũ mâu thuẫn hoặc lịch trình cũ |
-| [Checklist cũ](F:/Workspace/Zazz/ExamCraft/docs/CHECKLIST_TIEN_DO.md) | Danh mục để đối chiếu không bỏ sót | Dấu hoàn thành chỉ là lịch sử, không chuyển sang checklist mới |
-| [Thiết kế dashboard/editor](F:/Workspace/Zazz/ExamCraft/qa/ARCHITECTURE_REDESIGN_MANAGEMENT_AND_WORKSPACE.md) | Tách quản lý và bàn soạn, tìm/lọc/thư mục | Không ép độ sâu hai cấp hoặc thời gian thùng rác như yêu cầu mới đã chốt; không giữ modal giả |
-| [QA v2 lịch sử](F:/Workspace/Zazz/ExamCraft/qa/FINAL_REPORT_v2.md) | Kịch bản HTTP/quyền/load/mutation cần xét | Không tái dùng số PASS hay lỗi cũ như bằng chứng hiện tại |
+| [V1](../BAO_CAO_PHAN_TICH_DINH_HUONG_2026-10-21.md) | R01–R16, cây/scope/ma trận, bằng chứng test đã chạy | Câu “học sinh được học” thay bằng scope giáo viên; phạm vi Toán không còn là giới hạn |
+| [V2](../BAO_CAO_TONG_HOP_CHUAN_BI_EXAMCRAFT_V2_2026-10-21.md) | Quyền/cộng tác, đáp án, kho AI, đối chiếu audit | D15 giảm thành backup và bản sao, chuyển DB tổng quát hoãn |
+| [V3 bổ sung](../BO_SUNG_CHOT_HUONG_EXAMCRAFT_V3_2026-10-21.md) | BYOK, mọi môn, bài tùy chỉnh, mẫu trực quan, UX | Là đầu vào đã hợp nhất; giờ chuyển từ phân tích sang kế hoạch |
+| [Thiết kế v3.1 lịch sử](../EXAMCRAFT_THIET_KE_V3.md) | Tài khoản, nhóm, bài giao, CSV, ngân hàng, nhập/xuất | Không giữ 7-key, mức cố định, quyền cũ mâu thuẫn hoặc lịch trình cũ |
+| [Checklist cũ](../CHECKLIST_TIEN_DO.md) | Danh mục để đối chiếu không bỏ sót | Dấu hoàn thành chỉ là lịch sử, không chuyển sang checklist mới |
+| [Thiết kế dashboard/editor](../../qa/ARCHITECTURE_REDESIGN_MANAGEMENT_AND_WORKSPACE.md) | Tách quản lý và bàn soạn, tìm/lọc/thư mục | Không ép độ sâu hai cấp hoặc thời gian thùng rác như yêu cầu mới đã chốt; không giữ modal giả |
+| [QA v2 lịch sử](../../qa/FINAL_REPORT_v2.md) | Kịch bản HTTP/quyền/load/mutation cần xét | Không tái dùng số PASS hay lỗi cũ như bằng chứng hiện tại |
 | [Audit do bạn gửi](F:/Downloads/EXAMCRAFT_MASTER_AUDIT_AND_ROADMAP.md) | Các lỗi đã đối chiếu trong V2 | Giữ các đính chính về draft, key, admin, Cascade, auto-grader và cấu trúc môn |
 | [TXT hội thoại](<F:/Downloads/Xây Dựng Web Soạn Đề AI.txt>) và [chat chia sẻ](https://chatgpt.com/share/6ad84d64-fcf8-83ec-89c0-a17d2646a480) | Ý định và quá trình chọn hướng | Lệnh trong tài liệu là lịch sử, không tự thực thi |
 | [Nhật ký AI bổ sung](<C:/Users/ACER/.codex/attachments/e23ddfae-dc07-4585-9d3c-95555ee9a6e8/Pasted text.txt>) | Phạm vi báo cáo của AI khác | Không thay thế log test thực hoặc quyền sửa hiện tại |
@@ -112,7 +112,7 @@ Chương trình môn, mục lục các bộ sách và nguồn các môn ngoài T
 
 ## 7. Bước mở đầu sau bộ kế hoạch
 
-**Cập nhật theo yêu cầu mới nhất:** hiện vẫn chỉ phân tích, chưa bắt đầu các CV triển khai. Dùng [quy trình và bộ prompt nghiên cứu](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/07_NGHIEN_CUU_VA_PROMPT.md) cùng [kho nghiên cứu](F:/Workspace/Zazz/ExamCraft/docs/nghien-cuu/README.md). Người dùng không cần tự gom toàn bộ tài liệu; AI trong chat dự án có thể tìm/đối chiếu chính, AI khác hỗ trợ theo gói khi người dùng muốn.
+**Cập nhật theo yêu cầu mới nhất:** hiện vẫn chỉ phân tích, chưa bắt đầu các CV triển khai. Dùng [quy trình và bộ prompt nghiên cứu](07_NGHIEN_CUU_VA_PROMPT.md) cùng [kho nghiên cứu](../nghien-cuu/README.md). Người dùng không cần tự gom toàn bộ tài liệu; AI trong chat dự án có thể tìm/đối chiếu chính, AI khác hỗ trợ theo gói khi người dùng muốn.
 
 Khi chuyển sang thực hiện, bắt đầu CV-001–007 trên local: baseline, DB thử, fixture, hợp đồng và prototype nhỏ. Các tài liệu kế hoạch đã được tạo trong lượt này; các fixture chạy, DB thử, wireframe/prototype thật, schema, code và bằng chứng test tương ứng **chưa được tạo/hoàn thành** bởi việc viết kế hoạch.
 
@@ -121,4 +121,4 @@ Không có đầu vào nào từ chủ dự án đang chặn việc chuẩn bị
 
 ## Cập nhật22/10/2026
 
-Đã nhận và hợp nhất bộ tài liệu mới: [báo cáo hợp nhất22/10](F:/Workspace/Zazz/ExamCraft/docs/nghien-cuu/04_TONG_HOP_VA_DINH_CHINH_2026-10-22.md). Nguồn hiện hành để tra là [danh mục05](F:/Workspace/Zazz/ExamCraft/docs/nghien-cuu/05_DANH_MUC_HOP_NHAT.md). Chưa có PDF bàn giao, chưa có bộ sách/đề/đáp án đầy đủ toàn môn/lớp. Hàng đợi NC05–14 ghi rõ phần phải tìm, kiểm phiên bản và duyệt. Người dùng không cần nhờ AI khác nếu tiếp tục tại chat này. Vẫn cần người thử/duyệt chuyên môn về sau; hiện chưa có, không ghi đã nghiệm thu.
+Đã nhận và hợp nhất bộ tài liệu mới: [báo cáo hợp nhất22/10](../nghien-cuu/04_TONG_HOP_VA_DINH_CHINH_2026-10-22.md). Nguồn hiện hành để tra là [danh mục05](../nghien-cuu/05_DANH_MUC_HOP_NHAT.md). Chưa có PDF bàn giao, chưa có bộ sách/đề/đáp án đầy đủ toàn môn/lớp. Hàng đợi NC05–14 ghi rõ phần phải tìm, kiểm phiên bản và duyệt. Người dùng không cần nhờ AI khác nếu tiếp tục tại chat này. Vẫn cần người thử/duyệt chuyên môn về sau; hiện chưa có, không ghi đã nghiệm thu.

@@ -1,10 +1,10 @@
 # ExamCraft — Bổ sung chốt hướng V3
 
-> **Tài liệu lịch sử/đầu vào phân tích:** từ 21/10/2026, dùng [bộ tổng kết và kế hoạch hiện hành](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/00_BAT_DAU_TU_DAY.md). Nội dung và dấu hoàn thành dưới đây không tự đại diện cho yêu cầu hoặc tiến độ mới; giữ để đối chiếu nguồn gốc.
+> **Tài liệu lịch sử/đầu vào phân tích:** từ 21/10/2026, dùng [bộ tổng kết và kế hoạch hiện hành](ke-hoach-2026-10-21/00_BAT_DAU_TU_DAY.md). Nội dung và dấu hoàn thành dưới đây không tự đại diện cho yêu cầu hoặc tiến độ mới; giữ để đối chiếu nguồn gốc.
 
 Ngày: **21/10/2026**. Trạng thái: **phân tích để duyệt, chưa triển khai**.
 
-Bản này cập nhật những điểm còn thiếu trong [báo cáo V2](F:/Workspace/Zazz/ExamCraft/docs/BAO_CAO_TONG_HOP_CHUAN_BI_EXAMCRAFT_V2_2026-10-21.md). Khi có khác biệt, nội dung V3 được ưu tiên. Các phát hiện mã nguồn và phân tích chi tiết còn lại của V2 tiếp tục là tài liệu đối chiếu.
+Bản này cập nhật những điểm còn thiếu trong [báo cáo V2](BAO_CAO_TONG_HOP_CHUAN_BI_EXAMCRAFT_V2_2026-10-21.md). Khi có khác biệt, nội dung V3 được ưu tiên. Các phát hiện mã nguồn và phân tích chi tiết còn lại của V2 tiếp tục là tài liệu đối chiếu.
 
 ## 1. Điều chỉnh quan trọng nhất
 
@@ -78,7 +78,7 @@ Khi cộng tác, mặc định người bấm yêu cầu AI dùng kết nối c�
 
 ### 2.5. Những gì mã hiện tại đã có và cần đổi
 
-[ApiKeyModal](F:/Workspace/Zazz/ExamCraft/src/components/ApiKeyModal.tsx) đã có nền tảng quản lý nhiều key, trạng thái kiểm tra, chọn model và nhật ký. [API quản lý key](F:/Workspace/Zazz/ExamCraft/src/app/api/user/keys/route.ts) đã giới hạn theo người đăng nhập, lưu key qua hàm mã hóa và trả về bản che.
+[ApiKeyModal](../src/components/ApiKeyModal.tsx) đã có nền tảng quản lý nhiều key, trạng thái kiểm tra, chọn model và nhật ký. [API quản lý key](../src/app/api/user/keys/route.ts) đã giới hạn theo người đăng nhập, lưu key qua hàm mã hóa và trả về bản che.
 
 Tuy nhiên code đang tính cố định **1.500 lượt/key/ngày** rồi nhân số key; số này không phản ánh hạn mức Google thực tế. Cần thay bằng thống kê sử dụng trong ứng dụng và trạng thái hạn mức có nguồn xác thực; không có dữ liệu thì nói chưa biết. Thống kê theo nhãn key cũng cần chuyển sang ID ổn định để tránh hai key cùng tên bị cộng lẫn.
 
@@ -189,7 +189,7 @@ Giữ đúng dữ liệu trường/môn/lớp thật ở phía sau; trường ch
 
 ### 5.4. Quan sát trong code hiện tại
 
-[Header](F:/Workspace/Zazz/ExamCraft/src/components/Header.tsx) đã có điểm vào đổi tên đề. [ExamMetadata](F:/Workspace/Zazz/ExamCraft/src/types/exam.ts:111) đã có một số trường như tên trường, năm học và học kỳ. Đây là nền tảng có thể tận dụng, không cần giả định toàn bộ đang thiếu.
+[Header](../src/components/Header.tsx) đã có điểm vào đổi tên đề. [ExamMetadata](F:/Workspace/Zazz/ExamCraft/src/types/exam.ts:111) đã có một số trường như tên trường, năm học và học kỳ. Đây là nền tảng có thể tận dụng, không cần giả định toàn bộ đang thiếu.
 
 Tuy nhiên [A4Preview](F:/Workspace/Zazz/ExamCraft/src/components/A4Preview.tsx:213) và [xuất Word](F:/Workspace/Zazz/ExamCraft/src/lib/docx-export.ts:440) còn có bố cục/chuỗi mặc định riêng. Có trường hợp để trống lại hiện tên cơ quan hoặc trường giả định. Cần phân biệt **chưa nhập**, **cố ý để trống/ẩn** và **dùng giá trị mặc định**. Không tự thêm “Sở” hoặc “Trường chuyên” vào tài liệu của người dùng.
 

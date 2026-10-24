@@ -1,6 +1,6 @@
 # Rà soát danh mục thu thập ngày 21/10/2026
 
-**Cập nhật 22/10/2026:** đã hợp nhất bàn giao đợt01–03. Dùng [báo cáo hiện hành](F:/Workspace/Zazz/ExamCraft/docs/nghien-cuu/04_TONG_HOP_VA_DINH_CHINH_2026-10-22.md), [danh mục SRC+TK](F:/Workspace/Zazz/ExamCraft/docs/nghien-cuu/05_DANH_MUC_HOP_NHAT.md) và [việc tiếp theo](F:/Workspace/Zazz/ExamCraft/docs/nghien-cuu/06_VIEC_TIEP_THEO.md). Nội dung bên dưới là mốc nghiên cứu trước; không dùng số52 hoặc hàng đợi cũ làm tiến độ toàn kho.
+**Cập nhật 22/10/2026:** đã hợp nhất bàn giao đợt01–03. Dùng [báo cáo hiện hành](04_TONG_HOP_VA_DINH_CHINH_2026-10-22.md), [danh mục SRC+TK](05_DANH_MUC_HOP_NHAT.md) và [việc tiếp theo](06_VIEC_TIEP_THEO.md). Nội dung bên dưới là mốc nghiên cứu trước; không dùng số52 hoặc hàng đợi cũ làm tiến độ toàn kho.
 
 
 Kết luận: danh mục dùng được làm điểm bắt đầu tìm nguồn, **chưa đủ tài liệu để chuyển sang đánh giá chuyên môn toàn bộ**. Lượt này kiểm cấu trúc sổ, tính trùng, tính nhất quán và thử mở lại một số link; không thẩm định nội dung tất cả tài liệu.
@@ -36,4 +36,4 @@ Chỉ rà độ phủ và nhận diện tài liệu trong bước thu thập. Vi
 
 ## Cách dùng prompt sau sửa
 
-Đọc duy nhất [file chỉ cần dán](F:/Workspace/Zazz/ExamCraft/docs/nghien-cuu/02_PROMPT_CHI_CAN_DAN.md). Mở chat mới dùng Prompt 1; cùng chat dùng Prompt 2 cho các đợt tiếp; Prompt 3 xuất bàn giao; chat mới nhận bàn giao/danh mục rồi dùng Prompt 4. Không bắt người dùng điền mã hay ghép nhiều khối bối cảnh. Kết quả gửi về chat dự án sau mỗi đợt để tiếp nhận, chưa đánh giá chuyên môn.
+Đọc duy nhất [file chỉ cần dán](02_PROMPT_CHI_CAN_DAN.md). Mở chat mới dùng Prompt 1; cùng chat dùng Prompt 2 cho các đợt tiếp; Prompt 3 xuất bàn giao; chat mới nhận bàn giao/danh mục rồi dùng Prompt 4. Không bắt người dùng điền mã hay ghép nhiều khối bối cảnh. Kết quả gửi về chat dự án sau mỗi đợt để tiếp nhận, chưa đánh giá chuyên môn.

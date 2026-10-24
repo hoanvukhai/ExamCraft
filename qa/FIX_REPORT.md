@@ -1,5 +1,7 @@
 # BÁO CÁO KẾT QUẢ SỬA LỖI & NÂNG CẤP DỰ ÁN EXAMCRAFT v3.1 (FIX SPRINT REPORT)
 
+> **Báo cáo lịch sử trước đợt rebuild 22/10/2026, không phải trạng thái hiện tại.** Số liệu, "100%" và kết luận ở đây mô tả cây mã commit `ef8d34b`/phiên QA cũ, không dùng làm tiến độ. Trạng thái hiện tại: [hồ sơ 02](../docs/ban-giao/02_TRANG_THAI_TIEP_NOI.md); bằng chứng hiện hành: `qa/rebuild-2026-10-22/`, `qa/rebuild-2026-10-23/`. Nội dung gốc của tệp này trùng từng byte với `BAO_CAO_SUA_LOI.md` (trước khi thêm ghi chú này); giữ cả hai để không phá liên kết cũ.
+
 > **Dự án**: ExamCraft v3.1 — Nền tảng Trợ lý AI Soạn đề & Khảo thí Trực tuyến  
 > **Giai đoạn**: Fix Sprint & Regression Gate  
 > **Thời gian thực hiện**: 18/10/2026  

@@ -2,7 +2,7 @@
 
 **Bổ sung mới nhất22/10/2026:** phương án và điểm xác nhận code tại [hồ sơ08](08_HO_SO_TRUOC_KHI_CODE.md); nguồn/giới hạn tại [nghiên cứu07](../nghien-cuu/07_CHOT_NGUON_NEN_VA_DANH_GIA.md). Giữ30yêu cầu và14quyết định dưới đây. Bổ sung: ngày hiệu lực độc lập ngày ban hành; Raglai ngoài8tiếng cũ; quản lý nhánh/tập/ấn bản; metadata sách không đồng nghĩa quyền dùng toàn văn. Chưa sửa ứng dụng.
 
-Ngày: 21/10/2026. Tài liệu chuẩn của đợt cải tiến. [Mục lục bộ tài liệu](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/00_BAT_DAU_TU_DAY.md).
+Ngày: 21/10/2026. Tài liệu chuẩn của đợt cải tiến. [Mục lục bộ tài liệu](00_BAT_DAU_TU_DAY.md).
 
 ## 1. Sản phẩm cần trở thành gì?
 
@@ -84,7 +84,7 @@ Các mã dưới đây là phạm vi dùng để đối chiếu checklist; khôn
 
 ## 5. Mức nhận thức: lựa chọn theo bằng chứng và phạm vi
 
-Chủ dự án chỉ giải thích “ba/bốn mức” nói tới mức nhận thức, không yêu cầu hệ thống làm theo một khung cố định. Khuyến nghị dựa trên nguồn là lưu `khung mức + phiên bản + mã mức + mô tả`, không chỉ một trường có tên difficulty rồi dùng thay mọi khái niệm. Căn cứ kiểm tra bước đầu và giới hạn được ghi trong [quy trình nghiên cứu](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/07_NGHIEN_CUU_VA_PROMPT.md).
+Chủ dự án chỉ giải thích “ba/bốn mức” nói tới mức nhận thức, không yêu cầu hệ thống làm theo một khung cố định. Khuyến nghị dựa trên nguồn là lưu `khung mức + phiên bản + mã mức + mô tả`, không chỉ một trường có tên difficulty rồi dùng thay mọi khái niệm. Căn cứ kiểm tra bước đầu và giới hạn được ghi trong [quy trình nghiên cứu](07_NGHIEN_CUU_VA_PROMPT.md).
 
 Độ khó là một thuộc tính khác, có thể do giáo viên nhận định hoặc tính từ kết quả thực nghiệm. Không tự coi Vận dụng luôn khó hơn mọi câu Hiểu. Với nguồn bốn mức, giữ định nghĩa của nguồn; không tự gộp Vận dụng cao vào Vận dụng hoặc ngược lại. Mẫu tiểu học giữ cách gọi/mô tả phù hợp nguồn.
 
@@ -150,6 +150,6 @@ Hoàn thành phạm vi đợt cải tiến cần các cổng nghiệm thu trong 
 
 ## Bổ sung từ nghiên cứu22/10/2026
 
-[báo cáo hợp nhất22/10](F:/Workspace/Zazz/ExamCraft/docs/nghien-cuu/04_TONG_HOP_VA_DINH_CHINH_2026-10-22.md) bổ sung cách thực hiện YC-04/07/25/27, không giảm phạm vi toàn môn1–12. Dữ liệu cần năm học, phiên bản chương trình/sách, địa bàn khi áp dụng, vai trò NN1/NN2 và trình độ ngôn ngữ. Giữ riêng văn bản, phụ lục, tệp và nơi lưu. Phân tích AI phải dẫn nguồn-version và trang/đoạn; chưa duyệt không trở thành mẫu chuẩn.
+[báo cáo hợp nhất22/10](../nghien-cuu/04_TONG_HOP_VA_DINH_CHINH_2026-10-22.md) bổ sung cách thực hiện YC-04/07/25/27, không giảm phạm vi toàn môn1–12. Dữ liệu cần năm học, phiên bản chương trình/sách, địa bàn khi áp dụng, vai trò NN1/NN2 và trình độ ngôn ngữ. Giữ riêng văn bản, phụ lục, tệp và nơi lưu. Phân tích AI phải dẫn nguồn-version và trang/đoạn; chưa duyệt không trở thành mẫu chuẩn.
 
 Đề xuất mặc định sách theo danh mục năm học dựa trên kiểm tra QĐ3588 và hồ sơ bổ sung còn phải đọc; không xóa gói ba bộ/hồ sơ cũ. Độ khó, mức nhận thức và trình độ ngôn ngữ không dùng chung một trường. Các chức năng BYOK, lưu/backup, cộng tác, giao bài và quyền riêng tư đã chốt tiếp tục giữ nguyên.

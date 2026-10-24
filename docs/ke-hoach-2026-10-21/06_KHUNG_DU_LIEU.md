@@ -1,6 +1,6 @@
 # Khung dữ liệu, vòng đời và ví dụ trước triển khai
 
-Ngày: 21/10/2026. **Hợp đồng khái niệm để cụ thể hóa trong CV-007**, không phải schema Prisma/API đã triển khai. [Mục lục](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/00_BAT_DAU_TU_DAY.md).
+Ngày: 21/10/2026. **Hợp đồng khái niệm để cụ thể hóa trong CV-007**, không phải schema Prisma/API đã triển khai. [Mục lục](00_BAT_DAU_TU_DAY.md).
 
 ## 1. Mô hình dữ liệu chung
 
