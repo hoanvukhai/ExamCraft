@@ -1,0 +1,57 @@
+{
+  "run": "81be88e5-9c5f-46d7-bae3-a3a9ea72a3f1",
+  "checkedAt": "2026-10-24T14:43:30.219Z",
+  "environment": "isolatedTest localhost3117 / examcraft_test_20261022",
+  "realAiCalls": false,
+  "results": [
+    {
+      "id": "F1",
+      "status": "FAIL",
+      "durationMs": 32484,
+      "cleanupComplete": true,
+      "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Đăng nhập$/i })\u001b[22m\n"
+    },
+    {
+      "id": "F2",
+      "status": "FAIL",
+      "durationMs": 31621,
+      "cleanupComplete": true,
+      "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Đăng nhập$/i })\u001b[22m\n"
+    },
+    {
+      "id": "F3",
+      "status": "FAIL",
+      "durationMs": 31949,
+      "cleanupComplete": true,
+      "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Đăng nhập$/i })\u001b[22m\n"
+    },
+    {
+      "id": "F4",
+      "status": "FAIL",
+      "durationMs": 31539,
+      "cleanupComplete": true,
+      "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Đăng nhập$/i })\u001b[22m\n"
+    },
+    {
+      "id": "F5",
+      "status": "FAIL",
+      "durationMs": 31686,
+      "cleanupComplete": true,
+      "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Đăng nhập$/i })\u001b[22m\n"
+    },
+    {
+      "id": "F6",
+      "status": "FAIL",
+      "durationMs": 32330,
+      "cleanupComplete": true,
+      "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Đăng nhập$/i })\u001b[22m\n"
+    },
+    {
+      "id": "F7",
+      "status": "FAIL",
+      "durationMs": 31761,
+      "cleanupComplete": true,
+      "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: /Đăng nhập$/i })\u001b[22m\n"
+    }
+  ]
+}

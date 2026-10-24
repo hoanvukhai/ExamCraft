@@ -118,6 +118,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-08, YC-09. Nghiệm thu: NT-07, NT-08.
   - Đạt khi: Sửa lựa chọn/ý đúng-sai, thêm kiểu câu phù hợp, thứ tự/ghim; matching/ordering/fill_blank có cấu trúc đủ hoặc báo chưa hỗ trợ rõ.
 - [ ] **CV-024 — Đề, đáp án và song song.**
+  - **Hiện trạng24/10:** Tích hợp Song song của Claude (b44c0ec), browser chuyển Đề/Đáp án/Hướng dẫn/Song song và đối chiếu hai cột từ cùng dữ liệu. Build/helper/API đạt; ngữ liệu chung ở Song song còn thiếu, đã gửi Claude. Word ở chế độ này vẫn bố cục all; giữ mở. [PILOT_E2E](../../qa/rebuild-2026-10-24/PILOT_E2E.md).
   - Phạm vi: YC-09. Nghiệm thu: NT-07, NT-08.
   - Đạt khi: Ba chế độ cùng dữ liệu; đáp án/lời giải/rubric riêng nhưng gắn version, thiếu đáp án không tự điền đúng.
 - [ ] **CV-025 — Lịch sử câu và kiểm định theo phiên bản.**
@@ -189,11 +190,11 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-11, YC-25. Nghiệm thu: NT-16, NT-26.
   - Đạt khi: Ghi nguồn/trang/câu, dedup không xóa nhầm biến thể; tài liệu không rõ quyền ở kho riêng, không tự đưa vào kho chung.
 - [ ] **CV-042 — Trộn câu, lựa chọn và nhóm ngữ liệu.**
-  - Truy vết24/10: bằng chứng một phần22/10 ở [WORKSPACE](../../qa/rebuild-2026-10-22/WORKSPACE.md) — trộn giữ đủ7dạng, giữ thứ tự khi có ngữ liệu/phần, "Giữ vị trí" phương án, câu chưa có khóa không tự nhận A; helper `answer_review_and_shuffle.test.ts`. Chưa kiểm nhóm ngữ liệu nhiều mã/seed trên UI; giữ mở.
+  - **Hiện trạng24/10:** Browser trộn và tải đủ các mã, đối chiếu Word có đủ câu/ảnh; giữ helper ghim/seed và dữ liệu gốc đã kiểm trước. Chưa đầy đủ nhóm ngữ liệu/seed qua UI và mọi tổ hợp; giữ mở. [PILOT_E2E](../../qa/rebuild-2026-10-24/PILOT_E2E.md).
   - Phạm vi: YC-17. Nghiệm thu: NT-17.
   - Đạt khi: Seed tái lập, ghim và mọi loại câu giữ đủ; ID đáp án đúng sau đảo; không thay chữ cái bằng regex làm hỏng lời giải.
 - [ ] **CV-043 — Xuất Word và công thức/hình.**
-  - Truy vết24/10: bằng chứng một phần ở [WORKSPACE](../../qa/rebuild-2026-10-22/WORKSPACE.md) và `browser_export.json`/`browser-export.docx` — XML có tên phần/ngữ liệu/nguồn/câu, chế độ đề không kèm lời giải; bảng mục tiêu và dòng tiêu đề Word ở EXAM_PLAN/HEADER_LAYOUT. Chưa mở trực quan bằng Microsoft Word, chưa kiểm công thức/hình/tài liệu dài; giữ mở.
+  - **Hiện trạng24/10:** Sửa ShuffleModal chuẩn bị ảnh trước xuất, báo lỗi và khóa tải trong lúc xử lý; browser tải Word bàn soạn và từng mã, kiểm ZIP/XML/media đủ câu/ảnh nhúng. Build đạt. Chưa mở Word kiểm trực quan công thức/phân trang hoặc tài liệu dài; giữ mở. [PILOT_E2E](../../qa/rebuild-2026-10-24/PILOT_E2E.md).
   - Phạm vi: YC-12, YC-18. Nghiệm thu: NT-18.
   - Đạt khi: Tài liệu mở sửa được, đủ câu/hình/điểm/nguồn hiển thị, fallback có nhãn; kiểm công thức và ngắt trang trực quan.
 - [ ] **CV-044 — In/PDF và các biến thể xuất.**
@@ -237,14 +238,14 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
 ## S7 — Giao bài, làm và chấm
 
 - [ ] **CV-054 — Cấu hình bài giao và snapshot.**
-  - Bổ sung24/10: UI thật đã tạo bài không lớp sau sửa FREE_NAME; pin account cho giao/share và API same-origin, HTTP17đạt trước sửa thống kê pending. [Bằng chứng nhóm](../../qa/rebuild-2026-10-23/ASSIGNMENT_ACCESS_AND_STUDENT_FLOW.md). Chưa đủ toàn bộ enum/chính sách/tệp.
+  - **Hiện trạng24/10:** Đã tích hợp tùy chọn giao bài nâng cao của Claude; browser giao có/không lớp, đặt thời gian/lượt/mã/trộn, đối chiếu bản lưu; API kiểm giá trị sai và account pin. Giữ snapshot và kiểm quyền trước. Chưa mọi enum/chính sách/tệp, UI xem lại giờ đã giao; giữ mở. [PILOT_E2E](../../qa/rebuild-2026-10-24/PILOT_E2E.md).
   - Phạm vi: YC-20. Nghiệm thu: NT-21.
   - Đạt khi: Enum/API/import thống nhất, nhóm tùy chọn đúng nhận diện; snapshot đủ câu/đáp án/tệp/điểm/mẫu và bất biến.
 - [ ] **CV-055 — Nhận diện và phiên lượt làm.**
   - Phạm vi: YC-20, YC-21. Nghiệm thu: NT-21, NT-22.
   - Đạt khi: FREE_NAME/danh sách/mã có kiểm server, membership và PIN nếu bật; người biết ID không được đọc/sửa/nộp bài khác.
 - [ ] **CV-056 — Thời gian, số lượt và cạnh tranh start.**
-  - **Hiện trạng24/10:** HTTP/PG thử đã kiểm start đồng thời cùng học sinh chỉ tạo một lượt, cookie trình duyệt khác không chiếm lượt; opensAt tương lai/closesAt đã qua từ chối start. Nháp sau hạn bị chặn, nộp ngoài grace chỉ dùng draft đã nhận. Chưa UI thời gian thật/hai browser và đầy đủ gia hạn–mở lại, giữ mở. [PUBLIC_POLICIES_AND_NONNUMERIC](../../qa/rebuild-2026-10-24/PUBLIC_POLICIES_AND_NONNUMERIC.md).
+  - **Hiện trạng24/10:** Giữ HTTP/PG start đồng thời/cookie khác/grace đã kiểm. Bổ sung UI đặt giờ đóng và chờ đồng hồ thật: vào sau hạn bị từ chối, không tạo lượt. API kiểm thời gian/số lượt/mã/PIN đạt; tương thích mã legacy đã gửi Claude, gia hạn/mở lại/hai browser vẫn mở. [PILOT_E2E](../../qa/rebuild-2026-10-24/PILOT_E2E.md).
   - Phạm vi: YC-20, YC-21. Nghiệm thu: NT-22.
   - Đạt khi: Kiểm opensAt/closesAt/deadline/status, lượt hết hạn xử lý rõ; start đồng thời không tạo trùng hoặc lỗi unique vô nghĩa.
 - [ ] **CV-057 — Lưu nháp và resume thật.**
@@ -259,11 +260,11 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-09, YC-21, YC-22. Nghiệm thu: NT-24.
   - Đạt khi: Zero/false/blank phân biệt, số/biểu thức theo câu, đáp án thiếu không nhận blank đúng; submit đồng thời một kết quả, trả điểm đúng chính sách ở mọi nhánh.
 - [ ] **CV-060 — Chấm tay, đính chính và điểm chốt.**
-  - **Hiện trạng24/10:** Giữ restore lịch sử/CAS/row-lock/audit và phân biệt pending/điểm0 đã kiểm. Đã mount nháp chấm theo từng lần mở/writer: khôi phục giữ base, chặn rubric chưa hỗ trợ, đối chiếu GET sau lưu trước dọn bản gửi, giữ nháp nếu receipt khác/ngữ cảnh đổi. Có tải RAM. Unit/render tĩnh/build/API DB thử đạt; UI mới/hai browser/regrade còn mở. C05 thiết kế đang yêu cầu sửa, chưa triển khai. [DRAFT_RECOVERY_INTEGRATION](../../qa/rebuild-2026-10-24/DRAFT_RECOVERY_INTEGRATION.md).
+  - **Hiện trạng24/10:** Giữ CAS/row-lock/audit/restore và nháp chấm đã kiểm trước. Browser mới xem bài, chấm tự luận và nhận xét, receipt giữ đúng bản gửi, tổng đúng; API hồi quy đạt trên DB thử. Chưa rubric phức tạp/chấm đồng thời/regrade/đính chính, không đóng CV. [PILOT_E2E](../../qa/rebuild-2026-10-24/PILOT_E2E.md).
   - Phạm vi: YC-22. Nghiệm thu: NT-24, NT-25.
   - Đạt khi: Tự luận pending, chỉnh rubric/điểm có lịch sử, regrade có phạm vi/phiên bản; bài cũ không đổi ngầm khi sửa ngân hàng.
 - [ ] **CV-061 — Theo dõi, phản hồi và bảng điểm.**
-  - **Hiện trạng24/10:** Giữ monitor/CSV bài không số và dữ liệu null đã kiểm. Panel nháp nhận xét không hiện điểm giả; có chọn khôi phục và tải bản đang nhập, không tự gửi điểm. Render tĩnh/build/API DB thử đạt, chưa thao tác đóng/mở/reload trên browser mới. Gia hạn/mở lại và các tiêu chí khác giữ mở. [DRAFT_RECOVERY_INTEGRATION](../../qa/rebuild-2026-10-24/DRAFT_RECOVERY_INTEGRATION.md).
+  - **Hiện trạng24/10:** Browser chấm/xuất CSV của bài có điểm, đối chiếu học sinh và tổng; giữ API bài không số đã kiểm trước. CSV scored hiện không chứa nhận xét chữ; còn nhiều chính sách và UI bài không số, gia hạn/mở lại, giữ mở. [PILOT_E2E](../../qa/rebuild-2026-10-24/PILOT_E2E.md).
   - Phạm vi: YC-20, YC-22. Nghiệm thu: NT-25.
   - Đạt khi: Danh sách bài/lượt, progress, gia hạn/mở lại có quyền, thống kê/CSV; leaderboard tùy chọn mặc định tắt và không lộ toàn lớp.
 - [ ] **CV-062 — Hồi quy link và toàn luồng học sinh.**

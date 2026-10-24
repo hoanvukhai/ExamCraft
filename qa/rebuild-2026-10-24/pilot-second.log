@@ -1,0 +1,148 @@
+
+> exam-craft@0.1.0 test:pilot
+> node --import tsx scripts/pilot-run.cjs
+
+Pilot guard: installed browser; isolatedTest confirmed; exact test database selected.
+TAP version 13
+# Starting F1
+# Starting F2
+# Subtest: F1 first login, password change and library
+not ok 1 - F1 first login, password change and library
+  ---
+  duration_ms: 14291.5851
+  type: 'test'
+  location: 'F:\\Workspace\\Zazz\\ExamCraft\\tests_pilot\\pilot.test.ts:2:10696'
+  failureType: 'testCodeFailure'
+  error: |-
+    F1: locator.fill: Timeout 12000ms exceeded.
+    Call log:
+    [2m  - waiting for getByPlaceholder('Nhập mật khẩu mới')[22m
+    
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    flow (F:\Workspace\Zazz\ExamCraft\tests_pilot\pilot.test.ts:133:20)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Starting F3
+# Subtest: F2 author seven types, image, passage, zero, title and reopen
+not ok 2 - F2 author seven types, image, passage, zero, title and reopen
+  ---
+  duration_ms: 21690.3362
+  type: 'test'
+  location: 'F:\\Workspace\\Zazz\\ExamCraft\\tests_pilot\\pilot.test.ts:2:11371'
+  failureType: 'testCodeFailure'
+  error: |-
+    F2: page.waitForURL: Timeout 20000ms exceeded.
+    =========================== logs ===========================
+    waiting for navigation to "http://127.0.0.1:3117/" until "load"
+    ============================================================
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    flow (F:\Workspace\Zazz\ExamCraft\tests_pilot\pilot.test.ts:133:20)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Starting F4
+# Subtest: F3 answer views, shuffle, Word and print
+not ok 3 - F3 answer views, shuffle, Word and print
+  ---
+  duration_ms: 21925.9893
+  type: 'test'
+  location: 'F:\\Workspace\\Zazz\\ExamCraft\\tests_pilot\\pilot.test.ts:2:15267'
+  failureType: 'testCodeFailure'
+  error: |-
+    F3: page.waitForURL: Timeout 20000ms exceeded.
+    =========================== logs ===========================
+    waiting for navigation to "http://127.0.0.1:3117/" until "load"
+    ============================================================
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    flow (F:\Workspace\Zazz\ExamCraft\tests_pilot\pilot.test.ts:133:20)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Starting F5
+# Subtest: F4 public link, collaborator edits and revoke
+not ok 4 - F4 public link, collaborator edits and revoke
+  ---
+  duration_ms: 22012.471
+  type: 'test'
+  location: 'F:\\Workspace\\Zazz\\ExamCraft\\tests_pilot\\pilot.test.ts:2:17023'
+  failureType: 'testCodeFailure'
+  error: |-
+    F4: page.waitForURL: Timeout 20000ms exceeded.
+    =========================== logs ===========================
+    waiting for navigation to "http://127.0.0.1:3117/" until "load"
+    ============================================================
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    flow (F:\Workspace\Zazz\ExamCraft\tests_pilot\pilot.test.ts:133:20)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Starting F6
+# Subtest: F5 assign link with and without class and inspect frozen policies
+not ok 5 - F5 assign link with and without class and inspect frozen policies
+  ---
+  duration_ms: 25928.3805
+  type: 'test'
+  location: 'F:\\Workspace\\Zazz\\ExamCraft\\tests_pilot\\pilot.test.ts:2:19203'
+  failureType: 'testCodeFailure'
+  error: |-
+    F5: page.waitForURL: Timeout 20000ms exceeded.
+    =========================== logs ===========================
+    waiting for navigation to "http://127.0.0.1:3117/" until "load"
+    ============================================================
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    flow (F:\Workspace\Zazz\ExamCraft\tests_pilot\pilot.test.ts:133:20)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Starting F7
+# Subtest: F6 seven student answers survive reload, submit and hide solutions
+not ok 6 - F6 seven student answers survive reload, submit and hide solutions
+  ---
+  duration_ms: 21564.4251
+  type: 'test'
+  location: 'F:\\Workspace\\Zazz\\ExamCraft\\tests_pilot\\pilot.test.ts:2:20487'
+  failureType: 'testCodeFailure'
+  error: |-
+    F6: page.waitForURL: Timeout 20000ms exceeded.
+    =========================== logs ===========================
+    waiting for navigation to "http://127.0.0.1:3117/" until "load"
+    ============================================================
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    flow (F:\Workspace\Zazz\ExamCraft\tests_pilot\pilot.test.ts:133:20)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: F7 manual essay grade, total and CSV
+not ok 7 - F7 manual essay grade, total and CSV
+  ---
+  duration_ms: 22164.0051
+  type: 'test'
+  location: 'F:\\Workspace\\Zazz\\ExamCraft\\tests_pilot\\pilot.test.ts:2:20994'
+  failureType: 'testCodeFailure'
+  error: |-
+    F7: page.waitForURL: Timeout 20000ms exceeded.
+    =========================== logs ===========================
+    waiting for navigation to "http://127.0.0.1:3117/" until "load"
+    ============================================================
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    flow (F:\Workspace\Zazz\ExamCraft\tests_pilot\pilot.test.ts:133:20)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..7
+# tests 7
+# suites 0
+# pass 0
+# fail 7
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 150618.1884

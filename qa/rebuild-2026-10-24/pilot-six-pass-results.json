@@ -1,0 +1,51 @@
+{
+  "run": "f756dddb-a250-4859-b8ef-9e6dab111f28",
+  "checkedAt": "2026-10-24T15:04:39.980Z",
+  "environment": "isolatedTest localhost3117 / examcraft_test_20261022",
+  "realAiCalls": false,
+  "results": [
+    {
+      "id": "F1",
+      "status": "PASS",
+      "durationMs": 6688,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F2",
+      "status": "PASS",
+      "durationMs": 10066,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F3",
+      "status": "PASS",
+      "durationMs": 6711,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F4",
+      "status": "FAIL",
+      "durationMs": 32311,
+      "cleanupComplete": true,
+      "error": "Revoked editor still editable"
+    },
+    {
+      "id": "F5",
+      "status": "PASS",
+      "durationMs": 79459,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F6",
+      "status": "PASS",
+      "durationMs": 19211,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F7",
+      "status": "PASS",
+      "durationMs": 19649,
+      "cleanupComplete": true
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "run": "5ee48782-628c-44a2-8702-630022494315",
+  "checkedAt": "2026-10-24T15:01:00.818Z",
+  "environment": "isolatedTest localhost3117 / examcraft_test_20261022",
+  "realAiCalls": false,
+  "results": [
+    {
+      "id": "F1",
+      "status": "PASS",
+      "durationMs": 10794,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F2",
+      "status": "PASS",
+      "durationMs": 11727,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F3",
+      "status": "PASS",
+      "durationMs": 5722,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F4",
+      "status": "FAIL",
+      "durationMs": 16693,
+      "cleanupComplete": true,
+      "error": "locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('PILOT Q1 multiple_choice', { exact: true }).visible().first() to be visible\u001b[22m\n"
+    },
+    {
+      "id": "F5",
+      "status": "FAIL",
+      "durationMs": 28435,
+      "cleanupComplete": true,
+      "error": "page.waitForResponse: Timeout 12000ms exceeded while waiting for event \"response\""
+    },
+    {
+      "id": "F6",
+      "status": "PASS",
+      "durationMs": 20313,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F7",
+      "status": "FAIL",
+      "durationMs": 27434,
+      "cleanupComplete": true,
+      "error": "The expression evaluated to a falsy value:\n\n  assert.ok(csv.includes('Đã chấm (1đ)'))\n"
+    }
+  ]
+}

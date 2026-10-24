@@ -1,0 +1,55 @@
+{
+  "run": "290e498a-3d00-40fc-a508-783d99976c31",
+  "checkedAt": "2026-10-24T14:48:44.121Z",
+  "environment": "isolatedTest localhost3117 / examcraft_test_20261022",
+  "realAiCalls": false,
+  "results": [
+    {
+      "id": "F1",
+      "status": "PASS",
+      "durationMs": 3658,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F2",
+      "status": "FAIL",
+      "durationMs": 20918,
+      "cleanupComplete": true,
+      "error": "locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('PILOT Q7 ordering', { exact: true }).first() to be visible\u001b[22m\n\u001b[2m    27 × locator resolved to hidden <p>PILOT Q7 ordering</p>\u001b[22m\n"
+    },
+    {
+      "id": "F3",
+      "status": "FAIL",
+      "durationMs": 15909,
+      "cleanupComplete": true,
+      "error": "page.waitForEvent: Timeout 12000ms exceeded while waiting for event \"download\"\n=========================== logs ===========================\nwaiting for event \"download\"\n============================================================"
+    },
+    {
+      "id": "F4",
+      "status": "FAIL",
+      "durationMs": 14806,
+      "cleanupComplete": true,
+      "error": "locator.click: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Tạo link chia sẻ', exact: true })\u001b[22m\n"
+    },
+    {
+      "id": "F5",
+      "status": "PASS",
+      "durationMs": 3922,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F6",
+      "status": "FAIL",
+      "durationMs": 30146,
+      "cleanupComplete": true,
+      "error": "locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#q-4 textarea') to be visible\u001b[22m\n"
+    },
+    {
+      "id": "F7",
+      "status": "FAIL",
+      "durationMs": 30449,
+      "cleanupComplete": true,
+      "error": "locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#q-4 textarea') to be visible\u001b[22m\n"
+    }
+  ]
+}

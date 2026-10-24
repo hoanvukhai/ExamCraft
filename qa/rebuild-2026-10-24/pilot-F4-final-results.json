@@ -1,0 +1,17 @@
+{
+  "run": "b6fd847b-fbf0-4742-a37b-1269ae063374",
+  "sourceSha256": "a8cdfa699760957c9c600ec9c6e471e03e12b27c862831e479fcd25c70e83184",
+  "buildId": "7m4Am_PToSJs-yIodzyRZ",
+  "requestedFlow": "F4",
+  "checkedAt": "2026-10-24T15:05:55.230Z",
+  "environment": "isolatedTest localhost3117 / examcraft_test_20261022",
+  "realAiCalls": false,
+  "results": [
+    {
+      "id": "F4",
+      "status": "PASS",
+      "durationMs": 13687,
+      "cleanupComplete": true
+    }
+  ]
+}
