@@ -39,7 +39,7 @@ test('HTTP workflows on the isolated local server', { timeout: 120000 }, async t
       await prisma.teacherAiMemory.deleteMany({ where: { userId: { in: ids } } });
       await prisma.auditLog.deleteMany({ where: { actorId: { in: ids } } });
       await prisma.user.deleteMany({ where: { id: { in: ids } } });
-      fs.writeFileSync('qa/rebuild-2026-10-22/http_workflows.json', JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 10 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117', realAiCalls: false }, null, 2));
+      fs.writeFileSync('qa/rebuild-2026-10-22/http_workflows.json', JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 11 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117', realAiCalls: false }, null, 2));
     } finally { await prisma.$disconnect(); }
   });
   const passwordHash = await bcrypt.hash(password, 10);
@@ -380,6 +380,38 @@ test('HTTP workflows on the isolated local server', { timeout: 120000 }, async t
     const publicAssignment = await request('/api/public/assignments/' + publicId);
     assert.equal(publicAssignment.status, 200); assert.ok(!JSON.stringify(publicAssignment.data).includes('PRIVATE_SOLUTION'));
     checks.push('http-public-redaction-immutable-snapshot');
+  });
+  await t.test('a signed-in teacher copies a shared exam into their own server library without answers the link hides', async () => {
+    const copySource = await request('/api/exams', 'POST', { document: { ...exam, id: `draft_copy_${suffix}`, metadata: { ...exam.metadata, title: 'HTTP copy source' } } }, owner);
+    assert.equal(copySource.status, 200, copySource.data.error);
+    const sourceId = copySource.data.document.id as string, sourceBefore = JSON.stringify((await prisma.exam.findUniqueOrThrow({ where: { id: sourceId } })).metadata);
+    const closed = await request(`/api/exams/${sourceId}/share`, 'POST', { showAnswers: false, allowCopy: false }, owner);
+    const closedToken = closed.data.publicLink.split('/').pop();
+    assert.equal((await request(`/api/public/share/${closedToken}/copy`, 'POST', undefined, other)).data.code, 'COPY_NOT_ALLOWED');
+    const shared = await request(`/api/exams/${sourceId}/share`, 'POST', { showAnswers: false, allowCopy: true }, owner);
+    const token = shared.data.publicLink.split('/').pop(), copyPath = `/api/public/share/${token}/copy`;
+    assert.equal((await request(copyPath, 'POST')).status, 401);
+    assert.equal((await request(copyPath, 'POST', undefined, other, 'http://evil.example')).status, 403);
+    const wrongAccount = await fetch(origin + copyPath, { method: 'POST', headers: { Origin: origin, Cookie: other, 'x-examcraft-user': ids[0] } });
+    assert.equal(wrongAccount.status, 409); assert.equal((await wrongAccount.json()).code, 'ACCOUNT_CHANGED');
+    assert.equal(await prisma.exam.count({ where: { ownerId: ids[1], title: { startsWith: '[Bản sao] HTTP copy source' } } }), 0, 'Refused requests must not create a copy.');
+    const copied = await request(copyPath, 'POST', undefined, other);
+    assert.equal(copied.status, 200, copied.data.error);
+    const copyId = copied.data.id as string;
+    const stored = await prisma.exam.findUniqueOrThrow({ where: { id: copyId } });
+    assert.equal(stored.ownerId, ids[1]); assert.equal(stored.title, '[Bản sao] HTTP copy source');
+    const loaded = await request(`/api/exams/${copyId}`, 'GET', undefined, other);
+    assert.equal(loaded.status, 200); assert.equal(loaded.data.permissions.role, 'OWNER');
+    const loadedText = JSON.stringify(loaded.data.document);
+    assert.ok(!loadedText.includes('PRIVATE_SOLUTION') && !loadedText.includes('PRIVATE_RUBRIC'), 'Copy must not carry solutions the link hides.');
+    assert.equal(loaded.data.document.questions.length, 2); assert.equal(loaded.data.document.questions[0].points, 1);
+    assert.equal(loaded.data.document.questions[0].choices.length, 2);
+    const retry = await request(copyPath, 'POST', undefined, other);
+    assert.equal(retry.status, 200); assert.equal(retry.data.id, copyId);
+    assert.equal(await prisma.exam.count({ where: { ownerId: ids[1], title: '[Bản sao] HTTP copy source' } }), 1, 'Retry must not create a second copy.');
+    assert.equal(JSON.stringify((await prisma.exam.findUniqueOrThrow({ where: { id: sourceId } })).metadata), sourceBefore, 'Copying must not change the shared exam.');
+    assert.equal((await request(`/api/exams/${copyId}`, 'GET', undefined, owner)).status, 404, 'The original owner gets no access to the copy.');
+    checks.push('http-share-copy-to-server-library');
   });
   await t.test('attempt cookie is required; submit is idempotent and essay remains pending', async () => {
     const started = await request(`/api/public/assignments/${publicId}/start`, 'POST', { freeName: 'HTTP student fixture' });

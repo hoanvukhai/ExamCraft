@@ -211,7 +211,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-14, YC-19. Nghiệm thu: NT-06, NT-20.
   - Đạt khi: View/comment/edit/download/fork/publish phân biệt, mặc định private; public view không cấp edit/key; server kiểm từng thao tác.
 - [ ] **CV-048 — Link xem, thu hồi và phiên bản chia sẻ.**
-  - Phát hiện24/10 (đọc tĩnh): nút lưu bản sao ở `/share/[id]` (khi link cho phép allowCopy) chỉ ghi vào kho cũ trên trình duyệt (`dbSaveExam` IndexedDB + `examcraft_current_exam`) rồi về trang chủ; không tạo đề trên server. Giáo viên chỉ thấy bản sao qua "Xem dữ liệu cũ trên trình duyệt", trái QD-09. Cần chuyển sang tạo đề server có origin/quyền (liên quan CV052/CV015) và kiểm người chưa đăng nhập; chưa sửa.
+  - **Hiện trạng24/10:** nút sao chép ở `/share/[id]` đã chuyển sang route server `POST /api/public/share/[id]/copy` (đăng nhập, same-origin, ghim tài khoản, chỉ khi allowCopy; một bản/link/người; chỉ mang đáp án khi link hiện đáp án; bỏ gói kiến thức/kế hoạch). Unit, HTTP18/18 và UI thật đạt trên DB thử. Còn: quyết định chính sách đáp án cần chủ dự án xác nhận, sao chép lại sau khi gốc đổi, hình ngoài kho, hai browser độc lập. Giữ mở; [SHARE_COPY](../../qa/rebuild-2026-10-23/SHARE_COPY.md).
   - Phạm vi: YC-19. Nghiệm thu: NT-06, NT-20.
   - Đạt khi: Link dùng ID/quyền riêng, chính sách đáp án, hết hạn/thu hồi; bản công bố không vô tình trỏ nháp.
 - [ ] **CV-049 — Cùng sửa đồng thời.**
@@ -303,7 +303,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-24. Nghiệm thu: NT-27.
   - Đạt khi: DB+tệp+khả năng giải mã phục hồi vào môi trường trống; kiểm native exit code script, backup rỗng không báo tốt; retention/đường xóa an toàn.
 - [ ] **CV-073 — Chốt vận hành local và phương án pilot.**
-  - **Hiện trạng24/10:** runbook local [SAO_LUU_KHOI_PHUC_LOCAL](../van-hanh/SAO_LUU_KHOI_PHUC_LOCAL.md) đã đổi lệnh sang `powershell -NoProfile -File …` vì máy chưa có `pwsh`; script không dùng cú pháp riêng PowerShell7 và execution policy máy là RemoteSigned (đọc tĩnh). Chưa chạy lại script bằng PowerShell5.1. Còn RPO/RTO, nơi giữ bản thứ hai, người chịu trách nhiệm, chuyển máy/mất DPAPI và chi phí; giữ mở.
+  - **Hiện trạng24/10:** runbook local [SAO_LUU_KHOI_PHUC_LOCAL](../van-hanh/SAO_LUU_KHOI_PHUC_LOCAL.md) đã đổi lệnh sang `powershell -NoProfile -File …` vì máy chưa có `pwsh`; script không dùng cú pháp riêng PowerShell7 và execution policy máy là RemoteSigned (đọc tĩnh). Test wrapper restore (đích sai→thoát khác0, không in thành công) đã chạy được bằng `powershell` 5.1 khi không có `pwsh`; backup/restore thật bằng 5.1 chưa chạy lại. Còn RPO/RTO, nơi giữ bản thứ hai, người chịu trách nhiệm, chuyển máy/mất DPAPI và chi phí; giữ mở.
   - Phạm vi: YC-24. Nghiệm thu: NT-27.
   - Đạt khi: Runbook secrets/config/log/restore, tài khoản chịu trách nhiệm; mục tiêu RPO/RTO, dung lượng và chi phí có chủ dự án duyệt trước triển khai thật.
 - [ ] **CV-074 — CI, kiểm tải và giám sát.**

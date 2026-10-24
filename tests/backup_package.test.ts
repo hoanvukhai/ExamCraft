@@ -40,7 +40,8 @@ test('retention cannot delete and the PowerShell restore wrapper propagates inva
   const retention = spawnSync(process.execPath, ['scripts/backup-retention.cjs', '--execute'], { encoding: 'utf8' });
   assert.notEqual(retention.status, 0); assert.match(retention.stderr, /review-only/i);
   if (process.platform === 'win32') {
-    const wrapper = spawnSync('pwsh', ['-NoProfile', '-File', 'scripts/restore.ps1', '-Package', 'missing-qa-package', '-TargetDatabase', 'examcraft'], { encoding: 'utf8' });
+    const shell = spawnSync('pwsh', ['-NoProfile', '-Command', 'exit 0']).error ? 'powershell' : 'pwsh'; // PowerShell 7 is optional; Windows PowerShell 5.1 runs the same wrapper.
+    const wrapper = spawnSync(shell, ['-NoProfile', '-File', 'scripts/restore.ps1', '-Package', 'missing-qa-package', '-TargetDatabase', 'examcraft'], { encoding: 'utf8' });
     assert.notEqual(wrapper.status, 0); assert.ok(!wrapper.stdout.includes('RESTORED_VERIFIED'));
   }
 });

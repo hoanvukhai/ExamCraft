@@ -4,7 +4,7 @@ import React, { useState, useEffect, use } from 'react';
 import { Exam } from '@/types/exam';
 import { A4Preview } from '@/components/A4Preview';
 import { exportExamToDocx } from '@/lib/docx-export';
-import { dbSaveExam } from '@/lib/db';
+import { usePinnedAccount } from '@/hooks/usePinnedAccount';
 import { 
   Download, 
   Printer, 
@@ -31,6 +31,8 @@ function ShareExamContent({ params }: SharePageProps) {
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedToLocal, setCopiedToLocal] = useState(false);
   const [allowCopy, setAllowCopy] = useState(false);
+  const [copyMessage, setCopyMessage] = useState('');
+  const account = usePinnedAccount();
 
   useEffect(() => {
     async function loadSharedExam() {
@@ -61,26 +63,15 @@ function ShareExamContent({ params }: SharePageProps) {
 
   const handleCloneToLocal = async () => {
     if (!exam || !allowCopy) return;
+    setCopyMessage('');
     try {
-      const cloned: Exam = {
-        ...exam,
-        version: undefined,
-        id: `exam_clone_${Date.now()}`,
-        metadata: {
-          ...exam.metadata,
-          title: `[Bản sao] ${exam.metadata.title}`,
-        },
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      await dbSaveExam(cloned);
-      localStorage.setItem('examcraft_current_exam', JSON.stringify(cloned));
+      const response = await account.request(`/api/public/share/${encodeURIComponent(examId)}/copy`, { method: 'POST' });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.id) { setCopyMessage(data.error || 'Chưa sao chép được đề. Vui lòng thử lại.'); return; }
       setCopiedToLocal(true);
-      setTimeout(() => {
-        window.location.href = '/';
-      }, 1200);
-    } catch {
-      alert('Không thể lưu bản sao.');
+      setTimeout(() => { window.location.href = `/editor/${data.id}`; }, 1200);
+    } catch (error) {
+      setCopyMessage(error instanceof Error ? error.message : 'Chưa sao chép được đề. Vui lòng thử lại.');
     }
   };
 
@@ -163,7 +154,7 @@ function ShareExamContent({ params }: SharePageProps) {
               <span>In A4</span>
             </button>
 
-            {/* Nút Sao chép đề về máy để sửa */}
+            {/* Sao chép đề vào kho đề trên máy chủ của tài khoản đang đăng nhập */}
             {allowCopy && <button
               onClick={handleCloneToLocal}
               disabled={copiedToLocal}
@@ -172,7 +163,7 @@ function ShareExamContent({ params }: SharePageProps) {
               {copiedToLocal ? (
                 <>
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Đã nạp vào máy! Đang chuyển...</span>
+                  <span>Đã lưu vào kho đề! Đang mở...</span>
                 </>
               ) : (
                 <>
@@ -183,6 +174,7 @@ function ShareExamContent({ params }: SharePageProps) {
             </button>
 
             }
+            {copyMessage && <span role="alert" className="text-xs text-red-600 dark:text-red-400">{copyMessage}</span>}
 
             {/* Sao chép liên kết */}
             <button
