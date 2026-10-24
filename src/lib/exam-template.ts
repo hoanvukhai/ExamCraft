@@ -24,6 +24,36 @@ export interface PersonalTemplate {
   category: 'personal' | 'system_unreviewed' | 'legacy_unreviewed'; status: 'needs_review'; legacy: boolean;
   sources: TemplateEnvelope['sources']; origin: TemplateEnvelope['origin']; snapshot: TemplateSnapshot;
 }
+const templateCategory = z.enum(['personal', 'system_unreviewed', 'legacy_unreviewed']);
+const templateSummarySchema = z.object({ id, name: z.string().max(500), subject: z.string().max(100), gradeFrom: z.number().int().min(1).max(12), gradeTo: z.number().int().min(1).max(12), category: templateCategory, readable: z.boolean() });
+export type TemplateSummary = z.infer<typeof templateSummarySchema>;
+const templateDetailSchema = z.object({ id, name: z.string().max(500), subject: z.string().max(100), gradeFrom: z.number().int().min(1).max(12), gradeTo: z.number().int().min(1).max(12), createdAt: z.string(), revision: id, category: templateCategory, status: z.literal('needs_review'), legacy: z.boolean(), sources: z.array(templateSourceSchema).max(30), origin: templateOriginSchema.nullable(), snapshot: templateSnapshotSchema });
+const unreadableTemplate = 'Mẫu này chưa đọc được đầy đủ; dữ liệu gốc được giữ, chưa thể dùng.';
+/** Read a list response without trusting its shape; rows that cannot be shown are counted, not guessed. */
+export function parseTemplateList(data: unknown, requestedPage: number) {
+  const body = data && typeof data === 'object' ? data as { templates?: unknown; pagination?: { page?: unknown; pages?: unknown } } : {};
+  const { page, pages } = body.pagination ?? {};
+  if (!Array.isArray(body.templates) || !Number.isInteger(page) || !Number.isInteger(pages) || (page as number) < 1 || (pages as number) < 0) throw Error('Danh sách mẫu trả về không đọc được. Danh sách đang xem được giữ nguyên; hãy thử tải lại.');
+  if (page !== requestedPage) throw Error('Danh sách trả về không đúng trang đã chọn. Danh sách đang xem được giữ nguyên; hãy thử tải lại.');
+  if ((pages as number) > 0 && (page as number) > (pages as number)) throw Error('Danh sách mẫu đã thay đổi và trang này không còn. Hãy tải lại từ trang đầu.');
+  const rows = body.templates.map(row => templateSummarySchema.safeParse(row)), seen = new Set<string>();
+  const templates = rows.flatMap(row => row.success && !seen.has(row.data.id) && seen.add(row.data.id) ? [row.data] : []);
+  return { templates, page: page as number, pages: pages as number, skipped: body.templates.length - templates.length };
+}
+/** Read one opened template; it must be the one that was asked for and fully readable before any preview. */
+export function parseOpenedTemplate(data: unknown, expectedId: string): PersonalTemplate {
+  const parsed = templateDetailSchema.safeParse(data && typeof data === 'object' ? (data as { template?: unknown }).template : undefined);
+  if (!parsed.success) throw Error(unreadableTemplate);
+  if (parsed.data.id !== expectedId) throw Error('Phản hồi không đúng mẫu đã chọn nên chưa mở. Hãy chọn lại.');
+  return parsed.data;
+}
+/** A saved-template acknowledgement must name the saved template before the list or notice may change. */
+export function parseSavedTemplate(data: unknown): TemplateSummary & { name: string } {
+  const body = data && typeof data === 'object' ? data as { success?: unknown; template?: unknown } : {};
+  const parsed = templateSummarySchema.safeParse(body.success === true && body.template && typeof body.template === 'object' ? { ...body.template, readable: true } : undefined);
+  if (!parsed.success) throw Error('Chưa chắc bản mẫu đã được lưu. Nội dung vẫn được giữ; bấm lưu lại sẽ dùng đúng mã yêu cầu cũ nên không tạo bản trùng.');
+  return parsed.data;
+}
 export function parseTemplateSnapshot(input: unknown): TemplateSnapshot { return templateSnapshotSchema.parse(input); }
 export function captureTemplateSnapshot(exam: Exam): TemplateSnapshot {
   const m = exam.metadata;

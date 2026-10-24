@@ -4,6 +4,7 @@ import type { Prisma } from '@prisma/client';
 import type { Exam } from '../src/types/exam';
 import { ApiError } from '../src/lib/api-error';
 import { applyPersonalTemplate, captureTemplateSnapshot, legacyTemplateSnapshot, makeTemplateApplyAttempt, saveTemplateSchema, templateApplicationSchema, templateApplyAcknowledgement, templateApplyWarnings, templateDeviations, templateDocumentStamp, templateSectionPreview, templateSourceDateLabel, type PersonalTemplate } from '../src/lib/exam-template';
+import { parseOpenedTemplate, parseSavedTemplate, parseTemplateList } from '../src/lib/exam-template';
 import { getPersonalTemplate, listPersonalTemplates, readTemplateRequest, readTemplateRow, savePersonalTemplate, templateListParameters } from '../src/lib/exam-template-service';
 import { normalizeExamDocument } from '../src/lib/exam-document';
 import { freezeExamScoring } from '../src/lib/snapshot-scoring';
@@ -172,4 +173,52 @@ test('section copy preview exposes zero and missing count/points/total/progressi
   assert.deepEqual(rows[0], { name: 'Phần điểm0', type: 'essay', count: '0', points: '0', total: '0', progression: '0 → 0,1 → 0,333', instruction: 'Chỉ là cấu hình tự khai' });
   assert.equal(rows[1].count, 'Chưa đặt'); assert.equal(rows[1].points, 'Chưa đặt'); assert.equal(rows[1].progression, 'Chưa đặt'); assert.equal(rows[1].total, 'Chưa đặt');
   assert.equal(JSON.stringify(sections), original);
+});
+
+const summary = (id: string, over: Record<string, unknown> = {}) => ({ id, name: 'Mẫu ' + id, subject: 'toan', gradeFrom: 6, gradeTo: 6, category: 'personal', readable: true, createdAt: '2026-10-24T00:00:00Z', status: 'needs_review', ...over });
+const detail = (id = 'tpl-1', over: Record<string, unknown> = {}) => ({ id, name: 'Mẫu riêng', subject: 'toan', gradeFrom: 6, gradeTo: 6, createdAt: '2026-10-24T00:00:00Z', revision: 'r1', category: 'personal', status: 'needs_review', legacy: false, sources: [], origin: null, snapshot: captureTemplateSnapshot(fixture()), ...over });
+
+test('list response: wrong page, broken shape or vanished page never replace what the teacher sees; unreadable rows are counted, not guessed', () => {
+  const ok = parseTemplateList({ templates: [summary('a'), summary('b', { readable: false, category: 'legacy_unreviewed' })], pagination: { page: 2, limit: 20, count: 25, pages: 2 } }, 2);
+  assert.deepEqual([ok.templates.map(row => row.id), ok.page, ok.pages, ok.skipped], [['a', 'b'], 2, 2, 0]);
+  assert.throws(() => parseTemplateList({ templates: [], pagination: { page: 1, pages: 2 } }, 2), /không đúng trang/, 'response of an earlier page request');
+  for (const broken of [null, {}, { templates: 'x', pagination: { page: 1, pages: 1 } }, { templates: [], pagination: { page: 1 } }, { templates: [], pagination: { page: 0, pages: 1 } }, { templates: [], pagination: { page: 1.5, pages: 1 } }])
+    assert.throws(() => parseTemplateList(broken, 1), /không đọc được/);
+  assert.throws(() => parseTemplateList({ templates: [], pagination: { page: 3, pages: 2 } }, 3), /không còn/, 'page vanished after deletions');
+  assert.equal(parseTemplateList({ templates: [], pagination: { page: 1, pages: 0 } }, 1).templates.length, 0);
+  const mixed = parseTemplateList({ templates: [summary('a'), summary('a'), { id: 'x' }, null, summary('c', { gradeFrom: 'six' }), summary('d')], pagination: { page: 1, pages: 1 } }, 1);
+  assert.deepEqual([mixed.templates.map(row => row.id), mixed.skipped], [['a', 'd'], 4]);
+});
+
+test('opened template must be the requested one and fully readable before it can reach preview or apply', () => {
+  assert.equal(parseOpenedTemplate({ template: detail('tpl-1') }, 'tpl-1').id, 'tpl-1');
+  assert.throws(() => parseOpenedTemplate({ template: detail('tpl-2') }, 'tpl-1'), /không đúng mẫu/, 'late response for a previously clicked template');
+  for (const broken of [null, {}, { template: null }, { template: detail('tpl-1', { snapshot: undefined }) }, { template: detail('tpl-1', { sources: undefined }) }, { template: detail('tpl-1', { revision: '' }) }, { template: detail('tpl-1', { category: 'official' }) }, { template: detail('tpl-1', { snapshot: { headerFields: {}, sections: [] } }) }])
+    assert.throws(() => parseOpenedTemplate(broken, 'tpl-1'), /chưa đọc được đầy đủ/);
+  const old = readTemplateRow(legacy());
+  assert.equal(parseOpenedTemplate({ template: old }, old.id).legacy, true, 'a readable legacy template still opens');
+});
+
+test('save acknowledgement must name the saved template before the notice or the list changes', () => {
+  assert.equal(parseSavedTemplate({ success: true, template: detail('tpl-9') }).id, 'tpl-9');
+  for (const broken of [null, {}, { success: false, template: detail('tpl-9') }, { success: true }, { success: true, template: { id: '' } }, { success: true, template: { name: 'no id' } }])
+    assert.throws(() => parseSavedTemplate(broken), /Chưa chắc/);
+});
+
+test('a late apply never overwrites a newer title, answers or revoked rights, and is never reported as applied', () => {
+  const exam = fixture(), options = { header: true, context: false, plan: false, sections: false }, now = '2026-10-24T00:00:00Z';
+  const snapshot = captureTemplateSnapshot(exam); snapshot.headerFields.title = 'Tên đề của mẫu';
+  const template: PersonalTemplate = { ...detail('tpl-late'), snapshot } as unknown as PersonalTemplate;
+  const stamp = templateDocumentStamp(exam), attempt = makeTemplateApplyAttempt(exam, applyPersonalTemplate(exam, template, options, stamp, [], now));
+  const edited = { ...exam, metadata: { ...exam.metadata, title: 'Tiêu đề giáo viên vừa sửa' }, questions: exam.questions.map(question => ({ ...question, content: 'Câu giáo viên vừa sửa' })) };
+  const revoked = { ...exam, access: { role: 'viewer', canRead: true, canEdit: false, canManage: false, canPublish: false, canComment: false } };
+  for (const [label, current] of [['edited', edited], ['revoked', revoked], ['other document', { ...exam, id: 'another-exam' }]] as const) {
+    assert.equal(applyPersonalTemplate(current, template, options, stamp, [], now), current, label + ': updater returns the newest document untouched');
+    assert.notEqual(templateApplyAcknowledgement(current, attempt), 'applied', label + ': no false success');
+  }
+  assert.equal(edited.metadata.title, 'Tiêu đề giáo viên vừa sửa');
+  assert.equal(templateApplyAcknowledgement(exam, attempt), 'pending', 'updater has not run yet: still waiting, not success');
+  // Another template with the same source revision and options but a different attempt must not be accepted as ours.
+  const other = applyPersonalTemplate(exam, template, options, stamp, [], '2026-10-24T00:00:01Z');
+  assert.notEqual(templateApplyAcknowledgement(other, attempt), 'applied');
 });
