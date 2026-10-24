@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenAI, Type } from '@google/genai';
-import { requireAuth } from '@/lib/auth';
-import { isSameOriginMutation } from '@/lib/attempt-access';
+import { requireRequestAuth } from '@/lib/request-auth';
 import { apiErrorResponse, ApiError } from '@/lib/api-error';
 import prisma from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
@@ -44,11 +43,8 @@ const responseSchema = {
 
 export async function POST(req: NextRequest) {
   try {
-    if (!isSameOriginMutation(req)) throw new ApiError(403, 'Yêu cầu không hợp lệ');
-    const user = await requireAuth();
-    if (!user) {
-      return NextResponse.json({ error: 'Chưa đăng nhập' }, { status: 401 });
-    }
+    // Account and origin are settled before the body, the database, the key or the provider.
+    const user = await requireRequestAuth(req);
 
     const body = await req.json();
     const { question, examId, autoScan, subject = 'all' } = body;

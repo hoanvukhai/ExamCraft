@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Prisma } from '@prisma/client';
 import { ZodError } from 'zod';
-import { requireAuth } from '@/lib/auth';
-import { isSameOriginMutation } from '@/lib/attempt-access';
+import { requireRequestAuth } from '@/lib/request-auth';
 import { apiErrorResponse, ApiError } from '@/lib/api-error';
 import prisma from '@/lib/prisma';
 import { memoryImportId, parseMemoryArchive } from '@/lib/memory-document';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const user = await requireAuth();
+    const user = await requireRequestAuth(req);
     const memories = await prisma.teacherAiMemory.findMany({ where: { userId: user.id }, orderBy: { createdAt: 'asc' },
       select: { subject: true, category: true, title: true, insight: true, confidence: true, sampleQuestion: true, sourceAction: true, isActive: true, createdAt: true, updatedAt: true } });
     return NextResponse.json({ format: 'examcraft-private-memory', version: 1, exportedAt: new Date().toISOString(), memories }, {
@@ -20,8 +19,8 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
-    if (!isSameOriginMutation(req)) throw new ApiError(403, 'Yêu cầu không hợp lệ');
-    const user = await requireAuth();
+    // Account and origin first; the file body is not read for a stale or foreign tab.
+    const user = await requireRequestAuth(req);
     const body = await req.json();
     const archive = parseMemoryArchive(body.archive);
     const entries = [...new Map(archive.memories.map(entry => [memoryImportId(user.id, entry), entry])).entries()];
