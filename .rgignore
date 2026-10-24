@@ -1,0 +1,29 @@
+# Bỏ khỏi tìm kiếm mặc định của ripgrep (rg, công cụ Grep). Các tệp vẫn nằm trong Git/ổ đĩa.
+# Tìm có chủ đích: chỉ rõ tệp/thư mục cần đọc, hoặc thêm --no-ignore (ví dụ: rg --no-ignore "CV057" docs/lich-su).
+
+# Lịch sử và báo cáo trước đợt rebuild (đầu vào đối chiếu, không phải trạng thái)
+/docs/lich-su/
+/docs/archive/
+/docs/BAO_CAO_PHAN_TICH_DINH_HUONG_2026-10-21.md
+/docs/BAO_CAO_TONG_HOP_CHUAN_BI_EXAMCRAFT_V2_2026-10-21.md
+/docs/BAO_CAO_TOAN_DIEN_V3.md
+/docs/BO_SUNG_CHOT_HUONG_EXAMCRAFT_V3_2026-10-21.md
+/docs/CHECKLIST_TIEN_DO.md
+/docs/EXAMCRAFT_THIET_KE_V3.md
+/qa/*.md
+/qa/reports/
+/qa/evidence/
+/docs/nghien-cuu/inbox/
+
+# Log, DOM dump và tệp máy đọc lớn của bằng chứng; đọc theo liên kết từ báo cáo nhóm
+/qa/*.log
+/qa/rebuild-*/*.log
+/qa/rebuild-*/*.txt
+
+# Danh mục nghiên cứu lớn; tra qua báo cáo/sổ nguồn trước
+/docs/nghien-cuu/goi/NC-NEN-2026-10-22/SACH_VA_HOC_LIEU.md
+/docs/nghien-cuu/goi/NC-NEN-2026-10-22/*.json
+
+# Tệp sinh tự động và tạm
+/package-lock.json
+/tmp/

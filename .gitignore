@@ -43,6 +43,8 @@ next-env.d.ts
 
 # backups & generated test docs
 /backups
+# local scratch: one-off codemods and page renders of PDFs kept in docs/nghien-cuu/.../nguon
+/tmp/
 *.sql
 !prisma/migrations/**/migration.sql
 tests/*.docx

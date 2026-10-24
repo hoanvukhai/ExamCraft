@@ -1,5 +1,7 @@
 # Nghiên cứu tài liệu: phân công, cách làm và bộ prompt
 
+> **Mốc chuẩn bị 21–22/10/2026, đã qua.** Code đã được duyệt và bắt đầu ngày 22/10; các câu "chưa bắt đầu code" ở mục 4 và mục 10 là trạng thái lúc lập. Quy trình nghiên cứu, nơi lưu và prompt P0–P6 vẫn dùng được. Hàng đợi nghiên cứu hiện hành: [06](../nghien-cuu/06_VIEC_TIEP_THEO.md); trạng thái kỹ thuật: [hồ sơ 02](../ban-giao/02_TRANG_THAI_TIEP_NOI.md).
+
 **Cập nhật 22/10/2026:** chủ dự án chọn tìm và phân tích ngay tại chat dự án. Dùng [báo cáo hợp nhất](F:/Workspace/Zazz/ExamCraft/docs/nghien-cuu/04_TONG_HOP_VA_DINH_CHINH_2026-10-22.md) và [hàng đợi hiện hành](F:/Workspace/Zazz/ExamCraft/docs/nghien-cuu/06_VIEC_TIEP_THEO.md). Có thể đánh giá từng nhóm đủ hồ sơ; chưa chứng nhận chuyên môn toàn kho. [Prompt chỉ cần dán](F:/Workspace/Zazz/ExamCraft/docs/nghien-cuu/02_PROMPT_CHI_CAN_DAN.md) và P0–P6 dưới đây là lựa chọn khi cần giao việc cho AI khác, không yêu cầu người dùng làm lại.
 
 Ngày: 21/10/2026. **Chỉ phân tích và chuẩn bị tài liệu; chưa bắt đầu code, migration hay triển khai.**

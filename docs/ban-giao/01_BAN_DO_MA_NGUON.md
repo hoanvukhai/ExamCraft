@@ -37,7 +37,7 @@ Các nhóm mới23/10 (chỉ đọc nhóm liên quan):
 | Copilot thanh bên: quyền, đề xuất và race | `copilot-submission.ts`, `CopilotProposalReview.tsx`, `RightCompanionRail.tsx`, `ExamWorkspace.tsx`, API `exam-copilot/`, `tests/copilot_submission.test.ts`; [COPILOT_GUARDS](../../qa/rebuild-2026-10-23/COPILOT_GUARDS.md). ExamCopilotBar cũ không được import; chưa coi đã chuyển luồng đó |
 | Đề xuất bền và Undo/Redo Copilot | `ai-proposal-journal.ts`, `useAiProposal.ts`, `AiProposalJournalPanel.tsx`, `copilot-history.ts`, `CopilotHistoryControls.tsx`; [AI_JOURNAL_AND_HISTORY](../../qa/rebuild-2026-10-23/AI_JOURNAL_AND_HISTORY.md), journal5/history4test mới; archive còn xem lại, stack travel chưa bền qua reload |
 
-Tên tệp không có tiền tố: helper ở `src/lib/`, thành phần `.tsx` ở `src/components/`, test ở `tests/`. Các báo cáo/JSON/ảnh không có tiền tố nằm trong [qa/rebuild-2026-10-22](../../qa/rebuild-2026-10-22). Dùng `rg --files` nếu đổi tên; không suy chức năng đã xong từ tên file.
+Tên tệp không có tiền tố: helper ở `src/lib/`, thành phần `.tsx` ở `src/components/`, test ở `tests/`. Các báo cáo/JSON/ảnh không có tiền tố nằm trong [qa/rebuild-2026-10-22](../../qa/rebuild-2026-10-22). Dùng `rg --files` nếu đổi tên (log/DOM dump và tài liệu lịch sử bị `.rgignore` ẩn; thêm `--no-ignore` khi cần thấy chúng); không suy chức năng đã xong từ tên file.
 
 ## Luồng cần hiểu khi sửa lưu
 

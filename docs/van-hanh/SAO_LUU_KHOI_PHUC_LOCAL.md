@@ -1,14 +1,16 @@
 # Sao lưu và thử khôi phục local
 
-Áp dụng môi trường hiện tại: Windows/PowerShell7, Docker `examcraft_postgres`, DB nguồn `examcraft`, cổng5436. Không có tự xóa bản cũ. Đây là bản dữ liệu và cấu hình, không thay bản bảo toàn code/Git.
+Áp dụng môi trường hiện tại: Windows PowerShell 5.1, Docker `examcraft_postgres`, DB nguồn `examcraft`, cổng5436. Không có tự xóa bản cũ. Đây là bản dữ liệu và cấu hình, không thay bản bảo toàn code/Git.
+
+Máy hiện tại chưa cài PowerShell7 (`pwsh`); `backup.ps1`/`restore.ps1` không dùng cú pháp riêng của PowerShell7 và execution policy máy là RemoteSigned nên chạy được bằng `powershell` có sẵn. Nếu cài PowerShell7, thay `powershell` bằng `pwsh` với cùng tham số. Ghi chú 24/10: hướng dẫn đổi theo đọc tĩnh, chưa chạy lại script bằng PowerShell 5.1 sau lần sửa này.
 
 ## Tạo gói
 
 Từ thư mục dự án, xem trước rồi chạy:
 
 ```powershell
-pwsh -NoProfile -File scripts/backup.ps1
-pwsh -NoProfile -File scripts/backup.ps1 -Execute
+powershell -NoProfile -File scripts/backup.ps1
+powershell -NoProfile -File scripts/backup.ps1 -Execute
 ```
 
 Kết quả phải là `BACKUP_PACKAGE_CREATED`, kèm đường dẫn `backups/package-...`. Gói gồm custom dump DB, toàn bộ public, cấu hình mã hóa DPAPI và manifest/hash. Đừng lấy thư mục thiếu manifest hoặc lần chạy lỗi làm bản tốt. `restoreVerified: false` là đúng cho gói vừa tạo; chỉ đổi nhận định khi đã thử phục hồi thành công.
@@ -20,8 +22,8 @@ Nên tạo bản trước nhập/chuyển dữ liệu lớn hoặc sửa cấu h
 Thay hai giá trị mẫu bằng gói cần kiểm và **tên DB mới chưa tồn tại**, bắt đầu `examcraft_restore_`:
 
 ```powershell
-pwsh -NoProfile -File scripts/restore.ps1 -Package backups/package-THOI_GIAN -TargetDatabase examcraft_restore_thu_01
-pwsh -NoProfile -File scripts/restore.ps1 -Package backups/package-THOI_GIAN -TargetDatabase examcraft_restore_thu_01 -Execute
+powershell -NoProfile -File scripts/restore.ps1 -Package backups/package-THOI_GIAN -TargetDatabase examcraft_restore_thu_01
+powershell -NoProfile -File scripts/restore.ps1 -Package backups/package-THOI_GIAN -TargetDatabase examcraft_restore_thu_01 -Execute
 ```
 
 Không tự lấy gói mới nhất, không hỗ trợ restore đè hay drop DB. Gói sai hash, đường tệp thoát thư mục/junction/symlink, đích sai hoặc đã có đều dừng. Thành công phải có `RESTORED_VERIFIED`; kết quả và tệp được giữ dưới `backups/restore-run-...`. Native command lỗi trả exit khác0, không in thành công giả.

@@ -1,5 +1,7 @@
 # Chuẩn bị, rủi ro, nguồn và quyết định còn mở
 
+> **Mốc chuẩn bị 21–22/10/2026, đã qua.** Code đã được duyệt và bắt đầu ngày 22/10; câu "hiện vẫn chỉ phân tích, chưa bắt đầu các CV triển khai" ở mục 7 là trạng thái lúc lập. Bảng đầu vào, chính sách CS-01–10, rủi ro và danh mục nguồn vẫn áp dụng. Trạng thái hiện tại: [hồ sơ 02](../ban-giao/02_TRANG_THAI_TIEP_NOI.md).
+
 Ngày: 21/10/2026. [Mục lục](F:/Workspace/Zazz/ExamCraft/docs/ke-hoach-2026-10-21/00_BAT_DAU_TU_DAY.md).
 
 ## 1. Đầu vào hiện có và còn thiếu

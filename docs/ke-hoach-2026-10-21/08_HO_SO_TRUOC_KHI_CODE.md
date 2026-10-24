@@ -1,5 +1,7 @@
 # ExamCraft — Hồ sơ chốt trước khi sửa code
 
+> **Mốc chuẩn bị 22/10/2026, đã qua.** Chủ dự án đã duyệt bắt đầu code ngày 22/10. Các câu "dừng trước code", "chưa migration", "[ ] xác nhận bắt đầu S0" (mục 1, 11) và bảng đọc tĩnh mã ở mục 3 là trạng thái lúc lập; nhiều điểm ở mục 3 đã được sửa. Phương án, hợp đồng hành vi, UX, fixture FX01–12 và rủi ro vẫn áp dụng. Trạng thái hiện tại: [hồ sơ 02](../ban-giao/02_TRANG_THAI_TIEP_NOI.md) và [checklist](03_CHECKLIST.md).
+
 Ngày22/10/2026. Chủ dự án đã cho phép làm liên tục phần phân tích, tổng kết, kế hoạch và checklist; **dừng trước bước code để xác nhận**. Tài liệu này là phần bổ sung hiện hành của bộ00–07, không tạo một kế hoạch cạnh tranh. Nguồn mới: [báo cáo nghiên cứu07](../nghien-cuu/07_CHOT_NGUON_NEN_VA_DANH_GIA.md).
 
 ## 1. Phương án đề nghị duyệt
