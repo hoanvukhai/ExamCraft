@@ -1,0 +1,7 @@
+{
+  "status": "DRY_RUN",
+  "operation": "backup-db-public-protected-config",
+  "parent": "F:\\Workspace\\Zazz\\ExamCraft\\backups",
+  "sourceWrites": false,
+  "automaticDeletion": false
+}

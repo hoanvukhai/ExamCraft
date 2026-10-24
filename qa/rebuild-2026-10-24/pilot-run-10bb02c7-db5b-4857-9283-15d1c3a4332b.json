@@ -1,0 +1,57 @@
+{
+  "run": "10bb02c7-db5b-4857-9283-15d1c3a4332b",
+  "sourceSha256": "68215ea415d083394e67caba0f786017e0c7fae802d05db253652a3bdb5653ad",
+  "buildId": "lx0Fmr2Q0YTww6lMLv0Ss",
+  "browserVersion": "155.0.8059.85",
+  "requestedFlow": "F1-F7",
+  "checkedAt": "2026-10-24T17:00:34.290Z",
+  "environment": "isolatedTest localhost3117 / examcraft_test_20261022",
+  "realAiCalls": false,
+  "results": [
+    {
+      "id": "F1",
+      "status": "PASS",
+      "durationMs": 4841,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F2",
+      "status": "PASS",
+      "durationMs": 10943,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F3",
+      "status": "FAIL",
+      "durationMs": 5821,
+      "cleanupComplete": true,
+      "error": "Expected values to be strictly equal:\n\n8 !== 7\n"
+    },
+    {
+      "id": "F4",
+      "status": "PASS",
+      "durationMs": 18345,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F5",
+      "status": "PASS",
+      "durationMs": 36012,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F6",
+      "status": "FAIL",
+      "durationMs": 43902,
+      "cleanupComplete": true,
+      "error": "locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByPlaceholder('Ví dụ: Nguyễn Văn An') to be visible\u001b[22m\n"
+    },
+    {
+      "id": "F7",
+      "status": "FAIL",
+      "durationMs": 48650,
+      "cleanupComplete": true,
+      "error": "locator.click: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#q-1').getByRole('button', { name: /Hai/ })\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" class=\"flex items-start gap-3 p-3.5 rounded-2xl border text-left transition-all cursor-pointer bg-[#f8f9fa] dark:bg-[#242424] border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#2c2c2c]\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n"
+    }
+  ]
+}

@@ -287,7 +287,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
                 <div className="border border-black">
                   <div className="grid grid-cols-2 border-b border-black font-bold text-center text-[11pt]"><div className="p-2 border-r border-black">ĐỀ</div><div className="p-2">ĐÁP ÁN VÀ HƯỚNG DẪN</div></div>
                   {parallelRows(questions, passages).map(row => {
-                    if (row.kind === 'passage') return <div key={'passage-' + row.passage.id} className="question-item border-b border-black p-2 text-[11pt] break-inside-avoid">
+                    if (row.kind === 'passage') return <div key={'passage-' + row.passage.id} data-parallel-passage={row.passage.id} className="parallel-passage border-b border-black p-2 text-[11pt] break-inside-avoid">
                       <div className="font-bold mb-1">{row.passage.title || 'NGỮ LIỆU ĐỌC HIỂU:'}</div>
                       <div className="italic leading-relaxed whitespace-pre-line">{row.passage.content}</div>
                       {row.passage.figures?.map(renderPreviewFigure)}

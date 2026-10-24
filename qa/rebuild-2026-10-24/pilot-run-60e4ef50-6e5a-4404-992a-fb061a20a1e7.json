@@ -1,0 +1,55 @@
+{
+  "run": "60e4ef50-6e5a-4404-992a-fb061a20a1e7",
+  "sourceSha256": "68215ea415d083394e67caba0f786017e0c7fae802d05db253652a3bdb5653ad",
+  "buildId": "0dv517GfqjiWevZi6F6_T",
+  "browserVersion": "155.0.8059.85",
+  "requestedFlow": "F1-F7",
+  "checkedAt": "2026-10-24T17:10:41.436Z",
+  "environment": "isolatedTest localhost3117 / examcraft_test_20261022",
+  "realAiCalls": false,
+  "results": [
+    {
+      "id": "F1",
+      "status": "PASS",
+      "durationMs": 5258,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F2",
+      "status": "PASS",
+      "durationMs": 13653,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F3",
+      "status": "PASS",
+      "durationMs": 7478,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F4",
+      "status": "PASS",
+      "durationMs": 14578,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F5",
+      "status": "FAIL",
+      "durationMs": 19601,
+      "cleanupComplete": true,
+      "error": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n+ Set(1) {\n- Set(2) {\n    'cmvmnlnm500lctb4wq56x1iup',\n-   null\n  }\n"
+    },
+    {
+      "id": "F6",
+      "status": "PASS",
+      "durationMs": 28685,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F7",
+      "status": "PASS",
+      "durationMs": 37333,
+      "cleanupComplete": true
+    }
+  ]
+}

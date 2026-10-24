@@ -36,7 +36,7 @@ function copyFiles(source, target, manifest) {
   if (JSON.stringify(files(target)) !== JSON.stringify(manifest)) throw Error('Restored asset hashes differ');
 }
 function powershell(code) {
-  const result = spawnSync('pwsh', ['-NoProfile', '-NonInteractive', '-Command', "$ErrorActionPreference='Stop'; try { " + code + " } catch { [Console]::Error.Write($_.Exception.GetType().Name); exit 1 }"], { encoding: 'utf8', maxBuffer: 4 * 1024 * 1024 });
+  const result = spawnSync(spawnSync('pwsh', ['-NoProfile', '-NonInteractive', '-Command', 'exit 0']).error ? 'powershell' : 'pwsh', ['-NoProfile', '-NonInteractive', '-Command', "$ErrorActionPreference='Stop'; try { " + code + " } catch { [Console]::Error.Write($_.Exception.GetType().Name); exit 1 }"], { encoding: 'utf8', maxBuffer: 4 * 1024 * 1024 });
   if (result.error || result.status !== 0) {
     const category = result.error?.code ?? (/^[A-Za-z]+Exception$/.test(result.stderr.trim()) ? result.stderr.trim() : 'REDACTED');
     console.error(`Protected configuration operation category: ${category}`);

@@ -1,0 +1,19 @@
+{
+  "run": "04be78b5-b4f8-497f-b8af-65afc061cc2f",
+  "sourceSha256": "68215ea415d083394e67caba0f786017e0c7fae802d05db253652a3bdb5653ad",
+  "buildId": "lx0Fmr2Q0YTww6lMLv0Ss",
+  "browserVersion": "155.0.8059.85",
+  "requestedFlow": "F6",
+  "checkedAt": "2026-10-24T17:01:23.605Z",
+  "environment": "isolatedTest localhost3117 / examcraft_test_20261022",
+  "realAiCalls": false,
+  "results": [
+    {
+      "id": "F6",
+      "status": "FAIL",
+      "durationMs": 4506,
+      "cleanupComplete": true,
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:3117/login\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:3117/login\", waiting until \"load\"\u001b[22m\n"
+    }
+  ]
+}

@@ -81,7 +81,7 @@ async function setup(id: string, firstPassword = false) {
     browser = await chromium.launch({ executablePath: process.env.PILOT_BROWSER_PATH, headless: true }); browserVersion = browser.version();
     const context = async () => {
       const c = await browser!.newContext({ viewport: { width: 1536, height: 1000 }, acceptDownloads: true });
-      c.setDefaultTimeout(12000); c.setDefaultNavigationTimeout(20000);
+      c.setDefaultTimeout(Number(process.env.PILOT_STEP_TIMEOUT_MS) || 20000); c.setDefaultNavigationTimeout(20000);
       await c.route('**/*', route => {
         const u = new URL(route.request().url());
         if (['data:', 'blob:', 'about:'].includes(u.protocol)) return route.continue();
@@ -225,7 +225,7 @@ test('F5 assign link with and without class and inspect frozen policies', { time
   await authenticated(f); const id=await seedExam(f);const group=(await f.api('/api/groups','POST',{name:'Lớp pilot',studentNames:['Học sinh pilot']})).group;
   let closing: Date|undefined;
   for(const classId of ['',group.id]){
-    await openExam(f,id);await f.page.getByTitle('Tạo link cho học sinh làm bài hoặc chia sẻ đề cho đồng nghiệp').click();await f.page.getByLabel('Giao cho lớp học').selectOption(classId);await click(f.page,/Bài Trên Lớp/);
+    await openExam(f,id);await f.page.getByTitle('Tạo link cho học sinh làm bài hoặc chia sẻ đề cho đồng nghiệp').click();await f.page.getByLabel('Giao cho lớp học').locator('option',{hasText:'Lớp pilot'}).waitFor({state:'attached'}); /* the class list loads asynchronously and selects its first class when it arrives */ await f.page.getByLabel('Giao cho lớp học').selectOption(classId);await click(f.page,/Bài Trên Lớp/);
     if(!classId){
       // datetime-local uses minute precision. Wait for the real server clock to cross this near-future deadline.
       closing=new Date(Math.ceil((Date.now()+12000)/60000)*60000);

@@ -1,0 +1,55 @@
+{
+  "run": "88a7ee14-4c65-40b9-b8d6-4251999611c2",
+  "sourceSha256": "68215ea415d083394e67caba0f786017e0c7fae802d05db253652a3bdb5653ad",
+  "buildId": "0dv517GfqjiWevZi6F6_T",
+  "browserVersion": "155.0.8059.85",
+  "requestedFlow": "F1-F7",
+  "checkedAt": "2026-10-24T17:07:46.249Z",
+  "environment": "isolatedTest localhost3117 / examcraft_test_20261022",
+  "realAiCalls": false,
+  "results": [
+    {
+      "id": "F1",
+      "status": "PASS",
+      "durationMs": 4810,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F2",
+      "status": "PASS",
+      "durationMs": 11178,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F3",
+      "status": "FAIL",
+      "durationMs": 36586,
+      "cleanupComplete": true,
+      "error": "locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('Chấp nhận: 2', { exact: true }).first() to be visible\u001b[22m\n"
+    },
+    {
+      "id": "F4",
+      "status": "PASS",
+      "durationMs": 27334,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F5",
+      "status": "PASS",
+      "durationMs": 26189,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F6",
+      "status": "PASS",
+      "durationMs": 18876,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F7",
+      "status": "PASS",
+      "durationMs": 26247,
+      "cleanupComplete": true
+    }
+  ]
+}

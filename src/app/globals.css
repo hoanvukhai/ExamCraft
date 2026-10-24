@@ -118,7 +118,8 @@ body {
     break-before: page;
   }
 
-  .question-item {
+  .question-item,
+  .parallel-passage {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }

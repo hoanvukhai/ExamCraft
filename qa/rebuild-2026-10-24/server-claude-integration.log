@@ -1,0 +1,56 @@
+Starting isolated ExamCraft test server (production build) at http://127.0.0.1:3117; only examcraft_test_20261022 is used.
+▲ Next.js 16.4.2
+- Local:         http://127.0.0.1:3117
+- Network:       http://127.0.0.1:3117
+✓ Ready in 718ms
+✓ Running next.config.ts took 263ms
+prisma:error 
+Invalid `prisma.group.create()` invocation:
+
+
+Transaction failed due to a write conflict or a deadlock. Please retry your transaction
+prisma:error 
+Invalid `prisma.userApiKey.create()` invocation:
+
+
+Unique constraint failed on the fields: (`id`)
+prisma:error 
+Invalid `prisma.userApiKey.create()` invocation:
+
+
+Unique constraint failed on the fields: (`id`)
+prisma:error 
+Invalid `prisma.userApiKey.create()` invocation:
+
+
+Unique constraint failed on the fields: (`id`)
+prisma:error 
+Invalid `prisma.userApiKey.create()` invocation:
+
+
+Unique constraint failed on the fields: (`id`)
+prisma:error 
+Invalid `prisma.userApiKey.create()` invocation:
+
+
+Unique constraint failed on the fields: (`id`)
+prisma:error 
+Invalid `prisma.teacherAiMemory.create()` invocation:
+
+
+Unique constraint failed on the fields: (`id`)
+prisma:error 
+Invalid `prisma.teacherAiMemory.create()` invocation:
+
+
+Unique constraint failed on the fields: (`id`)
+prisma:error 
+Invalid `prisma.teacherAiMemory.create()` invocation:
+
+
+Unique constraint failed on the fields: (`id`)
+prisma:error 
+Invalid `prisma.teacherAiMemory.create()` invocation:
+
+
+Unique constraint failed on the fields: (`id`)

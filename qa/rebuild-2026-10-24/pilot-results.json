@@ -1,53 +1,53 @@
 {
-  "run": "38e9e5f7-4a0f-45c5-bf0f-ef49a9f9b712",
-  "sourceSha256": "68215ea415d083394e67caba0f786017e0c7fae802d05db253652a3bdb5653ad",
-  "buildId": "7m4Am_PToSJs-yIodzyRZ",
+  "run": "0b2acc3c-7dc5-4c6a-97cf-aab92055f7f0",
+  "sourceSha256": "52af876adff15d4aa74b161fe20785e42672b14e1843720ec3ed48d70de2f12b",
+  "buildId": "0dv517GfqjiWevZi6F6_T",
   "browserVersion": "155.0.8059.85",
   "requestedFlow": "F1-F7",
-  "checkedAt": "2026-10-24T15:09:39.077Z",
+  "checkedAt": "2026-10-24T17:13:40.193Z",
   "environment": "isolatedTest localhost3117 / examcraft_test_20261022",
   "realAiCalls": false,
   "results": [
     {
       "id": "F1",
       "status": "PASS",
-      "durationMs": 3933,
+      "durationMs": 12912,
       "cleanupComplete": true
     },
     {
       "id": "F2",
       "status": "PASS",
-      "durationMs": 8580,
+      "durationMs": 12144,
       "cleanupComplete": true
     },
     {
       "id": "F3",
       "status": "PASS",
-      "durationMs": 4670,
+      "durationMs": 8449,
       "cleanupComplete": true
     },
     {
       "id": "F4",
       "status": "PASS",
-      "durationMs": 9257,
+      "durationMs": 10983,
       "cleanupComplete": true
     },
     {
       "id": "F5",
       "status": "PASS",
-      "durationMs": 62407,
+      "durationMs": 34575,
       "cleanupComplete": true
     },
     {
       "id": "F6",
       "status": "PASS",
-      "durationMs": 18320,
+      "durationMs": 19156,
       "cleanupComplete": true
     },
     {
       "id": "F7",
       "status": "PASS",
-      "durationMs": 19713,
+      "durationMs": 19931,
       "cleanupComplete": true
     }
   ]

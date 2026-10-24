@@ -1,0 +1,6 @@
+{
+  "status": "BACKUP_PACKAGE_CREATED",
+  "directory": "backups\\package-20261024171439636",
+  "restoreVerified": false,
+  "automaticDeletion": false
+}

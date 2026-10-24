@@ -1,0 +1,18 @@
+{
+  "run": "fdae117b-5bda-48af-9d40-9a6289ea197e",
+  "sourceSha256": "68215ea415d083394e67caba0f786017e0c7fae802d05db253652a3bdb5653ad",
+  "buildId": "lx0Fmr2Q0YTww6lMLv0Ss",
+  "browserVersion": "155.0.8059.85",
+  "requestedFlow": "F7",
+  "checkedAt": "2026-10-24T17:02:32.950Z",
+  "environment": "isolatedTest localhost3117 / examcraft_test_20261022",
+  "realAiCalls": false,
+  "results": [
+    {
+      "id": "F7",
+      "status": "PASS",
+      "durationMs": 25205,
+      "cleanupComplete": true
+    }
+  ]
+}

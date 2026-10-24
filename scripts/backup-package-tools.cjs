@@ -69,8 +69,14 @@ function loadPackage(directory) {
   if (JSON.stringify(inventory(path.join(root, 'public'))) !== JSON.stringify(manifest.publicFiles)) throw Error('Package public files mismatch');
   return { root, manifest, dump };
 }
+// PowerShell 7 is optional: Windows PowerShell 5.1 runs the same DPAPI commands.
+let powershellCommand;
+function powershellExecutable() {
+  if (!powershellCommand) powershellCommand = spawnSync('pwsh', ['-NoProfile', '-NonInteractive', '-Command', 'exit 0']).error ? 'powershell' : 'pwsh';
+  return powershellCommand;
+}
 function powershell(code, env = process.env) {
-  const result = spawnSync('pwsh', ['-NoProfile', '-NonInteractive', '-Command', "$ErrorActionPreference='Stop'; try { " + code + " } catch { exit 1 }"], { env, encoding: 'utf8', maxBuffer: 4 * 1024 * 1024 });
+  const result = spawnSync(powershellExecutable(), ['-NoProfile', '-NonInteractive', '-Command', "$ErrorActionPreference='Stop'; try { " + code + " } catch { exit 1 }"], { env, encoding: 'utf8', maxBuffer: 4 * 1024 * 1024 });
   if (result.error || result.status !== 0) throw Error('Protected configuration operation failed; secret diagnostics withheld');
   return result.stdout;
 }

@@ -1,0 +1,54 @@
+{
+  "run": "0b2acc3c-7dc5-4c6a-97cf-aab92055f7f0",
+  "sourceSha256": "52af876adff15d4aa74b161fe20785e42672b14e1843720ec3ed48d70de2f12b",
+  "buildId": "0dv517GfqjiWevZi6F6_T",
+  "browserVersion": "155.0.8059.85",
+  "requestedFlow": "F1-F7",
+  "checkedAt": "2026-10-24T17:13:40.193Z",
+  "environment": "isolatedTest localhost3117 / examcraft_test_20261022",
+  "realAiCalls": false,
+  "results": [
+    {
+      "id": "F1",
+      "status": "PASS",
+      "durationMs": 12912,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F2",
+      "status": "PASS",
+      "durationMs": 12144,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F3",
+      "status": "PASS",
+      "durationMs": 8449,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F4",
+      "status": "PASS",
+      "durationMs": 10983,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F5",
+      "status": "PASS",
+      "durationMs": 34575,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F6",
+      "status": "PASS",
+      "durationMs": 19156,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F7",
+      "status": "PASS",
+      "durationMs": 19931,
+      "cleanupComplete": true
+    }
+  ]
+}
