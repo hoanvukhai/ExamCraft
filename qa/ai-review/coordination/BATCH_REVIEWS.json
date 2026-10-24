@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "updated_at_utc": "2026-10-24T16:35:29.000Z",
+  "updated_at_utc": "2026-10-24T17:20:32.000Z",
   "writer": "CLAUDE",
   "purpose": "Delivery review gates, not product checklist or proof of runtime completion",
   "batches": [
@@ -315,6 +315,40 @@
           "id": "GEM-P5",
           "decision": "PENDING",
           "review_note": "Chưa review; ưu tiên thấp (CV011)."
+        }
+      ]
+    },
+    {
+      "task_id": "GEMINI-PILOT-PREP",
+      "assignment_generation": 7,
+      "reviewer": "CLAUDE",
+      "reviewed_at_utc": "2026-10-24T17:20:32.000Z",
+      "review_basis": "Kiểm bằng chương trình: hai fixture qua normalizeExamDocument, giải mã ảnh PNG, đếm passageId; đối chiếu số dòng mã được trích; đọc bảng đối chiếu nguồn. Chưa mở lại từng nguồn chương trình.",
+      "items": [
+        {
+          "id": "GEM-P9",
+          "decision": "ACCEPTED",
+          "review_note": "Toán: 8 câu đủ 7 dạng, 1 câu điểm 0, ảnh PNG 300x180 (2,9KB) hợp lệ, 1 ngữ liệu; Môn 2: 6 câu, ngữ liệu dùng chung bởi 5 câu. Sửa duy nhất của Claude: bỏ BOM đầu tệp toan6-bay-dang.json (JSON.parse lỗi với BOM)."
+        },
+        {
+          "id": "GEM-P10",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "review_note": "Các tính năng mới đã có trong hướng dẫn và thẻ kiểm; các dòng mã trích (A4Preview:127, share page:190, teacher page:507) khớp. Giới hạn: số dòng đổi khi mã đổi."
+        },
+        {
+          "id": "GEM-P11",
+          "decision": "ACCEPTED",
+          "review_note": "Phiếu phản hồi và bảng ghi lỗi, không thu dữ liệu cá nhân học sinh."
+        },
+        {
+          "id": "GEM-P12",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "review_note": "Có 4+4 mục CHUA_XAC_MINH và 1+1 Chưa mở nên trung thực về chỗ chưa kiểm. Giới hạn: phần lớn \"Đã mở và khớp\" là đối chiếu với sổ nguồn nội bộ (Sổ 05) và danh mục, không phải kiểm lại toàn văn; vẫn là bản chuẩn bị chờ người duyệt chuyên môn."
+        },
+        {
+          "id": "GEM-P5",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "review_note": "Bản đồ caller tài khoản (CV011) chưa đối chiếu lại từng dòng; dùng làm danh mục tra cứu, không thay kiểm HTTP."
         }
       ]
     }

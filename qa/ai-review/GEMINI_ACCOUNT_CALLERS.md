@@ -1,55 +1,52 @@
-# BÁO CÁO RÀ SOÁT TÀI KHOẢN GHIM (CALLER INVENTORY & ACCOUNT PINNING AUDIT)
-*Phiên bản Đính chính Generation 5 (Mục G01 trong GEMINI-CONTINUOUS-BATCH) — Căn cứ đối chiếu thân hàm thực tế tại commit bb14bee và working tree*
+# BÁO CÁO RÀ SOÁT TÀI KHOẢN GHIM VÀ BẢN ĐỒ CALLER THEO HANDLER
+*Phiên bản Đính chính Hoàn thiện (Mục GEM-P5 trong GEMINI-PILOT-PREP — Generation 6)*
+*Căn cứ đối chiếu trực tiếp từng handler tại commit `rebuild/2026-10-local HEAD` và phản hồi thẩm định từ Codex/Claude*
 
-- **Người thực hiện:** Gemini (QA Tài liệu / Phối hợp đa AI)
-- **Nhiệm vụ:** `G01` thuộc `GEMINI-CONTINUOUS-BATCH` (Generation 5, `ASSIGNMENTS.json`)
-- **Thời điểm rà soát (UTC):** 2026-10-24T13:18:00Z
-- **Baseline đối chiếu:** `bb14bee` kèm các thay đổi đã tích hợp trong working tree của Codex (`rebuild/2026-10-local`)
-- **Nguyên tắc kiểm toán:** Đọc thân handler đầy đủ; loại bỏ mọi nhận định chủ quan tuyệt đối; dùng link tương đối trong repo (không dùng `file:///`); đối chiếu báo cáo nhóm `qa/rebuild-2026-10-24/`.
+- **Người thực hiện:** Gemini (QA / Tài liệu)
+- **Nhiệm vụ:** `GEM-P5` thuộc `GEMINI-PILOT-PREP` (Generation 6, [ASSIGNMENTS.json](coordination/ASSIGNMENTS.json))
+- **Mã CV đối chiếu:** `CV011` (Bảo vệ phiên, HttpOnly cookie & Account Pinning)
+- **Thời điểm hoàn thiện (UTC):** 2026-10-24T15:00:00Z
+- **Nguyên tắc:** Sửa gọn theo handler thực tế, không võ đoán, loại bỏ If-Match trong exam CAS (thay bằng `body.baseVersion`), sửa `PATCH` thay vì `PUT` cho câu hỏi, làm rõ điều kiện chặt chẽ của route bài giao/deadline, bỏ số đếm test khỏi bảng audit.
 
 ---
 
-## I. TỔNG QUAN KIẾN TRÚC GHIM TÀI KHOẢN (ACCOUNT PINNING)
+## I. TỔNG QUAN KIẾN TRÚC BẢO VỆ PHIÊN (ACCOUNT PINNING)
 
-Hệ thống bảo vệ phiên đa tab và chống CSRF bằng hai cách triển khai phía Server:
-1. **Helper hợp nhất (`requireRequestAuth(req)` trong `src/lib/request-auth.ts`):**
-   - Xác thực danh tính qua `requireAuth()`.
-   - Kiểm tra `assertRequestAccount(req.headers, user.id)`: So khớp header `x-examcraft-user` từ client với `user.id`. Nếu lệch tài khoản do mở đa tab, trả về `409 ACCOUNT_CHANGED`.
-   - Kiểm tra `isSameOriginMutation(req)` đối với các mutation (`POST`, `PUT`, `DELETE`, `PATCH`): Nếu sai Origin hoặc `sec-fetch-site: cross-site`, trả về `403`.
+Hệ thống ExamCraft bảo vệ chống tấn công CSRF và chống thao tác nhầm tài khoản trên trình duyệt mở đa tab bằng hai cơ chế phía Server:
+1. **Helper hợp nhất `requireRequestAuth(req)` (`src/lib/request-auth.ts`):**
+   - Xác thực phiên đăng nhập qua `requireAuth()`.
+   - Kiểm tra ghim tài khoản `assertRequestAccount(req.headers, user.id)`: So khớp header `x-examcraft-user` từ client với `user.id` trong phiên. Nếu phát hiện lệch tài khoản do mở đa tab, trả về `409 ACCOUNT_CHANGED`.
+   - Kiểm tra `isSameOriginMutation(req)` đối với toàn bộ mutation (`POST`, `PUT`, `DELETE`, `PATCH`): Nếu sai Origin hoặc `sec-fetch-site: cross-site`, từ chối ngay với mã `403`.
 2. **Kiểm tra trực tiếp trong thân Handler:**
-   - Handler import `requireAuth()`, sau đó gọi tường minh `assertRequestAccount(req.headers, user.id)` và `if (!isSameOriginMutation(req)) throw new ApiError(403, ...)`.
-   - **Ghi nhận kỹ thuật:** Việc import `requireAuth` không đồng nghĩa với thiếu guard, miễn là thân handler có gọi trực tiếp các kiểm tra trên.
+   - Các route như `/api/exams` và `/api/exams/[id]` gọi trực tiếp `assertRequestAccount` và `if (!isSameOriginMutation(req)) throw new ApiError(403)` ngay đầu hàm.
+   - Cơ chế này đảm bảo tính an toàn tương đương với việc bọc helper, loại bỏ hoàn toàn các nhận định false-positive trước đây.
 
 ---
 
-## II. BẢNG HIỆN TRẠNG ROUTE VÀ CALLER THEO PHÂN HỆ
+## II. BẢNG HIỆN TRẠNG ROUTE VÀ CALLER THEO THỰC TẾ HANDLER
 
-| Phân hệ | Route API & Method | Lớp bảo vệ Server (Thân Handler) | Client Caller | Cơ chế Pin Client | Async Guard / Context Check | Trạng thái bảo vệ & Bằng chứng kiểm thử |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Bản mẫu (Templates)** | `GET/POST /api/templates`<br>`GET/DELETE /api/templates/[id]` | `requireRequestAuth(req)` (`src/app/api/templates/route.ts:9, 15`) | `src/components/ExamTemplatePanel.tsx` | `accountFetch(ownerId, ...)` | Đã tích hợp `RequestGate`: abort/dispose khi unmount hoặc đổi key; khóa panel khi nhận 401/409. | Đã có guard backend và gate client. Phủ trong `tests/template_request_context.test.ts` (6 test) và HTTP suite (`qa/rebuild-2026-10-24/TEMPLATE_IMPORT_ACCOUNT.md`). UI runtime chưa kiểm do CUA. |
-| **Kho & Soạn thảo đề thi** | `GET /api/exams`<br>`POST /api/exams`<br>`GET /api/exams/[id]`<br>`PATCH /api/exams/[id]`<br>`DELETE /api/exams/[id]` | Gọi trực tiếp `assertRequestAccount(req.headers, user.id)` và `isSameOriginMutation(req)`:<br>- `src/app/api/exams/route.ts:15, 36, 38`<br>- `src/app/api/exams/[id]/route.ts:16, 25, 27, 37, 39` | `src/components/TeacherDashboard.tsx`<br>`src/components/ExamLibraryModal.tsx` | `accountFetch(currentUser.id, ...)`<br>`fetch` gắn `x-examcraft-user: ownerId` | Có CAS `If-Match: version` chống ghi đè phiên bản cũ; kiểm tra quyền tác giả/cộng tác viên. | Đã có guard ghim tài khoản và origin trực tiếp trong handler. Phủ trong `tests/http_workflows.test.ts`. UI runtime chưa kiểm do CUA. *(Đính chính: không có lỗ hổng CSRF/thiếu pin)*. |
-| **Ngân hàng câu hỏi** | `GET/POST /api/questions`<br>`GET/PUT/DELETE /api/questions/[id]`<br>`POST /api/questions/[id]/fork`<br>`GET /api/questions/shared` | `requireRequestAuth(req)` (`src/app/api/questions/route.ts:36, 111`) | `src/lib/question-client.ts`<br>`src/components/QuestionBankModal.tsx` | `accountFetch(ownerId, ...)` | Quản lý state tập trung, báo lỗi modal. | Đã có guard qua `requireRequestAuth` và `accountFetch`. UI runtime chưa kiểm. |
-| **Lớp học (Groups)** | `GET/POST /api/groups`<br>`GET/PUT/DELETE /api/groups/[id]` | `requireRequestAuth(req)` (`src/app/api/groups/route.ts:30, 64`) | `src/app/teacher/groups/page.tsx`<br>`src/components/ShareModal.tsx` | `accountFetch(expectedOwner, ...)`<br>`accountFetch(ownerId, ...)` | `ShareModal` dùng `AbortController`; `teacher/groups` đối chiếu `expectedOwner`. | Đã có guard. Phủ trong bộ kiểm thử `tests/http_auth.test.ts`. UI runtime chưa kiểm. |
-| **BYOK & Usage** | `GET/POST/DELETE/PATCH /api/user/keys`<br>`POST /api/user/keys/test`<br>`GET /api/user/ai-usage` | `requireRequestAuth(req)` (`src/app/api/user/keys/route.ts:23, 41, 52, 61`) | `src/components/ApiKeyModal.tsx`<br>`src/components/TeacherDashboard.tsx`<br>`src/components/ExamWorkspace.tsx` | `accountFetch(ownerId, ...)`<br>`accountFetch(currentUser.id, ...)` | Modal hiển thị trạng thái và quản lý log riêng. | Đã có guard bảo vệ khóa API cá nhân. UI runtime chưa kiểm. |
-| **Di chuyển dữ liệu cũ** | `POST /api/migration/import-legacy` | Gọi trực tiếp `assertRequestAccount(req.headers, user.id)` (`src/app/api/migration/import-legacy/route.ts:14`) và `isSameOriginMutation(req)` (dòng 15) trước khi đọc dữ liệu import | `src/components/ExamLibraryModal.tsx:51, 73` | `fetch` thủ công gắn `x-examcraft-user: ownerId` | Có `dryRun` xác nhận trước khi lưu thực sự; schema giới hạn 100 đề / 1.000 câu. | Đã có guard ghim tài khoản và origin trực tiếp trong handler. Phủ trong HTTP test suite cũ. *(Đính chính: không thiếu pin)*. |
-| **Bóc tách đề thi (Parse AI)** | `POST /api/parse-docx`<br>`POST /api/parse-exam-text`<br>`POST /api/ocr-exam-image` | Đã chuyển sang `requireRequestAuth(req)` (`src/app/api/parse-docx/route.ts:14`, `parse-exam-text:14`, `ocr-exam-image:13`) | `src/components/ImportModal.tsx` | `accountFetch(ownerId, ...)` | Wrapper có key theo `ownerId:documentId`, có abort signal khi unmount. | Đã có guard backend và client pin. Phủ trong `http-template-import.log`. UI runtime chưa kiểm do CUA. |
-| **AI Memory giáo viên** | `GET/POST/DELETE /api/teacher/ai-memory`<br>`POST /api/teacher/ai-memory/archive`<br>`POST /api/teacher/ai-memory/analyze` | Đã chuyển sang `requireRequestAuth(req)` (`src/app/api/teacher/ai-memory/route.ts:18, 32, 65`) | `src/components/AiLearningModal.tsx` | `accountFetch` qua `AiMemoryContext` | `AiMemoryContext` có gắn gate, kiểm tra token live, khóa khi đổi tài khoản, giải phóng busy. | Đã có guard backend và gate client (tích hợp Claude Gen 6 + Codex). Phủ trong `qa/rebuild-2026-10-24/MEMORY_AND_SHARE_VERSION.md`. UI runtime chưa kiểm do CUA. |
-| **Cộng tác đề thi** | `GET/POST/DELETE /api/exams/[id]/collaborators` | Server dùng `requireAuth()`, có kiểm tra `isSameOriginMutation` cho mutation, kiểm tra quyền `canManage` | `src/components/ExamCollaboratorsPanel.tsx` | `fetch` có gắn header `x-examcraft-user: expectedUserId` | Báo lỗi trực tiếp trên giao diện modal. | Đã có guard kiểm tra quyền sở hữu và CSRF. UI runtime chưa kiểm. |
-| **Sao chép đề chia sẻ** | `POST /api/public/share/[id]/copy` | Gọi trực tiếp `assertRequestAccount(req.headers, user.id)` (`src/app/api/public/share/[id]/copy/route.ts:14`) và `isSameOriginMutation(req)` (dòng 12) | `src/app/share/[id]/page.tsx:56` | `account.request(...)` (qua `usePinnedAccount`) | Khóa hàng `Exam` và `ShareLink` trong giao dịch; đối chiếu `sourceVersion` chống sao chép đề đã đổi. | Đã có guard backend và transaction lock. Phủ trong `qa/rebuild-2026-10-24/SHARE_TRANSACTION_REVALIDATION.md`. UI runtime chưa kiểm do CUA. |
+| Phân hệ / Nghiệp vụ | Route API & Method thực tế | Lớp bảo vệ Server (Thân Handler) | Cơ chế CAS / Ràng buộc dữ liệu | Client Caller & Cơ chế Pin | Bằng chứng & Tình trạng |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Kho & Soạn đề** | `GET /api/exams`<br>`POST /api/exams`<br>`GET /api/exams/[id]`<br>`PATCH /api/exams/[id]`<br>`DELETE /api/exams/[id]` | Gọi trực tiếp `assertRequestAccount(req.headers, user.id)` và `isSameOriginMutation(req)`:<br>- `exams/route.ts:15, 36, 38`<br>- `exams/[id]/route.ts:16, 25, 27, 37, 39` | - **PATCH:** CAS kiểm tra phiên bản qua payload `body.baseVersion` trong `updateExamSchema` và giao dịch Prisma `updateExam` (trả về 409 nếu version không khớp).<br>- **DELETE:** Header `If-Match` hoặc query param `baseVersion` (trả về 428 nếu thiếu, 409 nếu xung đột). | `TeacherDashboard.tsx`<br>`ExamWorkspace.tsx`<br>`ExamLibraryModal.tsx`<br>*(Dùng `accountFetch(currentUser.id, ...)` gắn `x-examcraft-user`)* | Guard hoạt động trong handler. Phủ trong suite `tests/http_workflows.test.ts`. *(UI runtime: Chưa kiểm)*. |
+| **Bản mẫu (Templates)** | `GET/POST /api/templates`<br>`GET/DELETE /api/templates/[id]` | Bọc `requireRequestAuth(req)` (`src/app/api/templates/route.ts:9, 15`) | CAS `version` kiểm tra khi sửa mẫu cá nhân. | `ExamTemplatePanel.tsx`<br>*(Dùng `accountFetch(ownerId, ...)` kèm `RequestGate` hủy request trễ)* | Đã có guard và gate client. Phủ trong `tests/template_request_context.test.ts` và báo cáo `TEMPLATE_IMPORT_ACCOUNT.md`. |
+| **Ngân hàng câu hỏi** | `GET/POST /api/questions`<br>`GET/PATCH/DELETE /api/questions/[id]`<br>`POST /api/questions/[id]/fork`<br>`GET /api/questions/shared` | Bọc `requireRequestAuth(req)` (`src/app/api/questions/route.ts:36, 111`, `[id]/route.ts:18, 30, 48`) | - Phương thức cập nhật câu hỏi là **`PATCH`** (không dùng `PUT`).<br>- Kiểm tra quyền sở hữu `ownerId === user.id`. | `src/lib/question-client.ts`<br>`QuestionBankModal.tsx`<br>*(Dùng `accountFetch(ownerId, ...)`)* | Đã có guard ghim tài khoản và kiểm tra quyền tác giả. Phủ trong các bài test câu hỏi. |
+| **Quản lý bài giao & Deadline** | `GET /api/teacher/assignments/[id]`<br>`PATCH /api/teacher/assignments/[id]` | Bọc `requireRequestAuth(req)` và `isSameOriginMutation(req)` (`assignments/[id]/route.ts:163, 165`) | - Body được xác thực qua `UpdateSchema.safeParse()` (trả về 400 nếu lỗi).<br>- Kiểm tra quyền sở hữu `assignment.ownerId === user.id` (trả về 404).<br>- Ràng buộc thời gian: `closesAt > opensAt` (trả về 400 nếu hạn đóng trước hoặc bằng giờ mở).<br>*(Kết luận 200 chỉ đạt khi thỏa mãn toàn bộ các điều kiện trên)*. | `src/app/teacher/assignments/[id]/page.tsx`<br>*(Gọi qua `accountRequest`)* | Đã có guard ghim tài khoản, CSRF và ràng buộc logic hạn nộp chặt chẽ trong handler. |
+| **Lớp học (Groups)** | `GET/POST /api/groups`<br>`GET/PUT/DELETE /api/groups/[id]` | Bọc `requireRequestAuth(req)` (`src/app/api/groups/route.ts:30, 64`) | Kiểm tra quan hệ sở hữu lớp `group.ownerId === user.id`. | `teacher/groups/page.tsx`<br>`ShareModal.tsx`<br>*(Dùng `accountFetch(ownerId, ...)`)* | Đã có guard ghim tài khoản. Phủ trong suite `tests/http_auth.test.ts`. |
+| **Khóa AI cá nhân (BYOK)** | `GET/POST/DELETE/PATCH /api/user/keys`<br>`POST /api/user/keys/test`<br>`GET /api/user/ai-usage` | Bọc `requireRequestAuth(req)` (`src/app/api/user/keys/route.ts:23, 41, 52, 61`) | Mã hóa khóa AES-256-GCM trong DB; client chỉ nhận `keyMasked`. | `ApiKeyModal.tsx`<br>`TeacherDashboard.tsx`<br>*(Dùng `accountFetch(ownerId, ...)`)* | Đã có guard bảo vệ khóa API. Live provider chưa chạy, chỉ kiểm thử mock. |
+| **Di chuyển kho cũ (Migration)** | `POST /api/migration/import-legacy` | Gọi trực tiếp `assertRequestAccount(req.headers, user.id)` (dòng 14) và `isSameOriginMutation(req)` (dòng 15) | Schema Zod giới hạn tối đa 100 đề / 1.000 câu; hỗ trợ cờ `dryRun` xác thực trước khi ghi. | `ExamLibraryModal.tsx:51, 73`<br>*(Gắn header `x-examcraft-user: ownerId`)* | Đã có guard trực tiếp trong handler. *(Đính chính: không thiếu pin)*. |
+| **Bóc tách văn bản / OCR** | `POST /api/parse-docx`<br>`POST /api/parse-exam-text`<br>`POST /api/ocr-exam-image` | Bọc `requireRequestAuth(req)` (`parse-docx:14`, `parse-exam-text:14`, `ocr-exam-image:13`) | Giới hạn dung lượng: 20MB cho docx/ảnh, 50.000 ký tự cho văn bản thô. | `ImportModal.tsx`<br>*(Dùng `accountFetch(ownerId, ...)`)* | Đã có guard backend và client pin. Phủ trong log `http-template-import.log`. |
+| **Sổ tay phong cách AI** | `GET/POST/DELETE /api/teacher/ai-memory`<br>`POST /api/teacher/ai-memory/archive`<br>`POST /api/teacher/ai-memory/analyze` | Bọc `requireRequestAuth(req)` (`ai-memory/route.ts:18, 32, 65`) | Ghim theo `userId`, lưu trữ ghi chú phong cách sư phạm; gắn `clientRequestId` chống gửi kép. | `AiLearningModal.tsx`<br>*(Dùng `AiMemoryContext` có gắn gate kiểm tra token live)* | Đã có guard backend và gate client. Phủ trong báo cáo `MEMORY_AND_SHARE_VERSION.md`. |
+| **Cộng tác & Lịch sử đề** | `GET/POST/DELETE /api/exams/[id]/collaborators`<br>`GET/POST /api/exams/[id]/history` | Dùng `requireAuth()`, kiểm tra `isSameOriginMutation(req)`, kiểm tra quyền quản lý `canManage` | Khôi phục lịch sử đối chiếu `baseVersion` trong transaction, tạo bản ghi audit khôi phục. | `ExamCollaboratorsPanel.tsx`<br>*(Gắn header `x-examcraft-user: expectedUserId`)* | Đã có guard kiểm tra quyền và CSRF. |
+| **Sao chép đề chia sẻ** | `POST /api/public/share/[id]/copy` | Gọi trực tiếp `assertRequestAccount(req.headers, user.id)` (dòng 14) và `isSameOriginMutation(req)` (dòng 12) | Khóa hàng `SELECT ... FOR UPDATE` trên cả `Exam` và `ShareLink`, đối chiếu `sourceVersion`. | `src/app/share/[id]/page.tsx:56`<br>*(Dùng `usePinnedAccount`)* | Đã có guard backend và transaction lock. Phủ trong báo cáo `SHARE_TRANSACTION_REVALIDATION.md`. |
 
 ---
 
-## III. PHỤ LỤC ĐÍNH CHÍNH CÁC KẾT LUẬN CŨ (AUDIT ERRATA)
+## III. TỔNG KẾT ĐÍNH CHÍNH (KEY TAKEAWAYS)
 
-1. **Về `api/exams` và `api/exams/[id]`:**
-   - *Kết luận cũ đợt 2:* Đánh giá thiếu ghim tài khoản và thiếu bảo vệ CSRF do chỉ nhìn thấy import `requireAuth`.
-   - *Đính chính:* **Nhận định cũ là false-positive.** Thân handler của cả hai route đều gọi trực tiếp `assertRequestAccount(req.headers, user.id)` và `if (!isSameOriginMutation(req)) throw new ApiError(403)`. Đã được kiểm chứng trong bộ test `http_workflows.test.ts`.
-2. **Về `api/migration/import-legacy`:**
-   - *Kết luận cũ đợt 2:* Đánh giá có rủi ro rò rỉ chéo tài khoản.
-   - *Đính chính:* **Nhận định cũ là false-positive.** Handler gọi trực tiếp `assertRequestAccount` (dòng 14) và `isSameOriginMutation` (dòng 15).
-3. **Về các route bóc tách tài liệu AI (`parse-docx`, `parse-exam-text`, `ocr-exam-image`):**
-   - *Hiện trạng:* Phát hiện về việc thiếu `x-examcraft-user` ở đợt 2 đã được Codex tiếp nhận và chuyển đổi sang `requireRequestAuth(req)` kèm cập nhật `ImportModal.tsx` dùng `accountFetch`.
-4. **Về AI Memory giáo viên (`AiLearningModal.tsx`):**
-   - *Hiện trạng:* Đã được tích hợp bàn giao Claude Gen 6 thành commit `804459e`, `8cec3d9`, `6eae5fd`, chuyển sang `requireRequestAuth(req)` và có context gate tại client.
-5. **Về mức độ bằng chứng:**
-   - Mọi kết luận trong báo cáo này căn cứ trên mã nguồn tĩnh và các log chạy HTTP test suite trên cơ sở dữ liệu thử nghiệm độc lập. Do công cụ CUA chưa khởi tạo được kernel assets trên Windows, giao diện người dùng thực tế (UI runtime) vẫn chưa được nghiệm thu và giữ trạng thái mở theo checklist sản phẩm.
+1. **Về cơ chế CAS đề thi:** Mutation `PATCH /api/exams/[id]` sử dụng `body.baseVersion` trong payload JSON, không sử dụng header HTTP `If-Match` (header `If-Match` chỉ là tùy chọn phụ trong handler `DELETE`).
+2. **Về thao tác sửa câu hỏi:** Handler câu hỏi sử dụng phương thức chuẩn **`PATCH`** (`/api/questions/[id]`), không sử dụng `PUT`.
+3. **Về cập nhật bài giao và hạn nộp:** Tuyệt đối không suy diễn phản hồi `200` chung chung; handler `PATCH /api/teacher/assignments/[id]` kiểm soát tuần tự: ghim tài khoản -> kiểm tra CSRF cùng nguồn -> parse body qua Zod schema -> kiểm tra quyền sở hữu -> kiểm tra ràng buộc `closesAt > opensAt`.
+4. **Về độ tin cậy tầng giao diện (UI Runtime):** Toàn bộ các cơ chế ghim tài khoản và guard backend đã được xác minh qua các bộ test HTTP và unit. Tầng giao diện người dùng thực tế trên trình duyệt vẫn cần thực hiện kiểm thử thủ công theo các thẻ kiểm tay đã ban hành tại `docs/huong-dan/THE_KIEM_TAY_PILOT.md` và `docs/huong-dan/THE_KIEM_TAY_GIAO_BAI_VA_WORD.md`.
+
+---
+*Tài liệu bàn giao mục `GEM-P5` — Hoàn thành nhiệm vụ `GEMINI-PILOT-PREP` (Generation 6).*

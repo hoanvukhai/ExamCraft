@@ -1,0 +1,157 @@
+{
+  "id": "exam-fixture-mon2-pilot",
+  "metadata": {
+    "title": "Đề Kiểm Tra Minh Họa Kỹ Thuật Ngữ Văn 6 - Ngữ Liệu Đọc Hiểu Dài",
+    "schoolName": "Trường THCS Thực Nghiệm",
+    "departmentName": "Tổ Ngữ Văn",
+    "subject": "ngu_van",
+    "grade": 6,
+    "durationMinutes": 60,
+    "examCode": "201",
+    "academicYear": "2026-2027",
+    "semester": "Học kỳ 1",
+    "assessmentMode": "scored",
+    "notes": "Ví dụ kỹ thuật phục vụ bộ kiểm tự động E2E của Codex; không phải đề thẩm định chuyên môn."
+  },
+  "passages": [
+    {
+      "id": "pas-van6-dong-song",
+      "title": "Dòng sông tuổi thơ và tiếng còi tàu sớm",
+      "content": "Con sông quê tôi chảy qua bao mùa bồi lở, ôm ấp lấy xóm làng như một dải lụa mềm vắt ngang triền xanh biếc. Cứ mỗi độ chớm thu, mặt nước lại phẳng lặng như tấm gương soi bóng những rặng tre già kẽ kẹt trong gió mai. Từ tờ mờ sáng, khi sương mù còn giăng mỏng như làn khói trên bãi mía, tiếng còi tàu chở cát từ phía thượng nguồn đã văng vẳng vọng lại, đánh thức cả xóm chài thức dậy vào một ngày mới tất bật.\n\nTôi nhớ những buổi sớm theo bà ra bến sông giặt áo. Nước mát rượi thấm vào da thịt, xua tan đi sự ngái ngủ của đứa trẻ lên mười. Bà thường kể cho tôi nghe chuyện những khúc quanh của dòng sông, nơi phù sa đọng lại nuôi lớn những hạt lúa mẩy tròn, nơi con cá bống, con tôm đất quẫy đuôi làm rộn cả một góc trời quê. Dòng sông không chỉ đem lại nguồn nước mát ngọt lành tưới tắm cho ruộng đồng, mà còn là nơi lưu giữ ký ức của biết bao thế hệ người dân quê tôi, mộc mạc, thủy chung và luôn son sắt với cội nguồn.",
+      "source": "Trích đoạn tản văn giả định phục vụ kiểm thử kỹ thuật ExamCraft"
+    }
+  ],
+  "sections": [
+    {
+      "id": "sec-doc-hieu",
+      "name": "Phần I",
+      "title": "Đọc hiểu văn bản (4.0 điểm)",
+      "type": "multiple_choice",
+      "pointsPerQuestion": 1.0
+    },
+    {
+      "id": "sec-viet",
+      "name": "Phần II",
+      "title": "Tập làm văn & Cảm nhận (6.0 điểm)",
+      "type": "essay",
+      "pointsPerQuestion": 6.0
+    }
+  ],
+  "questions": [
+    {
+      "id": "q-van6-mc-01",
+      "sectionId": "sec-doc-hieu",
+      "passageId": "pas-van6-dong-song",
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "points": 1.0,
+      "content": "Phương thức biểu đạt chính được sử dụng trong đoạn trích trên là gì?",
+      "choices": [
+        { "key": "A", "text": "Thuyết minh" },
+        { "key": "B", "text": "Biểu cảm" },
+        { "key": "C", "text": "Nghị luận" },
+        { "key": "D", "text": "Hành chính - công vụ" }
+      ],
+      "correct_answer": "B",
+      "step_by_step_solution": "Văn bản bộc lộ tình cảm, cảm xúc và ký ức gắn bó tha thiết của tác giả đối với dòng sông quê hương, do đó phương thức biểu đạt chính là Biểu cảm."
+    },
+    {
+      "id": "q-van6-tf-02",
+      "sectionId": "sec-doc-hieu",
+      "passageId": "pas-van6-dong-song",
+      "type": "true_false_group",
+      "difficulty": "thong_hieu",
+      "points": 1.0,
+      "content": "Dựa vào nội dung đoạn trích, xác định tính Đúng hoặc Sai của các nhận định dưới đây:",
+      "sub_questions": [
+        {
+          "key": "a",
+          "content": "Hình ảnh dòng sông được so sánh như \"dải lụa mềm vắt ngang triền xanh biếc\".",
+          "isCorrect": true,
+          "explanation": "Chi tiết xuất hiện trực tiếp trong câu đầu tiên của văn bản."
+        },
+        {
+          "key": "b",
+          "content": "Âm thanh đánh thức xóm chài vào buổi sáng sớm là tiếng chuông chùa làng.",
+          "isCorrect": false,
+          "explanation": "Trong văn bản nêu rõ là tiếng còi tàu chở cát từ phía thượng nguồn vọng lại."
+        },
+        {
+          "key": "c",
+          "content": "Theo lời bà kể, dòng sông mang phù sa nuôi lớn những hạt lúa mẩy tròn.",
+          "isCorrect": true,
+          "explanation": "Chi tiết nêu ở đoạn 2: phù sa đọng lại nuôi lớn những hạt lúa mẩy tròn."
+        },
+        {
+          "key": "d",
+          "content": "Nhân vật người cháu cảm thấy khó chịu vì phải dậy sớm ra bến sông.",
+          "isCorrect": false,
+          "explanation": "Người cháu cảm nhận dòng nước mát rượi xua tan sự ngái ngủ và lắng nghe lời bà kể đầy trân trọng."
+        }
+      ],
+      "step_by_step_solution": "Đối chiếu từng chi tiết với đoạn trích:\na) Đúng (câu mở đầu).\nb) Sai (tiếng còi tàu chứ không phải tiếng chuông chùa).\nc) Đúng (lời bà kể ở đoạn 2).\nd) Sai (tâm trạng hào hứng, xúc động gắn bó với kỷ niệm tuổi thơ)."
+    },
+    {
+      "id": "q-van6-sa-03",
+      "sectionId": "sec-doc-hieu",
+      "passageId": "pas-van6-dong-song",
+      "type": "short_answer",
+      "difficulty": "thong_hieu",
+      "points": 1.0,
+      "content": "Chỉ ra 01 từ láy mô phỏng âm thanh hoặc trạng thái của thiên nhiên trong câu: \"Cứ mỗi độ chớm thu, mặt nước lại phẳng lặng như tấm gương soi bóng những rặng tre già kẽ kẹt trong gió mai.\"",
+      "correct_answer": "kẽ kẹt",
+      "accepted_answers": ["kẽ kẹt", "phẳng lặng"],
+      "step_by_step_solution": "Trong câu văn có từ láy 'kẽ kẹt' mô phỏng âm thanh cọ xát của rặng tre và từ láy 'phẳng lặng' miêu tả trạng thái mặt nước sông mùa thu."
+    },
+    {
+      "id": "q-van6-fill-04",
+      "sectionId": "sec-doc-hieu",
+      "passageId": "pas-van6-dong-song",
+      "type": "fill_blank",
+      "difficulty": "nhan_biet",
+      "points": 1.0,
+      "content": "Điền từ còn thiếu vào chỗ trống theo đúng nguyên văn câu kết đoạn trích: \"Dòng sông không chỉ đem lại nguồn nước mát ngọt lành tưới tắm cho ruộng đồng, mà còn là nơi lưu giữ [blank] của biết bao thế hệ người dân quê tôi...\"",
+      "correct_answer": "ký ức",
+      "accepted_answers": ["ký ức", "kí ức"],
+      "step_by_step_solution": "Nguyên văn trong đoạn trích: '...mà còn là nơi lưu giữ ký ức của biết bao thế hệ...'."
+    },
+    {
+      "id": "q-van6-essay-05",
+      "sectionId": "sec-viet",
+      "passageId": "pas-van6-dong-song",
+      "type": "essay",
+      "difficulty": "van_dung",
+      "points": 6.0,
+      "content": "Từ nội dung đoạn trích trên, em hãy viết một đoạn văn ngắn (từ 5 đến 7 câu) trình bày suy nghĩ của em về ý nghĩa của hình ảnh dòng sông hoặc quê hương đối với sự trưởng thành của mỗi con người.",
+      "rubric": [
+        {
+          "criterion": "Hình thức: Đoạn văn đúng dung lượng (5-7 câu), diễn đạt trôi chảy, không sai chính tả ngữ pháp cơ bản",
+          "maxPoints": 1.5
+        },
+        {
+          "criterion": "Nội dung: Nêu được ý nghĩa thiêng liêng của quê hương (nơi nuôi dưỡng tâm hồn, chốn bình yên, nhắc nhở cội nguồn)",
+          "maxPoints": 3.0
+        },
+        {
+          "criterion": "Liên hệ bản thân: Có bài học nhận thức và hành động bảo vệ vẻ đẹp quê hương",
+          "maxPoints": 1.5
+        }
+      ],
+      "step_by_step_solution": "Đoạn văn cần đảm bảo:\n1. Mở đoạn: Dẫn dắt hình ảnh quê hương/dòng sông là cái nôi nuôi dưỡng tuổi thơ.\n2. Thân đoạn: Quê hương đem đến cho con người những kỷ niệm ngọt ngào, vun đắp tình yêu thương gia đình, bồi đắp lòng nhân ái và sự gắn kết cộng đồng.\n3. Kết đoạn: Khẳng định cội nguồn là điểm tựa tinh thần vững chắc để mỗi người trưởng thành và vươn xa."
+    },
+    {
+      "id": "q-van6-survey-06",
+      "sectionId": "sec-viet",
+      "type": "short_answer",
+      "difficulty": "nhan_biet",
+      "points": 0,
+      "content": "[Khảo sát kỹ thuật - Điểm 0] Đoạn trích trên có gợi nhắc cho em kỷ niệm nào về quê hương không? (Trả lời 'Có' hoặc 'Không')",
+      "correct_answer": "Có",
+      "accepted_answers": ["Có", "Không", "co", "khong"],
+      "step_by_step_solution": "Câu hỏi khảo sát kỹ thuật có điểm số bằng 0, không ảnh hưởng đến tổng điểm bài làm."
+    }
+  ],
+  "createdAt": "2026-10-24T14:45:00.000Z",
+  "updatedAt": "2026-10-24T14:45:00.000Z",
+  "version": 1
+}
