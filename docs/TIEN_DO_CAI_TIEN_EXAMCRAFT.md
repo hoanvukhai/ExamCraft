@@ -4,6 +4,8 @@ Cập nhật: 24/10/2026. Chủ dự án đã duyệt hướng và cho triển k
 
 ## Thông báo chung
 
+Đợt chấm tay và lưu Git24/10: giáo viên chấm từ trang cũ hoặc hai người chấm cùng lúc không còn ghi đè nhau; người gửi sau được báo xung đột và giữ điểm đang nhập. Mỗi lần chấm được ghi lịch sử (trước/sau điểm và nhận xét), chỉ chủ bài xem được. Trang chi tiết đọc được câu ghép/sắp xếp/đúng-sai và không bị phản hồi chậm của bài khác chen vào. Log bản dựng46trang, 231kiểm thử nền và17/17API đạt sau lần sửa mã cuối; chưa kiểm giao diện hai tab chấm cùng câu và lint nhóm này chưa kết luận. Theo yêu cầu, toàn bộ thay đổi22–24/10 đã commit local theo nhóm trên nhánh `rebuild/2026-10-local`, chưa push; `.env` và `backups/` không vào Git. Rà tài liệu/mã còn phát hiện: sao chép từ link chia sẻ chỉ lưu trên trình duyệt, model AI mặc định lệch, runbook ghi `pwsh` máy chưa có; đã ghi vào checklist, chưa sửa. Chỉ DB thử, không AI thật. [Chấm tay](../qa/rebuild-2026-10-23/MANUAL_GRADE_CAS_AND_HISTORY.md), [đọc chi tiết](../qa/rebuild-2026-10-23/TEACHER_DETAIL_REVIEW.md).
+
 Đợt nháp học sinh24/10: đã chặn trang cũ ghi đè nháp hoặc nộp đè bản mới; khi xung đột giữ câu đang nhập và tải bản sao được. Kiểm hai tab thật: A lưu bản mới, B bị chặn và tải được nội dung riêng, A nộp đúng; đối chiếu DB thử/nguồn giữ nguyên. Build46/17HTTP/226kiểm thử nền mới đạt. Chưa phục hồi nháp học sinh sau đóng trang/mất điện; tiếp tục phần chấm/hiển thị và xử lý lỗi, chưa tổng nghiệm thu. [Báo cáo](../qa/rebuild-2026-10-23/STUDENT_DRAFT_CAS.md).
 
 Đợt giao/chấm24/10: đã kiểm giao bài không lớp, học sinh làm đủ7dạng/lưu nháp/mở trang mới làm tiếp, nộp7đtạm rồi giáo viên chấm thành9.5; CSV và nguồn dữ liệu đối chiếu đúng. Sửa quyền khi đổi tài khoản và các nhãn/số liệu chờ chấm gây hiểu nhầm; bảng xếp hạng mặc định tắt. Build46trang/HTTP17 mới đạt,223kiểm thử nền đạt trước sửa hiển thị cuối. Đang tiếp chặn nháp học sinh ghi đè bởi yêu cầu chậm/nhiều tab; chưa tổng nghiệm thu. Chỉ DB thử, không AI thật. [Báo cáo](../qa/rebuild-2026-10-23/ASSIGNMENT_ACCESS_AND_STUDENT_FLOW.md).
@@ -58,12 +60,13 @@ Nhóm vận hành23/10 đã hoàn tất kiểm local CV072: gói backup mới c�
 | S5 — Nhập/trộn/xuất | Một phần | Nhập7dạng/ngữ liệu có cảnh báo nguồn; trộn giữ vị trí phương án; Word giữ thứ tự, phần và nguồn ngữ liệu. Tải trực tiếp đã đối chiếuXML; trình chiếu hiện/ẩn đáp án đã kiểm; chưa nghiệm thu đầy đủ Word/PDF dài |
 | S6 — Cộng tác | API và xung đột đã kiểm | Quyết định CAS + đồng bộ định kỳ cho nhóm nhỏ, lịch sử và phân quyền; chưa tuyên bố cộng tác thời gian thực từng ký tự |
 | S8 — Ghi chú riêng | Một phần | Không tự xóa/ghi đè hoặc bật phân tích mới; xuất/nhập JSON theo tài khoản, nhập để tắt chờ người dùng đọc |
-| S7 — Giao bài và chấm | Một phần đã kiểm | Snapshot tách nháp, cookie lượt làm, nộp lặp an toàn; giáo viên chấm điểm0/0,29 và nhận xét, kiểm quyền theo chủ |
+| S7 — Giao bài và chấm | Một phần đã kiểm | Snapshot tách nháp, cookie lượt làm, nộp lặp an toàn; giao/làm/chấm7dạng qua UI; CAS nháp học sinh và chấm tay có lịch sử (HTTP đạt, UI chấm hai tab chưa); kiểm quyền theo chủ |
 | S9 và việc còn lại | Chưa hoàn tất | Theo checklist78CV; không lấy code cũ hoặc tên menu làm bằng chứng đã đạt |
 
 ## Bảo toàn dữ liệu đã thực hiện
 
 - Mốc Git ban đầu: `bb831f240772f27ee57e4abcb83442ab0361e483`; giữ thay đổi có sẵn.
+- 24/10: commit local7nhóm trên nhánh `rebuild/2026-10-local` (`86968fc`…`28d5d8e`: migration, sửa byte migration, code, tests, scripts, docs, bằng chứng QA). `main` giữ mốc ban đầu, chưa push/merge. `.gitattributes` giữ nguyên byte các migration đã áp dụng; `tmp/` để ngoài commit.
 - `backups/before-rebuild-2026-10-21T22-08-28-289Z/`:257tệp,22.083.904bytes, manifestSHA256, diff và trạng thái cây. Đã kiểm nội dung bản sao khớp.
 - `.env` và `.env.test` được lưu dưới dạng mã hóa trong `protected-secrets/` của snapshot; không đưa giá trị bí mật vào báo cáo/Git. Đã thử giải mã và so sánh trong bộ nhớ. Cách bảo vệ DPAPI yêu cầu cùng hồ sơ Windows khi khôi phục.
 - DBdump62017bytes trong `backups/database/`, manifestSHA256; đã phục hồi vào `examcraft_restore_20261022`,21bảng. Bằng chứng: `provision-2026-10-22T03-28-44-994Z.json`. DB thử `examcraft_test_20261022` tách khỏi bản phục hồi và DB gốc.

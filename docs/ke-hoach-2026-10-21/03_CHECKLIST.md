@@ -21,6 +21,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
 ## S0 — Chuẩn bị và baseline
 
 - [x] **CV-001 — Ghi baseline và bảo toàn working tree.**
+  - Bổ sung24/10: theo yêu cầu chủ dự án, toàn bộ thay đổi22–24/10 đã commit local theo nhóm trên nhánh `rebuild/2026-10-local` (7commit `86968fc`…`28d5d8e`: migration, sửa byte migration, code, tests, scripts, docs, bằng chứng QA). `main` giữ `bb831f2`; chưa push. Đã kiểm `.env`, `.env.test`, `backups/` bị ignore và không có trong commit; quét tệp đưa vào chỉ thấy giá trị mẫu/email giả lập. `tmp/` (codemod một lần + ảnh scan nghiên cứu) để ngoài commit, không xóa.
   - Bằng chứng22/10: snapshot257tệp/hash/diff trong backups/before-rebuild-2026-10-21T22-08-28-289Z; bí mật DPAPI đã giải mã đối chiếu; inventory local/DB/tệp trong báo cáo tiến độ. Đây là bảo toàn baseline, không thay nghiệm thu restore CV072.
   - Phạm vi: YC-01, YC-24, YC-29, YC-30. Nghiệm thu: NT-01, NT-27.
   - Đạt khi: Lưu commit + diff/tệp chưa theo dõi cần thiết, danh sách dữ liệu local/DB/tệp và môi trường; không ghi bí mật vào bằng chứng, không reset thay đổi sẵn có.
@@ -36,6 +37,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-04, YC-06, YC-07, YC-26, YC-27. Nghiệm thu: NT-11, NT-28.
   - Đạt khi: Có mẫu màn hình tạo bài/đáp án/key/chia sẻ, danh mục môn-lớp cần xác minh và ca đại diện ba cấp; Toán không là giới hạn.
 - [ ] **CV-005 — Thử nhỏ cộng tác trước thiết kế lưu chính thức.**
+  - Truy vết24/10: quyết định đã ghi ở [COLLABORATION](../../qa/rebuild-2026-10-22/COLLABORATION.md) — nội dung đầy đủ + version CAS, kiểm thay đổi theo chu kỳ/focus; người lưu sau nhận409 và giữ nháp, chưa ghép từng ký tự. Ca hai phiên HTTP/hai tab nằm ở CV049/050. Chưa có thử offline/undo của từng người và hai browser độc lập nên giữ mở.
   - Phạm vi: YC-13, YC-19. Nghiệm thu: NT-20.
   - Đạt khi: Ghi kết quả hai người sửa, offline/reconnect, undo và đổi cấu trúc; quyết định cơ chế đồng bộ có lý do, không chỉ chọn tên thư viện.
 - [ ] **CV-006 — Thu thập fixture và tái lập các lỗi báo cáo.**
@@ -81,6 +83,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-01, YC-03, YC-24. Nghiệm thu: NT-05, NT-09.
   - Đạt khi: Đổi mật khẩu bắt buộc ở API, đăng xuất/khóa vô hiệu phiên, rate limit phù hợp runtime; key không xuất hiện trong response/log công khai.
 - [ ] **CV-014 — Thử migration có mapping và chạy lặp an toàn.**
+  - Bổ sung24/10: khi commit, `core.autocrlf=input` đổi xuống dòng của migration `exam_collaboration` (bản trên đĩa có xuống dòng lẫn lộn) nên blob Git khác byte bản đã áp dụng. Thêm `.gitattributes` `prisma/migrations/**/migration.sql -text` và commit `22af32b`; hash3migration mới trong Git khớp tệp trên đĩa. Chưa thử checkout sạch rồi `prisma migrate status` với DB chính; không chạy migration.
   - Đợt nhiều lượt23/10: dấu SHA256 nguồn trong snapshot đầu, không dựa bản server đã sửa để coi trùng; nguồn khác/thiếu dấu có xem trước và xác nhận bản sao riêng, retry không nhân đôi. Advisory lock kiểm hai request khác nguồn; UI nhập1bản sao/giữ1lỗi. SAFE138/build/HTTP16đạt. Không tự đoán/bổ sung dấu cho bản cũ; [CROSS_IMPORT_AND_FULL_RESTORE](../../qa/rebuild-2026-10-23/CROSS_IMPORT_AND_FULL_RESTORE.md), giữ mở cho toàn tiêu chí.
   - Đợt browser/IDB23/10: JSON hỏng sau preview đã xác nhận gỡ nút/checkbox; tải/chọn lại phần2của kho101đề. IndexedDB thật giữ bản cũ/retry/rollback hai store đạt. API chặn mọi biến thể cùng ID khác nội dung trong một request; SAFE137/build/HTTP16đạt,4lỗi/0ghi ở preview và import. Còn khác lượt/tệp, UI tách biến thể và toàn luồng local→server; [BROWSER_AND_INDEXEDDB](../../qa/rebuild-2026-10-23/BROWSER_AND_INDEXEDDB.md), giữ mở.
   - Đợt giới hạn23/10: parser JSON/BOM/cấu trúc/phiên bản/số mục và reset preview khi chọn tệp mới; xuất chia100đề/30MB. SAFE136/build/HTTP16đạt; preview101đề chia100+1 không ghi DB. Chưa kiểm UI nhiều phần/tệp hỏng và IndexedDB thật; [BACKUP_LIMITS](../../qa/rebuild-2026-10-23/BACKUP_LIMITS.md), giữ mở.
@@ -135,6 +138,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-09. Nghiệm thu: NT-07, NT-08.
   - Đạt khi: Ba chế độ cùng dữ liệu; đáp án/lời giải/rubric riêng nhưng gắn version, thiếu đáp án không tự điền đúng.
 - [ ] **CV-025 — Lịch sử câu và kiểm định theo phiên bản.**
+  - Đọc tĩnh24/10 (chưa đo): mỗi lần lưu đề bằng document, `writeDocumentQuestions` trong `exam-persistence.ts` xóa/ghi lại liên kết và tạo một QuestionRevision cho **mọi** câu, kể cả câu không đổi; autosave sau0,9giây nên bảng revision có thể tăng nhanh với đề dài. Cần đo dung lượng/thời gian lưu (liên quan CV074) trước khi quyết định chỉ ghi câu đổi; không sửa trong đợt hồ sơ.
   - Bổ sung24/10: Undo/Redo Copilot sửa/thêm/bỏ có guard toàn nền/source/owner và ack trước chuyển mốc. Browser chuỗi2Undo/2Redo, parent từ chối/retry và source mới đạt; giữ B/0/ảnh/ID, version tăng. SAFE223/build46đạt. Stack còn RAM, chưa bền sau reload; [AI_JOURNAL_AND_HISTORY](../../qa/rebuild-2026-10-23/AI_JOURNAL_AND_HISTORY.md).
   - Đợt24/10: Undo so câu/ngữ cảnh và guard lại trong updater; tăng version/reset verified, sửa ghost history sau chuỗi Undo. Browser2Undo→sửa mới đúng1mốc; B sửa lời giải→Undo A bị chặn, DBversion/hash không đổi. Clone/move/lưu/reload giữ lời giải mới/ảnh/điểm0; offline sau Apply giữ journal đến serverSaved rồi mới cleanup. Build46trang/SAFE203/HTTP17/integration7đạt; lint tập trung đạt. Còn redo, lịch sử Undo bền và bảo vệ toàn luồng AI; [QUESTION_COMMANDS](../../qa/rebuild-2026-10-23/QUESTION_COMMANDS.md).
   - Phạm vi: YC-09, YC-13, YC-16. Nghiệm thu: NT-08, NT-15.
@@ -161,9 +165,11 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
 ## S4 — Kết nối AI và sinh/kiểm định
 
 - [ ] **CV-031 — Thống nhất BYOK mọi endpoint.**
+  - Đọc tĩnh24/10: cả10route có gọi Gemini (generate-exam, exam-copilot, tweak/verify-question, parse-docx, parse-exam-text, ocr-exam-image, knowledge-scope/propose, teacher/assistant, teacher/ai-memory/analyze) đều đi qua `executeWithKeyRotation` trong `gemini-keys.ts`: chỉ key tạm của người gọi hoặc key đã lưu của chính họ, giữ quota ứng dụng trước gọi. Đây là đọc mã, chưa phải HTTP/AI thật cho từng route; HTTP17 mới phủ một phần (Copilot/tweak/verify). Giữ mở.
   - Phạm vi: YC-03. Nghiệm thu: NT-09.
   - Đạt khi: Generate/tweak/OCR/Word/verify/memory đều lấy key theo người gọi và quyền dữ liệu; không fallback mock dưới nhãn kết quả AI thật.
 - [ ] **CV-032 — Quản lý key và sử dụng minh bạch.**
+  - Phát hiện24/10 (đọc tĩnh): model mặc định lệch nhau. `User.selectedAiModel` mặc định `gemini-3.5-flash` (schema và migration `20261022000150`), còn `DEFAULT_GEMINI_MODEL` là `gemini-3.8-flash` và danh sách chọn không có3.5-flash. Tạo tài khoản không đặt model và các route AI không truyền model riêng, nên tài khoản chưa tự chọn sẽ gọi3.5-flash; `GEMINI_MODEL` chỉ được dùng khi cột model rỗng. Chưa đối chiếu giá trị thực trong DB chính. Cần quyết định mặc định và kiểm với project nhà cung cấp; không tự đổi dữ liệu người dùng.
   - Phạm vi: YC-03. Nghiệm thu: NT-09, NT-10.
   - Đạt khi: Thêm/chọn/test/thay/xóa; usage theo ID không theo label; bỏ 1500*key, gói chưa xác minh ghi chưa biết; không hứa số dư thật.
 - [ ] **CV-033 — Hạn mức, chi phí và tác vụ nền.**
@@ -201,15 +207,18 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-11, YC-25. Nghiệm thu: NT-16, NT-26.
   - Đạt khi: Ghi nguồn/trang/câu, dedup không xóa nhầm biến thể; tài liệu không rõ quyền ở kho riêng, không tự đưa vào kho chung.
 - [ ] **CV-042 — Trộn câu, lựa chọn và nhóm ngữ liệu.**
+  - Truy vết24/10: bằng chứng một phần22/10 ở [WORKSPACE](../../qa/rebuild-2026-10-22/WORKSPACE.md) — trộn giữ đủ7dạng, giữ thứ tự khi có ngữ liệu/phần, "Giữ vị trí" phương án, câu chưa có khóa không tự nhận A; helper `answer_review_and_shuffle.test.ts`. Chưa kiểm nhóm ngữ liệu nhiều mã/seed trên UI; giữ mở.
   - Phạm vi: YC-17. Nghiệm thu: NT-17.
   - Đạt khi: Seed tái lập, ghim và mọi loại câu giữ đủ; ID đáp án đúng sau đảo; không thay chữ cái bằng regex làm hỏng lời giải.
 - [ ] **CV-043 — Xuất Word và công thức/hình.**
+  - Truy vết24/10: bằng chứng một phần ở [WORKSPACE](../../qa/rebuild-2026-10-22/WORKSPACE.md) và `browser_export.json`/`browser-export.docx` — XML có tên phần/ngữ liệu/nguồn/câu, chế độ đề không kèm lời giải; bảng mục tiêu và dòng tiêu đề Word ở EXAM_PLAN/HEADER_LAYOUT. Chưa mở trực quan bằng Microsoft Word, chưa kiểm công thức/hình/tài liệu dài; giữ mở.
   - Phạm vi: YC-12, YC-18. Nghiệm thu: NT-18.
   - Đạt khi: Tài liệu mở sửa được, đủ câu/hình/điểm/nguồn hiển thị, fallback có nhãn; kiểm công thức và ngắt trang trực quan.
 - [ ] **CV-044 — In/PDF và các biến thể xuất.**
   - Phạm vi: YC-12, YC-18. Nghiệm thu: NT-18.
   - Đạt khi: Đề/đáp án/lời giải/ma trận riêng hoặc chung, 1–2 cột khi phù hợp, tiêu đề mẫu đồng nhất; câu dài được ngắt có kiểm soát, không tràn/mất.
 - [ ] **CV-045 — Trình chiếu để chữa bài.**
+  - Truy vết24/10: bằng chứng một phần ở [WORKSPACE](../../qa/rebuild-2026-10-22/WORKSPACE.md) và `presentation-verified.png` — chuyển câu, xem ngữ liệu, chủ động hiện/ẩn đáp án/lời giải, quay lại không làm bẩn bản đã lưu. Chưa kiểm phóng to/bàn phím đầy đủ; giữ mở.
   - Phạm vi: YC-18. Nghiệm thu: NT-19.
   - Đạt khi: Phóng to câu, hiện dần lời giải, ẩn đáp án ban đầu, điều khiển bàn phím; không làm đổi nội dung đề.
 - [ ] **CV-046 — Bộ fixture đa môn cho nhập/xuất.**
@@ -222,6 +231,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-14, YC-19. Nghiệm thu: NT-06, NT-20.
   - Đạt khi: View/comment/edit/download/fork/publish phân biệt, mặc định private; public view không cấp edit/key; server kiểm từng thao tác.
 - [ ] **CV-048 — Link xem, thu hồi và phiên bản chia sẻ.**
+  - Phát hiện24/10 (đọc tĩnh): nút lưu bản sao ở `/share/[id]` (khi link cho phép allowCopy) chỉ ghi vào kho cũ trên trình duyệt (`dbSaveExam` IndexedDB + `examcraft_current_exam`) rồi về trang chủ; không tạo đề trên server. Giáo viên chỉ thấy bản sao qua "Xem dữ liệu cũ trên trình duyệt", trái QD-09. Cần chuyển sang tạo đề server có origin/quyền (liên quan CV052/CV015) và kiểm người chưa đăng nhập; chưa sửa.
   - Phạm vi: YC-19. Nghiệm thu: NT-06, NT-20.
   - Đạt khi: Link dùng ID/quyền riêng, chính sách đáp án, hết hạn/thu hồi; bản công bố không vô tình trỏ nháp.
 - [ ] **CV-049 — Cùng sửa đồng thời.**
@@ -270,10 +280,12 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-09, YC-21, YC-22. Nghiệm thu: NT-24.
   - Đạt khi: Zero/false/blank phân biệt, số/biểu thức theo câu, đáp án thiếu không nhận blank đúng; submit đồng thời một kết quả, trả điểm đúng chính sách ở mọi nhánh.
 - [ ] **CV-060 — Chấm tay, đính chính và điểm chốt.**
+  - CAS/lịch sử chấm24/10: token nền điểm theo attempt/câu/bài làm/điểm/nhận xét; POST bắt buộc baseGradeRevision, row-lock, nền cũ→409GRADE_CONFLICT không đổi DB; AuditLog`attempt.grade` cùng transaction, GET chủ bài xem50sự kiện gần nhất. Log sau sửa mã cuối: build46trang/TypeScript, SAFE20+211=231, HTTP17/17 gồm thiếu nền/ngoài snapshot/vượt điểm400, đổi tài khoản409 không sự kiện, hai lần chấm cùng nền một200/một409, retry mất receipt không nhân đôi lịch sử, giáo viên khác404. Lint log rỗng chưa kết luận; UI2tab chưa chạy. Mã tại commit local`28d5d8e`. [MANUAL_GRADE_CAS_AND_HISTORY](../../qa/rebuild-2026-10-23/MANUAL_GRADE_CAS_AND_HISTORY.md). Chưa paging/khôi phục điểm từ lịch sử, chưa đính chính đáp án/regrade; không đóng CV.
   - UI24/10: guard detail requestseq/attemptRef ngăn A phản hồi muộn thành bàiB; chấm chỉ đúng attempt đang mở,503giữô2.5/báolỗi/retryđúng, trảdetail sauđóng không tựmởlại. Browser actualcomponent/fakeAPI và production7dạngđạt, build46/SAFE229 mới; [báo cáo](../../qa/rebuild-2026-10-23/TEACHER_DETAIL_REVIEW.md). Chưa CAS/hist chấm giữa2tab, không đóng CV.
   - Phạm vi: YC-22. Nghiệm thu: NT-24, NT-25.
   - Đạt khi: Tự luận pending, chỉnh rubric/điểm có lịch sử, regrade có phạm vi/phiên bản; bài cũ không đổi ngầm khi sửa ngân hàng.
 - [ ] **CV-061 — Theo dõi, phản hồi và bảng điểm.**
+  - Bổ sung24/10 (chấm tay): trang chi tiết đọc được câu trả lời ghép/sắp xếp/đúng-sai, giữ0/false, câu chưa làm ghi "Chưa trả lời"; production DB thử đọc đúng lượt bảy dạng. HTTP17/17 mới xác nhận thống kê đã nộp/chờ chấm/đã chấm đổi đúng sau chấm tay và lịch sử chấm chỉ chủ bài đọc được. [TEACHER_DETAIL_REVIEW](../../qa/rebuild-2026-10-23/TEACHER_DETAIL_REVIEW.md), [MANUAL_GRADE_CAS_AND_HISTORY](../../qa/rebuild-2026-10-23/MANUAL_GRADE_CAS_AND_HISTORY.md). Raw JSON nguồn không nhận diện vẫn hiện nguyên để không đoán; còn gia hạn/mở lại, nhiều chính sách nhận xét và UI2tab; không đóng CV.
   - Bổ sung24/10: bỏ kết quả giả0, dẫn bảng điểm thật; UI bài nộp/chấm tay9.5đạt. Pending đúng nhãn/số nộp và chỉ điểm chốt tính trung bình đã kiểm UI; mặc định leaderboardOFF UI đạt. Build46/typecheck, HTTP17 mới, DBread-only/CSV/hash nguồn đạt; SAFE223 trước sửa pending. Xem báo cáo nhóm CV054. Còn rawJSON/null trong chi tiết, nhiều chính sách/nhận xét/gia hạn và xung đột chấm, không đóng CV.
   - Phạm vi: YC-20, YC-22. Nghiệm thu: NT-25.
   - Đạt khi: Danh sách bài/lượt, progress, gia hạn/mở lại có quyền, thống kê/CSV; leaderboard tùy chọn mặc định tắt và không lộ toàn lớp.
@@ -323,9 +335,11 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-24. Nghiệm thu: NT-27.
   - Đạt khi: DB+tệp+khả năng giải mã phục hồi vào môi trường trống; kiểm native exit code script, backup rỗng không báo tốt; retention/đường xóa an toàn.
 - [ ] **CV-073 — Chốt vận hành local và phương án pilot.**
+  - Phát hiện24/10: runbook `docs/van-hanh/SAO_LUU_KHOI_PHUC_LOCAL.md` ghi chạy bằng `pwsh` (PowerShell7) nhưng máy hiện tại không có pwsh trên PATH; `backup.ps1`/`restore.ps1` không dùng cú pháp riêng của PowerShell7, nên cần ghi lệnh tương đương `powershell -NoProfile -File …` hoặc yêu cầu cài pwsh. Chưa chạy lại script; chưa sửa runbook.
   - Phạm vi: YC-24. Nghiệm thu: NT-27.
   - Đạt khi: Runbook secrets/config/log/restore, tài khoản chịu trách nhiệm; mục tiêu RPO/RTO, dung lượng và chi phí có chủ dự án duyệt trước triển khai thật.
 - [ ] **CV-074 — CI, kiểm tải và giám sát.**
+  - Ghi nhận24/10: `.github/workflows/ci.yml` chạy `db push` + seed trên DB CI riêng, `npm test` (SAFE) và build; chưa có integration/HTTP. Mã mới mới commit local, chưa push nên CI chưa chạy trên cây hiện tại. Chưa đo tải; xem thêm điểm revision câu ở CV025.
   - Phạm vi: YC-01, YC-24, YC-29. Nghiệm thu: NT-05, NT-29.
   - Đạt khi: CI dùng DB thử và fail thật, health/error/usage không lộ dữ liệu; tải đo trên kịch bản xác định, không hứa công suất chưa đo.
 - [ ] **CV-075 — Thiết kế kết nối Drive tùy chọn.**
@@ -335,6 +349,12 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-26, YC-29. Nghiệm thu: NT-30.
   - Đạt khi: Hướng dẫn ngắn key, soạn, đáp án, cùng sửa, giao bài, khôi phục; người mới thực hiện nhiệm vụ, sửa ngôn ngữ/điểm ngợp theo quan sát.
 - [ ] **CV-077 — Dọn đường cũ và cập nhật tài liệu.**
+  - Rà tài liệu24/10 (chưa sửa các tệp dưới, ghi để xử lý):
+    - Mã: `/test/[id]` là trang chặn link cũ an toàn nhưng nút dẫn tới `/room` không tồn tại (404).
+    - Hồ sơ cũ: 08 mục1 và mục11 còn "dừng trước code"/"[ ] chờ xác nhận bắt đầu"; quan sát mã ở mục3 đã cũ (draft đã kiểm cookie lượt làm, PATCH đã có baseVersion, scoring không còn fallback Toán12). 05 mục7 và 07 mục4/10 còn câu "chưa bắt đầu code". 00 có ghi chú chung nhưng các tệp này chưa có banner riêng.
+    - Checklist ghi nơi bằng chứng `qa/evidence/rebuild-2026-10-21/<CV-id>/` nhưng thực tế ở `qa/rebuild-2026-10-22/` và `qa/rebuild-2026-10-23/`.
+    - Liên kết: 120 liên kết tuyệt đối `F:/Workspace/...` trong21tệp (README, bộ kế hoạch, nghiên cứu) hỏng khi đổi máy/xem trên GitHub; 7 liên kết trỏ ra ngoài repo (`F:/Downloads`, `.codex`). Không có liên kết hỏng trên máy này (551 liên kết đã quét, trừ tham chiếu `tệp:dòng` cũ trong báo cáo V1–V3).
+    - `qa/` gốc: khoảng25 báo cáo cũ (FINAL_REPORT*, qa/reports/*, standup) có chữ "100%" nhưng không có banner lịch sử như `docs/`; `qa/FIX_REPORT.md` trùng y hệt `qa/BAO_CAO_SUA_LOI.md`.
   - Phạm vi: YC-29, YC-30. Nghiệm thu: NT-01, NT-03, NT-31.
   - Đạt khi: Rà caller/dữ liệu/link trước bỏ; tài liệu không còn hứa 7-key/100% sai; xóa/hạ schema chỉ sau migration/rollback đã kiểm.
 - [ ] **CV-078 — Tổng nghiệm thu và quyết định phát hành.**

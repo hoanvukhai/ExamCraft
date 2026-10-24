@@ -12,9 +12,12 @@ CV060/061, đang kiểm; tiếp [giao diện chấm](TEACHER_DETAIL_REVIEW.md). 
 
 ## Kiểm hiện tại
 
-- Unit `manual_grade_revision.test.ts`2/2mới đạt; thêm SAFE, chưa chạy toàn SAFE.
-- `build-manual-grade-cas.log` session78269 đang build; QA3117/3123 đã dừng trước build.
-- HTTP đã bổ sung2grade cùngbase1thắng/1conflict, khôngsideeffects/audit khi stale, retry không tăngevent, history2bản và foreign404; cleanup log chỉ fixture actorIds trong DB thử. Chưa chạy trên bản mới.
-- Cần UI2tab cùng câu ở fixture bảy dạng: A2.5→2.25, B1.75từnềncũ phải409/giữô; A2.25→2.5trảđiểmfixturebanđầu, history2bản. Không đụng DB chính. Ghi rõ đây là lịch sử mới bật, không có sự kiện cho điểm2.5cũ.
+Các log dưới đây được tạo lúc 11:06–11:07 ngày 24/10, sau lần sửa mã cuối (11:01–11:03); không có tệp `src/`, `tests/`, `scripts/`, `prisma/` nào đổi sau log. Cây mã đã kiểm trùng với commit local `28d5d8e` (nhánh `rebuild/2026-10-local`). Đợt cập nhật hồ sơ này chỉ đọc log, không chạy lại build/DB/AI.
 
-Giới hạn dự kiến: lịch sử UI50gần nhất, chưa paging/UI khôi phục điểm từ lịch sử, chưa reviewer chuyên môn/rubric/nhận xét đầy đủ; không đóng CV060 chỉ từ testcount.
+- Build: [build-manual-grade-cas.log](build-manual-grade-cas.log) có "Compiled successfully", TypeScript hoàn tất, sinh46trang và in đủ bảng route; không có dòng error/warn. Log không ghi exit code nên chỉ kết luận theo nội dung log.
+- SAFE: [safe-manual-grade-cas.log](safe-manual-grade-cas.log) unit20/20 + node211/211, fail0 (tổng231). Gồm ca `manual grade bases bind the attempt, question, comment and actual answer state` của `manual_grade_revision.test.ts`.
+- HTTP: [http-manual-grade-cas.log](http-manual-grade-cas.log)17/17, fail0. Ca chấm nằm trong subtest `attempt cookie is required; submit is idempotent and essay remains pending`: thiếu bản nền→400; câu ngoài snapshot/điểm vượt tối đa→400; tab đổi tài khoản→409`ACCOUNT_CHANGED`, attempt/answers không đổi, 0 sự kiện; hai lần chấm cùng nền đồng thời→một200/một409 và đúng1sự kiện; trang cũ gửi lại→409`GRADE_CONFLICT`, DB không đổi; chấm đúng nền→200, tổng1.29, hết chờ chấm; gửi lại sau mất receipt→200, không thêm sự kiện (tổng2); lịch sử2bản có điểm/nhận xét sau; giáo viên khác đọc→404; thống kê bảng điểm đúng. Log không ghi server thử được dựng từ bản build nào; theo thứ tự thời gian thì HTTP chạy sau build.
+- Lint: [manual-grade-cas-new-lint.log](manual-grade-cas-new-lint.log) rỗng (0 byte). Từng có log rỗng khi tiến trình chưa xong, nên chưa đủ căn cứ nhận lint sạch.
+- UI2tab cùng câu ở fixture bảy dạng **chưa chạy**: A2.5→2.25, B1.75 từ nền cũ phải409/giữ ô; A2.25→2.5 trả điểm fixture ban đầu, lịch sử2bản. Không đụng DB chính. Đây là lịch sử mới bật, không có sự kiện cho điểm2.5cũ. Kiểm chỉ đọc sau đó: không còn tiến trình nào nghe cổng3117/3118/3123; test-server xoay ATTEMPT_SESSION_SECRET mỗi lần khởi động nên cookie học sinh của fixture không dùng lại được. Cần dựng lại server thử theo bản đồ01.
+
+Giới hạn: lịch sử UI50gần nhất, chưa paging/UI khôi phục điểm từ lịch sử, chưa reviewer chuyên môn/rubric/nhận xét đầy đủ; chưa kiểm UI2tab và lint. Không đóng CV060/061 chỉ từ số test.
