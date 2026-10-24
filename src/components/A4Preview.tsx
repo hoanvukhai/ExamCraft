@@ -5,6 +5,7 @@ import { Exam, Figure } from '@/types/exam';
 import { MathRenderer } from './MathRenderer';
 import { FigureView } from './FigureView';
 import { exportExamToDocx } from '@/lib/docx-export';
+import { parallelAnswer } from '@/lib/parallel-view';
 import { prepareExportFigures } from '@/lib/export-figures';
 import { 
   formatPointsString, 
@@ -44,7 +45,7 @@ interface A4PreviewProps {
 }
 
 export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
-  const [viewMode, setViewMode] = useState<'exam' | 'answers' | 'solutions' | 'matrix'>('exam');
+  const [viewMode, setViewMode] = useState<'exam' | 'parallel' | 'answers' | 'solutions' | 'matrix'>('exam');
   const [zoom, setZoom] = useState<number>(100);
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const scrollArea = useRef<HTMLDivElement>(null);
@@ -66,7 +67,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
   const handleExportDocx = async () => {
     try {
       setIsExporting(true);
-      const blob = await exportExamToDocx(await prepareExportFigures(exam), viewMode !== 'exam' && viewMode !== 'matrix', viewMode === 'matrix', viewMode);
+      const blob = await exportExamToDocx(await prepareExportFigures(exam), viewMode !== 'exam' && viewMode !== 'matrix', viewMode === 'matrix', viewMode === 'parallel' ? 'all' : viewMode);
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -112,6 +113,18 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
           >
             <FileText className="w-3.5 h-3.5" />
             <span>Đề thi in ấn</span>
+          </button>
+
+          <button
+            onClick={() => setViewMode('parallel')}
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+              viewMode === 'parallel'
+                ? 'bg-white dark:bg-[#383a3d] text-[#202124] dark:text-[#e3e3e3] shadow-xs font-semibold'
+                : 'text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3]'
+            }`}
+          >
+            <TableProperties className="w-3.5 h-3.5" />
+            <span>Song song</span>
           </button>
 
           <button
@@ -260,6 +273,41 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
           )}
 
           {viewMode === 'exam' && questions.length === 0 && headerLines.filter(line => line.area === 'footer').map(line => <div key={line.id} data-header-line={line.id} className={`text-[11pt] whitespace-pre-wrap break-words ${line.bold ? 'font-bold' : ''} ${line.italic ? 'italic' : ''}`} style={{ textAlign: line.align, minHeight: '1.2em' }}>{line.text}</div>)}
+          {/* VIEW: SONG SONG — đề bên trái, đáp án và lời giải bên phải; chỉ để xem/in, không đổi dữ liệu */}
+          {viewMode === 'parallel' && (
+            <div className="space-y-4 text-[12pt]">
+              <h2 className="font-bold text-center text-[14pt]">ĐỀ VÀ ĐÁP ÁN SONG SONG</h2>
+              <p className="text-center">{metadata.title}{metadata.examCode ? ' — Mã đề: ' + metadata.examCode : ''}</p>
+              <p className="text-center italic text-[10pt]">Bản này chứa đáp án: chỉ dùng cho giáo viên, không phát cho học sinh.</p>
+              {questions.length === 0 ? (
+                <div className="py-16 text-center text-[#5f6368] italic text-[11pt]">(Chưa có câu hỏi nào.)</div>
+              ) : metadata.assessmentMode === 'survey' ? (
+                <div className="py-8 text-center italic text-[11pt]">Phiếu khảo sát không có đáp án đúng; hãy xem ở chế độ Đề thi in ấn.</div>
+              ) : (
+                <div className="border border-black">
+                  <div className="grid grid-cols-2 border-b border-black font-bold text-center text-[11pt]"><div className="p-2 border-r border-black">ĐỀ</div><div className="p-2">ĐÁP ÁN VÀ HƯỚNG DẪN</div></div>
+                  {questions.map((q, index) => {
+                    const answer = parallelAnswer(q);
+                    return <div key={q.id} className="question-item grid grid-cols-2 border-b border-black last:border-b-0 break-inside-avoid">
+                      <div className="p-2 border-r border-black text-[11pt]">
+                        <p className="leading-relaxed"><b>Câu {index + 1}:</b> {numericScore && q.points !== undefined && <span className="italic">({formatPointsString(q.points)}) </span>}<MathRenderer content={q.content} /></p>
+                        {q.choices && q.type === 'multiple_choice' && <div className="pl-3 py-1">{q.choices.map(choice => <p key={choice.key}><b>{choice.key}.</b> <MathRenderer content={choice.text} inline /></p>)}</div>}
+                        {q.sub_questions && q.type === 'true_false_group' && <div className="pl-3 space-y-1">{q.sub_questions.map(sub => <p key={sub.key}><b>{sub.key})</b> <MathRenderer content={sub.content} inline /></p>)}</div>}
+                        {renderStructuredPrompt(q)}
+                        {q.figures?.map(renderPreviewFigure)}
+                      </div>
+                      <div className="p-2 text-[11pt]">
+                        <p className="font-bold text-emerald-800">{answer.headline}</p>
+                        {answer.details.map((line, i) => <p key={i} className="text-[10pt]">{line}</p>)}
+                        {answer.solution && <div className="mt-1 text-[10.5pt] leading-relaxed"><MathRenderer content={answer.solution} /></div>}
+                      </div>
+                    </div>;
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
           {viewMode === 'answers' && <div className="space-y-5 text-[12pt]">
             <h2 className="font-bold text-center text-[14pt]">{metadata.assessmentMode === 'survey' ? 'PHIẾU KHẢO SÁT — KHÔNG CHẤM ĐÚNG SAI' : 'ĐÁP ÁN VÀ TIÊU CHÍ ĐÁNH GIÁ'}</h2>
             <p className="text-center">{metadata.title}{metadata.examCode ? ' — Mã đề: ' + metadata.examCode : ''}</p>

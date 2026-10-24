@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { accountFetch } from '@/lib/account-fetch';
 import { Exam } from '@/types/exam';
 import { persistExam } from '@/lib/exam-client';
+import { buildAssignmentOptions } from '@/lib/assignment-options';
 import Link from 'next/link';
 import {
   Share2,
@@ -68,6 +69,15 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   const [showResult, setShowResult] = useState<'IMMEDIATE' | 'AFTER_CLOSE' | 'NEVER'>('IMMEDIATE');
   const [showSolution, setShowSolution] = useState<'IMMEDIATE' | 'AFTER_CLOSE' | 'NEVER'>('AFTER_CLOSE');
   const [enableLeaderboard, setEnableLeaderboard] = useState<boolean>(false);
+  // Tùy chọn nâng cao: để trống = giữ hành vi cũ (mở ngay, không hạn đóng, 1 lượt cho phòng thi, 3 lượt cho loại khác)
+  const [opensAtLocal, setOpensAtLocal] = useState('');
+  const [closesAtLocal, setClosesAtLocal] = useState('');
+  const [maxAttemptsText, setMaxAttemptsText] = useState('');
+  const [joinCodeText, setJoinCodeText] = useState('');
+  const [requirePin, setRequirePin] = useState(false);
+  const [shuffleQuestions, setShuffleQuestions] = useState(false);
+  const [shuffleChoices, setShuffleChoices] = useState(false);
+  const [optionsError, setOptionsError] = useState('');
 
   // Trạng thái giao bài
   const [assigning, setAssigning] = useState(false);
@@ -125,6 +135,13 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   // Xử lý Giao bài lên Server DB (Tạo bản chụp Snapshot bất biến)
   const handleAssignExam = async (e: React.FormEvent) => {
     e.preventDefault();
+    const options = buildAssignmentOptions({
+      opensAtLocal, closesAtLocal, maxAttempts: maxAttemptsText, defaultMaxAttempts: mode === 'EXAM' ? 1 : 3,
+      joinCode: joinCodeText, requirePin, shuffleQuestions, shuffleChoices,
+      hasGroup: Boolean(selectedGroupId), identityMode: selectedGroupId ? identityMode : 'FREE_NAME',
+    });
+    if (!options.ok) { setOptionsError(options.error); return; }
+    setOptionsError('');
     try {
       setAssigning(true);
 
@@ -144,7 +161,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
           mode,
           identityMode: selectedGroupId ? identityMode : 'FREE_NAME',
           durationMinutes: Number(durationMinutes) || undefined,
-          maxAttempts: mode === 'EXAM' ? 1 : 3,
+          ...options.payload,
           showResult,
           showSolution,
           leaderboard: enableLeaderboard ? 'TOP_AND_ME' : 'OFF',
@@ -457,6 +474,31 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                     </button>
                   </div>
                 </div>
+
+                <details className="rounded-xl border border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#1e1e1e] px-3.5 py-2.5 text-xs">
+                  <summary className="cursor-pointer font-medium text-[#202124] dark:text-[#e3e3e3]">Tùy chọn nâng cao: giờ mở/đóng, số lượt, mã vào bài</summary>
+                  <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <label className="block text-[#5f6368] dark:text-[#9aa0a6]">Giờ mở (để trống: mở ngay)
+                      <input type="datetime-local" value={opensAtLocal} onChange={e => setOpensAtLocal(e.target.value)} className="mt-1 w-full bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3 py-2 text-[#202124] dark:text-[#e3e3e3]" />
+                    </label>
+                    <label className="block text-[#5f6368] dark:text-[#9aa0a6]">Giờ đóng (để trống: không hạn)
+                      <input type="datetime-local" value={closesAtLocal} onChange={e => setClosesAtLocal(e.target.value)} className="mt-1 w-full bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3 py-2 text-[#202124] dark:text-[#e3e3e3]" />
+                    </label>
+                    <label className="block text-[#5f6368] dark:text-[#9aa0a6]">Số lượt làm (1–10)
+                      <input type="number" inputMode="numeric" min={1} max={10} placeholder={mode === 'EXAM' ? '1 (phòng thi)' : '3'} value={maxAttemptsText} onChange={e => setMaxAttemptsText(e.target.value)} className="mt-1 w-full bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3 py-2 text-[#202124] dark:text-[#e3e3e3]" />
+                    </label>
+                    <label className="block text-[#5f6368] dark:text-[#9aa0a6]">Mã vào bài (4–12 chữ/số, tùy chọn)
+                      <input type="text" autoComplete="off" maxLength={12} value={joinCodeText} onChange={e => setJoinCodeText(e.target.value)} className="mt-1 w-full bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3 py-2 uppercase text-[#202124] dark:text-[#e3e3e3]" />
+                    </label>
+                  </div>
+                  <div className="mt-3 space-y-1.5 text-[#202124] dark:text-[#e3e3e3]">
+                    <label className="flex items-center gap-2"><input type="checkbox" checked={shuffleQuestions} onChange={e => setShuffleQuestions(e.target.checked)} /> Trộn thứ tự câu hỏi cho mỗi học sinh</label>
+                    <label className="flex items-center gap-2"><input type="checkbox" checked={shuffleChoices} onChange={e => setShuffleChoices(e.target.checked)} /> Trộn thứ tự đáp án A/B/C/D</label>
+                    <label className={`flex items-center gap-2 ${selectedGroupId && identityMode !== 'FREE_NAME' ? '' : 'opacity-50'}`}><input type="checkbox" disabled={!selectedGroupId || identityMode === 'FREE_NAME'} checked={requirePin && Boolean(selectedGroupId) && identityMode !== 'FREE_NAME'} onChange={e => setRequirePin(e.target.checked)} /> Yêu cầu PIN của học sinh (chỉ khi giao cho một lớp)</label>
+                  </div>
+                  <p className="mt-2 text-[11px] text-[#5f6368] dark:text-[#9aa0a6]">Giờ theo múi giờ của máy này. Đặt giờ đóng rồi, học sinh vào sau giờ đó sẽ bị từ chối; bài đang làm dở vẫn được nộp theo quy định thời gian của lượt.</p>
+                </details>
+                {optionsError && <p role="alert" className="text-xs text-red-600 dark:text-red-400">{optionsError}</p>}
 
                 <button
                   type="submit"

@@ -7,6 +7,7 @@ import { Prisma } from '@prisma/client';
 import { attachAttemptCookie, attemptDeadline, attemptSessionToken, hasAttemptAccess, isSameOriginMutation, SUBMIT_GRACE_MS } from '@/lib/attempt-access';
 import { createAttemptLayout, examForAttempt } from '@/lib/attempt-layout';
 import { attemptDraftRevision } from '@/lib/attempt-draft-revision';
+import { normalizeJoinCode } from '@/lib/assignment-options';
 
 const Schema = z.object({ studentId: z.string().max(100).optional(), freeName: z.string().trim().min(1).max(120).optional(), personalToken: z.string().max(200).optional(), pin: z.string().max(100).optional(), joinCode: z.string().max(100).optional() });
 class StartError extends Error { constructor(message: string, public status = 403) { super(message); } }
@@ -26,7 +27,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pub
               (assignment.opensAt && assignment.opensAt > now) || (assignment.closesAt && assignment.closesAt <= now)) {
             throw new StartError('Bài giao chưa mở hoặc đã đóng');
           }
-          if (assignment.joinCode && parsed.data.joinCode !== assignment.joinCode) throw new StartError('Mã vào bài không đúng');
+          if (assignment.joinCode && normalizeJoinCode(parsed.data.joinCode) !== assignment.joinCode) throw new StartError('Mã vào bài không đúng');
           let student;
           if (assignment.identityMode === 'FREE_NAME') {
             if (!parsed.data.freeName || parsed.data.studentId || parsed.data.personalToken) throw new StartError('Vui lòng nhập họ tên', 400);

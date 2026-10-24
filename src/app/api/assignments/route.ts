@@ -6,6 +6,7 @@ import { requireRequestAuth } from '@/lib/request-auth';
 import { ApiError, apiErrorResponse } from '@/lib/api-error';
 import { fromDatabaseExam } from '@/lib/exam-document';
 import { freezeExamScoring } from '@/lib/snapshot-scoring';
+import { assignmentPolicyError, normalizeJoinCode } from '@/lib/assignment-options';
 import {
   AssignmentMode,
   IdentityMode,
@@ -29,6 +30,7 @@ const CreateAssignmentSchema = z.object({
   showResult: z.nativeEnum(RevealPolicy).default(RevealPolicy.IMMEDIATE),
   showSolution: z.nativeEnum(RevealPolicy).default(RevealPolicy.AFTER_CLOSE),
   requirePin: z.boolean().default(false),
+  joinCode: z.string().max(40).optional(),
   leaderboard: z.nativeEnum(LeaderboardMode).default(LeaderboardMode.OFF),
   leaderboardTopN: z.number().int().min(1).max(10).default(3),
   leaderboardReveal: z.nativeEnum(RevealPolicy).default(RevealPolicy.IMMEDIATE),
@@ -113,6 +115,11 @@ export async function POST(req: NextRequest) {
     const opensAt = data.opensAt ? new Date(data.opensAt) : new Date();
     const closesAt = data.closesAt ? new Date(data.closesAt) : null;
     if (closesAt && closesAt <= opensAt) return NextResponse.json({ error: 'Thời gian đóng phải sau thời gian mở' }, { status: 400 });
+    if (closesAt && closesAt <= new Date()) return NextResponse.json({ error: 'Giờ đóng đã qua. Hãy chọn một thời điểm trong tương lai.' }, { status: 400 });
+    const joinCode = normalizeJoinCode(data.joinCode);
+    if (joinCode === null) return NextResponse.json({ error: 'Mã vào bài gồm 4–12 chữ cái hoặc chữ số, không dấu, không khoảng trắng.' }, { status: 400 });
+    const policyError = assignmentPolicyError({ requirePin: data.requirePin, hasGroup: Boolean(data.groupId), identityMode: data.identityMode, opensAt, closesAt, maxAttempts: data.maxAttempts });
+    if (policyError) return NextResponse.json({ error: policyError }, { status: 400 });
     if (data.identityMode !== 'FREE_NAME' && !data.groupId) return NextResponse.json({ error: 'Hãy chọn lớp cho chế độ nhận diện này hoặc chọn tự nhập tên' }, { status: 400 });
     if (data.groupId) {
       const group = await prisma.group.findFirst({ where: { id: data.groupId, ownerId: user.id, archivedAt: null } });
@@ -156,6 +163,7 @@ export async function POST(req: NextRequest) {
         showResult: data.showResult,
         showSolution: data.showSolution,
         requirePin: data.requirePin,
+        joinCode: joinCode ?? null,
         leaderboard: data.leaderboard,
         leaderboardTopN: data.leaderboardTopN,
         leaderboardReveal: data.leaderboardReveal,
