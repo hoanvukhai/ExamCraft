@@ -1,0 +1,35 @@
+{
+  "clientDate": "2026-10-23",
+  "environment": "localhost:3117, isolated examcraft_test_20261022, fake QA accounts only",
+  "status": "PASS_FOR_LISTED_SCENARIOS",
+  "scenarios": [
+    {
+      "name": "conflict-archive-recover",
+      "result": "A and B edit during QA server outage; B saves after restart; A conflicts, keeps local content; open-latest archives A and shows B; archive opens and saves with new ID and solution intact; original reload still shows B",
+      "evidence": [
+        "conflict-preserved.png",
+        "recovered-as-new.png"
+      ],
+      "buildNote": "Recovery checked before collaboration/logout follow-up; recovered document reloaded on final build"
+    },
+    {
+      "name": "logout-network-failure",
+      "buildId": "KHJx_jM0NuQ_FZlOZZScv",
+      "result": "Stopped own QA server; logout reports connection error and stays in editor; restart and retry reaches login",
+      "evidence": "logout-offline.png"
+    },
+    {
+      "name": "account-switch-stale-tab",
+      "buildId": "KHJx_jM0NuQ_FZlOZZScv",
+      "result": "Account 2 signs in; old editor freezes editing and keeps content; old-tab logout rejected; account 2 dashboard reload stays authenticated and draft drawer finds no account-1 drafts",
+      "evidence": "stale-account-blocked.png",
+      "limitation": "Editor may freeze during logged-out interval; ACCOUNT_CHANGED GET and mutations independently verified by HTTP"
+    }
+  ],
+  "limitations": [
+    "Same browser context, not independent browsers",
+    "Server unavailable, not full offline cold-start",
+    "No real users, provider calls or main DB writes",
+    "Structural editing and revocation races remain"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "checkedAt": "2026-10-23T13:44:10.046Z",
+  "status": "PASS",
+  "phase": "after-conflict",
+  "database": "examcraft_test_20261022",
+  "readOnly": true,
+  "examId": "ex_dfc36d842dd0da700caad3fb0ef0db42fc89bc12",
+  "version": 11,
+  "metadataSha256": "03668b8b6cf6c9ed10034accf74753d2cf19674aa4ffc422df9837413804c9e1",
+  "planCount": 2,
+  "questionPoints": 0,
+  "figureAndSolutionKept": true,
+  "hiddenPrintTitle": true,
+  "customLeftRightAligned": true,
+  "realAiCalls": false
+}

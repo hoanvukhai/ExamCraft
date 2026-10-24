@@ -1,0 +1,58 @@
+
+> exam-craft@0.1.0 test:integration
+> node --import tsx scripts/test-database.cjs run
+
+Validated test target: 127.0.0.1:5436/examcraft_test_20261022; action=run
+TAP version 13
+# Subtest: S1 real PostgreSQL transactions in an isolated test database
+    # Subtest: roundtrip seven types through PostgreSQL retains solutions, zero points and passages
+    ok 1 - roundtrip seven types through PostgreSQL retains solutions, zero points and passages
+      ---
+      duration_ms: 16.1142
+      type: 'test'
+      ...
+    # Subtest: repeat create does not duplicate questions or revisions
+    ok 2 - repeat create does not duplicate questions or revisions
+      ---
+      duration_ms: 107.8083
+      type: 'test'
+      ...
+    # Subtest: two teachers cannot link private question, folder or template
+    ok 3 - two teachers cannot link private question, folder or template
+      ---
+      duration_ms: 231.5889
+      type: 'test'
+      ...
+    # Subtest: competing transactions based on one version produce exactly one accepted save
+    ok 4 - competing transactions based on one version produce exactly one accepted save
+      ---
+      duration_ms: 536.8304
+      type: 'test'
+      ...
+    # Subtest: a forced error rolls back document, linked questions and revisions together
+    ok 5 - a forced error rolls back document, linked questions and revisions together
+      ---
+      duration_ms: 251.2241
+      type: 'test'
+      ...
+    # Subtest: rejected foreign reference cannot increment version or detach existing items
+    ok 6 - rejected foreign reference cannot increment version or detach existing items
+      ---
+      duration_ms: 95.7201
+      type: 'test'
+      ...
+    1..6
+ok 1 - S1 real PostgreSQL transactions in an isolated test database
+  ---
+  duration_ms: 2496.054
+  type: 'test'
+  ...
+1..1
+# tests 7
+# suites 0
+# pass 7
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 6501.3971

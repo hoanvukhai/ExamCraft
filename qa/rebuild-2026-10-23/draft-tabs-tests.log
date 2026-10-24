@@ -1,0 +1,82 @@
+TAP version 13
+# Subtest: different tab writers preserve unsaved content even when a server cache replaces the shared slot
+ok 1 - different tab writers preserve unsaved content even when a server cache replaces the shared slot
+  ---
+  duration_ms: 32.8633
+  type: 'test'
+  ...
+# Subtest: a new tab protects legacy drafts without writer IDs and preserves unreadable existing documents
+ok 2 - a new tab protects legacy drafts without writer IDs and preserves unreadable existing documents
+  ---
+  duration_ms: 1.81
+  type: 'test'
+  ...
+# Subtest: opening latest archives the full unsaved draft separately and a recovery opens as a new document
+ok 3 - opening latest archives the full unsaved draft separately and a recovery opens as a new document
+  ---
+  duration_ms: 1.9414
+  type: 'test'
+  ...
+# Subtest: a blocked archive or mismatched document never replaces the original local draft
+ok 4 - a blocked archive or mismatched document never replaces the original local draft
+  ---
+  duration_ms: 0.8879
+  type: 'test'
+  ...
+# Subtest: applying an accepted generated draft preserves teacher headers and refuses intervening edits
+ok 5 - applying an accepted generated draft preserves teacher headers and refuses intervening edits
+  ---
+  duration_ms: 1.1199
+  type: 'test'
+  ...
+# Subtest: generation keeps zero counts and refuses extra questions instead of expanding the requested plan
+ok 6 - generation keeps zero counts and refuses extra questions instead of expanding the requested plan
+  ---
+  duration_ms: 14.6598
+  type: 'test'
+  ...
+# Subtest: generation accepts all seven types with exact requested counts and structured matching and ordering keys
+ok 7 - generation accepts all seven types with exact requested counts and structured matching and ordering keys
+  ---
+  duration_ms: 5.7837
+  type: 'test'
+  ...
+# Subtest: structured generation refuses missing or duplicate pair IDs, incomplete order and unanswered fill blanks
+ok 8 - structured generation refuses missing or duplicate pair IDs, incomplete order and unanswered fill blanks
+  ---
+  duration_ms: 3.1475
+  type: 'test'
+  ...
+# Subtest: starting another document preserves the previous unsaved draft and listing never crosses accounts
+ok 9 - starting another document preserves the previous unsaved draft and listing never crosses accounts
+  ---
+  duration_ms: 1.7931
+  type: 'test'
+  ...
+# Subtest: generation refuses unsupported grade-subject combinations and inappropriate cognitive frameworks
+ok 10 - generation refuses unsupported grade-subject combinations and inappropriate cognitive frameworks
+  ---
+  duration_ms: 1.4195
+  type: 'test'
+  ...
+# Subtest: scored drafts require actual answer keys, survey drafts remove scoring and answers
+ok 11 - scored drafts require actual answer keys, survey drafts remove scoring and answers
+  ---
+  duration_ms: 0.8932
+  type: 'test'
+  ...
+# Subtest: browser drafts and acknowledged offline copies stay isolated by account
+ok 12 - browser drafts and acknowledged offline copies stay isolated by account
+  ---
+  duration_ms: 0.3394
+  type: 'test'
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 12
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1436.494

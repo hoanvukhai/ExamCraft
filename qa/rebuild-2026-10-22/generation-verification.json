@@ -1,0 +1,43 @@
+{
+  "checkedAt": "2026-10-22T16:23:21.234Z",
+  "build": {
+    "status": "PASS",
+    "session": 94176,
+    "buildId": "I-og4L6w1797zbzPaXWGp",
+    "staticPages": 44
+  },
+  "safe": {
+    "status": "PASS",
+    "legacyCases": 20,
+    "additionalCases": 101,
+    "log": "safe-tests.log"
+  },
+  "http": {
+    "status": "PASS",
+    "businessCases": 12,
+    "parentTests": 2,
+    "evidence": [
+      "http_workflows.json",
+      "http_auth.json"
+    ]
+  },
+  "targetedLint": "PASS",
+  "independentTypecheck": "PASS",
+  "browser": {
+    "knowledgeScopeSaveReload": "PASS",
+    "questionTagsSaveReloadAndOutsideWarning": "PASS",
+    "sevenTypeCountsAndZero": "PASS",
+    "dashboardModalSmoke": "PASS",
+    "screenshots": [
+      "knowledge-scope-saved.png",
+      "question-knowledge-saved.png",
+      "generation-seven-types.png"
+    ]
+  },
+  "realAiCalls": false,
+  "limitations": [
+    "AI response validation uses fixtures; provider quality and live result/cancel UI not tested.",
+    "Offline in two independent browsers, complete asset backup and subject package review remain open.",
+    "No claim of repository-wide lint cleanliness or complete S0-S9 delivery."
+  ]
+}

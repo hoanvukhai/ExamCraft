@@ -1,0 +1,61 @@
+- heading "Kiểm giao diện phạm vi bằng kết quả AI giả" [level=1]
+- paragraph: Component production; API được thay bằng kết quả giả chỉ trong trang QA này. Không DB, không AI thật.
+- paragraph: "Số yêu cầu giả: 3"
+- generic "Kiến thức và phạm vi ra đề · Gói tự soạn minh họa — chỉ dùng kiểm thử"
+- paragraph: Chọn kiến thức theo chương trình hoặc mục lục đã liên kết. Chưa có gói thì vẫn tự soạn và mô tả phạm vi bằng chữ. Gói nhập luôn chờ duyệt; hệ thống không tự xác nhận tài liệu chính thức.
+- text: Nhập gói kiến thức (.json)
+- button "Nhập gói kiến thức (.json)"
+- strong: Gói tự soạn minh họa — chỉ dùng kiểm thử
+- text: · Lớp 6 · Phiên bản r1 · Chờ duyệt nguồn
+- button "Tải gói"
+- text: Nhóm phép tính minh họa
+- combobox "Phạm vi Nhóm phép tính minh họa":
+  - option "Chưa chọn"
+  - option "Bao gồm" [selected]
+  - option "Loại trừ"
+- generic: ↳ Phép cộng minh họa
+- combobox "Phạm vi Phép cộng minh họa":
+  - option "Chưa chọn" [selected]
+  - option "Bao gồm"
+  - option "Loại trừ"
+- generic: ↳ Phép trừ minh họa
+- combobox "Phạm vi Phép trừ minh họa":
+  - option "Chưa chọn"
+  - option "Bao gồm"
+  - option "Loại trừ" [selected]
+- paragraph: Chọn một mục bao gồm các mục con. Loại trừ luôn được ưu tiên, kể cả khi chọn trực tiếp yêu cầu cần đạt.
+- generic "Yêu cầu cần đạt (2)"
+- option "Theo kiến thức" [selected]
+- option "Bao gồm"
+- option "Loại trừ"
+- option "Theo kiến thức" [selected]
+- option "Bao gồm"
+- option "Loại trừ"
+- generic "Chọn qua mục lục sách"
+- text: Giới hạn phương pháp / điều chưa học (mỗi dòng một yêu cầu)
+- textbox "Giới hạn phương pháp / điều chưa học (mỗi dòng một yêu cầu)": Không dùng máy tính
+- generic "Nhờ AI đề nghị phạm vi qua chat"
+- paragraph: Mô tả phần bao gồm, loại trừ và phương pháp chưa học. AI chỉ đề nghị để duyệt, dùng khóa và hạn mức AI của tài khoản. Nếu nhắc tới bài trong sách, hãy chọn đúng ấn bản; thiếu bài hoặc liên kết cần làm rõ.
+- text: Ấn bản sách cho yêu cầu này
+- combobox "Ấn bản sách cho yêu cầu này":
+  - option "Chưa chọn sách · dùng cây kiến thức" [selected]
+  - option "Mục lục tự soạn · Tài liệu minh họa · fixture-r1"
+- text: Yêu cầu phạm vi
+- textbox "Yêu cầu phạm vi":
+  - /placeholder: "Ví dụ: Bao gồm phép cộng, loại trừ phép trừ; chỉ dùng cách đã học."
+  - text: Chọn bài chưa rõ
+- button "Gửi yêu cầu đề nghị phạm vi"
+- paragraph: "Cần làm rõ trước khi chọn phạm vi:"
+- list:
+  - listitem: Bạn muốn bài nào và ấn bản nào?
+- paragraph: Bổ sung yêu cầu hoặc chọn ấn bản rồi gửi lại. Phạm vi được giữ nguyên.
+- button "Hủy đề nghị"
+- generic "Nguồn và quyền dùng (1)"
+- paragraph: "Phạm vi dự kiến: 2 mục kiến thức, 1 yêu cầu cần đạt. Thêm 0, bỏ 0 mục so với phạm vi đang lưu."
+- paragraph: "Theo phạm vi đã áp dụng: 0/0 câu có mã liên kết trong phạm vi. Mở sửa từng câu → Tiêu chí chấm và kiến thức để gắn hoặc kiểm lại. Đây là kiểm mã, chưa phải duyệt nội dung."
+- button "Áp dụng phạm vi vào đề"
+- button "Bỏ thay đổi đang chọn"
+- paragraph: Có thể tải gói trước khi gỡ. Bản đã lưu còn trong lịch sử đề; các câu hỏi được giữ nguyên.
+- button "Gỡ gói khỏi đề, dùng phạm vi tự do"
+- heading "Phạm vi đã áp dụng vào state bản soạn" [level=2]
+- generic: "{ \"packageId\": \"personal-fixture-math6\", \"packageRevision\": \"r1\", \"includeKnowledgeIds\": [ \"group\" ], \"excludeKnowledgeIds\": [ \"subtraction\" ], \"includeOutcomeIds\": [], \"excludeOutcomeIds\": [], \"methodConstraints\": [ \"Không dùng máy tính\" ] }"

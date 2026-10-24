@@ -1,0 +1,21 @@
+{
+  "createdAt": "2026-10-24T02:59:38.859Z",
+  "database": "examcraft_test_20261022",
+  "ownerEmail": "qa_browser_2@example.invalid",
+  "examId": "ex_49510788f581bb80104a8ca126057b22861cbcd0",
+  "title": "QA giao làm chấm đủ7dạng 20261024",
+  "questionIds": [
+    "qa-mc",
+    "qa-tf",
+    "qa-short",
+    "qa-blank",
+    "qa-match",
+    "qa-order",
+    "qa-essay"
+  ],
+  "sourceExamId": "ex_e8740536be2a92ce61bdeae0b3e53469f2dc3a62",
+  "sourceSha256": "2348ba8e2d6776fb49ca613e4561943ad623a2479e1649008a0ca9cf8b5b50a1",
+  "maxScore": 10,
+  "expectedObjectiveScore": 7,
+  "realAiCalls": false
+}

@@ -1,0 +1,59 @@
+
+F:\Workspace\Zazz\ExamCraft\src\app\api\teacher\assignments\[id]\export-csv\route.ts
+   8:33  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  48:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  49:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  67:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+F:\Workspace\Zazz\ExamCraft\src\app\api\teacher\assignments\[id]\route.ts
+   48:45  error    Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+   49:22  error    Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+   50:11  warning  'sections' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   50:21  error    Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+  181:39  error    Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+
+F:\Workspace\Zazz\ExamCraft\src\app\api\teacher\attempts\[id]\route.ts
+  41:53  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  45:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+F:\Workspace\Zazz\ExamCraft\src\components\ShareModal.tsx
+  17:3   warning  'Clock' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+  18:3   warning  'Settings' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+  21:3   warning  'Shield' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+  22:3   warning  'HelpCircle' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+  57:10  warning  'loadingGroups' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+  86:7   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+F:\Workspace\Zazz\ExamCraft\src\components\ShareModal.tsx:86:7
+  84 |   useEffect(() => {
+  85 |     if (typeof window !== 'undefined') {
+> 86 |       setOrigin(window.location.origin);
+     |       ^^^^^^^^^ Avoid calling setState() directly within an effect
+  87 |     }
+  88 |   }, []);
+  89 |                              react-hooks/set-state-in-effect
+  92:7   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+F:\Workspace\Zazz\ExamCraft\src\components\ShareModal.tsx:92:7
+  90 |   useEffect(() => {
+  91 |     if (exam?.metadata?.title) {
+> 92 |       setAssignmentTitle(exam.metadata.title);
+     |       ^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  93 |     }
+  94 |   }, [exam?.metadata?.title]);
+  95 |  react-hooks/set-state-in-effect
+
+✖ 18 problems (12 errors, 6 warnings)
+

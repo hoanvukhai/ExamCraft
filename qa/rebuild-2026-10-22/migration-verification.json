@@ -1,0 +1,156 @@
+{
+  "checkedAt": "2026-10-22T09:40:43.613Z",
+  "sourceDatabase": "examcraft",
+  "restoredDatabase": "examcraft_restore_20261022",
+  "freshDatabase": "examcraft_migrate_fresh_20261022",
+  "sourceUnchanged": true,
+  "originalRestoredDataUnchanged": true,
+  "restoredRerunIdempotent": true,
+  "restoredSchemaMatches": true,
+  "freshSchemaMatches": true,
+  "originalTables": {
+    "AiKeyState": {
+      "rows": 7,
+      "digest": "be0a2d295995461f37d1ea24e2c9c459"
+    },
+    "AiUsageLog": {
+      "rows": 0,
+      "digest": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "Assignment": {
+      "rows": 2,
+      "digest": "f1e12b64ec1ef548ac941042a9dbcd16"
+    },
+    "Attempt": {
+      "rows": 3,
+      "digest": "96cd221eba0e7613be7506d30c78a7c8"
+    },
+    "AttemptAnswer": {
+      "rows": 4,
+      "digest": "e34528355af99ca9bb384e6d661eac00"
+    },
+    "AuditLog": {
+      "rows": 11,
+      "digest": "2d6652615a906daf76c071daa02a5ae6"
+    },
+    "Exam": {
+      "rows": 7,
+      "digest": "c48e519b1b4e9f0b76a38bc3ef843f22"
+    },
+    "ExamCollaborator": {
+      "rows": 0,
+      "digest": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "ExamComment": {
+      "rows": 0,
+      "digest": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "ExamQuestion": {
+      "rows": 17,
+      "digest": "a7b59a0a961ea0187ba5eb2b4a982adc"
+    },
+    "ExamRevision": {
+      "rows": 0,
+      "digest": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "ExamTemplate": {
+      "rows": 4,
+      "digest": "028f0cd10a2ec4ec40850fc31703f4a5"
+    },
+    "Folder": {
+      "rows": 2,
+      "digest": "c6d29d5fe1b29dd299ffbd2adb7c7633"
+    },
+    "Group": {
+      "rows": 3,
+      "digest": "efda583e4e89217504c120f75f7901ab"
+    },
+    "Passage": {
+      "rows": 0,
+      "digest": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "Question": {
+      "rows": 24,
+      "digest": "8e5c60a81b48a0c95f5006b8d44d5800"
+    },
+    "QuestionRevision": {
+      "rows": 0,
+      "digest": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "Session": {
+      "rows": 3,
+      "digest": "00dc29b8199676f60c0b0eec59aca1d3"
+    },
+    "ShareLink": {
+      "rows": 0,
+      "digest": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "Student": {
+      "rows": 9,
+      "digest": "628a407622ba6e670cd314655d016c7f"
+    },
+    "TeacherAiMemory": {
+      "rows": 0,
+      "digest": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "User": {
+      "rows": 6,
+      "digest": "c4d4e863fac2c915b2db1a99c095ac26"
+    },
+    "UserApiKey": {
+      "rows": 1,
+      "digest": "2036661227dac9003dc2e9b3fe3031ea"
+    }
+  },
+  "restoredTables": [
+    "AiKeyState",
+    "AiUsageLog",
+    "Assignment",
+    "Attempt",
+    "AttemptAnswer",
+    "AuditLog",
+    "Exam",
+    "ExamCollaborator",
+    "ExamComment",
+    "ExamQuestion",
+    "ExamRevision",
+    "ExamTemplate",
+    "Folder",
+    "Group",
+    "Passage",
+    "Question",
+    "QuestionRevision",
+    "Session",
+    "ShareLink",
+    "Student",
+    "TeacherAiMemory",
+    "User",
+    "UserApiKey"
+  ],
+  "freshTables": [
+    "AiKeyState",
+    "AiUsageLog",
+    "Assignment",
+    "Attempt",
+    "AttemptAnswer",
+    "AuditLog",
+    "Exam",
+    "ExamCollaborator",
+    "ExamComment",
+    "ExamQuestion",
+    "ExamRevision",
+    "ExamTemplate",
+    "Folder",
+    "Group",
+    "Passage",
+    "Question",
+    "QuestionRevision",
+    "Session",
+    "ShareLink",
+    "Student",
+    "TeacherAiMemory",
+    "User",
+    "UserApiKey"
+  ],
+  "status": "PASS"
+}

@@ -1,0 +1,18 @@
+{
+  "checkedAt": "2026-10-23T10:23:16.7614542Z",
+  "buildId": "2ocvBhAga1fH0SMUSVdQB",
+  "environment": "production QA3117 and isolated component harness3122",
+  "database": "examcraft_test_20261022",
+  "safePassed": 151,
+  "httpPassed": 16,
+  "componentUI": [
+    "preview keeps applied scope empty",
+    "request edit disables stale accept",
+    "cancel and request again",
+    "accept fills draft only",
+    "apply updates component state",
+    "clarification has no accept action"
+  ],
+  "realAiCalls": false,
+  "status": "PASS_WITH_LIMITS"
+}

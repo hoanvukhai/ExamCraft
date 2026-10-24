@@ -1,0 +1,785 @@
+
+> exam-craft@0.1.0 test:safe
+> npm run test:unit && node --import tsx --test tests/safety_guard.test.ts tests/public_access.test.ts tests/persistence_permissions.test.ts tests/generation_and_drafts.test.ts tests/education.test.ts tests/ai_policy.test.ts tests/answer_review_and_shuffle.test.ts tests/structured_grading.test.ts tests/portable_and_exports.test.ts tests/question_history.test.ts tests/manual_grading.test.ts tests/auth_security.test.ts tests/import_document.test.ts tests/knowledge_package.test.ts tests/backup_package.test.ts
+
+
+> exam-craft@0.1.0 test:unit
+> node --import tsx tests/unit_tests.mjs
+
+========================================================
+       BẮT ĐẦU CHẠY BỘ KIỂM THỬ ĐƠN VỊ (UNIT TESTS)     
+========================================================
+
+[PASS] Scoring: Thiếu ngữ cảnh không tự lấy điểm Toán lớp 12
+[PASS] Scoring: Tính tổng điểm đề thi 12 MC + 4 TF + 6 SA = 10.0đ
+[PASS] Scoring: Tính tổng điểm Vật lí THPT (18 MC + 4 TF + 6 SA = 10.0đ)
+[PASS] Scoring: Tính tổng điểm Ngữ văn THPT (Đọc hiểu 4đ + Viết 6đ = 10.0đ)
+[PASS] CleanLatex: Không bị lỗi cắn xé token ngắn (infty, int, left, leq, neq)
+[PASS] CleanLatex: Xử lý phân số lồng nhau và căn lồng nhau sạch sẽ
+[PASS] CleanLatex: Xử lý hệ phương trình cases và bảng biến thiên
+[PASS] OMML Export: renderLatexRunsForWord phân tích chính xác TextRun và Math OMML
+[PASS] Shuffler: PRNG Mulberry32 sinh số tái lập 100% với cùng 1 Seed
+[PASS] Shuffler: Đảo phương án MC, cập nhật đáp án đúng và đồng bộ lời giải
+[PASS] Shuffler: Bảo vệ phương án phụ thuộc ("Cả A và B") không bị xáo trộn
+[PASS] ExamParser: Tách ngoặc lồng nhau extractBracedContent chuẩn xác
+[PASS] ExamParser: Bóc tách file LaTeX EX_Test có ngoặc lồng {\True \dfrac{a}{b}}
+[PASS] ExamParser: Bóc tách câu hỏi Đúng/Sai với thẻ \choiceTF
+[PASS] Matrix Generator: Tổng hợp câu và điểm thực tế, không tự chuẩn hóa thang 10
+[PASS] Spec Generator: Tạo bảng đặc tả ánh xạ chính xác số thứ tự câu hỏi
+[PASS] KHTN: CleanLatex hỗ trợ công thức hóa học mhchem và ký hiệu vật lí
+[PASS] Subject Config: Các mẫu tham khảo giữ cấu trúc vốn có, không đại diện mọi lớp
+[PASS] Curriculum: Danh mục môn học khớp chuẩn từng cấp lớp GDPT 2018
+[PASS] TT 17/2025 & Tracks: Hỗ trợ phân môn THCS và cụm chuyên đề THPT
+
+========================================================
+KẾT QUẢ: 20/20 bài kiểm thử đạt; 0 thất bại.
+========================================================
+TAP version 13
+# AI usage state could not be finalized { operationId: 'fixture-reservation', status: 200 }
+# Subtest: provider status never implies a free/paid tier or permanently disables a permission-denied key
+ok 1 - provider status never implies a free/paid tier or permanently disables a permission-denied key
+  ---
+  duration_ms: 4.4829
+  type: 'test'
+  ...
+# Subtest: temporary key aliases agree or reject conflict and model ids permit new provider models without URL injection
+ok 2 - temporary key aliases agree or reject conflict and model ids permit new provider models without URL injection
+  ---
+  duration_ms: 89.199
+  type: 'test'
+  ...
+# Subtest: application quota is configured independently from the number of provider keys
+ok 3 - application quota is configured independently from the number of provider keys
+  ---
+  duration_ms: 5.4612
+  type: 'test'
+  ...
+# Subtest: AI operation rejects missing user context before any provider callback
+ok 4 - AI operation rejects missing user context before any provider callback
+  ---
+  duration_ms: 1.3299
+  type: 'test'
+  ...
+# Subtest: successful generation is not repeated when usage logging fails; temporary key and chosen model are preserved
+ok 5 - successful generation is not repeated when usage logging fails; temporary key and chosen model are preserved
+  ---
+  duration_ms: 3.2012
+  type: 'test'
+  ...
+# Subtest: local quota reports the application cap and unknown provider capacity
+ok 6 - local quota reports the application cap and unknown provider capacity
+  ---
+  duration_ms: 0.9522
+  type: 'test'
+  ...
+# Subtest: saved-key retry stays within the owner and preserves the requested model
+ok 7 - saved-key retry stays within the owner and preserves the requested model
+  ---
+  duration_ms: 12.3686
+  type: 'test'
+  ...
+# Subtest: key encryption preserves existing derivation and refuses an absent secret
+ok 8 - key encryption preserves existing derivation and refuses an absent secret
+  ---
+  duration_ms: 1.0132
+  type: 'test'
+  ...
+# Subtest: review refuses incomplete, duplicate or unknown true/false keys
+ok 9 - review refuses incomplete, duplicate or unknown true/false keys
+  ---
+  duration_ms: 20.6283
+  type: 'test'
+  ...
+# Subtest: review does not match empty answers, essay, prose pretending to be a choice, or flagged ambiguity
+ok 10 - review does not match empty answers, essay, prose pretending to be a choice, or flagged ambiguity
+  ---
+  duration_ms: 0.8184
+  type: 'test'
+  ...
+# Subtest: shuffle preserves all seven types, missing answers and shared passage order
+ok 11 - shuffle preserves all seven types, missing answers and shared passage order
+  ---
+  duration_ms: 11.2761
+  type: 'test'
+  ...
+# Subtest: copilot rejects contradictory targets and cannot mark generated changes verified
+ok 12 - copilot rejects contradictory targets and cannot mark generated changes verified
+  ---
+  duration_ms: 7.5007
+  type: 'test'
+  ...
+# Subtest: shuffle respects pinned choices and builds keys for fill, matching and repeated ordering text
+ok 13 - shuffle respects pinned choices and builds keys for fill, matching and repeated ordering text
+  ---
+  duration_ms: 1.2584
+  type: 'test'
+  ...
+# Subtest: client logout rejects server errors, incomplete acknowledgements and network failures
+ok 14 - client logout rejects server errors, incomplete acknowledgements and network failures
+  ---
+  duration_ms: 35.9524
+  type: 'test'
+  ...
+# Subtest: client logout forwards the expected account and accepts only an acknowledged logout
+ok 15 - client logout forwards the expected account and accepts only an acknowledged logout
+  ---
+  duration_ms: 4.7099
+  type: 'test'
+  ...
+# Subtest: login rate buckets are normalized per account and reservations enforce a persistent limit regardless of IP changes
+ok 16 - login rate buckets are normalized per account and reservations enforce a persistent limit regardless of IP changes
+  ---
+  duration_ms: 4.765
+  type: 'test'
+  ...
+# Subtest: failed durable rate-limit storage fails closed rather than bypassing limits
+ok 17 - failed durable rate-limit storage fails closed rather than bypassing limits
+  ---
+  duration_ms: 1.071
+  type: 'test'
+  ...
+# Subtest: proxy headers are not trusted by default and invalid IPs are not persisted as trusted addresses
+ok 18 - proxy headers are not trusted by default and invalid IPs are not persisted as trusted addresses
+  ---
+  duration_ms: 8.7502
+  type: 'test'
+  ...
+# Subtest: session usability rejects the exact expiry boundary and disabled accounts
+ok 19 - session usability rejects the exact expiry boundary and disabled accounts
+  ---
+  duration_ms: 0.4623
+  type: 'test'
+  ...
+# Subtest: session issuance checks the current active account and password hash under the user lock
+ok 20 - session issuance checks the current active account and password hash under the user lock
+  ---
+  duration_ms: 4.083
+  type: 'test'
+  ...
+# Subtest: logout server revocation is idempotent and propagates DB failures
+ok 21 - logout server revocation is idempotent and propagates DB failures
+  ---
+  duration_ms: 3.1914
+  type: 'test'
+  ...
+# Subtest: backup package target and path guards refuse overwrite targets and escaping paths
+ok 22 - backup package target and path guards refuse overwrite targets and escaping paths
+  ---
+  duration_ms: 2.7085
+  type: 'test'
+  ...
+# Subtest: backup package verification rejects tampered dumps, assets and manifests before connecting to a DB
+ok 23 - backup package verification rejects tampered dumps, assets and manifests before connecting to a DB
+  ---
+  duration_ms: 213.4964
+  type: 'test'
+  ...
+# Subtest: retention cannot delete and the PowerShell restore wrapper propagates invalid-target failure
+ok 24 - retention cannot delete and the PowerShell restore wrapper propagates invalid-target failure
+  ---
+  duration_ms: 3131.6763
+  type: 'test'
+  ...
+# Subtest: all grades include arts and PE and unsupported subject/grade never borrows mathematics
+ok 25 - all grades include arts and PE and unsupported subject/grade never borrows mathematics
+  ---
+  duration_ms: 10.9954
+  type: 'test'
+  ...
+# Subtest: seven question types, explicit zero and non-scored documents preserve actual point rules
+ok 26 - seven question types, explicit zero and non-scored documents preserve actual point rules
+  ---
+  duration_ms: 4.4736
+  type: 'test'
+  ...
+# Subtest: cognitive matrix requires explicit framework/level and counts essay rows without inventing outcomes
+ok 27 - cognitive matrix requires explicit framework/level and counts essay rows without inventing outcomes
+  ---
+  duration_ms: 4.5715
+  type: 'test'
+  ...
+# Subtest: survey responses are recorded without correctness or a numeric score
+ok 28 - survey responses are recorded without correctness or a numeric score
+  ---
+  duration_ms: 0.8256
+  type: 'test'
+  ...
+# Subtest: math parser evaluates arithmetic and rejects JavaScript without executing it
+ok 29 - math parser evaluates arithmetic and rejects JavaScript without executing it
+  ---
+  duration_ms: 2.2269
+  type: 'test'
+  ...
+# Subtest: independent writer slots preserve both drafts even when shared-slot reads race from the same stale value
+ok 30 - independent writer slots preserve both drafts even when shared-slot reads race from the same stale value
+  ---
+  duration_ms: 25.6964
+  type: 'test'
+  ...
+# Subtest: retiring an acknowledged new draft never removes another writer and failed own-slot writes do not advance the shared pointer
+ok 31 - retiring an acknowledged new draft never removes another writer and failed own-slot writes do not advance the shared pointer
+  ---
+  duration_ms: 2.5892
+  type: 'test'
+  ...
+# Subtest: different tab writers preserve unsaved content even when a server cache replaces the shared slot
+ok 32 - different tab writers preserve unsaved content even when a server cache replaces the shared slot
+  ---
+  duration_ms: 5.0398
+  type: 'test'
+  ...
+# Subtest: a new tab protects legacy drafts without writer IDs and preserves unreadable existing documents
+ok 33 - a new tab protects legacy drafts without writer IDs and preserves unreadable existing documents
+  ---
+  duration_ms: 2.0084
+  type: 'test'
+  ...
+# Subtest: opening latest archives the full unsaved draft separately and a recovery opens as a new document
+ok 34 - opening latest archives the full unsaved draft separately and a recovery opens as a new document
+  ---
+  duration_ms: 1.5649
+  type: 'test'
+  ...
+# Subtest: a blocked archive or mismatched document never replaces the original local draft
+ok 35 - a blocked archive or mismatched document never replaces the original local draft
+  ---
+  duration_ms: 1.5042
+  type: 'test'
+  ...
+# Subtest: applying an accepted generated draft preserves teacher headers and refuses intervening edits
+ok 36 - applying an accepted generated draft preserves teacher headers and refuses intervening edits
+  ---
+  duration_ms: 1.1653
+  type: 'test'
+  ...
+# Subtest: generation keeps zero counts and refuses extra questions instead of expanding the requested plan
+ok 37 - generation keeps zero counts and refuses extra questions instead of expanding the requested plan
+  ---
+  duration_ms: 14.5935
+  type: 'test'
+  ...
+# Subtest: generation accepts all seven types with exact requested counts and structured matching and ordering keys
+ok 38 - generation accepts all seven types with exact requested counts and structured matching and ordering keys
+  ---
+  duration_ms: 6.0447
+  type: 'test'
+  ...
+# Subtest: structured generation refuses missing or duplicate pair IDs, incomplete order and unanswered fill blanks
+ok 39 - structured generation refuses missing or duplicate pair IDs, incomplete order and unanswered fill blanks
+  ---
+  duration_ms: 18.3367
+  type: 'test'
+  ...
+# Subtest: starting another document preserves the previous unsaved draft and listing never crosses accounts
+ok 40 - starting another document preserves the previous unsaved draft and listing never crosses accounts
+  ---
+  duration_ms: 1.942
+  type: 'test'
+  ...
+# Subtest: generation refuses unsupported grade-subject combinations and inappropriate cognitive frameworks
+ok 41 - generation refuses unsupported grade-subject combinations and inappropriate cognitive frameworks
+  ---
+  duration_ms: 1.6826
+  type: 'test'
+  ...
+# Subtest: scored drafts require actual answer keys, survey drafts remove scoring and answers
+ok 42 - scored drafts require actual answer keys, survey drafts remove scoring and answers
+  ---
+  duration_ms: 1.2114
+  type: 'test'
+  ...
+# Subtest: browser drafts and acknowledged offline copies stay isolated by account
+ok 43 - browser drafts and acknowledged offline copies stay isolated by account
+  ---
+  duration_ms: 0.899
+  type: 'test'
+  ...
+# Subtest: import preserves seven types and supplied zero points without filling unknown answers
+ok 44 - import preserves seven types and supplied zero points without filling unknown answers
+  ---
+  duration_ms: 21.2106
+  type: 'test'
+  ...
+# Subtest: import remaps shared passage IDs and refuses missing or duplicate passage definitions
+ok 45 - import remaps shared passage IDs and refuses missing or duplicate passage definitions
+  ---
+  duration_ms: 1.7816
+  type: 'test'
+  ...
+# Subtest: question links retain provenance and do not silently attach matching IDs from another package revision
+ok 46 - question links retain provenance and do not silently attach matching IDs from another package revision
+  ---
+  duration_ms: 22.2731
+  type: 'test'
+  ...
+# Subtest: question coverage distinguishes untagged, unknown and excluded links without deleting content
+ok 47 - question coverage distinguishes untagged, unknown and excluded links without deleting content
+  ---
+  duration_ms: 23.4294
+  type: 'test'
+  ...
+# Subtest: canonical saving keeps knowledge provenance and rejects malformed question links
+ok 48 - canonical saving keeps knowledge provenance and rejects malformed question links
+  ---
+  duration_ms: 19.5176
+  type: 'test'
+  ...
+# Subtest: package import preserves stable IDs and many-to-many book mapping, but never inherits approval
+ok 49 - package import preserves stable IDs and many-to-many book mapping, but never inherits approval
+  ---
+  duration_ms: 2.6854
+  type: 'test'
+  ...
+# Subtest: package rejects duplicate, missing references and cycles in knowledge, prerequisites or edition trees
+ok 50 - package rejects duplicate, missing references and cycles in knowledge, prerequisites or edition trees
+  ---
+  duration_ms: 7.9989
+  type: 'test'
+  ...
+# Subtest: scope includes descendants, prioritizes exclusions and refuses stale package versions
+ok 51 - scope includes descendants, prioritizes exclusions and refuses stale package versions
+  ---
+  duration_ms: 1.7297
+  type: 'test'
+  ...
+# Subtest: scope proposal reports changes without mutating the currently saved selection
+ok 52 - scope proposal reports changes without mutating the currently saved selection
+  ---
+  duration_ms: 2.2273
+  type: 'test'
+  ...
+# Subtest: a package revision cannot silently acquire different content
+ok 53 - a package revision cannot silently acquire different content
+  ---
+  duration_ms: 51.3331
+  type: 'test'
+  ...
+# Subtest: exam normalization preserves the package and selection and rejects a wrong grade or orphan scope
+ok 54 - exam normalization preserves the package and selection and rejects a wrong grade or orphan scope
+  ---
+  duration_ms: 4.9241
+  type: 'test'
+  ...
+# Subtest: generation validates selected scope and refuses invented or excluded knowledge codes
+ok 55 - generation validates selected scope and refuses invented or excluded knowledge codes
+  ---
+  duration_ms: 16.8425
+  type: 'test'
+  ...
+# Subtest: manual grading accepts two decimals such as .29 and exact zero while rejecting extra precision, negative and excess marks
+ok 56 - manual grading accepts two decimals such as .29 and exact zero while rejecting extra precision, negative and excess marks
+  ---
+  duration_ms: 11.7631
+  type: 'test'
+  ...
+# Subtest: manual grading refuses a missing score configuration without implicitly giving .25 or another template
+ok 57 - manual grading refuses a missing score configuration without implicitly giving .25 or another template
+  ---
+  duration_ms: 0.8591
+  type: 'test'
+  ...
+# Subtest: manual grading records comments for surveys and comment-only work without inventing numeric totals
+ok 58 - manual grading records comments for surveys and comment-only work without inventing numeric totals
+  ---
+  duration_ms: 1.9543
+  type: 'test'
+  ...
+# Subtest: summary includes only snapshot questions, preserves partial and zero marks, clears pending when all manual items are reviewed
+ok 59 - summary includes only snapshot questions, preserves partial and zero marks, clears pending when all manual items are reviewed
+  ---
+  duration_ms: 0.6197
+  type: 'test'
+  ...
+# Subtest: missing true-false responses never match a false answer by default
+ok 60 - missing true-false responses never match a false answer by default
+  ---
+  duration_ms: 6.7276
+  type: 'test'
+  ...
+# Subtest: teacher-only snapshot adapter retains canonical flat and legacy answers, solutions, structured keys and passages
+ok 61 - teacher-only snapshot adapter retains canonical flat and legacy answers, solutions, structured keys and passages
+  ---
+  duration_ms: 132.5346
+  type: 'test'
+  ...
+# Subtest: only access failures freeze editing; validation, version conflicts and outages keep recovery available
+ok 62 - only access failures freeze editing; validation, version conflicts and outages keep recovery available
+  ---
+  duration_ms: 5.7497
+  type: 'test'
+  ...
+# Subtest: adapter roundtrip retains seven question types, zero points, passages, figures and authoring fields
+ok 63 - adapter roundtrip retains seven question types, zero points, passages, figures and authoring fields
+  ---
+  duration_ms: 8.3699
+  type: 'test'
+  ...
+# Subtest: document validator rejects duplicates, unsupported types and invalid grades without defaulting to Math
+ok 64 - document validator rejects duplicates, unsupported types and invalid grades without defaulting to Math
+  ---
+  duration_ms: 1.2565
+  type: 'test'
+  ...
+# Subtest: legacy database Decimal values retain zero and overridden points
+ok 65 - legacy database Decimal values retain zero and overridden points
+  ---
+  duration_ms: 1.612
+  type: 'test'
+  ...
+# Subtest: service rejects foreign folders/templates/questions and permits system templates
+ok 66 - service rejects foreign folders/templates/questions and permits system templates
+  ---
+  duration_ms: 22.8812
+  type: 'test'
+  ...
+# Subtest: create is idempotent for an unchanged document and keeps teacher identities separate
+ok 67 - create is idempotent for an unchanged document and keeps teacher identities separate
+  ---
+  duration_ms: 29.3917
+  type: 'test'
+  ...
+# Subtest: updates require owner and base version; competing writers cannot both save
+ok 68 - updates require owner and base version; competing writers cannot both save
+  ---
+  duration_ms: 29.8768
+  type: 'test'
+  ...
+# Subtest: denied reference updates preserve the exam version and linked questions
+ok 69 - denied reference updates preserve the exam version and linked questions
+  ---
+  duration_ms: 6.4881
+  type: 'test'
+  ...
+# Subtest: legacy question-item updates never return a stale cached workspace document
+ok 70 - legacy question-item updates never return a stale cached workspace document
+  ---
+  duration_ms: 6.2205
+  type: 'test'
+  ...
+# Subtest: client creates legacy local drafts even when they already have a browser version
+ok 71 - client creates legacy local drafts even when they already have a browser version
+  ---
+  duration_ms: 24.669
+  type: 'test'
+  ...
+# Subtest: client keeps the caller document on conflict and does not turn errors into success
+ok 72 - client keeps the caller document on conflict and does not turn errors into success
+  ---
+  duration_ms: 7.3718
+  type: 'test'
+  ...
+# Subtest: collaboration roles separate viewing, commenting, editing and owner management
+ok 73 - collaboration roles separate viewing, commenting, editing and owner management
+  ---
+  duration_ms: 1.6139
+  type: 'test'
+  ...
+# Subtest: private invitations require owner and an existing active account; revoked access is checked every save
+ok 74 - private invitations require owner and an existing active account; revoked access is checked every save
+  ---
+  duration_ms: 62.7456
+  type: 'test'
+  ...
+# Subtest: two invited editors use CAS; revisions preserve the original and record the real actor
+ok 75 - two invited editors use CAS; revisions preserve the original and record the real actor
+  ---
+  duration_ms: 57.0494
+  type: 'test'
+  ...
+# Subtest: old documents acquire a baseline without overwriting history; trash is inaccessible to collaborators
+ok 76 - old documents acquire a baseline without overwriting history; trash is inaccessible to collaborators
+  ---
+  duration_ms: 39.275
+  type: 'test'
+  ...
+# Subtest: account pin rejects stale-tab writes and the client forwards the expected account without changing its draft
+ok 77 - account pin rejects stale-tab writes and the client forwards the expected account without changing its draft
+  ---
+  duration_ms: 7.9691
+  type: 'test'
+  ...
+# Subtest: legacy source fingerprint ignores wire key order and root timestamps but keeps answer, zero points and array order
+ok 78 - legacy source fingerprint ignores wire key order and root timestamps but keeps answer, zero points and array order
+  ---
+  duration_ms: 3.1243
+  type: 'test'
+  ...
+# Subtest: legacy variants are detected by source ID and content before import, ignoring object key order
+ok 79 - legacy variants are detected by source ID and content before import, ignoring object key order
+  ---
+  duration_ms: 3.5073
+  type: 'test'
+  ...
+# Subtest: backup parser accepts old archives, single exams and BOM, rejecting corrupt shapes and future versions
+ok 80 - backup parser accepts old archives, single exams and BOM, rejecting corrupt shapes and future versions
+  ---
+  duration_ms: 2.5411
+  type: 'test'
+  ...
+# Subtest: backup parser measures UTF-8 bytes at the exact boundary
+ok 81 - backup parser measures UTF-8 bytes at the exact boundary
+  ---
+  duration_ms: 0.4384
+  type: 'test'
+  ...
+# Subtest: portable archives split at 100 whole exams, preserving order, image counts and original documents
+ok 82 - portable archives split at 100 whole exams, preserving order, image counts and original documents
+  ---
+  duration_ms: 53.9832
+  type: 'test'
+  ...
+# Subtest: portable archives split by actual bytes and refuse an oversized whole exam without changing the source
+ok 83 - portable archives split by actual bytes and refuse an oversized whole exam without changing the source
+  ---
+  duration_ms: 19.5456
+  type: 'test'
+  ...
+# Subtest: portable backup embeds original image bytes once per source and restores without the old file
+ok 84 - portable backup embeds original image bytes once per source and restores without the old file
+  ---
+  duration_ms: 5.6437
+  type: 'test'
+  ...
+# Subtest: portable backup refuses missing, transient, oversized and non-image assets without mutating documents
+ok 85 - portable backup refuses missing, transient, oversized and non-image assets without mutating documents
+  ---
+  duration_ms: 3.8652
+  type: 'test'
+  ...
+# Subtest: legacy local copy never overwrites an existing record and reads all libraries without changing source bytes
+ok 86 - legacy local copy never overwrites an existing record and reads all libraries without changing source bytes
+  ---
+  duration_ms: 1.5624
+  type: 'test'
+  ...
+# Subtest: linked legacy exam preserves position, zero override, passage, figures and review status without mutating source
+ok 87 - linked legacy exam preserves position, zero override, passage, figures and review status without mutating source
+  ---
+  duration_ms: 5.3927
+  type: 'test'
+  ...
+# Subtest: Word export preserves editor order, all seven types, shared passage and hides solutions on question-only export
+ok 88 - Word export preserves editor order, all seven types, shared passage and hides solutions on question-only export
+  ---
+  duration_ms: 137.3925
+  type: 'test'
+  ...
+# Subtest: Word solution export labels missing answers explicitly instead of inventing A or false
+ok 89 - Word solution export labels missing answers explicitly instead of inventing A or false
+  ---
+  duration_ms: 50.2586
+  type: 'test'
+  ...
+# Subtest: legacy import keeps content and zero points but cannot inherit a historical verified badge
+ok 90 - legacy import keeps content and zero points but cannot inherit a historical verified badge
+  ---
+  duration_ms: 1.5611
+  type: 'test'
+  ...
+# Subtest: portable private-memory archive validates data and derives owner-isolated idempotent identities
+ok 91 - portable private-memory archive validates data and derives owner-isolated idempotent identities
+  ---
+  duration_ms: 7.265
+  type: 'test'
+  ...
+# Subtest: question validator rejects malformed collections and duplicate labels without accepting misleading answer values
+ok 92 - question validator rejects malformed collections and duplicate labels without accepting misleading answer values
+  ---
+  duration_ms: 1.1534
+  type: 'test'
+  ...
+# Subtest: Word keeps custom section names and passage source, and refuses an empty variation table
+ok 93 - Word keeps custom section names and passage source, and refuses an empty variation table
+  ---
+  duration_ms: 42.4544
+  type: 'test'
+  ...
+# Subtest: public graphs preserve math and reject executable expressions or extreme ranges
+ok 94 - public graphs preserve math and reject executable expressions or extreme ranges
+  ---
+  duration_ms: 4.8432
+  type: 'test'
+  ...
+# Subtest: attempt token binds attempt, student, assignment and creation time
+ok 95 - attempt token binds attempt, student, assignment and creation time
+  ---
+  duration_ms: 10.5228
+  type: 'test'
+  ...
+# Subtest: open state and deadline honor assignment window and archive state
+ok 96 - open state and deadline honor assignment window and archive state
+  ---
+  duration_ms: 0.7025
+  type: 'test'
+  ...
+# Subtest: submission has a fixed 15 second allowance while drafts close at the exact deadline
+ok 97 - submission has a fixed 15 second allowance while drafts close at the exact deadline
+  ---
+  duration_ms: 0.5286
+  type: 'test'
+  ...
+# Subtest: reveal and same-origin checks reject early answers and cross-site mutations
+ok 98 - reveal and same-origin checks reject early answers and cross-site mutations
+  ---
+  duration_ms: 0.7085
+  type: 'test'
+  ...
+# Subtest: public snapshot removes solutions and hidden keys from direct and nested questions
+ok 99 - public snapshot removes solutions and hidden keys from direct and nested questions
+  ---
+  duration_ms: 1.3718
+  type: 'test'
+  ...
+# Subtest: response validation refuses unrecognized questions, oversized and nested arbitrary objects
+ok 100 - response validation refuses unrecognized questions, oversized and nested arbitrary objects
+  ---
+  duration_ms: 4.9598
+  type: 'test'
+  ...
+# Subtest: grading uses configured points and leaves unsupported or unanswered rubric work for manual review
+ok 101 - grading uses configured points and leaves unsupported or unanswered rubric work for manual review
+  ---
+  duration_ms: 1.5566
+  type: 'test'
+  ...
+# Subtest: true-false scoring is linear unless the snapshot explicitly configures a progression
+ok 102 - true-false scoring is linear unless the snapshot explicitly configures a progression
+  ---
+  duration_ms: 0.9564
+  type: 'test'
+  ...
+# Subtest: missing answer keys never cause a false positive grade
+ok 103 - missing answer keys never cause a false positive grade
+  ---
+  duration_ms: 1.4337
+  type: 'test'
+  ...
+# Subtest: attempt layout is reproducible, keeps stable choice keys and never forwards answers
+ok 104 - attempt layout is reproducible, keeps stable choice keys and never forwards answers
+  ---
+  duration_ms: 5.0257
+  type: 'test'
+  ...
+# Subtest: origin check accepts actual Host after Next canonicalization and rejects mismatches
+ok 105 - origin check accepts actual Host after Next canonicalization and rejects mismatches
+  ---
+  duration_ms: 2.6023
+  type: 'test'
+  ...
+# Subtest: fork copies licensed reading passage into own storage, gives a distinct logical ID and removes workspace marker
+ok 106 - fork copies licensed reading passage into own storage, gives a distinct logical ID and removes workspace marker
+  ---
+  duration_ms: 7.2363
+  type: 'test'
+  ...
+# Subtest: fork rejects unavailable, private, unlicensed and foreign private passages
+ok 107 - fork rejects unavailable, private, unlicensed and foreign private passages
+  ---
+  duration_ms: 2.2418
+  type: 'test'
+  ...
+# Subtest: question rollback uses owner and CAS, resets review, clears null figures and preserves zero points
+ok 108 - question rollback uses owner and CAS, resets review, clears null figures and preserves zero points
+  ---
+  duration_ms: 3.1052
+  type: 'test'
+  ...
+# Subtest: rollback cannot revive a deleted question or restore a passage owned by somebody else
+ok 109 - rollback cannot revive a deleted question or restore a passage owned by somebody else
+  ---
+  duration_ms: 1.2672
+  type: 'test'
+  ...
+# Subtest: fork payload does not retain source logical IDs, source passage IDs or arbitrary DB owner fields
+ok 110 - fork payload does not retain source logical IDs, source passage IDs or arbitrary DB owner fields
+  ---
+  duration_ms: 0.548
+  type: 'test'
+  ...
+# Subtest: question rollback cannot mutate a workspace question behind its full-document cache
+ok 111 - question rollback cannot mutate a workspace question behind its full-document cache
+  ---
+  duration_ms: 0.5589
+  type: 'test'
+  ...
+# Subtest: bank client keeps optional passage by value and strips owner data from its portable result
+ok 112 - bank client keeps optional passage by value and strips owner data from its portable result
+  ---
+  duration_ms: 32.8984
+  type: 'test'
+  ...
+# Subtest: canonical null clears old editor figures and points while absent fields retain portable fallback and zero stays zero
+ok 113 - canonical null clears old editor figures and points while absent fields retain portable fallback and zero stays zero
+  ---
+  duration_ms: 6.2842
+  type: 'test'
+  ...
+# Subtest: document validates section identity, finite scoring and legacy passage figure maps
+ok 114 - document validates section identity, finite scoring and legacy passage figure maps
+  ---
+  duration_ms: 4.6534
+  type: 'test'
+  ...
+# Subtest: integration runner requires an explicit isolated target and opt-in
+ok 115 - integration runner requires an explicit isolated target and opt-in
+  ---
+  duration_ms: 4.2827
+  type: 'test'
+  ...
+# Subtest: integration guard rejects application, remote, malformed and non-PostgreSQL targets
+ok 116 - integration guard rejects application, remote, malformed and non-PostgreSQL targets
+  ---
+  duration_ms: 1.0721
+  type: 'test'
+  ...
+# Subtest: guard never exposes secret values in diagnostics
+ok 117 - guard never exposes secret values in diagnostics
+  ---
+  duration_ms: 0.4748
+  type: 'test'
+  ...
+# Subtest: matching and ordering public prompts have independent keys without paired IDs or original answer order
+ok 118 - matching and ordering public prompts have independent keys without paired IDs or original answer order
+  ---
+  duration_ms: 5.7801
+  type: 'test'
+  ...
+# Subtest: structured responses use presentation keys, validate drafts and grade the private configuration exactly
+ok 119 - structured responses use presentation keys, validate drafts and grade the private configuration exactly
+  ---
+  duration_ms: 2.6504
+  type: 'test'
+  ...
+# Subtest: missing keys or missing points are flagged for teacher review and explicit zero is preserved
+ok 120 - missing keys or missing points are flagged for teacher review and explicit zero is preserved
+  ---
+  duration_ms: 0.9317
+  type: 'test'
+  ...
+# Subtest: progressive scoring scales an explicit question override and never replaces zero with a template maximum
+ok 121 - progressive scoring scales an explicit question override and never replaces zero with a template maximum
+  ---
+  duration_ms: 0.9589
+  type: 'test'
+  ...
+# Subtest: manual grade-10 mathematics never silently receives a graduation scoring template
+ok 122 - manual grade-10 mathematics never silently receives a graduation scoring template
+  ---
+  duration_ms: 2.1097
+  type: 'test'
+  ...
+# Subtest: legacy grader preserves false/zero and leaves missing TF answers unresolved
+ok 123 - legacy grader preserves false/zero and leaves missing TF answers unresolved
+  ---
+  duration_ms: 1.0997
+  type: 'test'
+  ...
+1..123
+# tests 123
+# suites 0
+# pass 123
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5263.5885

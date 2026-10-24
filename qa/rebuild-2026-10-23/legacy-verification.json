@@ -1,0 +1,75 @@
+{
+  "clientDate": "2026-10-23",
+  "checkedAt": "2026-10-23T03:26:36.730Z",
+  "status": "PASS_WITH_LIMITATIONS",
+  "scope": "Legacy import, local preservation and account context",
+  "build": {
+    "status": "PASS",
+    "buildId": "LeIrAuoZ_qjBJmdbAy_sm",
+    "session": 41516,
+    "typecheck": "PASS",
+    "staticPages": 44,
+    "log": "build-legacy.log"
+  },
+  "safe": {
+    "status": "PASS",
+    "legacy": 20,
+    "additional": 110,
+    "log": "safe-legacy-tests.log",
+    "portableSuite": 8
+  },
+  "lint": {
+    "status": "TARGETED_PASS",
+    "files": [
+      "src/lib/legacy-import.ts",
+      "src/lib/legacy-local.ts",
+      "src/app/api/migration/import-legacy/route.ts",
+      "tests/portable_and_exports.test.ts",
+      "tests/http_workflows.test.ts"
+    ],
+    "note": "Final guard added after lint; build and full SAFE/HTTP rerun; repository-wide lint not clean"
+  },
+  "http": {
+    "status": "PASS",
+    "passed": 16,
+    "includesParentTests": true,
+    "log": "http-legacy-tests.log",
+    "buildId": "LeIrAuoZ_qjBJmdbAy_sm",
+    "database": "examcraft_test_20261022",
+    "checksAdded": [
+      "Dry-run no database writes",
+      "Valid items import despite invalid items",
+      "Retry preserves teacher edits and revision count",
+      "Correct failed items and resume without duplicates",
+      "Owner-isolated imported IDs",
+      "Stale account and cross-origin denied",
+      "Loose question with passage refuses partial import"
+    ],
+    "fixtureCleanup": true
+  },
+  "local": {
+    "checks": [
+      "Existing records never overwritten",
+      "All historical libraries read without mutation",
+      "Different contents with same ID retained in collected source",
+      "Linked items map order, pointsOverride0, passage, figures, solution and unverified status"
+    ],
+    "limitations": [
+      "Storage/table fixtures, not real IndexedDB browser transactions",
+      "Duplicate-ID content reconciliation not implemented",
+      "Loose bank passage migration remains unsupported and fails explicitly",
+      "Assets kept as JSON references, actual file restore untested"
+    ]
+  },
+  "browser": "NOT_RUN_THIS_ROUND",
+  "integration": "7/7 inherited from earlier 23/10, not rerun",
+  "mainDatabaseMutations": false,
+  "realAiCalls": false,
+  "qaServer": "STOPPED",
+  "remaining": [
+    "CV014/015 acceptance still open",
+    "Browser preview/import and IndexedDB real transaction validation",
+    "Restore DB plus external assets",
+    "Other open checklist criteria"
+  ]
+}

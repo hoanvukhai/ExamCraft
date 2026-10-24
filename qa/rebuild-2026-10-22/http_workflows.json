@@ -1,0 +1,19 @@
+{
+  "checkedAt": "2026-10-24T04:07:46.717Z",
+  "checks": [
+    "http-private-access-and-origin",
+    "http-collaboration-cas-history-revoke",
+    "http-structural-cas-revoked-retry",
+    "http-legacy-preview-resume-idempotence-account",
+    "http-public-redaction-immutable-snapshot",
+    "http-attempt-capability-submit-and-manual-grade",
+    "http-knowledge-package-scope-revision-private-source",
+    "http-private-immutable-template-retry-source-snapshot",
+    "http-bank-passage-fork-cas-history-delete",
+    "http-private-memory-portability"
+  ],
+  "cleanupComplete": true,
+  "status": "PASS",
+  "environment": "isolated localhost:3117",
+  "realAiCalls": false
+}

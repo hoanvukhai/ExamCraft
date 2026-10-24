@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-10-23T19:23:53.733Z",
+  "status": "PASS",
+  "phase": "after-order",
+  "readOnly": true,
+  "database": "examcraft_test_20261022",
+  "examId": "ex_e8740536be2a92ce61bdeae0b3e53469f2dc3a62",
+  "version": 18,
+  "questionCount": 3,
+  "firstQuestionVersion": 13,
+  "questionsSha256": "ab247aeff13cf4485abe52e12b025cb27a9a20c611825134963f0897ac966023",
+  "sourceUnchanged": true,
+  "zeroPointsAndFiguresKept": true,
+  "realAiCalls": false
+}

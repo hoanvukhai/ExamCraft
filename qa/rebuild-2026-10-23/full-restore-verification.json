@@ -1,0 +1,166 @@
+{
+  "checkedAt": "2026-10-23T08:55:15.235Z",
+  "status": "PASS_FOR_LOCAL_DB_FILES_CONFIG_RESTORE",
+  "sourceDatabase": "examcraft",
+  "restoredDatabase": "examcraft_restore_full_20261023085454302",
+  "sourceUnchanged": true,
+  "noDatabaseDroppedOrReused": true,
+  "sourceTables": {
+    "AiKeyState": {
+      "rows": 7,
+      "digest": "be0a2d295995461f37d1ea24e2c9c459"
+    },
+    "AiUsageLog": {
+      "rows": 0,
+      "digest": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "Assignment": {
+      "rows": 2,
+      "digest": "f1e12b64ec1ef548ac941042a9dbcd16"
+    },
+    "Attempt": {
+      "rows": 3,
+      "digest": "96cd221eba0e7613be7506d30c78a7c8"
+    },
+    "AttemptAnswer": {
+      "rows": 4,
+      "digest": "e34528355af99ca9bb384e6d661eac00"
+    },
+    "AuditLog": {
+      "rows": 11,
+      "digest": "2d6652615a906daf76c071daa02a5ae6"
+    },
+    "Exam": {
+      "rows": 7,
+      "digest": "c48e519b1b4e9f0b76a38bc3ef843f22"
+    },
+    "ExamCollaborator": {
+      "rows": 0,
+      "digest": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "ExamComment": {
+      "rows": 0,
+      "digest": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "ExamQuestion": {
+      "rows": 17,
+      "digest": "a7b59a0a961ea0187ba5eb2b4a982adc"
+    },
+    "ExamRevision": {
+      "rows": 0,
+      "digest": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "ExamTemplate": {
+      "rows": 4,
+      "digest": "028f0cd10a2ec4ec40850fc31703f4a5"
+    },
+    "Folder": {
+      "rows": 2,
+      "digest": "c6d29d5fe1b29dd299ffbd2adb7c7633"
+    },
+    "Group": {
+      "rows": 3,
+      "digest": "efda583e4e89217504c120f75f7901ab"
+    },
+    "Passage": {
+      "rows": 0,
+      "digest": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "Question": {
+      "rows": 24,
+      "digest": "8e5c60a81b48a0c95f5006b8d44d5800"
+    },
+    "QuestionRevision": {
+      "rows": 0,
+      "digest": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "Session": {
+      "rows": 3,
+      "digest": "00dc29b8199676f60c0b0eec59aca1d3"
+    },
+    "ShareLink": {
+      "rows": 0,
+      "digest": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "Student": {
+      "rows": 9,
+      "digest": "628a407622ba6e670cd314655d016c7f"
+    },
+    "TeacherAiMemory": {
+      "rows": 0,
+      "digest": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "User": {
+      "rows": 6,
+      "digest": "c4d4e863fac2c915b2db1a99c095ac26"
+    },
+    "UserApiKey": {
+      "rows": 1,
+      "digest": "2036661227dac9003dc2e9b3fe3031ea"
+    },
+    "_prisma_migrations": {
+      "rows": 4,
+      "digest": "60e474e921399551472a5ab606de5c76"
+    }
+  },
+  "restoredTableDigestsMatch": true,
+  "publicFiles": [
+    {
+      "path": "file.svg",
+      "bytes": 391,
+      "sha256": "2b67812c325c199a02536cdbeea0c593a72f707d323b72ee3e08dbab06753bd4"
+    },
+    {
+      "path": "globe.svg",
+      "bytes": 1035,
+      "sha256": "b614b9bf183925957661ac851498fe1d8029fd43a62fbfed86f9e2624a57e7cf"
+    },
+    {
+      "path": "next.svg",
+      "bytes": 1375,
+      "sha256": "55995dfad6ecb4945a1e856ddca03c5e16aa5bf13fd21b4df6a74ae79357bcfc"
+    },
+    {
+      "path": "qa-image-restore-20261023.png",
+      "bytes": 280,
+      "sha256": "3cdb8f730abecb5f832ecb0cbbbccaee8ac945ad1d51f1876ba24fb619ba14b7"
+    },
+    {
+      "path": "vercel.svg",
+      "bytes": 128,
+      "sha256": "f081337b2fee635b455b63275406a3e7f39d6a014e25ad90dab5a67e62a12ac4"
+    },
+    {
+      "path": "window.svg",
+      "bytes": 385,
+      "sha256": "644768c4aaeb4767bce293344eeb0c125fb804a94d801440424072202d85e3a1"
+    }
+  ],
+  "restoredPublicHashesMatch": true,
+  "protectedConfigRecoveredExactly": true,
+  "configurationProtection": "Windows CurrentUser DPAPI; recovery requires same Windows identity/machine. DATABASE_URL must be overridden before booting a restored app.",
+  "actualEncryptedKeysVerified": 1,
+  "actualEncryptedKeysUnverifiable": 0,
+  "encryptionCanaryPassed": true,
+  "assets": {
+    "localReferenceCount": 0,
+    "missingLocalReferences": [],
+    "remoteReferencesNotDownloaded": 0,
+    "inlineReferencesInDatabase": 0,
+    "transientReferences": 0
+  },
+  "backup": {
+    "directory": "backups\\full-restore-20261023085454302",
+    "dumpBytes": 70040,
+    "dumpSha256": "d245d917229edd20e425052200fa51eb0740bd4ba2f6c42034f907a710e34916",
+    "dpapiSha256": "73ed95c8ea46ab8eb1b95289909ceaec66a3aee1cb6df946f83c1c67e696f1ca"
+  },
+  "nativeDumpAndRestoreExitCodesPassed": true,
+  "deletions": 0,
+  "limitations": [
+    "No production cutover or RPO/RTO acceptance",
+    "Remote image services not included",
+    "No source mutation or provider requests",
+    "Restored application not started; do not boot with recovered original DATABASE_URL"
+  ]
+}

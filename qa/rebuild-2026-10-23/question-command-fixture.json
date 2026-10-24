@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-10-23T18:57:56.414Z",
+  "status": "PASS",
+  "database": "examcraft_test_20261022",
+  "sourceUnchanged": true,
+  "sourceMetadataSha256": "0c43108573c31bdf80ad81556e038a9fd2f68932499ba2788ca5f0d1e2bd17c6",
+  "examId": "ex_e8740536be2a92ce61bdeae0b3e53469f2dc3a62",
+  "questionIds": [
+    "17d996f3-c04c-4e65-a4d5-c92fb29429de",
+    "89ac7e43-0d8d-4f17-bccd-52acda11a3d7"
+  ],
+  "title": "QA lệnh câu và hoàn tác 20261024",
+  "realAiCalls": false
+}

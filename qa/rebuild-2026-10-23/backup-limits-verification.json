@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-23",
+  "status": "PASS_FOR_LISTED_CONTRACTS_UI_PARTITION_UNVERIFIED",
+  "buildId": "y2-iNGvWM3oaX2Gz81aqr",
+  "build": "PASS typecheck and 44 pages",
+  "safe": {
+    "legacy": 20,
+    "passed": 136,
+    "additional": 116
+  },
+  "portableTests": 14,
+  "http": {
+    "previewErrors": 0,
+    "target": "examcraft_test_20261022",
+    "previewDidNotIncreaseOwnerExamCount": true,
+    "passed": 16,
+    "previewPartitionExams": [
+      100,
+      1
+    ]
+  },
+  "lint": "PASS backup-files.ts and both changed test files",
+  "mainDatabaseMutated": false,
+  "schemaChanged": false,
+  "providerCalls": 0,
+  "qaServerStopped": true,
+  "browserThisRound": false,
+  "inheritedIntegrationPassed": 7,
+  "limitations": [
+    "Multipart UI and corrupt file after preview not verified on new build",
+    "No actual browser archive above 30MB or memory benchmark; still accumulates documents before splitting",
+    "Real IndexedDB transaction and conflicting IDs remain open",
+    "Operational DB and assets restore remains open",
+    "Existing unrelated trailing whitespace A4Preview.tsx:11"
+  ],
+  "report": "BACKUP_LIMITS.md",
+  "logs": [
+    "build-backup-limits.log",
+    "safe-backup-limits.log",
+    "http-backup-limits.log"
+  ]
+}

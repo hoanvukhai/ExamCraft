@@ -1,0 +1,65 @@
+{
+  "clientDate": "2026-10-23",
+  "checkedAt": "2026-10-23T04:14:45.283Z",
+  "status": "PARTIAL_UI_PENDING",
+  "scope": "Import UI and portable image restore",
+  "build": {
+    "status": "PASS",
+    "buildId": "SGTJQx2t-8IblKafS7nGO",
+    "session": 72444,
+    "typecheck": "PASS",
+    "staticPages": 44,
+    "log": "build-images.log"
+  },
+  "safe": {
+    "status": "PASS_BEFORE_CHECKBOX_ONLY_CHANGE",
+    "legacy": 20,
+    "additional": 112,
+    "log": "safe-images-tests.log"
+  },
+  "http": {
+    "status": "PASS",
+    "passed": 16,
+    "includesParentTests": true,
+    "log": "http-images-tests.log",
+    "database": "examcraft_test_20261022"
+  },
+  "lint": {
+    "status": "TARGETED_PASS",
+    "files": [
+      "src/lib/portable-backup.ts",
+      "tests/portable_and_exports.test.ts"
+    ],
+    "repositoryWideClean": false
+  },
+  "imageRestore": {
+    "status": "PASS",
+    "evidence": "image-restore-api.json",
+    "method": "Production backup helper plus isolated API; source moved and preserved; restored bytes match SHA256",
+    "browserDisplay": {
+      "status": "PASS",
+      "image": "image-restored-visible.png",
+      "instances": 2,
+      "loaded": true,
+      "width": 160,
+      "height": 80,
+      "embeddedSource": true
+    }
+  },
+  "importUi": {
+    "status": "PARTIAL",
+    "preview": "1 ready / 1 invalid item through actual file chooser",
+    "evidence": "image-import-preview.png",
+    "blocker": "Old native confirm in tab 3 interrupted browser interaction; replaced with checkbox and rebuilt, final click workflow still unverified"
+  },
+  "mainDatabaseMutations": false,
+  "realAiCalls": false,
+  "qaServer": "STOPPED",
+  "remaining": [
+    "Final checkbox import/download browser workflow",
+    "Real IndexedDB and full DB plus files restore",
+    "Large archive splitting/total size policy",
+    "Other open CV014/015/072 criteria"
+  ],
+  "supersededBy": "import-ui-roundtrip-verification.json"
+}

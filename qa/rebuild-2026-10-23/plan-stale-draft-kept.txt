@@ -1,0 +1,63 @@
+- heading "Kiểm kế hoạch bằng component production" [level=1]
+- paragraph: Chỉ state React và dữ liệu giả; không server lưu, DB hoặc AI. Một câu tự luận, 0 điểm, không gắn mức.
+- button "Giả lập nền đổi sang lớp 7"
+- paragraph: "Lớp bản soạn hiện tại: 7"
+- generic "Kế hoạch đề · mục tiêu và thực tế"
+- paragraph: Tự đặt số câu và tổng điểm từng ô. Kế hoạch chỉ đối chiếu các nhãn đã gắn, không tự chia điểm hoặc chuyển câu vào ô. Để trống yêu cầu nghĩa là không ràng buộc yêu cầu; ô này có thể chồng với ô có yêu cầu cụ thể.
+- paragraph: Điểm tính bằng đơn vị 0,01 điểm, cộng số nguyên; không làm tròn sớm. Điểm câu có hơn hai chữ số thập phân được báo cần xử lý. Điểm chưa cấu hình khác điểm 0. Đây là kế hoạch cá nhân, chưa là mẫu chuyên môn được duyệt.
+- group "Ô 1":
+  - generic: Ô 1
+  - text: Dạng câu
+  - combobox "Dạng câu":
+    - option "Lựa chọn"
+    - option "Đúng / sai"
+    - option "Trả lời ngắn"
+    - option "Tự luận" [selected]
+    - option "Điền khuyết"
+    - option "Ghép nối"
+    - option "Sắp xếp"
+  - text: Mức nhận thức
+  - combobox "Mức nhận thức":
+    - option "Không gắn mức" [selected]
+  - text: Yêu cầu cần đạt
+  - combobox "Yêu cầu cần đạt":
+    - option "Không ràng buộc yêu cầu" [selected]
+  - text: Số câu mục tiêu (có thể 0)
+  - textbox "Số câu mục tiêu (có thể 0)": "2"
+  - text: Tổng điểm mục tiêu của ô
+  - textbox "Tổng điểm mục tiêu của ô":
+    - /placeholder: Chưa đặt điểm
+    - text: 0,00
+  - button "Bỏ ô này"
+- button "Thêm ô mục tiêu"
+- alert: Kế hoạch hoặc ngữ cảnh trên đề đã đổi. Các ô nháp của bạn được giữ; đối chiếu bản mới và xác nhận rà soát ngữ cảnh trước khi áp dụng.
+- paragraph: Kế hoạch cần đối chiếu; chưa thể xác nhận khớp.
+- paragraph: Kế hoạch thuộc môn/lớp, cách đánh giá, khung mức hoặc phiên bản gói khác. Cần giáo viên rà soát lại.
+- paragraph: "Tổng câu: mục tiêu 2, thực tế 1. Tổng điểm mục tiêu 0,00, điểm thực tế đã biết 0,00."
+- table:
+  - rowgroup:
+    - row "Ô / đặc tả theo yêu cầu Mục tiêu câu Khớp ô Lệch câu Điểm mục tiêu Điểm đã biết Lệch điểm":
+      - columnheader "Ô / đặc tả theo yêu cầu"
+      - columnheader "Mục tiêu câu"
+      - columnheader "Khớp ô"
+      - columnheader "Lệch câu"
+      - columnheader "Điểm mục tiêu"
+      - columnheader "Điểm đã biết"
+      - columnheader "Lệch điểm"
+  - rowgroup:
+    - row "1. Tự luận · Không ràng buộc yêu cầu 2 0 -2 0,00 0,00 0,00":
+      - cell "1. Tự luận · Không ràng buộc yêu cầu"
+      - cell "2"
+      - cell "0"
+      - cell "-2"
+      - cell "0,00"
+      - cell "0,00"
+      - cell "0,00"
+- paragraph: "Chưa khớp ô: Câu 1: Ngữ cảnh kế hoạch đã thay đổi."
+- paragraph: Mở Ma trận & Đặc tả ở bản xem trước hoặc xuất Word chế độ ma trận để xem kế hoạch mục tiêu cùng bảng mô tả đề thực tế.
+- button "Áp dụng kế hoạch vào đề" [active]
+- button "Xác nhận rà soát theo ngữ cảnh hiện tại, giữ các ô"
+- button "Bỏ thay đổi đang nhập"
+- alert: Kế hoạch hoặc ngữ cảnh đã đổi. Giữ nháp; hãy đối chiếu bản mới trước khi áp dụng.
+- heading "Kế hoạch đã áp dụng vào state" [level=2]
+- generic: "{ \"formatVersion\": 1, \"subject\": \"toan\", \"grade\": 6, \"assessmentMode\": \"scored\", \"frameworkId\": null, \"packageReference\": null, \"slots\": [ { \"id\": \"7b5b1c3e-0c16-4fd1-bc0b-91ca283caa2d\", \"type\": \"essay\", \"cognitiveLevel\": null, \"count\": 1, \"targetPointsHundredths\": 0 } ] }"

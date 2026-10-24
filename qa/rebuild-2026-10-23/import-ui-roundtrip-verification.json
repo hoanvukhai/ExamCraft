@@ -1,0 +1,84 @@
+{
+  "clientDate": "2026-10-23",
+  "checkedAt": "2026-10-23T05:12:31.005Z",
+  "status": "PASS_FOR_LISTED_WORKFLOW",
+  "scope": "Checkbox import, portable backup download, reimport and image display",
+  "build": {
+    "status": "PASS",
+    "buildId": "hGdfzelszx3vUeb0xLO5b",
+    "session": 33478,
+    "typecheck": "PASS",
+    "staticPages": 44,
+    "log": "build-import-ui.log"
+  },
+  "safe": {
+    "status": "PASS",
+    "legacy": 20,
+    "additional": 112,
+    "log": "safe-import-ui-tests.log"
+  },
+  "http": {
+    "status": "INHERITED_NOT_RERUN",
+    "passed": 16,
+    "log": "http-images-tests.log"
+  },
+  "browser": {
+    "status": "PASS_FOR_LISTED_WORKFLOW",
+    "checkboxDefaultUnchecked": true,
+    "importDisabledBeforeConfirmation": true,
+    "firstImport": {
+      "imported": 1,
+      "errors": 1,
+      "examId": "ex_4599173782bf0ee9b6c88339c3be319477e3cd2f",
+      "image": "image-ui-import-success.png"
+    },
+    "download": {
+      "method": "Visible persistent link and documented downloadMedia",
+      "path": "F:/Downloads/ExamCraft-kho-de.json",
+      "retainedCopy": "image-ui-downloaded-backup.json",
+      "bytes": 7063,
+      "exams": 4,
+      "images": 3,
+      "allImageHashesMatch": true,
+      "sha256": "e89edc3fb1c908245587fc813b73e4dde22a6467d5e1bf01fee19a61651d50ca"
+    },
+    "reimport": {
+      "sameDownloadedFile": true,
+      "imported": 3,
+      "alreadyImported": 1,
+      "errors": 0,
+      "confirmationReset": true,
+      "image": "image-ui-reimport-success.png"
+    },
+    "restoredImage": {
+      "examId": "ex_dfc36d842dd0da700caad3fb0ef0db42fc89bc12",
+      "sha256": "3cdb8f730abecb5f832ecb0cbbbccaee8ac945ad1d51f1876ba24fb619ba14b7",
+      "complete": true,
+      "width": 160,
+      "height": 80,
+      "displayedInstances": 2,
+      "zeroPointsVisible": true,
+      "solutionVisible": "QA lời giải kèm ảnh",
+      "image": "image-ui-roundtrip-visible.png"
+    }
+  },
+  "fileRestore": {
+    "source": "image-source-preserved.png",
+    "target": "public/qa-image-restore-20261023.png",
+    "copiedWithoutOverwrite": true,
+    "sourceRetained": true,
+    "sameSha256": true,
+    "serverRestartedToRefreshPublicListing": true
+  },
+  "mainDatabaseMutations": false,
+  "realAiCalls": false,
+  "qaServer": "STOPPED",
+  "remaining": [
+    "Malformed JSON after preview UI",
+    "Real IndexedDB transactions",
+    "Large archive splitting/limits",
+    "Other image formats/CORS",
+    "Full operational DB plus assets restore",
+    "Other open CV014/015/072 criteria"
+  ]
+}

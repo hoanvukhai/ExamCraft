@@ -1,0 +1,15 @@
+{
+  "tick": 4,
+  "state": "saved",
+  "message": "",
+  "owner": "A",
+  "title": "Sửa B mới hơn",
+  "version": 3,
+  "points": 0,
+  "solution": "Lời giải giả",
+  "pending": [],
+  "serverA": "Sửa B mới hơn",
+  "serverB": "Bản gốc B",
+  "draftsA": [],
+  "draftsB": []
+}

@@ -1,0 +1,570 @@
+{
+  "isolated": true,
+  "createdOrAlreadyPresent": 94,
+  "results": [
+    {
+      "kind": "exam",
+      "index": 0,
+      "status": "imported",
+      "id": "ex_bbca3d9000a6b049740cfb64810f08ed4a3ec162"
+    },
+    {
+      "kind": "exam",
+      "index": 1,
+      "status": "imported",
+      "id": "ex_4cdeb69cdbd066b087921f4cbf99b1ff77162af3"
+    },
+    {
+      "kind": "exam",
+      "index": 2,
+      "status": "imported",
+      "id": "ex_bd9b44058a9b76279f7aed48ca4bc451963c991c"
+    },
+    {
+      "kind": "exam",
+      "index": 3,
+      "status": "imported",
+      "id": "ex_d22a53a2fd4ed1cd386047cf2c488eb5928b86bf"
+    },
+    {
+      "kind": "exam",
+      "index": 4,
+      "status": "imported",
+      "id": "ex_648f07ab93f0556501ee883f92b5c75d75651f95"
+    },
+    {
+      "kind": "exam",
+      "index": 5,
+      "status": "imported",
+      "id": "ex_bc782da5ba6c5193957b552755bd9d8e03d1d63f"
+    },
+    {
+      "kind": "exam",
+      "index": 6,
+      "status": "imported",
+      "id": "ex_25ae816f6b6747fdd7a4d98d7546489c0ee92c72"
+    },
+    {
+      "kind": "exam",
+      "index": 7,
+      "status": "imported",
+      "id": "ex_e6708ffee9031a3dd3ee7f0e74f8ad54b2b9702f"
+    },
+    {
+      "kind": "exam",
+      "index": 8,
+      "status": "imported",
+      "id": "ex_98fdff6174e427f135e9cd15a593db592e5e8701"
+    },
+    {
+      "kind": "exam",
+      "index": 9,
+      "status": "imported",
+      "id": "ex_3d2e6d0d1a6246105a8d8b57d36cf79c9f18bd15"
+    },
+    {
+      "kind": "exam",
+      "index": 10,
+      "status": "imported",
+      "id": "ex_76c6d921923229173ac9ed6be01e77c47ff818e9"
+    },
+    {
+      "kind": "exam",
+      "index": 11,
+      "status": "imported",
+      "id": "ex_94ef9ea63c750084c38c9f0062d48e53be8d0083"
+    },
+    {
+      "kind": "exam",
+      "index": 12,
+      "status": "imported",
+      "id": "ex_aecdf1e975c95a12b51d2787c7b805eb6cc6feb7"
+    },
+    {
+      "kind": "exam",
+      "index": 13,
+      "status": "imported",
+      "id": "ex_723cb3889275d1aaf24cb0cbb1cdf983a317e489"
+    },
+    {
+      "kind": "exam",
+      "index": 14,
+      "status": "imported",
+      "id": "ex_fb3824a74b394198d0f4829dcfff9fafdd51f19e"
+    },
+    {
+      "kind": "exam",
+      "index": 15,
+      "status": "imported",
+      "id": "ex_93f3286105146841d37b56ab4b62c2abdb76dbe3"
+    },
+    {
+      "kind": "exam",
+      "index": 16,
+      "status": "imported",
+      "id": "ex_03c3de534046849ef3103d43643d0511aa5cd4fa"
+    },
+    {
+      "kind": "exam",
+      "index": 17,
+      "status": "imported",
+      "id": "ex_9dbeca154524d14fffef0484b9bb2ab4f8ee51ae"
+    },
+    {
+      "kind": "exam",
+      "index": 18,
+      "status": "imported",
+      "id": "ex_557fbef955f973f32a5db5cc0438d8c841094d19"
+    },
+    {
+      "kind": "exam",
+      "index": 19,
+      "status": "imported",
+      "id": "ex_15c9089fddfb5d20faff3e1a90e1af872bf3a763"
+    },
+    {
+      "kind": "exam",
+      "index": 20,
+      "status": "imported",
+      "id": "ex_1f04cfd6a022833f6ca603737414651ff586644a"
+    },
+    {
+      "kind": "exam",
+      "index": 21,
+      "status": "imported",
+      "id": "ex_c494810105a2f716829e754f1e4383e1052ed2bb"
+    },
+    {
+      "kind": "exam",
+      "index": 22,
+      "status": "imported",
+      "id": "ex_5aab49480ff0cb1e231a2bd4a5d6bbc11acd07fb"
+    },
+    {
+      "kind": "exam",
+      "index": 23,
+      "status": "imported",
+      "id": "ex_6e0771673687f58a5146e4109b9867105399fa74"
+    },
+    {
+      "kind": "exam",
+      "index": 24,
+      "status": "imported",
+      "id": "ex_74692eb1b2a979385168585ef0e9dcffbe0806c7"
+    },
+    {
+      "kind": "exam",
+      "index": 25,
+      "status": "imported",
+      "id": "ex_5b6bb2bf32de34a66dff12e29600832d1efd1aa7"
+    },
+    {
+      "kind": "exam",
+      "index": 26,
+      "status": "imported",
+      "id": "ex_e4a6eb2828839b9e1291f26c9367e2bc155ce419"
+    },
+    {
+      "kind": "exam",
+      "index": 27,
+      "status": "imported",
+      "id": "ex_2b8a78fc0b9268293c2f8b7d0f591ad609c44148"
+    },
+    {
+      "kind": "exam",
+      "index": 28,
+      "status": "imported",
+      "id": "ex_3d62805f3b4668d0f8fbd0ab7207712ff2459105"
+    },
+    {
+      "kind": "exam",
+      "index": 29,
+      "status": "imported",
+      "id": "ex_e0938ebe14398525a0cb49a1b739b19ba16a9c0d"
+    },
+    {
+      "kind": "exam",
+      "index": 30,
+      "status": "imported",
+      "id": "ex_d6710d2f698be88d9dee971db83a394122bf9cfb"
+    },
+    {
+      "kind": "exam",
+      "index": 31,
+      "status": "imported",
+      "id": "ex_446ae36086ced27f697dce251222edb59c9f5651"
+    },
+    {
+      "kind": "exam",
+      "index": 32,
+      "status": "imported",
+      "id": "ex_47eec686c40138c1aa015d2b83770f0adaf2d8d6"
+    },
+    {
+      "kind": "exam",
+      "index": 33,
+      "status": "imported",
+      "id": "ex_83187f442bbefb24c3f3150353db0976f2ff8f28"
+    },
+    {
+      "kind": "exam",
+      "index": 34,
+      "status": "imported",
+      "id": "ex_f58aabf36c793ec6db5326d1d8749150da1b6d9e"
+    },
+    {
+      "kind": "exam",
+      "index": 35,
+      "status": "imported",
+      "id": "ex_75142567ec49c82c32e4480dbc603afa17c76372"
+    },
+    {
+      "kind": "exam",
+      "index": 36,
+      "status": "imported",
+      "id": "ex_dacdd3b014706a1a0a58de13da802ee53abeed2f"
+    },
+    {
+      "kind": "exam",
+      "index": 37,
+      "status": "imported",
+      "id": "ex_44e2e20f7378c18ff13fe65559e39d66f1dd64b9"
+    },
+    {
+      "kind": "exam",
+      "index": 38,
+      "status": "imported",
+      "id": "ex_35832bec2bd655a2356e40baee763d3b583c3cdf"
+    },
+    {
+      "kind": "exam",
+      "index": 39,
+      "status": "imported",
+      "id": "ex_11a7f0ddda19a136ba50cf14710d98cdfc16d001"
+    },
+    {
+      "kind": "exam",
+      "index": 40,
+      "status": "imported",
+      "id": "ex_a5f61b0666a89d8599e9db5dbe1191aa159977c4"
+    },
+    {
+      "kind": "exam",
+      "index": 41,
+      "status": "imported",
+      "id": "ex_9a5d778977bcc47dd9f77b9e3a7c9aed9635f6d7"
+    },
+    {
+      "kind": "exam",
+      "index": 42,
+      "status": "imported",
+      "id": "ex_7c59eae1454cce434286c5e7a316185e40f86a83"
+    },
+    {
+      "kind": "exam",
+      "index": 43,
+      "status": "imported",
+      "id": "ex_981623f51bbb87c79f311f78732bc5448d99ddc4"
+    },
+    {
+      "kind": "exam",
+      "index": 44,
+      "status": "imported",
+      "id": "ex_3c0ecf302fd5b7731211b1e04e04aa7579133e8e"
+    },
+    {
+      "kind": "exam",
+      "index": 45,
+      "status": "imported",
+      "id": "ex_e3a9557ab92af21bb87cacfa8cff1d10d63136a6"
+    },
+    {
+      "kind": "exam",
+      "index": 46,
+      "status": "imported",
+      "id": "ex_9dbaee04db0f20ed698f00d602db567c2f61d269"
+    },
+    {
+      "kind": "exam",
+      "index": 47,
+      "status": "imported",
+      "id": "ex_916f72912e306a9d996f01d125af4a52b2a42b47"
+    },
+    {
+      "kind": "exam",
+      "index": 48,
+      "status": "imported",
+      "id": "ex_2f308393abbc25108c895763ea808373a0f6acea"
+    },
+    {
+      "kind": "exam",
+      "index": 49,
+      "status": "imported",
+      "id": "ex_c8cf5b5cc65a2f0b6e0d7aecf5c147be1745b6b8"
+    },
+    {
+      "kind": "exam",
+      "index": 50,
+      "status": "imported",
+      "id": "ex_17d81db7552b9ed8827cbd49651f29db42a65d3b"
+    },
+    {
+      "kind": "exam",
+      "index": 51,
+      "status": "imported",
+      "id": "ex_78221c2d5d94362c981e04b77930087421939213"
+    },
+    {
+      "kind": "exam",
+      "index": 52,
+      "status": "imported",
+      "id": "ex_287031a8b4e565c3d4d4b6514aa517065501a5b9"
+    },
+    {
+      "kind": "exam",
+      "index": 53,
+      "status": "imported",
+      "id": "ex_30d813b51aa01245b757ee0506a9353abb159803"
+    },
+    {
+      "kind": "exam",
+      "index": 54,
+      "status": "imported",
+      "id": "ex_b5301a42c009d264a789e26309713473d1496393"
+    },
+    {
+      "kind": "exam",
+      "index": 55,
+      "status": "imported",
+      "id": "ex_35527d7339c0b906e140710c25d8dcca890a47b4"
+    },
+    {
+      "kind": "exam",
+      "index": 56,
+      "status": "imported",
+      "id": "ex_3687e1999cddeaa333727527b369236060adcbc4"
+    },
+    {
+      "kind": "exam",
+      "index": 57,
+      "status": "imported",
+      "id": "ex_f4538ee120e3f73faa0ce53ee2ddeaa3918798f5"
+    },
+    {
+      "kind": "exam",
+      "index": 58,
+      "status": "imported",
+      "id": "ex_34bf9caae9ac50b9fcab22fd0ecdb74f50a80de4"
+    },
+    {
+      "kind": "exam",
+      "index": 59,
+      "status": "imported",
+      "id": "ex_adf3cd615528a01e2e8468fe60766ae01c690779"
+    },
+    {
+      "kind": "exam",
+      "index": 60,
+      "status": "imported",
+      "id": "ex_81b6ab9dff727a2e7d18306e9a6c50376d532536"
+    },
+    {
+      "kind": "exam",
+      "index": 61,
+      "status": "imported",
+      "id": "ex_721785a2c96469f7af20b4e7169066e4b055557e"
+    },
+    {
+      "kind": "exam",
+      "index": 62,
+      "status": "imported",
+      "id": "ex_b8474dd211a66743088f8fe6c59dc53cef95e2f5"
+    },
+    {
+      "kind": "exam",
+      "index": 63,
+      "status": "imported",
+      "id": "ex_600eaf828b1def4923581afd661bbe66d81c4362"
+    },
+    {
+      "kind": "exam",
+      "index": 64,
+      "status": "imported",
+      "id": "ex_87a1c2d22ba5644deb448774d6c677300619ef1b"
+    },
+    {
+      "kind": "exam",
+      "index": 65,
+      "status": "imported",
+      "id": "ex_2a4a9b8aa09f78f03a065d4acd998f7ae3e73ea8"
+    },
+    {
+      "kind": "exam",
+      "index": 66,
+      "status": "imported",
+      "id": "ex_61717790a33d9d267ab9b6a939f9c8a22dcd0212"
+    },
+    {
+      "kind": "exam",
+      "index": 67,
+      "status": "imported",
+      "id": "ex_593d95696a11b434f88d368d622b15ac874d3707"
+    },
+    {
+      "kind": "exam",
+      "index": 68,
+      "status": "imported",
+      "id": "ex_f8d376949a42c452f35f7ffa6437e9952cdd0783"
+    },
+    {
+      "kind": "exam",
+      "index": 69,
+      "status": "imported",
+      "id": "ex_12484f5846ffd7a61b630a535f5f0537d9a0f97d"
+    },
+    {
+      "kind": "exam",
+      "index": 70,
+      "status": "imported",
+      "id": "ex_db0f1f1b052d671fd58a977cc0971f9e7bb139e5"
+    },
+    {
+      "kind": "exam",
+      "index": 71,
+      "status": "imported",
+      "id": "ex_d6bca4b9853dbf553ef7884de1de6934a698af98"
+    },
+    {
+      "kind": "exam",
+      "index": 72,
+      "status": "imported",
+      "id": "ex_756ca2db5e63cfe10fd2434e89088dca705fd1ed"
+    },
+    {
+      "kind": "exam",
+      "index": 73,
+      "status": "imported",
+      "id": "ex_e36e96bf2f5cc733a362a2e5ce61b6e3947a4cbc"
+    },
+    {
+      "kind": "exam",
+      "index": 74,
+      "status": "imported",
+      "id": "ex_e39d4d7ca77b2cff6674f7ce000c28bc0c67ca62"
+    },
+    {
+      "kind": "exam",
+      "index": 75,
+      "status": "imported",
+      "id": "ex_e7c5e9a80e19af31a4f6b24f2fbc0c8ec9530616"
+    },
+    {
+      "kind": "exam",
+      "index": 76,
+      "status": "imported",
+      "id": "ex_59b294d0b906b18839b00f18f2daf51b644c1fb7"
+    },
+    {
+      "kind": "exam",
+      "index": 77,
+      "status": "imported",
+      "id": "ex_234f53e7ad7d7b6addba5ab7a3836b246356b4ae"
+    },
+    {
+      "kind": "exam",
+      "index": 78,
+      "status": "imported",
+      "id": "ex_e965dbadbe06dbf55900958454a5b69ebb46dc76"
+    },
+    {
+      "kind": "exam",
+      "index": 79,
+      "status": "imported",
+      "id": "ex_28d505fe635d7cae1cb3ae7bf911e3819a7f5426"
+    },
+    {
+      "kind": "exam",
+      "index": 80,
+      "status": "imported",
+      "id": "ex_371e94ad54ac2532c0738488e90c00ce0e0ab43b"
+    },
+    {
+      "kind": "exam",
+      "index": 81,
+      "status": "imported",
+      "id": "ex_ad6c77dd8339fb485ea4fe087858c8c1a9866dfa"
+    },
+    {
+      "kind": "exam",
+      "index": 82,
+      "status": "imported",
+      "id": "ex_23f6865a124ac274888a9ac89126bba4ebaa1738"
+    },
+    {
+      "kind": "exam",
+      "index": 83,
+      "status": "imported",
+      "id": "ex_0d2fc605373c028cf5e8e434b9208c2caf62797e"
+    },
+    {
+      "kind": "exam",
+      "index": 84,
+      "status": "imported",
+      "id": "ex_87b4e80f55625cfbcd3bd176c8ddd4453a3b52fe"
+    },
+    {
+      "kind": "exam",
+      "index": 85,
+      "status": "imported",
+      "id": "ex_ffc4fe53f989101fe11d23db57beb19e7c1e8a02"
+    },
+    {
+      "kind": "exam",
+      "index": 86,
+      "status": "imported",
+      "id": "ex_dccf97ab64bb7ad14ddadffc3feb2dd7f07c2d27"
+    },
+    {
+      "kind": "exam",
+      "index": 87,
+      "status": "imported",
+      "id": "ex_c19defdb1b6fa3cb475eb283927420c10acaafab"
+    },
+    {
+      "kind": "exam",
+      "index": 88,
+      "status": "imported",
+      "id": "ex_5e9eb171ec676f541db464e4b159412ff54b309c"
+    },
+    {
+      "kind": "exam",
+      "index": 89,
+      "status": "imported",
+      "id": "ex_23b3af2a7618bf68eb695260a1457435ad41d668"
+    },
+    {
+      "kind": "exam",
+      "index": 90,
+      "status": "imported",
+      "id": "ex_74f4e017a22310a152c02a17b9300cc9ddce9346"
+    },
+    {
+      "kind": "exam",
+      "index": 91,
+      "status": "imported",
+      "id": "ex_600e8040dcdc938b515f7b256d454a904e7fc268"
+    },
+    {
+      "kind": "exam",
+      "index": 92,
+      "status": "imported",
+      "id": "ex_951e9637182d2e6d427e6df1026c4806382fb7d2"
+    },
+    {
+      "kind": "exam",
+      "index": 93,
+      "status": "imported",
+      "id": "ex_3708c4eed0178571a76b5df5ba749f79231aeff0"
+    }
+  ]
+}

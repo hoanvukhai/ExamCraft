@@ -1,0 +1,26 @@
+{
+  "status": "REVIEW_ONLY",
+  "days": 30,
+  "keep": 2,
+  "automaticDeletion": false,
+  "reviewCandidates": [],
+  "protectedNames": [
+    "package-20261023093421079",
+    "full-restore-20261023085454302"
+  ],
+  "retainedUnknown": [
+    "before-rebuild-2026-10-21T22-08-28-289Z",
+    "config-2026-10-22-after-attempt-secret",
+    "database",
+    "examcraft_backup_20261018_014029.sql",
+    "examcraft_backup_20261018_014117.sql",
+    "examcraft_backup_20261018_014226.sql",
+    "full-restore-20261023085207897",
+    "full-restore-20261023085332068",
+    "full-restore-20261023085409566",
+    "guard-fixtures",
+    "restore-run-examcraft_restore_app_20261023-1792747811102",
+    "restore-run-examcraft_restore_package_20261023-1792748155630"
+  ],
+  "sourceModified": false
+}

@@ -1,0 +1,172 @@
+{
+  "app": "ExamCraft",
+  "formatVersion": 2,
+  "exportedAt": "2026-10-23T04:46:41.764Z",
+  "embeddedImages": 3,
+  "exams": [
+    {
+      "id": "ex_4599173782bf0ee9b6c88339c3be319477e3cd2f",
+      "version": 1,
+      "metadata": {
+        "grade": 6,
+        "title": "QA nhập và khôi phục ảnh",
+        "subject": "toan",
+        "schoolName": "",
+        "departmentName": "",
+        "durationMinutes": 15
+      },
+      "createdAt": "2026-10-23T04:35:17.970Z",
+      "questions": [
+        {
+          "id": "q",
+          "type": "essay",
+          "points": 0,
+          "status": "draft",
+          "content": "QA ảnh xanh phải còn sau khôi phục",
+          "figures": [
+            {
+              "id": "qa-png",
+              "data": {
+                "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAABQCAIAAAARP+ljAAAA30lEQVR4nO3RsQmAMAAAwdTW1qmd2BGdw94mlYjPwQ3w8GPbD8LG5wW8yuA4g+MMjnsOnufFrxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkctxhMjMFxBscZHGdw3A3peSlNDUZB6wAAAABJRU5ErkJggg=="
+              },
+              "kind": "image",
+              "caption": "Ảnh QA xanh160x80",
+              "renderedBase64": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAABQCAIAAAARP+ljAAAA30lEQVR4nO3RsQmAMAAAwdTW1qmd2BGdw94mlYjPwQ3w8GPbD8LG5wW8yuA4g+MMjnsOnufFrxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkctxhMjMFxBscZHGdw3A3peSlNDUZB6wAAAABJRU5ErkJggg=="
+            }
+          ],
+          "difficulty": "thong_hieu",
+          "verifiedBy": "none",
+          "step_by_step_solution": "QA lời giải kèm ảnh"
+        }
+      ],
+      "updatedAt": "2026-10-23T04:35:17.970Z",
+      "serverId": "ex_4599173782bf0ee9b6c88339c3be319477e3cd2f",
+      "access": {
+        "role": "OWNER",
+        "canRead": true,
+        "canEdit": true,
+        "canComment": true,
+        "canManage": true,
+        "canPublish": true
+      }
+    },
+    {
+      "id": "ex_6d8e64bbd2b1bca58e8d16737ee3a3790943cd5e",
+      "version": 1,
+      "metadata": {
+        "grade": 6,
+        "title": "QA nhập và khôi phục ảnh",
+        "subject": "toan",
+        "schoolName": "",
+        "departmentName": "",
+        "durationMinutes": 15
+      },
+      "createdAt": "2026-10-23T04:10:07.662Z",
+      "questions": [
+        {
+          "id": "q",
+          "type": "essay",
+          "points": 0,
+          "status": "draft",
+          "content": "QA ảnh xanh phải còn sau khôi phục",
+          "figures": [
+            {
+              "id": "qa-png",
+              "data": {
+                "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAABQCAIAAAARP+ljAAAA30lEQVR4nO3RsQmAMAAAwdTW1qmd2BGdw94mlYjPwQ3w8GPbD8LG5wW8yuA4g+MMjnsOnufFrxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkctxhMjMFxBscZHGdw3A3peSlNDUZB6wAAAABJRU5ErkJggg=="
+              },
+              "kind": "image",
+              "caption": "Ảnh QA xanh160x80",
+              "renderedBase64": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAABQCAIAAAARP+ljAAAA30lEQVR4nO3RsQmAMAAAwdTW1qmd2BGdw94mlYjPwQ3w8GPbD8LG5wW8yuA4g+MMjnsOnufFrxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkctxhMjMFxBscZHGdw3A3peSlNDUZB6wAAAABJRU5ErkJggg=="
+            }
+          ],
+          "difficulty": "thong_hieu",
+          "verifiedBy": "none",
+          "step_by_step_solution": "QA lời giải kèm ảnh"
+        }
+      ],
+      "updatedAt": "2026-10-23T04:10:07.662Z",
+      "serverId": "ex_6d8e64bbd2b1bca58e8d16737ee3a3790943cd5e",
+      "access": {
+        "role": "OWNER",
+        "canRead": true,
+        "canEdit": true,
+        "canComment": true,
+        "canManage": true,
+        "canPublish": true
+      }
+    },
+    {
+      "id": "ex_a00acacd94ca7c6da6fc1773848f0ede254df423",
+      "version": 1,
+      "metadata": {
+        "grade": 6,
+        "title": "QA nhập và khôi phục ảnh",
+        "subject": "toan",
+        "schoolName": "",
+        "departmentName": "",
+        "durationMinutes": 15
+      },
+      "createdAt": "2026-10-23T04:10:07.511Z",
+      "questions": [
+        {
+          "id": "q",
+          "type": "essay",
+          "points": 0,
+          "status": "draft",
+          "content": "QA ảnh xanh phải còn sau khôi phục",
+          "figures": [
+            {
+              "id": "qa-png",
+              "data": {
+                "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAABQCAIAAAARP+ljAAAA30lEQVR4nO3RsQmAMAAAwdTW1qmd2BGdw94mlYjPwQ3w8GPbD8LG5wW8yuA4g+MMjnsOnufFrxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkctxhMjMFxBscZHGdw3A3peSlNDUZB6wAAAABJRU5ErkJggg=="
+              },
+              "kind": "image",
+              "caption": "Ảnh QA xanh160x80",
+              "renderedBase64": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAABQCAIAAAARP+ljAAAA30lEQVR4nO3RsQmAMAAAwdTW1qmd2BGdw94mlYjPwQ3w8GPbD8LG5wW8yuA4g+MMjnsOnufFrxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkctxhMjMFxBscZHGdw3A3peSlNDUZB6wAAAABJRU5ErkJggg=="
+            }
+          ],
+          "difficulty": "thong_hieu",
+          "verifiedBy": "none",
+          "step_by_step_solution": "QA lời giải kèm ảnh"
+        }
+      ],
+      "updatedAt": "2026-10-23T04:10:07.511Z",
+      "serverId": "ex_a00acacd94ca7c6da6fc1773848f0ede254df423",
+      "access": {
+        "role": "OWNER",
+        "canRead": true,
+        "canEdit": true,
+        "canComment": true,
+        "canManage": true,
+        "canPublish": true
+      }
+    },
+    {
+      "id": "ex_cf3b92058e5c62f38d31960393e173a1204ec310",
+      "version": 1,
+      "metadata": {
+        "grade": 6,
+        "title": "ĐỀ KIỂM TRA MỚI",
+        "subject": "toan",
+        "schoolName": "",
+        "academicYear": "2026 - 2027",
+        "departmentName": "",
+        "durationMinutes": 45
+      },
+      "createdAt": "2026-10-23T04:02:10.480Z",
+      "questions": [],
+      "updatedAt": "2026-10-23T04:02:10.480Z",
+      "serverId": "ex_cf3b92058e5c62f38d31960393e173a1204ec310",
+      "access": {
+        "role": "OWNER",
+        "canRead": true,
+        "canEdit": true,
+        "canComment": true,
+        "canManage": true,
+        "canPublish": true
+      }
+    }
+  ],
+  "questions": []
+}

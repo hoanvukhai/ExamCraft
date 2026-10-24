@@ -1,0 +1,93 @@
+- alert
+- banner:
+  - button "Mở rộng bảng công cụ":
+  - link:
+    - /url: /
+  - link "Quay về Kho đề của tôi (Lưu tự động)":
+    - /url: /
+  - button "QA tiêu đề mới từ tab khác":
+    - generic: QA tiêu đề mới từ tab khác
+  - button "Mở thanh trợ lý AI Gemini (Cột phải)":
+  - button "Chuyển sang chế độ Sáng (Màu trắng Google)":
+  - 'button "Tài khoản chưa có API Key: Nhấn để thêm khóa cá nhân"':
+  - button "G":
+    - generic: G
+- link "Về kho đề":
+  - /url: /
+- button "Trình chiếu"
+- button "Cùng soạn · Góp ý · Lịch sử"
+- generic: Đề của bạn
+- generic "Bản nháp chưa lưu trên máy này"
+- generic "Nháp câu hỏi trên máy · 1 chưa xử lý"
+- alert: Còn nháp câu chưa áp dụng. Mở Sửa để áp dụng câu, hoặc cất riêng tại Nháp câu hỏi trước khi lưu đề.
+- text: Thầy cô vẫn có thể
+- strong: soạn, lưu và xuất đề thủ công
+- text: . Thêm khóa Gemini cá nhân khi muốn dùng trợ lý AI.
+- button "Thêm khóa AI"
+- button "Danh sách câu hỏi (1)":
+  - generic: Danh sách câu hỏi (1)
+- button "Xem trang in A4":
+  - generic: Xem trang in A4
+- main:
+  - heading "Ngân Hàng Câu Hỏi Trong Đề 1 câu" [level=2]:
+    - generic: Ngân Hàng Câu Hỏi Trong Đề
+    - generic: 1 câu
+  - paragraph: QA tiêu đề mới từ tab khác (TOAN 6)
+  - button "Chọn tất cả câu hỏi":
+  - button "Lưu lại" [active]:
+    - generic: Lưu lại
+  - button "Thêm câu hỏi":
+    - generic: Thêm câu hỏi
+  - generic "Phần của đề và ngữ liệu dùng chung"
+  - option "Không gắn phần" [selected]
+  - option "Không gắn ngữ liệu" [selected]
+  - generic "Mẫu cá nhân và nguồn tham khảo"
+  - generic "Kiến thức và phạm vi ra đề (tùy chọn)"
+  - generic "Kế hoạch đề · mục tiêu và thực tế"
+  - option "Lựa chọn"
+  - option "Đúng / sai"
+  - option "Trả lời ngắn"
+  - option "Tự luận" [selected]
+  - option "Điền khuyết"
+  - option "Ghép nối"
+  - option "Sắp xếp"
+  - option "Không gắn mức" [selected]
+  - option "Không ràng buộc yêu cầu" [selected]
+  - checkbox "Chọn câu hỏi này để gộp câu hoặc thao tác hàng loạt"
+  - generic: "1"
+  - generic: Tự luận
+  - generic: 0 điểm
+  - button "Đổi số liệu":
+    - generic: Đổi số liệu
+  - button "Tạo câu hỏi tương đương bằng AI":
+  - 'button "Thẩm định độc lập bằng AI: AI giải từ đầu không nhìn đáp án để kiểm tra tính chính xác"':
+  - button "Bảo AI sửa câu này":
+    - generic: Bảo AI sửa câu này
+  - button "Lưu câu hỏi này vào Ngân hàng câu hỏi cá nhân":
+  - button "Di chuyển câu hỏi lên trên (↑)" [disabled]:
+  - button "Di chuyển câu hỏi xuống dưới (↓)" [disabled]:
+  - button "Nhân bản (sao chép) câu hỏi này":
+  - button "Sửa nội dung câu hỏi thủ công":
+  - button "Xóa câu hỏi này":
+  - paragraph: Nháp từng câu được giữ riêng trên máy. Bấm Áp dụng câu rồi lưu đề để lưu nội dung này trên máy chủ; đóng bảng sửa vẫn giữ nháp.
+  - text: Dạng câu
+  - combobox "Dạng câu":
+    - option "Lựa chọn"
+    - option "Đúng / Sai"
+    - option "Trả lời ngắn"
+    - option "Tự luận / thực hành" [selected]
+    - option "Điền khuyết"
+    - option "Ghép nối"
+    - option "Sắp xếp"
+  - text: Điểm (có thể để trống)
+  - spinbutton "Điểm câu": "0"
+  - text: Nội dung câu hỏi
+  - textbox "Nội dung câu hỏi": QA NHÁP A CHƯA ÁP DỤNG 20261024
+  - text: Lời giải / hướng dẫn thực hiện
+  - textbox "Lời giải": QA lời giải kèm ảnh
+  - generic "Hình và đồ thị (1)"
+  - generic "Tiêu chí chấm và kiến thức"
+  - button "Đóng, giữ nháp"
+  - button "Áp dụng câu vào đề"
+  - button "Xem lời giải chi tiết":
+    - generic: Xem lời giải chi tiết

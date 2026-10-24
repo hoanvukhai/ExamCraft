@@ -1,0 +1,18 @@
+{
+  "checkedAt": "2026-10-23T18:01:28.820Z",
+  "status": "PASS",
+  "phase": "final",
+  "readOnly": true,
+  "database": "examcraft_test_20261022",
+  "examId": "ex_dfc36d842dd0da700caad3fb0ef0db42fc89bc12",
+  "version": 14,
+  "preserved": {
+    "questionsSha256": "00e61f7dbd03a0baada4a4c825a6102d746df2160b897017ff54d59a22588f20",
+    "sectionsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "planSha256": "fbc19b5c8ad6c14d77b3db3e642a53fd5be4f886fcebf3cd5a33eae5aaa8d9a0"
+  },
+  "templateCount": 2,
+  "sourceId": "tpl_a8d259300d33d0f39ac3991d63a3aa2fb0f8d4f4",
+  "sourceSha256": "55f9ee109cc24f10321f382fb35577da30826483bb175a336d8ceef74ea9e42a",
+  "realAiCalls": false
+}

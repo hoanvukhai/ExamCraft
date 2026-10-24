@@ -1,0 +1,40 @@
+TAP version 13
+# Subtest: durable proposals survive a fresh storage view, preserve payload and remain isolated by account/document
+ok 1 - durable proposals survive a fresh storage view, preserve payload and remain isolated by account/document
+  ---
+  duration_ms: 11.2492
+  type: 'test'
+  ...
+# Subtest: each writer has a unique immutable slot; archive verifies a recoverable copy and protects later revisions
+ok 2 - each writer has a unique immutable slot; archive verifies a recoverable copy and protects later revisions
+  ---
+  duration_ms: 27.8082
+  type: 'test'
+  ...
+# Subtest: quota failures keep the source and RAM response, never delete unreadable or malformed records
+ok 3 - quota failures keep the source and RAM response, never delete unreadable or malformed records
+  ---
+  duration_ms: 1.3137
+  type: 'test'
+  ...
+# Subtest: archived records only reopen on explicit selection, without applying content or crossing question identity
+ok 4 - archived records only reopen on explicit selection, without applying content or crossing question identity
+  ---
+  duration_ms: 0.9399
+  type: 'test'
+  ...
+# Subtest: Copilot payload roundtrips independently and corrupted identity stays downloadable but not actionable
+ok 5 - Copilot payload roundtrips independently and corrupted identity stays downloadable but not actionable
+  ---
+  duration_ms: 0.5647
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 816.0202

@@ -1,0 +1,38 @@
+- heading "QA Copilot thật — API giả, không DB/provider" [level=1]
+- paragraph: CSP chặn mạng; fake fetch không có fallback.
+- button "Reset Copilot QA"
+- button "Đổi phạm vi QA"
+- button "Trả phản hồi Copilot giả" [disabled]
+- checkbox "Parent từ chối Copilot"
+- text: Parent từ chối Copilot
+- checkbox "B đổi ngay trong updater"
+- text: B đổi ngay trong updater
+- text: Hành động giả
+- combobox "Hành động giả":
+  - option "Sửa câu A" [selected]
+  - option "Thêm câu"
+  - option "Bỏ câu A"
+- complementary "Trợ lý và công cụ nhanh":
+  - heading "Gemini Copilot2.0" [level=3]
+  - paragraph: Trợ lý biên tập đề thi chuyên nghiệp
+  - button "Thu gọn dải công cụ":
+  - text: "Đang nhắm tới:"
+  - generic: Câu số 1
+  - text: "Gợi ý lệnh nhanh:"
+  - button "Đổi số liệu câu 1":
+    - text: Đổi số liệu câu 1
+  - button "Tăng độ khó câu 1":
+    - text: Tăng độ khó câu 1
+  - button "Giảm độ khó câu 1":
+    - text: Giảm độ khó câu 1
+  - button "Biến thành toán thực tế":
+    - text: Biến thành toán thực tế
+  - button "Tạo câu hỏi tương đương":
+    - text: Tạo câu hỏi tương đương
+  - text: Đã áp dụng vào bản soạn. Hãy lưu đề và kiểm tra nội dung trước khi chốt.
+  - 'textbox "Nhập yêu cầu cho Gemini (vd: đổi số liệu câu 2, thêm bẫy câu 3...)"'
+  - generic: Nhấn Enter ↵ để gửi
+  - button "Gửi lệnh" [disabled]:
+    - text: Gửi lệnh
+- heading "Bằng chứng state" [level=2]
+- generic: "{ \"ownerId\": \"qa-copilot-component\", \"generation\": 2, \"reject\": false, \"race\": false, \"submissions\": 2, \"calls\": [ { \"owner\": \"qa-copilot-component\", \"command\": \"Đổi số liệu và tính toán lại đáp án cho câu 1\" }, { \"owner\": \"qa-copilot-component\", \"command\": \"Đổi số liệu và tính toán lại đáp án cho câu 1\" } ], \"unexpected\": 0, \"pending\": 0, \"exam\": { \"id\": \"qa-copilot\", \"createdAt\": \"\", \"updatedAt\": \"\", \"metadata\": { \"title\": \"Copilot QA\", \"subject\": \"toan\", \"grade\": 6, \"durationMinutes\": 15, \"schoolName\": \"\", \"departmentName\": \"\", \"assessmentMode\": \"scored\" }, \"questions\": [ { \"id\": \"a\", \"type\": \"essay\", \"content\": \"QA Copilot đề xuất\", \"difficulty\": \"thong_hieu\", \"points\": 0, \"version\": 4, \"step_by_step_solution\": \"QA lời giải AI giả\", \"figures\": [ { \"id\": \"f\", \"kind\": \"image\", \"data\": { \"note\": \"no URL\" } } ], \"subject\": \"toan\", \"grade\": 6, \"status\": \"draft\", \"verifiedBy\": \"none\", \"aiGenerated\": true }, { \"id\": \"b\", \"type\": \"essay\", \"content\": \"QA câu B phải giữ\", \"difficulty\": \"thong_hieu\", \"points\": 0, \"version\": 2 } ] } }"

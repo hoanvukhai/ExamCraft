@@ -1,0 +1,6 @@
+Target database exists; refusing drop, overwrite or reuse
+Exception: F:\Workspace\Zazz\ExamCraft\scripts\restore.ps1:11
+Line |
+  11 |  … DE -ne 0) { throw 'Restore did not complete. Source and partial artif …
+     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Restore did not complete. Source and partial artifacts retained.

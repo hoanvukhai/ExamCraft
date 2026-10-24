@@ -1,0 +1,98 @@
+
+> exam-craft@0.1.0 build
+> next build --webpack
+
+▲ Next.js 16.4.2 (webpack)
+- Environments: .env
+✓ Running next.config.ts took 121ms
+- Cache Components enabled
+- Partial Prefetching enabled
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 32.6s
+  Running TypeScript ...
+  Finished TypeScript in 17.5s ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/44) ...
+  Generating static pages using 11 workers (11/44) 
+  Generating static pages using 11 workers (22/44) 
+  Generating static pages using 11 workers (33/44) 
+✓ Generating static pages using 11 workers (44/44) in 13.2s
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)
+┌ ◐ /
+├ ○ /_not-found
+├   /a/[publicId]
+│ └ ◐ /a/[publicId]
+├ ○ /admin/ai
+├ ○ /admin/users
+├ ƒ /api/admin/ai
+├ ƒ /api/admin/users
+├ ƒ /api/admin/users/[id]
+├ ƒ /api/assignments
+├ ƒ /api/auth/change-password
+├ ƒ /api/auth/login
+├ ƒ /api/auth/logout
+├ ƒ /api/auth/me
+├ ƒ /api/exam-copilot
+├ ƒ /api/exams
+├ ƒ /api/exams/[id]
+├ ƒ /api/exams/[id]/collaborators
+├ ƒ /api/exams/[id]/comments
+├ ƒ /api/exams/[id]/history
+├ ƒ /api/exams/[id]/share
+├ ƒ /api/folders
+├ ƒ /api/folders/[id]
+├ ƒ /api/generate-exam
+├ ƒ /api/groups
+├ ƒ /api/groups/[id]
+├ ƒ /api/health
+├ ƒ /api/migration/import-legacy
+├ ƒ /api/ocr-exam-image
+├ ƒ /api/parse-docx
+├ ƒ /api/parse-exam-text
+├ ƒ /api/public/assignments/[publicId]
+├ ƒ /api/public/assignments/[publicId]/start
+├ ƒ /api/public/attempts/[id]/draft
+├ ƒ /api/public/attempts/[id]/submit
+├ ƒ /api/public/groups/[groupCode]
+├ ƒ /api/public/share/[id]
+├ ƒ /api/questions
+├ ƒ /api/questions/[id]
+├ ƒ /api/questions/[id]/fork
+├ ƒ /api/questions/[id]/revisions
+├ ƒ /api/questions/shared
+├ ƒ /api/teacher/ai-memory
+├ ƒ /api/teacher/ai-memory/analyze
+├ ƒ /api/teacher/ai-memory/archive
+├ ƒ /api/teacher/assignments/[id]
+├ ƒ /api/teacher/assignments/[id]/export-csv
+├ ƒ /api/teacher/assistant
+├ ƒ /api/teacher/attempts/[id]
+├ ƒ /api/tweak-question
+├ ƒ /api/user/ai-usage
+├ ƒ /api/user/keys
+├ ƒ /api/user/keys/test
+├ ƒ /api/verify-question
+├   /c/[groupCode]
+│ └ ◐ /c/[groupCode]
+├ ○ /editor
+├   /editor/[id]
+│ └ ◐ /editor/[id]
+├ ○ /login
+├   /share/[id]
+│ └ ◐ /share/[id]
+├ ○ /teacher/assignments
+├   /teacher/assignments/[id]
+│ └ ◐ /teacher/assignments/[id]
+├ ○ /teacher/groups
+└   /test/[id]
+  └ ◐ /test/[id]
+
+
+○  (Static)             prerendered as static content
+◐  (Partial Prerender)  prerendered as static HTML with dynamic server-streamed content
+ƒ  (Dynamic)            server-rendered on demand
+

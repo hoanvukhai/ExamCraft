@@ -1,0 +1,77 @@
+{
+  "clientDate": "2026-10-23",
+  "checkedAt": "2026-10-23T03:15:17.304Z",
+  "status": "PASS_WITH_LIMITATIONS",
+  "scope": "Cross-tab draft preservation and access revocation",
+  "build": {
+    "status": "PASS",
+    "buildId": "sp9aSsUUrJN0DQ5YXIbrI",
+    "session": 16800,
+    "staticPages": 44,
+    "typecheck": "PASS",
+    "log": "build-tabs.log"
+  },
+  "safe": {
+    "status": "PASS",
+    "legacy": 20,
+    "additional": 108,
+    "log": "safe-tabs-tests.log",
+    "draftSuiteAfterFixtureTypeFix": 12
+  },
+  "lint": {
+    "status": "TARGETED_PASS",
+    "session": 78781,
+    "files": [
+      "src/lib/exam-draft.ts",
+      "src/lib/exam-client.ts",
+      "src/components/useExamPersistence.ts",
+      "tests/generation_and_drafts.test.ts",
+      "tests/http_workflows.test.ts"
+    ],
+    "repositoryWideClean": false
+  },
+  "http": {
+    "status": "PASS",
+    "passed": 15,
+    "includesParentTests": true,
+    "buildId": "sp9aSsUUrJN0DQ5YXIbrI",
+    "log": "http-tabs-tests.log",
+    "database": "examcraft_test_20261022",
+    "checksAdded": [
+      "Concurrent reorder vs delete/edit gives one full winner and one conflict",
+      "Revoked editor cannot update; document/version/revision count unchanged"
+    ]
+  },
+  "browser": {
+    "status": "PASS_FOR_LISTED_SCENARIOS",
+    "fixture": "revocation-fixture.json",
+    "image": "revoked-draft-kept.png",
+    "checks": [
+      "Server outage while editing",
+      "Downgrade to viewer disables editing and keeps local content",
+      "Full revocation freezes editor; draft remains listed for download",
+      "Direct test DB read confirms original version/content/solution unchanged"
+    ],
+    "limitations": [
+      "Same IAB context; no independent browsers available",
+      "Poll acted before retry; immediate PATCH403 UI path not separately exercised",
+      "Writer storage preservation tested with fixture, not full simultaneous browser matrix",
+      "No JSON download/reload recovery proof in this round"
+    ]
+  },
+  "integration": {
+    "status": "INHERITED_NOT_RERUN",
+    "evidence": "../rebuild-2026-10-22/integration_s1.json",
+    "passed": 7
+  },
+  "mainDatabaseMutations": false,
+  "realAiCalls": false,
+  "qaServer": "STOPPED",
+  "remaining": [
+    "Atomic cross-tab storage and simultaneous read/write races",
+    "Independent-browser offline/reload/reconnect",
+    "Save403 and late-response UI cases",
+    "CV014/015 data and asset migration checks",
+    "Other open canonical checklist criteria"
+  ]
+}

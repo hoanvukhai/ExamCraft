@@ -1,0 +1,47 @@
+[
+  {
+    "id": "header-schoolName",
+    "style": "text-align: center; min-height: 1.2em;",
+    "text": ""
+  },
+  {
+    "id": "header-departmentName",
+    "style": "text-align: center; min-height: 1.2em;",
+    "text": ""
+  },
+  {
+    "id": "header-examCode",
+    "style": "text-align: center; min-height: 1.2em;",
+    "text": ""
+  },
+  {
+    "id": "66f4c1fa-9ff1-4b27-a94a-d431f3d6fb20",
+    "style": "text-align: right; min-height: 1.2em;",
+    "text": "DÒNG RIÊNG QA — CĂN PHẢI"
+  },
+  {
+    "id": "header-academicYear",
+    "style": "text-align:center;min-height:1.2em",
+    "text": "Năm học: 2028–2029 QA MỚI"
+  },
+  {
+    "id": "header-semester",
+    "style": "text-align: center; min-height: 1.2em;",
+    "text": ""
+  },
+  {
+    "id": "header-subjectGrade",
+    "style": "text-align:center;min-height:1.2em",
+    "text": "Môn: Toán · Lớp 6"
+  },
+  {
+    "id": "header-durationScore",
+    "style": "text-align:center;min-height:1.2em",
+    "text": "Thời gian làm bài: 15 phút · Tổng 0,00 điểm"
+  },
+  {
+    "id": "header-notes",
+    "style": "text-align: left; min-height: 1.2em;",
+    "text": "QA ghi chú cuối đề — giữ câu, ảnh và điểm0"
+  }
+]

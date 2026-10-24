@@ -1,0 +1,34 @@
+- link "Soạn đề thi":
+  - /url: /
+  - text: Soạn đề thi
+- generic: /
+- generic: Quản lý lớp học
+- heading "Lớp Học & Danh Sách Học Sinh" [level=1]:
+  - text: Lớp Học & Danh Sách Học Sinh
+- paragraph: Quản lý lớp dạy thêm, danh sách học sinh và gửi link thi trực tuyến theo từng lớp.
+- button "Tạo Lớp Mới":
+  - text: Tạo Lớp Mới
+- textbox "Tìm kiếm theo tên lớp hoặc mã lớp..."
+- text: "Tổng cộng:"
+- strong: "1"
+- text: lớp
+- generic: "MÃ: QANHOM027D"
+- button "Chép link":
+  - generic: Chép link
+- heading "QA nhóm kiểm thêm học sinh 23-10" [level=3]
+- generic: Học sinh
+- text: "1"
+- generic: Bài đã giao
+- text: "0"
+- button "Xem Danh Sách" [active]
+- link "Mở cổng lớp học":
+  - /url: /c/QANHOM027D
+- heading "QA nhóm kiểm thêm học sinh 23-10" [level=3]
+- paragraph: "Mã lớp: QANHOM027D • 1 học sinh"
+- button:
+- textbox "Thêm tên học sinh mới..."
+- button "Thêm"
+- generic: "1"
+- generic: Học sinh QA thêm bằng nút
+- button "Đóng"
+- alert

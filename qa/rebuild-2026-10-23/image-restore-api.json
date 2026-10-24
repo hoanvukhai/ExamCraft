@@ -1,0 +1,20 @@
+{
+  "checkedAt": "2026-10-23T04:10:06.291Z",
+  "status": "PASS",
+  "sourceMovedNotDeleted": true,
+  "mainDatabaseMutations": false,
+  "realAiCalls": false,
+  "originalExamId": "ex_a00acacd94ca7c6da6fc1773848f0ede254df423",
+  "restoredExamId": "ex_6d8e64bbd2b1bca58e8d16737ee3a3790943cd5e",
+  "sourceHttpStatusAfterMove": 500,
+  "originalImageSha256": "3cdb8f730abecb5f832ecb0cbbbccaee8ac945ad1d51f1876ba24fb619ba14b7",
+  "restoredImageSha256": "3cdb8f730abecb5f832ecb0cbbbccaee8ac945ad1d51f1876ba24fb619ba14b7",
+  "bytes": 280,
+  "embeddedImages": 1,
+  "originalExamUnchanged": true,
+  "zeroPointsAndSolutionRetained": true,
+  "database": "examcraft_test_20261022",
+  "archive": "image-portable-backup.json",
+  "preservedSource": "image-source-preserved.png",
+  "method": "API and production backup helper, not browser export/import proof"
+}

@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "origin": "http://127.0.0.1:3121",
+  "engine": "real browser IndexedDB + Dexie",
+  "results": [
+    {
+      "name": "Actual IndexedDB preserves old IDs and retries across both stores",
+      "status": "PASS"
+    },
+    {
+      "name": "Actual IndexedDB rolls back exam insert when question-store write fails",
+      "status": "PASS"
+    },
+    {
+      "name": "Actual IndexedDB export reads all historical sources and keeps differing same-ID variants",
+      "status": "PASS"
+    },
+    {
+      "name": "Malformed collection rejected before any IndexedDB write",
+      "status": "PASS"
+    }
+  ],
+  "scope": "QA origin only; no PostgreSQL or AI",
+  "productionImportConflictResolution": "Not verified: source variants kept by export, server handling remains separate"
+}

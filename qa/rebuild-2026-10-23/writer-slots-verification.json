@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-23",
+  "status": "PASS_LISTED_WRITER_PRESERVATION_CASES",
+  "buildId": "n0TxaWxNOdv9hnPYmFFiB",
+  "build": "PASS 44 pages and typecheck",
+  "safe": {
+    "legacy": 20,
+    "additional": 123,
+    "total": 143
+  },
+  "browser": {
+    "bothAfterReload": "writer-both-after-reload.json",
+    "aAfterBSave": "writer-a-survives-b-save.json",
+    "tabs": 2,
+    "origin": "http://127.0.0.1:3121",
+    "independentBrowsers": false
+  },
+  "sourceDatabaseWrites": 0,
+  "providerCalls": 0,
+  "serverStopped": true,
+  "report": "WRITER_SLOTS.md",
+  "limitations": [
+    "Full React offline and independent browsers remain open",
+    "Quota or blocked storage can refuse writes",
+    "Old bundles without writer slots cannot be upgraded in place"
+  ]
+}

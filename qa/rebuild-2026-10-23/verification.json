@@ -1,0 +1,72 @@
+{
+  "clientDate": "2026-10-23",
+  "checkedAt": "2026-10-23T03:00:31.762Z",
+  "status": "PASS_WITH_LIMITATIONS",
+  "scope": "Draft recovery, expected account for collaboration, acknowledged logout",
+  "build": {
+    "status": "PASS",
+    "session": 5647,
+    "buildId": "KHJx_jM0NuQ_FZlOZZScv",
+    "staticPages": 44,
+    "typecheck": "PASS",
+    "log": "build.log"
+  },
+  "safe": {
+    "status": "PASS",
+    "legacy": 20,
+    "additional": 105,
+    "log": "safe-tests.log"
+  },
+  "lint": {
+    "status": "TARGETED_PASS",
+    "session": 98993,
+    "files": [
+      "src/lib/auth-client.ts",
+      "src/components/ExamCollaboratorsPanel.tsx",
+      "src/app/api/auth/logout/route.ts",
+      "tests/http_auth.test.ts",
+      "tests/http_workflows.test.ts"
+    ],
+    "limitations": "Repository-wide lint not clean; auth_security.test.ts has pre-existing explicit-any fixtures; LocalDraftsPanel has hard-navigation warning."
+  },
+  "runtime": {
+    "docker": "examcraft_postgres healthy on 5436; previous blocker resolved",
+    "database": {
+      "status": "PASS",
+      "passed": 7,
+      "target": "examcraft_test_20261022",
+      "evidence": "../rebuild-2026-10-22/integration_s1.json",
+      "checkedAt": "2026-10-23T02:35:21.462Z"
+    },
+    "http": {
+      "status": "PASS",
+      "passed": 14,
+      "includesParentTests": true,
+      "buildId": "KHJx_jM0NuQ_FZlOZZScv",
+      "log": "http-tests.log",
+      "evidence": [
+        "../rebuild-2026-10-22/http_auth.json",
+        "../rebuild-2026-10-22/http_workflows.json"
+      ],
+      "assertions": [
+        "Shared exam GET rejects stale expected account",
+        "Seven collaboration/comment/history operations reject stale account without changing membership or creating comments",
+        "Valid account creates comment with correct author",
+        "Stale logout rejected; current session remains usable"
+      ]
+    },
+    "browser": {
+      "status": "PASS_FOR_LISTED_SCENARIOS",
+      "evidence": "browser-recovery.json",
+      "limitations": "Two tabs in one browser context; server outage simulation, not independent-browser offline"
+    },
+    "qaServer": "STOPPED_AFTER_VERIFICATION"
+  },
+  "mainDatabaseMutations": false,
+  "realAiCalls": false,
+  "remaining": [
+    "Independent-browser offline/reconnect, structural edit and revocation races",
+    "Full CV010/CV011/CV049/CV050 acceptance",
+    "Real provider quality and remaining S0-S9 criteria"
+  ]
+}

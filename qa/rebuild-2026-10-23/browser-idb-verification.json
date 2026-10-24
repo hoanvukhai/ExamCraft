@@ -1,0 +1,74 @@
+{
+  "date": "2026-10-23",
+  "status": "PASS_FOR_LISTED_UI_IDB_AND_IMPORT_CONTRACTS",
+  "buildId": "VYNzCRwtZWRudnxBJRtrr",
+  "build": "PASS typecheck and 44 pages",
+  "safe": {
+    "legacy": 20,
+    "passed": 137,
+    "additional": 117
+  },
+  "http": {
+    "database": "examcraft_test_20261022",
+    "sameIdDifferentContent": {
+      "previewErrors": 4,
+      "newExams": 0,
+      "newQuestions": 0,
+      "importErrors": 4,
+      "sourceUnchanged": true
+    },
+    "passed": 16
+  },
+  "lint": "PASS legacy-import.ts and both changed test files",
+  "browser": {
+    "allPartsDownloaded": false,
+    "libraryExams": 101,
+    "fullLibraryReimported": false,
+    "actualDownloadedPart": 2,
+    "oldImportEnabledBeforeCorrupt": true,
+    "oldConfirmationCountAfterCorrupt": 0,
+    "oldImportButtonCountAfterCorrupt": 0,
+    "displayedParts": [
+      100,
+      1
+    ],
+    "actualDownloadedBytes": 604,
+    "actualDownloadedExamCount": 1,
+    "reselectedPartPreview": {
+      "errors": 0,
+      "alreadyImported": 1,
+      "ready": 0
+    },
+    "embeddedImages": 5,
+    "buildId": "y2-iNGvWM3oaX2Gz81aqr"
+  },
+  "indexedDb": {
+    "origin": "http://127.0.0.1:3121",
+    "result": "indexeddb-browser-verification.json",
+    "engine": "actual browser IndexedDB with Dexie",
+    "groupsPassed": 4
+  },
+  "mainDatabaseMutated": false,
+  "providerCalls": 0,
+  "qaServersStopped": true,
+  "integration": "7/7 inherited, not rerun",
+  "limitations": [
+    "Cross-file/request same-ID source variants not compared",
+    "No UI for separating conflicting variants yet",
+    "Multipart UI verified on earlier build; final change server-only",
+    "No browser archive above 30MB or memory benchmark",
+    "No full local-to-server migration UI or independent-browser race",
+    "No operational DB+assets full restore"
+  ],
+  "report": "BROWSER_AND_INDEXEDDB.md",
+  "logs": [
+    "build-browser-idb.log",
+    "safe-browser-idb.log",
+    "http-browser-idb.log"
+  ],
+  "screenshots": [
+    "backup-parts-ui.png",
+    "backup-corrupt-after-preview-ui.png",
+    "indexeddb-browser-ui.png"
+  ]
+}

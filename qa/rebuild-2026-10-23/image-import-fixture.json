@@ -1,0 +1,53 @@
+{
+  "exams": [
+    {
+      "id": "qa-image-import-20261023",
+      "createdAt": "2026-10-23T04:00:15.241Z",
+      "updatedAt": "2026-10-23T04:00:15.241Z",
+      "metadata": {
+        "title": "QA nhập và khôi phục ảnh",
+        "subject": "toan",
+        "grade": 6,
+        "durationMinutes": 15,
+        "schoolName": "",
+        "departmentName": ""
+      },
+      "questions": [
+        {
+          "id": "q",
+          "type": "essay",
+          "difficulty": "thong_hieu",
+          "content": "QA ảnh xanh phải còn sau khôi phục",
+          "step_by_step_solution": "QA lời giải kèm ảnh",
+          "figures": [
+            {
+              "id": "qa-png",
+              "kind": "image",
+              "data": {
+                "url": "/qa-image-restore-20261023.png"
+              },
+              "caption": "Ảnh QA xanh160x80"
+            }
+          ],
+          "points": 0
+        }
+      ]
+    },
+    {
+      "id": "qa-invalid-image-import-20261023",
+      "metadata": {
+        "title": "QA mục lỗi cần giữ",
+        "subject": "toan",
+        "grade": 6
+      },
+      "questions": [
+        {
+          "id": "bad",
+          "type": "unsupported",
+          "content": "Không nhập mục này"
+        }
+      ]
+    }
+  ],
+  "questions": []
+}

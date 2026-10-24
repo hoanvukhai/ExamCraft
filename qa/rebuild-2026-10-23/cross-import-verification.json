@@ -1,0 +1,61 @@
+{
+  "date": "2026-10-23",
+  "status": "PASS_FOR_LISTED_CROSS_REQUEST_IMPORT_AND_LOCAL_RESTORE",
+  "buildId": "lOm4oDENdPsYrIuh__aZb",
+  "build": "PASS typecheck and 44 pages",
+  "safe": {
+    "additional": 118,
+    "legacy": 20,
+    "passed": 138
+  },
+  "http": {
+    "checked": [
+      "cross-request exam and bank source conflict",
+      "source retry after server edit preserves revision",
+      "explicit deterministic copies and retry",
+      "missing original receipt copied safely",
+      "two competing requests serialized and loser copy retained",
+      "existing permissions, resume and import limits regression"
+    ],
+    "target": "examcraft_test_20261022",
+    "passed": 16
+  },
+  "browser": {
+    "copyPreview": "1 ready, 1 error",
+    "confirmReset": true,
+    "importResult": "1 copy imported, 1 error",
+    "oldImportPreview": "0 ready, 2 errors",
+    "screenshots": [
+      "cross-import-conflict-ui.png",
+      "cross-import-copy-ui.png"
+    ]
+  },
+  "fullRestore": {
+    "evidence": "full-restore-verification.json",
+    "files": 6,
+    "tables": 24,
+    "target": "examcraft_restore_full_20261023085454302",
+    "encryptedKeysVerified": 1,
+    "status": "PASS_FOR_LOCAL_DB_FILES_CONFIG_RESTORE",
+    "sourceUnchanged": true
+  },
+  "mainDatabaseDataMutated": false,
+  "schemaChanged": false,
+  "providerCalls": 0,
+  "qaServerStopped": true,
+  "lint": "PASS source helper and changed test files",
+  "integration": "7/7 inherited, not rerun",
+  "logs": [
+    "build-cross-import.log",
+    "safe-cross-import.log",
+    "http-cross-import.log"
+  ],
+  "report": "CROSS_IMPORT_AND_FULL_RESTORE.md",
+  "limitations": [
+    "Legacy imports without receipts are conservative conflicts; copy option provided",
+    "A copy whose receipt itself is lost requires manual source review",
+    "No app cutover or RPO/RTO acceptance",
+    "DPAPI same Windows identity/machine only",
+    "Legacy restore and retention scripts still need safe entrypoint replacement"
+  ]
+}

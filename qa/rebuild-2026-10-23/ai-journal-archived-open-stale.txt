@@ -1,0 +1,66 @@
+- heading "QA Copilot thật — API giả, không DB/provider" [level=1]
+- paragraph: CSP chặn mạng; fake fetch không có fallback.
+- button "Reset Copilot QA"
+- button "Đổi phạm vi QA"
+- button "Trả phản hồi Copilot giả" [disabled]
+- checkbox "Parent từ chối Copilot"
+- text: Parent từ chối Copilot
+- checkbox "B đổi ngay trong updater"
+- text: B đổi ngay trong updater
+- text: Hành động giả
+- combobox "Hành động giả":
+  - option "Sửa câu A"
+  - option "Thêm câu" [selected]
+  - option "Bỏ câu A"
+- generic "Đề xuất AI trên máy · 0 đang chờ"
+- paragraph: Đề xuất giữ riêng theo tài khoản. Bản đã cất vẫn còn để đối chiếu, không có nghĩa đã lưu đề lên máy chủ.
+- generic "Đề xuất đã cất · 2"
+- paragraph: "KẾT QUẢ GIẢ: giáo viên duyệt thay đổi."
+- paragraph: 2026-10-24T02:28:15.603Z
+- button "Tải bản đối chiếu"
+- button "Xem lại đề xuất" [active]
+- paragraph: "KẾT QUẢ GIẢ: giáo viên duyệt thay đổi."
+- paragraph: 2026-10-24T02:27:44.015Z
+- button "Tải bản đối chiếu"
+- button "Xem lại đề xuất"
+- status: Đã mở đề xuất để xem lại. Chưa thay nội dung đề; bản nền cũ vẫn bị chặn.
+- complementary "Trợ lý và công cụ nhanh":
+  - region "Đề xuất AI chưa áp dụng":
+    - paragraph: "KẾT QUẢ GIẢ: giáo viên duyệt thay đổi."
+    - alert: Câu, thứ tự hoặc phạm vi đã đổi từ khi gửi AI. Chưa áp dụng để giữ bản mới; đề xuất vẫn ở đây.
+    - paragraph: Bản đề xuất
+    - generic: QA Copilot đề xuất
+    - text: "Lời giải:"
+    - generic: QA lời giải AI giả
+    - button "Áp dụng" [disabled]
+    - button "Tải đề xuất"
+    - button "Cất đề xuất"
+    - paragraph: Bản đối chiếu có trong mục Đề xuất AI trên máy, kể cả sau khi cất hoặc áp dụng. Tải về để dự phòng; áp dụng vào bản soạn chưa phải xác nhận lưu máy chủ.
+    - paragraph: Sửa câu giữ điểm và liên kết hiện có. Câu thêm mới chưa đặt điểm hoặc gắn phần/ngữ liệu; giáo viên cấu hình sau khi kiểm tra.
+  - button "Hoàn tác Copilot (1)" [disabled]
+  - button "Làm lại Copilot (1)" [disabled]
+  - status: Đề hoặc phạm vi đã đổi sau thao tác này. Chưa hoàn tác/làm lại để giữ bản mới; hãy đối chiếu lịch sử.
+  - paragraph: Lịch sử thao tác này giữ trong phiên soạn hiện tại. Lưu đề để có mốc trên máy chủ.
+  - heading "Gemini Copilot2.0" [level=3]
+  - paragraph: Trợ lý biên tập đề thi chuyên nghiệp
+  - button "Thu gọn dải công cụ":
+  - text: "Đang nhắm tới:"
+  - generic: Câu số 1
+  - text: "Gợi ý lệnh nhanh:"
+  - button "Đổi số liệu câu 1" [disabled]:
+    - text: Đổi số liệu câu 1
+  - button "Tăng độ khó câu 1" [disabled]:
+    - text: Tăng độ khó câu 1
+  - button "Giảm độ khó câu 1" [disabled]:
+    - text: Giảm độ khó câu 1
+  - button "Biến thành toán thực tế" [disabled]:
+    - text: Biến thành toán thực tế
+  - button "Tạo câu hỏi tương đương" [disabled]:
+    - text: Tạo câu hỏi tương đương
+  - text: Đã áp dụng vào bản soạn. Bản đối chiếu được giữ; hãy lưu đề và kiểm tra nội dung trước khi chốt.
+  - 'textbox "Nhập yêu cầu cho Gemini (vd: đổi số liệu câu 2, thêm bẫy câu 3...)" [disabled]'
+  - generic: Nhấn Enter ↵ để gửi
+  - button "Gửi lệnh" [disabled]:
+    - text: Gửi lệnh
+- heading "Bằng chứng state" [level=2]
+- generic: "{ \"ownerId\": \"qa-copilot-component\", \"generation\": 1, \"reject\": false, \"race\": false, \"submissions\": 8, \"calls\": [ { \"owner\": \"qa-copilot-component\", \"command\": \"Đổi số liệu và tính toán lại đáp án cho câu 1\" } ], \"unexpected\": 0, \"pending\": 0, \"exam\": { \"id\": \"qa-copilot\", \"createdAt\": \"\", \"updatedAt\": \"\", \"metadata\": { \"title\": \"Copilot QA\", \"subject\": \"toan\", \"grade\": 6, \"durationMinutes\": 15, \"schoolName\": \"\", \"departmentName\": \"\", \"assessmentMode\": \"survey\" }, \"questions\": [ { \"id\": \"a\", \"type\": \"essay\", \"content\": \"QA Copilot đề xuất\", \"difficulty\": \"thong_hieu\", \"points\": 0, \"version\": 6, \"step_by_step_solution\": \"QA lời giải AI giả\", \"figures\": [ { \"id\": \"f\", \"kind\": \"image\", \"data\": { \"note\": \"no URL\" } } ], \"subject\": \"toan\", \"grade\": 6, \"status\": \"draft\", \"verifiedBy\": \"none\", \"aiGenerated\": true }, { \"id\": \"b\", \"type\": \"essay\", \"content\": \"QA câu B phải giữ\", \"difficulty\": \"thong_hieu\", \"step_by_step_solution\": \"\", \"points\": 0, \"version\": 2 } ] } }"

@@ -1,0 +1,4 @@
+Browser tab: 33, Title: "ExamCraft - Trợ Lý Soạn Đề AI Cho Giáo Viên", URL: "http://localhost:3117/a/446b557862363956ea976cc0becca19f".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+~		6 text 29:21 Lưu nháp  10:06:17
+The focused UI element is 79 text entry area (settable) Trình bày câu trả lời (giáo viên sẽ chấm), Value: Lấy một đơn vị ra khỏi một đơn vị thì còn không đơn vị nào, nên 1 - 1 = 0.

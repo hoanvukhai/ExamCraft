@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-10-23T13:27:24.520Z",
+  "status": "PASS",
+  "database": "examcraft_test_20261022",
+  "readOnly": true,
+  "examId": "ex_dfc36d842dd0da700caad3fb0ef0db42fc89bc12",
+  "version": 4,
+  "recoveredPlanCount": 2,
+  "targetPointsHundredths": 0,
+  "questionCount": 1,
+  "questionPoints": 0,
+  "figureKept": true,
+  "solutionKept": true,
+  "realAiCalls": false
+}

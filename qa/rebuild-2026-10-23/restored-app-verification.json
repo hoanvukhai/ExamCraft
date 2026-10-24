@@ -1,0 +1,23 @@
+{
+  "status": "PASS",
+  "checkedAt": "2026-10-23T09:32:47.076Z",
+  "restoredDatabase": "examcraft_restore_app_20261023",
+  "runDirectory": "backups\\restore-run-examcraft_restore_app_20261023-1792747811102",
+  "appRoot": "backups\\restore-run-examcraft_restore_app_20261023-1792747811102\\app",
+  "buildId": "lOm4oDENdPsYrIuh__aZb",
+  "productionStartup": true,
+  "protectedRuntimeConfigTargetsCopy": true,
+  "rekeyedCopiedKeys": 1,
+  "copiedKeysPlaintextPreserved": true,
+  "fixtureLogin": true,
+  "examSavedAndReopened": true,
+  "zeroPointsAndSolutionPreserved": true,
+  "directDatabaseConfirmed": true,
+  "restoredFilesServedAndHashed": 6,
+  "mainSourceUnchanged": true,
+  "mainConfigModified": false,
+  "providerCalls": 0,
+  "deletions": 0,
+  "fixtureDataRetained": true,
+  "serverStoppedInFinally": true
+}

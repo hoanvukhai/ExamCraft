@@ -1,0 +1,17 @@
+{
+  "tick": 6,
+  "state": "saved",
+  "message": "",
+  "owner": "B",
+  "title": "Bản gốc B",
+  "version": 1,
+  "points": 0,
+  "solution": "Lời giải giả",
+  "pending": [],
+  "serverA": "Sửa A trước khi phản hồi",
+  "serverB": "Bản gốc B",
+  "draftsA": [
+    "Sửa A trước khi phản hồi"
+  ],
+  "draftsB": []
+}

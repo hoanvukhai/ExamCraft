@@ -1,0 +1,88 @@
+TAP version 13
+# Subtest: move and duplicate use latest question values while stale order/document/permission is rejected
+ok 1 - move and duplicate use latest question values while stale order/document/permission is rejected
+  ---
+  duration_ms: 7.309
+  type: 'test'
+  ...
+# Subtest: undo rejects another writer or changed context and is guarded again inside the current-exam updater
+ok 2 - undo rejects another writer or changed context and is guarded again inside the current-exam updater
+  ---
+  duration_ms: 51.1015
+  type: 'test'
+  ...
+# Subtest: undo history is not consumed before acknowledgement; chained undo rebases only its expected after-stamp
+ok 3 - undo history is not consumed before acknowledgement; chained undo rebases only its expected after-stamp
+  ---
+  duration_ms: 2.0984
+  type: 'test'
+  ...
+# Subtest: manual submission guards owner, document, edit permission, full question and source baseline
+ok 4 - manual submission guards owner, document, edit permission, full question and source baseline
+  ---
+  duration_ms: 59.5048
+  type: 'test'
+  ...
+# Subtest: writer journals survive independently; owner/document boundaries and malformed records are enforced
+ok 5 - writer journals survive independently; owner/document boundaries and malformed records are enforced
+  ---
+  duration_ms: 8.8672
+  type: 'test'
+  ...
+# Subtest: late acknowledgement cannot retire a newer draft revision
+ok 6 - late acknowledgement cannot retire a newer draft revision
+  ---
+  duration_ms: 0.7864
+  type: 'test'
+  ...
+# Subtest: applying an edited recovery must not retire the different draft of another writer
+ok 7 - applying an edited recovery must not retire the different draft of another writer
+  ---
+  duration_ms: 0.9093
+  type: 'test'
+  ...
+# Subtest: applied drafts stay durable until server confirmation and cleanup only retires matching content/context
+ok 8 - applied drafts stay durable until server confirmation and cleanup only retires matching content/context
+  ---
+  duration_ms: 6.9005
+  type: 'test'
+  ...
+# Subtest: reopening an applied but unacknowledged journal takes the current baseline without retiring the source
+ok 9 - reopening an applied but unacknowledged journal takes the current baseline without retiring the source
+  ---
+  duration_ms: 9.8181
+  type: 'test'
+  ...
+# Subtest: account recovery index keeps old-document drafts discoverable after a server ID changes
+ok 10 - account recovery index keeps old-document drafts discoverable after a server ID changes
+  ---
+  duration_ms: 3.1573
+  type: 'test'
+  ...
+# Subtest: quota preserves a memory-only draft and cannot erase an older durable copy
+ok 11 - quota preserves a memory-only draft and cannot erase an older durable copy
+  ---
+  duration_ms: 2.1381
+  type: 'test'
+  ...
+# Subtest: invalid numeric draft is retained for download and cannot masquerade as valid zero/null
+ok 12 - invalid numeric draft is retained for download and cannot masquerade as valid zero/null
+  ---
+  duration_ms: 4.3048
+  type: 'test'
+  ...
+# Subtest: archive preserves raw malformed sources and refuses stale revisions or storage failure
+ok 13 - archive preserves raw malformed sources and refuses stale revisions or storage failure
+  ---
+  duration_ms: 3.1103
+  type: 'test'
+  ...
+1..13
+# tests 13
+# suites 0
+# pass 13
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1910.4315

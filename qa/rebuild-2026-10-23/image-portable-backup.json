@@ -1,0 +1,47 @@
+{
+  "app": "ExamCraft",
+  "formatVersion": 2,
+  "exportedAt": "2026-10-23T04:10:07.615Z",
+  "embeddedImages": 1,
+  "exams": [
+    {
+      "id": "ex_a00acacd94ca7c6da6fc1773848f0ede254df423",
+      "version": 1,
+      "metadata": {
+        "grade": 6,
+        "title": "QA nhập và khôi phục ảnh",
+        "subject": "toan",
+        "schoolName": "",
+        "departmentName": "",
+        "durationMinutes": 15
+      },
+      "createdAt": "2026-10-23T04:10:07.511Z",
+      "questions": [
+        {
+          "id": "q",
+          "type": "essay",
+          "points": 0,
+          "status": "draft",
+          "content": "QA ảnh xanh phải còn sau khôi phục",
+          "figures": [
+            {
+              "id": "qa-png",
+              "data": {
+                "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAABQCAIAAAARP+ljAAAA30lEQVR4nO3RsQmAMAAAwdTW1qmd2BGdw94mlYjPwQ3w8GPbD8LG5wW8yuA4g+MMjnsOnufFrxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkctxhMjMFxBscZHGdw3A3peSlNDUZB6wAAAABJRU5ErkJggg=="
+              },
+              "kind": "image",
+              "caption": "Ảnh QA xanh160x80",
+              "renderedBase64": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAABQCAIAAAARP+ljAAAA30lEQVR4nO3RsQmAMAAAwdTW1qmd2BGdw94mlYjPwQ3w8GPbD8LG5wW8yuA4g+MMjnsOnufFrxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkcZ3CcwXEGxxkctxhMjMFxBscZHGdw3A3peSlNDUZB6wAAAABJRU5ErkJggg=="
+            }
+          ],
+          "difficulty": "thong_hieu",
+          "verifiedBy": "none",
+          "step_by_step_solution": "QA lời giải kèm ảnh"
+        }
+      ],
+      "updatedAt": "2026-10-23T04:10:07.511Z",
+      "serverId": "ex_a00acacd94ca7c6da6fc1773848f0ede254df423"
+    }
+  ],
+  "questions": []
+}

@@ -1,0 +1,16 @@
+{
+  "action": "read after reload or other writer",
+  "writer": "a",
+  "owner": "qa-writer-6ff86635-52be-44da-87ec-48f443b04c19",
+  "sharedResumeTitle": "Nháp tab b",
+  "drafts": [
+    {
+      "storageId": "recovery:shared-writer-fixture:bdaf315e-fc81-494a-bfeb-603a6ee69b57",
+      "title": "Nháp tab a",
+      "points": 0,
+      "solution": "Lời giải tab a"
+    }
+  ],
+  "anotherOwnerDrafts": 0,
+  "unreadable": 0
+}

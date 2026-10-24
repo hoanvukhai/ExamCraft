@@ -1,0 +1,170 @@
+- banner:
+  - button "Mở rộng bảng công cụ":
+  - link "ExamCraft":
+    - /url: /
+    - generic: ExamCraft
+  - link "Kho đề":
+    - /url: /
+    - generic: Kho đề
+  - button "QA lệnh câu và hoàn tác 20261024":
+    - generic: QA lệnh câu và hoàn tác 20261024
+  - generic: Đã lưu trên máy chủ
+  - button "Tải Word (.docx)":
+    - generic: Tải Word (.docx)
+  - button "In / PDF":
+    - generic: In / PDF
+  - button "Gemini AI":
+    - generic: Gemini AI
+  - button "Chuyển sang chế độ Sáng (Màu trắng Google)":
+  - button "Khóa AI":
+    - generic: Khóa AI
+  - button "G":
+    - generic: G
+- link "Về kho đề":
+  - /url: /
+- button "Trình chiếu"
+- button "Cùng soạn · Góp ý · Lịch sử"
+- generic: Đề của bạn
+- complementary "Bảng công cụ soạn đề":
+  - button "Tạo bản nháp đề để giáo viên kiểm tra và chỉnh sửa":
+  - button "Mở thanh trợ lý AI Gemini ở cột bên phải":
+  - button "Xem và chọn ghi chú, cách trình bày riêng cho trợ lý":
+  - button "Trộn đề thành 4 mã đề kèm ma trận đáp án":
+  - button "Xem phân bố câu hỏi và điểm của đề đang soạn":
+  - button "Cài đặt Sở GD&ĐT, Trường THPT, thời gian, mã đề":
+  - button "Chọn câu hỏi từ Ngân hàng chèn vào đề":
+  - button "Sao lưu đề kèm ảnh và nhập kho cũ":
+  - button "Bóc tách câu hỏi từ file Word / Ảnh chụp đưa thêm vào đề":
+  - button "Tạo link cho học sinh làm bài hoặc chia sẻ đề cho đồng nghiệp":
+  - button "Xem danh sách bài nộp và phổ điểm học sinh":
+  - button "Quản lý khóa AI cá nhân và lượt dùng trong ứng dụng":
+  - button "Mở rộng menu":
+- generic "Bản nháp chưa lưu trên máy này"
+- generic "Nháp câu hỏi trên máy · 0 chưa xử lý"
+- text: Thầy cô vẫn có thể
+- strong: soạn, lưu và xuất đề thủ công
+- text: . Thêm khóa Gemini cá nhân khi muốn dùng trợ lý AI.
+- button "Thêm khóa AI"
+- main:
+  - heading "Ngân Hàng Câu Hỏi Trong Đề 2 câu" [level=2]:
+    - generic: Ngân Hàng Câu Hỏi Trong Đề
+    - generic: 2 câu
+  - paragraph: QA lệnh câu và hoàn tác 20261024 (TOAN 6)
+  - button "Chọn tất cả":
+    - generic: Chọn tất cả
+  - button "Lưu đề" [active]:
+    - generic: Lưu đề
+  - button "Thêm câu hỏi":
+    - generic: Thêm câu hỏi
+  - generic "Phần của đề và ngữ liệu dùng chung"
+  - option "Không gắn phần" [selected]
+  - option "Không gắn ngữ liệu" [selected]
+  - option "Không gắn phần" [selected]
+  - option "Không gắn ngữ liệu" [selected]
+  - generic "Mẫu cá nhân và nguồn tham khảo"
+  - generic "Kiến thức và phạm vi ra đề (tùy chọn)"
+  - generic "Kế hoạch đề · mục tiêu và thực tế"
+  - option "Lựa chọn"
+  - option "Đúng / sai"
+  - option "Trả lời ngắn"
+  - option "Tự luận" [selected]
+  - option "Điền khuyết"
+  - option "Ghép nối"
+  - option "Sắp xếp"
+  - option "Không gắn mức" [selected]
+  - option "Không ràng buộc yêu cầu" [selected]
+  - checkbox "Chọn câu hỏi này để gộp câu hoặc thao tác hàng loạt"
+  - generic: "1"
+  - generic: Tự luận
+  - generic: 0 điểm
+  - button "Hoàn tác (1)":
+    - generic: Hoàn tác (1)
+  - button "Đổi số liệu":
+    - generic: Đổi số liệu
+  - button "Câu tương tự":
+    - generic: Câu tương tự
+  - button "Thẩm định AI":
+    - generic: Thẩm định AI
+  - button "Bảo AI sửa câu này":
+    - generic: Bảo AI sửa câu này
+  - button "Lưu câu hỏi này vào Ngân hàng câu hỏi cá nhân":
+  - button "Di chuyển câu hỏi lên trên (↑)" [disabled]:
+  - button "Di chuyển câu hỏi xuống dưới (↓)":
+  - button "Nhân bản (sao chép) câu hỏi này":
+  - button "Sửa nội dung câu hỏi thủ công":
+  - button "Xóa câu hỏi này":
+  - generic: QA A SỬA 3
+  - figure "Ảnh QA xanh160x80":
+    - img "Ảnh QA xanh160x80"
+    - generic: Ảnh QA xanh160x80
+  - button "Xem lời giải chi tiết":
+    - generic: Xem lời giải chi tiết
+  - checkbox "Chọn câu hỏi này để gộp câu hoặc thao tác hàng loạt"
+  - generic: "2"
+  - generic: Tự luận
+  - generic: 0 điểm
+  - button "Đổi số liệu":
+    - generic: Đổi số liệu
+  - button "Câu tương tự":
+    - generic: Câu tương tự
+  - button "Thẩm định AI":
+    - generic: Thẩm định AI
+  - button "Bảo AI sửa câu này":
+    - generic: Bảo AI sửa câu này
+  - button "Lưu câu hỏi này vào Ngân hàng câu hỏi cá nhân":
+  - button "Di chuyển câu hỏi lên trên (↑)":
+  - button "Di chuyển câu hỏi xuống dưới (↓)" [disabled]:
+  - button "Nhân bản (sao chép) câu hỏi này":
+  - button "Sửa nội dung câu hỏi thủ công":
+  - button "Xóa câu hỏi này":
+  - generic: QA LỆNH CÂU B
+  - figure "Ảnh QA xanh160x80":
+    - img "Ảnh QA xanh160x80"
+    - generic: Ảnh QA xanh160x80
+  - button "Xem lời giải chi tiết":
+    - generic: Xem lời giải chi tiết
+  - button "Đề thi in ấn":
+    - generic: Đề thi in ấn
+  - button "Bảng đáp án & Barem":
+    - generic: Bảng đáp án & Barem
+  - button "Hướng dẫn giải":
+    - generic: Hướng dẫn giải
+  - button "Ma trận & Đặc tả":
+    - generic: Ma trận & Đặc tả
+  - button "Thu nhỏ":
+  - generic: 100%
+  - button "Phóng to":
+  - button "Khôi phục chuẩn 100%":
+  - button "In / PDF":
+    - generic: In / PDF
+  - button "Tải file Word (.docx)":
+    - generic: Tải file Word (.docx)
+  - generic: DÒNG RIÊNG QA — CĂN PHẢI
+  - generic: "Năm học: 2029–2030 QA TÙY CHỈNH"
+  - generic: "Môn: Toán · Lớp 6"
+  - generic: "Thời gian làm bài: 15 phút · Tổng 0,00 điểm"
+  - generic: "Họ và tên thí sinh: ........................................................................"
+  - generic: "Lớp: ......... SBD: .........."
+  - paragraph:
+    - generic: "Câu 1:"
+    - generic: (0 điểm)
+    - generic: QA A SỬA 3
+  - figure "Ảnh QA xanh160x80":
+    - img "Ảnh QA xanh160x80"
+    - generic: Ảnh QA xanh160x80
+  - paragraph:
+    - generic: "Câu 2:"
+    - generic: (0 điểm)
+    - generic: QA LỆNH CÂU B
+  - figure "Ảnh QA xanh160x80":
+    - img "Ảnh QA xanh160x80"
+    - generic: Ảnh QA xanh160x80
+  - generic: QA ghi chú cuối đề — giữ câu, ảnh và điểm0
+  - generic: "---------- HẾT ----------"
+- complementary "Trợ lý và công cụ nhanh":
+  - button "Mở Trợ lý Gemini AI Copilot (Bên phải)":
+  - button "Ma trận và đặc tả của đề":
+  - button "Trộn 4 mã đề thi hoán vị":
+  - button "Cài đặt Tiêu đề Sở/Trường & Thông tin đề thi":
+  - button "Mở rộng bảng Trợ lý AI":
+- alert

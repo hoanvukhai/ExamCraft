@@ -1,0 +1,190 @@
+- banner:
+  - button "Thu gọn bảng công cụ":
+  - link "ExamCraft":
+    - /url: /
+    - generic: ExamCraft
+  - link "Kho đề":
+    - /url: /
+    - generic: Kho đề
+  - button "QA nhập và khôi phục ảnh":
+    - generic: QA nhập và khôi phục ảnh
+  - generic: Đã lưu trên máy chủ
+  - button "Tải Word (.docx)":
+    - generic: Tải Word (.docx)
+  - button "In / PDF":
+    - generic: In / PDF
+  - button "Gemini AI":
+    - generic: Gemini AI
+  - button "Chuyển sang chế độ Sáng (Màu trắng Google)":
+  - button "Khóa AI":
+    - generic: Khóa AI
+  - button "G":
+    - generic: G
+- link "Về kho đề":
+  - /url: /
+- button "Trình chiếu"
+- button "Cùng soạn · Góp ý · Lịch sử"
+- generic: Đề của bạn
+- complementary:
+  - button "Sinh đề AI Mới":
+    - generic: Sinh đề AI Mới
+  - paragraph: Biên tập & Công cụ
+  - button "Trợ lý AI Copilot":
+    - generic: Trợ lý AI Copilot
+  - button "Ghi chú riêng cho AI":
+    - generic: Ghi chú riêng cho AI
+  - button "Trộn 4 mã đề":
+    - generic: Trộn 4 mã đề
+  - button "Ma trận của đề":
+    - generic: Ma trận của đề
+  - button "Tiêu đề trường thi":
+    - generic: Tiêu đề trường thi
+  - paragraph: Ngân hàng & Nhập liệu
+  - button "Ngân hàng câu hỏi":
+    - generic: Ngân hàng câu hỏi
+  - button "Sao lưu · Nhập kho cũ":
+    - generic: Sao lưu · Nhập kho cũ
+  - button "Nhập đề (Word/Ảnh)":
+    - generic: Nhập đề (Word/Ảnh)
+  - paragraph: Khảo thí Online
+  - button "Chia sẻ & Thi Online":
+    - generic: Chia sẻ & Thi Online
+  - button "Bảng điểm thi":
+    - generic: Bảng điểm thi
+  - button "Kho Khóa AI (Keys)":
+    - generic: Kho Khóa AI (Keys)
+  - button "Thu gọn":
+    - generic: Thu gọn
+- generic "Bản nháp chưa lưu trên máy này"
+- text: Tài khoản chưa cấu hình Khóa AI. Hãy
+- strong: thêm Google Gemini API Key cá nhân
+- text: để mở khóa quyền năng AI sinh đề, đổi số liệu và sửa câu hỏi tự động.
+- button "Cấu hình ngay"
+- main:
+  - heading "Ngân Hàng Câu Hỏi Trong Đề 1 câu" [level=2]:
+    - generic: Ngân Hàng Câu Hỏi Trong Đề
+    - generic: 1 câu
+  - paragraph: QA nhập và khôi phục ảnh (TOAN 6)
+  - button "Chọn tất cả":
+    - generic: Chọn tất cả
+  - button "Lưu lại":
+    - generic: Lưu lại
+  - button "Thêm câu hỏi":
+    - generic: Thêm câu hỏi
+  - generic "Phần của đề và ngữ liệu dùng chung"
+  - option "Không gắn phần" [selected]
+  - option "Không gắn ngữ liệu" [selected]
+  - generic "Kiến thức và phạm vi ra đề (tùy chọn)"
+  - generic "Kế hoạch đề · mục tiêu và thực tế"
+  - option "Lựa chọn"
+  - option "Đúng / sai"
+  - option "Trả lời ngắn"
+  - option "Tự luận" [selected]
+  - option "Điền khuyết"
+  - option "Ghép nối"
+  - option "Sắp xếp"
+  - option "Không gắn mức" [selected]
+  - option "Không ràng buộc yêu cầu" [selected]
+  - checkbox "Chọn câu hỏi này để gộp câu hoặc thao tác hàng loạt"
+  - generic: "1"
+  - generic: Tự luận
+  - generic: 0 điểm
+  - button "Đổi số liệu":
+    - generic: Đổi số liệu
+  - button "Câu tương tự":
+    - generic: Câu tương tự
+  - button "Thẩm định AI":
+    - generic: Thẩm định AI
+  - button "Bảo AI sửa câu này":
+    - generic: Bảo AI sửa câu này
+  - button "Lưu câu hỏi này vào Ngân hàng câu hỏi cá nhân":
+  - button "Di chuyển câu hỏi lên trên (↑)" [disabled]:
+  - button "Di chuyển câu hỏi xuống dưới (↓)" [disabled]:
+  - button "Nhân bản (sao chép) câu hỏi này":
+  - button "Sửa nội dung câu hỏi thủ công":
+  - button "Xóa câu hỏi này":
+  - generic: QA ảnh xanh phải còn sau khôi phục
+  - figure "Ảnh QA xanh160x80":
+    - img "Ảnh QA xanh160x80"
+    - generic: Ảnh QA xanh160x80
+  - button "Xem lời giải chi tiết":
+    - generic: Xem lời giải chi tiết
+  - button "Đề thi in ấn":
+    - generic: Đề thi in ấn
+  - button "Bảng đáp án & Barem":
+    - generic: Bảng đáp án & Barem
+  - button "Hướng dẫn giải":
+    - generic: Hướng dẫn giải
+  - button "Ma trận & Đặc tả" [active]:
+    - generic: Ma trận & Đặc tả
+  - button "Thu nhỏ":
+  - generic: 100%
+  - button "Phóng to":
+  - button "Khôi phục chuẩn 100%":
+  - button "In / PDF":
+    - generic: In / PDF
+  - button "Tải file Word (.docx)":
+    - generic: Tải file Word (.docx)
+  - heading "KẾ HOẠCH CÁ NHÂN — MỤC TIÊU VÀ THỰC TẾ" [level=2]
+  - paragraph: Đối chiếu nhãn do giáo viên gắn; không chứng nhận nội dung đạt yêu cầu hoặc mẫu chính thức. Đơn vị điểm 0,01; không tự chia điểm hay làm tròn điểm câu.
+  - paragraph: Số câu và điểm từng ô khớp các nhãn hiện tại; vẫn cần duyệt nội dung.
+  - paragraph: "Tổng câu mục tiêu: 1; thực tế toàn đề: 1; lệch: 0."
+  - paragraph: "Tổng điểm mục tiêu: 0,00; điểm thực tế đã biết: 0,00; lệch tổng: 0,00."
+  - paragraph: Tổng điểm đã biết gồm cả câu chưa khớp và khớp nhiều ô. Cột điểm từng ô chỉ đếm câu có đúng một ô ứng viên.
+  - table:
+    - rowgroup:
+      - 'row "Ô / dạng câu / mức nhận thức Đặc tả theo yêu cầu cần đạt Câu: mục tiêu / khớp ô / lệch Điểm: mục tiêu / đã biết / lệch"':
+        - columnheader "Ô / dạng câu / mức nhận thức"
+        - columnheader "Đặc tả theo yêu cầu cần đạt"
+        - 'columnheader "Câu: mục tiêu / khớp ô / lệch"'
+        - 'columnheader "Điểm: mục tiêu / đã biết / lệch"'
+    - rowgroup:
+      - 'row "Ô 1: Tự luận (essay) · Không gắn mức Không ràng buộc yêu cầu 1 / 1 / 0 0,00 / 0,00 / 0,00"':
+        - 'cell "Ô 1: Tự luận (essay) · Không gắn mức"'
+        - cell "Không ràng buộc yêu cầu"
+        - cell "1 / 1 / 0"
+        - cell "0,00 / 0,00 / 0,00"
+  - heading "MA TRẬN TỪ NỘI DUNG ĐANG SOẠN" [level=2]
+  - paragraph: "Môn: Toán · Lớp 6"
+  - paragraph: Có đầu mối tài liệu; nội dung và mẫu đánh giá đang chờ duyệt
+  - paragraph: Chưa chọn khung nhận thức phù hợp lớp; nhãn độ khó cũ được giữ riêng.
+  - paragraph: 1 câu chưa gắn mức nhận thức trong khung đang chọn.
+  - paragraph: Còn câu chưa gắn yêu cầu cần đạt; bản đặc tả cần giáo viên bổ sung.
+  - table:
+    - rowgroup:
+      - row "Chủ đề Chưa gắn mức Tổng câu Điểm":
+        - columnheader "Chủ đề"
+        - columnheader "Chưa gắn mức"
+        - columnheader "Tổng câu"
+        - columnheader "Điểm"
+    - rowgroup:
+      - row "Chưa phân loại chủ đề 1 1 0":
+        - cell "Chưa phân loại chủ đề"
+        - cell "1"
+        - cell "1"
+        - cell "0"
+    - rowgroup:
+      - row "Tổng 1 1 0":
+        - rowheader "Tổng"
+        - cell "1"
+        - cell "1"
+        - cell "0"
+  - heading "BẢN ĐẶC TẢ ĐANG SOẠN" [level=3]
+  - table:
+    - rowgroup:
+      - row "Chủ đề Yêu cầu cần đạt Chưa gắn mức":
+        - columnheader "Chủ đề"
+        - columnheader "Yêu cầu cần đạt"
+        - columnheader "Chưa gắn mức"
+    - rowgroup:
+      - row "Chưa phân loại chủ đề Chưa gắn yêu cầu cần đạt; giáo viên cần bổ sung. C1":
+        - cell "Chưa phân loại chủ đề"
+        - cell "Chưa gắn yêu cầu cần đạt; giáo viên cần bổ sung."
+        - cell "C1"
+- complementary:
+  - button "Mở Trợ lý Gemini AI Copilot (Bên phải)":
+  - button "Ma trận và đặc tả của đề":
+  - button "Trộn 4 mã đề thi hoán vị":
+  - button "Cài đặt Tiêu đề Sở/Trường & Thông tin đề thi":
+  - button "Mở rộng bảng Trợ lý AI":
+- alert

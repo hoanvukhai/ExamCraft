@@ -1,0 +1,18 @@
+{
+  "operation": "restore-to-new-database-and-files",
+  "target": "examcraft_restore_package_20261023",
+  "sourceDatabase": "examcraft",
+  "package": "backups\\package-20261023093421079",
+  "sourceWrites": false,
+  "dropsOrOverwrites": false,
+  "status": "RESTORED_VERIFIED",
+  "restoredAt": "2026-10-23T09:36:13.754Z",
+  "restoredDatabase": "examcraft_restore_package_20261023",
+  "tablesMatch": true,
+  "publicFilesMatch": true,
+  "sourceUnchanged": true,
+  "runDirectory": "backups\\restore-run-examcraft_restore_package_20261023-1792748155630",
+  "configProtected": true,
+  "appStarted": false,
+  "packageDigest": "4003d70eba783040259bd9560e98c2425a7d1c3abee1bd36c1548526ce255590"
+}

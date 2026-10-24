@@ -1,0 +1,113 @@
+
+> exam-craft@0.1.0 test:http
+> node --import tsx scripts/test-database.cjs http
+
+Validated test target: 127.0.0.1:5436/examcraft_test_20261022; action=http
+TAP version 13
+# Subtest: authentication revocation and limits on isolated local HTTP server
+    # Subtest: forced password change is enforced by APIs while account details remain readable
+    ok 1 - forced password change is enforced by APIs while account details remain readable
+      ---
+      duration_ms: 31.2412
+      type: 'test'
+      ...
+    # Subtest: changing password preserves current session and revokes every other session
+    ok 2 - changing password preserves current session and revokes every other session
+      ---
+      duration_ms: 204.9721
+      type: 'test'
+      ...
+    # Subtest: logout deletes the server session and old cookie cannot be reused
+    ok 3 - logout deletes the server session and old cookie cannot be reused
+      ---
+      duration_ms: 87.9787
+      type: 'test'
+      ...
+    # Subtest: admin reset and disable revoke sessions permanently, including after reenable
+    ok 4 - admin reset and disable revoke sessions permanently, including after reenable
+      ---
+      duration_ms: 372.8672
+      type: 'test'
+      ...
+    # Subtest: five failed logins block that account while another account remains usable
+    ok 5 - five failed logins block that account while another account remains usable
+      ---
+      duration_ms: 538.2064
+      type: 'test'
+      ...
+    1..5
+ok 1 - authentication revocation and limits on isolated local HTTP server
+  ---
+  duration_ms: 2236.3677
+  type: 'test'
+  ...
+# Subtest: HTTP workflows on the isolated local server
+    # Subtest: anonymous, foreign owner and cross-origin writes are rejected
+    ok 1 - anonymous, foreign owner and cross-origin writes are rejected
+      ---
+      duration_ms: 108.1769
+      type: 'test'
+      ...
+    # Subtest: collaboration honors view, edit, CAS, history and revocation
+    ok 2 - collaboration honors view, edit, CAS, history and revocation
+      ---
+      duration_ms: 852.8964
+      type: 'test'
+      ...
+    # Subtest: structural edits conflict without partial merges and revoked writers cannot retry
+    ok 3 - structural edits conflict without partial merges and revoked writers cannot retry
+      ---
+      duration_ms: 311.235
+      type: 'test'
+      ...
+    # Subtest: legacy preview is read-only, import resumes per item and retries never overwrite teacher edits
+    ok 4 - legacy preview is read-only, import resumes per item and retries never overwrite teacher edits
+      ---
+      duration_ms: 422.4376
+      type: 'test'
+      ...
+    # Subtest: public share and assignment hide keys and assignment freezes the source
+    ok 5 - public share and assignment hide keys and assignment freezes the source
+      ---
+      duration_ms: 98.9433
+      type: 'test'
+      ...
+    # Subtest: attempt cookie is required; submit is idempotent and essay remains pending
+    ok 6 - attempt cookie is required; submit is idempotent and essay remains pending
+      ---
+      duration_ms: 175.1344
+      type: 'test'
+      ...
+    # Subtest: knowledge snapshot and scope survive HTTP saves, reject a changed revision and stay out of public shares
+    ok 7 - knowledge snapshot and scope survive HTTP saves, reject a changed revision and stay out of public shares
+      ---
+      duration_ms: 204.3019
+      type: 'test'
+      ...
+    # Subtest: bank saves passages, forks privately and protects edit, history and soft delete with versions
+    ok 8 - bank saves passages, forks privately and protects edit, history and soft delete with versions
+      ---
+      duration_ms: 185.5796
+      type: 'test'
+      ...
+    # Subtest: private memory import is previewed, owner-isolated and inactive by default
+    ok 9 - private memory import is previewed, owner-isolated and inactive by default
+      ---
+      duration_ms: 67.3296
+      type: 'test'
+      ...
+    1..9
+ok 2 - HTTP workflows on the isolated local server
+  ---
+  duration_ms: 3339.1386
+  type: 'test'
+  ...
+1..2
+# tests 16
+# suites 0
+# pass 16
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3961.6891
