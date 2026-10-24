@@ -55,6 +55,16 @@ function parseEntry(key: string, raw: string): GradeDraftEntry {
   return entry;
 }
 
+/**
+ * What a panel open for this teacher and attempt may show: only entries stored under this teacher's and attempt's own
+ * key namespace. Unreadable or oversized records stay visible (raw, for export) but only when they sit in that namespace,
+ * so a stale or wrong prop can never expose another account's bytes.
+ */
+export function gradeDraftsForOpen(entries: readonly GradeDraftEntry[], teacherId: string, attemptId: string) {
+  const prefix = attemptPrefix(teacherId, attemptId);
+  return entries.filter(entry => entry.key.startsWith(prefix) && (!entry.value || (entry.value.teacherId === teacherId && entry.value.attemptId === attemptId)));
+}
+
 /** All drafts of one teacher on one attempt (every page that wrote one), optionally narrowed to a question. */
 export function readGradeDrafts(getStorage: () => GradeDraftStorage, teacherId: string, attemptId: string, questionKey?: string): { entries: GradeDraftEntry[]; unavailable: boolean } {
   try {
@@ -70,7 +80,8 @@ export function readGradeDrafts(getStorage: () => GradeDraftStorage, teacherId: 
 export function writeGradeDraft(getStorage: () => GradeDraftStorage, ctx: GradeDraftContext, writerId: string, input: { baseRevision: string; score: string; comment: string; rubric?: Record<string, unknown> | null }, now = new Date()): GradeDraftWrite {
   if (!ctx.teacherId || !ctx.attemptId || !ctx.questionKey || !writerId || !input.baseRevision) return 'invalid';
   const record: GradeDraftRecord = { v: 1, ...ctx, writerId, baseRevision: input.baseRevision, score: input.score, comment: input.comment, rubric: input.rubric ?? null, savedAt: now.toISOString() };
-  const raw = JSON.stringify(record);
+  let raw: string;
+  try { raw = JSON.stringify(record); } catch { return 'invalid'; } // circular or BigInt rubric: nothing is written
   if (record.score.length > MAX_SCORE || record.comment.length > MAX_COMMENT || new TextEncoder().encode(raw).length > MAX_RAW_BYTES) return 'too_large';
   try {
     const storage = getStorage(), key = gradeDraftKey(ctx, writerId), existing = storage.getItem(key);
@@ -85,9 +96,13 @@ export type ParsedScore = { kind: 'blank' } | { kind: 'number'; value: number } 
 export function parseScoreText(raw: string): ParsedScore {
   const text = raw.trim().replace(',', '.');
   if (!text) return { kind: 'blank' };
-  return /^\d+(\.\d+)?$/.test(text) ? { kind: 'number', value: Number(text) } : { kind: 'invalid' };
+  if (!/^\d+(\.\d+)?$/.test(text)) return { kind: 'invalid' };
+  const value = Number(text);
+  return Number.isFinite(value) ? { kind: 'number', value } : { kind: 'invalid' };
 }
 
+/** The request exactly as it was sent: the base token and the raw typed text. */
+export interface GradeSent { baseRevision: string; score: string; comment: string; rubric?: Record<string, unknown> | null }
 /** What the server now holds for the answer, as acknowledged by a successful save. */
 export interface GradeAck { manualScore: number | null; comment: string | null; rubric?: unknown }
 const sameAck = (record: GradeDraftRecord, ack: GradeAck) => {
@@ -96,16 +111,19 @@ const sameAck = (record: GradeDraftRecord, ack: GradeAck) => {
   const rubricOk = ack.rubric === undefined ? record.rubric === null : stableJson(record.rubric) === stableJson(ack.rubric);
   return scoreOk && record.comment === (ack.comment ?? '') && rubricOk;
 };
+const sameSent = (record: GradeDraftRecord, sent: GradeSent) =>
+  record.baseRevision === sent.baseRevision && record.score === sent.score && record.comment === sent.comment && stableJson(record.rubric) === stableJson(sent.rubric ?? null);
 /**
- * After a save is acknowledged, remove only this page's slot and only if it holds exactly what the server now has.
- * Anything typed after the saved request (a longer comment, another score) differs from the ack and is kept.
+ * After a save is acknowledged, remove only this page's slot and only when BOTH hold: it is exactly the request that was
+ * sent (same base token and same raw typed text) and the server now holds exactly that. A draft that moved on to a newer
+ * base with the same words, or that has more typed text, is a different draft and is kept.
  */
-export function retireWriterGradeDraft(getStorage: () => GradeDraftStorage, ctx: GradeDraftContext, writerId: string, ack: GradeAck): boolean {
+export function retireWriterGradeDraft(getStorage: () => GradeDraftStorage, ctx: GradeDraftContext, writerId: string, sent: GradeSent, ack: GradeAck): boolean {
   try {
     const storage = getStorage(), key = gradeDraftKey(ctx, writerId), raw = storage.getItem(key);
     if (raw === null) return true;
     const value = parseEntry(key, raw).value;
-    if (!value || !sameAck(value, ack) || storage.getItem(key) !== raw) return false;
+    if (!value || !sameSent(value, sent) || !sameAck(value, ack) || storage.getItem(key) !== raw) return false;
     storage.removeItem(key);
     return true;
   } catch { return false; }

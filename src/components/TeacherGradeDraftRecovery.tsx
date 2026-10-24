@@ -1,12 +1,12 @@
 'use client';
 
-import { canApplyGradeDraft, exportGradeDraft, parseScoreText, type GradeDraftEntry, type GradeDraftRecord, type GradeDraftWrite } from '@/lib/teacher-grade-draft';
+import { canApplyGradeDraft, exportGradeDraft, gradeDraftsForOpen, parseScoreText, type GradeDraftEntry, type GradeDraftRecord, type GradeDraftWrite } from '@/lib/teacher-grade-draft';
 
 interface Props {
   /** The account and attempt this panel is open for. The parent should also key the panel by both. */
   teacherId: string;
   attemptId: string;
-  /** From readGradeDrafts(...); entries of another teacher or attempt are ignored here as a second line of defence. */
+  /** From readGradeDrafts(...); entries outside this teacher's and attempt's key namespace (readable or not) are dropped here as a second line of defence. */
   entries: GradeDraftEntry[];
   /** True when the browser blocked reading storage, so no backup exists to show. */
   unavailable?: boolean;
@@ -31,7 +31,7 @@ const scoreText = (raw: string) => { const score = parseScoreText(raw); return s
 
 /** Backup panel for typed-but-unsaved grades. Small on purpose: read, compare, choose, download. */
 export function TeacherGradeDraftRecovery({ teacherId, attemptId, entries, unavailable, writeStatus, currentRevisions, questionLabel, writerId, disabled, onApply }: Props) {
-  const mine = entries.filter(entry => !entry.value || (entry.value.teacherId === teacherId && entry.value.attemptId === attemptId));
+  const mine = gradeDraftsForOpen(entries, teacherId, attemptId);
   const blocked = unavailable || (writeStatus !== undefined && writeStatus !== null && writeStatus !== 'saved');
   if (!mine.length && !blocked) return null;
   return <details className="border rounded-xl p-3 my-3 text-xs" open={blocked || undefined}>

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { canApplyGradeDraft, discardWriterGradeDraft, exportGradeDraft, gradeDraftKey, parseScoreText, readGradeDrafts, retireWriterGradeDraft, stableJson, writeGradeDraft, type GradeDraftContext, type GradeDraftStorage } from '../src/lib/teacher-grade-draft';
+import { canApplyGradeDraft, discardWriterGradeDraft, exportGradeDraft, gradeDraftKey, gradeDraftsForOpen, parseScoreText, readGradeDrafts, retireWriterGradeDraft, stableJson, writeGradeDraft, type GradeDraftContext, type GradeDraftStorage } from '../src/lib/teacher-grade-draft';
 
 const memory = () => {
   const data = new Map<string, string>();
@@ -10,6 +10,8 @@ const memory = () => {
 const ctx: GradeDraftContext = { teacherId: 'teacher-a', attemptId: 'att-1', questionKey: 'q1' };
 const input = (over: Record<string, unknown> = {}) => ({ baseRevision: 'rev-1', score: '1,5', comment: 'Làm tốt', ...over });
 const NOW = new Date('2026-10-24T08:00:00Z');
+// The request as sent, built from the same typed values that were written.
+const sentOf = (over: Record<string, unknown> = {}) => ({ baseRevision: 'rev-1', score: '1,5', comment: 'Làm tốt', rubric: null, ...over }) as { baseRevision: string; score: string; comment: string; rubric: Record<string, unknown> | null };
 
 test('keys never collide across teacher, attempt, question and writer, even with separators in the ids', () => {
   const keys = new Set([gradeDraftKey(ctx, 'w1'), gradeDraftKey({ ...ctx, teacherId: 'teacher-b' }, 'w1'), gradeDraftKey({ ...ctx, attemptId: 'att-2' }, 'w1'), gradeDraftKey({ ...ctx, questionKey: 'q2' }, 'w1'), gradeDraftKey(ctx, 'w2'),
@@ -63,42 +65,75 @@ test('two pages never overwrite or retire each other', () => {
   assert.equal(writeGradeDraft(() => store, ctx, 'tab-a', input({ score: '1', comment: 'A' }), NOW), 'saved');
   assert.equal(writeGradeDraft(() => store, ctx, 'tab-b', input({ score: '2', comment: 'B' }), NOW), 'saved');
   assert.equal(readGradeDrafts(() => store, 'teacher-a', 'att-1', 'q1').entries.length, 2);
-  assert.equal(retireWriterGradeDraft(() => store, ctx, 'tab-a', { manualScore: 1, comment: 'A' }), true);
+  assert.equal(retireWriterGradeDraft(() => store, ctx, 'tab-a', sentOf({ score: '1', comment: 'A' }), { manualScore: 1, comment: 'A' }), true);
   const left = readGradeDrafts(() => store, 'teacher-a', 'att-1', 'q1').entries;
   assert.deepEqual(left.map(entry => entry.value?.comment), ['B'], 'tab-b keeps its own draft');
   assert.equal(discardWriterGradeDraft(() => store, ctx, 'tab-a'), true, 'already gone is fine');
   assert.equal(readGradeDrafts(() => store, 'teacher-a', 'att-1', 'q1').entries.length, 1);
 });
 
-test('an acknowledgement retires the draft only when the server holds exactly what was typed', () => {
+test('an acknowledgement retires the draft only when it is the request that was sent and the server holds exactly that', () => {
   const store = memory(), slot = () => store.data.has(gradeDraftKey(ctx, 'w'));
   const put = (over: Record<string, unknown>) => writeGradeDraft(() => store, ctx, 'w', input(over), NOW);
   put({ score: '1,75', comment: 'ok' });
-  assert.equal(retireWriterGradeDraft(() => store, ctx, 'w', { manualScore: 1.75, comment: 'ok' }), true, '1,75 typed equals 1.75 saved');
+  assert.equal(retireWriterGradeDraft(() => store, ctx, 'w', sentOf({ score: '1,75', comment: 'ok' }), { manualScore: 1.75, comment: 'ok' }), true, '1,75 typed equals 1.75 saved');
   assert.equal(slot(), false);
   put({ score: '1.5', comment: 'đã gõ thêm sau khi gửi' });
-  assert.equal(retireWriterGradeDraft(() => store, ctx, 'w', { manualScore: 1.5, comment: 'bản đã gửi' }), false, 'late receipt after typing more: keep the newer text');
+  assert.equal(retireWriterGradeDraft(() => store, ctx, 'w', sentOf({ score: '1.5', comment: 'bản đã gửi' }), { manualScore: 1.5, comment: 'bản đã gửi' }), false, 'late receipt after typing more: keep the newer text');
   assert.equal(slot(), true);
-  assert.equal(retireWriterGradeDraft(() => store, ctx, 'w', { manualScore: 2, comment: 'đã gõ thêm sau khi gửi' }), false, 'different score');
+  assert.equal(retireWriterGradeDraft(() => store, ctx, 'w', sentOf({ score: '1.5', comment: 'đã gõ thêm sau khi gửi' }), { manualScore: 2, comment: 'đã gõ thêm sau khi gửi' }), false, 'server holds a different score');
   put({ score: '', comment: '' });
-  assert.equal(retireWriterGradeDraft(() => store, ctx, 'w', { manualScore: 0, comment: null }), false, 'a blank draft is not acknowledged by a graded 0');
+  assert.equal(retireWriterGradeDraft(() => store, ctx, 'w', sentOf({ score: '', comment: '' }), { manualScore: 0, comment: null }), false, 'a blank draft is not acknowledged by a graded 0');
   assert.equal(slot(), true);
-  assert.equal(retireWriterGradeDraft(() => store, ctx, 'w', { manualScore: null, comment: null }), true, 'pending with no comment equals a blank draft');
+  assert.equal(retireWriterGradeDraft(() => store, ctx, 'w', sentOf({ score: '', comment: '' }), { manualScore: null, comment: null }), true, 'pending with no comment equals a blank draft');
   put({ score: '0', comment: '' });
-  assert.equal(retireWriterGradeDraft(() => store, ctx, 'w', { manualScore: null, comment: null }), false, 'a typed 0 is not the pending state');
-  assert.equal(retireWriterGradeDraft(() => store, ctx, 'w', { manualScore: 0, comment: '' }), true);
+  assert.equal(retireWriterGradeDraft(() => store, ctx, 'w', sentOf({ score: '0', comment: '' }), { manualScore: null, comment: null }), false, 'a typed 0 is not the pending state');
+  assert.equal(retireWriterGradeDraft(() => store, ctx, 'w', sentOf({ score: '0', comment: '' }), { manualScore: 0, comment: '' }), true);
   put({ score: 'abc' });
-  assert.equal(retireWriterGradeDraft(() => store, ctx, 'w', { manualScore: 0, comment: 'Làm tốt' }), false, 'invalid text is never treated as 0');
+  assert.equal(retireWriterGradeDraft(() => store, ctx, 'w', sentOf({ score: 'abc' }), { manualScore: 0, comment: 'Làm tốt' }), false, 'invalid text is never treated as 0');
   put({ rubric: { r1: 1 } });
-  assert.equal(retireWriterGradeDraft(() => store, ctx, 'w', { manualScore: 1.5, comment: 'Làm tốt' }), false, 'a rubric the server does not hold yet stays');
-  assert.equal(retireWriterGradeDraft(() => store, ctx, 'w', { manualScore: 1.5, comment: 'Làm tốt', rubric: { r1: 1 } }), true);
+  assert.equal(retireWriterGradeDraft(() => store, ctx, 'w', sentOf({ rubric: { r1: 1 } }), { manualScore: 1.5, comment: 'Làm tốt' }), false, 'a rubric the server does not hold yet stays');
+  assert.equal(retireWriterGradeDraft(() => store, ctx, 'w', sentOf({ rubric: { r1: 1 } }), { manualScore: 1.5, comment: 'Làm tốt', rubric: { r1: 1 } }), true);
+});
+
+test('a draft that moved to a newer base with the same words is not retired by the acknowledgement of the older request', () => {
+  const store = memory(), slot = () => store.data.has(gradeDraftKey(ctx, 'w'));
+  writeGradeDraft(() => store, ctx, 'w', input({ baseRevision: 'rev-B', score: '1,5', comment: 'Làm tốt' }), NOW);
+  assert.equal(retireWriterGradeDraft(() => store, ctx, 'w', sentOf({ baseRevision: 'rev-A' }), { manualScore: 1.5, comment: 'Làm tốt' }), false, 'request A was acknowledged, the draft is already based on B');
+  assert.equal(slot(), true);
+  assert.equal(retireWriterGradeDraft(() => store, ctx, 'w', sentOf({ baseRevision: 'rev-B' }), { manualScore: 1.5, comment: 'Làm tốt' }), true, 'the acknowledgement of the request that really matches it');
+  writeGradeDraft(() => store, ctx, 'w', input({ score: '1.5' }), NOW);
+  assert.equal(retireWriterGradeDraft(() => store, ctx, 'w', sentOf({ score: '1,5' }), { manualScore: 1.5, comment: 'Làm tốt' }), false, 'same number but not the same raw text that was sent: keep');
+});
+
+test('a panel shows only records of its own teacher and attempt, readable or not, and keeps their raw bytes', () => {
+  const store = memory(), own = gradeDraftKey(ctx, 'w'), other = gradeDraftKey({ ...ctx, teacherId: 'teacher-b' }, 'w'), otherAttempt = gradeDraftKey({ ...ctx, attemptId: 'att-2' }, 'w');
+  store.data.set(own, '{broken own'); store.data.set(other, '{broken of B'); store.data.set(otherAttempt, 'x'.repeat(300 * 1024));
+  writeGradeDraft(() => store, { ...ctx, questionKey: 'q2' }, 'w2', input(), NOW);
+  const all = [...readGradeDrafts(() => store, 'teacher-a', 'att-1').entries, ...readGradeDrafts(() => store, 'teacher-b', 'att-1').entries, ...readGradeDrafts(() => store, 'teacher-a', 'att-2').entries];
+  assert.equal(all.length, 4);
+  const shown = gradeDraftsForOpen(all, 'teacher-a', 'att-1');
+  assert.deepEqual(shown.map(entry => entry.key).sort(), [own, gradeDraftKey({ ...ctx, questionKey: 'q2' }, 'w2')].sort(), 'bytes of another teacher or attempt are not exposed even if a stale prop carries them');
+  assert.equal(shown.find(entry => entry.key === own)!.raw, '{broken own', 'own unreadable bytes stay available for export');
+  assert.deepEqual(gradeDraftsForOpen(all, 'teacher-b', 'att-1').map(entry => entry.raw), ['{broken of B']);
+  assert.deepEqual(gradeDraftsForOpen(all, 'teacher-c', 'att-1'), []);
+});
+
+test('typing that cannot be serialized or turned into a number never breaks the grading flow or becomes a score', () => {
+  const store = memory();
+  const circular: Record<string, unknown> = {}; circular.self = circular;
+  assert.equal(writeGradeDraft(() => store, ctx, 'w', input({ rubric: circular }), NOW), 'invalid', 'circular rubric');
+  assert.equal(writeGradeDraft(() => store, ctx, 'w', input({ rubric: { big: BigInt(1) } }), NOW), 'invalid', 'BigInt rubric');
+  assert.equal(store.data.size, 0, 'nothing written for either');
+  assert.deepEqual(parseScoreText('9'.repeat(400)), { kind: 'invalid' }, 'a number too large to be finite is not a score');
+  assert.deepEqual(parseScoreText('1' + '0'.repeat(30)), { kind: 'number', value: 1e30 });
 });
 
 test('storage denied, full or hostile never throws and never destroys unreadable data', () => {
   const denied = () => { throw new Error('SecurityError'); };
   assert.deepEqual(readGradeDrafts(denied, 'teacher-a', 'att-1'), { entries: [], unavailable: true });
   assert.equal(writeGradeDraft(denied, ctx, 'w', input(), NOW), 'unavailable');
-  assert.equal(retireWriterGradeDraft(denied, ctx, 'w', { manualScore: 1, comment: null }), false);
+  assert.equal(retireWriterGradeDraft(denied, ctx, 'w', sentOf(), { manualScore: 1, comment: null }), false);
   assert.equal(discardWriterGradeDraft(denied, ctx, 'w'), false);
   const full = memory(); full.setItem = () => { throw new Error('QuotaExceededError'); };
   assert.equal(writeGradeDraft(() => full, ctx, 'w', input(), NOW), 'unavailable');
@@ -109,7 +144,7 @@ test('storage denied, full or hostile never throws and never destroys unreadable
     assert.equal(entries[0].value, undefined);
     assert.equal(entries[0].raw, bad, 'raw bytes available for export');
     assert.equal(writeGradeDraft(() => store, ctx, 'w', input(), NOW), 'blocked', 'own slot holding unreadable data is not overwritten');
-    assert.equal(retireWriterGradeDraft(() => store, ctx, 'w', { manualScore: 1.5, comment: 'Làm tốt' }), false);
+    assert.equal(retireWriterGradeDraft(() => store, ctx, 'w', sentOf(), { manualScore: 1.5, comment: 'Làm tốt' }), false);
     assert.equal(discardWriterGradeDraft(() => store, ctx, 'w'), false);
     assert.equal(store.data.get(key), bad, 'never deleted');
   }
