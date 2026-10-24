@@ -47,6 +47,8 @@ Luồng phải chạy trơn từ đầu đến cuối (mỗi luồng có kiểm 
 - **GEM-P3:** gói chuẩn bị nội dung `PILOT-TOAN-6`: mục lục/yêu cầu cần đạt có nguồn và trang, trạng thái "chờ duyệt"; không nạp vào mã.
 - **GEM-P4:** bản mô tả tuyển giáo viên thử và người duyệt chuyên môn cho chủ dự án (không tự liên hệ ai).
 
+**Phân công cập nhật 24/10 (chủ dự án):** Claude chỉ làm việc khó (task CLAUDE-PILOT-FEATURES: tùy chọn giao bài nâng cao và chế độ xem Song song, xem [PILOT_GAP_ANALYSIS](../../qa/rebuild-2026-10-24/PILOT_GAP_ANALYSIS.md)), phân tích, thiết kế và duyệt; Gemini nhận khối lượng việc nhẹ lớn nhất (thêm GEM-P6 gói nội dung môn 2, GEM-P7 dữ liệu đề mẫu cho bộ kiểm, GEM-P8 thẻ kiểm Word/offline); Codex nhận việc cơ học và mọi việc cần build/DB/server.
+
 **Claude (chỉ đạo):** duyệt từng bàn giao theo mã/bằng chứng, giữ ASSIGNMENTS/BATCH_REVIEWS, cập nhật 02/03 theo báo cáo nhóm, đề xuất bước kế.
 
 ## 6. Thứ tự và cổng

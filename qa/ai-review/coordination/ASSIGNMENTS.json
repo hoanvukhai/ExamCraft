@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "updated_at_utc": "2026-10-24T14:22:44.000Z",
+  "updated_at_utc": "2026-10-24T14:39:13.000Z",
   "coordinator": "CLAUDE",
   "shared_root": "F:/Workspace/Zazz/ExamCraft",
   "purpose": "Assignments only; not the canonical product checklist",
@@ -438,7 +438,7 @@
       "depends_on": [
         "CODEX-P1-E2E"
       ],
-      "scope": "Sửa lỗi lộ ra từ bộ kiểm theo thứ tự P0 (010,011,023,024,026,027,043,054–062,073); commit nhỏ; mỗi lần cập nhật dòng Hiện trạng của CV và báo cáo nhóm; không đóng CV.",
+      "scope": "Sửa lỗi lộ ra từ bộ kiểm theo thứ tự P0 (010,011,023,024,026,027,043,054–062,073); commit nhỏ; mỗi lần cập nhật dòng Hiện trạng của CV và báo cáo nhóm; không đóng CV. Khoảng cách D–I trong qa/rebuild-2026-10-24/PILOT_GAP_ANALYSIS.md; A và B do Claude làm, Codex không làm trùng.",
       "allowed_code": [
         "theo từng lỗi; ghi tệp trước khi sửa vào CODEX_STATUS"
       ],
@@ -501,16 +501,71 @@
             "qa/ai-review/GEMINI_ACCOUNT_CALLERS.md"
           ],
           "scope": "Chỉ làm khi GEM-P1..P4 xong: sửa bản đồ caller tài khoản theo yêu cầu đã trả (CV011). Kế thừa G01/G04."
+        },
+        {
+          "id": "GEM-P6",
+          "kind": "content_pack",
+          "priority": "P1",
+          "deliverables": [
+            "docs/nghien-cuu/goi/PILOT-MON-2/00_PHAM_VI.md",
+            "docs/nghien-cuu/goi/PILOT-MON-2/01_MUC_LUC_VA_YEU_CAU.md"
+          ],
+          "scope": "Như GEM-P3 cho một môn khác Toán (ưu tiên Ngữ văn 11 hoặc Tiếng Anh 10): mục lục sách, yêu cầu cần đạt, nguồn kèm trang, trạng thái chờ duyệt, điểm chưa chắc. Ghi rõ đặc thù môn (ngữ liệu, nghe, tự luận nhiều hướng)."
+        },
+        {
+          "id": "GEM-P7",
+          "kind": "fixture_data",
+          "priority": "P0",
+          "deliverables": [
+            "tests/fixtures/pilot/toan6-bay-dang.json",
+            "tests/fixtures/pilot/mon2-ngu-lieu.json",
+            "tests/fixtures/pilot/README.md"
+          ],
+          "scope": "Soạn dữ liệu đề mẫu cho bộ kiểm tự động: một đề Toán 6 đủ 7 dạng câu (có điểm 0, hình, ngữ liệu, đáp án và lời giải) và một đề môn 2 có ngữ liệu dài. Nội dung tự soạn, ghi \"ví dụ kỹ thuật, không phải đề chuẩn\". Định dạng theo kiểu Exam trong src/types/exam.ts (đọc mã, không sửa). Chỉ tạo các tệp này; Codex nạp và chạy."
+        },
+        {
+          "id": "GEM-P8",
+          "kind": "readonly_report",
+          "priority": "P1",
+          "deliverables": [
+            "docs/huong-dan/THE_KIEM_TAY_GIAO_BAI_VA_WORD.md"
+          ],
+          "scope": "Thẻ kiểm tay cho hai việc chưa tự động hóa được: mở file Word và bản in nhiều trang (khoảng cách C trong qa/rebuild-2026-10-24/PILOT_GAP_ANALYSIS.md), và thử offline/hai trình duyệt (K). Mỗi thẻ: chuẩn bị, bước, kết quả mong đợi, nơi ghi kết quả, ảnh cần chụp."
         }
       ],
       "rules": [
         "Không push/reset/clean; không ghi DB chính; không gọi AI/provider thật; không chép key/cookie/.env",
         "Test ghi chỉ trên DB thử đã kiểm đích; một build tại một thời điểm, không chạy lint/SAFE cùng build",
-        "Cập nhật status của mình sau mỗi mốc; gửi tin vào messages/ khi xong hoặc bị chặn"
+        "Cập nhật status của mình sau mỗi mốc; gửi tin vào messages/ khi xong hoặc bị chặn",
+        "Khối lượng lớn nhất của việc nhẹ thuộc Gemini: làm hết GEM-P1…P8 theo thứ tự P0 trước (P1, P2, P7, P3, P4) rồi P1 (P6, P8), cuối cùng GEM-P5"
       ]
+    },
+    {
+      "task_id": "CLAUDE-PILOT-FEATURES",
+      "assignment_generation": 14,
+      "owner": "CLAUDE",
+      "priority": "P0",
+      "depends_on": [
+        "CODEX-P0-COMMIT"
+      ],
+      "branch": "ai/claude-pilot-features",
+      "worktree": "F:/Workspace/Zazz/ExamCraft/tmp/ai-claude-pilot-features",
+      "scope": "Tính năng mới khó: (A) tùy chọn nâng cao khi giao bài (giờ mở/đóng, số lượt, mã vào bài, PIN, trộn) và (B) chế độ xem Song song cho đề/đáp án; thiết kế ở qa/rebuild-2026-10-24/PILOT_GAP_ANALYSIS.md mục 3.",
+      "allowed_code": [
+        "src/components/ShareModal.tsx",
+        "src/lib/assignment-options.ts",
+        "tests/assignment_options.test.ts",
+        "src/components/A4Preview.tsx",
+        "src/lib/parallel-view.ts",
+        "tests/parallel_view.test.ts",
+        "src/app/api/assignments/route.ts"
+      ],
+      "handoff": "Commit nhỏ trong worktree riêng; Codex chạy build/HTTP/bộ kiểm giao diện khi tích hợp; không đụng tệp Codex đang giữ.",
+      "status_file": "CLAUDE_STATUS.md"
     }
   ],
   "batch_protocol": "docs/phoi-hop-ai/03_HANG_DOI_LIEN_MACH.md",
   "coordinator_since_utc": "2026-10-24T14:22:44.000Z",
-  "director_note": "Từ 24/10/2026 chủ dự án giao vai chỉ đạo cho CLAUDE; CLAUDE giữ ASSIGNMENTS.json và BATCH_REVIEWS.json. CODEX giữ mã chính, build/DB/server/provider và thực thi. Kế hoạch: docs/phoi-hop-ai/04_MOC_PILOT.md."
+  "director_note": "Từ 24/10/2026 chủ dự án giao vai chỉ đạo cho CLAUDE; CLAUDE giữ ASSIGNMENTS.json và BATCH_REVIEWS.json. CODEX giữ mã chính, build/DB/server/provider và thực thi. Kế hoạch: docs/phoi-hop-ai/04_MOC_PILOT.md.",
+  "division_of_labor": "Từ 24/10/2026 (chủ dự án): Claude chỉ làm việc khó (tính năng mới, phân tích, thiết kế, duyệt); Gemini nhận khối lượng lớn nhất của việc nhẹ (nội dung, thẻ kiểm, dữ liệu mẫu, hướng dẫn); Codex nhận việc cơ học và mọi việc cần build/DB/server."
 }
