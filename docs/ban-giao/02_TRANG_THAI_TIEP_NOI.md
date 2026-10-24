@@ -5,7 +5,7 @@ Cập nhật: **24/10/2026**. Tệp này được **viết đè** mỗi đợt t
 ## 1. Mốc hiện tại
 
 - **Tiến độ:** 8/78 CV đạt theo [checklist](../ke-hoach-2026-10-21/03_CHECKLIST.md); đang làm S7 (giao/làm/chấm) xen các việc còn mở của S1/S6 (lưu, quyền, cộng tác). Chưa tổng nghiệm thu.
-- **Mới nhất 24/10 — chấm tay có bản nền điểm và lịch sử (CV060/061):** bản dựng, kiểm thử nền và HTTP đạt sau lần sửa mã cuối; **UI hai tab chấm cùng câu chưa chạy**, lint nhóm này chưa kết luận. [MANUAL_GRADE_CAS_AND_HISTORY](../../qa/rebuild-2026-10-23/MANUAL_GRADE_CAS_AND_HISTORY.md).
+- **Mới nhất 24/10 — chấm tay có bản nền điểm và lịch sử (CV060/061):** bản dựng, kiểm thử nền, HTTP và **UI hai tab chấm cùng câu đã đạt** (tab cũ bị chặn và giữ số đang nhập, lịch sử đúng); lint: file mới sạch, trang giáo viên còn lỗi kế thừa. [MANUAL_GRADE_CAS_AND_HISTORY](../../qa/rebuild-2026-10-23/MANUAL_GRADE_CAS_AND_HISTORY.md).
 - **Các đợt khác cùng ngày:** giao/làm/chấm bảy dạng qua UI ([ASSIGNMENT_ACCESS_AND_STUDENT_FLOW](../../qa/rebuild-2026-10-23/ASSIGNMENT_ACCESS_AND_STUDENT_FLOW.md)); CAS nháp học sinh và chặn nộp bản cũ ([STUDENT_DRAFT_CAS](../../qa/rebuild-2026-10-23/STUDENT_DRAFT_CAS.md)); đọc chi tiết bài làm, chặn phản hồi muộn ([TEACHER_DETAIL_REVIEW](../../qa/rebuild-2026-10-23/TEACHER_DETAIL_REVIEW.md)); đề xuất AI bền qua tải trang và Undo/Redo Copilot ([AI_JOURNAL_AND_HISTORY](../../qa/rebuild-2026-10-23/AI_JOURNAL_AND_HISTORY.md)); chặn sai tài khoản ở Copilot/tweak/verify ([COPILOT_GUARDS](../../qa/rebuild-2026-10-23/COPILOT_GUARDS.md)).
 - **Hồ sơ:** đã gọn theo kiểu một nơi cho số liệu; nhật ký theo đợt chuyển nguyên văn vào [docs/lich-su](../lich-su/README.md).
 - Không gọi provider/khóa thật, không ghi DB chính.
@@ -22,8 +22,8 @@ Cập nhật: **24/10/2026**. Tệp này được **viết đè** mỗi đợt t
 
 ## 3. Việc tiếp theo khi được yêu cầu tiếp tục kỹ thuật
 
-1. **CV060/061 — khép phần chấm tay:** dựng lại server thử từ bản build hiện tại, chạy UI hai tab cùng câu theo kịch bản trong [MANUAL_GRADE_CAS_AND_HISTORY](../../qa/rebuild-2026-10-23/MANUAL_GRADE_CAS_AND_HISTORY.md), chạy lại lint nhóm chấm tới khi có log đầy đủ. API đã qua HTTP, không cần sửa nếu UI đạt. Ngoài nhóm này còn paging/khôi phục điểm từ lịch sử, đính chính đáp án/regrade, gia hạn/mở lại.
-   Sau đó **CV057:** journal nháp học sinh qua đóng tab/mất điện, nhập lại JSON đã tải, hai browser độc lập, phản hồi chậm ([STUDENT_DRAFT_CAS](../../qa/rebuild-2026-10-23/STUDENT_DRAFT_CAS.md)).
+1. **CV060/061:** còn paging/khôi phục điểm từ lịch sử, đính chính đáp án/regrade, gia hạn/mở lại, hai browser độc lập (xem báo cáo nhóm). Phần CAS/lịch sử/UI hai tab đã đạt. Chuyển sang **CV057** nếu không làm các mục trên.
+   **CV057:** journal nháp học sinh qua đóng tab/mất điện, nhập lại JSON đã tải, hai browser độc lập, phản hồi chậm ([STUDENT_DRAFT_CAS](../../qa/rebuild-2026-10-23/STUDENT_DRAFT_CAS.md)).
    Fixture `learning-fixture.json` trên DB thử: exam `ex_49510788f581bb80104a8ca126057b22861cbcd0`, assignment `cmvltft9b009btbbskwkmw4e7` / public `446b557862363956ea976cc0becca19f`, đang CLOSED; lượt 1 đủ bảy dạng đã chốt điểm, lượt 2 chỉ tự luận đang chờ chấm. Không tạo lại fixture. Test-server xoay ATTEMPT_SESSION_SECRET mỗi lần khởi động nên cookie học sinh cũ không dùng lại được; đó không phải lỗi dữ liệu, không xoay secret thật.
 2. **CV048:** nút lưu bản sao ở `/share/[id]` chỉ ghi vào kho cũ trên trình duyệt, không lên server. Ưu tiên trước tính năng mới vì giáo viên có thể tưởng bản sao đã nằm trong kho.
 3. **CV010/011**, kết hợp **005/049/050:** offline/reload/reconnect trên React, nhiều tab đề mới → server ack, hai browser độc lập, phản hồi muộn; rà pin tài khoản cho template và toàn bộ caller. Không coi localStorage là giao dịch nguyên tử.

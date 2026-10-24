@@ -1,0 +1,8 @@
+UI hai tab chấm cùng câu — 24/10/2026, production build (bản build 11:05) + DB thử examcraft_test_20261022, server 127.0.0.1:3117 (isolatedTest=true), đã dừng sau kiểm.
+Fixture: assignment cmvltft9b009btbbskwkmw4e7, lượt 1, câu tự luận qa-essay. Hai tab cùng mở chi tiết lượt 1, lịch sử 0 sự kiện.
+Trước: earned=manualScore=2.50, tổng 9.50, AuditLog attempt.grade = 0.
+1. Tab A nhập 2.25, blur: POST 200. DB earned 2.25, tổng 9.25, 1 sự kiện (2.5 -> 2.25, có actorId).
+2. Tab B (còn nền cũ, ô hiện 2.5) nhập 1.75, blur: POST 409 Conflict. DB không đổi (2.25/9.25, vẫn 1 sự kiện). Ô giữ 1.75; banner đầu cửa sổ: "Điểm hoặc nhận xét đã được sửa ở trang khác. Chưa ghi đè; giữ số đang nhập để đối chiếu rồi mở lại bài."
+3. Tab A nhập 2.5, blur: POST 200. DB earned 2.50, tổng 9.50, 2 sự kiện (2.5 -> 2.25, 2.25 -> 2.5). Tab A hiện "Lịch sử chấm gần đây (2)" đúng thứ tự.
+Điểm cuối bằng điểm fixture ban đầu. Lượt 2 (tự luận 0, chờ chấm) không bị đụng.
+Ghi chú thao tác: lần thử đầu của bước 3 và bước 1 không có POST vì công cụ click lệch/không giữ focus (ảnh chụp 800x600, cửa sổ 1024x768); không phải lỗi ứng dụng, đã lặp lại và kiểm giá trị ô trước khi blur.
