@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { KeyGate, applyKeyTestResult, canActOnKey, classifyAddFailure, nextModelDraft, parseKeyList, pruneKeyTestResults, shouldClearKeyDraft } from '../src/lib/key-modal-request-context';
+import { KeyContext, KeyGate, applyKeyTestResult, canActOnKey, classifyAddFailure, nextModelDraft, parseKeyList, parseSavedKey, pruneKeyTestResults, shouldClearKeyDraft } from '../src/lib/key-modal-request-context';
 
 const key = (id: string, over: Record<string, unknown> = {}) => ({ id, label: 'Khóa ' + id, keyMasked: 'AIza…' + id, isActive: true, usedToday: 2, errorCount: 0, ...over });
 
@@ -71,4 +71,49 @@ test('gate: one request at a time; old-context replies cannot lock or un-busy th
   assert.equal(lockedToken.signal.aborted, true);
   assert.equal(lockedToken.release(), true, 'the failing request still clears its own busy flag');
   assert.equal(lockedGate.begin(), null, 'no retry under the account signed in now');
+});
+
+test('an add reply counts only when it names the saved key; a 200 with a broken body claims nothing', () => {
+  assert.equal(parseSavedKey({ success: true, key: key('new') })?.id, 'new');
+  assert.equal(parseSavedKey({ success: true, replayed: true, key: key('again') })?.id, 'again', 'a replayed receipt of the same request is an acknowledgement too');
+  for (const broken of [null, undefined, '', {}, { success: true }, { success: true, key: null }, { success: true, key: {} }, { success: false, key: key('x') }, { key: key('x') }, { success: true, key: key('x', { keyMasked: undefined }) }, { success: true, key: key('x', { isActive: 'true' }) }, { success: true, key: key('', {}) }, { success: 'true', key: key('x') }])
+    assert.equal(parseSavedKey(broken), null);
+});
+
+test('both request lanes share one account-loss fact', () => {
+  const ctx = new KeyContext(), actions = ctx.begin('main')!, logs = ctx.begin('logs')!;
+  assert.equal(ctx.isLive(actions) && ctx.isLive(logs), true);
+  assert.equal(ctx.loseAccount('logs', logs), true, 'the log lane found out');
+  assert.equal(ctx.isLive(actions), false, 'the action request still in flight can no longer clear the form or change the list');
+  assert.equal(actions.signal.aborted, true);
+  assert.equal(ctx.accountLost, true);
+  assert.equal(ctx.begin('main'), null);
+  assert.equal(ctx.begin('logs'), null);
+  assert.equal(actions.release(), false, 'its lane was closed with it');
+  assert.equal(ctx.loseAccount('main', actions), false, 'a dead token cannot announce a second loss');
+  const other = new KeyContext(), mainFirst = other.begin('main')!, logsPending = other.begin('logs')!;
+  assert.equal(other.loseAccount('main', mainFirst), true);
+  assert.equal(other.isLive(logsPending), false, 'and the other way round');
+  assert.equal(mainFirst.release(), true, 'the lane that found the loss can still clear its own busy flag');
+});
+
+test('a token of an older context never locks, revives or releases a newer one', () => {
+  const oldCtx = new KeyContext(), oldToken = oldCtx.begin('main')!;
+  oldCtx.dispose();
+  const newCtx = new KeyContext(), newMain = newCtx.begin('main')!, newLogs = newCtx.begin('logs')!;
+  assert.equal(newCtx.loseAccount('main', oldToken), false, 'a stale 401 must not lock the new context');
+  assert.equal(oldCtx.loseAccount('main', oldToken), false);
+  assert.equal(newCtx.accountLost, false);
+  assert.equal(newCtx.isLive(oldToken), false);
+  assert.equal(newCtx.isLive(newMain) && newCtx.isLive(newLogs), true);
+  assert.equal(oldToken.release(), false);
+});
+
+test('closing the dialog ends both lanes at once, before any effect cleanup could run', () => {
+  const ctx = new KeyContext(), actions = ctx.begin('main')!, logs = ctx.begin('logs')!;
+  ctx.dispose();
+  assert.deepEqual([ctx.isLive(actions), ctx.isLive(logs), actions.signal.aborted, logs.signal.aborted], [false, false, true, true]);
+  assert.equal(ctx.begin('main'), null);
+  assert.equal(ctx.begin('logs'), null);
+  assert.equal(ctx.accountLost, false, 'closing is not an account loss');
 });

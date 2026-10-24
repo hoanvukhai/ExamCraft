@@ -1,5 +1,6 @@
 /** Pure decisions for the AI-key dialog. Secrets never pass through here except as the draft the caller compares. */
-export { MemoryGate as KeyGate, type MemoryToken as KeyToken } from './ai-memory-request-context';
+import { MemoryGate as KeyGate, type MemoryToken as KeyToken } from './ai-memory-request-context';
+export { KeyGate, type KeyToken };
 
 export interface UserKeyRow { id: string; label: string; keyMasked: string; isActive: boolean; usedToday: number; errorCount: number }
 export interface AppQuotaRow { limit: number; usedToday: number; remaining: number; resetsAt?: string }
@@ -64,4 +65,33 @@ export function classifyAddFailure(status: number | null): 'unknown_outcome' | '
  */
 export function nextModelDraft(draft: string, replaceWhen: string, incoming: string) {
   return { draft: draft === replaceWhen ? incoming : draft, baseline: incoming };
+}
+
+/** The add reply counts only if it names the saved key (id, label, masked value, flag); a 200 with a broken body does not. */
+export function parseSavedKey(data: unknown): UserKeyRow | null {
+  const body = data && typeof data === 'object' ? data as { success?: unknown; key?: unknown } : {};
+  return body.success === true ? parseKeyList({ keys: [body.key] }).keys[0] ?? null : null;
+}
+
+export type KeyLane = 'main' | 'logs';
+/**
+ * Both request lanes of one dialog (actions and the usage log) share one account-loss fact: when either lane gets 401 or
+ * ACCOUNT_CHANGED, every token of this context stops being live. A token of an older context can neither lock nor revive
+ * a newer one, because liveness is always asked through the token's own gate.
+ */
+export class KeyContext {
+  private readonly lanes: Record<KeyLane, KeyGate> = { main: new KeyGate(), logs: new KeyGate() };
+  private lost = false;
+  get accountLost() { return this.lost; }
+  begin(lane: KeyLane): KeyToken | null { return this.lost ? null : this.lanes[lane].begin(); }
+  isLive(token: KeyToken) { return !this.lost && token.isLive(); }
+  /** Returns true only for the live token that really discovered the loss. */
+  loseAccount(lane: KeyLane, token: KeyToken) {
+    if (this.lost || !token.isLive() || !token.lockAccount()) return false;
+    this.lost = true;
+    this.lanes[lane === 'main' ? 'logs' : 'main'].dispose();
+    return true;
+  }
+  /** Close the dialog: synchronously ends every request of both lanes. */
+  dispose() { this.lanes.main.dispose(); this.lanes.logs.dispose(); }
 }

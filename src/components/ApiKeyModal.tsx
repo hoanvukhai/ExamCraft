@@ -3,8 +3,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { X, Key, Trash2, RefreshCw, Eye, EyeOff } from 'lucide-react';
 import { accountFetch } from '@/lib/account-fetch';
-import { isAccountFailure } from '@/lib/template-request-context';
-import { KeyGate, applyKeyTestResult, canActOnKey, classifyAddFailure, nextModelDraft, parseKeyList, pruneKeyTestResults, shouldClearKeyDraft, type KeyDraft, type KeyToken, type ModelOptionRow, type AppQuotaRow, type UserKeyRow } from '@/lib/key-modal-request-context';
+import { createRequestIdentity, isAccountFailure } from '@/lib/template-request-context';
+import { KeyContext, applyKeyTestResult, canActOnKey, classifyAddFailure, nextModelDraft, parseKeyList, parseSavedKey, pruneKeyTestResults, shouldClearKeyDraft, type KeyDraft, type KeyToken, type ModelOptionRow, type AppQuotaRow, type UserKeyRow } from '@/lib/key-modal-request-context';
 
 interface Log { id: string; endpointLabel: string; model: string | null; httpStatus: number | null; createdAt: string; }
 interface Props { ownerId: string; isOpen: boolean; onClose: () => void; onKeyUpdated?: () => void; }
@@ -17,7 +17,7 @@ const messageOf = (data: unknown, fallback: string) => {
   return typeof body.error === 'string' ? body.error : typeof body.message === 'string' ? body.message : fallback;
 };
 const lockedMessage = 'Phiên hoặc tài khoản đã thay đổi. Chưa gửi thêm gì từ cửa sổ này; nội dung đang nhập vẫn còn trên màn hình này. Hãy tải lại trang bằng đúng tài khoản rồi thử lại.';
-const unknownAddMessage = 'Chưa chắc khóa đã được lưu. Nội dung bạn nhập vẫn được giữ. Bấm “Làm mới” để xem danh sách trước khi lưu lại, tránh lưu trùng cùng một khóa.';
+const unknownAddMessage = 'Chưa chắc khóa đã được lưu. Nội dung bạn nhập vẫn được giữ. Bấm “Lưu khóa” lại với đúng nội dung này sẽ dùng cùng mã yêu cầu nên không lưu trùng; nếu bạn định sửa nội dung, hãy bấm “Làm mới” xem danh sách trước.';
 
 /** The dialog is re-created for every open and every account, so no list, reply or request outlives its context. */
 export const ApiKeyModal: React.FC<Props> = ({ ownerId, isOpen, onClose, onKeyUpdated }) => {
@@ -26,7 +26,10 @@ export const ApiKeyModal: React.FC<Props> = ({ ownerId, isOpen, onClose, onKeyUp
 };
 
 function ApiKeyDialog({ ownerId, onClose, onKeyUpdated }: Omit<Props, 'isOpen'>) {
-  const gateRef = useRef<KeyGate | null>(null), logGateRef = useRef<KeyGate | null>(null);
+  // Both lanes (actions and usage log) live in one context: losing the account on either ends every request of both.
+  const ctxRef = useRef<KeyContext | null>(null);
+  const [keyRequestId] = useState(() => createRequestIdentity(() => crypto.randomUUID()));
+  const live = (token: KeyToken) => !!ctxRef.current?.isLive(token);
   const [list, setList] = useState<{ ownerId: string; items: UserKeyRow[] }>({ ownerId: '', items: [] });
   const listRef = useRef(list);
   const [skipped, setSkipped] = useState(0);
@@ -55,17 +58,17 @@ function ApiKeyDialog({ ownerId, onClose, onKeyUpdated }: Omit<Props, 'isOpen'>)
   };
 
   const begin = (kind: NonNullable<Busy>['kind'], id?: string) => {
-    const token = gateRef.current?.begin() ?? null;
+    const token = ownerId ? ctxRef.current?.begin('main') ?? null : null;
     if (token) { setBusy({ kind, id }); setProblem(''); setMessage(''); }
     return token;
   };
   // A stale token's release() is false, so an old request can never clear the busy flag of a newer one.
   const finish = (token: KeyToken) => { if (token.release()) setBusy(null); };
-  const fail = (token: KeyToken, cause: unknown, fallback: string) => { if (token.isLive()) setProblem(cause instanceof Error ? cause.message : fallback); };
+  const fail = (token: KeyToken, cause: unknown, fallback: string) => { if (live(token)) setProblem(cause instanceof Error ? cause.message : fallback); };
   const send = async (token: KeyToken, path: string, method = 'GET', body?: unknown) => {
     const response = await accountFetch(ownerId, path, { method, signal: token.signal, ...(body !== undefined ? { headers: jsonHeaders, body: JSON.stringify(body) } : {}) });
     const data: unknown = await response.json().catch(() => null);
-    if (isAccountFailure(response.status, data) && token.lockAccount()) setLocked(true);
+    if (isAccountFailure(response.status, data) && ctxRef.current?.loseAccount('main', token)) { setLocked(true); setBusy(null); }
     return { response, data };
   };
   const commitList = (parsed: ReturnType<typeof parseKeyList>) => {
@@ -76,13 +79,13 @@ function ApiKeyDialog({ ownerId, onClose, onKeyUpdated }: Omit<Props, 'isOpen'>)
   };
   const fetchList = async (token: KeyToken) => {
     const { response, data } = await send(token, '/api/user/keys');
-    if (!token.isLive()) return null;
+    if (!live(token)) return null;
     if (!response.ok) throw Error(messageOf(data, 'Chưa tải được khóa'));
     return parseKeyList(data);
   };
   const refreshAfterChange = async (token: KeyToken) => {
     try { const parsed = await fetchList(token); if (parsed) commitList(parsed); }
-    catch { if (token.isLive()) setProblem('Đã thực hiện nhưng chưa tải lại danh sách. Bấm “Làm mới”.'); }
+    catch { if (live(token)) setProblem('Đã thực hiện nhưng chưa tải lại danh sách. Bấm “Làm mới”.'); }
   };
 
   const load = async () => {
@@ -92,8 +95,8 @@ function ApiKeyDialog({ ownerId, onClose, onKeyUpdated }: Omit<Props, 'isOpen'>)
     finally { finish(token); }
   };
   useEffect(() => {
-    const gate = new KeyGate(), logGate = new KeyGate(); gateRef.current = gate; logGateRef.current = logGate;
-    return () => { gate.dispose(); logGate.dispose(); if (gateRef.current === gate) gateRef.current = null; if (logGateRef.current === logGate) logGateRef.current = null; };
+    const context = new KeyContext(); ctxRef.current = context;
+    return () => { context.dispose(); if (ctxRef.current === context) ctxRef.current = null; };
   }, []);
   useEffect(() => {
     if (!ownerId) return;
@@ -105,22 +108,26 @@ function ApiKeyDialog({ ownerId, onClose, onKeyUpdated }: Omit<Props, 'isOpen'>)
 
   const add = async (event: React.FormEvent) => {
     event.preventDefault();
-    const sent = { ...draftRef.current };
-    if (sent.apiKey.length < 10) return;
+    const sent = { ...draftRef.current }, apiKey = sent.apiKey.trim(), label = sent.label.trim();
+    if (apiKey.length < 10) return;
     const token = begin('add'); if (!token) return;
     let status: number | null = null;
     try {
-      const { response, data } = await send(token, '/api/user/keys', 'POST', { apiKey: sent.apiKey, ...(sent.label.trim() ? { label: sent.label.trim() } : {}) });
+      // The same label and key keep one request ID, held in memory only (never stored or logged), so a retry cannot save the key twice; any edit gets a new ID.
+      const clientRequestId = keyRequestId(JSON.stringify([label, apiKey]));
+      const { response, data } = await send(token, '/api/user/keys', 'POST', { apiKey, ...(label ? { label } : {}), clientRequestId });
       status = response.status;
-      if (!token.isLive()) return;
+      if (!live(token)) return;
       if (!response.ok) throw Error(messageOf(data, 'Chưa lưu được khóa'));
+      // A 200 only counts when the reply names the saved key; a broken body keeps the form and claims nothing.
+      if (!parseSavedKey(data)) throw Error(unknownAddMessage);
       // Only what was sent is cleared; a different key typed since pressing Save stays.
       if (shouldClearKeyDraft(sent, draftRef.current)) editDraft(emptyDraft);
       setMessage('Đã lưu khóa được mã hóa.');
       onKeyUpdated?.();
       await refreshAfterChange(token);
     } catch (cause) {
-      if (!token.isLive()) return;
+      if (!live(token)) return;
       setProblem(classifyAddFailure(status) === 'unknown_outcome' ? unknownAddMessage : cause instanceof Error ? cause.message : 'Chưa lưu được khóa');
     } finally { finish(token); }
   };
@@ -130,7 +137,7 @@ function ApiKeyDialog({ ownerId, onClose, onKeyUpdated }: Omit<Props, 'isOpen'>)
     const token = begin('row', key.id); if (!token) return;
     try {
       const { response, data } = await send(token, '/api/user/keys', 'PATCH', { id: key.id, isActive: !key.isActive });
-      if (!token.isLive()) return;
+      if (!live(token)) return;
       if (!response.ok) throw Error(messageOf(data, 'Chưa cập nhật được khóa'));
       onKeyUpdated?.();
       await refreshAfterChange(token);
@@ -143,7 +150,7 @@ function ApiKeyDialog({ ownerId, onClose, onKeyUpdated }: Omit<Props, 'isOpen'>)
     const token = begin('row', key.id); if (!token) return;
     try {
       const { response, data } = await send(token, '/api/user/keys?id=' + encodeURIComponent(key.id), 'DELETE');
-      if (!token.isLive()) return;
+      if (!live(token)) return;
       if (!response.ok) throw Error(messageOf(data, 'Chưa xóa được khóa'));
       onKeyUpdated?.();
       await refreshAfterChange(token);
@@ -156,7 +163,7 @@ function ApiKeyDialog({ ownerId, onClose, onKeyUpdated }: Omit<Props, 'isOpen'>)
     const token = begin('row', key.id); if (!token) return;
     try {
       const { response, data } = await send(token, '/api/user/keys/test', 'POST', { keyId: key.id, testModel: modelRef.current });
-      if (!token.isLive()) return;
+      if (!live(token)) return;
       if (!response.ok) throw Error(messageOf(data, 'Chưa đọc được danh mục model'));
       const reply = data as { message?: unknown; error?: unknown; availableModels?: unknown };
       const text = typeof reply.message === 'string' ? reply.message : typeof reply.error === 'string' ? reply.error : 'Chưa có kết quả';
@@ -172,7 +179,7 @@ function ApiKeyDialog({ ownerId, onClose, onKeyUpdated }: Omit<Props, 'isOpen'>)
     const token = begin('model'); if (!token) return;
     try {
       const { response, data } = await send(token, '/api/user/keys', 'PATCH', { action: 'set_model', model: sent });
-      if (!token.isLive()) return;
+      if (!live(token)) return;
       if (!response.ok) throw Error(messageOf(data, 'Chưa lưu được model'));
       const saved = data && typeof data === 'object' ? (data as { selectedAiModel?: unknown }).selectedAiModel : undefined;
       // The reply replaces the box only if it still holds what was sent; newer typing is kept.
@@ -183,19 +190,20 @@ function ApiKeyDialog({ ownerId, onClose, onKeyUpdated }: Omit<Props, 'isOpen'>)
     finally { finish(token); }
   };
   const loadLogs = async () => {
-    const token = logGateRef.current?.begin(); if (!token) return;
+    const token = ownerId ? ctxRef.current?.begin('logs') : null; if (!token) return;
     try {
       const response = await accountFetch(ownerId, '/api/user/ai-usage', { signal: token.signal });
       const data: unknown = await response.json().catch(() => null);
-      if (isAccountFailure(response.status, data) && token.lockAccount()) setLocked(true);
-      if (!token.isLive()) return;
+      if (isAccountFailure(response.status, data) && ctxRef.current?.loseAccount('logs', token)) { setLocked(true); setBusy(null); }
+      if (!live(token)) return;
       if (!response.ok || !data || !Array.isArray((data as { logs?: unknown }).logs)) throw Error(messageOf(data, 'Chưa tải được nhật ký'));
       setLogs((data as { logs: Log[] }).logs.filter(log => log && typeof log.id === 'string'));
-    } catch (cause) { if (token.isLive()) setProblem(cause instanceof Error ? cause.message : 'Chưa tải được nhật ký'); }
+    } catch (cause) { if (live(token)) setProblem(cause instanceof Error ? cause.message : 'Chưa tải được nhật ký'); }
     finally { token.release(); }
   };
   const requestClose = () => {
     if ((draft.apiKey || draft.label.trim()) && !confirm('Khóa đang nhập chưa được lưu và sẽ mất nếu đóng. Đóng cửa sổ này?')) return;
+    ctxRef.current?.dispose(); // end every request of both lanes now, not when the effect cleanup runs
     onClose();
   };
 
@@ -211,7 +219,7 @@ function ApiKeyDialog({ ownerId, onClose, onKeyUpdated }: Omit<Props, 'isOpen'>)
     {skipped > 0 && <p className="text-xs">Có {skipped} khóa chưa đọc được nên chưa hiển thị; dữ liệu gốc không bị đổi.</p>}
     <div className="space-y-3">{keys.map(key => <article key={key.id} className="border rounded-2xl p-4 space-y-2"><div className="flex justify-between gap-3"><div><strong>{key.label}</strong><p className="font-mono text-xs">{key.keyMasked}</p></div><span className="text-sm">{key.isActive ? 'Đang bật' : 'Đang tắt'}</span></div><p className="text-xs">Thao tác thành công được ghi nhận bằng khóa này hôm nay: {key.usedToday}. Không suy ra quota còn lại.</p><div className="flex flex-wrap gap-3 text-sm"><button disabled={!idle} onClick={() => void testKey(key)} className="text-blue-600">Đọc danh mục</button><button disabled={!idle} onClick={() => void toggle(key)}>{key.isActive ? 'Tắt khóa' : 'Bật khóa'}</button><button disabled={!idle} onClick={() => void remove(key)} className="flex items-center gap-1 text-red-600"><Trash2 size={14} />Xóa</button></div>{testResults[key.id] && <p className="text-xs" role="status">{testResults[key.id]}</p>}</article>)}</div>
     <form onSubmit={e => void add(e)} className="border rounded-2xl p-4 space-y-3"><h3 className="font-semibold">Thêm khóa</h3><label className="block text-sm">Tên dễ nhớ<input className={field} maxLength={120} value={draft.label} onChange={e => editDraft({ label: e.target.value })} /></label><label className="block text-sm">Khóa API<input className={field} type={showKey ? 'text' : 'password'} autoComplete="off" minLength={10} maxLength={500} required value={draft.apiKey} onChange={e => editDraft({ apiKey: e.target.value })} /></label><div className="flex justify-between"><button type="button" onClick={() => setShowKey(!showKey)} aria-label={showKey ? 'Ẩn khóa' : 'Hiện khóa'}>{showKey ? <EyeOff size={18} /> : <Eye size={18} />}</button><button disabled={!idle} type="submit" className="rounded-full bg-blue-600 text-white px-4 py-2 disabled:opacity-50">Lưu khóa</button></div></form>
-    <details onToggle={event => { if (event.currentTarget.open && logs === null && ready) void loadLogs(); }}><summary className="text-sm cursor-pointer">Nhật ký thao tác gần đây</summary><div className="space-y-2 mt-2">{logs?.map(log => <p key={log.id} className="text-xs">{new Date(log.createdAt).toLocaleString('vi-VN')} · {log.endpointLabel} · {log.model} · {log.httpStatus === 200 ? 'Thành công' : log.httpStatus === 102 ? 'Đang xử lý' : 'Lỗi ' + log.httpStatus}</p>)}</div></details>
+    <details onToggle={event => { if (event.currentTarget.open && logs === null && ready && !ctxRef.current?.accountLost) void loadLogs(); }}><summary className="text-sm cursor-pointer">Nhật ký thao tác gần đây</summary><div className="space-y-2 mt-2">{logs?.map(log => <p key={log.id} className="text-xs">{new Date(log.createdAt).toLocaleString('vi-VN')} · {log.endpointLabel} · {log.model} · {log.httpStatus === 200 ? 'Thành công' : log.httpStatus === 102 ? 'Đang xử lý' : 'Lỗi ' + log.httpStatus}</p>)}</div></details>
     {problem && <p role="alert" className="text-sm text-red-700">{problem}</p>}
     {message && <p role="status" className="text-sm">{message}</p>}
     <button disabled={!idle} className="flex items-center gap-2 text-sm" onClick={() => void load()}><RefreshCw size={14} />Làm mới</button>
