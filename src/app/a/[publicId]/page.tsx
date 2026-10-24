@@ -19,6 +19,7 @@ import {
   ArrowLeft,
   Award,
 } from 'lucide-react';
+import { writeJournal, readJournal, clearJournal, reconcileJournal } from '@/lib/student-draft-journal';
 
 interface Question {
   id: string;
@@ -137,6 +138,7 @@ function StudentExamContent({
   const [joinCode, setJoinCode] = useState('');
   const [personalToken, setPersonalToken] = useState('');
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [journalNotice, setJournalNotice] = useState<string | null>(null);
 
   // Trạng thái đang làm bài
   const [attempt, setAttempt] = useState<AttemptData | null>(null);
@@ -235,7 +237,14 @@ function StudentExamContent({
       setAttempt(data.attempt);
       setCanStartAnother(data.attempt.attemptNo < assignment.maxAttempts);
       if (data.exam) { setQuestions(data.exam.questions || []); setSections(data.exam.sections || []); setPassages(data.exam.passages || []); }
-      setAnswers(data.attempt.draft || {});
+      // Answers typed on this browser but never acknowledged by the server (tab closed, power loss) come back here.
+      const outcome = reconcileJournal(readJournal(localStorage, data.attempt.id), data.attempt.draft || {}, data.attempt.draftRevision);
+      setJournalNotice(outcome.kind === 'restored' ? 'Đã khôi phục các câu em làm dở trên máy này; hệ thống sẽ tự lưu lại.' : null);
+      if (outcome.kind === 'conflict') {
+        draftConflictRef.current = true;
+        setSaveError('Nháp trên máy chủ đã thay đổi ở trang khác sau lần em làm dở trên máy này. Chưa ghi đè hay nộp; hãy tải bản đang nhập về trước khi mở lại.');
+      }
+      setAnswers(outcome.answers);
 
       // Tính toán thời gian đếm ngược
       if (data.attempt.deadlineAt) {
@@ -273,6 +282,7 @@ function StudentExamContent({
         }
         if (typeof result.draftRevision !== 'string') throw new Error('Chưa nhận được xác nhận phiên bản nháp. Bản đang nhập vẫn giữ trên trang này.');
         draftRevisionRef.current = result.draftRevision;
+        try { writeJournal(localStorage, savingAttemptId, result.draftRevision, answersRef.current); } catch { /* The server save succeeded; only the offline copy could not be refreshed. */ }
         setSaveError(null);
         const now = new Date();
         setLastSaved(
@@ -295,6 +305,12 @@ function StudentExamContent({
     },
     [attempt?.id]
   );
+
+  // Keep every change on this browser until the server acknowledges it; skipped while a conflict is unresolved.
+  useEffect(() => {
+    if (!attempt?.id || submitResult || draftConflictRef.current) return;
+    try { writeJournal(localStorage, attempt.id, draftRevisionRef.current, answers); } catch { /* Blocked or full storage: the server autosave still runs. */ }
+  }, [answers, attempt?.id, submitResult]);
 
   // Định kỳ tự lưu nháp mỗi 15 giây
   useEffect(() => {
@@ -394,6 +410,7 @@ function StudentExamContent({
       }
 
       setSubmitResult(data);
+      try { clearJournal(localStorage, attempt.id); } catch { /* Nothing to remove. */ }
       setAnswers(data.responses || {});
       if (isAuto) {
         alert('Đã hết giờ làm bài! Bài thi của em đã được nộp tự động.');
@@ -740,6 +757,7 @@ function StudentExamContent({
         </div>
       </header>
 
+      {journalNotice && !saveError && <div role="status" className="max-w-6xl mx-auto w-full px-4 py-3 text-sm bg-sky-50 text-sky-900 border border-sky-300 rounded-xl">{journalNotice}</div>}
       {saveError && <div role="alert" className="max-w-6xl mx-auto w-full px-4 py-3 text-sm bg-amber-50 text-amber-900 border border-amber-300 rounded-xl">
         <p>{saveError}</p>
         <p>Bản đang nhập vẫn ở trang này. Tải bản sao trước khi đóng hoặc tải lại trang; tệp này dùng để đối chiếu, chưa thay cho bài đã nộp.</p>
