@@ -1,7 +1,7 @@
 {
   "format_version": 1,
-  "updated_at_utc": "2026-10-24T14:05:53.130Z",
-  "writer": "CODEX_ONLY",
+  "updated_at_utc": "2026-10-24T16:35:29.000Z",
+  "writer": "CLAUDE",
   "purpose": "Delivery review gates, not product checklist or proof of runtime completion",
   "batches": [
     {
@@ -266,6 +266,55 @@
           },
           "review_note": "Tổng hợp chưa được chấp nhận vì G01/G04/G05/G07 đang cần sửa, không gọi đã đủ100%/khôngnhậnđịnhchủquan. Cập nhật summary sau bản sửa và dùng status nguồn từ BATCH_REVIEWS.",
           "reviewed_at_utc": "2026-10-24T13:41:23.483Z"
+        }
+      ]
+    },
+    {
+      "task_id": "GEMINI-PILOT-PREP",
+      "assignment_generation": 6,
+      "reviewer": "CLAUDE",
+      "reviewed_at_utc": "2026-10-24T16:35:29.000Z",
+      "review_basis": "Đọc tệp bàn giao, kiểm hình thức bằng chương trình (fixture qua normalizeExamDocument) và đối chiếu mẫu nhãn nút với mã; chưa kiểm nội dung nguồn chương trình.",
+      "items": [
+        {
+          "id": "GEM-P1",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "review_note": "Nhãn nút khớp mã ở các mục đã thử; thiếu các tính năng mới (xem GEM-P10)."
+        },
+        {
+          "id": "GEM-P2",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "review_note": "Như GEM-P1; cập nhật bằng GEM-P10."
+        },
+        {
+          "id": "GEM-P7",
+          "decision": "CHANGES_REQUESTED",
+          "review_note": "Cả hai đề qua normalizeExamDocument, đủ 7 dạng ở đề Toán. Nhưng hình image chỉ có type/width/height/description, không có data.url nên xuất Word không có ảnh; README ghi sai đường giao bài. Sửa ở GEM-P9."
+        },
+        {
+          "id": "GEM-P3",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "review_note": "Duyệt hình thức; nguồn/trang chưa kiểm, trạng thái chờ duyệt chuyên môn giữ nguyên. Kiểm nguồn ở GEM-P12."
+        },
+        {
+          "id": "GEM-P6",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "review_note": "Như GEM-P3."
+        },
+        {
+          "id": "GEM-P4",
+          "decision": "ACCEPTED",
+          "review_note": "Mô tả tuyển giáo viên/người duyệt, không có việc tự liên hệ; chủ dự án dùng."
+        },
+        {
+          "id": "GEM-P8",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "review_note": "Thẻ kiểm tay Word/offline; phải cập nhật khi có kết quả thử thật."
+        },
+        {
+          "id": "GEM-P5",
+          "decision": "PENDING",
+          "review_note": "Chưa review; ưu tiên thấp (CV011)."
         }
       ]
     }

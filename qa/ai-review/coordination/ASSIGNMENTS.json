@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "updated_at_utc": "2026-10-24T14:45:59.000Z",
+  "updated_at_utc": "2026-10-24T16:35:29.000Z",
   "coordinator": "CLAUDE",
   "shared_root": "F:/Workspace/Zazz/ExamCraft",
   "purpose": "Assignments only; not the canonical product checklist",
@@ -448,11 +448,12 @@
         "Không push/reset/clean; không ghi DB chính; không gọi AI/provider thật; không chép key/cookie/.env",
         "Test ghi chỉ trên DB thử đã kiểm đích; một build tại một thời điểm, không chạy lint/SAFE cùng build",
         "Cập nhật status của mình sau mỗi mốc; gửi tin vào messages/ khi xong hoặc bị chặn"
-      ]
+      ],
+      "director_decision_20261024": "Codex hết token lượt trước; Claude đã sửa review A/B (1ce95b9). Resume: build+SAFE+HTTP+test:pilot trên 1ce95b9, rồi gap I theo quyết định trong tin claude-codex-20261024T160000Z."
     },
     {
       "task_id": "GEMINI-PILOT-PREP",
-      "assignment_generation": 6,
+      "assignment_generation": 7,
       "owner": "GEMINI",
       "priority": "P0",
       "base_commit": "rebuild/2026-10-local HEAD",
@@ -531,6 +532,46 @@
             "docs/huong-dan/THE_KIEM_TAY_GIAO_BAI_VA_WORD.md"
           ],
           "scope": "Thẻ kiểm tay cho hai việc chưa tự động hóa được: mở file Word và bản in nhiều trang (khoảng cách C trong qa/rebuild-2026-10-24/PILOT_GAP_ANALYSIS.md), và thử offline/hai trình duyệt (K). Mỗi thẻ: chuẩn bị, bước, kết quả mong đợi, nơi ghi kết quả, ảnh cần chụp."
+        },
+        {
+          "id": "GEM-P9",
+          "kind": "fixture_data",
+          "priority": "P0",
+          "deliverables": [
+            "tests/fixtures/pilot/toan6-bay-dang.json",
+            "tests/fixtures/pilot/mon2-ngu-lieu.json",
+            "tests/fixtures/pilot/README.md"
+          ],
+          "scope": "Sửa theo tin codex-claude-20261024T145548Z: hình trong đề Toán phải có data.url là dataURL ảnh PNG hoặc JPG hợp lệ nhỏ (dưới 20KB, tự tạo, không svg_placeholder) để xuất Word có ảnh được; README sửa đường giao bài thành POST /api/assignments (không có /api/exams/:id/assign); đề môn 2 có ngữ liệu dùng chung với ít nhất hai câu cùng passageId để kiểm chế độ Song song. Sau khi sửa, tự đối chiếu với kiểu Exam trong src/types/exam.ts và hình dạng mà src/lib/exam-document.ts chấp nhận (chỉ đọc)."
+        },
+        {
+          "id": "GEM-P10",
+          "kind": "readonly_report",
+          "priority": "P0",
+          "deliverables": [
+            "docs/huong-dan/HUONG_DAN_GIAO_VIEN_PILOT.md",
+            "docs/huong-dan/THE_KIEM_TAY_PILOT.md"
+          ],
+          "scope": "Cập nhật hai tài liệu cho các tính năng mới (nhãn lấy từ mã): hộp thoại giao bài mục \"Tùy chọn nâng cao: giờ mở/đóng, số lượt, mã vào bài\" (ShareModal.tsx); nút \"Tạo bản sao để sửa\" ở trang chia sẻ (src/app/share/[id]/page.tsx, chỉ khi chủ cho phép, chỉ mang đáp án khi link hiện đáp án); chế độ xem \"Song song\" ở A4Preview.tsx (chỉ xem/in, Word dùng bố cục đề rồi đáp án); dòng \"Mở … Đóng … Số lượt … Mã vào bài\" ở trang theo dõi bài giao (src/app/teacher/assignments/[id]/page.tsx). Đọc qa/rebuild-2026-10-24/PILOT_E2E.md để biết luồng đã tự kiểm và phần chỉ kiểm tay."
+        },
+        {
+          "id": "GEM-P11",
+          "kind": "readonly_report",
+          "priority": "P1",
+          "deliverables": [
+            "docs/huong-dan/PHIEU_PHAN_HOI_PILOT.md"
+          ],
+          "scope": "Phiếu phản hồi cho giáo viên dùng thử (câu hỏi ngắn theo F1–F8: làm được/lúng túng ở đâu/thời gian/điều muốn thêm) và bảng ghi lỗi (mô tả, bước tái hiện, ảnh, mức độ). Không thu dữ liệu cá nhân của học sinh."
+        },
+        {
+          "id": "GEM-P12",
+          "kind": "readonly_report",
+          "priority": "P1",
+          "deliverables": [
+            "docs/nghien-cuu/goi/PILOT-TOAN-6/02_DOI_CHIEU_NGUON.md",
+            "docs/nghien-cuu/goi/PILOT-MON-2/02_DOI_CHIEU_NGUON.md"
+          ],
+          "scope": "Kiểm lại từng trích dẫn nguồn/trang trong hai gói 00 và 01 đối chiếu với tài liệu có trong docs/nghien-cuu (sổ 05, sach-va-hoc-lieu, nguon/*.pdf nếu đọc được). Bảng: mục | nguồn đã dẫn | đã mở và khớp / chưa mở / không khớp | ghi chú. Mục không kiểm được thì CHUA_XAC_MINH, không điền cho đủ."
         }
       ],
       "rules": [
@@ -538,7 +579,8 @@
         "Test ghi chỉ trên DB thử đã kiểm đích; một build tại một thời điểm, không chạy lint/SAFE cùng build",
         "Cập nhật status của mình sau mỗi mốc; gửi tin vào messages/ khi xong hoặc bị chặn",
         "Khối lượng lớn nhất của việc nhẹ thuộc Gemini: làm hết GEM-P1…P8 theo thứ tự P0 trước (P1, P2, P7, P3, P4) rồi P1 (P6, P8), cuối cùng GEM-P5"
-      ]
+      ],
+      "director_decision": "Generation 7: GEM-P1..P8 đã nộp (xem BATCH_REVIEWS); thêm GEM-P9..P12."
     },
     {
       "task_id": "CLAUDE-PILOT-FEATURES",

@@ -1,7 +1,6 @@
 # CLAUDE status (người chỉ đạo)
 role: DIRECTOR từ 24/10/2026; chỉ làm việc khó (tính năng mới, phân tích, thiết kế, duyệt).
-state: DELIVERED_FOR_INTEGRATION (task CLAUDE-PILOT-FEATURES, generation 14)
-Đã làm: commit b44c0ec trên ai/claude-pilot-features (worktree tmp/ai-claude-pilot-features): (A) tùy chọn nâng cao khi giao bài, (B) chế độ xem Song song. Unit thuần 14/14 ở ba múi giờ, tsc đạt, lint không thêm vấn đề. HTTP test viết nhưng chưa chạy.
-Bàn giao: messages/claude-codex-20261024T150500Z-*.md (việc Codex: review, tích hợp, chạy HTTP/build/bộ kiểm giao diện).
-Tiếp theo: chờ Codex tích hợp và báo kết quả; duyệt báo cáo nhóm của Codex và Gemini theo mã/bằng chứng khi status ghi WAITING_REVIEW; chưa nhận thêm tính năng mới cho tới khi có kết quả bộ kiểm F1–F7.
-Không chạy build/DB/server/provider.
+state: WORKING (Codex hết lượt, đang chờ resume; Gemini WAITING_REVIEW rồi nhận generation 7)
+Đã làm: duyệt GEMINI-PILOT-PREP gen 6 (BATCH_REVIEWS); giao GEM-P9..P12 (gen 7); sửa review A/B của Codex (commit 1ce95b9: mã vào bài legacy, ngữ liệu ở Song song, hiển thị giờ/mã cho giáo viên); quyết định gap I; phân tích CV025 (qa/rebuild-2026-10-24/CV025_REVISION_COST.md).
+Tiếp theo: dán lại prompt Gemini (có việc mới) và Codex khi hết hạn token; khi Codex xong build/HTTP/test:pilot trên 1ce95b9 thì duyệt PILOT_E2E/PILOT_GAPS và cập nhật hồ sơ 02; giao CV025 changed-only cho Codex sau pilot.
+Chưa chạy build/HTTP cho 1ce95b9.
