@@ -109,3 +109,8 @@ Căn cứ bảng đối chiếu GEM-T1 của Gemini (mọi tên test đều ki�
 
 ## Bổ sung: đóng CV054, 056, 061, 024 (đợt chốt nhanh)
 Chỉ đối chiếu bằng chứng đã có (không chạy lại): SAFE 408/408, HTTP 88/88, trình duyệt 15/15 lần gần nhất. Mỗi dòng nghiệm thu nêu test và giới hạn. Giữ mở CV026, 043, 044 vì chỉ còn việc xem bằng mắt (Word thật, in thật), chủ dự án tự làm.
+
+## Bổ sung: F17, F18 và đóng CV045, CV030
+- **F17 (nhập đề từ văn bản khi chưa có khóa AI):** máy chủ trả "chưa có khóa", hộp nhập chuyển sang bộ phân tích tích hợp; dán đề có dòng tiêu đề, trắc nghiệm có "Đáp án: B", đúng-sai có (Đ)/(S), trả lời ngắn; xem trước đúng 3 câu, thêm vào đề, lưu, và đề trên máy chủ có đúng đáp án B, bốn ý đúng-sai [đúng, sai, đúng, sai], tiêu đề đề thi không thành câu. Chưa đóng CV039 vì đường nhập bằng AI chưa kiểm.
+- **F18 (trình chiếu):** xem dòng nghiệm thu CV045. **CV030:** xem dòng nghiệm thu.
+- Hàm mở đề dùng chung trong bộ kiểm trình duyệt nay chờ nút "Lưu" đầu tiên (ở chế độ hẹp có hai nút cùng tên).

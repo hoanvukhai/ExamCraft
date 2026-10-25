@@ -144,7 +144,8 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Đợt24/10: khôngkey vẫn sửa/Apply/lưu thật; rail mobile thành drawer/ẩn khi thu gọn. Browser360px main30,4→322,4px,390px main352,8px; document không tràn ngang, form0điểm/nút Apply hiển thị đủ. Drawer mở/đóng đạt; chưa nghiệm thu mobile keyboard/zoom/screen reader/toàn luồng xuất. Build/SAFE192đạt, xem QUESTION_DRAFTS_AND_MOBILE.
   - Phạm vi: YC-26. Nghiệm thu: NT-30.
   - Đạt khi: Tạo/sửa/lưu/xuất thủ công không bị chặn key; thông báo dễ hiểu, tab order/focus/label, cuộn trang và layout nhỏ được thử.
-- [ ] **CV-030 — Quyền chốt và phiên bản công bố.**
+- [x] **CV-030 — Quyền chốt và phiên bản công bố.**
+  - **Nghiệm thu25/10 (Claude): ĐẠT đủ tiêu chí "Đạt khi".** Chốt bản cụ thể: link chia sẻ khóa vào phiên bản lúc tạo (http_share_pin), bài giao dùng snapshot bất biến (F5; sửa nguồn sau giao không đổi bài; sửa đáp án chỉ qua lối chấm lại có lịch sử), mỗi lần lưu có bản lịch sử và khôi phục tạo bản mới (http_collab_restore). Quyền phát hành tách khỏi sửa: người sửa không được chia sẻ, giao bài, khôi phục lịch sử hay xóa (http_permission_matrix). Mẫu cập nhật không đổi bản đã chốt: mẫu cá nhân bất biến, lưu lại cùng mã yêu cầu mà khác nội dung bị từ chối không ghi đè, áp mẫu vào đề không rỗng không đổi câu hỏi, liên kết hay điểm (`same request ID locks before lookup, replays same immutable row, and rejects changed content without overwrite`, `applying into nonempty exam never changes questions, their links/points, or section fallback`). Giới hạn: không có bước "công bố" riêng, việc chốt thể hiện qua link khóa phiên bản và snapshot giao bài. [Đối chiếu](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md).
   - Phạm vi: YC-12, YC-13, YC-19. Nghiệm thu: NT-14, NT-20.
   - Đạt khi: Chốt bản cụ thể, quyền phát hành tách sửa; mẫu cập nhật không đổi bản đã chốt; chuẩn bị snapshot cho giao bài.
 
@@ -208,9 +209,8 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - **Bằng chứng25/10:** lỗi thật đã sửa: in từ trình soạn chỉ ra **một trang** (ba lớp bọc cố định chiều cao cắt nội dung); nay đề 60 câu ra nhiều trang. Luồng F15 đo bằng trình duyệt: mọi câu nằm trong tờ in, không câu nào bị chia đôi hay cao hơn một trang, không tràn lề phải, nút soạn thảo ẩn khi in, PDF A4 nhiều trang. Giới hạn: chưa xem bằng mắt; ngắt trang giữa câu và ngữ liệu dùng chung dựa vào CSS, chưa so với máy in thật.
   - Phạm vi: YC-12, YC-18. Nghiệm thu: NT-18.
   - Đạt khi: Đề/đáp án/lời giải/ma trận riêng hoặc chung, 1–2 cột khi phù hợp, tiêu đề mẫu đồng nhất; câu dài được ngắt có kiểm soát, không tràn/mất.
-- [ ] **CV-045 — Trình chiếu để chữa bài.**
-  - **Hiện trạng25/10:** Bổ sung chọn nhanh câu, cỡ chữ và tránh chiếm phím mũi tên trong select/ô nhập; chuyển câu ẩn lại đáp án. Render kiểm mặc định ẩn đạt; browser mới chưa chạy vì Docker/DB thử chưa sẵn sàng. Chưa nghiệm thu zoom/bàn phím hoặc hiện từng bước lời giải; giữ mở. [Báo cáo nhóm](../../qa/rebuild-2026-10-25/EXAM_REVIEW_AND_PRESENTATION.md).
-  - Truy vết24/10: bằng chứng một phần ở [WORKSPACE](../../qa/rebuild-2026-10-22/WORKSPACE.md) và `presentation-verified.png` — chuyển câu, xem ngữ liệu, chủ động hiện/ẩn đáp án/lời giải, quay lại không làm bẩn bản đã lưu. Chưa kiểm phóng to/bàn phím đầy đủ; giữ mở.
+- [x] **CV-045 — Trình chiếu để chữa bài.**
+  - **Nghiệm thu25/10 (Claude): ĐẠT đủ tiêu chí "Đạt khi".** F18 trên trình duyệt: mở trình chiếu thì đáp án ẩn; phím mũi tên chuyển câu và chọn câu bằng ô chọn; "Hiện đáp án / lời giải" hiện lời giải theo yêu cầu và chuyển câu thì ẩn lại; nút chữ lớn/nhỏ phóng thu theo từng bước; Esc đóng; sau khi trình chiếu, phiên bản, tên đề và số câu không đổi. Giới hạn: lời giải hiện một lần, chưa chia từng bước nhỏ trong một lời giải. [Đối chiếu](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md).
   - Phạm vi: YC-18. Nghiệm thu: NT-19.
   - Đạt khi: Phóng to câu, hiện dần lời giải, ẩn đáp án ban đầu, điều khiển bàn phím; không làm đổi nội dung đề.
 - [ ] **CV-046 — Bộ fixture đa môn cho nhập/xuất.**

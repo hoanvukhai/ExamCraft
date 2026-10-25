@@ -103,7 +103,7 @@ async function setup(id: string, firstPassword = false) {
 }
 async function authenticated(f: Fixture) { await login(f.page, f.emails[0], f.password); await f.page.waitForURL(origin + '/'); }
 async function seedExam(f: Fixture, subject: 'toan' | 'ngu_van' = 'toan') { return (await f.api('/api/exams', 'POST', { document: document(subject) })).exam.id as string; }
-async function openExam(f: Fixture, id: string) { await f.page.goto(origin + '/editor/' + id); await f.page.getByTitle('Lưu các thay đổi lên máy chủ').waitFor(); }
+async function openExam(f: Fixture, id: string) { await f.page.goto(origin + '/editor/' + id); await f.page.getByTitle('Lưu các thay đổi lên máy chủ').first().waitFor(); }
 async function assignment(f: Fixture, examId: string) {
   return (await f.api('/api/assignments', 'POST', { examId, title: 'Pilot bài giao', mode: 'CLASSWORK', identityMode: 'FREE_NAME', durationMinutes: 15, maxAttempts: 1, shuffleQuestions: false, shuffleChoices: false, showResult: 'IMMEDIATE', showSolution: 'AFTER_CLOSE' })).assignment;
 }
@@ -139,7 +139,7 @@ async function flow(id: string, action: (f: Fixture) => Promise<void>, firstPass
   finally { if (f) { try { await f.cleanup(); cleanupComplete = true; } catch (e) { error ??= e; } } }
   const message = error instanceof Error ? error.message.replaceAll(f?.password ?? '\0', '[fixture-password]') : error ? 'Unknown pilot failure' : undefined;
   results.push({ id, status: error ? 'FAIL' : 'PASS', durationMs: Date.now() - start, cleanupComplete, ...(message ? { error: message } : {}) });
-  fs.mkdirSync(reportDir, { recursive: true }); const evidence=JSON.stringify({ run, sourceSha256, buildId, browserVersion, browserExecutable: process.env.PILOT_BROWSER_PATH, requestedFlow: process.env.PILOT_FLOW ?? 'F1-F7,F9-F16', checkedAt: new Date().toISOString(), environment: 'isolatedTest localhost3117 / examcraft_test_20261022', realAiCalls: false, results }, null, 2);
+  fs.mkdirSync(reportDir, { recursive: true }); const evidence=JSON.stringify({ run, sourceSha256, buildId, browserVersion, browserExecutable: process.env.PILOT_BROWSER_PATH, requestedFlow: process.env.PILOT_FLOW ?? 'F1-F7,F9-F18', checkedAt: new Date().toISOString(), environment: 'isolatedTest localhost3117 / examcraft_test_20261022', realAiCalls: false, results }, null, 2);
   fs.writeFileSync(`${reportDir}/pilot-results.json`,evidence);fs.writeFileSync(`${reportDir}/pilot-run-${run}.json`,evidence);
   if (error) throw Error(`${id}: ${message}`);
 }
@@ -611,4 +611,46 @@ test('F16 main pages have named controls and a student can answer, move and subm
   await focusBy('button:has-text("Nộp bài thi")'); await p.keyboard.press('Enter'); await focusBy('button:has-text("Nộp bài ngay")'); await p.keyboard.press('Enter');
   assert.equal((await req).status(), 200, 'the keyboard submit reached the server');
   assert.deepEqual(findings, [], 'controls without a name, or a tabindex that breaks the tab order');
+}));
+
+test('F17 pasting an exam as text with no AI key still gives a usable preview that can be added to the exam', { timeout: 180000 }, () => flow('F17', async f => {
+  await authenticated(f); const id = await seedExam(f); await openExam(f, id);
+  // What the server answers when the teacher has no key: the dialog must fall back to the built-in parser.
+  await f.page.route('**/api/parse-exam-text', route => route.fulfill({ status: 400, contentType: 'application/json', body: JSON.stringify({ success: false, error: 'Hãy thêm hoặc bật khóa Gemini của bạn trong mục Khóa AI.' }) }));
+  await f.page.getByTitle('Bóc tách câu hỏi từ file Word / Ảnh chụp đưa thêm vào đề').click();
+  await click(f.page, 'Dán văn bản thô (AI Parser)');
+  const text = 'ĐỀ KIỂM TRA 15 PHÚT\nThời gian: 15 phút\n\nCâu 1: Thủ đô của Việt Nam là gì?\nA. Hà Nội\nB. Huế\nC. Đà Nẵng\nD. Cần Thơ\nĐáp án: B\n\nCâu 2: Xét các mệnh đề sau:\na) Số 2 là số nguyên tố. (Đ)\nb) Số 9 là số nguyên tố. (S)\nc) Số 0 là số tự nhiên. (Đ)\nd) Số 1 là số nguyên tố. (S)\n\nCâu 3: Tính 15 + 27.';
+  await f.page.getByPlaceholder(/^Dán đoạn văn bản đề thi thô/).fill(text);
+  await click(f.page, 'Bắt đầu phân rã thành câu hỏi');
+  await f.page.getByText('Kết quả bóc tách (3 câu hỏi)').waitFor();
+  await f.page.getByText(/Bóc tách cơ bản 3 câu hỏi/).waitFor();
+  await click(f.page, 'Thêm 3 câu hỏi vào Đề thi hiện tại');
+  await f.page.getByTitle('Lưu các thay đổi lên máy chủ').first().click();
+  await waitUntil(async () => (await f.db.examQuestion.count({ where: { examId: id } })) === 10, 'The three imported questions were not saved into the exam', 30000);
+  const questions = (await f.api('/api/exams/' + id)).document.questions as { content: string; type: string; correct_answer?: string; choices?: unknown[]; sub_questions?: { isCorrect?: boolean }[] }[];
+  const mc = questions.find(q => q.content.startsWith('Thủ đô'))!; assert.equal(mc.type, 'multiple_choice'); assert.equal(mc.correct_answer, 'B'); assert.equal(mc.choices?.length, 4);
+  const tf = questions.find(q => q.type === 'true_false_group' && q.content.includes('mệnh đề'))!; assert.deepEqual(tf.sub_questions!.map(s => s.isCorrect), [true, false, true, false]);
+  assert.equal(questions.find(q => q.content.startsWith('Tính 15'))!.type, 'short_answer');
+  assert.ok(!questions.some(q => q.content.includes('ĐỀ KIỂM TRA 15 PHÚT')), 'the title block is not a question');
+}));
+
+test('F18 the presentation moves with the arrow keys, hides the answer until asked, resizes, and never changes the exam', { timeout: 150000 }, () => flow('F18', async f => {
+  await authenticated(f); const id = await seedExam(f); await openExam(f, id);
+  const before = await f.db.exam.findUniqueOrThrow({ where: { id } });
+  await click(f.page, 'Trình chiếu');
+  const dialog = f.page.getByRole('dialog', { name: 'Trình chiếu đề' }); await dialog.waitFor();
+  const header = () => dialog.locator('strong').first().innerText();
+  const shows = async (n: number) => waitUntil(async () => new RegExp(`Câu ${n}/7`).test(await header()), `the presentation shows question ${n}`, 5000);
+  await shows(1); assert.ok(!(await dialog.innerText()).includes('Đáp án / hướng dẫn'), 'the answer is hidden at first');
+  await f.page.keyboard.press('ArrowRight'); await shows(2);
+  await f.page.keyboard.press('ArrowRight'); await shows(3); await f.page.keyboard.press('ArrowLeft'); await shows(2);
+  await dialog.getByLabel('Chọn câu trình chiếu').selectOption({ label: '4' }); await shows(4);
+  await click(f.page, 'Hiện đáp án / lời giải'); assert.ok((await dialog.innerText()).includes(solution), 'the solution appears when asked');
+  await f.page.keyboard.press('ArrowRight'); await shows(5); assert.ok(!(await dialog.innerText()).includes('Đáp án / hướng dẫn'), 'moving on hides the answer again');
+  const size = async () => Number(/(\d+)px/.exec(await dialog.locator('[aria-live=polite]').innerText())![1]);
+  const start = await size(); await dialog.getByRole('button', { name: 'Chữ lớn hơn', exact: true }).click(); assert.equal(await size(), start + 2);
+  await dialog.getByRole('button', { name: 'Chữ nhỏ hơn', exact: true }).click(); assert.equal(await size(), start);
+  await f.page.keyboard.press('Escape'); await dialog.waitFor({ state: 'detached' });
+  const after = await f.db.exam.findUniqueOrThrow({ where: { id } });
+  assert.equal(after.version, before.version); assert.equal(after.title, before.title); assert.equal(await f.db.examQuestion.count({ where: { examId: id } }), 7, 'presenting changes nothing');
 }));
