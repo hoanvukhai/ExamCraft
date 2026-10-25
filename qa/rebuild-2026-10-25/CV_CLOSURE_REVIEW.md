@@ -106,3 +106,6 @@ Chủ dự án quyết bỏ "tệp" và "âm thanh theo đề" khỏi tiêu chí
 
 ## Bổ sung: đóng CV023 và CV027
 Căn cứ bảng đối chiếu GEM-T1 của Gemini (mọi tên test đều kiểm có thật bằng `check-test-citations`), cộng các luồng trình duyệt F2 và hai-tab đợt 23/10, cộng `docx_long_exam`. Mỗi vế của tiêu chí có ít nhất một test chạy được; tên test ghi trong dòng nghiệm thu của từng CV. Không chạy lại kiểm thử vì chỉ ghi hồ sơ; lần chạy đầy đủ gần nhất: SAFE 408/408, HTTP 88/88, trình duyệt 15/15. Giới hạn chính: chưa ai mở Word thật; ca môn khác Toán chưa soạn trên giao diện.
+
+## Bổ sung: đóng CV054, 056, 061, 024 (đợt chốt nhanh)
+Chỉ đối chiếu bằng chứng đã có (không chạy lại): SAFE 408/408, HTTP 88/88, trình duyệt 15/15 lần gần nhất. Mỗi dòng nghiệm thu nêu test và giới hạn. Giữ mở CV026, 043, 044 vì chỉ còn việc xem bằng mắt (Word thật, in thật), chủ dự án tự làm.
