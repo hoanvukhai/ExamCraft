@@ -1,140 +1,111 @@
-# TÀI LIỆU THIẾT KẾ SƠ BỘ: TÍNH NĂNG SAO LƯU GOOGLE DRIVE
-*Tài liệu kiến trúc kỹ thuật sơ bộ (Design Draft) — Dự án ExamCraft*
-*Căn cứ phân công điều phối: Nhiệm vụ GEM-R7 (P2, Generation 10)*
+# TÀI LIỆU THIẾT KẾ KỸ THUẬT: TÙY CHỌN ĐỒNG BỘ GOOGLE DRIVE (CV075)
 
-- **Người thực hiện:** Gemini (Kiến trúc & Phân tích an toàn dữ liệu)
-- **Thời điểm lập (UTC):** 2026-10-25T10:45:00Z
-- **Trạng thái:** BẢN THẢO THIẾT KẾ (CHƯA TRIỂN KHAI MÃ NGUỒN)
-- **Mục tiêu:** Định hình kiến trúc, cấu trúc gói dữ liệu, phân quyền bảo mật tối thiểu và luồng dữ liệu dự phòng cục bộ trước khi quyết định đưa vào lộ trình phát triển.
+*Tài liệu thiết kế kiến trúc và danh mục nhiệm vụ tồn đọng (Design Specification & Backlog) — Dự án ExamCraft*
+*Căn cứ phân công điều phối: Nhiệm vụ GEM-W4 (P1, Generation 15), hoàn thiện tiêu chí CV075*
 
----
-
-## 1. BỐI CẢNH VÀ MỤC TIÊU THIẾT KẾ
-
-Trong mô hình triển khai của ExamCraft, hệ thống có thể chạy dưới dạng máy chủ cục bộ tại trường học hoặc máy tính cá nhân của giáo viên:
-- **Nhu cầu thực tế:** Giáo viên đầu tư nhiều thời gian biên soạn ngân hàng câu hỏi và ma trận đề thi. Khi chuyển đổi máy tính giảng dạy hoặc khi máy chủ trường học được cài đặt lại, nguy cơ thất thoát dữ liệu đề thi là rất lớn.
-- **Mục tiêu cốt lõi:**
-  1. Cho phép giáo viên chủ động đồng bộ kho đề thi cá nhân lên tài khoản Google Drive của chính mình để lưu trữ an toàn lâu dài.
-  2. Trao toàn quyền sở hữu dữ liệu cho người dùng (Self-Sovereign Data), không phụ thuộc vào hạ tầng đám mây tập trung của dự án.
-  3. Đảm bảo tính riêng tư tuyệt đối: Chỉ giáo viên mới có thể mở và khôi phục lại kho đề của mình.
+- Người thực hiện: Gemini (Kiến trúc & Phân tích hệ thống)
+- Thời điểm chốt tài liệu: 2026-10-26T00:00:00Z
+- Trạng thái kỹ thuật: BẢN THIẾT KẾ CHỐT (CHƯA TRIỂN KHAI MÃ NGUỒN)
+- Tuyên bố bắt buộc:
+  1. Ứng dụng không yêu cầu Google Drive để hoạt động. Mọi tính năng tạo đề, quản lý câu hỏi, làm bài và xuất bản đều hoạt động bình thường, độc lập hoàn toàn ở chế độ cục bộ (local/offline).
+  2. Tính năng kết nối Google Drive hiện tại chưa triển khai trong mã nguồn, được lưu trữ dưới dạng backlog kỹ thuật và thiết kế chuẩn bị cho giai đoạn sau pilot khi có quyết định phê duyệt của chủ dự án.
 
 ---
 
-## 2. CẤU TRÚC DỮ LIỆU GÓI SAO LƯU (EXAM BUNDLE FORMAT)
+## 1. Mục tiêu và nguyên tắc kiến trúc
 
-Dữ liệu sao lưu được đóng gói thành một tệp JSON tiêu chuẩn (hoặc tệp lưu trữ nén chứa tệp JSON cùng thư mục hình ảnh minh họa).
-
-### Sơ đồ cấu trúc tệp sao lưu:
-```json
-{
-  "format": "EXAMCRAFT_BUNDLE",
-  "version": "1.0.0",
-  "exportedAt": "2026-10-25T10:00Z",
-  "generator": "ExamCraft",
-  "checksum": "sha256_hash",
-  "teacher": {
-    "displayName": "Giao vien",
-    "subject": "TOAN_6"
-  },
-  "exams": [
-    {
-      "id": "exam_id",
-      "title": "Toan 6 Giua ky 1",
-      "subject": "TOAN",
-      "grade": 6,
-      "duration": 45,
-      "matrix": {
-        "know": 40,
-        "understand": 30,
-        "apply": 20,
-        "highApply": 10
-      },
-      "passages": [],
-      "questions": [
-        {
-          "key": "q1",
-          "type": "multiple_choice",
-          "content": "Noi dung cau hoi",
-          "options": ["A", "B", "C", "D"],
-          "correctAnswer": "A",
-          "points": 2.0,
-          "solution": "Huong dan giai"
-        }
-      ]
-    }
-  ]
-}
-```
-
-### Các nguyên tắc đóng gói dữ liệu:
-1. **Chỉ sao lưu tài sản sư phạm:** Gói sao lưu bao gồm ngân hàng câu hỏi, các đề thi đã biên soạn, ma trận đặc tả và đoạn ngữ liệu dùng chung.
-2. **Không sao lưu dữ liệu nhạy cảm của học sinh:** Tuyệt đối không đưa họ tên, bảng điểm hay bài làm của học sinh vào gói sao lưu Google Drive cá nhân nhằm tuân thủ quy định bảo vệ dữ liệu giáo dục.
-3. **Mã băm toàn vẹn:** Trường checksum được tạo bằng thuật toán SHA-256 từ chuỗi JSON chuẩn hóa để đảm bảo gói tin không bị thay đổi hoặc hư hỏng trong quá trình truyền tải.
+1. Mục tiêu:
+   - Cung cấp tùy chọn phụ trợ cho giáo viên muốn đồng bộ và lưu trữ dự phòng các gói sao lưu đề thi lên tài khoản Google Drive cá nhân.
+   - Tránh thất thoát tài nguyên sư phạm khi chuyển đổi máy tính công tác hoặc cài đặt lại môi trường máy chủ cục bộ.
+2. Nguyên tắc bảo mật và quyền riêng tư:
+   - Nguyên tắc đặc quyền tối thiểu (Least Privilege): Chỉ yêu cầu quyền đối với các tệp do chính ứng dụng tạo ra.
+   - Quyền tự chủ dữ liệu (Self-Sovereign Data): Toàn bộ dữ liệu nằm trên Drive cá nhân của giáo viên; hệ thống không chuyển tiếp hay lưu giữ dữ liệu trên bất kỳ máy chủ trung gian nào của bên thứ ba.
+   - Không đưa thông tin nhạy cảm của học sinh lên Drive cá nhân (chỉ sao lưu ngân hàng câu hỏi, đề thi, ma trận, ngữ liệu; không sao lưu danh sách học sinh và kết quả bài làm).
 
 ---
 
-## 3. PHÂN QUYỀN OAUTH 2.0 TỐI THIỂU (LEAST PRIVILEGE)
+## 2. Định dạng gói đồng bộ (Dựa trên gói sao lưu cục bộ hiện có)
 
-Để bảo đảm an toàn thông tin và tạo sự tin tưởng tuyệt đối cho giáo viên, hệ thống áp dụng nguyên tắc đặc quyền tối thiểu khi kết nối Google API:
+Thay vì phát triển một định dạng đóng gói mới, tính năng Drive Sync kế thừa và tái sử dụng trực tiếp cấu trúc gói sao lưu chuẩn của dự án được quy định tại docs/van-hanh/SAO_LUU_KHOI_PHUC_LOCAL.md:
 
-### A. Phạm vi quyền (OAuth Scope) bắt buộc
-- **Scope duy nhất được sử dụng:**
-  `https://www.googleapis.com/auth/drive.file`
-- **Ý nghĩa kỹ thuật của scope:**
-  + Ứng dụng ExamCraft **chỉ có quyền** tạo mới tệp, đọc, cập nhật và xóa các tệp do chính ExamCraft tạo ra trên Google Drive của giáo viên.
-  + Ứng dụng **hoàn toàn không có quyền** đọc, xem danh sách, tải về hay chỉnh sửa bất kỳ tài liệu, hình ảnh, bảng tính hay tệp cá nhân nào khác có sẵn trong Google Drive của người dùng.
+1. Cấu trúc thư mục gói sao lưu (Package Structure):
+   - manifest.json: Tệp thông tin định danh và băm kiểm tra toàn vẹn (SHA-256) của gói.
+     - status: BACKUP_PACKAGE_CREATED
+     - formatVersion: 1
+     - createdAt: Thời điểm tạo bản sao lưu (chuẩn ISO UTC).
+     - sourceDatabase: Tên cơ sở dữ liệu nguồn.
+     - publicFiles: Danh sách các tệp hình ảnh, tài nguyên đi kèm (đường dẫn tương đối, dung lượng bytes, mã băm sha256).
+     - backup: Chứa dumpBytes, dumpSha256 và chữ ký kiểm tra.
+   - database.dump: Tệp trích xuất dữ liệu nhị phân hoặc JSON xuất khẩu của các bảng nghiệp vụ sư phạm (Exam, Question, Passage, ExamTemplate, TeacherAiMemory).
+   - public/: Thư mục chứa các tệp hình ảnh minh họa (figures) được nhúng trong đề thi.
 
-### B. Phạm vi quyền tuyệt đối bị cấm (Banned Scopes)
-- Tuyệt đối cấm sử dụng scope toàn quyền `https://www.googleapis.com/auth/drive`.
-- Tuyệt đối cấm sử dụng scope đọc toàn bộ `https://www.googleapis.com/auth/drive.readonly`.
-
-### C. Cơ chế tạo thư mục riêng biệt
-Khi giáo viên kết nối lần đầu, ứng dụng tạo một thư mục chuyên dụng mang tên Thư mục sao lưu ExamCraft trên Google Drive. Toàn bộ các bản sao lưu định kỳ sẽ được ghi vào thư mục này để giáo viên dễ dàng quản lý.
-
----
-
-## 4. PHÂN TÍCH RỦI RO BẢO MẬT VÀ GIẢI PHÁP PHÒNG NGỪA
-
-### Rủi ro 1: Nguy cơ rò rỉ Refresh Token tại máy trạm
-- **Mối đe dọa:** Khi kết nối Google Drive qua giao thức Offline Access, hệ thống nhận được Refresh Token có giá trị vô thời hạn. Nếu lưu trữ Refresh Token không an toàn trên máy chủ cục bộ hoặc máy dùng chung ở trường học, kẻ xấu có thể trích xuất token.
-- **Biện pháp kỹ thuật:**
-  1. Mã hóa Refresh Token bằng thuật toán AES-256-GCM với khóa mã hóa xuất phát từ biến môi trường máy chủ hoặc TPM của máy trạm.
-  2. Bố trí nút Hủy liên kết Google Drive trong màn hình cài đặt. Khi giáo viên nhấn hủy, hệ thống gửi yêu cầu thu hồi token tới máy chủ Google và xóa sạch dữ liệu xác thực tại máy cục bộ.
-
-### Rủi ro 2: Nguy cơ lộ đề thi chưa phát hành
-- **Mối đe dọa:** Đề thi kiểm tra định kỳ được sao lưu lên Google Drive có thể bị chia sẻ ngoài ý muốn nếu giáo viên vô tình đặt chế độ chia sẻ công khai cho thư mục Drive cá nhân.
-- **Biện pháp kỹ thuật:**
-  1. Cung cấp tùy chọn Mã hóa gói đề thi bằng mật khẩu do giáo viên tự đặt.
-  2. Khi bật tùy chọn này, gói JSON sẽ được mã hóa bằng thuật toán AES-GCM với khóa sinh từ mật khẩu (PBKDF2) trước khi tải lên Drive. Người có tệp sao lưu nhưng không có mật khẩu sẽ không thể đọc được nội dung đề thi.
+2. Tính toàn vẹn và an toàn đường dẫn:
+   - Tuân thủ quy tắc kiểm tra nghiêm ngặt của bộ công cụ backup-package-tools: Từ chối mọi tệp có đường dẫn thoát ra ngoài thư mục gói (chặn path traversal ../).
+   - Bắt buộc kiểm tra khớp mã băm SHA-256 trước khi giải nén hoặc khôi phục dữ liệu vào cơ sở dữ liệu.
 
 ---
 
-## 5. LUỒNG XUẤT DỮ LIỆU CỤC BỘ DỰ PHÒNG (OFFLINE FALLBACK)
+## 3. Phân quyền OAuth 2.0 tối thiểu (Least Privilege Scope)
 
-Tính năng sao lưu không được phụ thuộc độc quyền vào Google Drive. Hệ thống bắt buộc phải có luồng làm việc độc lập hoàn toàn không qua Internet:
+1. Scope duy nhất được phép sử dụng:
+   - https://www.googleapis.com/auth/drive.file
+   - Ý nghĩa: Ứng dụng chỉ có quyền tạo mới, đọc, cập nhật và xóa các tệp do chính ứng dụng ExamCraft tạo ra trên Google Drive của người dùng.
+   - Cam kết bảo mật: Ứng dụng không có quyền truy cập, đọc danh sách hay chỉnh sửa bất kỳ tệp cá nhân nào khác của người dùng trên Drive.
 
-```text
-[Màn hình Quản lý Kho đề]
-        |
-        +---> Nút [Xuất tệp sao lưu .json] ---> Tải ngay tệp về máy tính cá nhân
-        |
-        +---> Nút [Khôi phục từ tệp] ---> Chọn tệp từ ổ đĩa ---> Kiểm tra toàn vẹn ---> Nạp vào CSDL
-```
+2. Các scope tuyệt đối bị cấm:
+   - Cấm sử dụng https://www.googleapis.com/auth/drive (toàn quyền truy cập Drive).
+   - Cấm sử dụng https://www.googleapis.com/auth/drive.readonly (đọc toàn bộ kho lưu trữ của người dùng).
 
-### Ưu điểm của luồng dữ liệu cục bộ:
-- Hoạt động ngay cả khi phòng máy trường học mất kết nối mạng Internet.
-- Phù hợp với các giáo viên hoặc đơn vị giáo dục có chính sách bảo mật nội bộ nghiêm ngặt, không cho phép kết nối tài khoản đám mây bên thứ ba.
-- Đơn giản, trực quan, không phát sinh chi phí hạ tầng hay thủ tục xin phê duyệt ứng dụng OAuth từ Google.
+3. Quản lý thư mục trên Drive:
+   - Ứng dụng tạo thư mục chuyên dụng mang tên ExamCraft Backups trên Drive của giáo viên.
+   - Các gói sao lưu được tải lên dưới dạng tệp nén mang tên có cấu trúc: examcraft-backup-YYYYMMDD-HHMMSS.zip.
 
 ---
 
-## 6. KHUYẾN NGHỊ VÀ KẾ HOẠCH HÀNH ĐỘNG
+## 4. Máy trạng thái sao lưu và khôi phục (Backup & Restore State Machine)
 
-1. **Giai đoạn Pilot hiện tại:**
-   - Ưu tiên duy trì và hoàn thiện tính năng Xuất tệp sao lưu cục bộ (Local JSON/ZIP Export/Import).
-   - Tạm hoãn việc tích hợp trực tiếp Google Drive SDK cho đến khi quy trình đăng ký ứng dụng Google Cloud và quy trình duyệt ứng dụng (OAuth App Verification) của Google được thông qua.
-2. **Giai đoạn phát triển tiếp theo:**
-   - Khi có quyết định chính thức từ Chủ dự án, kỹ sư phần mềm sẽ thiết lập mô-đun Drive Sync dựa trên bản thiết kế này, đảm bảo tuân thủ nghiêm ngặt scope tối thiểu và cơ chế mã hóa mật khẩu.
+Quá trình tương tác giữa máy khách ExamCraft và Google Drive được mô hình hóa thành máy trạng thái hữu hạn (FSM) gồm các trạng thái rõ ràng:
+
+1. IDLE (Sẵn sàng): Trạng thái nghỉ. Chưa có thao tác đồng bộ nào đang chạy.
+2. CONNECTING (Đang kết nối): Đang thực hiện luồng trao đổi token OAuth 2.0 hoặc làm mới Access Token từ Refresh Token.
+3. PREPARING_PACKAGE (Đang đóng gói): Đang tạo gói sao lưu cục bộ, tính mã băm SHA-256 và nén dữ liệu.
+4. UPLOADING (Đang tải lên): Đang truyền luồng dữ liệu gói nén lên Google Drive qua Google Drive REST API.
+5. SYNCED (Đã đồng bộ): Quá trình tải lên thành công, mã tệp Drive và thời gian đồng bộ được lưu vào nhật ký cục bộ.
+6. CONFLICT (Phát hiện xung đột): Phiên bản trên Drive có thời gian cập nhật mới hơn bản sao lưu hiện tại của máy cục bộ; hệ thống yêu cầu giáo viên xác nhận ghi đè hoặc đổi tên bản sao lưu.
+7. RESTORE_PREVIEW (Xem trước khôi phục): Đã tải gói từ Drive về vùng tạm; hiển thị thông tin manifest (số lượng đề, câu hỏi, ngày sao lưu) để giáo viên xác nhận trước khi phục hồi.
+8. RESTORING (Đang khôi phục): Đang nạp dữ liệu vào cơ sở dữ liệu theo quy trình kiểm tra toàn vẹn nghiêm ngặt.
+9. RESTORED (Đã khôi phục thành công): Cơ sở dữ liệu và thư mục tài nguyên đã được cập nhật hoàn tất.
+10. ERROR (Lỗi): Xảy ra lỗi mất mạng, hết hạn ngạch Drive, token bị thu hồi hoặc gói dữ liệu bị hỏng (mã băm không khớp). Hiển thị thông báo thân thiện và giữ nguyên dữ liệu hiện tại.
 
 ---
-*Tài liệu thiết kế sơ bộ sao lưu Google Drive ExamCraft 2026.*
+
+## 5. Danh mục nhiệm vụ tồn đọng kỹ thuật (Technical Backlog)
+
+Khi chủ dự án quyết định triển khai tính năng Google Drive, các đầu việc kỹ thuật cần thực hiện theo thứ tự:
+
+| Mã việc | Tên nhiệm vụ | Chi tiết kỹ thuật cần làm | Ghi chú an toàn |
+|---|---|---|---|
+| DRV-01 | Đăng ký Google Cloud Console Project | Tạo dự án trên GCP, cấu hình màn hình đồng ý OAuth (Consent Screen), khai báo scope drive.file, nhận Client ID và Client Secret. | Dùng chế độ Testing nội bộ, không công khai public |
+| DRV-02 | Lưu trữ bảo mật OAuth Token | Tạo bảng UserDriveConnection trong schema Prisma; mã hóa Refresh Token bằng thuật toán AES-256-GCM trước khi lưu vào DB. | Khóa mã hóa lấy từ biến môi trường máy chủ |
+| DRV-03 | API Endpoints kết nối và ngắt kết nối | Xây dựng route /api/drive/auth/url, /api/drive/auth/callback, /api/drive/disconnect. | Hỗ trợ nút ngắt kết nối và thu hồi token tức thì |
+| DRV-04 | Dịch vụ đóng gói và đồng bộ nền | Viết module drive-sync-service đóng gói thư mục backup theo chuẩn manifest.json và đẩy lên Drive qua multipart upload. | Chặn path traversal; ghi nhật ký trạng thái |
+| DRV-05 | Giao diện quản lý Drive tại Cài đặt | Thêm panel Đồng bộ Google Drive trong trang Cài đặt; hiển thị trạng thái kết nối, nút Sao lưu ngay, danh sách bản sao lưu trên Drive. | Bố trí nhãn rõ ràng; có nút Khôi phục kèm xác nhận |
+| DRV-06 | Kiểm thử hồi quy tự động | Viết bộ kiểm thử HTTP mock các phản hồi của Google Drive API; kiểm tra kịch bản mất mạng giữa chừng, token hết hạn và băm lỗi. | Không gọi API thật của Google trong test |
+
+---
+
+## 6. Quyết định chủ dự án cần chọn
+
+Để làm căn cứ phê duyệt đưa vào triển khai thực tế, Chủ dự án chỉ cần lựa chọn 3 vấn đề kiến trúc sau:
+
+1. Phương thức lưu trữ ưu tiên:
+   - Lựa chọn A: Chỉ sử dụng tính năng Xuất/Nhập gói sao lưu thủ công cục bộ (.zip) về máy tính cá nhân (Đơn giản, an toàn tuyệt đối, không phụ thuộc Google).
+   - Lựa chọn B: Tích hợp thêm tùy chọn đồng bộ Google Drive cá nhân theo bản thiết kế trên (Thuận tiện khi chuyển đổi máy, cần duy trì kết nối OAuth).
+
+2. Cơ chế kích hoạt sao lưu:
+   - Lựa chọn A: Sao lưu thủ công theo yêu cầu (Chỉ sao lưu khi giáo viên chủ động bấm nút yêu cầu sao lưu).
+   - Lựa chọn B: Sao lưu tự động định kỳ (Hệ thống tự động sao lưu mỗi tuần một lần khi có kết nối mạng).
+
+3. Mã hóa dữ liệu gói sao lưu:
+   - Lựa chọn A: Giữ nguyên gói nén JSON tiêu chuẩn (Dễ xem, dễ kiểm tra cấu trúc).
+   - Lựa chọn B: Bổ sung tùy chọn đặt mật khẩu mã hóa (AES-GCM) trước khi tải lên Drive (Chống lộ đề ngay cả khi Drive bị người khác truy cập).
