@@ -114,3 +114,10 @@ Chỉ đối chiếu bằng chứng đã có (không chạy lại): SAFE 408/408
 - **F17 (nhập đề từ văn bản khi chưa có khóa AI):** máy chủ trả "chưa có khóa", hộp nhập chuyển sang bộ phân tích tích hợp; dán đề có dòng tiêu đề, trắc nghiệm có "Đáp án: B", đúng-sai có (Đ)/(S), trả lời ngắn; xem trước đúng 3 câu, thêm vào đề, lưu, và đề trên máy chủ có đúng đáp án B, bốn ý đúng-sai [đúng, sai, đúng, sai], tiêu đề đề thi không thành câu. Chưa đóng CV039 vì đường nhập bằng AI chưa kiểm.
 - **F18 (trình chiếu):** xem dòng nghiệm thu CV045. **CV030:** xem dòng nghiệm thu.
 - Hàm mở đề dùng chung trong bộ kiểm trình duyệt nay chờ nút "Lưu" đầu tiên (ở chế độ hẹp có hai nút cùng tên).
+
+## Bổ sung: máy chủ Gemini giả, khóa AI (CV031, 032, 033), EX_Test, fixture
+Chạy cuối: build đạt, SAFE 425/425 ([log](safe-claude-run14.log)), HTTP 98/98 ([log](http-claude-run27.log)); trình duyệt 17/17 ở lần chạy trước, không đổi giao diện sau đó.
+- **Không gọi AI thật.** Server thử nay được khởi động với `GOOGLE_GEMINI_BASE_URL` trỏ về một máy chủ giả trong bài kiểm (cổng 3118); đã xác nhận trước bằng một đoạn mã riêng rằng SDK gửi đúng tới máy chủ giả. Route "kiểm tra khóa" từng gọi cứng địa chỉ Google, nay theo biến này nhưng chỉ khi chạy server thử.
+- **Lỗi thật sửa:** khi AI trả về nội dung không phải JSON, sáu route AI báo "dữ liệu gửi lên không phải JSON" (sai người, mã 400). Nay có `parseProviderJson`: mã 502 `AI_BAD_OUTPUT`, nói rõ lỗi ở AI và chưa lưu gì; test tĩnh buộc mọi route đọc kết quả AI qua hàm này.
+- **EX_Test:** 22 ca của Gemini làm lộ ba lỗi thật (immini, shortans, heva), đã sửa. **Fixture:** xuất Word đủ ba chế độ cho cả 7 đề mẫu.
+- Gemini generation 13: nhận U1, U3, U4; U2 nhận có giới hạn.

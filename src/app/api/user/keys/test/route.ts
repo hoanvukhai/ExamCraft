@@ -22,7 +22,9 @@ export async function POST(req: NextRequest) {
       rawKey = decryptApiKey(saved.keyEncrypted, saved.keyIv, saved.keyTag);
     }
     const startedAt = Date.now();
-    const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=1000', { headers: { 'x-goog-api-key': rawKey! }, signal: AbortSignal.timeout(10000), cache: 'no-store' });
+    // Only the isolated test server may point this at a local imitation of the provider.
+    const providerBase = process.env.EXAMCRAFT_ISOLATED_TEST_SERVER === '1' && process.env.GOOGLE_GEMINI_BASE_URL ? process.env.GOOGLE_GEMINI_BASE_URL : 'https://generativelanguage.googleapis.com';
+    const response = await fetch(`${providerBase}/v1beta/models?pageSize=1000`, { headers: { 'x-goog-api-key': rawKey! }, signal: AbortSignal.timeout(10000), cache: 'no-store' });
     if (!response.ok) {
       const body = await response.json().catch(() => ({}));
       const failure = classifyProviderFailure({ status: response.status, message: body?.error?.message ?? '' });

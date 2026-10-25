@@ -1,6 +1,6 @@
 # BỘ FIXTURE ĐỀ THI ĐA MÔN KIỂM TRA NHẬP/XUẤT (EXAM FIXTURES)
 
-Thư mục này chứa bộ 6 tệp đề thi mẫu đa môn học theo chuẩn Chương trình Giáo dục phổ thông 2018, tuân thủ nghiêm ngặt định dạng lược đồ Exam của hệ thống ExamCraft (mã nguồn tại src/types/exam.ts). Toàn bộ các tệp được mã hóa UTF-8 chuẩn (không chứa ký tự BOM ở đầu tệp, byte đầu là 0x7B).
+Thư mục này chứa bộ 7 tệp đề thi mẫu đa môn học theo chuẩn Chương trình Giáo dục phổ thông 2018, tuân thủ nghiêm ngặt định dạng lược đồ Exam của hệ thống ExamCraft (mã nguồn tại src/types/exam.ts). Toàn bộ các tệp được mã hóa UTF-8 chuẩn (không chứa ký tự BOM ở đầu tệp, byte đầu là 0x7B).
 
 Bộ dữ liệu phục vụ mục đích kiểm thử tự động (tests/fixture_da_mon.test.ts) và thủ công cho các luồng:
 1. Nhập và mở đề trong không gian làm việc ExamWorkspace.
@@ -11,7 +11,7 @@ Bộ dữ liệu phục vụ mục đích kiểm thử tự động (tests/fixtu
 
 ---
 
-## DANH MỤC 6 TỆP ĐỀ THI ĐÃ MỞ RỘNG (10 CÂU / ĐỀ, ĐA DẠNG DẠNG THỨC)
+## DANH MỤC 7 TỆP ĐỀ THI ĐÃ MỞ RỘNG (10 CÂU / ĐỀ, ĐA DẠNG DẠNG THỨC)
 
 Mỗi đề thi trong bộ fixture đã được mở rộng lên 10 câu hỏi độc lập, bao quát từ 4 đến 7 dạng thức câu hỏi khác nhau: Trắc nghiệm 4 lựa chọn (multiple_choice), Trắc nghiệm Đúng/Sai nhóm (true_false_group), Trả lời ngắn (short_answer), Điền khuyết (fill_blank), Ghép nối (matching), Sắp xếp thứ tự (ordering) và Tự luận có barem rubric (essay).
 
@@ -70,10 +70,19 @@ Mỗi đề thi trong bộ fixture đã được mở rộng lên 10 câu hỏi 
 - Trường hợp biên cài đặt:
   + Công thức toán học cực dài trên 150 ký tự: Biểu thức đại số chứa căn thức lồng nhau tại Câu 1 có độ dài chuỗi ký tự LaTeX đạt 210 ký tự, kiểm tra khả năng hiển thị MathJax/KaTeX và bộ lọc chuyển đổi sang MathML/OMML khi xuất tệp .docx.
 
+### 7. tieu-hoc-3.json (Tiểu học lớp 3 - Toán và Tiếng Việt)
+- Quy mô: 10 câu hỏi, gồm 2 phần (Toán học lớp 3 và Tiếng Việt lớp 3).
+- Các dạng thức: multiple_choice, short_answer, true_false_group, essay.
+- Đặc điểm sư phạm:
+  + Câu hỏi ngắn gọn, dùng các con số nhỏ trong phạm vi 1000 phù hợp tâm lý tiếp nhận của học sinh tiểu học.
+  + Môn Toán: Cấu tạo số có 3 chữ số, phép nhân trong phạm vi 1000, chu vi hình chữ nhật, đặc điểm hình vuông/tam giác và đơn vị đo.
+  + Hình vẽ mô tả bằng chữ: Câu hỏi đọc giờ đồng hồ có kèm khối văn bản mô tả trực quan vị trí kim ngắn kim dài.
+  + Môn Tiếng Việt: Gắn với ngữ liệu bài thơ "Mùa thu của em", câu hỏi đọc hiểu, biện pháp tu từ so sánh, từ chỉ đặc điểm và câu tự luận ngắn kể về đồ dùng học tập.
+
 ---
 
 ## HƯỚNG DẪN KIỂM TRA TÍNH HỢP LỆ VÀ SỬ DỤNG
 1. Kiểm tra cú pháp JSON và mã hóa:
-   Tất cả 6 tệp đều vượt qua kiểm tra cú pháp và đảm bảo byte đầu tiên là 0x7B (ký tự mở ngoặc nhọn {), không bị chèn byte BOM (0xEF 0xBB 0xBF).
+   Tất cả 7 tệp đều vượt qua kiểm tra cú pháp và đảm bảo byte đầu tiên là 0x7B (ký tự mở ngoặc nhọn {), không bị chèn byte BOM (0xEF 0xBB 0xBF).
 2. Kiểm tra tự chấm điểm tự động:
    Tất cả các câu hỏi thuộc các dạng tự chấm (multiple_choice, short_answer, fill_blank) đều có khóa đáp án chính xác, vượt qua 100% bộ kiểm tra tự động tại tests/fixture_da_mon.test.ts.

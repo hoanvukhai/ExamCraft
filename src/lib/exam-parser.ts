@@ -44,6 +44,20 @@ function parseVTexId(idTag: string): { difficulty: DifficultyLevel; tags: string
   return { difficulty, tags: [idTag] };
 }
 
+/** `\heva{...}` and `\hoac{...}` are VTeX shorthands for a system of equations; KaTeX only reads `cases`. */
+function expandSystemMacros(text: string): string {
+  let out = text;
+  for (const name of ['\\heva', '\\hoac']) {
+    for (let at = out.indexOf(name); at !== -1; at = out.indexOf(name, at + 1)) {
+      if (!out.slice(at + name.length).trimStart().startsWith('{')) continue;
+      const group = extractBracedContent(out, at + name.length);
+      if (!group) continue;
+      out = `${out.slice(0, at)}\\begin{cases}${group.content}\\end{cases}${out.slice(group.nextIdx)}`;
+    }
+  }
+  return out;
+}
+
 /**
  * Bóc tách đề thi từ mã nguồn LaTeX chuẩn EX_Test (Cộng đồng VTeX)
  * Sử dụng bộ đọc đếm độ sâu ngoặc nhọn (Bracket Depth) hỗ trợ cả ngoặc lồng nhau
@@ -59,7 +73,7 @@ export function parseExTestLatex(rawLatex: string): Question[] {
 
   while ((match = exRegex.exec(rawLatex)) !== null) {
     const idTag = (match[1] || '').trim();
-    const fullContent = (match[2] || '').trim();
+    const fullContent = expandSystemMacros((match[2] || '').trim());
 
     // 1. Tách phần lời giải \loigiai{...} nếu có
     let contentWithoutSolution = fullContent;
@@ -75,7 +89,17 @@ export function parseExTestLatex(rawLatex: string): Question[] {
       }
     }
 
-    const { difficulty, tags } = parseVTexId(idTag);
+    // `\immini{text and choices}{figure}`: keep the text side; the figure cannot be read, so say so instead of dropping it silently.
+    let hasFigure = false;
+    const immini = /^\\immini(?:\[[^\]]*\])?\s*(?=\{)/.exec(contentWithoutSolution);
+    if (immini) {
+      const first = extractBracedContent(contentWithoutSolution, immini[0].length);
+      if (first) { contentWithoutSolution = first.content.trim(); hasFigure = true; }
+    }
+    const figureNote = hasFigure ? '\n\n[Đề gốc có hình vẽ: cần chèn lại hình ảnh.]' : '';
+    const parsedId = parseVTexId(idTag);
+    const difficulty = parsedId.difficulty;
+    const tags = hasFigure ? [...parsedId.tags, 'Can_chen_hinh'] : parsedId.tags;
 
     // 2. Kiểm tra câu hỏi dạng Đúng/Sai (\choiceTF)
     const choiceTFIdx = contentWithoutSolution.indexOf('\\choiceTF');
@@ -107,7 +131,7 @@ export function parseExTestLatex(rawLatex: string): Question[] {
         id: `q_parsed_${Date.now()}_${index++}`,
         type: 'true_false_group',
         difficulty,
-        content: questionContent,
+        content: questionContent + figureNote,
         sub_questions: subQuestions,
         correct_answer: subQuestions.map(s => `${s.key}:${s.isCorrect ? 'Đ' : 'S'}`).join(' '),
         step_by_step_solution: solution || 'Xem lời giải trong tài liệu gốc.',
@@ -148,7 +172,7 @@ export function parseExTestLatex(rawLatex: string): Question[] {
         id: `q_parsed_${Date.now()}_${index++}`,
         type: isChoice ? 'multiple_choice' : 'short_answer',
         difficulty,
-        content: questionContent,
+        content: questionContent + figureNote,
         choices: isChoice ? choices : undefined,
         correct_answer: isChoice ? correctAnswer : undefined,
         step_by_step_solution: solution || 'Xem lời giải trong tài liệu gốc.',
@@ -157,12 +181,22 @@ export function parseExTestLatex(rawLatex: string): Question[] {
       continue;
     }
 
-    // 4. Nếu không có \choice và không có \choiceTF -> Trả lời ngắn / Tự luận
+    // 4. Nếu không có \choice và không có \choiceTF -> Trả lời ngắn / Tự luận; `\shortans{3}` là đáp án của câu trả lời ngắn
+    let shortAnswer: string | undefined;
+    const shortAt = contentWithoutSolution.indexOf('\\shortans');
+    if (shortAt !== -1 && contentWithoutSolution.slice(shortAt + 9).trimStart().startsWith('{')) {
+      const answer = extractBracedContent(contentWithoutSolution, shortAt + 9);
+      if (answer) {
+        shortAnswer = answer.content.trim() || undefined;
+        contentWithoutSolution = (contentWithoutSolution.slice(0, shortAt) + contentWithoutSolution.slice(answer.nextIdx)).trim();
+      }
+    }
     questions.push({
       id: `q_parsed_${Date.now()}_${index++}`,
       type: 'short_answer',
       difficulty,
-      content: contentWithoutSolution,
+      ...(shortAnswer ? { correct_answer: shortAnswer, accepted_answers: [shortAnswer] } : {}),
+      content: contentWithoutSolution + figureNote,
       step_by_step_solution: solution || 'Xem lời giải trong tài liệu gốc.',
       tags,
     });

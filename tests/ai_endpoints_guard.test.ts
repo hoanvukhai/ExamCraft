@@ -45,3 +45,13 @@ test('the helper refuses an anonymous caller and shared keys', () => {
   assert.match(helper.text, /export function getRegisteredKeys\(\): KeyInfo\[\] \{ return \[\]; \}/, 'no shared key list');
   assert.match(helper.text, /userApiKey\.findMany\(\{ where: \{ userId: context\.userId/, 'saved keys are looked up by the caller');
 });
+
+test('routes that read JSON from the provider use the shared reader, so garbage is blamed on the provider and not on the request', () => {
+  // These read the answer through their own guarded parsing.
+  const own = new Set(['src/app/api/generate-exam/route.ts', 'src/app/api/knowledge-scope/propose/route.ts', 'src/app/api/teacher/ai-memory/analyze/route.ts']);
+  for (const { file, text } of providerFiles) {
+    if (!/JSON\.parse\(/.test(text) || own.has(file)) continue;
+    assert.match(text, /parseProviderJson\(/, `${file} must read the provider answer with parseProviderJson`);
+    assert.ok(!/JSON\.parse\((responseText|result|aiResult|cleanJson)/.test(text), `${file} must not parse the provider answer with a bare JSON.parse`);
+  }
+});

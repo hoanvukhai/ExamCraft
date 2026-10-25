@@ -7,7 +7,7 @@ import { isSameOriginMutation } from '@/lib/attempt-access';
 
 import mammoth from 'mammoth';
 import { GoogleGenAI } from '@google/genai';
-import { executeWithKeyRotation } from '@/lib/gemini-keys';
+import { executeWithKeyRotation, parseProviderJson } from '@/lib/gemini-keys';
 
 export async function POST(req: NextRequest) {
   try {
@@ -96,7 +96,7 @@ ${rawText}
       );
     }
 
-    const imported = parseImportedDocument(JSON.parse(aiResult), 'Word (.docx)');
+    const imported = parseImportedDocument(parseProviderJson(aiResult), 'Word (.docx)');
     imported.warnings.unshift('Luồng Word hiện đọc văn bản; ảnh, bảng phức tạp và công thức Word cần đối chiếu với tệp gốc và bổ sung thủ công.');
     return NextResponse.json({ success: true, ...imported, totalCount: imported.questions.length });
   } catch (error: unknown) {

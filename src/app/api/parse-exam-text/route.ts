@@ -6,7 +6,7 @@ import { isSameOriginMutation } from '@/lib/attempt-access';
 import { apiErrorResponse } from '@/lib/api-error';
 import prisma from '@/lib/prisma';
 import { requestApiKey } from '@/lib/ai-policy';
-import { executeWithKeyRotation } from '@/lib/gemini-keys';
+import { executeWithKeyRotation, parseProviderJson } from '@/lib/gemini-keys';
 
 export async function POST(req: NextRequest) {
   try {
@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
       }
     );
 
-    const imported = parseImportedDocument(JSON.parse(responseText), 'Văn bản nhập');
+    const imported = parseImportedDocument(parseProviderJson(responseText), 'Văn bản nhập');
     return NextResponse.json({ success: true, ...imported, totalCount: imported.questions.length });
   } catch (error: unknown) {
     return apiErrorResponse(error, 'Không thể xử lý yêu cầu AI lúc này.');

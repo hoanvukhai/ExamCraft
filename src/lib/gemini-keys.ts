@@ -47,6 +47,12 @@ async function reserveOperation(userId: string, endpoint: string, requestedModel
   throw new AiRequestError('Chưa thể giữ lượt gọi AI; hãy thử lại.', 503, 'RESERVATION_CONFLICT');
 }
 
+/** The provider answered, but not with JSON we can read: say so, instead of blaming the request that was sent. */
+export function parseProviderJson(text: string): unknown {
+  try { return JSON.parse(text); }
+  catch { throw new ApiError(502, 'AI trả về kết quả không đọc được. Chưa có gì được lưu; hãy thử lại hoặc nhập thủ công.', 'AI_BAD_OUTPUT'); }
+}
+
 /** One authenticated operation uses only the user's temporary key or saved keys. No implicit model change. */
 export async function executeWithKeyRotation<T>(customKey: string | undefined, operation: (apiKey: string, model: string) => Promise<T>, context?: { userId?: string; endpoint?: string; model?: string }): Promise<T> {
   if (!context?.userId) throw new AiRequestError('Vui lòng đăng nhập để dùng AI.', 401, 'UNAUTHORIZED');

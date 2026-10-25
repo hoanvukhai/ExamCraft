@@ -6,7 +6,7 @@ import { requestApiKey } from '@/lib/ai-policy';
 import { isSameOriginMutation } from '@/lib/attempt-access';
 
 import { GoogleGenAI } from '@google/genai';
-import { executeWithKeyRotation } from '@/lib/gemini-keys';
+import { executeWithKeyRotation, parseProviderJson } from '@/lib/gemini-keys';
 
 export async function POST(req: NextRequest) {
   try {
@@ -69,7 +69,7 @@ ${IMPORT_SOURCE_RULES}`;
       );
     }
 
-    const imported = parseImportedDocument(JSON.parse(result), 'Ảnh OCR');
+    const imported = parseImportedDocument(parseProviderJson(result), 'Ảnh OCR');
     imported.warnings.unshift('Cần đối chiếu chữ, công thức và hình với ảnh gốc trước khi sử dụng.');
     return NextResponse.json({ success: true, ...imported, totalCount: imported.questions.length });
   } catch (error: unknown) {

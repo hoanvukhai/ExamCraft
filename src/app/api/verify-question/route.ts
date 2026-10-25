@@ -10,7 +10,7 @@ import { normalizeQuestion } from '@/lib/exam-document';
 import { compareAnswerReview } from '@/lib/answer-review';
 import prisma from '@/lib/prisma';
 import { requestApiKey } from '@/lib/ai-policy';
-import { executeWithKeyRotation } from '@/lib/gemini-keys';
+import { executeWithKeyRotation, parseProviderJson } from '@/lib/gemini-keys';
 
 const geminiVerifySchema = {
   type: Type.OBJECT,
@@ -150,7 +150,7 @@ Yêu cầu xuất ra cấu trúc JSON hợp lệ theo Schema đã cung cấp.`;
       }
     );
 
-    const parsedJson = JSON.parse(responseText);
+    const parsedJson = parseProviderJson(responseText) as ReturnType<typeof JSON.parse>;
     const verifiedData = verifyZodSchema.parse(parsedJson);
 
     const { complete, isMatch, discrepancies } = compareAnswerReview(question, verifiedData);

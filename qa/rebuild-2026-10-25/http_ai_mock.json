@@ -1,0 +1,18 @@
+{
+  "checkedAt": "2026-10-25T12:08:08.713Z",
+  "checks": [
+    "no-key-no-call",
+    "temporary-key",
+    "stored-key-and-usage",
+    "invalid-key-disabled",
+    "rate-limit-fallback-and-isolation",
+    "daily-limit",
+    "choose-and-model",
+    "bad-output",
+    "outage-test-delete"
+  ],
+  "cleanupComplete": true,
+  "status": "PASS",
+  "environment": "isolated localhost:3117 with a local provider imitation on 3118",
+  "realAiCalls": false
+}

@@ -8,7 +8,7 @@ import { isSameOriginMutation } from '@/lib/attempt-access';
 import { GoogleGenAI, Type } from '@google/genai';
 import { z } from 'zod';
 import { Question } from '@/types/exam';
-import { executeWithKeyRotation } from '@/lib/gemini-keys';
+import { executeWithKeyRotation, parseProviderJson } from '@/lib/gemini-keys';
 import { syncQuestionFigures } from '@/lib/figure-sync';
 
 export type TweakAction = 
@@ -180,7 +180,7 @@ ${actionInstruction}
       return response.text || '{}';
     }, { userId: currentUser.id, endpoint: 'question.tweak' });
 
-    const parsedRaw = JSON.parse(responseText);
+    const parsedRaw = parseProviderJson(responseText) as ReturnType<typeof JSON.parse>;
     const validationResult = QuestionZodSchema.safeParse(parsedRaw);
 
     if (!validationResult.success) {

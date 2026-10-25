@@ -29,3 +29,26 @@ for (const file of files) {
     }
   });
 }
+
+import JSZip from 'jszip';
+import { exportExamToDocx } from '../src/lib/docx-export';
+
+for (const file of files) {
+  test(`fixture ${file} exports to Word in all three views with every question present and no raw LaTeX`, async () => {
+    const exam = normalizeExamDocument(JSON.parse(fs.readFileSync(path.join(directory, file), 'utf8')));
+    const open = async (solutions: boolean, mode?: 'parallel') => {
+      const zip = await JSZip.loadAsync(await (await (mode ? exportExamToDocx(exam, solutions, false, mode) : exportExamToDocx(exam, solutions, false))).arrayBuffer());
+      const xml = await zip.file('word/document.xml')!.async('string');
+      const decode = (text: string) => text.replace(/&apos;|&#39;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+      return { xml, plain: decode([...xml.matchAll(/<w:t[^>]*>([^<]*)<\/w:t>/g)].map(match => match[1]).join(' ')), math: [...xml.matchAll(/<m:t[^>]*>([^<]*)<\/m:t>/g)].map(match => match[1]).join(' ') };
+    };
+    for (const view of [await open(false), await open(true), await open(true, 'parallel')]) {
+      assert.ok(view.xml.startsWith('<?xml'));
+      assert.ok(!/\\(frac|sqrt|sum|begin|cdot|times|leq|geq)/.test(view.plain + ' ' + view.math), 'no raw LaTeX command in the exported text');
+      for (const question of exam.questions) {
+        const lead = question.content.replace(/\$[^$]*\$/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 14);
+        if (lead.length >= 8) assert.ok(view.plain.replace(/\s+/g, ' ').includes(lead), `${question.id} is in the export`);
+      }
+    }
+  });
+}

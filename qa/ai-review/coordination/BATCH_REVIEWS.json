@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "updated_at_utc": "2026-10-25T19:00:00.000Z",
+  "updated_at_utc": "2026-10-25T22:00:00.000Z",
   "writer": "CLAUDE",
   "purpose": "Delivery review gates, not product checklist or proof of runtime completion",
   "batches": [
@@ -601,6 +601,48 @@
           ],
           "review_note": "Đề xuất cách viết theo phạm vi cá nhân; chưa áp dụng.",
           "reviewed_at_utc": "2026-10-25T19:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "task_id": "GEMINI-NEXT",
+      "assignment_generation": 13,
+      "items": [
+        {
+          "id": "GEM-U1",
+          "decision": "ACCEPTED",
+          "submission_ref": [
+            "qa/ai-review/GEMINI_EXTEST_CASES.md"
+          ],
+          "review_note": "22 ca dựng thành ex_test_cases; làm lộ ba lỗi thật (immini rò mã và mất hình, shortans nằm trong nội dung, heva KaTeX không đọc được), đã sửa.",
+          "reviewed_at_utc": "2026-10-25T22:00:00.000Z"
+        },
+        {
+          "id": "GEM-U2",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "submission_ref": [
+            "qa/ai-review/GEMINI_TEXT_FORMATS.md"
+          ],
+          "review_note": "Tài liệu để chủ dự án quyết có hỗ trợ điền khuyết/nối cột/sắp xếp từ văn bản; chưa cài.",
+          "reviewed_at_utc": "2026-10-25T22:00:00.000Z"
+        },
+        {
+          "id": "GEM-U3",
+          "decision": "ACCEPTED",
+          "submission_ref": [
+            "docs/huong-dan/HUONG_DAN_GIAO_VIEN_DAY_DU.md"
+          ],
+          "review_note": "check-ui-labels: 63 cụm, 0 lệch.",
+          "reviewed_at_utc": "2026-10-25T22:00:00.000Z"
+        },
+        {
+          "id": "GEM-U4",
+          "decision": "ACCEPTED",
+          "submission_ref": [
+            "qa/ai-review/GEMINI_CV_GAPS.md"
+          ],
+          "review_note": "60 cụm trích, 0 không tìm thấy.",
+          "reviewed_at_utc": "2026-10-25T22:00:00.000Z"
         }
       ]
     }

@@ -11,6 +11,8 @@ const env = { ...process.env, TEST_DATABASE_URL: target.href, EXAMCRAFT_ALLOW_TE
 requireTestDatabase(env);
 env.DATABASE_URL = target.href;
 env.EXAMCRAFT_ISOLATED_TEST_SERVER = '1';
+// Tests that touch AI routes run against a local imitation of the provider (tests/http_ai_mock.test.ts), never the real service.
+env.GOOGLE_GEMINI_BASE_URL = 'http://127.0.0.1:3118';
 env.SESSION_SECRET = crypto.randomBytes(48).toString('base64url');
 env.ATTEMPT_SESSION_SECRET = crypto.randomBytes(48).toString('base64url');
 const production = process.argv.includes('--production');

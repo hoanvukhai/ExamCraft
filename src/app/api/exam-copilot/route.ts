@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenAI } from '@google/genai';
 import { Exam, Question } from '@/types/exam';
 import { requestApiKey } from '@/lib/ai-policy';
-import { executeWithKeyRotation } from '@/lib/gemini-keys';
+import { executeWithKeyRotation, parseProviderJson } from '@/lib/gemini-keys';
 import { normalizeExamDocument } from '@/lib/exam-document';
 import { validateCopilotResult } from '@/lib/copilot-result';
 import { requireAuth } from '@/lib/auth';
@@ -135,7 +135,7 @@ ${JSON.stringify(exam.questions, null, 2)}
     if (cleanJson.startsWith('```')) cleanJson = cleanJson.slice(3);
     if (cleanJson.endsWith('```')) cleanJson = cleanJson.slice(0, -3);
 
-    const parsed = validateCopilotResult(JSON.parse(cleanJson.trim()), exam, targetQuestionId);
+    const parsed = validateCopilotResult(parseProviderJson(cleanJson.trim()), exam, targetQuestionId);
 
     return NextResponse.json({ success: true, result: parsed });
   } catch (error: unknown) {
