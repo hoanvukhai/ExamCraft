@@ -1,0 +1,149 @@
+
+> exam-craft@0.1.0 test:pilot
+> node --import tsx scripts/pilot-run.cjs
+
+Pilot guard: installed browser; isolatedTest confirmed; exact test database selected.
+TAP version 13
+# Starting F1
+# Starting F2
+# Subtest: F1 first login, password change and library
+ok 1 - F1 first login, password change and library
+  ---
+  duration_ms: 4017.4433
+  type: 'test'
+  ...
+# Starting F3
+# Subtest: F2 author seven types, image, passage, zero, title and reopen
+ok 2 - F2 author seven types, image, passage, zero, title and reopen
+  ---
+  duration_ms: 9751.8875
+  type: 'test'
+  ...
+# F3 variant 0 download requested
+# F3 variant 0 downloaded
+# F3 variant 1 download requested
+# F3 variant 1 downloaded
+# F3 variant 2 download requested
+# F3 variant 2 downloaded
+# F3 variant 3 download requested
+# F3 variant 3 downloaded
+# Starting F4
+# Subtest: F3 answer views, shuffle, Word and print
+ok 3 - F3 answer views, shuffle, Word and print
+  ---
+  duration_ms: 5481.3278
+  type: 'test'
+  ...
+# Starting F5
+# Subtest: F4 public link, collaborator edits and revoke
+ok 4 - F4 public link, collaborator edits and revoke
+  ---
+  duration_ms: 9786.1533
+  type: 'test'
+  ...
+# F5 dialog: PIN không đúng hoặc chưa được giáo viên thiết lập
+# F5 dialog: Bài giao chưa mở hoặc đã đóng
+# Starting F6
+# Subtest: F5 assign link with and without class and inspect frozen policies
+ok 5 - F5 assign link with and without class and inspect frozen policies
+  ---
+  duration_ms: 37594.5502
+  type: 'test'
+  ...
+# F6 dialog: 
+# Starting F7
+# Subtest: F6 seven student answers survive reload, submit and hide solutions
+ok 6 - F6 seven student answers survive reload, submit and hide solutions
+  ---
+  duration_ms: 18616.7454
+  type: 'test'
+  ...
+# F7 dialog: 
+# Starting F9
+# Subtest: F7 manual essay grade, total and CSV
+ok 7 - F7 manual essay grade, total and CSV
+  ---
+  duration_ms: 19025.7669
+  type: 'test'
+  ...
+# Starting F10
+# Subtest: F9 offline edits reconnect safely and preserve a conflicting draft as a separate exam
+ok 8 - F9 offline edits reconnect safely and preserve a conflicting draft as a separate exam
+  ---
+  duration_ms: 8171.7967
+  type: 'test'
+  ...
+# F10 dialog: 
+# Starting F11
+# Subtest: F10 switching accounts in one browser keeps a local draft private to its owner and recoverable
+ok 9 - F10 switching accounts in one browser keeps a local draft private to its owner and recoverable
+  ---
+  duration_ms: 8666.8067
+  type: 'test'
+  ...
+# F11 dialog: 
+# Starting F12
+# Subtest: F11 a reload that fails with no network loses nothing and the draft reaches the server on reconnect
+ok 10 - F11 a reload that fails with no network loses nothing and the draft reaches the server on reconnect
+  ---
+  duration_ms: 5407.8717
+  type: 'test'
+  ...
+# F12 dialog: 
+# Starting F13
+# Subtest: F12 teacher corrects a short-answer key, previews, applies and the student score follows
+ok 11 - F12 teacher corrects a short-answer key, previews, applies and the student score follows
+  ---
+  duration_ms: 18889.9738
+  type: 'test'
+  ...
+# Starting F14
+# Subtest: F13 a student works and a teacher browses on a 375px phone without sideways scrolling
+ok 12 - F13 a student works and a teacher browses on a 375px phone without sideways scrolling
+  ---
+  duration_ms: 19744.7412
+  type: 'test'
+  ...
+# Starting F15
+# Subtest: F14 two teachers edit the same exam at once: the first save wins, the other keeps a draft and can save it as a copy
+ok 13 - F14 two teachers edit the same exam at once: the first save wins, the other keeps a draft and can save it as a copy
+  ---
+  duration_ms: 8129.4744
+  type: 'test'
+  ...
+# Starting F16
+# Subtest: F15 a 60-question exam prints on A4 pages without sideways overflow or questions taller than a page
+ok 14 - F15 a 60-question exam prints on A4 pages without sideways overflow or questions taller than a page
+  ---
+  duration_ms: 3464.4393
+  type: 'test'
+  ...
+# Starting F17
+# Subtest: F16 main pages have named controls and a student can answer, move and submit with the keyboard alone
+ok 15 - F16 main pages have named controls and a student can answer, move and submit with the keyboard alone
+  ---
+  duration_ms: 39036.8338
+  type: 'test'
+  ...
+# Starting F18
+# Subtest: F17 pasting an exam as text with no AI key still gives a usable preview that can be added to the exam
+ok 16 - F17 pasting an exam as text with no AI key still gives a usable preview that can be added to the exam
+  ---
+  duration_ms: 3200.9905
+  type: 'test'
+  ...
+# Subtest: F18 the presentation moves with the arrow keys, hides the answer until asked, resizes, and never changes the exam
+ok 17 - F18 the presentation moves with the arrow keys, hides the answer until asked, resizes, and never changes the exam
+  ---
+  duration_ms: 2406.9295
+  type: 'test'
+  ...
+1..17
+# tests 17
+# suites 0
+# pass 17
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 222144.6662
