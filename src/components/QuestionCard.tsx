@@ -106,6 +106,9 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
   const [pendingUndo, setPendingUndo] = useState<QuestionManualSubmission | null>(null);
   const [undoMessage, setUndoMessage] = useState('');
   const activeUndoHistory = confirmedUndoHistory(undoHistory, pendingUndo ? questionValueStamp(pendingUndo.value) : undefined, question);
+  const [redoHistory, setRedoHistory] = useState<QuestionUndoEntry[]>([]);
+  const [pendingRedo, setPendingRedo] = useState<QuestionManualSubmission | null>(null);
+  const activeRedoHistory = confirmedUndoHistory(redoHistory, pendingRedo ? questionValueStamp(pendingRedo.value) : undefined, question);
   const [bankSavedNotification, setBankSavedNotification] = useState(false);
   const bankSaveInFlight = useRef(false);
   const [bankSaving, setBankSaving] = useState(false);
@@ -180,8 +183,17 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
     if (!entry) return;
     const submission = prepareQuestionUndo(question, sourceStamp, entry, ownerId, documentId);
     if (!submission) { setUndoMessage('Câu hoặc cấu hình đã đổi sau lần sửa này. Chưa hoàn tác để giữ bản mới; hãy đối chiếu trong Lịch sử.'); return; }
+    setRedoHistory([...activeRedoHistory, { before: structuredClone(question), afterStamp: questionValueStamp(submission.value), sourceStamp }]); setPendingRedo(null);
     setUndoHistory(activeUndoHistory); setPendingUndo(submission); setUndoMessage('');
     onManualSave(submission);
+  };
+  const handleRedo = () => {
+    const entry = activeRedoHistory.at(-1);
+    if (!entry) return;
+    const submission = prepareQuestionUndo(question, sourceStamp, entry, ownerId, documentId);
+    if (!submission) { setUndoMessage('Câu hoặc cấu hình đã đổi. Chưa làm lại để giữ bản mới.'); return; }
+    setUndoHistory([...activeUndoHistory, { before: structuredClone(question), afterStamp: questionValueStamp(submission.value), sourceStamp }]); setPendingUndo(null);
+    setRedoHistory(activeRedoHistory); setPendingRedo(submission); setUndoMessage(''); onManualSave(submission);
   };
 
   // Lưu câu hỏi vào Ngân hàng câu hỏi cá nhân
@@ -298,6 +310,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
           </span>
 
           {/* Nút Hoàn tác (Undo) nếu có lịch sử */}
+          {activeRedoHistory.length > 0 && <button type="button" onClick={handleRedo}>Làm lại câu ({activeRedoHistory.length})</button>}
           {activeUndoHistory.length > 0 && (
             <button
               onClick={handleUndo}
@@ -510,7 +523,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
       {pendingNewQuestion && (
         <QuestionAiReview key={proposalJournal.entry!.key} base={pendingNewQuestion.base} candidate={pendingNewQuestion.question} ownerId={ownerId} documentId={documentId} sourceStamp={sourceStamp} question={question}
           onSubmit={submission => { setUndoHistory(activeUndoHistory); setPendingUndo(null); onManualSave(submission); }}
-          onApplied={(before, after) => { setUndoHistory([...activeUndoHistory, { before, afterStamp: questionValueStamp(after), sourceStamp }]); setPendingUndo(null); setUndoMessage(''); setVerification(null); proposalJournal.archive(); }}
+          onApplied={(before, after) => { setUndoHistory([...activeUndoHistory, { before, afterStamp: questionValueStamp(after), sourceStamp }]); setPendingUndo(null); setRedoHistory([]); setPendingRedo(null); setUndoMessage(''); setVerification(null); proposalJournal.archive(); }}
           onDiscard={handleDiscardPendingQuestion} />
       )}
 
@@ -519,7 +532,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
       <div className="p-4 space-y-3">
         {undoMessage && <p role="alert" className="text-sm text-amber-700">{undoMessage}</p>}
         {isEditing ? (
-          <QuestionEditor ownerId={ownerId} documentId={documentId} sourceStamp={sourceStamp} question={question} frameworkId={cognitiveFrameworkId} knowledgePackage={knowledgePackage} knowledgeScope={knowledgeScope} onCancel={() => setIsEditing(false)} onSave={submission => { setUndoHistory(activeUndoHistory); setPendingUndo(null); onManualSave(submission); }} onApplied={previous => { setUndoHistory([...activeUndoHistory, { before: previous, afterStamp: questionValueStamp(question), sourceStamp }]); setPendingUndo(null); setUndoMessage(''); setVerification(null); setIsEditing(false); }} />
+          <QuestionEditor ownerId={ownerId} documentId={documentId} sourceStamp={sourceStamp} question={question} frameworkId={cognitiveFrameworkId} knowledgePackage={knowledgePackage} knowledgeScope={knowledgeScope} onCancel={() => setIsEditing(false)} onSave={submission => { setUndoHistory(activeUndoHistory); setPendingUndo(null); onManualSave(submission); }} onApplied={previous => { setUndoHistory([...activeUndoHistory, { before: previous, afterStamp: questionValueStamp(question), sourceStamp }]); setPendingUndo(null); setRedoHistory([]); setPendingRedo(null); setUndoMessage(''); setVerification(null); setIsEditing(false); }} />
         ) : (
           <div className="text-sm text-[#202124] dark:text-[#e3e3e3] leading-relaxed font-serif">
             <MathRenderer content={question.content} />

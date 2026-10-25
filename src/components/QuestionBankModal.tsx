@@ -35,7 +35,8 @@ interface QuestionBankModalProps {
   allowInsert?: boolean;
 }
 
-export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
+export const QuestionBankModal: React.FC<QuestionBankModalProps> = props => <QuestionBankContent key={`${props.ownerId}:${props.isOpen}`} {...props} />;
+const QuestionBankContent: React.FC<QuestionBankModalProps> = ({
   ownerId,
   isOpen,
   onClose,
@@ -43,7 +44,7 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
   allowInsert = true,
 }) => {
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSubject, setSelectedSubject] = useState<string>('all');
   const [selectedGrade, setSelectedGrade] = useState<string>('all');
@@ -52,7 +53,7 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
   const [insertedIds, setInsertedIds] = useState<Set<string>>(new Set());
   const [bankTab, setBankTab] = useState<'personal' | 'shared'>('personal');
   const [sharedQuestions, setSharedQuestions] = useState<(BankQuestion & { solution?: string; author?: { id: string; name: string } })[]>([]);
-  const [loadingShared, setLoadingShared] = useState(false);
+  const [loadingShared, setLoadingShared] = useState(true);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
@@ -61,19 +62,32 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
   };
 
   // Nạp danh sách câu hỏi cá nhân từ IndexedDB
-  const readBankQuestions = () => dbGetAllQuestionsFromBank(ownerId).then(allQ => setQuestions(allQ)).catch(err => {
+  const readBankQuestions = (isLive = () => true) => dbGetAllQuestionsFromBank(ownerId).then(allQ => { if (isLive()) setQuestions(allQ); }).catch(err => {
     console.error('Lỗi khi nạp ngân hàng câu hỏi:', err);
-  }).finally(() => setLoading(false));
+  }).finally(() => { if (isLive()) setLoading(false); });
   const loadBankQuestions = () => { setLoading(true); return readBankQuestions(); };
 
   // Nạp danh sách câu hỏi dùng chung nội bộ từ PostgreSQL server
-  const readSharedQuestions = () => accountFetch(ownerId, '/api/questions/shared').then(async res => {
-    if (res.ok) { const data = await res.json(); setSharedQuestions(data.questions || []); }
-  }).catch(error => { console.error('Lỗi khi nạp ngân hàng dùng chung:', error); }).finally(() => setLoadingShared(false));
+  const readSharedQuestions = (isLive = () => true) => accountFetch(ownerId, '/api/questions/shared').then(async res => {
+    if (res.ok) { const data = await res.json(); if (isLive()) setSharedQuestions(data.questions || []); }
+  }).catch(error => { console.error('Lỗi khi nạp ngân hàng dùng chung:', error); }).finally(() => { if (isLive()) setLoadingShared(false); });
 
   useEffect(() => {
-    if (isOpen) { if (bankTab === 'personal') void readBankQuestions(); else void readSharedQuestions(); }
+    let live = true;
+    if (isOpen) { if (bankTab === 'personal') void readBankQuestions(() => live); else void readSharedQuestions(() => live); }
+    return () => { live = false; };
   }, [isOpen, bankTab, ownerId]);
+
+  const changeTab = (tab: 'personal' | 'shared') => {
+    if (tab === bankTab) return;
+    if (tab === 'personal') setLoading(true); else setLoadingShared(true);
+    setBankTab(tab);
+  };
+  const changeReplication = async (q: Question) => {
+    const response = await accountFetch(ownerId, `/api/questions/${encodeURIComponent(q.id)}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ baseVersion: q.version, shareable: (q as BankQuestion).shareable === false, revisionNote: 'Giáo viên đổi quyền nhân bản nguồn' }) });
+    if (!response.ok) { showToast('Chưa đổi được quyền nhân bản. Hãy tải lại ngân hàng và thử lại.'); return; }
+    await loadBankQuestions();
+  };
 
   // Nhân bản câu hỏi dùng chung về kho cá nhân
   const handleForkQuestion = async (q: { id: string }) => {
@@ -301,7 +315,7 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
         <div className="bg-[#f8f9fa] dark:bg-[#181818] px-5 py-2.5 border-b border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setBankTab('personal')}
+              onClick={() => changeTab('personal')}
               className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
                 bankTab === 'personal'
                   ? 'bg-white dark:bg-[#282828] text-[#1a73e8] dark:text-[#8ab4f8] shadow-xs border border-[#dadce0] dark:border-[#3c4043]'
@@ -313,7 +327,7 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
             </button>
 
             <button
-              onClick={() => setBankTab('shared')}
+              onClick={() => changeTab('shared')}
               className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
                 bankTab === 'shared'
                   ? 'bg-white dark:bg-[#282828] text-[#1a73e8] dark:text-[#8ab4f8] shadow-xs border border-[#dadce0] dark:border-[#3c4043]'
@@ -463,6 +477,7 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
                     </div>
 
                     <div className="flex items-center gap-2">
+                      {bankTab === 'personal' && q.importedFromFile && <button type="button" onClick={() => void changeReplication(q).catch(() => showToast('Chưa kết nối được để đổi quyền nhân bản.'))}>{(q as BankQuestion).shareable === false ? 'Cho phép nhân bản' : 'Ngừng cho nhân bản'}</button>}
                       {bankTab === 'shared' && (
                         <button
                           onClick={() => handleForkQuestion(q)}

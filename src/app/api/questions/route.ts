@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'node:crypto';
+import { bankSaveReceipt } from '@/lib/bank-save-receipt';
 import { forkPayload } from '@/lib/question-history';
 import { ApiError, apiErrorResponse } from '@/lib/api-error';
 import { isSameOriginMutation } from '@/lib/attempt-access';
@@ -9,6 +10,7 @@ import { requireRequestAuth } from '@/lib/request-auth';
 import { QuestionType, Difficulty, Visibility, SourceKind } from '@prisma/client';
 
 const CreateQuestionSchema = z.object({
+  requestId: z.string().uuid().optional(),
   passageId: z.string().min(1).optional(),
   passage: z.object({ title: z.string().max(500).optional(), content: z.string().min(1).max(500000), source: z.string().max(4000).optional(), figures: z.unknown().optional() }).optional(),
   subject: z.string().min(1, 'Mã môn học là bắt buộc'),
@@ -122,10 +124,22 @@ export async function POST(req: NextRequest) {
     const data = parsed.data;
 
     // Nếu câu hỏi từ IMPORTED_WEB thì mặc định khóa shareable = false
-    const shareable = data.sourceKind === SourceKind.IMPORTED_WEB ? false : data.shareable;
+    const imported = data.sourceKind === SourceKind.IMPORTED_WEB || data.sourceKind === SourceKind.IMPORTED_FILE;
+    const shareable = imported ? false : data.shareable;
+    const receipt = data.requestId ? bankSaveReceipt(user.id, data.requestId, data) : undefined;
 
     // Tạo câu hỏi kèm revision đầu tiên (version 1) trong transaction
     const question = await prisma.$transaction(async (tx) => {
+      const id = receipt?.id ?? `q_${randomUUID()}`;
+      if (receipt) {
+        await tx.$queryRaw`SELECT 1 FROM pg_advisory_xact_lock(hashtext(${id}))`;
+        const existing = await tx.question.findUnique({ where: { id }, include: { passage: true, author: { select: { id: true, name: true } } } });
+        if (existing) {
+          const payload = existing.payload as { bankSaveReceipt?: { fingerprint?: string } } | null;
+          if (existing.ownerId !== user.id || existing.deletedAt || payload?.bankSaveReceipt?.fingerprint !== receipt.fingerprint) throw new ApiError(409, 'Mã lưu đã dùng cho bản khác; hãy kiểm lại ngân hàng trước khi lưu bản mới');
+          return existing;
+        }
+      }
       let passageId: string | undefined;
       if (data.passage) {
         const passage = await tx.passage.create({ data: { ownerId: user.id, title: data.passage.title, content: data.passage.content, source: data.passage.source, figures: data.passage.figures == null ? undefined : JSON.parse(JSON.stringify(data.passage.figures)) } });
@@ -135,7 +149,6 @@ export async function POST(req: NextRequest) {
         if (!passage) throw new ApiError(400, 'Chưa có ngữ liệu trong kho riêng; hãy truyền cả nội dung ngữ liệu khi lưu câu hỏi');
         passageId = passage.id;
       }
-      const id = `q_${randomUUID()}`;
       const q = await tx.question.create({
         data: {
           id, ownerId: user.id, passageId,
@@ -146,12 +159,12 @@ export async function POST(req: NextRequest) {
           difficulty: data.difficulty,
           content: data.content,
           figures: data.figures ? JSON.parse(JSON.stringify(data.figures)) : undefined,
-          payload: forkPayload(data.payload, id, passageId ?? null),
+          payload: forkPayload({ ...(data.payload ?? {}), ...(receipt ? { bankSaveReceipt: { fingerprint: receipt.fingerprint } } : {}) }, id, passageId ?? null),
           solution: data.solution,
           points: data.points !== undefined ? data.points : undefined,
           topics: data.topics,
           tags: data.tags.filter(tag => tag !== '__workspace_only'),
-          visibility: data.visibility,
+          visibility: imported ? Visibility.PRIVATE : data.visibility,
           sourceKind: data.sourceKind,
           sourceUrl: data.sourceUrl,
           shareable,

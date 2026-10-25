@@ -12,7 +12,7 @@ const updateSchema = z.object({
   baseVersion: z.number().int().positive().optional(), subject: z.string().min(1).max(100).optional(), grade: z.number().int().min(1).max(12).optional(),
   type: z.nativeEnum(QuestionType).optional(), difficulty: z.nativeEnum(Difficulty).optional(), content: z.string().trim().min(1).optional(),
   figures: z.unknown().optional(), payload: z.record(z.string(), z.unknown()).optional(), solution: z.string().optional(), points: z.number().finite().nonnegative().max(999).nullable().optional(),
-  topics: z.array(z.string()).max(100).optional(), tags: z.array(z.string()).max(100).optional(), visibility: z.nativeEnum(Visibility).optional(), revisionNote: z.string().max(2000).optional(),
+  topics: z.array(z.string()).max(100).optional(), tags: z.array(z.string()).max(100).optional(), visibility: z.nativeEnum(Visibility).optional(), shareable: z.boolean().optional(), revisionNote: z.string().max(2000).optional(),
 }).strict();
 const json = (value: unknown) => JSON.parse(JSON.stringify(value)) as Prisma.InputJsonValue;
 export async function GET(req: NextRequest, { params }: Context) {
