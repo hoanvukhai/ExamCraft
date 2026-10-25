@@ -1,0 +1,1998 @@
+{
+  "run": "load_2eeeedde-36d3-42d5-909b-9b598ce366c9",
+  "checkedAt": "2026-10-25T07:53:49.045Z",
+  "environment": "localhost3117 / examcraft_test_20261022",
+  "students": 40,
+  "clientRetries": 0,
+  "realAiCalls": false,
+  "cleanupComplete": true,
+  "status": "PASS",
+  "phases": [
+    {
+      "phase": "start",
+      "requests": 40,
+      "errors5xx": 0,
+      "non200": 0,
+      "p95Ms": 665,
+      "maxMs": 684,
+      "serverRetriesObserved": 0
+    },
+    {
+      "phase": "startReplay",
+      "requests": 80,
+      "errors5xx": 0,
+      "non200": 0,
+      "p95Ms": 543,
+      "maxMs": 561,
+      "serverRetriesObserved": 0
+    },
+    {
+      "phase": "draft1",
+      "requests": 40,
+      "errors5xx": 0,
+      "non200": 0,
+      "p95Ms": 680,
+      "maxMs": 696,
+      "serverRetriesObserved": 0
+    },
+    {
+      "phase": "draft2",
+      "requests": 40,
+      "errors5xx": 0,
+      "non200": 0,
+      "p95Ms": 342,
+      "maxMs": 350,
+      "serverRetriesObserved": 0
+    },
+    {
+      "phase": "draft3",
+      "requests": 40,
+      "errors5xx": 0,
+      "non200": 0,
+      "p95Ms": 245,
+      "maxMs": 254,
+      "serverRetriesObserved": 0
+    },
+    {
+      "phase": "submit",
+      "requests": 40,
+      "errors5xx": 0,
+      "non200": 0,
+      "p95Ms": 274,
+      "maxMs": 281,
+      "serverRetriesObserved": 0
+    },
+    {
+      "phase": "submitReplay",
+      "requests": 40,
+      "errors5xx": 0,
+      "non200": 0,
+      "p95Ms": 320,
+      "maxMs": 323,
+      "serverRetriesObserved": 0
+    }
+  ],
+  "samples": [
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 206,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 236,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 269,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 300,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 334,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 370,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 412,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 447,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 479,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 520,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 544,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 571,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 601,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 606,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 609,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 609,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 610,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 611,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 611,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 612,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 613,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 615,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 615,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 617,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 618,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 652,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 653,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 654,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 655,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 656,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 656,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 657,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 661,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 662,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 663,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 664,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 665,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 665,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 683,
+      "transactionTries": 1
+    },
+    {
+      "phase": "start",
+      "status": 200,
+      "ms": 684,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 237,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 238,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 242,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 244,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 244,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 247,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 248,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 260,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 261,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 263,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 267,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 267,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 268,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 281,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 285,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 287,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 291,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 299,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 301,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 301,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 303,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 305,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 307,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 316,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 319,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 320,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 325,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 328,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 333,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 336,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 339,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 340,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 341,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 350,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 354,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 355,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 356,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 362,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 363,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 366,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 374,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 376,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 380,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 381,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 388,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 390,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 393,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 396,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 400,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 402,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 405,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 411,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 415,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 418,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 419,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 422,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 429,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 430,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 434,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 441,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 449,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 450,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 457,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 463,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 471,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 474,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 476,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 486,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 492,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 495,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 497,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 501,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 510,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 536,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 541,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 543,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 545,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 555,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 556,
+      "transactionTries": 1
+    },
+    {
+      "phase": "startReplay",
+      "status": 200,
+      "ms": 561,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 416,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 423,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 424,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 439,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 445,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 465,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 464,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 468,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 470,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 494,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 525,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 531,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 541,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 617,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 621,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 623,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 626,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 628,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 631,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 633,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 636,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 636,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 635,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 637,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 637,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 637,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 668,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 670,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 672,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 672,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 675,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 675,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 676,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 676,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 677,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 678,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 680,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 680,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 680,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft1",
+      "status": 200,
+      "ms": 696,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 215,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 217,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 221,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 221,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 222,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 223,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 225,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 226,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 229,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 231,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 232,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 235,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 238,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 270,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 275,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 277,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 284,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 286,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 288,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 289,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 291,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 291,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 293,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 294,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 294,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 299,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 319,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 320,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 322,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 330,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 332,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 334,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 336,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 336,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 339,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 340,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 341,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 342,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 344,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft2",
+      "status": 200,
+      "ms": 350,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 172,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 173,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 173,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 174,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 175,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 175,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 176,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 176,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 177,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 178,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 179,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 179,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 183,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 203,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 204,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 205,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 205,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 206,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 206,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 207,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 208,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 209,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 209,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 210,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 211,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 215,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 236,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 238,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 239,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 240,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 240,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 240,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 241,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 242,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 242,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 243,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 243,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 245,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 245,
+      "transactionTries": 1
+    },
+    {
+      "phase": "draft3",
+      "status": 200,
+      "ms": 254,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 227,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 236,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 242,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 243,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 245,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 246,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 247,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 247,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 248,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 249,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 249,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 250,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 251,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 251,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 252,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 252,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 254,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 254,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 255,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 256,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 257,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 258,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 260,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 261,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 263,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 264,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 265,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 266,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 266,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 268,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 270,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 271,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 271,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 271,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 273,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 273,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 274,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 274,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 275,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submit",
+      "status": 200,
+      "ms": 281,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 250,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 251,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 258,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 260,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 265,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 268,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 270,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 273,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 274,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 276,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 278,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 279,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 280,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 281,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 283,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 286,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 286,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 287,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 288,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 290,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 291,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 293,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 295,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 296,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 298,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 298,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 300,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 301,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 304,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 306,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 309,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 309,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 312,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 314,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 316,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 317,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 319,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 320,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 321,
+      "transactionTries": 1
+    },
+    {
+      "phase": "submitReplay",
+      "status": 200,
+      "ms": 323,
+      "transactionTries": 1
+    }
+  ],
+  "buildId": "ZtsYF_Oa7QYF7bBGv-JNQ"
+}

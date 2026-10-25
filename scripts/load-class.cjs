@@ -44,8 +44,20 @@ async function main() {
     assert.equal(created.status, 200);
     const assigned = await request('/api/assignments', 'POST', { examId: created.data.document.id, title: 'Load 40 fixture', identityMode: 'FREE_NAME', maxAttempts: 1, showResult: 'NEVER', showSolution: 'NEVER' }, owner);
     assert.equal(assigned.status, 200); const assignment = assigned.data.assignment;
-    const starts = await cohort(Array.from({ length: 40 }, (_, i) => request(`/api/public/assignments/${assignment.publicId}/start`, 'POST', { freeName: `Học sinh thử ${i + 1}` }, '', 'start')));
+    const startRace = process.env.LOAD_START_RACE === '1';
+    const initial = await cohort(Array.from({ length: startRace ? 80 : 40 }, (_, i) => request(`/api/public/assignments/${assignment.publicId}/start`, 'POST', { freeName: `Học sinh thử ${startRace ? Math.floor(i/2) + 1 : i + 1}` }, '', 'start')));
+    const starts = startRace ? Array.from({ length: 40 }, (_, i) => {
+      const pair = initial.slice(i*2, i*2+2);
+      assert.deepEqual(pair.map(r => r.status).sort(), [200,403], 'Two unbound browsers racing for one student must have one winner');
+      return pair.find(r => r.status === 200);
+    }) : initial;
+    report.expectedStartDenials = startRace ? 40 : 0;
     assert.ok(starts.every(r => r.status === 200), 'Some starts failed; see phase metrics');
+    if (process.env.LOAD_START_RACE === '1') {
+      const resumed = await cohort(starts.flatMap((r,i) => [0,1].map(() => request(`/api/public/assignments/${assignment.publicId}/start`, 'POST', { freeName: `Học sinh thử ${i + 1}` }, r.cookie, 'startReplay'))));
+      assert.ok(resumed.every((r,i) => r.status === 200 && r.data.resumed === true && r.data.attempt.id === starts[Math.floor(i/2)].data.attempt.id), 'Concurrent resume must keep the same attempt');
+      assert.equal(await db.attempt.count({ where: { assignmentId: assignment.id } }), 40);
+    }
     for (let round = 1; round <= 3; round++) {
       const drafts = await cohort(starts.map(r => request(`/api/public/attempts/${r.data.attempt.id}/draft`, 'PATCH', { baseDraftRevision: r.data.attempt.draftRevision, draft: { mc: round === 2 ? 'B' : 'A' } }, r.cookie, 'draft' + round)));
       assert.ok(drafts.every(r => r.status === 200), 'Some drafts failed; see phase metrics');
