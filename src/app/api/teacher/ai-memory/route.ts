@@ -8,9 +8,9 @@ import { Prisma } from '@prisma/client';
 
 const failureMessage = 'Không thể xử lý ghi chú hoặc yêu cầu AI lúc này.';
 const noStore = { 'Cache-Control': 'private, no-store' };
-const fields = { title: z.string().trim().min(1).max(500), insight: z.string().trim().min(1).max(12000), category: z.string().trim().min(1).max(100) };
-const updateSchema = z.object({ id: z.string().min(1).max(200), isActive: z.boolean().optional(), title: fields.title.optional(), insight: fields.insight.optional(), category: fields.category.optional() }).strict();
-const createSchema = z.object({ ...fields, category: fields.category.default('PEDAGOGICAL_STYLE'), subject: z.string().trim().min(1).max(100).optional(), sampleQuestion: z.unknown().optional(), clientRequestId: z.uuid().optional() }).strict();
+const fields = { evidence: z.string().trim().max(4000), uncertainty: z.string().trim().max(4000), title: z.string().trim().min(1).max(500), insight: z.string().trim().min(1).max(12000), category: z.string().trim().min(1).max(100) };
+const updateSchema = z.object({ id: z.string().min(1).max(200), isActive: z.boolean().optional(), title: fields.title.optional(), insight: fields.insight.optional(), category: fields.category.optional(), evidence: fields.evidence.optional(), uncertainty: fields.uncertainty.optional() }).strict();
+const createSchema = z.object({ ...fields, category: fields.category.default('PEDAGOGICAL_STYLE'), subject: z.string().trim().min(1).max(100).optional(), sampleQuestion: z.unknown().optional(), evidence: fields.evidence.optional(), uncertainty: fields.uncertainty.optional(), clientRequestId: z.uuid().optional() }).strict();
 const comparableSample = (value: unknown) => JSON.stringify(value ?? null, (_key, entry) => entry && typeof entry === 'object' && !Array.isArray(entry) ? Object.fromEntries(Object.keys(entry).sort().map(key => [key, entry[key]])) : entry);
 // The same account and request ID always name the same note, so a retry after a lost reply cannot add a second one.
 const requestNoteId = (ownerId: string, clientRequestId: string) => `mem_req_${createHash('sha256').update(JSON.stringify([ownerId, clientRequestId])).digest('hex').slice(0, 40)}`;
@@ -43,8 +43,8 @@ export async function POST(req: NextRequest) {
     }
     const parsed = createSchema.safeParse(body);
     if (!parsed.success) throw new ApiError(400, 'Tiêu đề và nội dung insight không được trống');
-    const { title, insight, category, subject, sampleQuestion, clientRequestId } = parsed.data;
-    const data = { userId: user.id, subject: subject ?? 'all', category, title, insight, sampleQuestion: (sampleQuestion as Prisma.InputJsonValue | undefined) ?? Prisma.JsonNull, sourceAction: 'MANUAL_NOTE', confidence: 1.0, isActive: true };
+    const { title, insight, category, subject, sampleQuestion, evidence, uncertainty, clientRequestId } = parsed.data;
+    const data = { userId: user.id, subject: subject ?? 'all', category, title, insight, sampleQuestion: (sampleQuestion as Prisma.InputJsonValue | undefined) ?? Prisma.JsonNull, evidence: evidence || null, uncertainty: uncertainty || null, sourceRef: { kind: 'manual', analyzedAt: new Date().toISOString() } as Prisma.InputJsonValue, sourceAction: 'MANUAL_NOTE', confidence: 1.0, isActive: true };
     if (!clientRequestId) return NextResponse.json({ success: true, memory: await prisma.teacherAiMemory.create({ data }) }, { headers: noStore });
     const id = requestNoteId(user.id, clientRequestId);
     try {

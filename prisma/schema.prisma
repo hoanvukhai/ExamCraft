@@ -505,6 +505,9 @@ model TeacherAiMemory {
   sampleQuestion Json?     // Câu hỏi mẫu tiêu biểu làm chuẩn (Few-shot example)
   sourceAction   String    @default("AI_ANALYSIS") // "QUESTION_VERIFIED", "QUESTION_EDITED", "MANUAL_NOTE", "AI_ANALYSIS"
   confidence     Float     @default(1.0)
+  evidence       String?   @db.Text // trích dẫn từ dữ liệu nguồn làm căn cứ
+  uncertainty    String?   @db.Text // điều chưa chắc chắn
+  sourceRef      Json?     // nguồn: loại, đề/câu, phiên bản, thời điểm phân tích
   isActive       Boolean   @default(true)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt

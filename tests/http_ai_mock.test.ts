@@ -49,7 +49,7 @@ test('AI routes use only the caller key, count usage per key id, fail honestly a
       await db.user.deleteMany({ where: { id: { in: all } } });
       const directory = `qa/rebuild-${new Date().toISOString().slice(0, 10)}`;
       fs.mkdirSync(directory, { recursive: true });
-      writeQaReport(`${directory}/http_ai_mock.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 12 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117 with a local provider imitation on 3118', realAiCalls: false }, null, 2));
+      writeQaReport(`${directory}/http_ai_mock.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 13 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117 with a local provider imitation on 3118', realAiCalls: false }, null, 2));
     } finally { await db.$disconnect(); }
   });
   const cookies: Record<string, string> = {};
@@ -190,6 +190,27 @@ test('AI routes use only the caller key, count usage per key id, fail honestly a
     const theirs = seen.map(s => s.body).join(' | ');
     assert.ok(!theirs.includes(on) && !theirs.includes(off), 'another teacher never receives these notes');
     checks.push('private-notes-in-prompts');
+  });
+
+  await t.test('analysis notes keep their source, a quote that is checked against it, and the doubts; the readable copy shows them', async () => {
+    const mark = 'CONTENT_MARK_' + randomUUID();
+    const insight = (title: string, evidence: string) => ({ category: 'PEDAGOGICAL_STYLE', title, insight: 'Nhận định ' + title, evidence, uncertainty: 'Chỉ có một câu mẫu', confidence: 0.9 });
+    reset(() => ({ status: 200, body: reply(JSON.stringify({ insights: [insight('Có căn cứ ' + mark, mark), insight('Trích bịa ' + mark, 'đoạn này không có trong dữ liệu ' + mark)] })) }));
+    const analyzed = await request('/api/teacher/ai-memory/analyze', 'POST', { question: { id: 'src-q1', type: 'essay', difficulty: 'thong_hieu', content: mark, step_by_step_solution: 'x' }, customApiKey: 'memo-key-0123456789abcdef' }, cookies.a);
+    assert.equal(analyzed.status, 200, String(analyzed.data.error));
+    const saved = await db.teacherAiMemory.findMany({ where: { userId: ids.a, title: { contains: mark } }, orderBy: { title: 'asc' } });
+    assert.equal(saved.length, 2); const [good, fake] = saved;
+    assert.equal(good.evidence, mark); assert.ok(!/không khớp nguyên văn/.test(good.uncertainty ?? ''), 'a quote found in the data raises no flag'); assert.match(good.uncertainty ?? '', /Chỉ có một câu mẫu/);
+    assert.match(fake.uncertainty ?? '', /không khớp nguyên văn/, 'a quote that is not in the data is flagged for the teacher');
+    const ref = good.sourceRef as { kind: string; questionIds: string[]; analyzedAt: string };
+    assert.equal(ref.kind, 'question'); assert.deepEqual(ref.questionIds, ['src-q1']); assert.ok(ref.analyzedAt);
+    assert.equal(good.isActive, false); assert.equal(good.sourceAction, 'AI_ANALYSIS_PENDING', 'a proposal is off and never counts as checked');
+    const md = await fetch(origin + '/api/teacher/ai-memory/archive?format=markdown', { headers: { Origin: origin, Cookie: cookies.a } });
+    assert.equal(md.status, 200); assert.match(md.headers.get('content-type') ?? '', /markdown/);
+    const text = await md.text();
+    assert.ok(text.includes('Có căn cứ ' + mark) && text.includes('Bằng chứng: ' + mark) && text.includes('Nguồn: một câu hỏi; câu: src-q1'), 'the copy names the note, its evidence and its source');
+    assert.equal((await fetch(origin + '/api/teacher/ai-memory/archive?format=markdown', { headers: { Origin: origin, Cookie: cookies.b } }).then(r => r.text())).includes(mark), false, 'another teacher never receives these notes');
+    checks.push('analysis-provenance');
   });
 
   await t.test('provider errors are reported without retry storms; testing a key reads only the model list; keys of others cannot be tested', async () => {

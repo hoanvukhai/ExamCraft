@@ -1,4 +1,4 @@
-export interface TeacherMemoryRow { id: string; subject: string; category: string; title: string; insight: string; confidence: number; isActive: boolean; sourceAction: string; createdAt: string }
+export interface TeacherMemoryRow { id: string; subject: string; category: string; title: string; insight: string; confidence: number; isActive: boolean; sourceAction: string; createdAt: string; evidence?: string; uncertainty?: string; sourceNote?: string }
 export interface MemoryDraft { title: string; insight: string; category: string; subject: string }
 
 /** One request token of one gate. Everything a request does afterwards (state, lock, release) goes through its own token. */
@@ -40,6 +40,16 @@ export function canActOnMemory(list: { ownerId: string; items: readonly { id: st
 
 const text = (value: unknown, max: number) => typeof value === 'string' && value.length <= max;
 /** Read a memory list response without trusting its shape; unreadable or repeated rows are counted, never guessed. */
+function sourceNote(ref: unknown) {
+  if (!ref || typeof ref !== 'object') return '';
+  const r = ref as { kind?: unknown; examTitle?: unknown; examVersion?: unknown; questionIds?: unknown };
+  const kinds: Record<string, string> = { question: 'một câu hỏi', exam: 'một đề', scan: 'các câu gần đây trong kho riêng', manual: 'ghi tay' };
+  const parts = [kinds[String(r.kind)] ?? 'không rõ'];
+  if (typeof r.examTitle === 'string') parts.push(`đề "${r.examTitle.slice(0, 100)}"${typeof r.examVersion === 'number' ? ` bản ${r.examVersion}` : ''}`);
+  if (Array.isArray(r.questionIds)) parts.push(`${r.questionIds.length} câu`);
+  return parts.join(', ');
+}
+
 export function parseMemoryList(data: unknown) {
   const rows = data && typeof data === 'object' ? (data as { memories?: unknown }).memories : undefined;
   if (!Array.isArray(rows)) throw Error('Danh sách ghi chú trả về không đọc được. Danh sách đang xem được giữ nguyên; hãy thử lại.');
@@ -50,7 +60,8 @@ export function parseMemoryList(data: unknown) {
     seen.add(value.id as string);
     items.push({ id: value.id as string, title: value.title as string, insight: value.insight as string, category: value.category as string, isActive: value.isActive,
       subject: text(value.subject, 100) ? value.subject as string : 'all', sourceAction: text(value.sourceAction, 200) ? value.sourceAction as string : '',
-      confidence: typeof value.confidence === 'number' && Number.isFinite(value.confidence) ? value.confidence : 0, createdAt: text(value.createdAt, 100) ? value.createdAt as string : '' });
+      confidence: typeof value.confidence === 'number' && Number.isFinite(value.confidence) ? value.confidence : 0, createdAt: text(value.createdAt, 100) ? value.createdAt as string : '',
+      ...(typeof value.evidence === 'string' && value.evidence ? { evidence: value.evidence.slice(0, 4000) } : {}), ...(typeof value.uncertainty === 'string' && value.uncertainty ? { uncertainty: value.uncertainty.slice(0, 4000) } : {}), ...(sourceNote(value.sourceRef) ? { sourceNote: sourceNote(value.sourceRef) } : {}) });
   }
   return { items, skipped: rows.length - items.length };
 }

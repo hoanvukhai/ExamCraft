@@ -92,3 +92,10 @@ test('late save receipt clears the form only if the teacher has not typed since 
   assert.equal(shouldClearDraft(sent, draft({ category: 'EXPLANATION_RULE' })), false);
   assert.equal(shouldClearDraft(sent, draft({ subject: 'hoa' })), false);
 });
+
+test('a listed note carries its evidence, doubts and a plain-words source, and older rows without them still list', () => {
+  const base = { id: 'n1', title: 'T', insight: 'I', category: 'PEDAGOGICAL_STYLE', isActive: false, subject: 'toan', sourceAction: 'AI_ANALYSIS_PENDING', confidence: 0.9, createdAt: '2026-10-26' };
+  const { items } = parseMemoryList({ memories: [{ ...base, evidence: 'trích', uncertainty: 'ít dữ liệu', sourceRef: { kind: 'exam', examTitle: 'Đề 15 phút', examVersion: 3, questionIds: ['a', 'b'] } }, { ...base, id: 'n2' }] });
+  assert.equal(items[0].evidence, 'trích'); assert.equal(items[0].uncertainty, 'ít dữ liệu'); assert.equal(items[0].sourceNote, 'một đề, đề "Đề 15 phút" bản 3, 2 câu');
+  assert.equal(items[1].evidence, undefined); assert.equal(items[1].sourceNote, undefined);
+});

@@ -136,14 +136,14 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
     return () => window.removeEventListener('beforeunload', warn);
   }, []);
 
-  const exportNotes = async () => {
+  const exportNotes = async (format: 'json' | 'markdown' = 'json') => {
     const token = begin('archive'); if (!token) return;
     try {
-      const { response, data } = await send(token, '/api/teacher/ai-memory/archive', {}, true);
+      const { response, data } = await send(token, '/api/teacher/ai-memory/archive' + (format === 'markdown' ? '?format=markdown' : ''), {}, true);
       if (!token.isLive()) return;
       if (!response.ok) throw Error(messageOf(data, 'Chưa xuất được ghi chú.'));
       const url = URL.createObjectURL(data as Blob);
-      const anchor = document.createElement('a'); anchor.href = url; anchor.download = 'examcraft-ghi-chu-rieng.json'; anchor.click();
+      const anchor = document.createElement('a'); anchor.href = url; anchor.download = format === 'markdown' ? 'examcraft-ghi-chu-rieng.md' : 'examcraft-ghi-chu-rieng.json'; anchor.click();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
       setStatusMessage('Đã xuất ghi chú riêng. Hãy giữ tệp này ở nơi bạn tin cậy.');
     } catch (cause) { fail(token, cause, 'Chưa xuất được ghi chú.'); }
@@ -326,6 +326,7 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
 
         <div className="flex flex-wrap gap-3 py-2 text-xs">
           <button type="button" disabled={!idle} onClick={() => void exportNotes()} className="border rounded px-3 py-2 disabled:opacity-50">Xuất ghi chú riêng</button>
+          <button type="button" disabled={!idle} onClick={() => void exportNotes('markdown')} className="border rounded px-3 py-2 disabled:opacity-50">Tải bản đọc được (.md)</button>
           <button type="button" disabled={!idle} onClick={() => archiveInput.current?.click()} className="border rounded px-3 py-2 disabled:opacity-50">Nhập tệp ghi chú</button>
           <input ref={archiveInput} type="file" accept=".json,application/json" className="hidden" aria-label="Tệp ghi chú riêng" onChange={e => void importNotes(e.target.files?.[0])} />
           <p className="w-full text-gray-500">Ghi chú ở kho riêng. Phân tích mới chỉ tạo đề xuất; bạn đọc rồi bật từng mục muốn áp dụng.</p>
@@ -492,6 +493,11 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
                       <p className="text-xs text-[#3c4043] dark:text-[#cccccc] leading-relaxed pt-1">
                         {m.insight}
                       </p>
+                      {(m.sourceNote || m.evidence || m.uncertainty) && <div className="text-[10px] text-[#5f6368] dark:text-[#9aa0a6] pt-1 space-y-0.5">
+                        {m.sourceNote && <p>Nguồn: {m.sourceNote}</p>}
+                        {m.evidence && <p>Bằng chứng: “{m.evidence}”</p>}
+                        {m.uncertainty && <p>Điều chưa chắc: {m.uncertainty}</p>}
+                      </div>}
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0 pt-0.5">

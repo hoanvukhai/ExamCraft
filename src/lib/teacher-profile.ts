@@ -83,6 +83,9 @@ export async function upsertTeacherAiMemory(
     insight: string;
     confidence?: number;
     sampleQuestion?: Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput;
+    evidence?: string | null;
+    uncertainty?: string | null;
+    sourceRef?: Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput;
     sourceAction?: string;
   }
 ) {
@@ -104,6 +107,9 @@ export async function upsertTeacherAiMemory(
         insight: data.insight,
         confidence: data.confidence ?? 0,
         sampleQuestion: data.sampleQuestion ?? Prisma.JsonNull,
+        evidence: data.evidence ?? null,
+        uncertainty: data.uncertainty ?? null,
+        sourceRef: data.sourceRef ?? Prisma.JsonNull,
         sourceAction: data.sourceAction || 'AI_ANALYSIS',
         isActive: false,
       },

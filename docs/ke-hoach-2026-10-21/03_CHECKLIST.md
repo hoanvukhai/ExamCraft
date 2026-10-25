@@ -316,8 +316,8 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
 
 ## S8 — Tri thức và trợ lý
 
-- [ ] **CV-063 — Phân tích có cấu trúc và bản đọc được.**
-  - **Rà26/10 (Claude):** giữ mở. Ghi chú AI hiện chỉ có tiêu đề, nhận định, câu mẫu và độ tin cậy; chưa có nguồn/phiên bản/trang/câu, chưa có phần bằng chứng và điều chưa chắc, chưa có bản Markdown liên kết dữ liệu gốc. Cần thêm trường và thay đổi schema.
+- [x] **CV-063 — Phân tích có cấu trúc và bản đọc được.**
+  - **Nghiệm thu26/10 (Claude): ĐẠT đủ tiêu chí "Đạt khi".** Ghi chú AI đúc kết nay lưu nguồn (loại, đề, phiên bản đề, mã câu, thời điểm phân tích), đoạn trích làm bằng chứng và điều chưa chắc; máy đối chiếu đoạn trích với dữ liệu nguồn và đánh dấu "không khớp nguyên văn" nếu AI trích bịa hoặc không dẫn được căn cứ; độ tin cậy AI tự báo được ghi rõ là không phải xác nhận. Bản đọc được (Markdown, nút "Tải bản đọc được (.md)") ghi từng ghi chú kèm nguồn, bằng chứng, điều chưa chắc và trạng thái bật/tắt; bản JSON và nhập lại giữ nguyên các trường mới, tệp xuất cũ vẫn nhập được (`analysis notes keep their source, a quote that is checked against it, and the doubts; the readable copy shows them`, `the readable copy keeps source, evidence, doubts and the AI confidence label next to each note`, `an exported archive with the new fields is read back with them intact`, `a listed note carries its evidence, doubts and a plain-words source, and older rows without them still list`). Thêm 3 cột vào `TeacherAiMemory` (migration `20261026000200`, đã áp DB chính sau sao lưu `backups/examcraft-before-cv063-20261026.dump`). Giới hạn: số trang không có vì nguồn là câu/đề trong ứng dụng; chưa gọi AI thật nên chưa biết AI trích dẫn đúng tới đâu (máy sẽ đánh dấu khi sai); giao diện mới chưa có luồng trình duyệt tự động. [Đối chiếu](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md)
   - Phạm vi: YC-23, YC-25. Nghiệm thu: NT-26.
   - Đạt khi: Lưu nguồn/version/trang/câu, nhận xét/bằng chứng/điều chưa chắc; Markdown liên kết dữ liệu gốc, không chỉ một đoạn chat.
 - [x] **CV-064 — Bộ nhớ cá nhân có quyền kiểm soát.**

@@ -16,7 +16,7 @@ Ký hiệu trong ô:
 | Môn | Loại | Lớp 1 | Lớp 2 | Lớp 3 | Lớp 4 | Lớp 5 | Nguồn trong danh mục |
 |---|---|---|---|---|---|---|---|
 | Tiếng Việt | Bắt buộc | chờ duyệt | chờ duyệt | chờ duyệt | chờ duyệt | chờ duyệt | TK-0003 |
-| Toán | Bắt buộc | chờ duyệt | chờ duyệt | chờ duyệt | chờ duyệt | chờ duyệt | TK-0004 |
+| Toán | Bắt buộc | chờ duyệt | chờ duyệt | chờ duyệt; đề mẫu: tieu-hoc-3.json | chờ duyệt | chờ duyệt | TK-0004 |
 | Đạo đức (nx) | Bắt buộc | chờ duyệt | chờ duyệt | chờ duyệt | chờ duyệt | chờ duyệt | TK-0005 |
 | Âm nhạc (nx) | Bắt buộc | chờ duyệt | chờ duyệt | chờ duyệt | chờ duyệt | chờ duyệt | TK-0010 |
 | Mĩ thuật (nx) | Bắt buộc | chờ duyệt | chờ duyệt | chờ duyệt | chờ duyệt | chờ duyệt | TK-0011 |
@@ -78,5 +78,4 @@ Ký hiệu trong ô:
 
 - Ô môn–lớp: 161; gói kiến thức: 1 (personal-fixture-math6, needs_review); đề mẫu: 9.
 - Đề mẫu theo cấp: Tiểu học 1, THCS 6, THPT 2.
-- Đề mẫu có môn/lớp không khớp danh mục: tieu-hoc-3.json (tieu_hoc, lớp 3).
 - Việc còn thiếu ở mọi ô: yêu cầu cần đạt đã đối chiếu, mục lục đúng ấn bản, bộ đề–đáp án–rubric được giáo viên duyệt (đúng như `getEducationReadiness`).
