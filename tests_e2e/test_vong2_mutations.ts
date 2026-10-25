@@ -146,7 +146,8 @@ async function runMutationTesting() {
       console.log('🔴 SURVIVED (Test pass bất chấp mutant!)');
       survivedCount++;
       results.push({ mutant: m, status: 'SURVIVED', output: 'Tests passed without error' });
-    } catch (err: any) {
+    } catch (error: unknown) {
+      const err = error as { stdout?: { toString(): string }; message: string };
       // Nếu bộ test bị fail -> Mutant đã bị tiêu diệt (Bộ test bắt được lỗi!)
       console.log('🟢 KILLED (Test phát hiện và chặn đứng)');
       killedCount++;

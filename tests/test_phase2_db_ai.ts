@@ -109,7 +109,7 @@ async function runPhase2Tests() {
   const rev1 = await prisma.questionRevision.findUnique({
     where: { questionId_version: { questionId: q1.id, version: 1 } },
   });
-  const snapshot1 = rev1!.snapshot as any;
+  const snapshot1 = rev1!.snapshot as { content: string };
 
   const q1RolledBack = await prisma.$transaction(async (tx) => {
     const q = await tx.question.update({

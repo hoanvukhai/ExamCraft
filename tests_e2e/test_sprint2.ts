@@ -201,7 +201,7 @@ async function main() {
     data: { draft: draftContent },
   });
 
-  const d: any = updatedAttemptWithDraft.draft;
+  const d = updatedAttemptWithDraft.draft as Record<string, unknown> & { q_part2_tf?: { a?: boolean; b?: boolean } };
   assert(
     d && d[questionWithFigure.id] === 'A' && d.q_part2_tf?.a === true && d.q_part2_tf?.b === false,
     'Tự động lưu nháp thành công vào CSDL'
@@ -236,7 +236,7 @@ async function main() {
   assert(q1CorrectRate === 100, 'Tỷ lệ làm đúng câu 1 là 100%');
 
   // Test CSV Sanitization chống Formula Injection (R26)
-  function sanitizeCsvCell(value: any): string {
+  function sanitizeCsvCell(value: unknown): string {
     if (value === null || value === undefined) return '';
     let str = String(value).trim();
     if (/^[=+\-@\t\r]/.test(str)) {
@@ -260,7 +260,7 @@ async function main() {
   // ─────────────────────────────────────────────────────────────
   console.log('\n--- 4. KIỂM THỬ XUẤT WORD .DOCX (R20, R22) ---');
 
-  const testExamForDocx: any = {
+  const testExamForDocx = {
     id: 'test_exam_docx',
     metadata: {
       title: 'ĐỀ THI KIỂM THỬ XUẤT WORD OMML',
@@ -282,7 +282,7 @@ async function main() {
     ],
   };
 
-  const docxBlob = await exportExamToDocx(testExamForDocx);
+  const docxBlob = await exportExamToDocx(testExamForDocx as unknown as Parameters<typeof exportExamToDocx>[0]);
   assert(docxBlob !== null && docxBlob.size > 0, 'Sinh file Word .docx thành công (kích thước > 0 bytes)');
 
   // Kiểm tra header zip OpenXML (PK\x03\x04)

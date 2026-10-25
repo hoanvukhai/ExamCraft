@@ -42,8 +42,8 @@ test('client logout forwards the expected account and accepts only an acknowledg
 test('login rate buckets are normalized per account and reservations enforce a persistent limit regardless of IP changes', async () => {
   const rows: { action: string; targetId: string; createdAt: Date }[] = [];
   const tx = { $queryRaw: async () => [], auditLog: {
-    count: async ({ where }: any) => rows.filter(row => row.action === where.action && row.targetId === where.targetId && row.createdAt >= where.createdAt.gte).length,
-    create: async ({ data }: any) => { rows.push(data); return data; },
+    count: async ({ where }: { where: { action: string; targetId: string; createdAt: { gte: Date } } }) => rows.filter(row => row.action === where.action && row.targetId === where.targetId && row.createdAt >= where.createdAt.gte).length,
+    create: async ({ data }: { data: typeof rows[number] }) => { rows.push(data); return data; },
   } } as unknown as Prisma.TransactionClient;
   assert.equal(loginBucket(' A@EXAMPLE.test '), loginBucket('a@example.test'));
   assert.notEqual(loginBucket('a@example.test'), loginBucket('b@example.test'));
@@ -80,11 +80,11 @@ test('session usability rejects the exact expiry boundary and disabled accounts'
 test('session issuance checks the current active account and password hash under the user lock', async () => {
   const previous = prisma.$transaction;
   let active = true, hash = 'current-hash', created = 0, locked = false;
-  (prisma as any).$transaction = async (operation: any) => operation({
+  prisma.$transaction = (async (operation: (tx: Prisma.TransactionClient) => Promise<unknown>) => operation({
     $queryRaw: async () => { locked = true; return []; },
     user: { findUnique: async () => { assert.equal(locked, true); return { isActive: active, passwordHash: hash }; } },
     session: { create: async () => { created++; } },
-  });
+  } as unknown as Prisma.TransactionClient)) as typeof prisma.$transaction;
   try {
     await createSession('user', 'current-hash'); assert.equal(created, 1);
     hash = 'reset-hash'; await assert.rejects(createSession('user', 'current-hash'), /UNAUTHORIZED/);
@@ -95,10 +95,10 @@ test('session issuance checks the current active account and password hash under
 test('logout server revocation is idempotent and propagates DB failures', async () => {
   const previous = prisma.session.deleteMany;
   let supplied: unknown;
-  (prisma.session as any).deleteMany = async (input: unknown) => { supplied = input; return { count: 0 }; };
+  prisma.session.deleteMany = (async (input: unknown) => { supplied = input; return { count: 0 }; }) as typeof previous;
   try {
     await deleteSession('revoked-token'); assert.deepEqual(supplied, { where: { token: 'revoked-token' } });
-    (prisma.session as any).deleteMany = async () => { throw new Error('DB unavailable'); };
+    prisma.session.deleteMany = (async () => { throw new Error('DB unavailable'); }) as typeof previous;
     await assert.rejects(deleteSession('current-token'), /DB unavailable/);
   } finally { prisma.session.deleteMany = previous; }
 });

@@ -22,7 +22,7 @@ interface PerfMetrics {
 
 async function getDbConnectionCount(): Promise<number> {
   try {
-    const result: any = await prisma.$queryRaw`SELECT count(*)::int as count FROM pg_stat_activity WHERE datname = 'examcraft_qa';`;
+    const result = await prisma.$queryRaw<{ count: number }[]>`SELECT count(*)::int as count FROM pg_stat_activity WHERE datname = 'examcraft_qa';`;
     return result[0]?.count || 0;
   } catch (e) {
     return 0;
@@ -35,7 +35,7 @@ async function main() {
   console.log('   Mục tiêu: R5, R8, R11, R12, R17, R23-R30, PERF 100 HS, AI Real');
   console.log('===============================================================\n');
 
-  const auditResults: Record<string, any> = {};
+  const auditResults: Record<string, unknown> = {};
 
   // 0. Khởi tạo dữ liệu giáo viên kiểm thử
   console.log('--- BƯỚC 0: KHỞI TẠO TÀI KHOẢN VÀ DỮ LIỆU KIỂM THỬ ---');
@@ -349,7 +349,7 @@ async function main() {
   });
   const draftAfterSubmitData = await draftAfterSubmitRes.json();
   const attemptAfterDraft = await prisma.attempt.findUnique({ where: { id: cucAttempt?.id } });
-  const draftOverwritten = (attemptAfterDraft?.draft as any)?.[q1.id] === 'A';
+  const draftOverwritten = (attemptAfterDraft?.draft as Record<string, unknown> | null | undefined)?.[q1.id] === 'A';
   console.log(`- Draft sau khi submit: Status = ${draftAfterSubmitRes.status} ("${draftAfterSubmitData.error || 'ok'}"), Bị ghi đè: ${draftOverwritten ? 'CÓ (LỖI)' : 'KHÔNG (CHẶN ĐÚNG)'}`);
 
   auditResults['R11'] = {
@@ -609,7 +609,7 @@ async function main() {
   // ===============================================================
   console.log('\n--- 7. KIỂM ĐỊNH CHẤT LƯỢNG NỘI DUNG AI GEMINI THẬT (TOÁN 12 & HÓA 11) ---');
   const geminiKey = process.env.GEMINI_API_KEY_1;
-  const aiLedgerEntries: any[] = [];
+  const aiLedgerEntries: { id?: string; subject?: string; model?: string; durationMs?: number; status: string; sample?: string; error?: string }[] = [];
 
   if (geminiKey && geminiKey.length > 20) {
     try {
@@ -656,7 +656,8 @@ async function main() {
         status: 'SUCCESS',
         sample: chemText.slice(0, 120),
       });
-    } catch (e: any) {
+    } catch (error: unknown) {
+      const e = error instanceof Error ? error : new Error(String(error));
       console.log('⚠️ Gọi Gemini thật gặp lỗi:', e.message);
       aiLedgerEntries.push({ status: 'FAILED', error: e.message });
     }

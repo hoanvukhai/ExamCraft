@@ -254,7 +254,7 @@ async function runPhase3Tests() {
     data: { draft: draftAnswers },
   });
 
-  if ((updatedAttempt.draft as any)[q1.id] !== 'C') {
+  if ((updatedAttempt.draft as Record<string, unknown>)[q1.id] !== 'C') {
     throw new Error('Lưu nháp thất bại!');
   }
   console.log('✓ Test 7: Tự động lưu nháp (Auto-Save Draft) hoạt động chính xác');

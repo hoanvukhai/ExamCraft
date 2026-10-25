@@ -265,7 +265,7 @@ async function main() {
     where: { id: assignmentA.id },
   });
 
-  const assignmentSnapshot: any = freshAssignment?.snapshot;
+  const assignmentSnapshot = freshAssignment?.snapshot as { sections: { questions: { figures?: unknown; content: string; payload?: { correct?: string } }[] }[] } | undefined;
   const snapshotQuestion = assignmentSnapshot?.sections[0]?.questions[0];
 
   assert(

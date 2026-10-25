@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import type { Prisma } from '@prisma/client';
 import { forkPayload, forkQuestion, rollbackQuestion } from '../src/lib/question-history';
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- This in-memory Prisma test double accepts dynamic model rows and select/include arguments; production boundaries remain typed.
 type Row = Record<string, any>;
 const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value));
 const status = (value: number) => (e: unknown) => !!e && typeof e === 'object' && 'status' in e && e.status === value;
