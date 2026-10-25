@@ -1,0 +1,13 @@
+{
+  "checkedAt": "2026-10-25T10:06:55.175Z",
+  "checks": [
+    "close-and-reopen",
+    "invalid-close-times-refused",
+    "extension-applies-to-new-attempts",
+    "comment-private-to-teacher"
+  ],
+  "cleanupComplete": true,
+  "status": "PASS",
+  "environment": "isolated localhost:3117",
+  "realAiCalls": false
+}

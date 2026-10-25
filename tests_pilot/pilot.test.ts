@@ -138,7 +138,7 @@ async function flow(id: string, action: (f: Fixture) => Promise<void>, firstPass
   finally { if (f) { try { await f.cleanup(); cleanupComplete = true; } catch (e) { error ??= e; } } }
   const message = error instanceof Error ? error.message.replaceAll(f?.password ?? '\0', '[fixture-password]') : error ? 'Unknown pilot failure' : undefined;
   results.push({ id, status: error ? 'FAIL' : 'PASS', durationMs: Date.now() - start, cleanupComplete, ...(message ? { error: message } : {}) });
-  fs.mkdirSync(reportDir, { recursive: true }); const evidence=JSON.stringify({ run, sourceSha256, buildId, browserVersion, browserExecutable: process.env.PILOT_BROWSER_PATH, requestedFlow: process.env.PILOT_FLOW ?? 'F1-F7,F9-F13', checkedAt: new Date().toISOString(), environment: 'isolatedTest localhost3117 / examcraft_test_20261022', realAiCalls: false, results }, null, 2);
+  fs.mkdirSync(reportDir, { recursive: true }); const evidence=JSON.stringify({ run, sourceSha256, buildId, browserVersion, browserExecutable: process.env.PILOT_BROWSER_PATH, requestedFlow: process.env.PILOT_FLOW ?? 'F1-F7,F9-F14', checkedAt: new Date().toISOString(), environment: 'isolatedTest localhost3117 / examcraft_test_20261022', realAiCalls: false, results }, null, 2);
   fs.writeFileSync(`${reportDir}/pilot-results.json`,evidence);fs.writeFileSync(`${reportDir}/pilot-run-${run}.json`,evidence);
   if (error) throw Error(`${id}: ${message}`);
 }
@@ -501,4 +501,30 @@ test('F13 a student works and a teacher browses on a 375px phone without sideway
   await login(tp, f.emails[0], f.password); await tp.waitForURL(origin + '/'); await tp.waitForLoadState('networkidle'); await noHorizontalScroll(tp, 'teacher library');
   await tp.goto(origin + '/teacher/assignments/' + asg.id); await tp.getByText('Bảng điểm & Bài nộp').waitFor(); await noHorizontalScroll(tp, 'teacher assignment');
   await tp.goto(origin + '/editor/' + (await f.db.exam.findFirstOrThrow({ where: { ownerId: f.ids[0] } })).id); await tp.getByTitle('Lưu các thay đổi lên máy chủ').first().waitFor(); await noHorizontalScroll(tp, 'teacher editor');
+}));
+
+test('F14 two teachers edit the same exam at once: the first save wins, the other keeps a draft and can save it as a copy', { timeout: 180000 }, () => flow('F14', async f => {
+  await authenticated(f); const id = await seedExam(f);
+  assert.ok((await f.api(`/api/exams/${id}/collaborators`, 'POST', { email: f.emails[1], role: 'EDITOR' })).success !== false);
+  await openExam(f, id);
+  const peerContext = await f.context(), peer = await peerContext.newPage();
+  await login(peer, f.emails[1], f.password); await peer.waitForURL(origin + '/'); await peer.goto(origin + '/editor/' + id);
+  const titleOf = (page: Page) => page.getByTitle('Nhấn để đổi tên đề thi (như Google Docs)');
+  await titleOf(peer).waitFor();
+  const rename = async (page: Page, value: string) => { await titleOf(page).click(); const input = page.locator('header input').first(); await input.fill(value); await input.press('Enter'); };
+  // The second teacher loses the connection, edits, and the first teacher saves in the meantime.
+  await peerContext.setOffline(true); await rename(peer, 'Bản của đồng nghiệp');
+  await peer.getByText('Mất kết nối — đang giữ bản nháp trên máy', { exact: true }).waitFor();
+  await rename(f.page, 'Bản của chủ đề');
+  await waitUntil(async () => (await f.db.exam.findUniqueOrThrow({ where: { id } })).title === 'Bản của chủ đề', 'The owner save did not reach the server');
+  const ownerVersion = (await f.db.exam.findUniqueOrThrow({ where: { id } })).version;
+  await peerContext.setOffline(false);
+  await peer.getByRole('button', { name: 'Lưu bản nháp thành đề mới', exact: true }).waitFor();
+  assert.equal((await f.db.exam.findUniqueOrThrow({ where: { id } })).title, 'Bản của chủ đề', 'The late edit never overwrites the saved one');
+  assert.equal((await f.db.exam.findUniqueOrThrow({ where: { id } })).version, ownerVersion);
+  assert.ok((await titleOf(peer).innerText()).includes('Bản của đồng nghiệp'), 'The colleague still sees their own draft');
+  await click(peer, 'Lưu bản nháp thành đề mới');
+  await waitUntil(async () => await f.db.exam.count({ where: { ownerId: f.ids[1], title: 'Bản của đồng nghiệp (Bản sao phục hồi)' } }) === 1, 'The colleague draft was not saved as their own copy');
+  assert.equal((await f.db.exam.findUniqueOrThrow({ where: { id } })).title, 'Bản của chủ đề', 'The owner exam is unchanged by the copy');
+  assert.equal(await f.db.exam.count({ where: { ownerId: f.ids[0] } }), 1, 'The owner library has no extra exam');
 }));

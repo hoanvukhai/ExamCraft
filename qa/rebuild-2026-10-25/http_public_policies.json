@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-25T09:52:54.217Z",
+  "checkedAt": "2026-10-25T10:06:55.997Z",
   "checks": [
     "start-race-max-attempts-and-capability-isolation",
     "reveal-never-after-close-immediate-and-idempotent-redaction",

@@ -51,3 +51,12 @@ Trong đề xuất quyết định tôi nói bình luận và quyền công bố
 - **Claude làm thay:** F13 (màn hình nhỏ 375px) phát hiện nút ĐÚNG/SAI thấp hơn 40px, đã sửa; ghi chú phiên bản ở hộp chia sẻ; test fixture đa môn.
 - **Chạy cuối:** build đạt, SAFE 353/353 ([log](safe-claude-run4.log)), HTTP 60/60 ([log](http-claude-run14.log)), trình duyệt 12/12 gồm F13 ([log](pilot-claude-run10.log)).
 - **Chưa làm của Codex:** CV061, 023, 024, 026, 027, 042, 043 (Q3), Q4, Q6–Q10, Q12 và ca trình duyệt hai người cùng sửa. Các CV mức pilot vẫn chưa đóng đủ.
+
+## Bổ sung tối 25/10: Claude làm thay Codex (Q3, Q4, Q9, Q10, Q11)
+Chạy cuối: build đạt, SAFE 358/358 ([log](safe-claude-run5.log)), HTTP 70/70 ([log](http-claude-run17.log)), trình duyệt 13/13 gồm F13 và F14 ([log](pilot-claude-run11.log)).
+- **CV061:** `http_assignment_window` (đóng sớm, mở lại, gia hạn, giờ đóng sai, nhận xét giáo viên không tới học sinh, CSV cần phiên giáo viên). Chưa đóng: học sinh chưa có lựa chọn xem nhận xét.
+- **CV049:** F14 (hai giáo viên, hai ngữ cảnh trình duyệt) bổ sung giới hạn còn lại, CV đã đóng từ trước.
+- **CV073:** đo sao lưu 17 giây và khôi phục 20 giây, đối chiếu đạt ([OPS_RTO_MEASURE](OPS_RTO_MEASURE.md)); runbook [VAN_HANH_PILOT_LOCAL](../../docs/van-hanh/VAN_HANH_PILOT_LOCAL.md). Chưa đóng: cần chủ dự án duyệt RPO/RTO, nơi giữ bản sao thứ hai, người chịu trách nhiệm; chưa thử trên máy khác.
+- **CV015:** `http_library` (tìm/lọc, sao, thư mục, thùng rác, khôi phục, bản sao từ link). Chưa đóng: chưa kiểm giao diện hợp nhất kho.
+- **CV031:** `ai_endpoints_guard` ràng buộc mười route AI dùng khóa của chính người dùng. Chưa đóng: chưa kiểm hết bằng nhà cung cấp giả.
+- **Chưa làm của Codex:** CV023, 024, 026, 027, 042, 043 (cần Word thật, hình/công thức trực quan), Q6 (cần bảng ca của Gemini), Q7 in/PDF và Word dài, Q8 nhập Word/ảnh, Q12 dọn log.
