@@ -1,4 +1,5 @@
 import test from 'node:test';
+import http from 'node:http';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { randomUUID, createHash } from 'node:crypto';
@@ -45,7 +46,10 @@ async function waitUntil(check: () => Promise<boolean>, message: string, timeout
 async function openDetails(page: Page, summary: string) { await page.locator('summary', { hasText: summary }).first().evaluate(el => { (el.parentElement as HTMLDetailsElement).open = true; }); }
 async function click(page: Page, name: string | RegExp) { await page.getByRole('button', { name, exact: typeof name === 'string' }).click(); }
 async function login(page: Page, email: string, password: string) {
+  // The effect's session lookup proves hydration; SSR form controls alone do not.
+  const hydrated = page.waitForResponse(r => r.url().endsWith('/api/auth/me') && r.request().method() === 'GET');
   await page.goto(origin + '/login');
+  await hydrated;
   await page.getByPlaceholder('name@school.edu.vn').fill(email);
   await page.getByPlaceholder('••••••••').fill(password);
   const response = page.waitForResponse(r => r.url().endsWith('/api/auth/login') && r.request().method() === 'POST');
@@ -72,7 +76,9 @@ async function setup(id: string, firstPassword = false) {
     await db.passage.deleteMany({ where: { ownerId: { in: ids } } });
     await db.auditLog.deleteMany({ where: { OR: [{actorId: { in: ids }}, {targetType:'LoginBucket',targetId:{in:emails.map(loginBucket)}}] } });
     const aiCalls = await db.aiUsageLog.count({ where: { userId: { in: ids } } });
-    assert.equal(aiCalls, 0, 'Pilot must not call/reserve provider usage');
+    if (!['F21', 'F22'].includes(id)) assert.equal(aiCalls, 0, 'Pilot must not call/reserve provider usage');
+    await db.aiUsageLog.deleteMany({ where: { userId: { in: ids } } });
+    await db.userApiKey.deleteMany({ where: { userId: { in: ids } } });
     await db.user.deleteMany({ where: { id: { in: ids } } });
     assert.equal(await db.user.count({ where: { id: { in: ids } } }), 0);
     assert.equal(await db.auditLog.count({ where: { OR: [{actorId: {in:ids}}, {targetType:'LoginBucket',targetId:{in:emails.map(loginBucket)}}] } }),0);
@@ -87,7 +93,8 @@ async function setup(id: string, firstPassword = false) {
       await c.route('**/*', route => {
         const u = new URL(route.request().url());
         if (['data:', 'blob:', 'about:'].includes(u.protocol)) return route.continue();
-        if (u.origin !== origin || /\/api\/(generate|ocr|parse-|verify|tweak)|\/ai-memory\/analyze/.test(u.pathname)) return route.abort();
+        const localMockFlow = id === 'F22' && ['/api/parse-exam-text', '/api/generate-exam'].includes(u.pathname);
+        if (u.origin !== origin || !localMockFlow && /\/api\/(generate|ocr|parse-|verify|tweak)|\/ai-memory\/analyze/.test(u.pathname)) return route.abort();
         return route.continue();
       });
       c.on('page', p => { p.on('dialog', d => { console.log(id+' dialog: '+d.message()); void d.accept(); }); p.on('pageerror', e=>console.log(id+' browser error: '+e.message)); });
@@ -139,7 +146,7 @@ async function flow(id: string, action: (f: Fixture) => Promise<void>, firstPass
   finally { if (f) { try { await f.cleanup(); cleanupComplete = true; } catch (e) { error ??= e; } } }
   const message = error instanceof Error ? error.message.replaceAll(f?.password ?? '\0', '[fixture-password]') : error ? 'Unknown pilot failure' : undefined;
   results.push({ id, status: error ? 'FAIL' : 'PASS', durationMs: Date.now() - start, cleanupComplete, ...(message ? { error: message } : {}) });
-  fs.mkdirSync(reportDir, { recursive: true }); const evidence=JSON.stringify({ run, sourceSha256, buildId, browserVersion, browserExecutable: process.env.PILOT_BROWSER_PATH, requestedFlow: process.env.PILOT_FLOW ?? 'F1-F7,F9-F19', checkedAt: new Date().toISOString(), environment: 'isolatedTest localhost3117 / examcraft_test_20261022', realAiCalls: false, results }, null, 2);
+  fs.mkdirSync(reportDir, { recursive: true }); const evidence=JSON.stringify({ run, sourceSha256, buildId, browserVersion, browserExecutable: process.env.PILOT_BROWSER_PATH, requestedFlow: process.env.PILOT_FLOW ?? 'F1-F7,F9-F23', checkedAt: new Date().toISOString(), environment: 'isolatedTest localhost3117 / examcraft_test_20261022', realAiCalls: false, results }, null, 2);
   fs.writeFileSync(`${reportDir}/pilot-results.json`,evidence);fs.writeFileSync(`${reportDir}/pilot-run-${run}.json`,evidence);
   if (error) throw Error(`${id}: ${message}`);
 }
@@ -742,4 +749,119 @@ test('F19 library search, starred, recent, trash, restore and safe controls', { 
   for (const id of ids) assert.equal((await f.db.exam.findUniqueOrThrow({ where: { id } })).deletedAt, null);
   checked.push('new-exam-and-return-keeps-originals');
   fs.writeFileSync(reportDir + '/library-ui-' + run + '.json', JSON.stringify({ run, buildId, checkedAt: new Date().toISOString(), inventory, checked, limitation: 'Inventory includes safe controls covered by other pilot flows; this flow does not send AI prompts, submit keys, delete folders or log out.' }, null, 2));
+}));
+
+
+test('F20 import preview corrections survive import, save and reopen', { timeout: 180000 }, () => flow('F20', async f => {
+  await authenticated(f); const id = await seedExam(f); await openExam(f, id);
+  await f.page.route('**/api/parse-exam-text', route => route.fulfill({ status: 400, contentType: 'application/json', body: JSON.stringify({ success: false, error: 'Fixture: use built-in text parser' }) }));
+  await f.page.getByTitle('Bóc tách câu hỏi từ file Word / Ảnh chụp đưa thêm vào đề').click();
+  await click(f.page, 'Dán văn bản thô (AI Parser)');
+  const sample = fs.readFileSync('docs/huong-dan/DE_MAU_DE_KIEM_TAY.md', 'utf8').split('```text')[1].split('```')[0];
+  await f.page.getByPlaceholder(/^Dán đoạn văn bản đề thi thô/).fill(sample + '\nCâu 6: Câu chưa có đáp án để rà lại.');
+  await click(f.page, 'Bắt đầu phân rã thành câu hỏi');
+  const cards = f.page.getByTestId('import-preview-question');
+  await waitUntil(async () => await cards.count() === 6, 'Expected five sample questions and one unanswered question');
+  await cards.last().getByText('Chưa có đáp án — kiểm lại', { exact: true }).waitFor();
+  await cards.first().getByRole('button', { name: 'Sửa', exact: true }).click();
+  await cards.first().getByLabel('Nội dung câu nhập', { exact: true }).fill('F20 nội dung đã sửa');
+  await cards.first().getByLabel('Phương án A', { exact: true }).fill('Phương án đã sửa');
+  await cards.first().getByLabel('Đáp án câu nhập', { exact: true }).selectOption('A');
+  await cards.first().getByRole('button', { name: 'Xong', exact: true }).click();
+  await click(f.page, 'Thêm 6 câu hỏi vào Đề thi hiện tại');
+  await f.page.getByTitle('Lưu các thay đổi lên máy chủ').first().click();
+  await waitUntil(async () => (await f.db.examQuestion.count({ where: { examId: id } })) === 13, 'Imported preview changes must be saved');
+  const row = await f.db.question.findFirstOrThrow({ where: { ownerId: f.ids[0], content: 'F20 nội dung đã sửa' } });
+  assert.equal((row.payload as { correct?: string }).correct, 'A');
+  await openExam(f, id);
+  const saved = (await f.api('/api/exams/' + id)).document.questions.find((q: { content: string }) => q.content === 'F20 nội dung đã sửa');
+  assert.equal(saved.correct_answer, 'A'); assert.equal(saved.choices[0].text, 'Phương án đã sửa');
+  await f.page.getByText('F20 nội dung đã sửa', { exact: true }).first().waitFor();
+}));
+
+
+async function localProvider() {
+  const keys: string[] = []; let output: unknown = {}; let release: (() => void) | undefined;
+  const server = http.createServer((req, res) => {
+    req.on('data', () => {}); req.on('end', () => {
+      keys.push(String(req.headers['x-goog-api-key'] ?? ''));
+      release = () => { if (!res.destroyed) res.setHeader('Content-Type', 'application/json').end(JSON.stringify({ candidates: [{ content: { role: 'model', parts: [{ text: JSON.stringify(output) }] }, finishReason: 'STOP' }] })); };
+    });
+  });
+  await new Promise<void>((resolve, reject) => { server.once('error', reject); server.listen(3118, '127.0.0.1', resolve); });
+  return { keys, respond(value: unknown) { output = value; release?.(); }, async close() { server.closeAllConnections(); await new Promise<void>(resolve => server.close(() => resolve())); } };
+}
+
+test('F21 collaborator Copilot uses its own key and preserves the owner concurrent edit', { timeout: 180000 }, () => flow('F21', async f => {
+  const mock = await localProvider();
+  try {
+    await authenticated(f); const id = await seedExam(f); await openExam(f, id);
+    await f.db.user.updateMany({ where: { id: { in: f.ids } }, data: { aiDailyLimit: 10 } });
+    await f.api('/api/user/keys', 'POST', { apiKey: 'pilot-owner-key-0123456789', label: 'Owner fixture' });
+    await f.api('/api/exams/' + id + '/collaborators', 'POST', { email: f.emails[1], role: 'EDITOR' });
+    const context = await f.context(), b = await context.newPage(); await login(b, f.emails[1], f.password);
+    await f.api('/api/user/keys', 'POST', { apiKey: 'pilot-editor-key-0123456789', label: 'Editor fixture' }, context);
+    await b.goto(origin + '/editor/' + id);
+    await b.getByTitle('Mở rộng bảng Trợ lý AI').click();
+    await b.locator('#right-copilot-input').fill('Sửa nội dung câu 1 thành câu thử F21'); await b.locator('#right-copilot-input').press('Enter');
+    await waitUntil(async () => mock.keys.length === 1, 'Collaborator request must reach local provider');
+    assert.deepEqual(mock.keys, ['pilot-editor-key-0123456789']);
+    await f.page.getByTitle('Sửa nội dung câu hỏi thủ công', { exact: true }).first().click();
+    await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).fill('F21 OWNER NEW CONTENT'); await click(f.page, 'Áp dụng câu vào đề');
+    await f.page.getByTitle('Lưu các thay đổi lên máy chủ').first().click();
+    await waitUntil(async () => (await f.api('/api/exams/' + id)).document.questions[0].content === 'F21 OWNER NEW CONTENT', 'Owner edit must persist before provider responds');
+    const aiQuestion = { ...document().questions[0], content: 'F21 AI PROPOSAL' };
+    mock.respond({ type: 'action', action: 'modify_single_question', targetQuestionIndex: 1, targetQuestionId: 'q1', explanation: 'F21 proposal', modifiedQuestion: aiQuestion });
+    const proposal = b.getByRole('region', { name: 'Đề xuất AI chưa áp dụng' });
+    await b.getByText('F21 proposal', { exact: true }).waitFor();
+    const apply = b.getByRole('button', { name: 'Áp dụng', exact: true });
+    if (await apply.isEnabled()) { await apply.click(); await b.getByTitle('Lưu các thay đổi lên máy chủ').first().click(); await b.getByText('Lưu bản nháp thành đề mới', { exact: true }).waitFor(); }
+    else { await b.getByText(/Chưa áp dụng để giữ bản mới/).waitFor(); }
+    const current = (await f.api('/api/exams/' + id)).document; assert.equal(current.questions[0].content, 'F21 OWNER NEW CONTENT');
+    assert.ok(!(await b.locator('body').innerText()).includes('pilot-editor-key-0123456789'));
+    assert.ok(!(await b.locator('body').innerText()).includes('pilot-owner-key-0123456789'));
+    const logs = await f.db.aiUsageLog.findMany({ where: { userId: { in: f.ids } } }); assert.equal(logs.length, 1); assert.equal(logs[0].userId, f.ids[1]); assert.equal(logs[0].httpStatus, 200);
+    void proposal;
+  } finally { await mock.close(); }
+}));
+
+test('F22 cancel slow AI import and generation without applying or saving results', { timeout: 180000 }, () => flow('F22', async f => {
+  f.page.on('requestfailed', request => console.log('F22 network failure', new URL(request.url()).pathname, request.failure()?.errorText));
+  const mock = await localProvider();
+  try {
+    await authenticated(f); const id = await seedExam(f); await openExam(f, id);
+    await f.db.user.update({ where: { id: f.ids[0] }, data: { aiDailyLimit: 10 } });
+    await f.api('/api/user/keys', 'POST', { apiKey: 'pilot-cancel-key-0123456789', label: 'Cancel fixture' });
+    await f.page.getByTitle('Bóc tách câu hỏi từ file Word / Ảnh chụp đưa thêm vào đề').click(); await click(f.page, 'Dán văn bản thô (AI Parser)');
+    await f.page.getByPlaceholder(/^Dán đoạn văn bản đề thi thô/).fill('Câu 1: Tính hai cộng hai.'); await click(f.page, 'Bắt đầu phân rã thành câu hỏi');
+    await waitUntil(async () => mock.keys.length === 1, 'Import waits at provider'); await click(f.page, 'Hủy yêu cầu AI');
+    await f.page.getByText('Đã hủy yêu cầu. Chưa thêm câu hỏi nào vào đề.', { exact: true }).waitFor(); assert.equal(await f.page.getByTestId('import-preview-question').count(), 0);
+    assert.equal(await f.page.getByRole('button', { name: 'Bắt đầu phân rã thành câu hỏi', exact: true }).isEnabled(), true);
+    await click(f.page, 'Đóng');
+    await f.page.getByTitle('Tạo bản nháp đề để giáo viên kiểm tra và chỉnh sửa').click();
+    await f.page.getByPlaceholder('Nhập phần kiến thức muốn soạn; có thể dán yêu cầu cần đạt đã kiểm tra.').fill('Phép cộng số tự nhiên'); await click(f.page, 'Tạo bản nháp');
+    await waitUntil(async () => mock.keys.length === 2, 'Generation waits at provider'); await click(f.page, 'Hủy yêu cầu AI');
+    await f.page.getByText('Đã hủy yêu cầu. Chưa áp dụng bản nháp nào.', { exact: true }).waitFor(); assert.equal(await f.page.getByRole('button', { name: 'Tạo bản nháp', exact: true }).isEnabled(), true);
+    mock.respond({ questions: [] });
+    await waitUntil(async () => (await f.db.aiUsageLog.count({ where: { userId: f.ids[0], httpStatus: 499 } })) === 2, 'Both cancelled calls finalized');
+    assert.equal(await f.db.examQuestion.count({ where: { examId: id } }), 7); assert.equal(await f.db.question.count({ where: { ownerId: f.ids[0] } }), 7);
+  } finally { await mock.close(); }
+}));
+
+test('F23 manual edits, undo redo and a retried bank save preserve links without duplicates', { timeout: 180000 }, () => flow('F23', async f => {
+  await authenticated(f); const id = await seedExam(f); await openExam(f, id);
+  await f.page.getByTitle('Sửa nội dung câu hỏi thủ công', { exact: true }).first().click(); await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).fill('F23 EDITED'); await f.page.getByLabel('Đáp án lựa chọn').selectOption('B'); await click(f.page, 'Áp dụng câu vào đề');
+  await f.page.getByRole('button', { name: /^Hoàn tác \(/ }).first().click(); await f.page.getByText('PILOT Q1 multiple_choice', { exact: true }).first().waitFor();
+  await f.page.getByRole('button', { name: /^Làm lại câu \(/ }).first().click(); await f.page.getByText('F23 EDITED', { exact: true }).first().waitFor();
+  await f.page.getByTitle('Lưu các thay đổi lên máy chủ').first().click();
+  await waitUntil(async () => (await f.api('/api/exams/' + id)).document.questions[0].content === 'F23 EDITED', 'Redo snapshot persisted');
+  const q = (await f.api('/api/exams/' + id)).document.questions[0]; assert.equal(q.correct_answer, 'B'); assert.equal(q.passageId, 'p1'); assert.equal(q.status, 'draft'); assert.equal(q.verifiedBy, 'none');
+  let dropped = false; const bankBodies: Record<string, unknown>[] = [];
+  await f.page.route('**/api/questions', async route => { if (route.request().method() === 'POST') bankBodies.push(route.request().postDataJSON()); if (route.request().method() === 'POST' && !dropped) { dropped = true; await route.fetch(); await route.abort('failed'); } else await route.continue(); });
+  const card = f.page.locator('div.group').filter({ has: f.page.getByText('F23 EDITED', { exact: true }) }).last();
+  const bank = card.getByRole('button', { name: 'Lưu bản sao vào ngân hàng', exact: true }); await bank.click();
+  await waitUntil(async () => dropped && await bank.count() === 1 && await bank.isEnabled(), 'Lost receipt leaves retry available'); await bank.click();
+  await f.page.getByText('Đã lưu bản sao riêng vào ngân hàng', { exact: true }).first().waitFor();
+  if (bankBodies.length > 1) { const diff = (a: unknown, b: unknown, prefix = ''): string[] => a && b && typeof a === 'object' && typeof b === 'object' ? [...new Set([...Object.keys(a), ...Object.keys(b)])].flatMap(key => diff((a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key], prefix + '.' + key)) : JSON.stringify(a) === JSON.stringify(b) ? [] : [prefix]; console.log('F23 retry changed fields', diff(bankBodies[0], bankBodies[1])); }
+  assert.equal(await f.db.question.count({ where: { ownerId: f.ids[0], id: { startsWith: 'q_save_' } } }), 1);
 }));
