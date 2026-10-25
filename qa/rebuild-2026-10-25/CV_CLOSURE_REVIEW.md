@@ -159,3 +159,6 @@ Thêm cột `version`, `resolvedAt`, `resolvedById` vào ExamComment (migration 
 
 ## Bổ sung 26/10: đóng CV063
 Thêm `evidence`, `uncertainty`, `sourceRef` vào TeacherAiMemory (sao lưu main DB trước, migration 20261026000200 áp DB chính; DB thử áp cùng SQL). Phân tích AI lưu nguồn/đoạn trích/điều chưa chắc, đối chiếu đoạn trích với dữ liệu nguồn; xuất Markdown `?format=markdown`; JSON giữ trường mới. HTTP 104/104, SAFE 448/448 (một lần chạy đầu có 1 lỗi không tái hiện trong hai lần chạy lại, chưa rõ nguyên nhân, nghi khoá file báo cáo trên Windows), tsc sạch, lint 0 lỗi, build đạt. Chưa chạy lại luồng trình duyệt.
+
+## Bổ sung 26/10: ngoại lệ CV017, 065, 066
+Chủ dự án giao Claude quyết. Ghi ba CV là ngoại lệ chấp nhận có phạm vi (dự án cá nhân/nhóm nhỏ), vẫn mở, không cộng vào số đạt.

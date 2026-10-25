@@ -98,6 +98,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-04, YC-25, YC-27. Nghiệm thu: NT-11, NT-28.
   - Đạt khi: Tên/mã chuẩn và cấp áp dụng, không alias môn sai; thiếu gói báo rõ; theo dõi các thao tác theo từng gói.
 - [ ] **CV-017 — Cây kiến thức, yêu cầu cần đạt và mục lục sách.**
+  - **Ngoại lệ chấp nhận 26/10 (chủ dự án ủy quyền Claude quyết):** không đóng, không tính là đạt. Cơ chế gói đã kiểm; dữ liệu Toán ba bộ sách thật do chủ dự án tự nhập qua giao diện khi cần dùng, không bịa mục lục sách. Phạm vi ngoại lệ: dự án cá nhân/nhóm nhỏ.
   - **Rà26/10 (Claude): giữ mở, đạt phần cơ chế.** Cơ chế gói đã kiểm (ID ổn định, nhiều–nhiều có nguồn/phiên bản, chặn vòng lặp, không đổi nội dung cùng revision: `package import preserves stable IDs and many-to-many book mapping, but never inherits approval`, `package rejects duplicate, missing references and cycles in knowledge, prerequisites or edition trees`, `a package revision cannot silently acquire different content`). Còn thiếu dữ liệu thật: trong kho chưa có gói Toán nào của ba bộ sách; chỉ có gói thử tự soạn. Cần chủ dự án đưa gói JSON thật (nhập qua giao diện), không bịa mục lục sách.
   - Nền kỹ thuật22/10: gói JSON có ID/phiên bản, cây + tiên quyết, mapping nhiều–nhiều theo ấn bản; chặn vòng lặp/mã thiếu và thay nội dung cùng revision. Lưu/mở bằng DB/HTTP đã kiểm; dữ liệu môn–lớp và ba bộ sách chưa biên tập/duyệt đủ nên giữ mở.
   - Phạm vi: YC-04, YC-25. Nghiệm thu: NT-11.
@@ -326,10 +327,12 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-23. Nghiệm thu: NT-26.
   - Đạt khi: Sở thích khác kiến thức đã duyệt, xem/sửa/xóa/không dùng lại; không tự gắn QUESTION_VERIFIED từ confidence.
 - [ ] **CV-065 — Đóng góp kho chung chủ động.**
+  - **Ngoại lệ chấp nhận 26/10 (chủ dự án ủy quyền Claude quyết):** không đóng, không tính là đạt. Kho chung cho nhiều người ngoài phạm vi dự án cá nhân/nhóm nhỏ; chia sẻ trong nhóm dùng liên kết và cộng tác đã đóng (CV011, CV052).
   - **Ưu tiên thấp (chủ dự án 25/10/2026):** dự án cá nhân, dùng riêng hoặc trong nhóm nhỏ nội bộ do chủ dự án kiểm soát, không phục vụ bên ngoài. Đóng góp vào kho chung cho nhiều người không phải mục tiêu hiện tại. Giữ mở, chỉ làm khi chủ dự án yêu cầu.
   - Phạm vi: YC-23, YC-25. Nghiệm thu: NT-26.
   - Đạt khi: Preview bản chia sẻ, loại dữ liệu riêng không cần, kiểm quyền nguồn, review/thu hồi; không public toàn bộ chat/tài liệu gốc.
 - [ ] **CV-066 — Cập nhật nguồn và vòng đời mẫu.**
+  - **Ngoại lệ chấp nhận 26/10 (chủ dự án ủy quyền Claude quyết):** không đóng, không tính là đạt. Vòng đời mẫu dùng chung ngoài phạm vi dự án cá nhân/nhóm nhỏ; mẫu riêng có nguồn tự khai và cảnh báo ngày đã đóng (CV021).
   - **Ưu tiên thấp (chủ dự án 25/10/2026):** dự án cá nhân, dùng riêng hoặc trong nhóm nhỏ nội bộ do chủ dự án kiểm soát, không phục vụ bên ngoài. Vòng đời mẫu dùng chung cho nhiều người không phải mục tiêu hiện tại. Giữ mở, chỉ làm khi chủ dự án yêu cầu.
   - Phạm vi: YC-23, YC-25. Nghiệm thu: NT-11, NT-26.
   - Đạt khi: Nguồn mới/thay thế/thu hồi đánh dấu phân tích phụ thuộc cần xem lại; công khai label đúng phạm vi/hiệu lực.

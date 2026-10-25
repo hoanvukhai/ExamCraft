@@ -4,7 +4,7 @@ Cập nhật **26/10/2026**. Viết đè mỗi đợt; bản cũ giữ trong Git
 
 ## 1. Mốc hiện tại
 
-- **Tiến độ CV: 60/78 đạt đủ tiêu chí** (thêm CV014, 015, 028, 077, CV025, 033, 039, 041, 053 ngày 25-26/10). Mức "đạt trong phạm vi pilot" vẫn tính riêng, không cộng. Mỗi lần đóng có dòng "Nghiệm thu" nêu test và giới hạn; nhật ký ở [CV_CLOSURE_REVIEW](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md).
+- **Tiến độ CV: 60/78 đạt đủ tiêu chí; 3 ngoại lệ chấp nhận có phạm vi (CV017, 065, 066), không tính đạt** (thêm CV014, 015, 028, 077, CV025, 033, 039, 041, 053 ngày 25-26/10). Mức "đạt trong phạm vi pilot" vẫn tính riêng, không cộng. Mỗi lần đóng có dòng "Nghiệm thu" nêu test và giới hạn; nhật ký ở [CV_CLOSURE_REVIEW](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md).
 - **Phân công:** Claude chỉ đạo và duyệt (giữ checklist, hồ sơ 02, ASSIGNMENTS.json, BATCH_REVIEWS.json); Codex làm mã/build/DB thử/trình duyệt, không tự tick; Gemini chỉ đọc mã và viết tài liệu, **phải kiểm lại bằng cách tự mở mã** (gen 15 có 5/8 tệp bị từ chối dù công cụ kiểm đều đạt). Việc đang giao: `qa/ai-review/coordination/messages/claude-codex-20261025T150749Z-*.md` (Codex gen 16) và `claude-gemini-20261025T150749Z-*.md` (Gemini gen 16).
 - **Đợt 26/10:** Codex gen 15: lint sạch và vào CI, F19 kho đề (sửa hai lỗi thật), migration từ checkout sạch, gom log thô vào `chay-tho/`, kiểm nguồn nhập (sửa lộ khóa số). Claude chạy lại kiểm nhanh: kiểu, lint, SAFE đạt. Bảng môn–lớp nay sinh bằng máy (`scripts/catalog-table.cjs`) có test chống mất môn.
 - Không ghi DB chính, không gọi AI thật, không đổi schema, không push. `main` vẫn mốc cũ.
