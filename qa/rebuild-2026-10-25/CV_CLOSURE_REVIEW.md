@@ -150,3 +150,6 @@ Chuyển sáu báo cáo V1–V3 sang `docs/lich-su/` bằng `git mv`, sửa liê
 
 ## Bổ sung 26/10: đóng CV051
 Thêm cột `version`, `resolvedAt`, `resolvedById` vào ExamComment (migration 20261026000100; sao lưu `backups/examcraft-before-cv051-20261025.dump` rồi áp DB chính; DB thử áp cùng SQL). API PATCH giải quyết góp ý; HTTP 102/102 đạt, lint 0 lỗi, tsc sạch, build đạt. Chưa chạy lại luồng trình duyệt; UI cộng tác để chủ dự án xem.
+
+## Bổ sung 26/10: rà CV016–022 và CV070
+Đóng CV016, 018, 019, 020, 021, 022, 070 theo từng vế "Đạt khi", dẫn test nguyên văn (đã kiểm có thật). Giữ mở CV017: mới có cơ chế gói, chưa có gói Toán ba bộ sách thật, cần chủ dự án cung cấp. Sửa mã môn `tieu_hoc` sai trong `qa/ai-review/fixtures/da-mon/tieu-hoc-3.json` thành `toan` (fixture_da_mon 19/19 đạt). Chưa kiểm AI thật cho chat phạm vi; bố cục in ma trận để chủ dự án xem.
