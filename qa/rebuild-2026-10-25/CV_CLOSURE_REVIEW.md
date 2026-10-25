@@ -179,3 +179,5 @@ T1, T2 nhận; T3 nhận có giới hạn. CI độc lập của Claude trên HE
 
 ## Bổ sung 26/10: AI thật, đóng CV034, 035, 037, 038
 Chủ dự án cung cấp 7 khóa Gemini; chạy bằng tệp tạm ngoài kho mã, server thử cô lập (EXAMCRAFT_REAL_AI=1), DB thử. Chi tiết và giới hạn: qa/rebuild-2026-10-25/REAL_AI_EVAL.md. Sửa lỗi thật phát hiện: đọc JSON có LaTeX chưa thoát (Vật lí), phương án LaTeX trần, nhập Word mất công thức, đề 60 câu thiếu mà không báo (chia lô, đối chiếu số câu). Thêm cột promptVersion/dataVersion cho AiUsageLog (sao lưu rồi áp DB chính). CV040 và CV068 giữ mở có ghi lý do. Hạn mức nhà cung cấp hết (429) cuối ngày nên chưa chạy lại đề 60 câu thật. Khuyến nghị: thu hồi/xoay 7 khóa đã dán trong chat sau khi xong.
+
+- CI độc lập 26/10 sau đợt AI thật (HEAD 5b94b64): kiểu, lint, SAFE 474, build, HTTP 105, trình duyệt 23/23 đạt cùng một lượt.
