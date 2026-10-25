@@ -1,3 +1,4 @@
+import { writeQaReport } from './helpers/qa-report';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
@@ -28,7 +29,7 @@ test('regrade: the twenty hand-worked cases', { timeout: 280000 }, async t => {
       await db.user.deleteMany({ where: { id: uid } });
       const directory = `qa/rebuild-${new Date().toISOString().slice(0, 10)}`;
       fs.mkdirSync(directory, { recursive: true });
-      fs.writeFileSync(`${directory}/http_regrade_cases.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 20 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117', realAiCalls: false }, null, 2));
+      writeQaReport(`${directory}/http_regrade_cases.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 20 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117', realAiCalls: false }, null, 2));
     } finally { await db.$disconnect(); }
   });
   await db.user.create({ data: { id: uid, email: uid + '@example.invalid', name: 'Cases fixture', passwordHash: await bcrypt.hash('fixture-' + run, 10), mustChangePassword: false, aiDailyLimit: 0 } });

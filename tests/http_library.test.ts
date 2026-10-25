@@ -1,3 +1,4 @@
+import { writeQaReport } from './helpers/qa-report';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
@@ -27,7 +28,7 @@ test('the personal library lists, filters, stars, trashes, restores and keeps co
       await db.user.deleteMany({ where: { id: { in: ids } } });
       const directory = `qa/rebuild-${new Date().toISOString().slice(0, 10)}`;
       fs.mkdirSync(directory, { recursive: true });
-      fs.writeFileSync(`${directory}/http_library.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 4 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117', realAiCalls: false }, null, 2));
+      writeQaReport(`${directory}/http_library.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 4 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117', realAiCalls: false }, null, 2));
     } finally { await db.$disconnect(); }
   });
   const password = 'fixture-' + randomUUID(), hash = await bcrypt.hash(password, 10), cookies: Record<string, string> = {};

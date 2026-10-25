@@ -1,3 +1,4 @@
+import { writeQaReport } from './helpers/qa-report';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
@@ -26,7 +27,7 @@ test('student identity (PIN, class membership, personal link) and concurrent sub
       await db.user.deleteMany({ where: { id: uid } });
       const directory = `qa/rebuild-${new Date().toISOString().slice(0, 10)}`;
       fs.mkdirSync(directory, { recursive: true });
-      fs.writeFileSync(`${directory}/http_student_identity.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 4 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117', realAiCalls: false }, null, 2));
+      writeQaReport(`${directory}/http_student_identity.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 4 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117', realAiCalls: false }, null, 2));
     } finally { await db.$disconnect(); }
   });
   const password = 'fixture-' + randomUUID(), email = uid + '@example.invalid';

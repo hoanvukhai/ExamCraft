@@ -1,3 +1,4 @@
+import { writeQaReport } from './helpers/qa-report';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
@@ -42,7 +43,7 @@ test('HTTP workflows on the isolated local server', { timeout: 120000 }, async t
       await prisma.user.deleteMany({ where: { id: { in: ids } } });
       const reportDirectory = `qa/rebuild-${new Date().toISOString().slice(0, 10)}`;
       fs.mkdirSync(reportDirectory, { recursive: true });
-      fs.writeFileSync(`${reportDirectory}/http_workflows.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 16 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117', realAiCalls: false }, null, 2));
+      writeQaReport(`${reportDirectory}/http_workflows.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 16 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117', realAiCalls: false }, null, 2));
     } finally { await prisma.$disconnect(); }
   });
   const passwordHash = await bcrypt.hash(password, 10);
