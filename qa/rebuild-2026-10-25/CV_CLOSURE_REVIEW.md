@@ -103,3 +103,6 @@ Chạy cuối: build đạt, SAFE 408/408 ([log](safe-claude-run12.log)), HTTP 8
 
 ## Bổ sung: đóng CV058
 Chủ dự án quyết bỏ "tệp" và "âm thanh theo đề" khỏi tiêu chí CV058 (mô hình đề chỉ có hình ảnh, đồ thị, bảng biến thiên, hình học và dự án không cần thêm). Bằng chứng còn lại đã có từ các lần chạy trước: F6 (bảy dạng, tải lại, nộp), F13 (điện thoại 375px), F16 (bàn phím và hình hiển thị thật cho học sinh), `public_access`, `structured_grading`. Không chạy lại kiểm thử vì chỉ đổi tiêu chí và hồ sơ.
+
+## Bổ sung: đóng CV023 và CV027
+Căn cứ bảng đối chiếu GEM-T1 của Gemini (mọi tên test đều kiểm có thật bằng `check-test-citations`), cộng các luồng trình duyệt F2 và hai-tab đợt 23/10, cộng `docx_long_exam`. Mỗi vế của tiêu chí có ít nhất một test chạy được; tên test ghi trong dòng nghiệm thu của từng CV. Không chạy lại kiểm thử vì chỉ ghi hồ sơ; lần chạy đầy đủ gần nhất: SAFE 408/408, HTTP 88/88, trình duyệt 15/15. Giới hạn chính: chưa ai mở Word thật; ca môn khác Toán chưa soạn trên giao diện.
