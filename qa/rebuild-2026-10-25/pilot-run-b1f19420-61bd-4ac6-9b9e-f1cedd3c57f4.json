@@ -1,0 +1,63 @@
+{
+  "run": "b1f19420-61bd-4ac6-9b9e-f1cedd3c57f4",
+  "sourceSha256": "a61f99b92c373241fab791fb15357071efdc3c1c998b2d8b95462fd13ba02f2a",
+  "buildId": "6cQQd-HR76s3wjUamv2X0",
+  "browserVersion": "155.0.8059.85",
+  "browserExecutable": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  "requestedFlow": "F1-F7,F9",
+  "checkedAt": "2026-10-25T05:26:49.106Z",
+  "environment": "isolatedTest localhost3117 / examcraft_test_20261022",
+  "realAiCalls": false,
+  "results": [
+    {
+      "id": "F1",
+      "status": "PASS",
+      "durationMs": 2778,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F2",
+      "status": "FAIL",
+      "durationMs": 29049,
+      "cleanupComplete": true,
+      "error": "locator.click: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('Lưu cấu hình đề hiện tại thành mẫu riêng', { exact: true })\u001b[22m\n\u001b[2m    - locator resolved to <summary class=\"text-sm cursor-pointer\">Lưu cấu hình đề hiện tại thành mẫu riêng</summary>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    38 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not visible\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n"
+    },
+    {
+      "id": "F3",
+      "status": "FAIL",
+      "durationMs": 6021,
+      "cleanupComplete": true,
+      "error": "The expression evaluated to a falsy value:\n\n  assert.ok(parallelXml.includes('ĐỀ VÀ ĐÁP ÁN SONG SONG'))\n"
+    },
+    {
+      "id": "F4",
+      "status": "PASS",
+      "durationMs": 10487,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F5",
+      "status": "PASS",
+      "durationMs": 69517,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F6",
+      "status": "PASS",
+      "durationMs": 18659,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F7",
+      "status": "PASS",
+      "durationMs": 19311,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F9",
+      "status": "PASS",
+      "durationMs": 10415,
+      "cleanupComplete": true
+    }
+  ]
+}

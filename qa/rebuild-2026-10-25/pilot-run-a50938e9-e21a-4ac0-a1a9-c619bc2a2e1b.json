@@ -1,0 +1,20 @@
+{
+  "run": "a50938e9-e21a-4ac0-a1a9-c619bc2a2e1b",
+  "sourceSha256": "2230110daa739502b3156f67938431bec62e0a279acc65d3b29448cb13405d17",
+  "buildId": "edFk-KPaIc9gE5V-q-3Sz",
+  "browserVersion": "155.0.8059.85",
+  "browserExecutable": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  "requestedFlow": "F3",
+  "checkedAt": "2026-10-25T05:07:09.674Z",
+  "environment": "isolatedTest localhost3117 / examcraft_test_20261022",
+  "realAiCalls": false,
+  "results": [
+    {
+      "id": "F3",
+      "status": "FAIL",
+      "durationMs": 6201,
+      "cleanupComplete": true,
+      "error": "The expression evaluated to a falsy value:\n\n  assert.ok((await presentation.innerText()).includes('PILOT Q2'))\n"
+    }
+  ]
+}

@@ -45,7 +45,8 @@ test('assignment options (times, attempts, entry code, PIN) are decided on the s
   await t.test('times: close must be in the future and after open, and valid times are stored as sent', async () => {
     assert.equal((await assign({ closesAt: hours(-1) })).status, 400);
     assert.equal((await assign({ opensAt: hours(3), closesAt: hours(2) })).status, 400);
-    assert.equal((await assign({ opensAt: hours(2), closesAt: hours(2) })).status, 400);
+    const sameInstant = hours(2); // one value: two hours(2) calls differ by a few milliseconds and would make close later than open
+    assert.equal((await assign({ opensAt: sameInstant, closesAt: sameInstant })).status, 400);
     const opens = hours(1), closes = hours(5);
     const ok = await assign({ opensAt: opens, closesAt: closes });
     assert.equal(ok.status, 200, ok.data.error);

@@ -1,0 +1,61 @@
+{
+  "run": "f496c73b-b4d3-4daa-aa3c-bd94d48af946",
+  "sourceSha256": "7cfde4d5f24da7acf28a3a27318c19f2706c2817e7b13e7b717ca1a99bd118c1",
+  "buildId": "6cQQd-HR76s3wjUamv2X0",
+  "browserVersion": "155.0.8059.85",
+  "browserExecutable": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  "requestedFlow": "F1-F7,F9",
+  "checkedAt": "2026-10-25T05:29:46.750Z",
+  "environment": "isolatedTest localhost3117 / examcraft_test_20261022",
+  "realAiCalls": false,
+  "results": [
+    {
+      "id": "F1",
+      "status": "PASS",
+      "durationMs": 2763,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F2",
+      "status": "PASS",
+      "durationMs": 8995,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F3",
+      "status": "PASS",
+      "durationMs": 5722,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F4",
+      "status": "PASS",
+      "durationMs": 9779,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F5",
+      "status": "PASS",
+      "durationMs": 56773,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F6",
+      "status": "PASS",
+      "durationMs": 18059,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F7",
+      "status": "PASS",
+      "durationMs": 19419,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F9",
+      "status": "PASS",
+      "durationMs": 8680,
+      "cleanupComplete": true
+    }
+  ]
+}

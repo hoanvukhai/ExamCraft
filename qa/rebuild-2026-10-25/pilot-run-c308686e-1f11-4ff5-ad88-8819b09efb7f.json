@@ -1,0 +1,63 @@
+{
+  "run": "c308686e-1f11-4ff5-ad88-8819b09efb7f",
+  "sourceSha256": "784a6988eab745eef1edc1142d088d69db8fe9ec86c4344a38d17cd942bcb1cc",
+  "buildId": "edFk-KPaIc9gE5V-q-3Sz",
+  "browserVersion": "155.0.8059.85",
+  "browserExecutable": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  "requestedFlow": "F1-F7,F9",
+  "checkedAt": "2026-10-25T05:19:09.737Z",
+  "environment": "isolatedTest localhost3117 / examcraft_test_20261022",
+  "realAiCalls": false,
+  "results": [
+    {
+      "id": "F1",
+      "status": "PASS",
+      "durationMs": 4769,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F2",
+      "status": "FAIL",
+      "durationMs": 11444,
+      "cleanupComplete": true,
+      "error": "Expected values to be strictly equal:\n\n200 !== 201\n"
+    },
+    {
+      "id": "F3",
+      "status": "FAIL",
+      "durationMs": 25005,
+      "cleanupComplete": true,
+      "error": "Presentation select should show Q2"
+    },
+    {
+      "id": "F4",
+      "status": "PASS",
+      "durationMs": 14555,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F5",
+      "status": "PASS",
+      "durationMs": 42896,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F6",
+      "status": "PASS",
+      "durationMs": 25081,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F7",
+      "status": "PASS",
+      "durationMs": 27552,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F9",
+      "status": "PASS",
+      "durationMs": 15777,
+      "cleanupComplete": true
+    }
+  ]
+}

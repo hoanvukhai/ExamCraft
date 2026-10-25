@@ -1,0 +1,63 @@
+{
+  "run": "ad140e1a-4516-4971-a920-66b4667f2a63",
+  "sourceSha256": "784a6988eab745eef1edc1142d088d69db8fe9ec86c4344a38d17cd942bcb1cc",
+  "buildId": "edFk-KPaIc9gE5V-q-3Sz",
+  "browserVersion": "155.0.8059.85",
+  "browserExecutable": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  "requestedFlow": "F1-F7,F9",
+  "checkedAt": "2026-10-25T05:15:55.243Z",
+  "environment": "isolatedTest localhost3117 / examcraft_test_20261022",
+  "realAiCalls": false,
+  "results": [
+    {
+      "id": "F1",
+      "status": "PASS",
+      "durationMs": 5420,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F2",
+      "status": "FAIL",
+      "durationMs": 26148,
+      "cleanupComplete": true,
+      "error": "locator.fill: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByLabel('Chú thích hình 1')\u001b[22m\n"
+    },
+    {
+      "id": "F3",
+      "status": "FAIL",
+      "durationMs": 25378,
+      "cleanupComplete": true,
+      "error": "Presentation select should show Q2"
+    },
+    {
+      "id": "F4",
+      "status": "PASS",
+      "durationMs": 14827,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F5",
+      "status": "PASS",
+      "durationMs": 23971,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F6",
+      "status": "PASS",
+      "durationMs": 21126,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F7",
+      "status": "PASS",
+      "durationMs": 22140,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F9",
+      "status": "PASS",
+      "durationMs": 10846,
+      "cleanupComplete": true
+    }
+  ]
+}

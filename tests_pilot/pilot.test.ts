@@ -42,6 +42,7 @@ async function waitUntil(check: () => Promise<boolean>, message: string, timeout
   while (Date.now() < deadline) { if (await check()) return; await new Promise(resolve => setTimeout(resolve, 150)); }
   throw Error(message);
 }
+async function openDetails(page: Page, summary: string) { await page.locator('summary', { hasText: summary }).first().evaluate(el => { (el.parentElement as HTMLDetailsElement).open = true; }); }
 async function click(page: Page, name: string | RegExp) { await page.getByRole('button', { name, exact: typeof name === 'string' }).click(); }
 async function login(page: Page, email: string, password: string) {
   await page.goto(origin + '/login');
@@ -157,6 +158,7 @@ test('F2 author seven types, image, passage, zero, title and reopen', { timeout:
   for (const [index, type] of types.entries()) {
     await click(f.page, index === 0 ? 'Thêm câu hỏi mới' : 'Thêm câu hỏi');
     await f.page.getByTitle('Sửa nội dung câu hỏi thủ công', { exact: true }).last().click();
+    assert.equal(await f.page.getByRole('button', { name: 'Lưu bản sao vào ngân hàng', exact: true }).last().isDisabled(), true);
     await f.page.getByLabel('Dạng câu', { exact: true }).selectOption(type);
     await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).fill(`PILOT Q${index + 1} ${type}`);
     await f.page.getByLabel('Điểm câu', { exact: true }).fill(index === 0 ? '0' : '1');
@@ -175,11 +177,20 @@ test('F2 author seven types, image, passage, zero, title and reopen', { timeout:
   await f.page.getByText('Phần của đề và ngữ liệu dùng chung',{ exact: true }).click(); await click(f.page,'Thêm ngữ liệu');
   await f.page.getByLabel('Tên ngữ liệu 1').fill('Ngữ liệu thử'); await f.page.getByLabel('Nội dung ngữ liệu 1').fill('Lan đọc sách ở thư viện.');
   await f.page.getByLabel('Ngữ liệu của câu 1').selectOption({ label: 'Ngữ liệu thử' });
-  await f.page.getByText('Mẫu cá nhân và nguồn tham khảo', { exact: true }).click();
-  await f.page.getByText('Lưu cấu hình đề hiện tại thành mẫu riêng', { exact: true }).click();
+  const bankSaved = f.page.waitForResponse(r => r.url().endsWith('/api/questions') && r.request().method() === 'POST');
+  await f.page.getByRole('button', { name: 'Lưu bản sao vào ngân hàng', exact: true }).first().click();
+  { const bankResponse = await bankSaved; assert.equal(bankResponse.status(), 200, 'POST /api/questions status ' + bankResponse.status()); } // this endpoint answers 200 with { success, question }, not 201
+  await f.page.getByText('Đã lưu bản sao riêng vào ngân hàng', { exact: true }).waitFor();
+  const bankRows = await f.db.question.findMany({ where: { ownerId: f.ids[0], NOT: { tags: { has: '__workspace_only' } } }, include: { passage: true } });
+  assert.equal(bankRows.length, 1);
+  assert.equal(bankRows[0].content, 'PILOT Q1 multiple_choice');
+  assert.equal(Number(bankRows[0].points), 0);
+  assert.equal(bankRows[0].passage?.content, 'Lan đọc sách ở thư viện.');
+  await openDetails(f.page, 'Mẫu cá nhân và nguồn tham khảo');
+  await openDetails(f.page, 'Lưu cấu hình đề hiện tại thành mẫu riêng');
   await f.page.getByLabel('Tên bản mẫu riêng', { exact: true }).fill('Mẫu pilot riêng');
   const templateSaved = f.page.waitForResponse(r=>r.url().endsWith('/api/templates') && r.request().method()==='POST');
-  await click(f.page,'Lưu bản mẫu riêng'); assert.equal((await templateSaved).status(),201);
+  await click(f.page,'Lưu bản mẫu riêng'); { const templateResponse = await templateSaved; assert.equal(templateResponse.status(), 201, 'POST /api/templates status ' + templateResponse.status() + ' ' + (await templateResponse.text()).slice(0, 160)); }
   await f.page.getByTitle('Lưu các thay đổi lên máy chủ').click();
   await waitUntil(async () => { const rows = await f.db.exam.findMany({ where: { ownerId: f.ids[0] } }); return rows.some(r => r.title === 'Pilot Toán 6 tự soạn' && JSON.stringify(r.metadata).includes('PILOT Q7')); }, 'All seven questions not saved');
   const exam = await f.db.exam.findFirstOrThrow({ where: { ownerId: f.ids[0] } });
@@ -203,11 +214,13 @@ test('F3 answer views, shuffle, Word and print', { timeout: 120000 }, () => flow
   assert.ok((await presentation.innerText()).includes('26px'));
   await presentation.getByRole('button', { name: 'Hiện đáp án / lời giải', exact: true }).click();
   assert.ok((await presentation.innerText()).includes(solution));
-  await presentation.getByLabel('Chọn câu trình chiếu').selectOption('1');
+  await presentation.getByLabel('Chọn câu trình chiếu').selectOption({ label: '2' });
+  await waitUntil(async () => (await presentation.innerText()).includes('PILOT Q2'), 'Presentation select should show Q2');
   assert.ok((await presentation.innerText()).includes('PILOT Q2'));
   assert.ok(!(await presentation.innerText()).includes(solution));
   await presentation.getByRole('button', { name: 'Câu sau →', exact: true }).focus();
   await f.page.keyboard.press('ArrowRight');
+  await waitUntil(async () => (await presentation.innerText()).includes('PILOT Q3'), 'Presentation keyboard should show Q3');
   assert.ok((await presentation.innerText()).includes('PILOT Q3'));
   await f.page.keyboard.press('Escape');
   await presentation.waitFor({ state: 'detached' });
@@ -228,6 +241,18 @@ test('F3 answer views, shuffle, Word and print', { timeout: 120000 }, () => flow
   for(let i=0;i<7;i++){ const row=rows.nth(i);assert.equal(await row.locator(':scope > div').count(),2);assert.ok((await row.innerText()).includes('PILOT Q'+(i+1)));assert.ok((await row.innerText()).includes(solution)); }
   const passage = f.page.locator('[data-parallel-passage="p1"]');
   assert.equal(await passage.count(),1); assert.ok((await passage.innerText()).includes('Lan đọc sách ở thư viện.'));
+  const [parallelDownload] = await Promise.all([f.page.waitForEvent('download'), f.page.getByRole('button', { name: 'Tải file Word (.docx)', exact: true }).click()]);
+  const parallelPath = await parallelDownload.path(); assert.ok(parallelPath);
+  const parallelZip = await JSZip.loadAsync(fs.readFileSync(parallelPath));
+  const parallelXml = await parallelZip.file('word/document.xml')!.async('string');
+  assert.ok(parallelXml.includes('ĐỀ VÀ ĐÁP ÁN SONG SONG'));
+  assert.equal(parallelXml.split('Lan đọc sách ở thư viện.').length - 1, 1);
+  for (let i = 1; i <= 7; i++) {
+    const begin = parallelXml.indexOf('PILOT Q' + i);
+    const end = i < 7 ? parallelXml.indexOf('PILOT Q' + (i + 1)) : parallelXml.length;
+    const answer = parallelXml.indexOf(solution, begin);
+    assert.ok(begin >= 0 && answer > begin && answer < end);
+  }
   // The contributed fixture exercises a long shared passage across five questions.
   // It remains synthetic test content, never an approved curriculum package.
   const literary = JSON.parse(fs.readFileSync('tests/fixtures/pilot/mon2-ngu-lieu.json','utf8')) as Exam;

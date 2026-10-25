@@ -1,0 +1,20 @@
+{
+  "run": "1901bcd3-2c32-46f6-bd71-c9cb53ceb2c6",
+  "sourceSha256": "1b3b6c54d1050b9994dd0b46be8fdca007d43f450a58acd1a491d42875c21c73",
+  "buildId": "6cQQd-HR76s3wjUamv2X0",
+  "browserVersion": "155.0.8059.85",
+  "browserExecutable": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  "requestedFlow": "F2",
+  "checkedAt": "2026-10-25T05:23:13.222Z",
+  "environment": "isolatedTest localhost3117 / examcraft_test_20261022",
+  "realAiCalls": false,
+  "results": [
+    {
+      "id": "F2",
+      "status": "FAIL",
+      "durationMs": 7927,
+      "cleanupComplete": true,
+      "error": "Expected values to be strictly equal:\n\n200 !== 201\n"
+    }
+  ]
+}

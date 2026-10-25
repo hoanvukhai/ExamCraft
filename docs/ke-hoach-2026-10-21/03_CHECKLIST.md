@@ -114,10 +114,12 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
 ## S3 — Bàn soạn và trải nghiệm
 
 - [ ] **CV-023 — Soạn đủ loại câu và thành phần.**
+  - **Mức pilot25/10: đạt trong phạm vi pilot** (theo quy tắc chủ dự án duyệt 24/10; không đổi dấu hoàn thành, không thay "Đạt khi"). Kiểm tự động: F2 soạn bảy dạng, lưu, đóng, mở lại đúng nội dung; integration_s1/persistence/HTTP lưu-đọc bảy dạng. Giới hạn: AI sinh/sửa chưa kiểm chuyên môn; bàn phím/màn hình nhỏ; chưa mọi ca môn khác Toán. [Chạy 25/10](../../qa/rebuild-2026-10-25/PILOT_CLAUDE_RUN.md).
   - Đợt24/10: journal từng câu/writer, guard baseline khi Apply, giữ form/nháp và chặn Lưu đề còn câu chưa áp dụng; bảng tải/cất giữ nguồn. Build46trang/SAFE192đạt; browser đóng/mở/fresh-tab/reload/archive/hai tab đạt, DB giữ version/hash khi A stale và giữ B/ảnh/điểm0/plan. Còn toàn tiêu chí7dạng và ca khác; [QUESTION_DRAFTS_AND_MOBILE](../../qa/rebuild-2026-10-23/QUESTION_DRAFTS_AND_MOBILE.md).
   - Phạm vi: YC-08, YC-09. Nghiệm thu: NT-07, NT-08.
   - Đạt khi: Sửa lựa chọn/ý đúng-sai, thêm kiểu câu phù hợp, thứ tự/ghim; matching/ordering/fill_blank có cấu trúc đủ hoặc báo chưa hỗ trợ rõ.
 - [ ] **CV-024 — Đề, đáp án và song song.**
+  - **Mức pilot25/10: đạt trong phạm vi pilot** (theo quy tắc chủ dự án duyệt 24/10; không đổi dấu hoàn thành, không thay "Đạt khi"). Kiểm tự động: F3 chuyển Đề/Đáp án/Hướng dẫn/Song song, hai cột đủ 7 câu, ngữ liệu một lần, Word Song song hai cột; unit parallel_view và portable_and_exports; mở lại đề qua API ở F2. Giới hạn: Word dài chưa mở bằng Word thật; in nhiều trang chưa kiểm. [Chạy 25/10](../../qa/rebuild-2026-10-25/PILOT_CLAUDE_RUN.md).
   - **Hiện trạng25/10:** Song song trên màn hình giữ ngữ liệu chung; Word nay có hai cột theo từng câu, ngữ liệu xuất một lần, ảnh thu theo cột. Đã kiểm nội dung/cấu trúc DOCX tự động; chưa mở Word kiểm phân trang trực quan. Giữ mở. [Báo cáo nhóm](../../qa/rebuild-2026-10-25/EXAM_REVIEW_AND_PRESENTATION.md).
   - Phạm vi: YC-09. Nghiệm thu: NT-07, NT-08.
   - Đạt khi: Ba chế độ cùng dữ liệu; đáp án/lời giải/rubric riêng nhưng gắn version, thiếu đáp án không tự điền đúng.
@@ -126,9 +128,11 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-09, YC-13, YC-16. Nghiệm thu: NT-08, NT-15.
   - Đạt khi: Sửa dữ kiện đánh dấu cần kiểm lại, undo/redo và lưu mốc giữ liên kết; chọn lưu ngân hàng khác với lưu nháp.
 - [ ] **CV-026 — Hình, công thức, bảng và ngữ liệu.**
+  - **Mức pilot25/10: đạt trong phạm vi pilot** (theo quy tắc chủ dự án duyệt 24/10; không đổi dấu hoàn thành, không thay "Đạt khi"). Kiểm tự động: F2 ảnh và ngữ liệu có mã, F3 Word có ảnh/media, mã đề; unit/DB round-trip hình. Giới hạn: công thức/hình học phức tạp, Word thật, tệp mất liên kết. [Chạy 25/10](../../qa/rebuild-2026-10-25/PILOT_CLAUDE_RUN.md).
   - Phạm vi: YC-10. Nghiệm thu: NT-16.
   - Đạt khi: Thành phần hiển thị/biên tập có ID, mất tệp báo chỗ thiếu, ngữ liệu dùng chung không nhân bản sai; giữ mô hình hình học/môn khác.
 - [ ] **CV-027 — Mẫu trực quan và tùy chỉnh tiêu đề.**
+  - **Mức pilot25/10: đạt trong phạm vi pilot** (theo quy tắc chủ dự án duyệt 24/10; không đổi dấu hoàn thành, không thay "Đạt khi"). Kiểm tự động: F2 tên đề, đặt/ lưu mẫu riêng; header_layout, exam_template và HTTP templates. Giới hạn: mẫu hệ thống/nguồn chưa duyệt, Word dài. [Chạy 25/10](../../qa/rebuild-2026-10-25/PILOT_CLAUDE_RUN.md).
   - Đợt tiêu đề23/10: patch trường đã sửa/guard nền giữ scope/plan; dòng in ID/vị trí/căn/ẩn/ghi đè/rỗng dùng chung A4/Word. Build45trang/SAFE173/HTTP16đạt; UI hai tab giữ plan/tên mới khi Apply header, cùng trường đổi thì giữ nháp/chặn ghi, DBversion/hash không đổi. Reload giữ layout/ảnh/điểm0, ca A4ngắn không thấy tràn. Còn Word dài/mẫu cá nhân và nghiệm thu toàn tiêu chí; [HEADER_LAYOUT](../../qa/rebuild-2026-10-23/HEADER_LAYOUT.md).
   - Phạm vi: YC-12. Nghiệm thu: NT-14, NT-18.
   - Đạt khi: Sửa trường/năm/tên đề/phần, thêm/ẩn dòng, căn chỉnh và lưu mẫu; để trống không sinh trường giả; dữ liệu thời gian/điểm thống nhất.
@@ -191,10 +195,12 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-11, YC-25. Nghiệm thu: NT-16, NT-26.
   - Đạt khi: Ghi nguồn/trang/câu, dedup không xóa nhầm biến thể; tài liệu không rõ quyền ở kho riêng, không tự đưa vào kho chung.
 - [ ] **CV-042 — Trộn câu, lựa chọn và nhóm ngữ liệu.**
+  - **Mức pilot25/10: đạt trong phạm vi pilot** (theo quy tắc chủ dự án duyệt 24/10; không đổi dấu hoàn thành, không thay "Đạt khi"). Kiểm tự động: F3 trộn 4 mã, tải 4 tệp Word đủ 7 câu/ảnh; unit answer_review_and_shuffle. Giới hạn: tái lập theo seed và nhóm ngữ liệu nhiều mã chưa kiểm trên giao diện. [Chạy 25/10](../../qa/rebuild-2026-10-25/PILOT_CLAUDE_RUN.md).
   - **Hiện trạng24/10:** Browser trộn và tải đủ các mã, đối chiếu Word có đủ câu/ảnh; giữ helper ghim/seed và dữ liệu gốc đã kiểm trước. Chưa đầy đủ nhóm ngữ liệu/seed qua UI và mọi tổ hợp; giữ mở. [PILOT_E2E](../../qa/rebuild-2026-10-24/PILOT_E2E.md).
   - Phạm vi: YC-17. Nghiệm thu: NT-17.
   - Đạt khi: Seed tái lập, ghim và mọi loại câu giữ đủ; ID đáp án đúng sau đảo; không thay chữ cái bằng regex làm hỏng lời giải.
 - [ ] **CV-043 — Xuất Word và công thức/hình.**
+  - **Mức pilot25/10: đạt trong phạm vi pilot** (theo quy tắc chủ dự án duyệt 24/10; không đổi dấu hoàn thành, không thay "Đạt khi"). Kiểm tự động: F3 Word bàn soạn, 4 mã và Song song (ZIP/XML/media); unit portable_and_exports. Giới hạn: chưa mở trực quan bằng Microsoft Word, công thức/tài liệu dài. [Chạy 25/10](../../qa/rebuild-2026-10-25/PILOT_CLAUDE_RUN.md).
   - **Hiện trạng25/10:** Word Song song đã xuất hai cột, giữ thứ tự câu/đáp án và ngữ liệu chung một lần; thu ảnh đúng tỷ lệ, ngữ liệu toán dùng công thức Word. Kiểm ZIP/XML đạt; chưa kiểm trực quan Word dài, phân trang hoặc bản in. Giữ các bằng chứng xuất/trộn trước; CV mở. [Báo cáo nhóm](../../qa/rebuild-2026-10-25/EXAM_REVIEW_AND_PRESENTATION.md).
   - Phạm vi: YC-12, YC-18. Nghiệm thu: NT-18.
   - Đạt khi: Tài liệu mở sửa được, đủ câu/hình/điểm/nguồn hiển thị, fallback có nhãn; kiểm công thức và ngắt trang trực quan.
@@ -240,6 +246,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
 ## S7 — Giao bài, làm và chấm
 
 - [ ] **CV-054 — Cấu hình bài giao và snapshot.**
+  - **Mức pilot25/10: đạt trong phạm vi pilot** (theo quy tắc chủ dự án duyệt 24/10; không đổi dấu hoàn thành, không thay "Đạt khi"). Kiểm tự động: F5 giao có/không lớp, đặt giờ/lượt/mã/trộn rồi đối chiếu DB; HTTP assignment options; snapshot bất biến. Giới hạn: chưa giao diện sửa sau khi giao; PIN thực của học sinh mới ở HTTP. [Chạy 25/10](../../qa/rebuild-2026-10-25/PILOT_CLAUDE_RUN.md).
   - **Hiện trạng24/10:** Đã tích hợp tùy chọn giao bài nâng cao của Claude; browser giao có/không lớp, đặt thời gian/lượt/mã/trộn, đối chiếu bản lưu; API kiểm giá trị sai và account pin. Giữ snapshot và kiểm quyền trước. Chưa mọi enum/chính sách/tệp, UI xem lại giờ đã giao; giữ mở. [PILOT_E2E](../../qa/rebuild-2026-10-24/PILOT_E2E.md).
   - Phạm vi: YC-20. Nghiệm thu: NT-21.
   - Đạt khi: Enum/API/import thống nhất, nhóm tùy chọn đúng nhận diện; snapshot đủ câu/đáp án/tệp/điểm/mẫu và bất biến.
@@ -247,6 +254,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-20, YC-21. Nghiệm thu: NT-21, NT-22.
   - Đạt khi: FREE_NAME/danh sách/mã có kiểm server, membership và PIN nếu bật; người biết ID không được đọc/sửa/nộp bài khác.
 - [ ] **CV-056 — Thời gian, số lượt và cạnh tranh start.**
+  - **Mức pilot25/10: đạt trong phạm vi pilot** (theo quy tắc chủ dự án duyệt 24/10; không đổi dấu hoàn thành, không thay "Đạt khi"). Kiểm tự động: F5 chờ qua giờ đóng thật rồi học sinh bị từ chối, không tạo lượt; HTTP times/attempts. Giới hạn: chưa kiểm start đồng thời nhiều máy, dung sai nộp bài ở giao diện. [Chạy 25/10](../../qa/rebuild-2026-10-25/PILOT_CLAUDE_RUN.md).
   - **Hiện trạng24/10:** Giữ HTTP/PG start đồng thời/cookie khác/grace đã kiểm. Bổ sung UI đặt giờ đóng và chờ đồng hồ thật: vào sau hạn bị từ chối, không tạo lượt. API kiểm thời gian/số lượt/mã/PIN đạt; tương thích mã legacy đã gửi Claude, gia hạn/mở lại/hai browser vẫn mở. [PILOT_E2E](../../qa/rebuild-2026-10-24/PILOT_E2E.md).
   - Phạm vi: YC-20, YC-21. Nghiệm thu: NT-22.
   - Đạt khi: Kiểm opensAt/closesAt/deadline/status, lượt hết hạn xử lý rõ; start đồng thời không tạo trùng hoặc lỗi unique vô nghĩa.
@@ -255,6 +263,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-21. Nghiệm thu: NT-04, NT-23.
   - Đạt khi: Method/body chuẩn, kiểm res.ok, trạng thái mạng; reload lấy đúng nháp, không ghi đè câu mới bởi request chậm.
 - [ ] **CV-058 — Giao diện làm bài đủ dạng.**
+  - **Mức pilot25/10: đạt trong phạm vi pilot** (theo quy tắc chủ dự án duyệt 24/10; không đổi dấu hoàn thành, không thay "Đạt khi"). Kiểm tự động: F6 làm đủ bảy dạng, tải lại làm tiếp, nộp, không thấy đáp án trước chính sách; public_access/structured_grading. Giới hạn: bàn phím/màn hình nhỏ, âm thanh, hình nâng cao. [Chạy 25/10](../../qa/rebuild-2026-10-25/PILOT_CLAUDE_RUN.md).
   - Phạm vi: YC-10, YC-21. Nghiệm thu: NT-16, NT-23.
   - Đạt khi: Tự luận có ô trả lời, đúng-sai/điền/ghép/sắp xếp dùng được, tệp/hình/âm thanh theo đề; cuộn/keyboard/mobile đúng.
 - [ ] **CV-059 — Chấm server và nộp lặp an toàn.**
@@ -266,6 +275,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-22. Nghiệm thu: NT-24, NT-25.
   - Đạt khi: Tự luận pending, chỉnh rubric/điểm có lịch sử, regrade có phạm vi/phiên bản; bài cũ không đổi ngầm khi sửa ngân hàng.
 - [ ] **CV-061 — Theo dõi, phản hồi và bảng điểm.**
+  - **Mức pilot25/10: đạt trong phạm vi pilot** (theo quy tắc chủ dự án duyệt 24/10; không đổi dấu hoàn thành, không thay "Đạt khi"). Kiểm tự động: F7 xem bài, chấm tự luận, CSV có tổng và nhận xét; HTTP workflows CSV. Giới hạn: gia hạn/mở lại bài, nhiều chính sách nhận xét. [Chạy 25/10](../../qa/rebuild-2026-10-25/PILOT_CLAUDE_RUN.md).
   - **Hiện trạng25/10:** Bổ sung nhận xét từng câu vào CSV bài có điểm, giữ cột điểm cũ; bài không số vẫn giữ đánh giá/nhận xét, không tạo điểm giả. Có kiểm chống công thức CSV, dấu phẩy/ngoặc kép/xuống dòng và quyền xuất. Chưa toàn UI bài không số, gia hạn/mở lại hoặc mọi chính sách; giữ mở. [Báo cáo đợt](../../qa/rebuild-2026-10-25/BATCH_SUMMARY.md).
   - Phạm vi: YC-20, YC-22. Nghiệm thu: NT-25.
   - Đạt khi: Danh sách bài/lượt, progress, gia hạn/mở lại có quyền, thống kê/CSV; leaderboard tùy chọn mặc định tắt và không lộ toàn lớp.

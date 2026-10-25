@@ -1,0 +1,20 @@
+{
+  "run": "b188dc00-c511-4e82-b50c-df6e62f4cd2d",
+  "sourceSha256": "784a6988eab745eef1edc1142d088d69db8fe9ec86c4344a38d17cd942bcb1cc",
+  "buildId": "edFk-KPaIc9gE5V-q-3Sz",
+  "browserVersion": "155.0.8059.85",
+  "browserExecutable": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  "requestedFlow": "F3",
+  "checkedAt": "2026-10-25T05:08:21.502Z",
+  "environment": "isolatedTest localhost3117 / examcraft_test_20261022",
+  "realAiCalls": false,
+  "results": [
+    {
+      "id": "F3",
+      "status": "FAIL",
+      "durationMs": 24899,
+      "cleanupComplete": true,
+      "error": "Presentation select should show Q2"
+    }
+  ]
+}
