@@ -127,3 +127,6 @@ Chạy cuối: HTTP 99/99 ([log](http-claude-run28.log)); SAFE 425/425 và trìn
 - **CV036 đóng**; **CV034** thêm bằng chứng nhưng giữ mở (sinh từng ô riêng và chất lượng nội dung chưa kiểm).
 - **CV053** (AI trong phiên cộng tác): route Copilot nhận đề từ trình duyệt; phần so phiên bản trước khi áp dụng là logic phía trình duyệt, đã có test đơn vị, chưa có kiểm thêm.
 - Gemini generation 14 nhận cả bốn việc; kịch bản kiểm tay toàn dự án (48 nhãn, 0 lệch) đã sẵn cho chủ dự án.
+
+## Bổ sung 26/10: CV074 (CI)
+`npm run ci` chạy đầy đủ đạt cả 6 bước trong 331 giây ([log](ci-full-run1.log)). Chứng minh "fail thật": với một server giả chiếm cổng 3117, CI dừng ngay sau hai bước đầu và thoát mã 1 ([log](ci-failure-demo.log)). Lint chưa nằm trong CI cho tới khi Codex dọn xong lỗi cũ (CDX-R1).

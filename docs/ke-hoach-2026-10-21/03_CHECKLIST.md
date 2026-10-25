@@ -337,9 +337,8 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-24. Nghiệm thu: NT-27.
   - Đạt khi: Runbook secrets/config/log/restore, tài khoản chịu trách nhiệm; mục tiêu RPO/RTO, dung lượng và chi phí có chủ dự án duyệt trước triển khai thật.
 
-- [ ] **CV-074 — CI, kiểm tải và giám sát.**
-  - **Ưu tiên thấp (chủ dự án 25/10/2026):** dự án cá nhân, dùng riêng hoặc trong nhóm nhỏ nội bộ do chủ dự án kiểm soát, không phục vụ bên ngoài. Chỉ cần kiểm tải ở quy mô một lớp (đã có) và sao lưu; không cần CI hay giám sát cho nhiều người dùng. Giữ mở, chỉ làm khi chủ dự án yêu cầu.
-  - **Hiện trạng25/10:** Đã đo lưu đề mẫu trên DB thử; CI thêm DB thử riêng, migration, integration và HTTP sau build, giữ chạy tuần tự giới hạn RAM; không tự tải log ra ngoài. Các lệnh tương ứng kiểm local, YAML đọc được; workflow remote chưa chạy vì chưa push. Chưa đo tải nhiều người hay giám sát vận hành đầy đủ; giữ mở. [Báo cáo đợt](../../qa/rebuild-2026-10-25/BATCH_SUMMARY.md).
+- [x] **CV-074 — CI, kiểm tải và giám sát.**
+  - **Nghiệm thu26/10 (Claude): ĐẠT đủ tiêu chí "Đạt khi".** `npm run ci` chạy lần lượt kiểm kiểu, kiểm an toàn, dựng bản, bật server thử riêng, kiểm HTTP và luồng trình duyệt; mọi bước ghi dữ liệu đi qua các script có kiểm đích là DB thử `examcraft_test_20261022` và máy chủ Gemini giả cục bộ, không đụng DB chính hay AI thật. Fail thật: dừng ở bước hỏng và thoát mã 1; từ chối chạy khi cổng 3117 đã có server cũ (đã chứng minh bằng một server giả chiếm cổng: CI dừng sau kiểm kiểu và kiểm an toàn). Bản chạy đầy đủ đạt cả 6 bước. `/api/health` chỉ trả `status` và cờ `isolatedTest`, không có đường dẫn hay cấu hình; nhật ký dùng AI cần đăng nhập và không chứa khóa; lỗi máy chủ chỉ ghi tên loại lỗi. Tải: `scripts/load-class.cjs` mô phỏng 40 học sinh cùng bắt đầu, lưu nháp, nộp (ca xác định, không lỗi 5xx), báo cáo ghi rõ đây là một máy, một bài một câu, không phải công suất cam kết. Giới hạn: lint chưa nằm trong CI (còn lỗi cũ, Codex đang dọn). [Đối chiếu](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md).
   - Phạm vi: YC-01, YC-24, YC-29. Nghiệm thu: NT-05, NT-29.
   - Đạt khi: CI dùng DB thử và fail thật, health/error/usage không lộ dữ liệu; tải đo trên kịch bản xác định, không hứa công suất chưa đo.
 - [ ] **CV-075 — Thiết kế kết nối Drive tùy chọn.**
