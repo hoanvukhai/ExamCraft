@@ -174,3 +174,5 @@ Thêm `src/lib/markdown-table.ts` (tách bảng, bỏ qua `|` trong công thức
 
 ## Bổ sung 26/10: nhận Codex generation 17
 T1, T2 nhận; T3 nhận có giới hạn. CI độc lập của Claude trên HEAD: kiểu, lint, SAFE 457/457, build, HTTP đạt; trình duyệt 22/23 do F14 rớt vì test bấm đổi tên khi trình soạn thảo chưa sẵn sàng (cùng nguyên nhân F11, sửa ở test; F14 đạt 3/3 riêng). Cần một lượt CI đầy đủ cuối cùng trước tổng nghiệm thu.
+
+- CI độc lập cuối 26/10 trên HEAD c30e7bc: kiểu, lint, SAFE 457, build, HTTP, trình duyệt 23/23 đạt trong cùng một lượt (log ci-claude-final.log, không vào Git).
