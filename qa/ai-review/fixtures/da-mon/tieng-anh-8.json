@@ -1,0 +1,98 @@
+{
+  "id": "exam_fixture_tieng_anh_8",
+  "metadata": {
+    "title": "English 8 Mid-term Examination (Pilot Fixture)",
+    "schoolName": "Chu Van An Secondary School",
+    "departmentName": "Foreign Languages Department",
+    "subject": "tieng_anh",
+    "grade": 8,
+    "durationMinutes": 60,
+    "academicYear": "2026-2027",
+    "semester": "Học kỳ 1",
+    "notes": "Students are not allowed to use any dictionaries or reference materials."
+  },
+  "passages": [
+    {
+      "id": "pas_en8_01",
+      "title": "Reading Passage: Life in the Countryside",
+      "content": "Life in the countryside has changed significantly over the past decades thanks to modern technology and rural development programs. In the past, farmers had to work hard manually from dawn till dusk without the help of modern machinery. Today, tractors and automated harvesting machines have made farm work much easier and more productive. Furthermore, high-speed Internet connectivity enables young villagers to access online educational resources, work remotely, and connect with friends across the country. Despite these advancements, rural areas continue to preserve their peaceful atmosphere, clean air, and close-knit community spirit. Neighbors always know one another and are willing to lend a helping hand during harvest seasons or festive celebrations.",
+      "source": "Adapted from English 8 Reading Comprehension Materials"
+    }
+  ],
+  "sections": [
+    {
+      "id": "sec_en8_reading",
+      "name": "PART I. READING COMPREHENSION",
+      "title": "Reading Comprehension and Vocabulary"
+    },
+    {
+      "id": "sec_en8_language",
+      "name": "PART II. LANGUAGE FOCUS AND MATCHING",
+      "title": "Grammar, Fill-in-blank and Sentence Matching"
+    }
+  ],
+  "questions": [
+    {
+      "id": "q_en8_01",
+      "sectionId": "sec_en8_reading",
+      "passageId": "pas_en8_01",
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "What is the main topic of the passage?",
+      "choices": [
+        { "key": "A", "text": "The changes and preserved values in modern countryside life" },
+        { "key": "B", "text": "The disadvantages of using modern tractors in farming" },
+        { "key": "C", "text": "Why young people in villages refuse to use the Internet" },
+        { "key": "D", "text": "The environmental problems caused by urbanization" }
+      ],
+      "correct_answer": "A",
+      "points": 2.0,
+      "step_by_step_solution": "The passage outlines how rural life has changed positively with technology while maintaining its peaceful atmosphere and communal values."
+    },
+    {
+      "id": "q_en8_02",
+      "sectionId": "sec_en8_reading",
+      "passageId": "pas_en8_01",
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "According to the passage, what has made farm work much easier and more productive?",
+      "choices": [
+        { "key": "A", "text": "Tractors and automated harvesting machines" },
+        { "key": "B", "text": "Working manually from dawn till dusk" },
+        { "key": "C", "text": "Moving to large industrial cities" },
+        { "key": "D", "text": "Limiting Internet access among villagers" }
+      ],
+      "correct_answer": "A",
+      "points": 2.0,
+      "step_by_step_solution": "Sentence 3 explicitly mentions: 'Today, tractors and automated harvesting machines have made farm work much easier and more productive.'"
+    },
+    {
+      "id": "q_en8_03",
+      "sectionId": "sec_en8_language",
+      "type": "fill_blank",
+      "difficulty": "van_dung",
+      "content": "Fill in the blank with the correct form of the word in brackets: 'Living in a peaceful village is more ________ than living in a crowded metropolis.' [PEACE]",
+      "correct_answer": "peaceful",
+      "accepted_answers": ["peaceful", "PEACEFUL", "Peaceful"],
+      "points": 2.5,
+      "step_by_step_solution": "The comparative form 'more ... than' requires the adjective 'peaceful' derived from the noun 'peace'."
+    },
+    {
+      "id": "q_en8_04",
+      "sectionId": "sec_en8_language",
+      "type": "matching",
+      "difficulty": "thong_hieu",
+      "content": "Match each beginning in Column A with its appropriate ending in Column B to make meaningful sentences:",
+      "matchingPairs": [
+        { "id": "m1", "left": "Although the village is far from the city center,", "right": "it has convenient bus routes and high-speed Internet." },
+        { "id": "m2", "left": "If you visit my hometown in the autumn,", "right": "you can enjoy the sweet fragrance of ripe golden rice fields." },
+        { "id": "m3", "left": "Local farmers use solar-powered dryers", "right": "in order to preserve their agricultural products efficiently." }
+      ],
+      "points": 3.5,
+      "step_by_step_solution": "Pair 1 combines a concession clause (Although...) with a surprising contrast. Pair 2 is a Type 1 conditional sentence. Pair 3 expresses purpose using 'in order to'."
+    }
+  ],
+  "createdAt": "2026-10-25T07:45:00.000Z",
+  "updatedAt": "2026-10-25T07:45:00.000Z",
+  "version": 1
+}

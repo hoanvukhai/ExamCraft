@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "updated_at_utc": "2026-10-25T10:00:00.000Z",
+  "updated_at_utc": "2026-10-25T13:00:00.000Z",
   "writer": "CLAUDE",
   "purpose": "Delivery review gates, not product checklist or proof of runtime completion",
   "batches": [
@@ -364,6 +364,80 @@
           ],
           "review_note": "Bảng vế tiêu chí dùng được để định hướng, nhưng 24 tên ca test trích cho CV050/055/057/059/062 không tồn tại trong tests (mô tả tự đặt). Claude tự kiểm lại bằng tên ca thật: đóng 050/055/057/059/062 (055 và 059 sau khi thêm http_student_identity, 059 sửa lỗi 503 khi nộp đồng thời; 062 thêm ca link cũ). Giữ mở 010, 011, 047, 048, 049, 060. Quy tắc: kết luận ĐỦ chỉ nhận khi trích đúng tên ca và tìm thấy trong mã. Xem CV_CLOSURE_REVIEW.",
           "reviewed_at_utc": "2026-10-25T10:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "task_id": "CODEX-NEXT",
+      "assignment_generation": 14,
+      "items": [
+        {
+          "id": "CDX-Q1",
+          "decision": "ACCEPTED",
+          "submission_ref": [
+            "c4c7a38"
+          ],
+          "review_note": "Nguyên nhân thật: form câu bị gắn lại khi tạo đề lần đầu nhận ACK nên mất nội dung đang nhập; sửa bằng khóa phiên mở đề và chuyển nháp câu sang ID đã lưu. Duyệt mã, F2 lặp 5 lần đạt, và các lần chạy sau của Claude đạt.",
+          "reviewed_at_utc": "2026-10-25T13:00:00.000Z"
+        },
+        {
+          "id": "CDX-Q2",
+          "decision": "ACCEPTED",
+          "submission_ref": [
+            "c1aa21e"
+          ],
+          "review_note": "Bắt được lỗi 503 khi nộp bài đồng thời (7/40) mà Claude bỏ sót; đổi nộp bài sang ReadCommitted có khóa dòng lượt. Tải 40 học sinh không lỗi 5xx. Giới hạn: một máy, bài một câu.",
+          "reviewed_at_utc": "2026-10-25T13:00:00.000Z"
+        },
+        {
+          "id": "CDX-Q3",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "submission_ref": [
+            "71c8ed7",
+            "8205107"
+          ],
+          "review_note": "Phần 054 và 056 nhận. 058 đã được Claude kiểm bằng F13 (màn hình nhỏ). Chưa làm 061, 023, 024, 026, 027, 042, 043. Codex hết token giữa chừng; Claude làm thay Q5 và Q11.",
+          "reviewed_at_utc": "2026-10-25T13:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "task_id": "GEMINI-NEXT",
+      "assignment_generation": 9,
+      "items": [
+        {
+          "id": "GEM-Q1",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "submission_ref": [
+            "docs/huong-dan/HUONG_DAN_GIAO_VIEN_DAY_DU.md"
+          ],
+          "review_note": "Nhãn nút khớp mã (62 cụm, chỉ tiêu đề bảng không có trong mã). Tuyên bố 100% trong tin bàn giao là quá lời đối với hướng dẫn học sinh (xem GEM-Q6).",
+          "reviewed_at_utc": "2026-10-25T13:00:00.000Z"
+        },
+        {
+          "id": "GEM-Q2",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "submission_ref": [
+            "docs/huong-dan/THE_KIEM_TAY_PILOT_2.md"
+          ],
+          "review_note": "Dùng được. Lưu ý: số hiệu F13–F16 của thẻ tay trùng tên với luồng tự động F13 (màn hình nhỏ) nhưng khác nội dung; phân biệt bằng tên thẻ.",
+          "reviewed_at_utc": "2026-10-25T13:00:00.000Z"
+        },
+        {
+          "id": "GEM-Q3",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "submission_ref": [
+            "qa/ai-review/fixtures/da-mon"
+          ],
+          "review_note": "Sáu đề nạp được và tự chấm đúng (test fixture_da_mon). Giới hạn: mỗi đề chỉ 3–4 câu, yêu cầu là 10–20 câu; thiếu dạng đủ bảy loại.",
+          "reviewed_at_utc": "2026-10-25T13:00:00.000Z"
+        },
+        {
+          "id": "GEM-Q4..Q10",
+          "decision": "CHANGES_REQUESTED",
+          "submission_ref": [],
+          "review_note": "Gemini làm các việc khác với tin giao (phiếu ma trận, 30 lỗi Word, sổ tay học sinh, chương trình 3 môn mới, so sánh 5 dịch vụ AI, kịch bản diễn tập, tổng kết). Không nhận so sánh dịch vụ AI vì ngoài phạm vi. Các việc được giao nhưng chưa làm: rà chữ giao diện và màn hình nhỏ, rà tài liệu, bản mời giáo viên thử, nháp thiết kế Drive, câu hỏi cho chủ dự án, bảng ca thử chấm lại. Giao lại ở tin mới.",
+          "reviewed_at_utc": "2026-10-25T13:00:00.000Z"
         }
       ]
     }

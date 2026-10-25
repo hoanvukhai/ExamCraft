@@ -44,3 +44,10 @@ Trong đề xuất quyết định tôi nói bình luận và quyền công bố
 - F2 (soạn đề) từng hỏng 2 trong 4 lần chạy ở bước tìm ô "Điểm câu" rồi đạt khi chạy lại; chưa tìm nguyên nhân, nghi tranh thời gian giao diện. Lần chạy cuối đạt.
 - Một lần chạy HTTP trước khi sửa khóa có 503 ở bước bắt đầu làm bài; sau sửa không tái hiện.
 - Chấm lại chỉ cho 3 dạng câu tự chấm; các dạng khác phải chấm tay. Link chia sẻ tạo trước 25/10 vẫn theo đề đang sửa.
+
+## Bổ sung chiều 25/10: duyệt Codex và Gemini, Claude làm thay Codex
+- **Codex (Q1, Q2, Q3 một phần):** nhận Q1 (lỗi form câu mất khi tạo đề lần đầu), Q2 (lỗi 503 khi nộp bài đồng thời, đã đổi sang ReadCommitted có khóa dòng lượt), Q3 cho CV054 và CV056. Ghi chi tiết ở [LOAD_CLASS.md](LOAD_CLASS.md), [Q1_EDITOR_ACK.md](Q1_EDITOR_ACK.md), [PILOT_SCOPE_CLOSURE.md](PILOT_SCOPE_CLOSURE.md).
+- **Gemini (generation 9):** Q1–Q3 nhận có giới hạn; Q4–Q10 làm khác với tin giao nên giao lại (xem BATCH_REVIEWS.json). Bảng nhãn nút của hướng dẫn giáo viên khớp mã; hướng dẫn học sinh có vài nhãn lệch. Sáu đề mẫu chỉ 3–4 câu mỗi đề (yêu cầu 10–20) nhưng nạp được và tự chấm đúng.
+- **Claude làm thay:** F13 (màn hình nhỏ 375px) phát hiện nút ĐÚNG/SAI thấp hơn 40px, đã sửa; ghi chú phiên bản ở hộp chia sẻ; test fixture đa môn.
+- **Chạy cuối:** build đạt, SAFE 353/353 ([log](safe-claude-run4.log)), HTTP 60/60 ([log](http-claude-run14.log)), trình duyệt 12/12 gồm F13 ([log](pilot-claude-run10.log)).
+- **Chưa làm của Codex:** CV061, 023, 024, 026, 027, 042, 043 (Q3), Q4, Q6–Q10, Q12 và ca trình duyệt hai người cùng sửa. Các CV mức pilot vẫn chưa đóng đủ.

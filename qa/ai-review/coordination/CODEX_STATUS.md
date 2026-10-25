@@ -1,16 +1,14 @@
 # CODEX status
 
-task_id: SOLO-EXAM-REVIEW-PRESENTATION-WORD
-assignment_generation: solo-2026-10-25
-state: NEEDS_RESUME (kiểm browser chờ Docker/DB thử sẵn sàng; không chờ Claude/Gemini)
-updated_at_utc: 2026-10-25T04:51:17.272Z
+task_id: CODEX-NEXT / CDX-Q3
+assignment_generation: 14
+state: WORKING
+updated_at_utc: 2026-10-25T07:43:21.518Z
 branch/worktree: rebuild/2026-10-local, F:/Workspace/Zazz/ExamCraft
-commit mã/tests gần nhất: 23e9eb5
+commit gần nhất: c1aa21e (Q2), c4c7a38 (Q1)
 
-Đã làm: rà soát cấu trúc toàn đề; chọn câu/cỡ chữ trình chiếu; nút ngân hàng giữ bản sao riêng/chặn gửi lặp và sửa dở; Word Song song hai cột, ảnh vừa cột và công thức ngữ liệu.
+Q1 bàn giao chờ Claude duyệt: lỗi thật remount form khi ACK tạo đề; sửa giữ phiên form và journal hiện có, bảo toàn owner/target mới. Bằng chứng và số liệu chỉ qa/rebuild-2026-10-25/Q1_EDITOR_ACK.md, q1-evidence.json.
 
-Kiểm: SAFE và build tích hợp đạt. Chi tiết/log/số liệu chỉ ở qa/rebuild-2026-10-25/EXAM_REVIEW_AND_PRESENTATION.md. Browser F3 bị chặn trước kiểm bởi DB5436 không chạy. Docker Desktop đã mở nhưng engine/DB chưa sẵn sàng, đã hỏi chủ dự án. QA3117 đã dừng. Chưa kiểm trực quan Word dài. Lint mã mới đạt; tệp cũ có lỗi lint kế thừa, không báo toàn repo sạch.
+Q2 đã bàn giao chờ Claude duyệt; bằng chứng LOAD_CLASS.md. Đang làm Q3 từ CV054/056/058/061. Q2 đã kiểm: tải40học sinh cùng bắt đầu/nháp/nộp, đo lỗi/độ trễ/retry. QA3117 đang do Codex chạy bằng scripts/test-server.cjs, chỉ DB thử. Không provider/migration/DB chính.
 
-Bước kế: xác nhận Docker Engine và container PostgreSQL; giữ DB chính, chỉ guard DB thử rồi chạy F3 mở rộng và kiểm nút ngân hàng. Sau đó tiếp publication/regrade theo thiết kế và bảo toàn/rollback, không thêm journal trái đóng băng. Không lặp lại các tính năng đã xong, không suy hoàn thành từ test.
-
-Tệp giữ: mã đã commit; hồ sơ/bằng chứng cùng nhóm. Giữ tmp/backups/worktrees. Không schema mới, provider thật, push/reset/clean.
+Bước kế Q3..Q12 theo tin Claude generation14, không đóng CV và không sửa hồ sơ chung. Giữ log/ảnh có sẵn của các AI khác; chưa xử lý Q12.

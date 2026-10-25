@@ -1,0 +1,101 @@
+{
+  "id": "exam_fixture_khtn_6",
+  "metadata": {
+    "title": "Đề kiểm tra định kỳ Khoa học tự nhiên 6 (Bộ fixture kiểm thử)",
+    "schoolName": "Trường THCS Lê Quý Đôn",
+    "departmentName": "Tổ Khoa học Tự nhiên",
+    "subject": "khtn",
+    "grade": 6,
+    "durationMinutes": 60,
+    "academicYear": "2026-2027",
+    "semester": "Học kỳ 1",
+    "notes": "Đề thi tích hợp Vật lý, Hóa học và Sinh học theo Chương trình GDPT 2018."
+  },
+  "sections": [
+    {
+      "id": "sec_khtn6_phan1",
+      "name": "PHẦN I. TRẮC NGHIỆM KHÁCH QUAN (4.0 điểm)",
+      "title": "Câu trắc nghiệm 4 lựa chọn"
+    },
+    {
+      "id": "sec_khtn6_phan2",
+      "name": "PHẦN II. ĐÚNG / SAI VÀ PHÂN TÍCH BẢNG SỐ LIỆU (6.0 điểm)",
+      "title": "Câu hỏi Đúng/Sai và xử lý dữ liệu thực nghiệm"
+    }
+  ],
+  "questions": [
+    {
+      "id": "q_khtn6_01",
+      "sectionId": "sec_khtn6_phan1",
+      "subBranch": "physics",
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Trong Hệ đơn vị đo lường quốc tế (SI), đơn vị chuẩn dùng để đo khối lượng và nhiệt độ lần lượt là gì?",
+      "choices": [
+        { "key": "A", "text": "Kilôgam ($\\text{kg}$) và Kelvin ($\\text{K}$) / Độ Celsius ($^\\circ\\text{C}$)" },
+        { "key": "B", "text": "Gam ($\\text{g}$) và Độ Fahrenheit ($^\\circ\\text{F}$)" },
+        { "key": "C", "text": "Tấn ($\\text{t}$) và Độ Celsius ($^\\circ\\text{C}$)" },
+        { "key": "D", "text": "Miligam ($\\text{mg}$) và Jun ($\\text{J}$)" }
+      ],
+      "correct_answer": "A",
+      "points": 2.0,
+      "step_by_step_solution": "Theo quy chuẩn đo lường GDPT 2018 KHTN 6, đơn vị đo khối lượng chính thức trong hệ SI là kilôgam ($\\text{kg}$); đơn vị đo nhiệt độ thường dùng trong đời sống thực tế là độ Celsius ($^\\circ\\text{C}$) và nhiệt độ nhiệt động học là Kelvin ($\\text{K}$)."
+    },
+    {
+      "id": "q_khtn6_02",
+      "sectionId": "sec_khtn6_phan1",
+      "subBranch": "chemistry",
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Khí oxygen chiếm khoảng $21\\%$ thể tích không khí, có công thức hóa học là $\\text{O}_2$. Hiện tượng nào sau đây thể hiện tính chất duy trì sự cháy của khí oxygen?",
+      "choices": [
+        { "key": "A", "text": "Tàn đóm đỏ bùng cháy sáng trở lại khi đưa vào bình chứa khí $\\text{O}_2$" },
+        { "key": "B", "text": "Nước đá tan chảy thành nước lỏng $\\text{H}_2\\text{O}$ ở nhiệt độ phòng" },
+        { "key": "C", "text": "Khí carbon dioxide $\\text{CO}_2$ làm đục nước vôi trong" },
+        { "key": "D", "text": "Hòa tan đường kính vào nước nóng tạo thành dung dịch đồng nhất" }
+      ],
+      "correct_answer": "A",
+      "points": 2.0,
+      "step_by_step_solution": "Khí oxygen ($\\text{O}_2$) duy trì sự sống và sự cháy. Dấu hiệu nhận biết là làm que đóm còn tàn đỏ bùng cháy mãnh liệt thành ngọn lửa."
+    },
+    {
+      "id": "q_khtn6_03",
+      "sectionId": "sec_khtn6_phan2",
+      "subBranch": "biology",
+      "type": "true_false_group",
+      "difficulty": "van_dung",
+      "content": "Một nhóm học sinh lớp 6 tiến hành thí nghiệm đo sự thoát hơi nước của cây trồng ở các điều kiện nhiệt độ môi trường khác nhau. Bảng số liệu ghi nhận được như sau:\n\n| Lần đo | Nhiệt độ môi trường ($^\\circ\\text{C}$) | Lượng nước thoát ra sau $2\\text{ h}$ ($\\text{mL}$) | Nhận xét trạng thái lá |\n|:---:|:---:|:---:|:---:|\n| 1 | $20^\\circ\\text{C}$ | $15\\text{ mL}$ | Lá tươi, bình thường |\n| 2 | $28^\\circ\\text{C}$ | $35\\text{ mL}$ | Lá tươi, khí khổng mở rộng |\n| 3 | $38^\\circ\\text{C}$ | $10\\text{ mL}$ | Lá hơi héo, khí khổng đóng lại |\n\nHãy xác định tính Đúng hoặc Sai của mỗi nhận định sau:",
+      "sub_questions": [
+        {
+          "key": "a",
+          "content": "Từ $20^\\circ\\text{C}$ đến $28^\\circ\\text{C}$, tốc độ thoát hơi nước của lá cây tăng lên rõ rệt.",
+          "isCorrect": true,
+          "explanation": "Từ bảng số liệu: lượng nước thoát ra tăng từ 15 mL lên 35 mL."
+        },
+        {
+          "key": "b",
+          "content": "Ở nhiệt độ quá cao ($38^\\circ\\text{C}$), cây thoát hơi nước nhiều hơn bất kỳ mức nhiệt độ nào khác.",
+          "isCorrect": false,
+          "explanation": "Ở 38°C cây chỉ thoát 10 mL do cơ chế tự vệ đóng khí khổng chống mất nước."
+        },
+        {
+          "key": "c",
+          "content": "Hiện tượng khí khổng đóng lại ở $38^\\circ\\text{C}$ giúp bảo vệ cây khỏi nguy cơ mất nước nghiêm trọng.",
+          "isCorrect": true,
+          "explanation": "Đây là phản xạ sinh lý thích nghi của thực vật nhằm hạn chế thoát hơi nước khi nắng gắt."
+        },
+        {
+          "key": "d",
+          "content": "Nhiệt độ môi trường hoàn toàn không ảnh hưởng đến hoạt động quang hợp và thoát hơi nước của thực vật.",
+          "isCorrect": false,
+          "explanation": "Nhiệt độ là yếu tố môi trường cốt lõi tác động trực tiếp đến cường độ thoát hơi nước của lá cây."
+        }
+      ],
+      "points": 6.0,
+      "step_by_step_solution": "Phân tích bảng số liệu: Cột lượng nước thoát ra đạt cực đại 35 mL tại 28°C rồi giảm xuống 10 mL tại 38°C do khí khổng khép lại bảo vệ tế bào thực vật."
+    }
+  ],
+  "createdAt": "2026-10-25T07:45:00.000Z",
+  "updatedAt": "2026-10-25T07:45:00.000Z",
+  "version": 1
+}

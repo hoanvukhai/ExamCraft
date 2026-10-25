@@ -24,6 +24,9 @@ import {
   HelpCircle,
 } from 'lucide-react';
 
+/** Share links end in `.v<version>` (see src/lib/share-version.ts, which is server-only). */
+const pinnedVersionOf = (path: string) => /\.v(\d{1,9})$/.exec(path)?.[1] ?? '';
+
 interface GroupItem {
   id: string;
   name: string;
@@ -524,6 +527,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
         {activeTab === 'share' && (
           <div className="space-y-4">
             <p className="text-xs">Link xem có hiệu lực 7 ngày. Ai có link đều xem được nội dung bạn cho phép.</p>
+            <p data-testid="share-pin-note" className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">Link giữ bản đề tại thời điểm tạo. Nếu bạn sửa đề sau đó, hãy tạo link mới để người xem thấy bản mới.{pinnedVersionOf(sharePath) ? <> Link hiện tại giữ <strong>phiên bản {pinnedVersionOf(sharePath)}</strong> của đề.</> : null}</p>
             <label className="block text-sm"><input type="checkbox" checked={shareAnswers} onChange={e => setShareAnswers(e.target.checked)} /> Kèm đáp án và lời giải</label>
             <label className="block text-sm"><input type="checkbox" checked={shareCopy} onChange={e => setShareCopy(e.target.checked)} /> Cho giáo viên đã đăng nhập tạo bản sao</label>
             <button disabled={sharing} onClick={createShareLink} className="px-4 py-2 rounded-full bg-blue-600 text-white disabled:opacity-50">{sharing ? 'Đang tạo…' : 'Tạo link chia sẻ'}</button>

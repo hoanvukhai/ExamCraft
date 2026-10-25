@@ -138,7 +138,7 @@ async function flow(id: string, action: (f: Fixture) => Promise<void>, firstPass
   finally { if (f) { try { await f.cleanup(); cleanupComplete = true; } catch (e) { error ??= e; } } }
   const message = error instanceof Error ? error.message.replaceAll(f?.password ?? '\0', '[fixture-password]') : error ? 'Unknown pilot failure' : undefined;
   results.push({ id, status: error ? 'FAIL' : 'PASS', durationMs: Date.now() - start, cleanupComplete, ...(message ? { error: message } : {}) });
-  fs.mkdirSync(reportDir, { recursive: true }); const evidence=JSON.stringify({ run, sourceSha256, buildId, browserVersion, browserExecutable: process.env.PILOT_BROWSER_PATH, requestedFlow: process.env.PILOT_FLOW ?? 'F1-F7,F9-F12', checkedAt: new Date().toISOString(), environment: 'isolatedTest localhost3117 / examcraft_test_20261022', realAiCalls: false, results }, null, 2);
+  fs.mkdirSync(reportDir, { recursive: true }); const evidence=JSON.stringify({ run, sourceSha256, buildId, browserVersion, browserExecutable: process.env.PILOT_BROWSER_PATH, requestedFlow: process.env.PILOT_FLOW ?? 'F1-F7,F9-F13', checkedAt: new Date().toISOString(), environment: 'isolatedTest localhost3117 / examcraft_test_20261022', realAiCalls: false, results }, null, 2);
   fs.writeFileSync(`${reportDir}/pilot-results.json`,evidence);fs.writeFileSync(`${reportDir}/pilot-run-${run}.json`,evidence);
   if (error) throw Error(`${id}: ${message}`);
 }
@@ -289,6 +289,7 @@ test('F4 public link, collaborator edits and revoke', { timeout: 150000 }, () =>
   await f.page.getByTitle('Tạo link cho học sinh làm bài hoặc chia sẻ đề cho đồng nghiệp').click();
   await click(f.page,'Link Xem / Tải Word (.docx)');
   const [response]=await Promise.all([f.page.waitForResponse(r=>r.url().endsWith(`/api/exams/${id}/share`)&&r.request().method()==='POST'),click(f.page,'Tạo link chia sẻ')]);const publicLink=(await response.json()).publicLink as string;assert.ok(publicLink.startsWith('/share/'));
+  const pinNote=await f.page.getByTestId('share-pin-note').innerText();assert.match(pinNote,/Link giữ bản đề tại thời điểm tạo/);assert.match(pinNote,/phiên bản \d+ của đề/);
   const guest=await f.context(),p=await guest.newPage();await p.goto(origin+publicLink);await p.getByText('PILOT Q1 multiple_choice',{exact:true}).filter({visible:true}).first().waitFor();assert.ok(!(await p.locator('body').innerText()).includes(solution));
   await f.page.reload();await click(f.page,'Cùng soạn · Góp ý · Lịch sử');await f.page.getByLabel('Email giáo viên').fill(f.emails[1]);await f.page.getByLabel('Quyền cộng tác').selectOption('VIEWER');await click(f.page,'Cấp quyền');
   const peer=await f.context(),other=await peer.newPage();await login(other,f.emails[1],f.password);await other.waitForURL(origin+'/');await other.goto(origin+'/editor/'+id);const title=other.getByTitle('Nhấn để đổi tên đề thi (như Google Docs)');await title.waitFor();assert.equal(await title.isDisabled(),true,'Viewer must not edit');
@@ -470,4 +471,34 @@ test('F12 teacher corrects a short-answer key, previews, applies and the student
   assert.equal((await f.db.attemptAnswer.findUniqueOrThrow({ where: { attemptId_questionKey: { attemptId: attempt.id, questionKey: 'q3' } } })).isCorrect, false);
   assert.equal(await f.db.auditLog.count({ where: { action: 'attempt.grade', targetId: attempt.id } }), 1, 'One history event for the regraded attempt');
   await panel.getByText(/Nhập nhầm đáp án/).waitFor();
+}));
+
+async function noHorizontalScroll(page: Page, where: string) {
+  const sizes = await page.evaluate(() => ({ scroll: window.document.documentElement.scrollWidth, inner: window.innerWidth }));
+  assert.ok(sizes.scroll <= sizes.inner + 1, `${where}: page scrolls sideways (${sizes.scroll}px wide in a ${sizes.inner}px window)`);
+}
+async function smallTargets(page: Page, selector: string) {
+  return page.locator(selector).evaluateAll(nodes => nodes.filter(node => { const box = (node as HTMLElement).getBoundingClientRect(); return box.width > 0 && box.height > 0 && box.height < 40; }).map(node => ((node as HTMLElement).innerText || (node as HTMLElement).getAttribute('aria-label') || node.tagName).trim().slice(0, 40)));
+}
+
+test('F13 a student works and a teacher browses on a 375px phone without sideways scrolling', { timeout: 180000 }, () => flow('F13', async f => {
+  await authenticated(f); const asg = await assignment(f, await seedExam(f));
+  const student = await f.context(), p = await student.newPage(); await p.setViewportSize({ width: 375, height: 812 });
+  await p.goto(origin + '/a/' + asg.publicId);
+  await p.getByPlaceholder('Ví dụ: Nguyễn Văn An').waitFor(); await noHorizontalScroll(p, 'student entry');
+  await p.getByPlaceholder('Ví dụ: Nguyễn Văn An').fill('Học sinh điện thoại');
+  assert.deepEqual(await smallTargets(p, 'button'), [], 'Entry screen buttons are at least 40px tall');
+  await click(p, /Bắt đầu làm bài/); await p.locator('#q-1').waitFor(); await noHorizontalScroll(p, 'student question 1');
+  const tooSmall: string[] = [];
+  for (let i = 1; i <= 7; i++) { await p.locator('#q-' + i).scrollIntoViewIfNeeded(); await noHorizontalScroll(p, 'student question ' + i); tooSmall.push(...await smallTargets(p, `#q-${i} button`)); }
+  assert.deepEqual(tooSmall, [], 'Answer buttons are at least 40px tall');
+  await p.locator('#q-1').getByRole('button', { name: /Hai/ }).click(); await p.locator('#q-3 input').fill('2'); await p.locator('#q-4 textarea').fill('Lập luận trên điện thoại');
+  await waitUntil(async () => JSON.stringify((await f.db.attempt.findFirst({ where: { assignmentId: asg.id } }))?.draft).includes('Lập luận trên điện thoại'), 'Phone draft not acknowledged');
+  const req = p.waitForResponse(r => /\/api\/public\/attempts\/[^/]+\/submit$/.test(r.url()) && r.request().method() === 'POST');
+  await click(p, 'Nộp bài thi'); await noHorizontalScroll(p, 'submit confirmation'); await click(p, 'Nộp bài ngay'); assert.equal((await req).status(), 200);
+  await p.getByText(/Nộp lúc/).waitFor(); await noHorizontalScroll(p, 'student result');
+  const t = await f.context(), tp = await t.newPage(); await tp.setViewportSize({ width: 375, height: 812 });
+  await login(tp, f.emails[0], f.password); await tp.waitForURL(origin + '/'); await tp.waitForLoadState('networkidle'); await noHorizontalScroll(tp, 'teacher library');
+  await tp.goto(origin + '/teacher/assignments/' + asg.id); await tp.getByText('Bảng điểm & Bài nộp').waitFor(); await noHorizontalScroll(tp, 'teacher assignment');
+  await tp.goto(origin + '/editor/' + (await f.db.exam.findFirstOrThrow({ where: { ownerId: f.ids[0] } })).id); await tp.getByTitle('Lưu các thay đổi lên máy chủ').first().waitFor(); await noHorizontalScroll(tp, 'teacher editor');
 }));

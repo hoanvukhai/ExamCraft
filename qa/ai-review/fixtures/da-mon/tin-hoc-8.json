@@ -1,0 +1,93 @@
+{
+  "id": "exam_fixture_tin_hoc_8",
+  "metadata": {
+    "title": "Đề kiểm tra Tin học 8 (Bộ fixture kiểm thử)",
+    "schoolName": "Trường THCS Thực nghiệm Công nghệ",
+    "departmentName": "Tổ Toán - Tin học",
+    "subject": "tin_hoc",
+    "grade": 8,
+    "durationMinutes": 45,
+    "academicYear": "2026-2027",
+    "semester": "Học kỳ 1",
+    "notes": "Học sinh kiểm tra cẩn thận cấu trúc cú pháp mã nguồn và bảng logic."
+  },
+  "sections": [
+    {
+      "id": "sec_cs8_logic",
+      "name": "PHẦN I. BIỂU THỨC LOGIC VÀ BẢNG CHÂN TRỊ (4.0 điểm)",
+      "title": "Các phép toán logic AND, OR, NOT"
+    },
+    {
+      "id": "sec_cs8_code",
+      "name": "PHẦN II. THUẬT TOÁN VÀ ĐOẠN MÃ PYTHON (6.0 điểm)",
+      "title": "Cấu trúc lặp và rẽ nhánh trong ngôn ngữ lập trình"
+    }
+  ],
+  "questions": [
+    {
+      "id": "q_cs8_01",
+      "sectionId": "sec_cs8_logic",
+      "type": "true_false_group",
+      "difficulty": "thong_hieu",
+      "content": "Cho hai biến mệnh đề logic $A$ và $B$. Bảng chân trị của các phép toán logic cơ bản được mô tả như sau:\n\n| $A$ | $B$ | NOT $A$ | $A$ AND $B$ | $A$ OR $B$ |\n|:---:|:---:|:---:|:---:|:---:|\n| True | True | False | True | True |\n| True | False | False | False | True |\n| False | True | True | False | True |\n| False | False | True | False | False |\n\nHãy xác định tính Đúng hoặc Sai của mỗi khẳng định sau:",
+      "sub_questions": [
+        {
+          "key": "a",
+          "content": "Phép toán (A AND B) chỉ cho kết quả True khi cả hai mệnh đề A và B đều mang giá trị True.",
+          "isCorrect": true,
+          "explanation": "Theo định nghĩa của phép hội (AND), điều kiện bắt buộc là cả hai toán hạng đều phải đúng."
+        },
+        {
+          "key": "b",
+          "content": "Phép toán (A OR B) cho kết quả False khi có ít nhất một trong hai mệnh đề A hoặc B mang giá trị True.",
+          "isCorrect": false,
+          "explanation": "Phép tuyển (OR) chỉ cho kết quả False khi cả hai toán hạng đều nhận giá trị False."
+        },
+        {
+          "key": "c",
+          "content": "Nếu A = True và B = False thì biểu thức: (NOT A) OR B có giá trị là True.",
+          "isCorrect": false,
+          "explanation": "NOT A = False; False OR False = False."
+        },
+        {
+          "key": "d",
+          "content": "Biểu thức NOT (A AND B) tương đương logic với biểu thức (NOT A) OR (NOT B) theo định luật De Morgan.",
+          "isCorrect": true,
+          "explanation": "Đây là định luật De Morgan cơ bản trong đại số Boole."
+        }
+      ],
+      "points": 4.0,
+      "step_by_step_solution": "Áp dụng bảng chân trị đại số Boole: Phép AND trả về True khi cả hai đều True; phép OR trả về True khi có ít nhất một toán hạng True; phép phủ định NOT đảo ngược giá trị logic."
+    },
+    {
+      "id": "q_cs8_02",
+      "sectionId": "sec_cs8_code",
+      "type": "multiple_choice",
+      "difficulty": "van_dung",
+      "content": "Cho đoạn mã nguồn Python sau đây thực hiện tính tổng các số chẵn nhỏ hơn 10:\n\n```python\ntong = 0\nfor i in range(1, 10):\n    if i % 2 == 0:\n        tong += i\nprint(tong)\n```\n\nSau khi thực thi đoạn mã trên, giá trị in ra màn hình là bao nhiêu?",
+      "choices": [
+        { "key": "A", "text": "20" },
+        { "key": "B", "text": "30" },
+        { "key": "C", "text": "25" },
+        { "key": "D", "text": "18" }
+      ],
+      "correct_answer": "A",
+      "points": 3.0,
+      "step_by_step_solution": "Hàm range(1, 10) sinh ra dãy số nguyên từ 1 đến 9. Các số chẵn thỏa mãn điều kiện i % 2 == 0 là: 2, 4, 6, 8. Tổng = 2 + 4 + 6 + 8 = 20."
+    },
+    {
+      "id": "q_cs8_03",
+      "sectionId": "sec_cs8_code",
+      "type": "short_answer",
+      "difficulty": "van_dung_cao",
+      "content": "Xem đoạn mã Python sau:\n\n```python\nn = 5\nkq = 1\nwhile n > 1:\n    kq = kq * n\n    n -= 1\n```\n\nNhập giá trị cuối cùng của biến `kq` sau khi vòng lặp `while` kết thúc hoàn toàn.",
+      "accepted_answers": ["120"],
+      "correct_answer": "120",
+      "points": 3.0,
+      "step_by_step_solution": "Vòng lặp tính giai thừa của 5 (5!): kq = 1 * 5 * 4 * 3 * 2 = 120."
+    }
+  ],
+  "createdAt": "2026-10-25T07:45:00.000Z",
+  "updatedAt": "2026-10-25T07:45:00.000Z",
+  "version": 1
+}

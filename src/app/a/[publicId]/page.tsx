@@ -951,7 +951,7 @@ function StudentExamContent({
                             <button
                               type="button"
                               onClick={() => handleSelectTrueFalse(q.id, sub.key, true)}
-                              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                              className={`min-h-10 min-w-16 px-4 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                                 userVal === true
                                   ? 'bg-[#137333] dark:bg-[#5bb98c] text-white dark:text-[#0f291e] shadow-xs'
                                   : 'bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#282828]'
@@ -962,7 +962,7 @@ function StudentExamContent({
                             <button
                               type="button"
                               onClick={() => handleSelectTrueFalse(q.id, sub.key, false)}
-                              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                              className={`min-h-10 min-w-16 px-4 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                                 userVal === false
                                   ? 'bg-[#c5221f] dark:text-[#371918] text-white dark:bg-[#f28b82] shadow-xs'
                                   : 'bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#282828]'

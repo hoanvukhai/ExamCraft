@@ -250,7 +250,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
 ## S7 — Giao bài, làm và chấm
 
 - [ ] **CV-054 — Cấu hình bài giao và snapshot.**
-  - **Mức pilot25/10: đạt trong phạm vi pilot** (theo quy tắc chủ dự án duyệt 24/10; không đổi dấu hoàn thành, không thay "Đạt khi"). Kiểm tự động: F5 giao có/không lớp, đặt giờ/lượt/mã/trộn rồi đối chiếu DB; HTTP assignment options; snapshot bất biến. Giới hạn: chưa giao diện sửa sau khi giao; PIN thực của học sinh mới ở HTTP. [Chạy 25/10](../../qa/rebuild-2026-10-25/PILOT_CLAUDE_RUN.md).
+  - **Mức pilot25/10: đạt trong phạm vi pilot** (theo quy tắc chủ dự án duyệt 24/10; không đổi dấu hoàn thành, không thay "Đạt khi"). Kiểm tự động: F5 giao có/không lớp, đặt giờ/lượt/mã/trộn rồi đối chiếu DB; HTTP assignment options; snapshot bất biến. Từ 25/10 (Codex): F5 sửa câu nguồn sau khi giao rồi so snapshot không đổi, PIN nhập thật trên giao diện (sai không tạo lượt, đúng mở bài). Giới hạn: chưa giao diện đổi thời hạn sau giao. [Chạy 25/10](../../qa/rebuild-2026-10-25/PILOT_CLAUDE_RUN.md), [PILOT_SCOPE_CLOSURE](../../qa/rebuild-2026-10-25/PILOT_SCOPE_CLOSURE.md).
   - **Hiện trạng24/10:** Đã tích hợp tùy chọn giao bài nâng cao của Claude; browser giao có/không lớp, đặt thời gian/lượt/mã/trộn, đối chiếu bản lưu; API kiểm giá trị sai và account pin. Giữ snapshot và kiểm quyền trước. Chưa mọi enum/chính sách/tệp, UI xem lại giờ đã giao; giữ mở. [PILOT_E2E](../../qa/rebuild-2026-10-24/PILOT_E2E.md).
   - Phạm vi: YC-20. Nghiệm thu: NT-21.
   - Đạt khi: Enum/API/import thống nhất, nhóm tùy chọn đúng nhận diện; snapshot đủ câu/đáp án/tệp/điểm/mẫu và bất biến.
@@ -259,7 +259,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-20, YC-21. Nghiệm thu: NT-21, NT-22.
   - Đạt khi: FREE_NAME/danh sách/mã có kiểm server, membership và PIN nếu bật; người biết ID không được đọc/sửa/nộp bài khác.
 - [ ] **CV-056 — Thời gian, số lượt và cạnh tranh start.**
-  - **Mức pilot25/10: đạt trong phạm vi pilot** (theo quy tắc chủ dự án duyệt 24/10; không đổi dấu hoàn thành, không thay "Đạt khi"). Kiểm tự động: F5 chờ qua giờ đóng thật rồi học sinh bị từ chối, không tạo lượt; HTTP times/attempts. Giới hạn: chưa kiểm start đồng thời nhiều máy, dung sai nộp bài ở giao diện. [Chạy 25/10](../../qa/rebuild-2026-10-25/PILOT_CLAUDE_RUN.md).
+  - **Mức pilot25/10: đạt trong phạm vi pilot** (theo quy tắc chủ dự án duyệt 24/10; không đổi dấu hoàn thành, không thay "Đạt khi"). Kiểm tự động: F5 chờ qua giờ đóng thật rồi học sinh bị từ chối, không tạo lượt; HTTP times/attempts. Từ 25/10 (Codex): 80 lượt bắt đầu tranh nhau cho 40 học sinh đúng quyền, tải 40 học sinh nộp đồng thời không lỗi 5xx (đã sửa lỗi 503 khi nộp). Giới hạn: một máy, chưa nhiều máy thật; dung sai nộp bài ở giao diện. [Chạy 25/10](../../qa/rebuild-2026-10-25/PILOT_CLAUDE_RUN.md).
   - **Hiện trạng24/10:** Giữ HTTP/PG start đồng thời/cookie khác/grace đã kiểm. Bổ sung UI đặt giờ đóng và chờ đồng hồ thật: vào sau hạn bị từ chối, không tạo lượt. API kiểm thời gian/số lượt/mã/PIN đạt; tương thích mã legacy đã gửi Claude, gia hạn/mở lại/hai browser vẫn mở. [PILOT_E2E](../../qa/rebuild-2026-10-24/PILOT_E2E.md).
   - Phạm vi: YC-20, YC-21. Nghiệm thu: NT-22.
   - Đạt khi: Kiểm opensAt/closesAt/deadline/status, lượt hết hạn xử lý rõ; start đồng thời không tạo trùng hoặc lỗi unique vô nghĩa.
@@ -269,7 +269,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-21. Nghiệm thu: NT-04, NT-23.
   - Đạt khi: Method/body chuẩn, kiểm res.ok, trạng thái mạng; reload lấy đúng nháp, không ghi đè câu mới bởi request chậm.
 - [ ] **CV-058 — Giao diện làm bài đủ dạng.**
-  - **Mức pilot25/10: đạt trong phạm vi pilot** (theo quy tắc chủ dự án duyệt 24/10; không đổi dấu hoàn thành, không thay "Đạt khi"). Kiểm tự động: F6 làm đủ bảy dạng, tải lại làm tiếp, nộp, không thấy đáp án trước chính sách; public_access/structured_grading. Giới hạn: bàn phím/màn hình nhỏ, âm thanh, hình nâng cao. [Chạy 25/10](../../qa/rebuild-2026-10-25/PILOT_CLAUDE_RUN.md).
+  - **Mức pilot25/10: đạt trong phạm vi pilot** (theo quy tắc chủ dự án duyệt 24/10; không đổi dấu hoàn thành, không thay "Đạt khi"). Kiểm tự động: F6 làm đủ bảy dạng, tải lại làm tiếp, nộp, không thấy đáp án trước chính sách; public_access/structured_grading. Từ 25/10: F13 làm bài đủ bảy dạng trên màn hình 375px không cuộn ngang, nút ≥40px (đã sửa nút ĐÚNG/SAI quá nhỏ). Giới hạn: bàn phím rời, âm thanh, hình nâng cao. [Chạy 25/10](../../qa/rebuild-2026-10-25/PILOT_CLAUDE_RUN.md).
   - Phạm vi: YC-10, YC-21. Nghiệm thu: NT-16, NT-23.
   - Đạt khi: Tự luận có ô trả lời, đúng-sai/điền/ghép/sắp xếp dùng được, tệp/hình/âm thanh theo đề; cuộn/keyboard/mobile đúng.
 - [x] **CV-059 — Chấm server và nộp lặp an toàn.**

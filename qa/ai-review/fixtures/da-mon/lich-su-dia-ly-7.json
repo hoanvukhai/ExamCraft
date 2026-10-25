@@ -1,0 +1,99 @@
+{
+  "id": "exam_fixture_lich_su_dia_ly_7",
+  "metadata": {
+    "title": "Đề kiểm tra Lịch sử và Địa lí 7 (Bộ fixture kiểm thử)",
+    "schoolName": "Trường THCS Thăng Long",
+    "departmentName": "Tổ Khoa học Xã hội",
+    "subject": "lich_su_dia_ly",
+    "grade": 7,
+    "durationMinutes": 60,
+    "academicYear": "2026-2027",
+    "semester": "Học kỳ 1",
+    "notes": "Đề tích hợp 2 phân môn Lịch sử và Địa lí theo Chương trình GDPT 2018."
+  },
+  "sections": [
+    {
+      "id": "sec_lsdl7_lichsu",
+      "name": "PHÂN MÔN LỊCH SỬ (5.0 điểm)",
+      "title": "Tư liệu lịch sử Đại Việt"
+    },
+    {
+      "id": "sec_lsdl7_diali",
+      "name": "PHÂN MÔN ĐỊA LÍ (5.0 điểm)",
+      "title": "Địa lí tự nhiên và dân cư Châu Âu"
+    }
+  ],
+  "questions": [
+    {
+      "id": "q_lsdl7_01",
+      "sectionId": "sec_lsdl7_lichsu",
+      "subBranch": "history",
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Đọc đoạn trích tư liệu lịch sử sau đây:\n\n'Năm 1010, vua Lý Thái Tổ nhận thấy thành Hoa Lư ẩm thấp chật hẹp, bèn ban Chiếu dời đô về thành Đại La: ...Ở vào nơi trung tâm trời đất, được cái thế rồng cuộn hổ ngồi... Tiện nghi núi sông sau trước, chốn này chính là thắng địa...'\n\n(Theo Đại Việt sử ký toàn thư)\n\nĐoạn tư liệu trên phản ánh sự kiện lịch sử trọng đại nào của dân tộc ta?",
+      "choices": [
+        { "key": "A", "text": "Quyết định dời đô từ Hoa Lư về Đại La (Thăng Long) của vua Lý Thái Tổ năm 1010" },
+        { "key": "B", "text": "Chiến thắng Bạch Đằng lịch sử chấm dứt ngàn năm Bắc thuộc năm 938" },
+        { "key": "C", "text": "Kháng chiến chống quân xâm lược Tống lần thứ nhất của Lê Hoàn năm 981" },
+        { "key": "D", "text": "Ban bố bộ luật Hình thư thành văn đầu tiên của nước ta năm 1042" }
+      ],
+      "correct_answer": "A",
+      "points": 2.5,
+      "step_by_step_solution": "Đoạn trích từ 'Chiếu dời đô' (Thiên đô chiếu) năm Canh Tuất 1010 ghi nhận quyết sách dời kinh đô từ Hoa Lư hiểm trở về đồng bằng Thăng Long trù phú để phát triển đất nước lâu dài."
+    },
+    {
+      "id": "q_lsdl7_02",
+      "sectionId": "sec_lsdl7_lichsu",
+      "subBranch": "history",
+      "type": "short_answer",
+      "difficulty": "van_dung",
+      "content": "Dựa vào tư liệu trên và kiến thức đã học, hãy nêu tên gọi của bản chiếu dời đô do vua Lý Thái Tổ ban bố (Thử nghiệm chuỗi ký tự dấu tiếng Việt tổ hợp NFD: Chi\u0065\u0302\u0301u d\u01a1\u0300i d\u00f4).",
+      "accepted_answers": [
+        "Chiếu dời đô",
+        "Thiên đô chiếu",
+        "Chiếu dời đô"
+      ],
+      "points": 2.5,
+      "step_by_step_solution": "Văn bản lịch sử có tên gọi chữ Hán là Thiên đô chiếu, dịch ra tiếng Việt là Chiếu dời đô."
+    },
+    {
+      "id": "q_lsdl7_03",
+      "sectionId": "sec_lsdl7_diali",
+      "subBranch": "geography",
+      "type": "true_false_group",
+      "difficulty": "thong_hieu",
+      "content": "Cho bảng số liệu về quy mô dân số và tỉ lệ dân thành thị của Châu Âu giai đoạn 1990 – 2020:\n\n| Năm | Dân số Châu Âu (triệu người) | Tỉ lệ dân thành thị (%) |\n|:---:|:---:|:---:|\n| 1990 | 721.8 | 70.0 |\n| 2000 | 728.5 | 71.4 |\n| 2010 | 739.4 | 73.1 |\n| 2020 | 747.6 | 74.5 |\n\nCăn cứ vào bảng số liệu, hãy xác định tính Đúng hoặc Sai của mỗi phát biểu sau:",
+      "sub_questions": [
+        {
+          "key": "a",
+          "content": "Giai đoạn 1990 – 2020, quy mô dân số Châu Âu có xu hướng tăng đều nhưng với tốc độ khá chậm.",
+          "isCorrect": true,
+          "explanation": "Từ 721.8 triệu người lên 747.6 triệu người trong 30 năm thể hiện tốc độ gia tăng tự nhiên rất thấp."
+        },
+        {
+          "key": "b",
+          "content": "Tỉ lệ dân cư sinh sống tại khu vực thành thị ở Châu Âu luôn đạt trên mức 70% và tiếp tục tăng.",
+          "isCorrect": true,
+          "explanation": "Năm 1990 tỉ lệ là 70.0%, năm 2020 tăng lên 74.5%."
+        },
+        {
+          "key": "c",
+          "content": "Năm 2020, số dân nông thôn ở Châu Âu nhiều hơn đáng kể so với số dân thành thị.",
+          "isCorrect": false,
+          "explanation": "Tỉ lệ dân thành thị là 74.5% nên dân nông thôn chỉ chiếm khoảng 25.5%, ít hơn rất nhiều."
+        },
+        {
+          "key": "d",
+          "content": "Châu Âu là một trong những châu lục có mức độ đô thị hóa hàng đầu thế giới.",
+          "isCorrect": true,
+          "explanation": "Gần 3/4 dân số sinh sống tại các đô thị phản ánh trình độ phát triển kinh tế và đô thị hóa cao."
+        }
+      ],
+      "points": 5.0,
+      "step_by_step_solution": "Phân tích bảng số liệu: Dân số châu Âu tăng chậm phản ánh tình trạng già hóa dân số; tỉ lệ đô thị hóa cao trên 70% phản ánh đặc trưng của các quốc gia phát triển."
+    }
+  ],
+  "createdAt": "2026-10-25T07:45:00.000Z",
+  "updatedAt": "2026-10-25T07:45:00.000Z",
+  "version": 1
+}
