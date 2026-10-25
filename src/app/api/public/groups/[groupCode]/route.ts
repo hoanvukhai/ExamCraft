@@ -45,7 +45,7 @@ export async function GET(
     }
 
     // Nếu học sinh đã chọn tên, tra cứu lịch sử làm bài của học sinh trong các bài giao này
-    let studentAttempts: Record<string, any[]> = {};
+    const studentAttempts: Record<string, Pick<import('@prisma/client').Attempt, 'id' | 'assignmentId' | 'studentId' | 'attemptNo' | 'status' | 'score' | 'maxScore' | 'startedAt' | 'submittedAt' | 'deadlineAt'>[]> = {};
     if (studentId) {
       const attempts = await prisma.attempt.findMany({
         where: {

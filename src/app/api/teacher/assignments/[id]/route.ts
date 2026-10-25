@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { requireRequestAuth } from '@/lib/request-auth';
 import { ApiError, apiErrorResponse } from '@/lib/api-error';
-import { AssignmentStatus, AttemptStatus } from '@prisma/client';
+import { AssignmentStatus, AttemptStatus, type Prisma } from '@prisma/client';
 import { z } from 'zod';
 import { isSameOriginMutation } from '@/lib/attempt-access';
 import { asObject } from '@/lib/public-exam';
@@ -47,10 +47,9 @@ export async function GET(
       return NextResponse.json({ error: 'Không tìm thấy bài giao' }, { status: 404 });
     }
 
-    const snapshot = assignment.snapshot as any;
+    const snapshot = assignment.snapshot as unknown as { metadata?: unknown; questions?: { id: string; type: string; points?: number; content: string }[] };
     const numeric = requiresNumericScore(asObject(asObject(assignment.snapshot).metadata).assessmentMode as AssessmentMode | undefined);
-    const questions: any[] = snapshot?.questions || [];
-    const sections: any[] = snapshot?.sections || [];
+    const questions = snapshot?.questions || [];
 
     // Phân loại các lượt làm bài
     const submittedAttempts = assignment.attempts.filter(
@@ -187,7 +186,7 @@ export async function PATCH(
     }
 
     if (body.closesAt && assignment.opensAt && new Date(body.closesAt) <= assignment.opensAt) return NextResponse.json({ error: 'Thời gian đóng phải sau thời gian mở' }, { status: 400 });
-    const updatedData: Record<string, any> = {};
+    const updatedData: Prisma.AssignmentUpdateInput = {};
 
     if (body.status && Object.values(AssignmentStatus).includes(body.status)) {
       updatedData.status = body.status;

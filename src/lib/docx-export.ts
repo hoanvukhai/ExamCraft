@@ -18,6 +18,7 @@ import { computeExamMatrix, generateDocxMatrixTable } from './matrix-spec-genera
 import { matchingDisplay, orderingDisplay } from './structured-question';
 import { examPlanOutput } from './exam-plan-output';
 import { resolveHeaderLines } from './header-layout';
+import type { VariationTableData } from '@/components/VariationTable';
 import { latexToMath } from './latex-math';
 
 /**
@@ -233,7 +234,7 @@ export function renderFiguresForDocx(figures?: Figure[], compact = false): (Para
         throw new Error(`Không chèn được hình “${fig.caption ?? fig.id}” vào Word. Dữ liệu gốc vẫn được giữ.`);
       }
     } else if (fig.kind === 'variation_table' && fig.data) {
-      const vData = fig.data as any;
+      const vData = fig.data as VariationTableData;
       if (!Array.isArray(vData.xValues) || vData.xValues.length < 2 || !Array.isArray(vData.yPrimeSigns) || !vData.yPrimeSigns.length || !Array.isArray(vData.yValues) || !vData.yValues.length) throw new Error(`Bảng biến thiên “${fig.caption ?? fig.id}” chưa đủ dữ liệu.`);
       if (Array.isArray(vData.xValues) && Array.isArray(vData.yPrimeSigns)) {
         // Tạo bảng biến thiên dạng Table trong docx
@@ -298,7 +299,7 @@ export function renderFiguresForDocx(figures?: Figure[], compact = false): (Para
         let ySummary = '';
         if (Array.isArray(vData.yValues)) {
           ySummary = vData.yValues
-            .map((yv: any) => {
+            .map((yv) => {
               if (yv.type === 'up') return ' ↗ ';
               if (yv.type === 'down') return ' ↘ ';
               return cleanLatexForWord(yv.val || '');

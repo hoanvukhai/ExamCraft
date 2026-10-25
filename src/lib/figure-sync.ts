@@ -76,7 +76,7 @@ export function syncQuestionFigures(
   return originalFigures.map((fig) => {
     if (fig.kind === 'function_plot') {
       const extractedFn = extractFunctionFromLatex(newContent);
-      const prevData = fig.data as any;
+      const prevData = fig.data as Record<string, unknown>;
 
       if (extractedFn) {
         return {
