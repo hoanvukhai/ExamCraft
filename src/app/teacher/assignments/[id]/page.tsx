@@ -7,6 +7,7 @@ import { usePinnedAccount } from '@/hooks/usePinnedAccount';
 import { MathRenderer } from '@/components/MathRenderer';
 import { studentResponseText } from '@/lib/student-response-text';
 import { TeacherGradeEditor } from '@/components/TeacherGradeEditor';
+import RegradePanel from '@/components/RegradePanel';
 import { buildGradeSubmission, initialScoreText, isGradeDraftDirty, describeGradeHistory, isPendingGrade, type GradeDraft, type GradeHistorySide } from '@/lib/grade-history-restore';
 import { TeacherGradeDraftRecovery } from '@/components/TeacherGradeDraftRecovery';
 import { readGradeDrafts, writeGradeDraft, discardWriterGradeDraft, retireWriterGradeDraft, type GradeDraftWrite } from '@/lib/teacher-grade-draft';
@@ -751,6 +752,8 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
               <strong>Mẹo sư phạm:</strong> Hệ thống tự động đo lường tỷ lệ trả lời đúng của từng câu hỏi.
               Những câu có tỷ lệ đúng <span className="font-bold text-[#c5221f] dark:text-[#f28b82]">&lt; 50%</span> là những điểm học sinh hay nhầm lẫn, giáo viên nên dành thời gian chữa chi tiết trên lớp.
             </div>
+
+            <RegradePanel assignmentId={id} request={accountRequest} onChanged={fetchAssignmentData} />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {itemAnalysis.map((item) => (

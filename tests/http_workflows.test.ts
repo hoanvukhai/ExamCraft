@@ -476,13 +476,23 @@ test('HTTP workflows on the isolated local server', { timeout: 120000 }, async t
     assert.equal((await request(copyPath, 'POST', versionBody, other)).status, 409, 'Retry never overwrites edits in a private copy.');
     const nextSource = await request(`/api/exams/${sourceId}`, 'PATCH', { baseVersion: copySource.data.document.version, document: { ...copySource.data.document, metadata: { ...copySource.data.document.metadata, title: 'HTTP copy source updated' } } }, owner);
     assert.equal(nextSource.status, 200, nextSource.data.error);
+    // The link is pinned to the version it was made from: later edits never reach it, and its copy stays the protected private copy.
+    const stillOld = await request(`/api/public/share/${token}`);
+    assert.equal(stillOld.data.sourceVersion, copySource.data.document.version); assert.equal(stillOld.data.pinned, true);
+    assert.equal(stillOld.data.exam.metadata.title, 'HTTP copy source', 'an older link keeps showing the shared version');
     const staleCopy = await request(copyPath, 'POST', versionBody, other);
-    assert.equal(staleCopy.status, 409); assert.equal(staleCopy.data.code, 'SOURCE_CHANGED');
-    const nextVersion = (await request(`/api/public/share/${token}`)).data.sourceVersion;
-    assert.equal(nextVersion, nextSource.data.document.version);
-    const newCopy = await request(copyPath, 'POST', { sourceVersion: nextVersion }, other);
+    assert.equal(staleCopy.status, 409); assert.equal(staleCopy.data.code, 'ALREADY_COPIED');
+    const wrongVersion = await request(copyPath, 'POST', { sourceVersion: nextSource.data.document.version }, other);
+    assert.equal(wrongVersion.status, 409); assert.equal(wrongVersion.data.code, 'SOURCE_CHANGED', 'a viewer who saw another version is told to reload');
+    // A link made after the edit carries the new version and gets its own copy.
+    const sharedAgain = await request(`/api/exams/${sourceId}/share`, 'POST', { showAnswers: false, allowCopy: true }, owner);
+    const newToken = sharedAgain.data.publicLink.split('/').pop(), newCopyPath = `/api/public/share/${newToken}/copy`;
+    const newView = await request(`/api/public/share/${newToken}`);
+    const nextVersion = newView.data.sourceVersion;
+    assert.equal(nextVersion, nextSource.data.document.version); assert.equal(newView.data.exam.metadata.title, 'HTTP copy source updated');
+    const newCopy = await request(newCopyPath, 'POST', { sourceVersion: nextVersion }, other);
     assert.equal(newCopy.status, 200, newCopy.data.error); assert.notEqual(newCopy.data.id, privateCopy.id);
-    assert.equal((await request(copyPath, 'POST', { sourceVersion: nextVersion }, other)).data.id, newCopy.data.id);
+    assert.equal((await request(newCopyPath, 'POST', { sourceVersion: nextVersion }, other)).data.id, newCopy.data.id);
     assert.deepEqual(await prisma.exam.findUniqueOrThrow({ where: { id: privateCopy.id } }), protectedCopy, 'Copying a new source version leaves private edits intact.');
     assert.equal((await request(`/api/exams/${copyId}`, 'GET', undefined, other)).data.document.metadata.title, '[Bản sao] HTTP copy source', 'The legacy copy is retained.');
     assert.ok(!JSON.stringify((await request(`/api/exams/${newCopy.data.id}`, 'GET', undefined, other)).data.document).includes('PRIVATE_SOLUTION'));
@@ -502,7 +512,7 @@ test('HTTP workflows on the isolated local server', { timeout: 120000 }, async t
     }
     // Hold a TEST-DB row, prove the HTTP request is blocked behind that exact backend PID,
     // then commit a change. No timing-only sleep is used as evidence that the request arrived.
-    const linkedId = shared.data.link.id as string;
+    let linkedId = sharedAgain.data.link.id as string, racePath = newCopyPath;
     const countBeforeRaces = await prisma.exam.count({ where: { ownerId: ids[1] } });
     const queuedCopy = async (row: 'exam' | 'link' | 'question', change: (tx: Prisma.TransactionClient) => Promise<unknown>, version: number) => {
       let pending: ReturnType<typeof request> | undefined;
@@ -513,7 +523,7 @@ test('HTTP workflows on the isolated local server', { timeout: 120000 }, async t
           else await tx.$queryRaw`SELECT "id" FROM "Question" WHERE "id" = ${linkedQuestionId} FOR UPDATE`;
           const [{ pid }] = await tx.$queryRaw<{ pid: number }[]>`SELECT pg_backend_pid() AS pid`;
           let settled = false;
-          pending = request(copyPath, 'POST', { sourceVersion: version }, other).finally(() => { settled = true; });
+          pending = request(racePath, 'POST', { sourceVersion: version }, other).finally(() => { settled = true; });
           const until = Date.now() + 5000;
           let observed = false;
           while (!settled && Date.now() < until) {
@@ -527,8 +537,13 @@ test('HTTP workflows on the isolated local server', { timeout: 120000 }, async t
         return await pending!;
       } finally { await pending?.catch(() => undefined); }
     };
+    // The link is pinned: a source edit that lands while the copy waits for the exam lock cannot change what it copies.
     const sourceEditRace = await queuedCopy('exam', tx => tx.exam.update({ where: { id: sourceId }, data: { version: { increment: 1 } } }), nextVersion);
-    assert.equal(sourceEditRace.status, 409); assert.equal(sourceEditRace.data.code, 'SOURCE_CHANGED');
+    assert.equal(sourceEditRace.status, 200, sourceEditRace.data.error); assert.equal(sourceEditRace.data.id, newCopy.data.id, 'the pinned copy is the same private copy');
+    // A link made after that edit is pinned to the new version; the remaining races run against it.
+    const raceShare = await request(`/api/exams/${sourceId}/share`, 'POST', { showAnswers: false, allowCopy: true }, owner);
+    assert.equal(raceShare.status, 200, raceShare.data.error);
+    linkedId = raceShare.data.link.id as string; racePath = `/api/public/share/${String(raceShare.data.publicLink).split('/').pop()}/copy`;
     const racedVersion = nextVersion + 1;
     const questionRightsRace = await queuedCopy('question', tx => tx.question.update({ where: { id: linkedQuestionId }, data: { shareable: false } }), racedVersion);
     assert.equal(questionRightsRace.status, 404);
@@ -541,7 +556,7 @@ test('HTTP workflows on the isolated local server', { timeout: 120000 }, async t
     await prisma.shareLink.update({ where: { id: linkedId }, data: { expiresAt: null } });
     const revokedRace = await queuedCopy('link', tx => tx.shareLink.update({ where: { id: linkedId }, data: { revokedAt: new Date() } }), racedVersion);
     assert.equal(revokedRace.status, 404);
-    assert.equal((await request(copyPath, 'POST', { sourceVersion: nextVersion }, other)).status, 404, 'Revoked link wins over source version checks.');
+    assert.equal((await request(racePath, 'POST', { sourceVersion: nextVersion }, other)).status, 404, 'Revoked link wins over source version checks.');
     assert.equal(await prisma.exam.count({ where: { ownerId: ids[1] } }), countBeforeRaces, 'Refused queued requests create no private copies.');
     assert.deepEqual(await prisma.exam.findUniqueOrThrow({ where: { id: privateCopy.id } }), protectedCopy);
     // Reverse order: hold only the recipient FK so copy reaches INSERT while keeping its source locks.
@@ -561,7 +576,7 @@ test('HTTP workflows on the isolated local server', { timeout: 120000 }, async t
           }
           throw Error('Expected a backend to wait for the proven copy/revoke ordering.');
         };
-        copyFirst = request(copyPath, 'POST', { sourceVersion: racedVersion }, other);
+        copyFirst = request(racePath, 'POST', { sourceVersion: racedVersion }, other);
         const copyPid = await waitForBackend(blockerPid);
         revokeSecond = request(`/api/exams/${sourceId}/share`, 'DELETE', { linkId: linkedId }, owner);
         await waitForBackend(copyPid);
@@ -571,7 +586,7 @@ test('HTTP workflows on the isolated local server', { timeout: 120000 }, async t
       assert.equal((await revokeSecond!).status, 200);
       const retained = await request(`/api/exams/${copiedBeforeRevoke.data.id}`, 'GET', undefined, other);
       assert.equal(retained.status, 200); assert.equal(retained.data.permissions.role, 'OWNER');
-      assert.equal((await request(copyPath, 'POST', { sourceVersion: racedVersion }, other)).status, 404);
+      assert.equal((await request(racePath, 'POST', { sourceVersion: racedVersion }, other)).status, 404);
       assert.equal(await prisma.exam.count({ where: { ownerId: ids[1] } }), countBeforeRaces + 1);
     } finally { await Promise.allSettled([copyFirst, revokeSecond].filter(Boolean)); }
     checks.push('http-share-copy-to-server-library');

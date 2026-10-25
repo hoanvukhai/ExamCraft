@@ -3,7 +3,8 @@ import prisma from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
 import { apiErrorResponse, ApiError } from '@/lib/api-error';
 import { createExam } from '@/lib/exam-persistence';
-import { fromDatabaseExam } from '@/lib/exam-document';
+import { fromDatabaseExam, normalizeExamDocument } from '@/lib/exam-document';
+import { pinnedVersion } from '@/lib/share-version';
 import { isSameOriginMutation } from '@/lib/attempt-access';
 import { assertRequestAccount } from '@/lib/request-account';
 import { buildShareCopy, shareCopyClientId } from '@/lib/share-copy';
@@ -38,8 +39,16 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
           throw new ApiError(404, 'Liên kết không tồn tại, đã hết hạn hoặc đã được thu hồi.');
         }
         if (!link.allowCopy) throw new ApiError(403, 'Chủ đề chưa cho phép sao chép từ liên kết này.', 'COPY_NOT_ALLOWED');
-        if (sourceVersion !== undefined && sourceVersion !== link.exam.version) throw new ApiError(409, 'Đề nguồn đã thay đổi. Hãy tải lại để xem bản mới trước khi sao chép.', 'SOURCE_CHANGED');
-        const document = buildShareCopy(fromDatabaseExam(link.exam), { ...link, sourceVersion });
+        // A pinned link copies the version it was made from, so the copy matches what the viewer saw.
+        const pinned = pinnedVersion(token);
+        let source = fromDatabaseExam(link.exam), currentVersion = link.exam.version;
+        if (pinned !== null) {
+          const revision = await tx.examRevision.findUnique({ where: { examId_version: { examId: link.examId, version: pinned } }, select: { snapshot: true } });
+          if (!revision) throw new ApiError(404, 'Liên kết không tồn tại, đã hết hạn hoặc đã được thu hồi.');
+          source = normalizeExamDocument(revision.snapshot); currentVersion = pinned;
+        }
+        if (sourceVersion !== undefined && sourceVersion !== currentVersion) throw new ApiError(409, 'Đề nguồn đã thay đổi. Hãy tải lại để xem bản mới trước khi sao chép.', 'SOURCE_CHANGED');
+        const document = buildShareCopy(source, { ...link, sourceVersion });
         const clientId = shareCopyClientId(link.id, sourceVersion);
         return createExam(tx, user.id, { document, clientId });
       }, { timeout: 30000 });

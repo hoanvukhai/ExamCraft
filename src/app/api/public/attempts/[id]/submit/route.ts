@@ -5,7 +5,7 @@ import prisma from '@/lib/prisma';
 import { hasActiveAttemptAccess, canAcceptSubmissionAnswers, isPolicyVisible, isSameOriginMutation } from '@/lib/attempt-access';
 import { asObject, snapshotQuestions, solutionForQuestion, validateResponses } from '@/lib/public-exam';
 import { gradeSnapshot } from '@/lib/attempt-grading';
-import { isRetryableTransactionError } from '@/lib/transaction-retry';
+import { isRetryableTransactionError, MAX_TRANSACTION_TRIES, retryPause } from '@/lib/transaction-retry';
 import { requiresNumericScore, type AssessmentMode } from '@/lib/education-catalog';
 
 const include = { assignment: { include: { group: true } }, student: { select: { displayName: true, archivedAt: true, groupId: true } } } as const;
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const body = await req.json().catch(() => null);
     if (!body || typeof body !== 'object' || Array.isArray(body)) return NextResponse.json({ error: 'Dữ liệu nộp bài không hợp lệ' }, { status: 400 });
     if (body.useSavedDraftOnly !== undefined && typeof body.useSavedDraftOnly !== 'boolean') return NextResponse.json({ error: 'Chế độ nộp bài không hợp lệ' }, { status: 400 });
-    for (let retry = 0; retry < 3; retry++) {
+    for (let retry = 0; retry < MAX_TRANSACTION_TRIES; retry++) {
       try {
         const outcome = await prisma.$transaction(async tx => {
           await tx.$queryRaw`SELECT id FROM "Attempt" WHERE id = ${id} FOR UPDATE`;
@@ -84,7 +84,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         if ('error' in outcome) return NextResponse.json({ error: outcome.error, code: 'code' in outcome ? outcome.code : undefined }, { status: outcome.status });
         return resultResponse(outcome.attempt, outcome.idempotent);
       } catch (error) {
-        if (retry < 2 && (isRetryableTransactionError(error) || error instanceof Error && error.message === 'ATTEMPT_WRITE_CONFLICT')) continue;
+        if (retry < MAX_TRANSACTION_TRIES - 1 && (isRetryableTransactionError(error) || error instanceof Error && error.message === 'ATTEMPT_WRITE_CONFLICT')) { await retryPause(retry); continue; }
         throw error;
       }
     }

@@ -6,6 +6,11 @@ import { Prisma } from '@prisma/client';
  * raw `SELECT ... FOR UPDATE` - as P2010 whose meta.code is the PostgreSQL SQLSTATE
  * (40001 serialization failure, 40P01 deadlock).
  */
+export const MAX_TRANSACTION_TRIES = 6;
+
+/** Short random pause before the next try, so racing writers stop colliding in lockstep. */
+export const retryPause = (retry: number) => new Promise<void>(resolve => setTimeout(resolve, 20 * (retry + 1) + Math.random() * 60));
+
 export function isRetryableTransactionError(error: unknown): boolean {
   if (!(error instanceof Prisma.PrismaClientKnownRequestError)) return false;
   if (error.code === 'P2034' || error.code === 'P2002') return true;

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { randomBytes } from 'node:crypto';
+import { newShareToken } from '@/lib/share-version';
+import { recordExamRevision } from '@/lib/exam-persistence';
 import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import { requireRequestAuth } from '@/lib/request-auth';
@@ -24,7 +25,14 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const exam = await prisma.exam.findFirst({ where: { id, ownerId: user.id, deletedAt: null }, include: { items: { include: { question: { select: { shareable: true, deletedAt: true, ownerId: true, passage: { select: { ownerId: true } } } } } } } });
     if (!exam) return NextResponse.json({ error: 'Không tìm thấy đề thi của bạn' }, { status: 404 });
     if (exam.items.some(item => !item.question.shareable || item.question.deletedAt || item.question.ownerId !== user.id || (item.question.passage && item.question.passage.ownerId !== user.id))) return NextResponse.json({ error: 'Đề có câu hỏi hoặc ngữ liệu ngoài quyền chia sẻ, hoặc đã xóa' }, { status: 403 });
-    const link = await prisma.shareLink.create({ data: { examId: id, token: randomBytes(32).toString('base64url'), showAnswers: parsed.data.showAnswers, allowCopy: parsed.data.allowCopy, expiresAt: parsed.data.expiresAt ? new Date(parsed.data.expiresAt) : null } });
+    // Pin the link to this exact version; make sure that version is recorded before anyone can open the link.
+    const recorded = await prisma.examRevision.findUnique({ where: { examId_version: { examId: id, version: exam.version } }, select: { id: true } });
+    if (!recorded) {
+      const full = await prisma.exam.findFirst({ where: { id, ownerId: user.id, deletedAt: null }, include: { items: { include: { question: { include: { passage: true } } }, orderBy: { position: 'asc' } } } });
+      if (!full) return NextResponse.json({ error: 'Không tìm thấy đề thi của bạn' }, { status: 404 });
+      await prisma.$transaction(tx => recordExamRevision(tx, full, user.id, 'Ghi nhận phiên bản trước khi chia sẻ'));
+    }
+    const link = await prisma.shareLink.create({ data: { examId: id, token: newShareToken(exam.version), showAnswers: parsed.data.showAnswers, allowCopy: parsed.data.allowCopy, expiresAt: parsed.data.expiresAt ? new Date(parsed.data.expiresAt) : null } });
     return NextResponse.json({ success: true, link: { id: link.id, showAnswers: link.showAnswers, allowCopy: link.allowCopy, expiresAt: link.expiresAt }, publicLink: '/share/' + link.token }, { headers: { 'Cache-Control': 'no-store' } });
   } catch (error) { return failure(error); }
 }

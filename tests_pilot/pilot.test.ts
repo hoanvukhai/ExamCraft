@@ -138,7 +138,7 @@ async function flow(id: string, action: (f: Fixture) => Promise<void>, firstPass
   finally { if (f) { try { await f.cleanup(); cleanupComplete = true; } catch (e) { error ??= e; } } }
   const message = error instanceof Error ? error.message.replaceAll(f?.password ?? '\0', '[fixture-password]') : error ? 'Unknown pilot failure' : undefined;
   results.push({ id, status: error ? 'FAIL' : 'PASS', durationMs: Date.now() - start, cleanupComplete, ...(message ? { error: message } : {}) });
-  fs.mkdirSync(reportDir, { recursive: true }); const evidence=JSON.stringify({ run, sourceSha256, buildId, browserVersion, browserExecutable: process.env.PILOT_BROWSER_PATH, requestedFlow: process.env.PILOT_FLOW ?? 'F1-F7,F9,F10,F11', checkedAt: new Date().toISOString(), environment: 'isolatedTest localhost3117 / examcraft_test_20261022', realAiCalls: false, results }, null, 2);
+  fs.mkdirSync(reportDir, { recursive: true }); const evidence=JSON.stringify({ run, sourceSha256, buildId, browserVersion, browserExecutable: process.env.PILOT_BROWSER_PATH, requestedFlow: process.env.PILOT_FLOW ?? 'F1-F7,F9-F12', checkedAt: new Date().toISOString(), environment: 'isolatedTest localhost3117 / examcraft_test_20261022', realAiCalls: false, results }, null, 2);
   fs.writeFileSync(`${reportDir}/pilot-results.json`,evidence);fs.writeFileSync(`${reportDir}/pilot-run-${run}.json`,evidence);
   if (error) throw Error(`${id}: ${message}`);
 }
@@ -396,4 +396,29 @@ test('F11 a reload that fails with no network loses nothing and the draft reache
   await f.page.goto(origin + '/editor/' + id);
   await waitUntil(async () => (await f.db.exam.findUniqueOrThrow({ where: { id } })).title === offlineTitle, 'Offline draft was not saved after reconnecting', 30000);
   assert.equal(await f.db.exam.count({ where: { ownerId: f.ids[0] } }), 1, 'No duplicate exam from recovery');
+}));
+
+test('F12 teacher corrects a short-answer key, previews, applies and the student score follows', { timeout: 150000 }, () => flow('F12', async f => {
+  await authenticated(f); const asg = await assignment(f, await seedExam(f)); await studentSubmit(f, asg);
+  const attempt = await f.db.attempt.findFirstOrThrow({ where: { assignmentId: asg.id } });
+  const before = Number(attempt.score);
+  await f.page.goto(origin + '/teacher/assignments/' + asg.id);
+  await f.page.getByRole('button', { name: /Phân tích câu hỏi/ }).click();
+  const panel = f.page.getByTestId('regrade-panel'); await panel.waitFor();
+  await panel.locator('summary').click();
+  await panel.getByLabel('Câu cần sửa').selectOption({ label: 'Câu 3: PILOT Q3 short_answer' });
+  await panel.getByLabel('Các đáp án được chấp nhận').fill('3');
+  const apply = panel.getByRole('button', { name: 'Sửa đáp án và chấm lại', exact: true });
+  assert.equal(await apply.isDisabled(), true, 'Applying needs a reason and a preview first');
+  await panel.getByLabel('Lý do sửa đáp án').fill('Nhập nhầm đáp án');
+  await panel.getByRole('button', { name: 'Xem trước ảnh hưởng', exact: true }).click();
+  await panel.getByTestId('regrade-effect').getByText(/Xem trước: 1 bài đổi điểm/).waitFor();
+  assert.equal(Number((await f.db.attempt.findUniqueOrThrow({ where: { id: attempt.id } })).score), before, 'Preview writes nothing');
+  await apply.click();
+  await panel.getByTestId('regrade-message').getByText('Đã sửa đáp án và chấm lại 1 bài').waitFor();
+  const after = await f.db.attempt.findUniqueOrThrow({ where: { id: attempt.id } });
+  assert.equal(Number(after.score), before - 1, 'The student lost the point of the corrected question');
+  assert.equal((await f.db.attemptAnswer.findUniqueOrThrow({ where: { attemptId_questionKey: { attemptId: attempt.id, questionKey: 'q3' } } })).isCorrect, false);
+  assert.equal(await f.db.auditLog.count({ where: { action: 'attempt.grade', targetId: attempt.id } }), 1, 'One history event for the regraded attempt');
+  await panel.getByText(/Nhập nhầm đáp án/).waitFor();
 }));

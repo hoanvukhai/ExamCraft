@@ -3,12 +3,11 @@ import { z } from 'zod';
 import crypto from 'node:crypto';
 import bcrypt from 'bcryptjs';
 import prisma from '@/lib/prisma';
-import { Prisma } from '@prisma/client';
 import { attachAttemptCookie, attemptDeadline, attemptSessionToken, hasAttemptAccess, isSameOriginMutation, SUBMIT_GRACE_MS } from '@/lib/attempt-access';
 import { createAttemptLayout, examForAttempt } from '@/lib/attempt-layout';
 import { attemptDraftRevision } from '@/lib/attempt-draft-revision';
 import { joinCodeMatches } from '@/lib/assignment-options';
-import { isRetryableTransactionError } from '@/lib/transaction-retry';
+import { isRetryableTransactionError, MAX_TRANSACTION_TRIES, retryPause } from '@/lib/transaction-retry';
 
 const Schema = z.object({ studentId: z.string().max(100).optional(), freeName: z.string().trim().min(1).max(120).optional(), personalToken: z.string().max(200).optional(), pin: z.string().max(100).optional(), joinCode: z.string().max(100).optional() });
 class StartError extends Error { constructor(message: string, public status = 403) { super(message); } }
@@ -19,7 +18,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pub
   if (!parsed.success) return NextResponse.json({ error: 'Dữ liệu không hợp lệ' }, { status: 400 });
   const { publicId } = await params;
   try {
-    for (let retry = 0; retry < 3; retry++) {
+    for (let retry = 0; retry < MAX_TRANSACTION_TRIES; retry++) {
       try {
         const result = await prisma.$transaction(async tx => {
           const assignment = await tx.assignment.findUnique({ where: { publicId }, include: { group: true } });
@@ -34,9 +33,14 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pub
             if (!parsed.data.freeName || parsed.data.studentId || parsed.data.personalToken) throw new StartError('Vui lòng nhập họ tên', 400);
             let groupId = assignment.groupId;
             if (!groupId) {
-              const group = await tx.group.create({ data: { ownerId: assignment.ownerId, name: 'Bài giao ' + assignment.id, publicCode: crypto.randomBytes(16).toString('hex') } });
-              groupId = group.id;
-              await tx.assignment.update({ where: { id: assignment.id }, data: { groupId } });
+              // Only the first starts of a class-less assignment create its group; they queue on the assignment row and re-read it.
+              await tx.$queryRaw`SELECT "id" FROM "Assignment" WHERE "id" = ${assignment.id} FOR UPDATE`;
+              groupId = (await tx.assignment.findUniqueOrThrow({ where: { id: assignment.id }, select: { groupId: true } })).groupId;
+              if (!groupId) {
+                const group = await tx.group.create({ data: { ownerId: assignment.ownerId, name: 'Bài giao ' + assignment.id, publicCode: crypto.randomBytes(16).toString('hex') } });
+                groupId = group.id;
+                await tx.assignment.update({ where: { id: assignment.id }, data: { groupId } });
+              }
             }
             student = await tx.student.upsert({ where: { groupId_displayName: { groupId, displayName: parsed.data.freeName } }, create: { groupId, displayName: parsed.data.freeName, isGuest: true }, update: {} });
           } else if (assignment.identityMode === 'PERSONAL_LINK') {
@@ -48,6 +52,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pub
           }
           if (!student || student.archivedAt) throw new StartError('Học sinh không thuộc lớp của bài giao');
           if (assignment.requirePin && (!student.pinHash || !parsed.data.pin || !await bcrypt.compare(parsed.data.pin, student.pinHash))) throw new StartError('PIN không đúng hoặc chưa được giáo viên thiết lập');
+          // Starts of the same student queue on that student's row, so the attempt count below is exact; other students never wait for each other.
+          await tx.$queryRaw`SELECT "id" FROM "Student" WHERE "id" = ${student.id} FOR UPDATE`;
           const previous = await tx.attempt.findMany({ where: { assignmentId: assignment.id, studentId: student.id }, orderBy: { attemptNo: 'desc' } });
           const active = previous.find(a => a.status === 'IN_PROGRESS' && (!a.deadlineAt || a.deadlineAt.getTime() + SUBMIT_GRACE_MS >= now.getTime()));
           if (active) {
@@ -65,13 +71,13 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pub
           } });
           attemptSessionToken(attempt); // Refuse to commit a new attempt if the session key is missing.
           return { attempt, studentName: student.displayName, resumed: false, snapshot: assignment.snapshot };
-        }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
+        });
         const { attempt, studentName, resumed, snapshot } = result;
         return attachAttemptCookie(NextResponse.json({ success: true, resumed, serverNow: new Date().toISOString(), attempt: {
           id: attempt.id, attemptNo: attempt.attemptNo, startedAt: attempt.startedAt, deadlineAt: attempt.deadlineAt, draft: attempt.draft, draftRevision: attemptDraftRevision(attempt.draft), studentName,
         }, exam: examForAttempt(snapshot, attempt.layout) }), attempt);
       } catch (error) {
-        if (isRetryableTransactionError(error) && retry < 2) continue;
+        if (isRetryableTransactionError(error) && retry < MAX_TRANSACTION_TRIES - 1) { await retryPause(retry); continue; }
         throw error;
       }
     }
