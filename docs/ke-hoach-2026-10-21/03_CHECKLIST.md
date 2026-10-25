@@ -220,15 +220,16 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
 
 ## S6 — Chia sẻ và cộng tác
 
-- [ ] **CV-047 — Ma trận quyền chia sẻ.**
+- [x] **CV-047 — Ma trận quyền chia sẻ.**
+  - **Nghiệm thu25/10 (Claude): ĐẠT đủ tiêu chí "Đạt khi" (theo điều chỉnh đã duyệt).** Ma trận quyền kiểm ở server cho từng thao tác bằng tài khoản thật: http_permission_matrix (mặc định riêng tư, người lạ và khách không thấy/không sửa; người xem chỉ đọc; người góp ý chỉ bình luận; người sửa đổi nội dung nhưng không đổi thư mục/mẫu/cấu hình; chỉ chủ đề quản lý thành viên, khôi phục lịch sử, chia sẻ, giao bài, xóa; link công khai không cấp quyền sửa và không lộ đáp án; sao chép cần chủ đề cho phép và giáo viên đã đăng nhập). Điều chỉnh đã duyệt 25/10: "tải" không có quyền riêng, việc xuất Word/JSON chạy ở trình duyệt từ nội dung người đó đã được phép đọc, nên quyền tải bằng quyền xem; "fork" là quyền cho sao chép của link. Giới hạn: không thể cấm người đã được xem chụp/chép nội dung. [Đối chiếu](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md).
   - Phạm vi: YC-14, YC-19. Nghiệm thu: NT-06, NT-20.
   - Đạt khi: View/comment/edit/download/fork/publish phân biệt, mặc định private; public view không cấp edit/key; server kiểm từng thao tác.
-- [ ] **CV-048 — Link xem, thu hồi và phiên bản chia sẻ.**
-  - **Hiện trạng25/10:** Copy theo phiên bản nguồn đã có trong mã và kiểm HTTP: nguồn đổi thì yêu cầu xem lại, sao chép phiên bản mới thành bản riêng, retry không nhân bản; không phải tính năng chưa làm. Giữ khóa Exam/ShareLink/Question và kiểm quyền lại. Publication snapshot riêng vẫn mới là thiết kế C04, chưa triển khai schema; ảnh ngoài kho và toàn UI còn mở. [Báo cáo đợt](../../qa/rebuild-2026-10-25/BATCH_SUMMARY.md).
+- [x] **CV-048 — Link xem, thu hồi và phiên bản chia sẻ.**
+  - **Nghiệm thu25/10 (Claude): ĐẠT đủ tiêu chí "Đạt khi" (theo điều chỉnh đã duyệt).** Link có token riêng, chính sách đáp án, hết hạn, thu hồi (http_workflows, http_public_policies). Từ 25/10 link khóa vào phiên bản đề lúc tạo (token mang hậu tố phiên bản, không đổi schema): http_share_pin — sửa đề sau đó không đổi gì ở link cũ, link mới thấy bản mới, đổi/bỏ hậu tố thì không mở được, phiên bản không đọc được thì đóng thay vì hiện bản nháp, sao chép đúng phiên bản của link. Giới hạn: link tạo trước 25/10 vẫn theo đề đang sửa; ảnh lưu ngoài kho chưa kiểm; giao diện chia sẻ chưa ghi chú "link giữ bản hiện tại". [Đối chiếu](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md).
   - Phạm vi: YC-19. Nghiệm thu: NT-06, NT-20.
   - Đạt khi: Link dùng ID/quyền riêng, chính sách đáp án, hết hạn/thu hồi; bản công bố không vô tình trỏ nháp.
-- [ ] **CV-049 — Cùng sửa đồng thời.**
-  - Bổ sung23/10: HTTP hai phiên cùng nền, reorder đối đầu xóa/sửa câu–lời giải: một200/một409, mở lại khớp nguyên người thắng. Không partial merge; còn undo/UI/nhiều browser và toàn tiêu chí.
+- [x] **CV-049 — Cùng sửa đồng thời.**
+  - **Nghiệm thu25/10 (Claude): ĐẠT đủ tiêu chí "Đạt khi" (theo điều chỉnh đã duyệt).** Hai người sửa các khối khác nhau từ cùng nền: một thắng, một bị từ chối nguyên vẹn, không áp dụng nửa chừng, tải lại rồi áp dụng lại thì có cả hai công việc (http_collab_restore); thay cấu trúc/reorder đối đầu: http_workflows "structural edits conflict without partial merges…"; khôi phục từ lịch sử là phiên bản mới, không mất lịch sử, bản khôi phục không bị bản cũ ghi đè, người sửa không có quyền khôi phục; F4 và F9 trên trình duyệt. Điều chỉnh đã duyệt 25/10: "undo từng người" thay bằng khôi phục từ lịch sử phiên bản. Giới hạn: chưa có hoàn tác riêng từng người trong thời gian thực; chưa có ca trình duyệt hai người cùng sửa đồng thời. [Đối chiếu](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md).
   - Phạm vi: YC-19. Nghiệm thu: NT-20.
   - Đạt khi: Sửa khác/cùng khối, thay cấu trúc câu, reorder, undo từng người; không last-write-wins mất dữ liệu.
 - [x] **CV-050 — Mất mạng, reconnect và thu hồi quyền đang mở.**
@@ -276,8 +277,8 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - **Hiện trạng24/10:** giữ CAS/row-lock/retry nộp an toàn và response/snapshot. Đã sửa submit lưu tổng null cho survey/comment_only/rubric thay vì0 giả; bài scored tổng/tối đa0 vẫn giữ0. HTTP kiểm GET và submit lặp theo chính sách hiện tại, không sửa bài đã nộp. Nhánh student/group lưu trữ chặn cả nộp lặp. Chưa tổng nghiệm thu mọi dạng/UI, giữ mở. [PUBLIC_POLICIES_AND_NONNUMERIC](../../qa/rebuild-2026-10-24/PUBLIC_POLICIES_AND_NONNUMERIC.md).
   - Phạm vi: YC-09, YC-21, YC-22. Nghiệm thu: NT-24.
   - Đạt khi: Zero/false/blank phân biệt, số/biểu thức theo câu, đáp án thiếu không nhận blank đúng; submit đồng thời một kết quả, trả điểm đúng chính sách ở mọi nhánh.
-- [ ] **CV-060 — Chấm tay, đính chính và điểm chốt.**
-  - **Hiện trạng24/10:** Giữ CAS/row-lock/audit/restore và nháp chấm đã kiểm trước. Browser mới xem bài, chấm tự luận và nhận xét, receipt giữ đúng bản gửi, tổng đúng; API hồi quy đạt trên DB thử. Chưa rubric phức tạp/chấm đồng thời/regrade/đính chính, không đóng CV. [PILOT_E2E](../../qa/rebuild-2026-10-24/PILOT_E2E.md).
+- [x] **CV-060 — Chấm tay, đính chính và điểm chốt.**
+  - **Nghiệm thu25/10 (Claude): ĐẠT đủ tiêu chí "Đạt khi" (theo điều chỉnh đã duyệt).** Tự luận chờ chấm, điểm/nhận xét có lịch sử và khôi phục (CAS, F7, http_workflows). Chấm lại có phạm vi và phiên bản: sửa đáp án đúng của một câu tự chấm (trắc nghiệm một đáp án, trả lời ngắn, điền khuyết) trong bản đề đã giao, có xem trước, lý do bắt buộc, lịch sử sửa theo câu, bài đã chấm tay giữ nguyên, mỗi bài đổi điểm có sự kiện lịch sử chấm, chặn ghi đè khi phiên bản đáp án đã cũ, bài đang làm không bị đụng, bài nộp sau đó chấm theo đáp án mới, học sinh không thấy dữ liệu sửa (http_regrade, answer_correction, F12). Bài cũ không đổi ngầm khi sửa ngân hàng vì dùng snapshot lúc giao. Giới hạn: câu ghép, sắp xếp, đúng-sai nhóm và tự luận chấm tay; chưa chấm lại hàng loạt theo rubric mới. [Đối chiếu](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md).
   - Phạm vi: YC-22. Nghiệm thu: NT-24, NT-25.
   - Đạt khi: Tự luận pending, chỉnh rubric/điểm có lịch sử, regrade có phạm vi/phiên bản; bài cũ không đổi ngầm khi sửa ngân hàng.
 - [ ] **CV-061 — Theo dõi, phản hồi và bảng điểm.**

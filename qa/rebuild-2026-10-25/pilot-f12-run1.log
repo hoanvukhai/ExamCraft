@@ -1,0 +1,49 @@
+
+> exam-craft@0.1.0 test:pilot
+> node --import tsx scripts/pilot-run.cjs
+
+Pilot guard: installed browser; isolatedTest confirmed; exact test database selected.
+TAP version 13
+# Starting F12
+# F12 dialog: 
+# Subtest: F12 teacher corrects a short-answer key, previews, applies and the student score follows
+not ok 1 - F12 teacher corrects a short-answer key, previews, applies and the student score follows
+  ---
+  duration_ms: 43502.1517
+  type: 'test'
+  location: 'F:\\Workspace\\Zazz\\ExamCraft\\tests_pilot\\pilot.test.ts:2:41174'
+  failureType: 'testCodeFailure'
+  error: |-
+    F12: locator.selectOption: Timeout 20000ms exceeded.
+    Call log:
+    [2m  - waiting for getByTestId('regrade-panel').getByLabel('Câu cần sửa')[22m
+    [2m    - locator resolved to <select aria-label="Câu cần sửa" class="mt-1 w-full border rounded-lg p-2 bg-transparent">…</select>[22m
+    [2m  - attempting select option action[22m
+    [2m    2 × waiting for element to be visible and enabled[22m
+    [2m      - did not find some options[22m
+    [2m    - retrying select option action[22m
+    [2m    - waiting 20ms[22m
+    [2m    2 × waiting for element to be visible and enabled[22m
+    [2m      - did not find some options[22m
+    [2m    - retrying select option action[22m
+    [2m      - waiting 100ms[22m
+    [2m    37 × waiting for element to be visible and enabled[22m
+    [2m       - did not find some options[22m
+    [2m     - retrying select option action[22m
+    [2m       - waiting 500ms[22m
+    
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    flow (F:\Workspace\Zazz\ExamCraft\tests_pilot\pilot.test.ts:143:20)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 44483.0697

@@ -1,0 +1,53 @@
+
+> exam-craft@0.1.0 test:pilot
+> node --import tsx scripts/pilot-run.cjs
+
+Pilot guard: installed browser; isolatedTest confirmed; exact test database selected.
+TAP version 13
+# Starting F12
+# F12 dialog: 
+# F12 debug {
+#   open: true,
+#   html: '<summary class="cursor-pointer text-sm font-medium">Sửa đáp án và chấm lại</summary><div class="mt-3 space-y-3 text-xs"><p class="text-[\#5f6368] dark:text-[\#9aa0a6]">Chỉ áp dụng cho câu trắc nghiệm một đáp án, trả lời ngắn và điền khuyết. Câu bạn đã tự chấm tay được giữ nguyên; mỗi bài đổi điểm có ghi vào lịch sử chấm.</p><label class="block">Câu cần sửa<select aria-label="Câu cần sửa" class="mt-1 w-full border rounded-lg p-2 bg-transparent"><option value="">Chọn câu…</option><option value="q1">Câu 1: PILOT Q1 multiple_choice</option><option value="q3">Câu 2: PILOT Q3 short_answer</option><opt'
+# }
+# Subtest: F12 teacher corrects a short-answer key, previews, applies and the student score follows
+not ok 1 - F12 teacher corrects a short-answer key, previews, applies and the student score follows
+  ---
+  duration_ms: 27068.444
+  type: 'test'
+  location: 'F:\\Workspace\\Zazz\\ExamCraft\\tests_pilot\\pilot.test.ts:2:41174'
+  failureType: 'testCodeFailure'
+  error: |-
+    F12: locator.selectOption: Timeout 5000ms exceeded.
+    Call log:
+    [2m  - waiting for getByTestId('regrade-panel').getByLabel('Câu cần sửa')[22m
+    [2m    - locator resolved to <select aria-label="Câu cần sửa" class="mt-1 w-full border rounded-lg p-2 bg-transparent">…</select>[22m
+    [2m  - attempting select option action[22m
+    [2m    2 × waiting for element to be visible and enabled[22m
+    [2m      - did not find some options[22m
+    [2m    - retrying select option action[22m
+    [2m    - waiting 20ms[22m
+    [2m    2 × waiting for element to be visible and enabled[22m
+    [2m      - did not find some options[22m
+    [2m    - retrying select option action[22m
+    [2m      - waiting 100ms[22m
+    [2m    10 × waiting for element to be visible and enabled[22m
+    [2m       - did not find some options[22m
+    [2m     - retrying select option action[22m
+    [2m       - waiting 500ms[22m
+    
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    flow (F:\Workspace\Zazz\ExamCraft\tests_pilot\pilot.test.ts:143:20)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 28672.3421

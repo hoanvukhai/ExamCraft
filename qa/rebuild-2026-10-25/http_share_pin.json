@@ -1,0 +1,13 @@
+{
+  "checkedAt": "2026-10-25T07:18:24.616Z",
+  "checks": [
+    "link-serves-its-version",
+    "later-edits-stay-out",
+    "legacy-and-tampered",
+    "revoke-and-copy"
+  ],
+  "cleanupComplete": true,
+  "status": "PASS",
+  "environment": "isolated localhost:3117",
+  "realAiCalls": false
+}

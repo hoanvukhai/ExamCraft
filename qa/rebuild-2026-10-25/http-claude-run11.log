@@ -1,0 +1,359 @@
+
+> exam-craft@0.1.0 test:http
+> node --import tsx scripts/test-database.cjs http
+
+Validated test target: 127.0.0.1:5436/examcraft_test_20261022; action=http
+TAP version 13
+# Subtest: assignment options (times, attempts, entry code, PIN) are decided on the server
+    # Subtest: times: close must be in the future and after open, and valid times are stored as sent
+    ok 1 - times: close must be in the future and after open, and valid times are stored as sent
+      ---
+      duration_ms: 343.9229
+      type: 'test'
+      ...
+    # Subtest: attempts: whole numbers 1-10 only; the old default is unchanged when omitted
+    ok 2 - attempts: whole numbers 1-10 only; the old default is unchanged when omitted
+      ---
+      duration_ms: 436.3442
+      type: 'test'
+      ...
+    # Subtest: entry code: normalized when saved, refused when unsafe, case-insensitive for students
+    ok 3 - entry code: normalized when saved, refused when unsafe, case-insensitive for students
+      ---
+      duration_ms: 656.8328
+      type: 'test'
+      ...
+    # Subtest: PIN needs a class and a non-free identity; the rest of the old flow still works
+    ok 4 - PIN needs a class and a non-free identity; the rest of the old flow still works
+      ---
+      duration_ms: 224.8796
+      type: 'test'
+      ...
+    1..4
+ok 1 - assignment options (times, attempts, entry code, PIN) are decided on the server
+  ---
+  duration_ms: 2940.0286
+  type: 'test'
+  ...
+# Subtest: authentication revocation and limits on isolated local HTTP server
+    # Subtest: forced password change is enforced by APIs while account details remain readable
+    ok 1 - forced password change is enforced by APIs while account details remain readable
+      ---
+      duration_ms: 41.4321
+      type: 'test'
+      ...
+    # Subtest: changing password preserves current session and revokes every other session
+    ok 2 - changing password preserves current session and revokes every other session
+      ---
+      duration_ms: 345.6676
+      type: 'test'
+      ...
+    # Subtest: logout deletes the server session and old cookie cannot be reused
+    ok 3 - logout deletes the server session and old cookie cannot be reused
+      ---
+      duration_ms: 234.6675
+      type: 'test'
+      ...
+    # Subtest: admin reset and disable revoke sessions permanently, including after reenable
+    ok 4 - admin reset and disable revoke sessions permanently, including after reenable
+      ---
+      duration_ms: 746.8234
+      type: 'test'
+      ...
+    # Subtest: five failed logins block that account while another account remains usable
+    ok 5 - five failed logins block that account while another account remains usable
+      ---
+      duration_ms: 745.5718
+      type: 'test'
+      ...
+    1..5
+ok 2 - authentication revocation and limits on isolated local HTTP server
+  ---
+  duration_ms: 3631.8502
+  type: 'test'
+  ...
+# Subtest: share permission matrix is decided by the server for every operation
+    # Subtest: private by default: a stranger sees nothing and an anonymous caller cannot act
+    ok 1 - private by default: a stranger sees nothing and an anonymous caller cannot act
+      ---
+      duration_ms: 398.6701
+      type: 'test'
+      ...
+    # Subtest: view: read-only collaborators read but never write, comment, manage or publish
+    ok 2 - view: read-only collaborators read but never write, comment, manage or publish
+      ---
+      duration_ms: 356.1532
+      type: 'test'
+      ...
+    # Subtest: comment: a commenter writes comments only; an editor edits content but not structure owned by the owner
+    ok 3 - comment: a commenter writes comments only; an editor edits content but not structure owned by the owner
+      ---
+      duration_ms: 698.7269
+      type: 'test'
+      ...
+    # Subtest: manage and publish: only the owner changes members, restores history, shares, assigns or deletes
+    ok 4 - manage and publish: only the owner changes members, restores history, shares, assigns or deletes
+      ---
+      duration_ms: 460.1529
+      type: 'test'
+      ...
+    # Subtest: a public link grants neither edit nor keys, and copying needs both the owner permission and a signed-in teacher
+    ok 5 - a public link grants neither edit nor keys, and copying needs both the owner permission and a signed-in teacher
+      ---
+      duration_ms: 88.2249
+      type: 'test'
+      ...
+    1..5
+ok 3 - share permission matrix is decided by the server for every operation
+  ---
+  duration_ms: 4210.179
+  type: 'test'
+  ...
+# Subtest: public deadlines, reveal policies and nonnumeric results on isolated PostgreSQL
+    # Subtest: concurrent starts respect maximum attempts and capabilities cannot cross attempts
+    ok 1 - concurrent starts respect maximum attempts and capabilities cannot cross attempts
+      ---
+      duration_ms: 601.6713
+      type: 'test'
+      ...
+    # Subtest: GET and idempotent submit use current reveal policies and hide rankings when scores are hidden
+    ok 2 - GET and idempotent submit use current reveal policies and hide rankings when scores are hidden
+      ---
+      duration_ms: 1572.6811
+      type: 'test'
+      ...
+    # Subtest: late submission finalizes only the acknowledged draft and future or closed assignments refuse starts
+    ok 3 - late submission finalizes only the acknowledged draft and future or closed assignments refuse starts
+      ---
+      duration_ms: 273.03
+      type: 'test'
+      ...
+    # Subtest: archived students or groups cannot reuse existing capabilities to write or read results
+    ok 4 - archived students or groups cannot reuse existing capabilities to write or read results
+      ---
+      duration_ms: 243.2327
+      type: 'test'
+      ...
+    # Subtest: survey, comment-only and rubric store no artificial totals and do not enter numeric statistics or CSV
+    ok 5 - survey, comment-only and rubric store no artificial totals and do not enter numeric statistics or CSV
+      ---
+      duration_ms: 517.6909
+      type: 'test'
+      ...
+    1..5
+ok 4 - public deadlines, reveal policies and nonnumeric results on isolated PostgreSQL
+  ---
+  duration_ms: 4484.7824
+  type: 'test'
+  ...
+# Subtest: correcting an answer key regrades submitted attempts without touching hand grades
+    # Subtest: preview shows the effect and writes nothing; bad requests change nothing
+    ok 1 - preview shows the effect and writes nothing; bad requests change nothing
+      ---
+      duration_ms: 587.7487
+      type: 'test'
+      ...
+    # Subtest: applying changes only auto-graded answers and records history per attempt
+    ok 2 - applying changes only auto-graded answers and records history per attempt
+      ---
+      duration_ms: 159.8494
+      type: 'test'
+      ...
+    # Subtest: the correction is recorded, repeating it is a no-op, and a stale revision is refused
+    ok 3 - the correction is recorded, repeating it is a no-op, and a stale revision is refused
+      ---
+      duration_ms: 92.1863
+      type: 'test'
+      ...
+    # Subtest: a student who starts afterwards is graded under the corrected key and the key never reaches students
+    ok 4 - a student who starts afterwards is graded under the corrected key and the key never reaches students
+      ---
+      duration_ms: 92.8267
+      type: 'test'
+      ...
+    # Subtest: essay or unsupported keys are refused and a short-answer key can be widened
+    ok 5 - essay or unsupported keys are refused and a short-answer key can be widened
+      ---
+      duration_ms: 77.0748
+      type: 'test'
+      ...
+    # Subtest: closed attempts in progress are not regraded
+    ok 6 - closed attempts in progress are not regraded
+      ---
+      duration_ms: 101.8929
+      type: 'test'
+      ...
+    1..6
+ok 5 - correcting an answer key regrades submitted attempts without touching hand grades
+  ---
+  duration_ms: 4016.1547
+  type: 'test'
+  ...
+# Subtest: a share link stays on the version it was made from and later edits never reach it
+    # Subtest: the link carries its version and serves exactly that version
+    ok 1 - the link carries its version and serves exactly that version
+      ---
+      duration_ms: 25.0983
+      type: 'test'
+      ...
+    # Subtest: editing the exam afterwards changes nothing behind the old link, while a new link shows the new version
+    ok 2 - editing the exam afterwards changes nothing behind the old link, while a new link shows the new version
+      ---
+      duration_ms: 664.7497
+      type: 'test'
+      ...
+    # Subtest: links made before pinning keep following the exam, and a tampered or unknown version never resolves
+    ok 3 - links made before pinning keep following the exam, and a tampered or unknown version never resolves
+      ---
+      duration_ms: 250.6802
+      type: 'test'
+      ...
+    # Subtest: revoking still works for a pinned link and the copy is the pinned version
+    ok 4 - revoking still works for a pinned link and the copy is the pinned version
+      ---
+      duration_ms: 909.7071
+      type: 'test'
+      ...
+    1..4
+ok 6 - a share link stays on the version it was made from and later edits never reach it
+  ---
+  duration_ms: 3164.773
+  type: 'test'
+  ...
+# Subtest: student identity (PIN, class membership, personal link) and concurrent submit on the isolated server
+    # Subtest: PIN: required, checked per student, and a student from another class is refused
+    ok 1 - PIN: required, checked per student, and a student from another class is refused
+      ---
+      duration_ms: 706.958
+      type: 'test'
+      ...
+    # Subtest: personal link: only the student own token of this class works
+    ok 2 - personal link: only the student own token of this class works
+      ---
+      duration_ms: 425.4349
+      type: 'test'
+      ...
+    # Subtest: old links: a revoked or expired share link stops serving content and a refused revoke changes nothing
+    ok 3 - old links: a revoked or expired share link stops serving content and a refused revoke changes nothing
+      ---
+      duration_ms: 337.7389
+      type: 'test'
+      ...
+    # Subtest: two simultaneous submits of one attempt produce one result and no duplicate answers
+    ok 4 - two simultaneous submits of one attempt produce one result and no duplicate answers
+      ---
+      duration_ms: 510.7634
+      type: 'test'
+      ...
+    1..4
+ok 7 - student identity (PIN, class membership, personal link) and concurrent submit on the isolated server
+  ---
+  duration_ms: 3562.7625
+  type: 'test'
+  ...
+# Subtest: HTTP workflows on the isolated local server
+    # Subtest: anonymous, foreign owner and cross-origin writes are rejected
+    ok 1 - anonymous, foreign owner and cross-origin writes are rejected
+      ---
+      duration_ms: 2687.2236
+      type: 'test'
+      ...
+    # Subtest: key creation retries are private, masked and idempotent without contacting a provider
+    ok 2 - key creation retries are private, masked and idempotent without contacting a provider
+      ---
+      duration_ms: 248.3555
+      type: 'test'
+      ...
+    # Subtest: collaboration honors view, edit, CAS, history and revocation
+    ok 3 - collaboration honors view, edit, CAS, history and revocation
+      ---
+      duration_ms: 240.0259
+      type: 'test'
+      ...
+    # Subtest: structural edits conflict without partial merges and revoked writers cannot retry
+    ok 4 - structural edits conflict without partial merges and revoked writers cannot retry
+      ---
+      duration_ms: 140.9164
+      type: 'test'
+      ...
+    # Subtest: legacy preview is read-only, import resumes per item and retries never overwrite teacher edits
+    ok 5 - legacy preview is read-only, import resumes per item and retries never overwrite teacher edits
+      ---
+      duration_ms: 1653.1965
+      type: 'test'
+      ...
+    # Subtest: public share and assignment hide keys and assignment freezes the source
+    ok 6 - public share and assignment hide keys and assignment freezes the source
+      ---
+      duration_ms: 66.3774
+      type: 'test'
+      ...
+    # Subtest: a signed-in teacher copies a shared exam into their own server library without answers the link hides
+    ok 7 - a signed-in teacher copies a shared exam into their own server library without answers the link hides
+      ---
+      duration_ms: 922.3544
+      type: 'test'
+      ...
+    # Subtest: attempt cookie is required; submit is idempotent and essay remains pending
+    ok 8 - attempt cookie is required; submit is idempotent and essay remains pending
+      ---
+      duration_ms: 471.2529
+      type: 'test'
+      ...
+    # Subtest: saved-only submission preserves the server draft when another page has unsubmitted conflicting answers
+    ok 9 - saved-only submission preserves the server draft when another page has unsubmitted conflicting answers
+      ---
+      duration_ms: 76.8768
+      type: 'test'
+      ...
+    # Subtest: history restore keeps student answers, restores pending distinctly from zero, isolates owners and serializes concurrent changes
+    ok 10 - history restore keeps student answers, restores pending distinctly from zero, isolates owners and serializes concurrent changes
+      ---
+      duration_ms: 288.1232
+      type: 'test'
+      ...
+    # Subtest: comment-only work saves and restores feedback without creating numeric scores
+    ok 11 - comment-only work saves and restores feedback without creating numeric scores
+      ---
+      duration_ms: 221.1388
+      type: 'test'
+      ...
+    # Subtest: knowledge snapshot and scope survive HTTP saves, reject a changed revision and stay out of public shares
+    ok 12 - knowledge snapshot and scope survive HTTP saves, reject a changed revision and stay out of public shares
+      ---
+      duration_ms: 184.8474
+      type: 'test'
+      ...
+    # Subtest: personal templates are private immutable copies with source checks, retry safety and portable applied snapshots
+    ok 13 - personal templates are private immutable copies with source checks, retry safety and portable applied snapshots
+      ---
+      duration_ms: 275.63
+      type: 'test'
+      ...
+    # Subtest: bank saves passages, forks privately and protects edit, history and soft delete with versions
+    ok 14 - bank saves passages, forks privately and protects edit, history and soft delete with versions
+      ---
+      duration_ms: 148.2548
+      type: 'test'
+      ...
+    # Subtest: private memory import is previewed, owner-isolated and inactive by default
+    ok 15 - private memory import is previewed, owner-isolated and inactive by default
+      ---
+      duration_ms: 158.8824
+      type: 'test'
+      ...
+    1..15
+ok 8 - HTTP workflows on the isolated local server
+  ---
+  duration_ms: 8891.6059
+  type: 'test'
+  ...
+1..8
+# tests 56
+# suites 0
+# pass 56
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 9764.9553

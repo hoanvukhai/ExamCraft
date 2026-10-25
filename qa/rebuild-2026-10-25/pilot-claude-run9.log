@@ -1,0 +1,106 @@
+
+> exam-craft@0.1.0 test:pilot
+> node --import tsx scripts/pilot-run.cjs
+
+Pilot guard: installed browser; isolatedTest confirmed; exact test database selected.
+TAP version 13
+# Starting F1
+# Starting F2
+# Subtest: F1 first login, password change and library
+ok 1 - F1 first login, password change and library
+  ---
+  duration_ms: 4941.3194
+  type: 'test'
+  ...
+# Starting F3
+# Subtest: F2 author seven types, image, passage, zero, title and reopen
+ok 2 - F2 author seven types, image, passage, zero, title and reopen
+  ---
+  duration_ms: 9373.3139
+  type: 'test'
+  ...
+# F3 variant 0 download requested
+# F3 variant 0 downloaded
+# F3 variant 1 download requested
+# F3 variant 1 downloaded
+# F3 variant 2 download requested
+# F3 variant 2 downloaded
+# F3 variant 3 download requested
+# F3 variant 3 downloaded
+# Starting F4
+# Subtest: F3 answer views, shuffle, Word and print
+ok 3 - F3 answer views, shuffle, Word and print
+  ---
+  duration_ms: 5550.2553
+  type: 'test'
+  ...
+# Starting F5
+# Subtest: F4 public link, collaborator edits and revoke
+ok 4 - F4 public link, collaborator edits and revoke
+  ---
+  duration_ms: 8966.4247
+  type: 'test'
+  ...
+# F5 dialog: Bài giao chưa mở hoặc đã đóng
+# Starting F6
+# Subtest: F5 assign link with and without class and inspect frozen policies
+ok 5 - F5 assign link with and without class and inspect frozen policies
+  ---
+  duration_ms: 18510.4296
+  type: 'test'
+  ...
+# F6 dialog: 
+# Starting F7
+# Subtest: F6 seven student answers survive reload, submit and hide solutions
+ok 6 - F6 seven student answers survive reload, submit and hide solutions
+  ---
+  duration_ms: 18053.0828
+  type: 'test'
+  ...
+# F7 dialog: 
+# Starting F9
+# Subtest: F7 manual essay grade, total and CSV
+ok 7 - F7 manual essay grade, total and CSV
+  ---
+  duration_ms: 18700.4901
+  type: 'test'
+  ...
+# Starting F10
+# Subtest: F9 offline edits reconnect safely and preserve a conflicting draft as a separate exam
+ok 8 - F9 offline edits reconnect safely and preserve a conflicting draft as a separate exam
+  ---
+  duration_ms: 8237.5886
+  type: 'test'
+  ...
+# F10 dialog: 
+# Starting F11
+# Subtest: F10 switching accounts in one browser keeps a local draft private to its owner and recoverable
+ok 9 - F10 switching accounts in one browser keeps a local draft private to its owner and recoverable
+  ---
+  duration_ms: 8852.339
+  type: 'test'
+  ...
+# F11 dialog: 
+# Starting F12
+# Subtest: F11 a reload that fails with no network loses nothing and the draft reaches the server on reconnect
+ok 10 - F11 a reload that fails with no network loses nothing and the draft reaches the server on reconnect
+  ---
+  duration_ms: 5242.0385
+  type: 'test'
+  ...
+# F12 dialog: 
+# Subtest: F12 teacher corrects a short-answer key, previews, applies and the student score follows
+ok 11 - F12 teacher corrects a short-answer key, previews, applies and the student score follows
+  ---
+  duration_ms: 18615.2169
+  type: 'test'
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 125791.4437

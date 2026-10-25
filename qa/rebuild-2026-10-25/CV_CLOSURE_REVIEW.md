@@ -29,3 +29,18 @@ Việc nhỏ nhất để đóng thêm: CV011 (một ca trình duyệt đổi t�
 - Thêm hai luồng trình duyệt: **F10** (đổi tài khoản trong cùng trình duyệt: nháp chưa lưu của A không hiện cho B, không lưu lên máy chủ khi B đăng nhập, không tạo dữ liệu dưới B; A đăng nhập lại thì nháp phục hồi) và **F11** (tải lại thất bại khi không có mạng không làm mất nháp; nối lại lưu đúng một đề). Chạy toàn bộ trình duyệt: 10/10 ([log](pilot-claude-run7.log)).
 - **CV011 đóng.** **CV010 đóng** theo "Đạt khi" của checklist.
 - Giới hạn nói thẳng: ứng dụng **chưa có bản mở offline** (không service worker). Mở trang mới hoàn toàn không mạng sẽ không hiển thị; nháp trên máy được giữ và lưu khi có mạng. Nếu cần "mở lại hoàn toàn offline" thì là tính năng mới (service worker), chưa làm. Hai engine sửa đồng thời cũng chưa kiểm.
+
+## Bổ sung: đóng CV060, CV048, CV047, CV049 (cùng ngày)
+Chạy cuối: build đạt, SAFE 344/344 ([log](safe-claude-run3.log)), HTTP 60/60 ([log](http-claude-run13.log)), trình duyệt 11/11 gồm F10–F12 ([log](pilot-claude-run9.log)). Mã đã đổi:
+- **CV060:** `answer-correction.ts`, API `/api/teacher/assignments/[id]/regrade` (xem trước, áp dụng, lịch sử), `RegradePanel` ở tab Phân tích. Ca trình duyệt F12 phát hiện lỗi đánh số trong danh sách (đánh theo vị trí lọc, không theo số câu của đề), đã sửa.
+- **CV048:** link chia sẻ mới mang hậu tố phiên bản trong token (`<ngẫu nhiên>.v<phiên bản>`), trang công khai và route sao chép đọc bản lịch sử đó; không đổi schema nên không cần migration trên DB chính. Test `http_workflows` cũ mã hóa hành vi "link luôn theo bản mới" đã được cập nhật theo quy tắc mới.
+- **Lỗi thật tìm thấy khi chạy:** bước bắt đầu làm bài dùng giao dịch Serializable nên các học sinh *khác nhau* cũng tranh nhau và có lúc trả 503 (một lớp bấm cùng lúc sẽ gặp). Đã đổi sang khóa theo từng học sinh (và khóa bài giao chỉ khi tạo nhóm lần đầu), thêm chờ ngẫu nhiên giữa các lần thử. Sau sửa: HTTP chạy 3 lần liên tiếp không lỗi.
+- **CV047 và CV049:** không đổi mã sản phẩm, chỉ thêm test `http_permission_matrix`, `http_collab_restore`.
+
+### Đính chính điều tôi đã nói sai
+Trong đề xuất quyết định tôi nói bình luận và quyền công bố "chưa có". Sai: mã đã có vai trò người góp ý, bình luận, và `canPublish` của chủ đề. Test ma trận kiểm cả hai. Quyền "tải" thì không tách được ở server vì xuất Word/JSON chạy ở trình duyệt; đã ghi thành "tải = quyền xem" trong nghiệm thu CV047, chủ dự án có thể bác bỏ cách hiểu này.
+
+### Giới hạn và điều chập chờn
+- F2 (soạn đề) từng hỏng 2 trong 4 lần chạy ở bước tìm ô "Điểm câu" rồi đạt khi chạy lại; chưa tìm nguyên nhân, nghi tranh thời gian giao diện. Lần chạy cuối đạt.
+- Một lần chạy HTTP trước khi sửa khóa có 503 ở bước bắt đầu làm bài; sau sửa không tái hiện.
+- Chấm lại chỉ cho 3 dạng câu tự chấm; các dạng khác phải chấm tay. Link chia sẻ tạo trước 25/10 vẫn theo đề đang sửa.
