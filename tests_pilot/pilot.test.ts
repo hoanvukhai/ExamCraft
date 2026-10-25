@@ -139,7 +139,7 @@ async function flow(id: string, action: (f: Fixture) => Promise<void>, firstPass
   finally { if (f) { try { await f.cleanup(); cleanupComplete = true; } catch (e) { error ??= e; } } }
   const message = error instanceof Error ? error.message.replaceAll(f?.password ?? '\0', '[fixture-password]') : error ? 'Unknown pilot failure' : undefined;
   results.push({ id, status: error ? 'FAIL' : 'PASS', durationMs: Date.now() - start, cleanupComplete, ...(message ? { error: message } : {}) });
-  fs.mkdirSync(reportDir, { recursive: true }); const evidence=JSON.stringify({ run, sourceSha256, buildId, browserVersion, browserExecutable: process.env.PILOT_BROWSER_PATH, requestedFlow: process.env.PILOT_FLOW ?? 'F1-F7,F9-F15', checkedAt: new Date().toISOString(), environment: 'isolatedTest localhost3117 / examcraft_test_20261022', realAiCalls: false, results }, null, 2);
+  fs.mkdirSync(reportDir, { recursive: true }); const evidence=JSON.stringify({ run, sourceSha256, buildId, browserVersion, browserExecutable: process.env.PILOT_BROWSER_PATH, requestedFlow: process.env.PILOT_FLOW ?? 'F1-F7,F9-F16', checkedAt: new Date().toISOString(), environment: 'isolatedTest localhost3117 / examcraft_test_20261022', realAiCalls: false, results }, null, 2);
   fs.writeFileSync(`${reportDir}/pilot-results.json`,evidence);fs.writeFileSync(`${reportDir}/pilot-run-${run}.json`,evidence);
   if (error) throw Error(`${id}: ${message}`);
 }
@@ -554,4 +554,61 @@ test('F15 a 60-question exam prints on A4 pages without sideways overflow or que
   const pdf = await f.page.pdf({ preferCSSPageSize: true, printBackground: true });
   const pages = Number(/\/Type\s*\/Pages\s*\/Count\s+(\d+)/.exec(pdf.toString('latin1'))?.[1] ?? 0);
   assert.ok(pdf.subarray(0, 5).toString() === '%PDF-' && pages >= 5 && pages <= 40, `the PDF has a sensible page count (${pages})`);
+}));
+
+/** Names of visible buttons, links and fields that a screen reader or a keyboard user could not tell apart. */
+async function unnamedControls(page: Page) {
+  return await page.evaluate(`(() => {
+    const visible = el => { const box = el.getBoundingClientRect(); const style = window.getComputedStyle(el); return box.width > 0 && box.height > 0 && style.visibility !== 'hidden' && style.display !== 'none'; };
+    const nameOf = el => {
+      const aria = el.getAttribute('aria-label'); if (aria && aria.trim()) return aria.trim();
+      const by = el.getAttribute('aria-labelledby'); if (by) { const text = by.split(' ').map(id => { const node = window.document.getElementById(id); return node ? node.textContent : ''; }).join(' ').trim(); if (text) return text; }
+      if (el.labels && el.labels.length) { const text = Array.from(el.labels).map(label => label.textContent).join(' ').trim(); if (text) return text; }
+      const title = el.getAttribute('title'); if (title && title.trim()) return title.trim();
+      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') { const placeholder = el.getAttribute('placeholder'); if (placeholder && placeholder.trim()) return placeholder.trim(); if (el.type === 'submit' || el.type === 'button') return (el.value || '').trim(); return ''; }
+      const own = (el.textContent || '').trim(); if (own) return own;
+      const img = el.querySelector('img[alt]'); return img ? img.getAttribute('alt').trim() : '';
+    };
+    const bad = Array.from(window.document.querySelectorAll('button, a[href], input:not([type=hidden]), select, textarea, [role=button]')).filter(visible).filter(el => !nameOf(el)).map(el => el.tagName.toLowerCase() + (el.className && typeof el.className === 'string' ? '.' + el.className.split(' ').slice(0, 2).join('.') : ''));
+    const positive = Array.from(window.document.querySelectorAll('[tabindex]')).filter(el => Number(el.getAttribute('tabindex')) > 0).length;
+    return { bad, positive };
+  })()`) as { bad: string[]; positive: number };
+}
+
+test('F16 main pages have named controls and a student can answer, move and submit with the keyboard alone', { timeout: 180000 }, () => flow('F16', async f => {
+  // 1. Names: every visible control of the main pages can be told apart.
+  const guest = await f.context(), gp = await guest.newPage(); await gp.goto(origin + '/login'); await gp.getByPlaceholder('name@school.edu.vn').waitFor();
+  const findings: string[] = [];
+  const audit = async (page: Page, where: string) => { const r = await unnamedControls(page); for (const item of r.bad) findings.push(`${where}: ${item}`); if (r.positive) findings.push(`${where}: ${r.positive} positive tabindex`); };
+  await audit(gp, 'login');
+  await authenticated(f); const examId = await seedExam(f); const asg = await assignment(f, examId);
+  await f.page.getByRole('button', { name: /Tạo đề mới|Đề mới/ }).first().waitFor().catch(() => {}); await f.page.waitForLoadState('networkidle'); await audit(f.page, 'library');
+  await openExam(f, examId); await f.page.waitForLoadState('networkidle'); await audit(f.page, 'editor');
+  await f.page.goto(origin + '/teacher/assignments/' + asg.id); await f.page.getByText('Bảng điểm & Bài nộp').waitFor(); await audit(f.page, 'teacher assignment');
+  // 2. Keyboard-only student.
+  const student = await f.context(), p = await student.newPage(); await p.goto(origin + '/a/' + asg.publicId);
+  const name = p.getByPlaceholder('Ví dụ: Nguyễn Văn An'); await name.waitFor(); await audit(p, 'student entry');
+  await name.focus(); await p.keyboard.type('Học sinh bàn phím');
+  let reached = false; for (let i = 0; i < 8 && !reached; i++) { await p.keyboard.press('Tab'); reached = await p.evaluate(`(window.document.activeElement?.textContent || '').includes('Bắt đầu làm bài')`) as boolean; }
+  assert.ok(reached, 'Tab moves from the name field to the start button'); await p.keyboard.press('Enter');
+  await p.locator('#q-1').waitFor(); await audit(p, 'student exam');
+  // The figure of question 1 is really shown to the student, not just present in the page.
+  await p.locator('#q-1 img').first().waitFor();
+  assert.ok(await p.locator('#q-1 img').first().evaluate(el => (el as HTMLImageElement).complete && (el as HTMLImageElement).naturalWidth > 0), 'the question figure loaded for the student');
+  const focusBy = async (selector: string) => { const target = p.locator(selector).first(); await target.focus(); assert.equal(await target.evaluate(el => el === window.document.activeElement), true, `${selector} can take focus`); };
+  // Every control of every question is reachable by Tab, in page order.
+  for (let q = 1; q <= 7; q++) {
+    const total = await p.locator(`#q-${q} button, #q-${q} input, #q-${q} textarea, #q-${q} select`).count(); if (!total) continue;
+    await focusBy(`#q-${q} button, #q-${q} input, #q-${q} textarea, #q-${q} select`);
+    const seen = new Set<string>(); for (let i = 0; i < total; i++) { seen.add(await p.evaluate(`(() => { const el = window.document.activeElement; const box = window.document.querySelector('#q-${q}'); return box && box.contains(el) ? Array.from(box.querySelectorAll('button, input, textarea, select')).indexOf(el) : -1; })()`) as unknown as string); await p.keyboard.press('Tab'); }
+    assert.ok(!seen.has('-1') && seen.size === total, `question ${q}: Tab visits all ${total} controls (${seen.size} seen)`);
+  }
+  await focusBy('#q-1 button:has-text("Hai")'); await p.keyboard.press('Enter');
+  await focusBy('#q-2 button:has-text("ĐÚNG")'); await p.keyboard.press('Space');
+  await focusBy('#q-3 input'); await p.keyboard.type('2');
+  await waitUntil(async () => { const raw = JSON.stringify((await f.db.attempt.findFirst({ where: { assignmentId: asg.id } }))?.draft); return raw.includes('"A"') && raw.includes('"2"'); }, 'Keyboard answers were not saved');
+  const req = p.waitForResponse(r => /\/api\/public\/attempts\/[^/]+\/submit$/.test(r.url()) && r.request().method() === 'POST');
+  await focusBy('button:has-text("Nộp bài thi")'); await p.keyboard.press('Enter'); await focusBy('button:has-text("Nộp bài ngay")'); await p.keyboard.press('Enter');
+  assert.equal((await req).status(), 200, 'the keyboard submit reached the server');
+  assert.deepEqual(findings, [], 'controls without a name, or a tabindex that breaks the tab order');
 }));

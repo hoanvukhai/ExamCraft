@@ -87,3 +87,10 @@ Test đề dài 120 câu phát hiện: trước đây chỉ phân số và căn 
 - **Bộ phân tích LaTeX ExTest** cũng chưa có test. Hai lỗi thật: không có `\True` thì mã tự điền đáp án **A** (trái quy tắc dự án "thiếu đáp án không tự điền"); đề có 2–3 phương án bị mất hết phương án nhưng vẫn gắn nhãn trắc nghiệm. Đã sửa, `ex_test_parser` 6 ca.
 - **Nhập văn bản thuần** nay nhận đúng-sai nhóm a) b) c) d); đáp án đọc từ hậu tố (Đ)/(S)/(Đúng)/(Sai) hoặc dòng "Đáp án: a) Đ, b) S…"; thiếu thì để trống. Bài tự luận có a) b) chỉ hai ý không bị ép thành đúng-sai. `exam_parser` 13 ca.
 - Chạy cuối: SAFE 384/384 ([log](safe-claude-run10.log)). Chưa chạy lại bộ HTTP và trình duyệt vì lượt này chỉ đổi hai hàm phân tích thuần và test của chúng.
+
+## Bổ sung: trộn đề (CV042), bàn phím và nhãn truy cập (CV029, CV058)
+Chạy cuối: build đạt, SAFE 391/391 ([log](safe-claude-run11.log)), HTTP 88/88 ([log](http-claude-run22.log)), trình duyệt 15/15 gồm F16 ([log](pilot-claude-run16.log)).
+- **CV042 đóng.** Test `shuffle_variants` phát hiện lỗi thật: phần đồng bộ lời giải chỉ đổi chữ của đáp án đúng, các phương án sai được nhắc trong lời giải ("Phương án B sai") bị lệch; regex dùng `` nên không khớp cụm bắt đầu bằng "đ" ("đáp án") và "Đáp án: B" có dấu hai chấm. Đã đổi sang đổi mọi chữ được nhắc trong một lượt theo nội dung từng phương án, không chạm chữ trong từ ("tam giác ABC").
+- **Điều cần chủ dự án quyết (không sửa khi chưa hỏi):** với đề có phần hoặc ngữ liệu (mọi đề lưu trên máy chủ đều có phần mặc định), trộn mã đề **chỉ đảo phương án, không đảo thứ tự câu**; các mã đề cùng thứ tự câu. Đề xuất: đảo thứ tự câu trong từng phần nhưng giữ nhóm ngữ liệu nguyên khối. Cần bạn xác nhận vì đổi cách ra đề.
+- **CV029 đóng** nhờ F13 và F16. F16 phát hiện một nút hiện/ẩn mật khẩu ở trang đăng nhập không có tên, đã thêm nhãn "Hiện mật khẩu"/"Ẩn mật khẩu".
+- **CV058 vẫn mở:** mô hình đề chưa có âm thanh hoặc tệp đính kèm; tiêu chí nhắc đến "tệp/âm thanh theo đề". Cần chủ dự án quyết có cần không.

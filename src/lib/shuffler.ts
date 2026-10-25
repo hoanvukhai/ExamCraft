@@ -35,6 +35,9 @@ function hasDependentChoices(choices: ChoiceItem[]): boolean {
   return /cả\s+[A-D]\s+và\s+[A-D]|tất cả.*(đúng|sai)/i.test(text);
 }
 
+/** "chọn đáp án B", "Phương án A", "Đáp án: B", "đáp án đúng là C", "chọn D". Letters inside words ("tam giác ABC") never match. */
+const SOLUTION_LETTER = /((?<![\p{L}\d])(?:chọn\s+(?:đáp án|phương án)(?:\s+đúng)?(?:\s+là)?(?:\s*:\s*|\s+)|(?:đáp án|phương án)(?:\s+đúng)?(?:\s+là)?(?:\s*:\s*|\s+)|chọn\s+))([A-D])(?![\p{L}\d])/giu;
+
 /**
  * Trộn một câu hỏi trắc nghiệm: hoán vị A, B, C, D, cập nhật correct_answer và đồng bộ lời giải
  */
@@ -66,12 +69,12 @@ function shuffleMultipleChoiceQuestion(question: Question, randomFn: () => numbe
   const newCorrectChoice = newChoices.find(c => c.text === correctText);
   const newCorrectKey = newCorrectChoice ? newCorrectChoice.key : oldCorrectKey;
 
-  // Cập nhật lại lời giải nếu có nhắc cụ thể đến chữ cái đáp án cũ
-  let updatedSolution = question.step_by_step_solution;
-  if (updatedSolution && oldCorrectKey !== newCorrectKey) {
-    const regex = new RegExp(`\\b(chọn|đáp án|phương án)\\s+${oldCorrectKey}\\b`, 'gi');
-    updatedSolution = updatedSolution.replace(regex, `$1 ${newCorrectKey}`);
-  }
+  // Every letter the solution names ("Phương án A sai", "Chọn đáp án B", "Đáp án: B") must follow its own answer text.
+  // All letters move in one pass, so a letter that was just rewritten is never rewritten again.
+  const keyByOldText = new Map(question.choices.map(c => [c.text, c.key]));
+  const moved = new Map<string, string>();
+  for (const choice of newChoices) { const oldKey = keyByOldText.get(choice.text); if (oldKey) moved.set(oldKey.toUpperCase(), choice.key); }
+  const updatedSolution = question.step_by_step_solution?.replace(SOLUTION_LETTER, (whole, lead: string, letter: string) => `${lead}${moved.get(letter.toUpperCase()) ?? letter}`);
 
   return {
     ...question,

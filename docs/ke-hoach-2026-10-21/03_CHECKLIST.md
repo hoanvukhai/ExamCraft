@@ -142,7 +142,8 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Đợt quản lý23/10: sửa nút thêm học sinh khớp API PATCH/newStudentNames; browser tạo lớp→thêm→reload/mở danh sách đạt, chỉ DB thử. Ngân hàng/key/folder gắn đúng tài khoản; toàn tiêu chí kho/filter/trash/điều hướng vẫn mở, xem OBJECT_ACCESS.
   - Phạm vi: YC-02, YC-26. Nghiệm thu: NT-02, NT-30.
   - Đạt khi: Tách dashboard/editor, tránh modal trùng, nút không hoạt động không giả hoàn thành; recent/filter/trash/restore và quay lại không mất đề.
-- [ ] **CV-029 — Dùng được khi chưa có AI và trên màn hình nhỏ.**
+- [x] **CV-029 — Dùng được khi chưa có AI và trên màn hình nhỏ.**
+  - **Nghiệm thu25/10 (Claude): ĐẠT đủ tiêu chí "Đạt khi".** Tạo/sửa/lưu/xuất thủ công không cần khóa AI: mọi luồng trình duyệt chạy với các đường AI bị chặn; thông báo thiếu khóa bằng tiếng Việt rõ ràng ở máy chủ. F16: mọi nút, liên kết, ô nhập của đăng nhập, kho đề, trình soạn, trang bài giao và trang học sinh có tên (một nút hiện/ẩn mật khẩu từng không có tên, đã sửa), không có tabindex dương, Tab đi qua đủ điều khiển của cả bảy dạng câu, học sinh trả lời và nộp chỉ bằng bàn phím. F13: màn hình 375px không cuộn ngang, nút ≥40px. Giới hạn: chưa kiểm viền focus nhìn thấy, chưa thử với trình đọc màn hình thật. [Đối chiếu](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md).
   - Đợt24/10: khôngkey vẫn sửa/Apply/lưu thật; rail mobile thành drawer/ẩn khi thu gọn. Browser360px main30,4→322,4px,390px main352,8px; document không tràn ngang, form0điểm/nút Apply hiển thị đủ. Drawer mở/đóng đạt; chưa nghiệm thu mobile keyboard/zoom/screen reader/toàn luồng xuất. Build/SAFE192đạt, xem QUESTION_DRAFTS_AND_MOBILE.
   - Phạm vi: YC-26. Nghiệm thu: NT-30.
   - Đạt khi: Tạo/sửa/lưu/xuất thủ công không bị chặn key; thông báo dễ hiểu, tab order/focus/label, cuộn trang và layout nhỏ được thử.
@@ -197,9 +198,8 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
 - [ ] **CV-041 — Quyền và nguồn nhập.**
   - Phạm vi: YC-11, YC-25. Nghiệm thu: NT-16, NT-26.
   - Đạt khi: Ghi nguồn/trang/câu, dedup không xóa nhầm biến thể; tài liệu không rõ quyền ở kho riêng, không tự đưa vào kho chung.
-- [ ] **CV-042 — Trộn câu, lựa chọn và nhóm ngữ liệu.**
-  - **Mức pilot25/10: đạt trong phạm vi pilot** (theo quy tắc chủ dự án duyệt 24/10; không đổi dấu hoàn thành, không thay "Đạt khi"). Kiểm tự động: F3 trộn 4 mã, tải 4 tệp Word đủ 7 câu/ảnh; unit answer_review_and_shuffle. Giới hạn: tái lập theo seed và nhóm ngữ liệu nhiều mã chưa kiểm trên giao diện. [Chạy 25/10](../../qa/rebuild-2026-10-25/PILOT_CLAUDE_RUN.md).
-  - **Hiện trạng24/10:** Browser trộn và tải đủ các mã, đối chiếu Word có đủ câu/ảnh; giữ helper ghim/seed và dữ liệu gốc đã kiểm trước. Chưa đầy đủ nhóm ngữ liệu/seed qua UI và mọi tổ hợp; giữ mở. [PILOT_E2E](../../qa/rebuild-2026-10-24/PILOT_E2E.md).
+- [x] **CV-042 — Trộn câu, lựa chọn và nhóm ngữ liệu.**
+  - **Nghiệm thu25/10 (Claude): ĐẠT đủ tiêu chí "Đạt khi".** Seed tái lập, ghim, phương án phụ thuộc và trùng chữ giữ nguyên thứ tự, mọi loại câu giữ đủ, thiếu đáp án không tự điền: shuffle_variants (7 ca) và answer_review_and_shuffle; chữ đáp án đúng luôn trỏ đúng nội dung qua 40 seed; lời giải theo đổi chữ của cả phương án đúng lẫn sai trong một lượt, không chạm chữ hình học như "tam giác ABC" (đã sửa lỗi cũ chỉ đổi phương án đúng và không khớp cụm bắt đầu bằng "đ"); trộn mã đề qua giao diện ở F3. Giới hạn: đề có phần hoặc ngữ liệu chỉ đảo phương án, không đảo thứ tự câu (chờ chủ dự án quyết). [Đối chiếu](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md).
   - Phạm vi: YC-17. Nghiệm thu: NT-17.
   - Đạt khi: Seed tái lập, ghim và mọi loại câu giữ đủ; ID đáp án đúng sau đảo; không thay chữ cái bằng regex làm hỏng lời giải.
 - [ ] **CV-043 — Xuất Word và công thức/hình.**
@@ -271,7 +271,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-21. Nghiệm thu: NT-04, NT-23.
   - Đạt khi: Method/body chuẩn, kiểm res.ok, trạng thái mạng; reload lấy đúng nháp, không ghi đè câu mới bởi request chậm.
 - [ ] **CV-058 — Giao diện làm bài đủ dạng.**
-  - **Mức pilot25/10: đạt trong phạm vi pilot** (theo quy tắc chủ dự án duyệt 24/10; không đổi dấu hoàn thành, không thay "Đạt khi"). Kiểm tự động: F6 làm đủ bảy dạng, tải lại làm tiếp, nộp, không thấy đáp án trước chính sách; public_access/structured_grading. Từ 25/10: F13 làm bài đủ bảy dạng trên màn hình 375px không cuộn ngang, nút ≥40px (đã sửa nút ĐÚNG/SAI quá nhỏ). Giới hạn: bàn phím rời, âm thanh, hình nâng cao. [Chạy 25/10](../../qa/rebuild-2026-10-25/PILOT_CLAUDE_RUN.md).
+  - **Mức pilot25/10: đạt trong phạm vi pilot** (theo quy tắc chủ dự án duyệt 24/10; không đổi dấu hoàn thành, không thay "Đạt khi"). Kiểm tự động: F6 làm đủ bảy dạng, tải lại làm tiếp, nộp, không thấy đáp án trước chính sách; public_access/structured_grading. Từ 25/10: F13 làm bài đủ bảy dạng trên màn hình 375px không cuộn ngang, nút ≥40px (đã sửa nút ĐÚNG/SAI quá nhỏ). Giới hạn: bàn phím rời, âm thanh, hình nâng cao Từ 25/10: F16 học sinh trả lời và nộp chỉ bằng bàn phím, Tab đi qua đủ điều khiển của bảy dạng câu, hình của câu hiển thị thật cho học sinh. Còn mở vì mô hình đề chưa có âm thanh hoặc tệp đính kèm (chỉ hình ảnh, đồ thị, bảng biến thiên, hình học); cần chủ dự án quyết có cần hay bỏ khỏi tiêu chí. [Chạy 25/10](../../qa/rebuild-2026-10-25/PILOT_CLAUDE_RUN.md).
   - Phạm vi: YC-10, YC-21. Nghiệm thu: NT-16, NT-23.
   - Đạt khi: Tự luận có ô trả lời, đúng-sai/điền/ghép/sắp xếp dùng được, tệp/hình/âm thanh theo đề; cuộn/keyboard/mobile đúng.
 - [x] **CV-059 — Chấm server và nộp lặp an toàn.**
