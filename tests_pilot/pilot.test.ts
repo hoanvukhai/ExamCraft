@@ -314,12 +314,42 @@ test('F5 assign link with and without class and inspect frozen policies', { time
       await f.page.getByLabel('Mã vào bài (4–12 chữ/số, tùy chọn)',{exact:true}).fill('pilot01');
       await f.page.getByLabel('Trộn thứ tự câu hỏi cho mỗi học sinh',{exact:true}).check();
       await f.page.getByLabel('Trộn thứ tự đáp án A/B/C/D',{exact:true}).check();
+    } else {
+      await f.page.getByText('Tùy chọn nâng cao: giờ mở/đóng, số lượt, mã vào bài',{exact:true}).click();
+      await f.page.getByLabel('Yêu cầu PIN của học sinh (chỉ khi giao cho một lớp)',{exact:true}).check();
     }
     const [response]=await Promise.all([f.page.waitForResponse(r=>r.url().endsWith('/api/assignments')&&r.request().method()==='POST'),click(f.page,'Giao Bài & Tạo Phòng Thi Ngay')]);assert.equal(response.status(),200);
   }
   const rows=await f.db.assignment.findMany({where:{ownerId:f.ids[0]}});assert.equal(rows.length,2);assert.deepEqual(new Set(rows.map(r=>r.groupId)),new Set([null,group.id]));
   const advanced=rows.find(r=>r.groupId===null)!; assert.equal(advanced.closesAt?.toISOString(),closing!.toISOString());assert.equal(advanced.maxAttempts,2);assert.equal(advanced.joinCode,'PILOT01');assert.equal(advanced.shuffleQuestions,true);assert.equal(advanced.shuffleChoices,true);
   for(const row of rows){assert.equal(row.showSolution,'AFTER_CLOSE');assert.equal(row.durationMinutes,45);assert.equal(row.status,'OPEN');}
+  // Editing the source after assignment must not rewrite either frozen snapshot.
+  const frozen = rows.map(row => ({ id: row.id, snapshot: JSON.stringify(row.snapshot) }));
+  await openExam(f, id);
+  await f.page.getByTitle('Sửa nội dung câu hỏi thủ công', { exact: true }).first().click();
+  await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).fill('SOURCE_CHANGED_AFTER_ASSIGN');
+  await click(f.page, 'Áp dụng câu vào đề');
+  await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).waitFor({ state: 'hidden' });
+  await f.page.getByTitle('Lưu các thay đổi lên máy chủ').click();
+  await waitUntil(async () => JSON.stringify((await f.db.exam.findUniqueOrThrow({ where: { id } })).metadata).includes('SOURCE_CHANGED_AFTER_ASSIGN'), 'Source edit must be saved');
+  for (const row of frozen) assert.equal(JSON.stringify((await f.db.assignment.findUniqueOrThrow({ where: { id: row.id } })).snapshot), row.snapshot);
+  const classAssignment = rows.find(row => row.groupId === group.id)!;
+  assert.equal(classAssignment.requirePin, true);
+  const student = await f.db.student.findFirstOrThrow({ where: { groupId: group.id } });
+  await f.db.student.update({ where: { id: student.id }, data: { pinHash: await bcrypt.hash('4821', 10) } });
+  const pinContext = await f.context(), pinPage = await pinContext.newPage();
+  await pinPage.goto(origin + '/a/' + classAssignment.publicId);
+  await pinPage.getByRole('combobox').selectOption(student.id);
+  await pinPage.getByLabel('PIN do giáo viên cấp', { exact: true }).fill('0000');
+  const wrongPin = pinPage.waitForResponse(r => r.url().endsWith('/start') && r.request().method() === 'POST');
+  await click(pinPage, /Bắt đầu làm bài/); assert.equal((await wrongPin).status(), 403);
+  assert.equal(await f.db.attempt.count({ where: { assignmentId: classAssignment.id } }), 0);
+  await pinPage.getByLabel('PIN do giáo viên cấp', { exact: true }).fill('4821');
+  const correctPin = pinPage.waitForResponse(r => r.url().endsWith('/start') && r.request().method() === 'POST');
+  await click(pinPage, /Bắt đầu làm bài/); assert.equal((await correctPin).status(), 200);
+  await pinPage.locator('#q-1').waitFor();
+  assert.ok(!(await pinPage.locator('body').innerText()).includes('SOURCE_CHANGED_AFTER_ASSIGN'));
+  await pinContext.close();
   await f.page.goto(origin+'/teacher/assignments/'+advanced.id);
   await f.page.getByText('PILOT01',{exact:true}).waitFor();
   const policy = f.page.getByText('(giờ theo máy này)',{exact:true}).locator('..');
