@@ -8,6 +8,12 @@ import { Prisma } from '@prisma/client';
  */
 export const MAX_TRANSACTION_TRIES = 6;
 
+/** Local isolated-test telemetry only; never enabled by request input. */
+export function withTestTransactionTries<T extends Response>(response: T, tries: number): T {
+  if (process.env.EXAMCRAFT_ISOLATED_TEST_SERVER === '1') response.headers.set('x-examcraft-test-transaction-tries', String(tries));
+  return response;
+}
+
 /** Short random pause before the next try, so racing writers stop colliding in lockstep. */
 export const retryPause = (retry: number) => new Promise<void>(resolve => setTimeout(resolve, 20 * (retry + 1) + Math.random() * 60));
 

@@ -3,6 +3,7 @@ import prisma from '@/lib/prisma';
 import { hasActiveAttemptAccess, isAttemptOpen, isSameOriginMutation } from '@/lib/attempt-access';
 import { validateResponses } from '@/lib/public-exam';
 import { attemptDraftRevision, validDraftRevision } from '@/lib/attempt-draft-revision';
+import { withTestTransactionTries } from '@/lib/transaction-retry';
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!isSameOriginMutation(req)) return NextResponse.json({ error: 'Yêu cầu không hợp lệ' }, { status: 403 });
@@ -27,7 +28,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       if (!updated.count) return { status: 409, error: 'Lượt đã đóng hoặc đã nộp' };
       return { status: 200, success: true, savedAt: now.toISOString(), draftRevision: nextRevision };
     });
-    return NextResponse.json(outcome, { status: outcome.status, headers: { 'Cache-Control': 'no-store' } });
+    return withTestTransactionTries(NextResponse.json(outcome, { status: outcome.status, headers: { 'Cache-Control': 'no-store' } }), 1);
   } catch (error) {
     console.error('Draft save failed', error);
     return NextResponse.json({ error: 'Chưa lưu được bản nháp' }, { status: 500 });

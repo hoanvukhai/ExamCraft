@@ -7,7 +7,7 @@ import { attachAttemptCookie, attemptDeadline, attemptSessionToken, hasAttemptAc
 import { createAttemptLayout, examForAttempt } from '@/lib/attempt-layout';
 import { attemptDraftRevision } from '@/lib/attempt-draft-revision';
 import { joinCodeMatches } from '@/lib/assignment-options';
-import { isRetryableTransactionError, MAX_TRANSACTION_TRIES, retryPause } from '@/lib/transaction-retry';
+import { isRetryableTransactionError, MAX_TRANSACTION_TRIES, retryPause, withTestTransactionTries } from '@/lib/transaction-retry';
 
 const Schema = z.object({ studentId: z.string().max(100).optional(), freeName: z.string().trim().min(1).max(120).optional(), personalToken: z.string().max(200).optional(), pin: z.string().max(100).optional(), joinCode: z.string().max(100).optional() });
 class StartError extends Error { constructor(message: string, public status = 403) { super(message); } }
@@ -73,9 +73,9 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pub
           return { attempt, studentName: student.displayName, resumed: false, snapshot: assignment.snapshot };
         });
         const { attempt, studentName, resumed, snapshot } = result;
-        return attachAttemptCookie(NextResponse.json({ success: true, resumed, serverNow: new Date().toISOString(), attempt: {
+        return withTestTransactionTries(attachAttemptCookie(NextResponse.json({ success: true, resumed, serverNow: new Date().toISOString(), attempt: {
           id: attempt.id, attemptNo: attempt.attemptNo, startedAt: attempt.startedAt, deadlineAt: attempt.deadlineAt, draft: attempt.draft, draftRevision: attemptDraftRevision(attempt.draft), studentName,
-        }, exam: examForAttempt(snapshot, attempt.layout) }), attempt);
+        }, exam: examForAttempt(snapshot, attempt.layout) }), attempt), retry + 1);
       } catch (error) {
         if (isRetryableTransactionError(error) && retry < MAX_TRANSACTION_TRIES - 1) { await retryPause(retry); continue; }
         throw error;

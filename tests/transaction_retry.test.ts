@@ -1,7 +1,17 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { Prisma } from '@prisma/client';
-import { isRetryableTransactionError } from '../src/lib/transaction-retry';
+import { isRetryableTransactionError, withTestTransactionTries } from '../src/lib/transaction-retry';
+
+test('transaction telemetry is absent outside the isolated test server', () => {
+  const previous = process.env.EXAMCRAFT_ISOLATED_TEST_SERVER;
+  try {
+    delete process.env.EXAMCRAFT_ISOLATED_TEST_SERVER;
+    assert.equal(withTestTransactionTries(new Response(), 3).headers.has('x-examcraft-test-transaction-tries'), false);
+    process.env.EXAMCRAFT_ISOLATED_TEST_SERVER = '1';
+    assert.equal(withTestTransactionTries(new Response(), 3).headers.get('x-examcraft-test-transaction-tries'), '3');
+  } finally { if (previous === undefined) delete process.env.EXAMCRAFT_ISOLATED_TEST_SERVER; else process.env.EXAMCRAFT_ISOLATED_TEST_SERVER = previous; }
+});
 
 const known = (code: string, meta?: Record<string, unknown>) => new Prisma.PrismaClientKnownRequestError('x', { code, clientVersion: 'test', meta });
 

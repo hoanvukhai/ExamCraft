@@ -1,0 +1,51 @@
+{
+  "status": "FAIL",
+  "cleanupComplete": true,
+  "phases": [
+    {
+      "phase": "start",
+      "requests": 40,
+      "errors5xx": 0,
+      "non200": 0,
+      "p95Ms": 780,
+      "maxMs": 802,
+      "serverRetriesObserved": null
+    },
+    {
+      "phase": "draft1",
+      "requests": 40,
+      "errors5xx": 0,
+      "non200": 0,
+      "p95Ms": 463,
+      "maxMs": 472,
+      "serverRetriesObserved": null
+    },
+    {
+      "phase": "draft2",
+      "requests": 40,
+      "errors5xx": 0,
+      "non200": 0,
+      "p95Ms": 384,
+      "maxMs": 409,
+      "serverRetriesObserved": null
+    },
+    {
+      "phase": "draft3",
+      "requests": 40,
+      "errors5xx": 0,
+      "non200": 0,
+      "p95Ms": 453,
+      "maxMs": 462,
+      "serverRetriesObserved": null
+    },
+    {
+      "phase": "submit",
+      "requests": 40,
+      "errors5xx": 7,
+      "non200": 7,
+      "p95Ms": 915,
+      "maxMs": 917,
+      "serverRetriesObserved": null
+    }
+  ]
+}

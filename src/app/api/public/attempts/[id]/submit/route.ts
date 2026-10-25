@@ -5,7 +5,7 @@ import prisma from '@/lib/prisma';
 import { hasActiveAttemptAccess, canAcceptSubmissionAnswers, isPolicyVisible, isSameOriginMutation } from '@/lib/attempt-access';
 import { asObject, snapshotQuestions, solutionForQuestion, validateResponses } from '@/lib/public-exam';
 import { gradeSnapshot } from '@/lib/attempt-grading';
-import { isRetryableTransactionError, MAX_TRANSACTION_TRIES, retryPause } from '@/lib/transaction-retry';
+import { isRetryableTransactionError, MAX_TRANSACTION_TRIES, retryPause, withTestTransactionTries } from '@/lib/transaction-retry';
 import { requiresNumericScore, type AssessmentMode } from '@/lib/education-catalog';
 
 const include = { assignment: { include: { group: true } }, student: { select: { displayName: true, archivedAt: true, groupId: true } } } as const;
@@ -80,9 +80,12 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
             } });
           }
           return { attempt: { ...attempt, status: 'SUBMITTED' as const, score: score === null ? null : new Prisma.Decimal(score), maxScore: maxScore === null ? null : new Prisma.Decimal(maxScore), needsGrading: grade.needsGrading, submittedAt }, idempotent: false };
-        }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
+        // The Attempt row is locked before reading draft/status/permissions.
+        // READ COMMITTED serializes writers of this attempt without SSI conflicts
+        // between different students inserting answers into the same index pages.
+        }, { isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted });
         if ('error' in outcome) return NextResponse.json({ error: outcome.error, code: 'code' in outcome ? outcome.code : undefined }, { status: outcome.status });
-        return resultResponse(outcome.attempt, outcome.idempotent);
+        return withTestTransactionTries(await resultResponse(outcome.attempt, outcome.idempotent), retry + 1);
       } catch (error) {
         if (retry < MAX_TRANSACTION_TRIES - 1 && (isRetryableTransactionError(error) || error instanceof Error && error.message === 'ATTEMPT_WRITE_CONFLICT')) { await retryPause(retry); continue; }
         throw error;
