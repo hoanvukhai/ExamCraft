@@ -909,6 +909,12 @@ test('F24 comment resolution respects roles and private notes download as readab
   assert.equal((await forbiddenResolve()).status(), 403);
   await ownPeerCard.getByRole('button', { name: 'Đánh dấu đã giải quyết', exact: true }).click(); await ownPeerCard.getByText('Đã giải quyết bởi Pilot F24 1', { exact: true }).waitFor();
   const peerComment = await f.db.examComment.findFirstOrThrow({ where: { examId: id, body: 'F24 PEER COMMENT' } }); assert.ok(peerComment.resolvedAt); assert.equal(peerComment.resolvedById, f.ids[1]);
+  // A former commenter must also lose resolution controls on their own older comments.
+  await f.api('/api/exams/' + id + '/collaborators', 'POST', { email: f.emails[1], role: 'VIEWER' });
+  await b.reload(); await click(b, 'Cùng soạn · Góp ý · Lịch sử'); await otherPanel.getByText('Chỉ xem', { exact: true }).waitFor(); await openDetails(b, 'Góp ý');
+  assert.equal(await otherPanel.getByRole('button', { name: 'Mở lại', exact: true }).count(), 0, 'Downgraded viewer must not resolve even their own older comment');
+  const deniedReopen = await peer.request.patch(origin + '/api/exams/' + id + '/comments', { headers: { Origin: origin, 'x-examcraft-user': f.ids[1] }, data: { commentId: peerComment.id, resolved: false } });
+  assert.equal(deniedReopen.status(), 403);
 
   await panel.getByRole('button', { name: 'Đóng', exact: true }).click();
   const secret = 'pilot-f24-canary-key-0123456789'; await f.api('/api/user/keys', 'POST', { apiKey: secret, label: 'F24 fixture only' });
