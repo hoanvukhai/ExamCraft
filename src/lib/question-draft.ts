@@ -84,6 +84,23 @@ export function writeQuestionDraft(value: QuestionDraft, storage?: Pick<Storage,
     ram.delete(key); signal(); return { durable: true };
   } catch { signal(); return { durable: false }; }
 }
+/** Keep existing question journals reachable after the first server acknowledgement. */
+export function copyQuestionDraftsAfterCreate(ownerId: string, previousId: string, savedId: string, storage?: Pick<Storage, 'length' | 'key' | 'getItem' | 'setItem'>) {
+  if (previousId === savedId) return true;
+  let durable = true;
+  const existing = new Map(listQuestionDrafts(ownerId, savedId, storage).map(entry => [entry.key, entry]));
+  for (const entry of listQuestionDrafts(ownerId, previousId, storage)) {
+    if (!entry.value) { durable = false; continue; }
+    const value = { ...entry.value, documentId: savedId };
+    const key = questionDraftKey(value), target = existing.get(key);
+    // Keep both sources when a target writer has already advanced. Never overwrite it.
+    if (target && target.raw !== JSON.stringify(value)) { durable = false; continue; }
+    if (!target) durable = writeQuestionDraft(value, storage).durable && durable;
+  }
+  // Old records deliberately remain available in the all-drafts recovery panel.
+  return durable;
+}
+
 /** Only retire the exact acknowledged/discarded revision; another writer has its own key. */
 export function retireQuestionDraft(entry: QuestionDraftEntry, storage?: Pick<Storage, 'getItem' | 'removeItem'>) {
   const memory = ram.get(entry.key); if (memory === entry.raw) ram.delete(entry.key);

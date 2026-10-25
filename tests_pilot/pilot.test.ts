@@ -152,7 +152,20 @@ test('F1 first login, password change and library', { timeout: 90000 }, () => fl
 }, true));
 
 test('F2 author seven types, image, passage, zero, title and reopen', { timeout: 240000 }, () => flow('F2', async f => {
-  await authenticated(f); await f.page.getByText('Soạn đề trống mới', { exact: true }).click();
+  await authenticated(f);
+  // Hold the first real creation ACK until a question form contains unsaved text.
+  // This makes the draft-ID -> server-ID race deterministic instead of sleeping.
+  let releaseCreate!: () => void;
+  const createGate = new Promise<void>(resolve => { releaseCreate = resolve; });
+  let heldCreate = false;
+  await f.page.route('**/api/exams', async route => {
+    if (route.request().method() !== 'POST' || heldCreate) return route.continue();
+    heldCreate = true;
+    const response = await route.fetch();
+    await createGate;
+    await route.fulfill({ response });
+  });
+  await f.page.getByText('Soạn đề trống mới', { exact: true }).click();
   await f.page.getByTitle('Nhấn để đổi tên đề thi (như Google Docs)').click();
   const titleInput = f.page.locator('header input').first(); await titleInput.fill('Pilot Toán 6 tự soạn'); await titleInput.press('Enter');
   for (const [index, type] of types.entries()) {
@@ -161,6 +174,12 @@ test('F2 author seven types, image, passage, zero, title and reopen', { timeout:
     assert.equal(await f.page.getByRole('button', { name: 'Lưu bản sao vào ngân hàng', exact: true }).last().isDisabled(), true);
     await f.page.getByLabel('Dạng câu', { exact: true }).selectOption(type);
     await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).fill(`PILOT Q${index + 1} ${type}`);
+    if (index === 0) {
+      await waitUntil(async () => heldCreate, 'First create request must be held');
+      releaseCreate();
+      await waitUntil(async () => /\/editor\/(?!new(?:\?|$))[^/?]+/.test(new URL(f.page.url()).pathname), 'Creation ACK should select server document');
+      assert.equal(await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).inputValue(), 'PILOT Q1 multiple_choice', 'Creation ACK must not close/reset a dirty question form');
+    }
     await f.page.getByLabel('Điểm câu', { exact: true }).fill(index === 0 ? '0' : '1');
     if (type === 'multiple_choice') { for (const key of ['A','B','C','D']) await f.page.getByLabel('Phương án ' + key, { exact: true }).fill(key === 'A' ? 'Hai' : key); await f.page.getByLabel('Đáp án lựa chọn').selectOption('A');
       await f.page.getByText('Hình và đồ thị (0)', { exact: true }).click();

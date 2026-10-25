@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import type { Exam, Question } from '../src/types/exam';
+import { copyQuestionDraftsAfterCreate } from '../src/lib/question-draft';
 import { applyQuestionManualSubmission, archiveQuestionDraft, listQuestionDrafts, parseQuestionDraft, questionDraftKey, questionDraftSatisfiedBy, questionDraftSourceStamp, questionValueStamp, resumeQuestionDraft, retireQuestionDraft, retireSavedQuestionDrafts, writeQuestionDraft, type QuestionDraft, type QuestionManualSubmission } from '../src/lib/question-draft';
 
 class StorageFixture {
@@ -11,6 +12,22 @@ class StorageFixture {
   setItem(key: string, value: string) { if (this.fail) throw Error('quota'); this.values.set(key, value); }
   removeItem(key: string) { this.values.delete(key); }
 }
+
+test('first create ACK copies question journals within owner and keeps sources and newer targets', () => {
+  const storage = new StorageFixture();
+  const exam = fixture();
+  const record: QuestionDraft = { formatVersion: 1, ownerId: 'ack-owner', documentId: 'draft_ack', questionId: 'q', journalId: 'ack-journal', token: 'ack-token', updatedAt: 'now', baseQuestion: exam.questions[0], baseSourceStamp: questionDraftSourceStamp(exam), draft: { ...exam.questions[0], content: 'Unsaved input' } };
+  writeQuestionDraft(record, storage);
+  writeQuestionDraft({ ...record, ownerId: 'other-ack-owner' }, storage);
+  assert.equal(copyQuestionDraftsAfterCreate('ack-owner', 'draft_ack', 'saved_ack', storage), true);
+  assert.equal(listQuestionDrafts('ack-owner', 'saved_ack', storage)[0].value?.draft.content, 'Unsaved input');
+  assert.ok(storage.getItem(questionDraftKey(record)));
+  assert.equal(listQuestionDrafts('other-ack-owner', 'saved_ack', storage).length, 0);
+  const newer = { ...record, documentId: 'saved_ack', token: 'newer', draft: { ...record.draft, content: 'Newer target' } };
+  writeQuestionDraft(newer, storage);
+  assert.equal(copyQuestionDraftsAfterCreate('ack-owner', 'draft_ack', 'saved_ack', storage), false);
+  assert.equal(listQuestionDrafts('ack-owner', 'saved_ack', storage)[0].value?.draft.content, 'Newer target');
+});
 function fixture(): Exam {
   return { id: 'doc', createdAt: '', updatedAt: '', metadata: { title: 'Title', schoolName: '', departmentName: '', subject: 'toan', grade: 6, durationMinutes: 15 }, questions: [{ id: 'q', type: 'essay', difficulty: 'thong_hieu', content: 'Question', step_by_step_solution: 'Private solution', points: 0 }, { id: 'other', type: 'essay', difficulty: 'thong_hieu', content: 'Other', step_by_step_solution: '' }] };
 }

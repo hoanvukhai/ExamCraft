@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Exam } from '@/types/exam';
 import { loadExam, persistExam, SaveExamError, isExamAccessError } from '@/lib/exam-client';
 import { readDraft, writeDraft, retireWriterDraft, stageLatestExam } from '@/lib/exam-draft';
+import { copyQuestionDraftsAfterCreate } from '@/lib/question-draft';
 
 export type SaveState = 'loading' | 'saved' | 'dirty' | 'saving' | 'offline' | 'conflict' | 'error';
 function blankExam(): Exam {
@@ -17,6 +18,7 @@ export function useExamPersistence(ownerId: string, requestedId?: string) {
   const [message, setMessage] = useState('');
   const [loadedKey, setLoadedKey] = useState('');
   const [writerId] = useState(() => crypto.randomUUID());
+  const [editorSessionKey, setEditorSessionKey] = useState(() => crypto.randomUUID());
   const current = useRef(exam), edits = useRef(0), savedEdits = useRef(0), ready = useRef(false);
   const activeOwner = useRef(ownerId), flight = useRef<Promise<Exam | null> | null>(null);
   const storageId = useRef(requestedId && requestedId !== 'new' ? requestedId : 'new');
@@ -38,6 +40,7 @@ export function useExamPersistence(ownerId: string, requestedId?: string) {
       return () => { cancelled = true; };
     }
     generation.current += 1; flight.current = null;
+    setEditorSessionKey(crypto.randomUUID());
     activeOwner.current = ownerId; ready.current = false; storageId.current = id;
     setState('loading');
     (async () => {
@@ -95,6 +98,11 @@ export function useExamPersistence(ownerId: string, requestedId?: string) {
         if (activeOwner.current !== savingOwner || generation.current !== savingGeneration) return null;
         const stillCurrent = edits.current === revision;
         const next = stillCurrent ? saved : { ...current.current, id: saved.id, serverId: saved.id, version: saved.version, access: saved.access };
+        if (!document.serverId && document.id !== saved.id) {
+          try {
+            if (!copyQuestionDraftsAfterCreate(savingOwner, document.id, saved.id, localStorage)) setMessage('Đề đã lưu; có nháp câu chưa chuyển đầy đủ. Bản gốc vẫn được giữ trong danh sách nháp trên máy.');
+          } catch { setMessage('Đề đã lưu; hãy giữ tab và tải nháp câu vì bộ nhớ máy chưa xác nhận được bản nháp.'); }
+        }
         current.current = next; savedEdits.current = revision; setValue(next);
         let cacheWritten = false;
         try { writeDraft(localStorage, savingOwner, saved.id, next, !stillCurrent, writerId); cacheWritten = true; }
@@ -224,5 +232,5 @@ export function useExamPersistence(ownerId: string, requestedId?: string) {
     return true;
   }, [ownerId, writerId]);
 
-  return { exam, setExam, save, ensureSaved, saveCopy, openLatest, acceptServerDocument, state, message, ready: state !== 'loading' && loadedKey === `${ownerId}/${requestedId ?? 'new'}` };
+  return { exam, editorSessionKey, setExam, save, ensureSaved, saveCopy, openLatest, acceptServerDocument, state, message, ready: state !== 'loading' && loadedKey === `${ownerId}/${requestedId ?? 'new'}` };
 }

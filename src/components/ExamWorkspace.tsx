@@ -71,7 +71,7 @@ interface ExamWorkspaceProps {
 }
 
 export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examId }) => {
-  const { exam, setExam, save, ensureSaved, saveCopy, openLatest, acceptServerDocument, state: saveState, message: saveMessage, ready } = useExamPersistence(currentUser.id, examId);
+  const { exam, editorSessionKey, setExam, save, ensureSaved, saveCopy, openLatest, acceptServerDocument, state: saveState, message: saveMessage, ready } = useExamPersistence(currentUser.id, examId);
   const scoredQuestions = freezeExamScoring(exam).questions;
   const canEdit = ready && exam.access?.canEdit !== false;
   const canPublish = ready && exam.access?.canPublish !== false;
@@ -491,7 +491,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                     cognitiveFrameworkId={exam.metadata.cognitiveFrameworkId}
                       knowledgePackage={exam.metadata.knowledgePackage}
                       knowledgeScope={exam.metadata.knowledgeScope}
-                    key={`${currentUser.id}:${exam.id}:${q.id}`}
+                    key={`${currentUser.id}:${editorSessionKey}:${q.id}`}
                     documentId={exam.id}
                     sourceStamp={manualSourceStamp}
                     onManualSave={submission => setExam(previous => applyQuestionManualSubmission(previous, submission, currentUser.id))}

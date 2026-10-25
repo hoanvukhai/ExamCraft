@@ -33,7 +33,7 @@ export function QuestionEditor({ ownerId, documentId, sourceStamp, question, fra
     }
   }, [acknowledged, attempt, editor.record.baseQuestion, onApplied]);
   const setDraft = (value: Question) => {
-    const record = { ...editor.record, ...(acknowledged ? { baseQuestion: structuredClone(question), baseSourceStamp: sourceStamp } : {}), token: crypto.randomUUID(), updatedAt: new Date().toISOString(), draft: value };
+    const record = { ...editor.record, documentId, ...(acknowledged ? { baseQuestion: structuredClone(question), baseSourceStamp: sourceStamp } : {}), token: crypto.randomUUID(), updatedAt: new Date().toISOString(), draft: value };
     try {
       const result = writeQuestionDraft(record);
       setWarning(result.durable ? '' : 'Nháp hiện chỉ được giữ trong tab này; bộ nhớ máy không lưu được. Hãy tải nháp trước khi rời trang.');
