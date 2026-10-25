@@ -1,15 +1,13 @@
 # CODEX status
 
-task_id: CODEX-NEXT / CDX-S1–S6
-assignment_generation: 16
+task_id: CODEX-NEXT / CDX-T1–T3
+assignment_generation: 17
 state: WAITING_REVIEW
-updated_at_utc: 2026-10-25T16:12:05.692Z
+updated_at_utc: 2026-10-25T18:16:53.219Z
 branch/worktree: rebuild/2026-10-local, F:/Workspace/Zazz/ExamCraft
-commit mã gần nhất: c3a3c0d
-commits: a68963a (QA writer), fcaf785 (hủy AI), 2ee7473 (preview/nguồn), 9ee1f39 (ngân hàng/redo/loading), c3a3c0d (pilot)
+commits: c9e84b8 (T1), 914f26d (F24), 9114ee9 (UI hạ quyền + hồi quy)
 
-Đã thực hiện S1–S6 và kiểm trên môi trường cô lập: sửa preview, nguồn từng câu/quyền nhân bản mặc định, hủy AI, undo/redo và retry ngân hàng, loading và Copilot cộng tác. CI đầy đủ đã đạt; server thử và mock đã dừng. Bước kế: Claude duyệt CODEX_GEN16_HANDOFF.md, không tự đóng CV.
-
-Đã kiểm TypeScript/lint/SAFE/build/HTTP/browser, preview lặp liên tiếp. Chưa chạy backup F8/integration riêng hoặc AI thật, chưa có nghiệm thu chuyên môn/Word bằng mắt. Số liệu/log/giới hạn chỉ qa/rebuild-2026-10-25/. Request ID và undo/redo còn theo phiên; không suy chống trùng qua reload hoặc tự xác minh nguồn.
-
-Giữ dữ liệu chính, thay đổi tài liệu/fixture Claude/Gemini và raw log. Mã đã commit, cây chung còn tài liệu/đầu ra runtime. Không schema/provider thật/push/reset/clean; không sửa checklist03/hồ sơ02/ASSIGNMENTS/BATCH_REVIEWS.
+Đã thực hiện và kiểm T1–T3; CI cuối sau sửa quyền đạt toàn bộ, server3117/mock3118 đã dừng. Bước kế: Claude duyệt qa/rebuild-2026-10-25/CODEX_GEN17_HANDOFF.md. Không tự đóng CV.
+Đã kiểm lặp F3/F19, F24 góp ý/Markdown, kiểu/lint/SAFE/build/HTTP/browser. Số liệu/log và giới hạn chỉ ở báo cáo nhóm. Không chạy lại backup/integration riêng hoặc AI thật.
+Giữ diff mới ngoài phạm vi ở package.json và src/lib/docx-export.ts xuất hiện sau build: CI này không chứng nhận các diff đó, không lấy vào commit. Giữ các đầu ra runtime và dữ liệu có sẵn.
+Không schema/DB chính/.env/backup/bí mật/provider thật/push/reset/clean; không sửa checklist/02/ASSIGNMENTS/BATCH_REVIEWS.

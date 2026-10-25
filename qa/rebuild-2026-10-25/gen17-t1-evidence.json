@@ -1,0 +1,65 @@
+{
+  "checkedAt": "2026-10-25T17:57:37.431Z",
+  "evidence": [
+    {
+      "run": "497ddb4a-924b-420c-bd06-b5c4b9a29d45",
+      "checkedAt": "2026-10-25T17:53:32.376Z",
+      "sourceSha256": "ebfb50321ea685f4276aba98edb0dc289d1277c2e04670f75abb6a3de7cc9ca4",
+      "buildId": "0Akmj_fubiHYsZgyFqBuQ",
+      "results": [
+        {
+          "id": "F3",
+          "status": "PASS",
+          "durationMs": 12455,
+          "cleanupComplete": true
+        }
+      ],
+      "rawSha256": "8487b1b01ea0d5c0e44901824043d9c29909b0b434854befc5e55b51fa0018a5"
+    },
+    {
+      "run": "17c75698-70f4-4696-8b25-50763154cd46",
+      "checkedAt": "2026-10-25T17:53:17.433Z",
+      "sourceSha256": "ebfb50321ea685f4276aba98edb0dc289d1277c2e04670f75abb6a3de7cc9ca4",
+      "buildId": "0Akmj_fubiHYsZgyFqBuQ",
+      "results": [
+        {
+          "id": "F3",
+          "status": "PASS",
+          "durationMs": 12984,
+          "cleanupComplete": true
+        }
+      ],
+      "rawSha256": "b4054170b92b3d8e5ae0c4cee48a30ff73bfc555a1d4b3cb3476915476d19dc2"
+    },
+    {
+      "run": "78d7a3dd-36ac-4a24-87c3-aafe0627928e",
+      "checkedAt": "2026-10-25T17:53:59.657Z",
+      "sourceSha256": "ebfb50321ea685f4276aba98edb0dc289d1277c2e04670f75abb6a3de7cc9ca4",
+      "buildId": "0Akmj_fubiHYsZgyFqBuQ",
+      "results": [
+        {
+          "id": "F19",
+          "status": "PASS",
+          "durationMs": 11915,
+          "cleanupComplete": true
+        }
+      ],
+      "rawSha256": "4cd30724ac357ff67730114d48f232b4f7b6075b55ec124a08d1d28dbcf98379"
+    },
+    {
+      "run": "4f53dafc-4a84-4807-9713-a3326bf64886",
+      "checkedAt": "2026-10-25T17:53:46.056Z",
+      "sourceSha256": "ebfb50321ea685f4276aba98edb0dc289d1277c2e04670f75abb6a3de7cc9ca4",
+      "buildId": "0Akmj_fubiHYsZgyFqBuQ",
+      "results": [
+        {
+          "id": "F19",
+          "status": "PASS",
+          "durationMs": 11899,
+          "cleanupComplete": true
+        }
+      ],
+      "rawSha256": "b81b366cc66a50b2e6cce3257c044228e0ec2da14d75ced6757c0786916d2e5e"
+    }
+  ]
+}
