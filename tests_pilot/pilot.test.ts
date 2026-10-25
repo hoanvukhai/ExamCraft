@@ -121,7 +121,8 @@ async function studentSubmit(f: Fixture, asg: { id: string; publicId: string }) 
   await waitUntil(async () => { const row = await f.db.attempt.findFirst({ where: { assignmentId: asg.id, student: { displayName: 'Học sinh pilot' } } }); const raw = JSON.stringify(row?.draft); return raw.includes('Lập luận thử') && raw.includes('q7'); }, 'Student draft not acknowledged');
   await p.reload();
   // Anonymous name entry may be shown again; the signed attempt cookie resumes same attempt.
-  await p.getByPlaceholder('Ví dụ: Nguyễn Văn An').waitFor();
+  // After a reload the page either asks for the name again or resumes the signed attempt by itself; wait for whichever comes.
+  await p.locator('#q-4 textarea, input[placeholder="Ví dụ: Nguyễn Văn An"]').first().waitFor();
   if (await p.getByPlaceholder('Ví dụ: Nguyễn Văn An').isVisible()) { await p.getByPlaceholder('Ví dụ: Nguyễn Văn An').fill('Học sinh pilot'); await click(p, /Bắt đầu làm bài/); }
   await p.locator('#q-4 textarea').waitFor(); assert.equal(await p.locator('#q-4 textarea').inputValue(), 'Lập luận thử');
   assert.ok(!(await p.locator('body').innerText()).includes(solution));

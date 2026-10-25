@@ -60,3 +60,9 @@ Chạy cuối: build đạt, SAFE 358/358 ([log](safe-claude-run5.log)), HTTP 70
 - **CV015:** `http_library` (tìm/lọc, sao, thư mục, thùng rác, khôi phục, bản sao từ link). Chưa đóng: chưa kiểm giao diện hợp nhất kho.
 - **CV031:** `ai_endpoints_guard` ràng buộc mười route AI dùng khóa của chính người dùng. Chưa đóng: chưa kiểm hết bằng nhà cung cấp giả.
 - **Chưa làm của Codex:** CV023, 024, 026, 027, 042, 043 (cần Word thật, hình/công thức trực quan), Q6 (cần bảng ca của Gemini), Q7 in/PDF và Word dài, Q8 nhập Word/ảnh, Q12 dọn log.
+
+## Bổ sung đêm 25/10: lỗi công thức trong Word (CV043, CV026)
+Test đề dài 120 câu phát hiện: trước đây chỉ phân số và căn đứng một mình thành phương trình Word; `x^2`, `x_1`, `\sum`, `\sin`, `\cdot`... hiện nguyên dạng chữ LaTeX. Đã viết bộ chuyển đổi mới `src/lib/latex-math.ts` (phân số lồng, căn bậc n, chỉ số trên/dưới, tổng/tích phân, giới hạn, hàm, ký hiệu, hệ phương trình một dòng) và nối vào xuất Word. Kiểm: `latex_math` (5 ca), `docx_long_exam` (2 ca), `portable_and_exports` không đổi kết quả.
+- **Giới hạn nói thẳng:** chưa mở bằng Microsoft Word thật; hệ phương trình vẫn là một dòng ngăn bằng dấu chấm phẩy (chưa xếp dọc); macro lạ giữ nguyên chữ để giáo viên sửa; công thức trong tiêu đề phần/bảng chưa kiểm.
+- Việc tay cần làm: thẻ kiểm Word trong `THE_KIEM_TAY_PILOT_2.md` (mở tệp xuất ra bằng Word, nhìn công thức).
+- Chạy cuối: build đạt, SAFE 365/365 ([log](safe-claude-run6.log)), HTTP 70/70 ([log](http-claude-run18.log)), trình duyệt 13/13 ([log](pilot-claude-run13.log)). Có sửa chập chờn của hàm kiểm dùng chung `studentSubmit` (sau tải lại, trang có thể tự tiếp tục lượt mà không hỏi tên).

@@ -10,6 +10,7 @@ const db = new PrismaClient({ datasources: { db: { url: requireTestDatabase() } 
 const origin = 'http://127.0.0.1:3117';
 async function request(path: string, method = 'GET', body?: unknown, cookie = '') {
   const response = await fetch(origin + path, { method, headers: { Origin: origin, ...(cookie ? { Cookie: cookie } : {}), ...(body === undefined ? {} : { 'Content-Type': 'application/json' }) }, body: body === undefined ? undefined : JSON.stringify(body) });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- loose JSON response in a test helper
   return { status: response.status, data: await response.json().catch(() => ({})) as Record<string, any>, cookie: response.headers.getSetCookie().map(value => value.split(';')[0]).join('; ') };
 }
 

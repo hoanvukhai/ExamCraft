@@ -10,9 +10,6 @@ import {
   BorderStyle,
   Packer,
   Math,
-  MathRun,
-  MathFraction,
-  MathRadical,
   PageBreak,
   ImageRun,
 } from 'docx';
@@ -21,6 +18,7 @@ import { computeExamMatrix, generateDocxMatrixTable } from './matrix-spec-genera
 import { matchingDisplay, orderingDisplay } from './structured-question';
 import { examPlanOutput } from './exam-plan-output';
 import { resolveHeaderLines } from './header-layout';
+import { latexToMath } from './latex-math';
 
 /**
  * Xóa bỏ ký hiệu LaTeX thô hoặc làm sạch chuẩn xác để hiển thị trong Word
@@ -164,42 +162,8 @@ export function renderLatexRunsForWord(
     const mathExpr = match[0];
     const innerMath = mathExpr.replace(/^\$\$|\$\$$/g, '').replace(/^\$|\$$/g, '').trim();
 
-    // Phân tích biểu thức toán học sang OMML Math
-    // 1. Kiểm tra phân số đơn giản \frac{A}{B} hoặc \dfrac{A}{B}
-    const fracMatch = /^\\(?:d?frac)\{([^{}]+)\}\{([^{}]+)\}$/.exec(innerMath);
-    // 2. Kiểm tra căn bậc hai đơn giản \sqrt{A}
-    const sqrtMatch = /^\\sqrt\{([^{}]+)\}$/.exec(innerMath);
-
-    if (fracMatch) {
-      runs.push(
-        new Math({
-          children: [
-            new MathFraction({
-              numerator: [new MathRun(cleanLatexForWord(fracMatch[1]))],
-              denominator: [new MathRun(cleanLatexForWord(fracMatch[2]))],
-            }),
-          ],
-        })
-      );
-    } else if (sqrtMatch) {
-      runs.push(
-        new Math({
-          children: [
-            new MathRadical({
-              children: [new MathRun(cleanLatexForWord(sqrtMatch[1]))],
-            }),
-          ],
-        })
-      );
-    } else {
-      // Biểu thức toán học tổng quát: hiển thị trong môi trường Math của Word
-      const cleaned = cleanLatexForWord(innerMath);
-      runs.push(
-        new Math({
-          children: [new MathRun(cleaned)],
-        })
-      );
-    }
+    // Phân tích biểu thức LaTeX thành phương trình Word thật: phân số, căn, chỉ số trên/dưới, tổng, giới hạn
+    runs.push(new Math({ children: latexToMath(innerMath) }));
 
     lastIndex = regex.lastIndex;
   }
