@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "updated_at_utc": "2026-10-25T05:33:52.000Z",
+  "updated_at_utc": "2026-10-25T15:09:25.450Z",
   "coordinator": "CODEX",
   "execution_mode": "directed",
   "current_direction": "2026-10-25 (chiều): Claude chỉ đạo lại; Codex hồi token, Gemini còn nhiều. Việc mới: Gemini messages/claude-gemini-20261025T120000Z (GEM-Q1..Q10), Codex messages/claude-codex-20261025T120100Z (CDX-Q1..Q12). Chi tiết ở hai tin, không ở queue_items.",
@@ -623,6 +623,61 @@
         "b44c0ec"
       ],
       "handoff_message": "messages/claude-codex-20261024T150500Z-7c1d2a4e-5b3f-4a86-9e21-0f6a8d3b9c15.md"
+    },
+    {
+      "task_id": "GEMINI-NEXT",
+      "assignment_generation": 16,
+      "owner": "GEMINI",
+      "priority": "P0",
+      "base_commit": "rebuild/2026-10-local HEAD",
+      "status_file": "GEMINI_STATUS.md",
+      "queue_file": "qa/ai-review/coordination/messages/claude-gemini-20261025T150749Z-400a3865-7b31-487b-9a32-9ba59a7da2f3.md",
+      "queue_items": [
+        {
+          "id": "GEM-X1 HOP_DONG_KHAI_NIEM (CV007)"
+        },
+        {
+          "id": "GEM-X2 LOI_DA_BAO_VA_TRANG_THAI (CV006)"
+        },
+        {
+          "id": "GEM-X3 MAU_LUONG_VA_DANH_MUC_MON (CV004)"
+        },
+        {
+          "id": "GEM-X4 fixtures vat-li-11, hoa-hoc-10 (CV004, CV046)"
+        },
+        {
+          "id": "GEM-X5 DRIVE_DESIGN_DRAFT (CV075)"
+        }
+      ]
+    },
+    {
+      "task_id": "CODEX-NEXT",
+      "assignment_generation": 16,
+      "owner": "CODEX",
+      "priority": "P0",
+      "base_commit": "rebuild/2026-10-local HEAD",
+      "status_file": "CODEX_STATUS.md",
+      "queue_file": "qa/ai-review/coordination/messages/claude-codex-20261025T150749Z-7bde118b-28fe-489f-8828-3fdc5cabc186.md",
+      "queue_items": [
+        {
+          "id": "CDX-S1 import preview edit + F20 (CV039)"
+        },
+        {
+          "id": "CDX-S2 per-question import source, shareable=false (CV041)"
+        },
+        {
+          "id": "CDX-S3 cancel AI request (CV033)"
+        },
+        {
+          "id": "CDX-S4 CV025 audit and gaps"
+        },
+        {
+          "id": "CDX-S5 bank loading flicker"
+        },
+        {
+          "id": "CDX-S6 F21 AI in collaboration (CV053)"
+        }
+      ]
     }
   ],
   "batch_protocol": "docs/phoi-hop-ai/03_HANG_DOI_LIEN_MACH.md",

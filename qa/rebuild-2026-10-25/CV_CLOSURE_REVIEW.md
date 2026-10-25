@@ -130,3 +130,11 @@ Chạy cuối: HTTP 99/99 ([log](http-claude-run28.log)); SAFE 425/425 và trìn
 
 ## Bổ sung 26/10: CV074 (CI)
 `npm run ci` chạy đầy đủ đạt cả 6 bước trong 331 giây ([log](ci-full-run1.log)). Chứng minh "fail thật": với một server giả chiếm cổng 3117, CI dừng ngay sau hai bước đầu và thoát mã 1 ([log](ci-failure-demo.log)). Lint chưa nằm trong CI cho tới khi Codex dọn xong lỗi cũ (CDX-R1).
+
+## Bổ sung 26/10: duyệt Gemini/Codex generation 15, đóng CV014, 015, 028
+Claude chạy lại `npm run ci -- --quick` sau bàn giao Codex: kiểu, lint, SAFE 431/431 đạt. HTTP 99/99 và trình duyệt 18/18 là lượt Codex chạy sau R1–R2 (r1-r2-http.log, r1-r2-pilot-all.log); R6 chỉ đổi hàm phân tích thuần, SAFE phủ.
+- **CV014 đóng:** test nhập dữ liệu cũ đếm trước/sau, xem trước không ghi, từ chối cùng mã khác nội dung, sai tài khoản/nguồn, lỗi từng mục và resume; cộng diễn tập khôi phục (CV072) và migration từ checkout sạch (Codex R4).
+- **CV015, CV028 đóng:** F19 (ba lượt đạt) cộng các test máy chủ đã có. F19 tìm ra hai lỗi thật, Codex đã sửa: nút "Thêm vào đề" ở kho báo thành công mà không chèn; hai hộp dùng chung key React nên hộp ngân hàng không đóng ổn định.
+- **Codex R6:** sửa lộ khóa "Đáp án: 13" trong nội dung câu trả lời ngắn. Claude kiểm thêm: câu trắc nghiệm có khóa số không khớp phương án vẫn để trống đáp án. CV041 chưa đủ.
+- **Codex R3:** xem trước nhập đề chưa sửa được; không dựng F20 giả. CV039 chờ tính năng.
+- **Gemini generation 15:** nhận có giới hạn KET_QUA_THU_CONG_TAC, LOI_DA_BAO_VA_TRANG_THAI, DRIVE_DESIGN_DRAFT; **từ chối** GEMINI_REMAINING_GAPS (cột "Đạt khi" bịa ở 9 CV, test gắn sai vế), MAU_LUONG_VA_DANH_MUC_MON và DANH_MUC_GOI_THEO_MON (lệch coverage.json, thiếu 5 môn, "THPT: Toán 9"), HOP_DONG_KHAI_NIEM (13/27 đường API không tồn tại), DOC_MOVE_PLAN (đề xuất chuyển tệp thông báo hiện hành). Công cụ check-test-citations/check-ui-labels đạt nhưng không bắt được loại lỗi này. Chi tiết trong BATCH_REVIEWS.json.

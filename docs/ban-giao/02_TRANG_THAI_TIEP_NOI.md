@@ -1,19 +1,13 @@
 # Trạng thái để tiếp nối
 
-Cập nhật **25/10/2026**. Viết đè mỗi đợt; bản cũ giữ trong Git. Số test/log chỉ ở báo cáo nhóm được liên kết. Đọc yêu cầu hiện tại trước khi chọn việc; tệp này không tự cho phép việc ngoài phạm vi.
+Cập nhật **26/10/2026**. Viết đè mỗi đợt; bản cũ giữ trong Git. Số test/log chỉ ở báo cáo nhóm được liên kết. Đọc yêu cầu hiện tại trước khi chọn việc; tệp này không tự cho phép việc ngoài phạm vi.
 
 ## 1. Mốc hiện tại
 
-- **Kiểm lại 25/10 chiều (Claude, theo yêu cầu chủ dự án):** hoàn tất phần kiểm trình duyệt còn dở của đợt trước: **8/8 luồng đạt** (F1–F7, F9) gồm rà soát đề, trình chiếu, lưu ngân hàng, Word Song song hai cột; build đạt, SAFE 338/338, HTTP 33/33. Bốn lỗi đều của bộ kiểm chưa hoàn thiện (kỳ vọng 201 sai, chọn câu trình chiếu theo nhãn, nút Word sai, đồng hồ trong test), đã sửa; không lỗi sản phẩm mới. [PILOT_CLAUDE_RUN](../../qa/rebuild-2026-10-25/PILOT_CLAUDE_RUN.md).
-- **Tiến độ CV:** **35/78 đạt đủ tiêu chí** (thêm 050, 055, 057, 059, 062, 010, 011, 047, 048, 049, 060, 073, 042, 029, 058, 023, 027, 054, 056, 061, 024, 045, 030, 031, 032, 036, 074 ngày 25-26/10 sau đối chiếu có tên ca test thật, xem [CV_CLOSURE_REVIEW](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md)); thêm **10 CV ghi "đạt trong phạm vi pilot"** (023, 024, 026, 027, 042, 043, 054, 056, 058, 061). Hai con số không cộng làm một; mức pilot không phải nghiệm thu. Trình duyệt nay thêm F10 (đổi tài khoản), F11 (tải lại hỏng khi mất mạng), F12 (sửa đáp án và chấm lại); chưa có bản mở offline. Link chia sẻ mới khóa vào phiên bản lúc tạo; bước bắt đầu làm bài dùng khóa theo học sinh thay cho giao dịch Serializable.
-- **Đợt mới nhất:** `23e9eb5` thêm rà soát cấu trúc toàn đề, điều khiển trình chiếu, guard lưu bản sao ngân hàng và Word Song song hai cột. SAFE/build đạt; browser mới bị chặn bởi Docker/DB thử chưa sẵn sàng, chưa kiểm Word trực quan. [Báo cáo nhóm](../../qa/rebuild-2026-10-25/EXAM_REVIEW_AND_PRESENTATION.md). Không schema, không ghi DB chính, không provider.
-
-- **Codex làm một mình** theo yêu cầu mới của chủ dự án: thực hiện mã, kiểm thử, tổng hợp và giữ hồ sơ chung; không giao thêm/chờ Claude hoặc Gemini. Phân công cũ giữ để truy vết.
-- Đã hoàn thiện đợt lưu dữ liệu, kiểm giao diện/offline, CSV nhận xét và cấu hình CI. Mã local: `789d1aa`, `5a5408b` trên `rebuild/2026-10-local`. [Báo cáo đợt25/10](../../qa/rebuild-2026-10-25/BATCH_SUMMARY.md) là nơi chính cho kết quả mới, build ID và giới hạn.
-- Lưu đề chỉ ghi lịch sử câu đổi, giữ bản chụp đề và mọi lịch sử cũ; CAS từng câu chặn ghi đè bản mới. Đã kiểm PostgreSQL thử, quyền, rollback, điểm0/xóa trường/điểm lẻ và ghi đồng thời.
-- Browser kiểm luồng pilot, ngữ liệu chung ở Song song, giờ/mã giao bài; Chrome và Edge kiểm offline/reconnect/xung đột theo lượt. Nháp xung đột lưu được thành đề riêng; chưa hỗ trợ mở ứng dụng từ đầu khi hoàn toàn offline.
-- CSV bài có điểm nay giữ nhận xét từng câu; unit/HTTP và browser chấm→tải kiểm đạt. Bản dựng cuối đạt; server QA được dừng sau kiểm để giảm RAM.
-- Không ghi DB chính, không gọi provider/khóa thật, không migration mới, không push/reset/clean. Chưa tổng nghiệm thu; dấu hoàn thành theo [checklist chính](../ke-hoach-2026-10-21/03_CHECKLIST.md), không suy từ số test.
+- **Tiến độ CV: 38/78 đạt đủ tiêu chí** (thêm CV014, 015, 028 ngày 26/10). Mức "đạt trong phạm vi pilot" vẫn tính riêng, không cộng. Mỗi lần đóng có dòng "Nghiệm thu" nêu test và giới hạn; nhật ký ở [CV_CLOSURE_REVIEW](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md).
+- **Phân công:** Claude chỉ đạo và duyệt (giữ checklist, hồ sơ 02, ASSIGNMENTS.json, BATCH_REVIEWS.json); Codex làm mã/build/DB thử/trình duyệt, không tự tick; Gemini chỉ đọc mã và viết tài liệu, **phải kiểm lại bằng cách tự mở mã** (gen 15 có 5/8 tệp bị từ chối dù công cụ kiểm đều đạt). Việc đang giao: `qa/ai-review/coordination/messages/claude-codex-20261025T150749Z-*.md` (Codex gen 16) và `claude-gemini-20261025T150749Z-*.md` (Gemini gen 16).
+- **Đợt 26/10:** Codex gen 15: lint sạch và vào CI, F19 kho đề (sửa hai lỗi thật), migration từ checkout sạch, gom log thô vào `chay-tho/`, kiểm nguồn nhập (sửa lộ khóa số). Claude chạy lại kiểm nhanh: kiểu, lint, SAFE đạt. Bảng môn–lớp nay sinh bằng máy (`scripts/catalog-table.cjs`) có test chống mất môn.
+- Không ghi DB chính, không gọi AI thật, không đổi schema, không push. `main` vẫn mốc cũ.
 
 ## 2. Đã có và các giới hạn cần giữ
 
@@ -22,17 +16,15 @@ Cập nhật **25/10/2026**. Viết đè mỗi đợt; bản cũ giữ trong Git
 - Backup/restore đầy đủ đã kiểm local và PowerShell5.1, gồm bản phục hồi riêng; kế thừa [PILOT_CLAUDE_INTEGRATION](../../qa/rebuild-2026-10-24/PILOT_CLAUDE_INTEGRATION.md), không chạy lại chỉ để sửa hồ sơ. Còn chuyển máy/mất DPAPI, nơi giữ bản thứ hai và mục tiêu vận hành.
 - AI có BYOK/quota/đề xuất duyệt trước và ghi chú riêng; chưa kiểm chất lượng provider thật. Khóa mã hóa cũ không được tự xoay vì có thể mất khả năng giải mã dữ liệu cũ.
 - Gói Toán6/môn2 và fixtures là chuẩn bị kỹ thuật/nội dung chờ duyệt. Chưa có giáo viên/reviewer, chưa đủ nội dung đã duyệt cho mọi môn/lớp; không tự ký thay chuyên môn.
-- Word Song song đã có hai cột, ngữ liệu và ảnh được kiểm qua cấu trúc DOCX; Word/PDF dài vẫn cần kiểm trực quan. Cấu hình CI có integration/HTTP nhưng chưa chạy remote vì chưa push. Lint phần mã đổi đạt, chưa chứng minh lint toàn repo sạch.
+- Word Song song đã có hai cột, ngữ liệu và ảnh được kiểm qua cấu trúc DOCX; Word/PDF dài vẫn cần kiểm trực quan. Cấu hình CI có integration/HTTP nhưng chưa chạy remote vì chưa push. Lint toàn repo sạch và nằm trong `npm run ci`.
 
 ## 3. Hàng đợi tiếp nối
 
-1. **Khôi phục điều kiện kiểm:** Docker Desktop đã được mở nhưng PostgreSQL5436 chưa lên; chờ trạng thái Engine từ chủ dự án. Không reset/xóa dữ liệu. Sau khi engine sẵn sàng, kiểm DB thử chính xác rồi chạy F3 mở rộng trên bản dựng hiện tại; chưa báo đã đạt UI mới.
-2. **Dùng thử luồng lõi:** chủ dự án thử theo [hướng dẫn ngắn](../huong-dan/HUONG_DAN_GIAO_VIEN_PILOT.md); ưu tiên dễ hiểu, Word/in trang dài và thao tác thật. Ghi lỗi và kết quả mong muốn; không cần đọc toàn bộ QA.
-2. **Kỹ thuật tiếp theo khi tiếp tục:** hoàn thiện parent journal/storage lỗi, hai engine cộng tác, các chính sách giao/chấm còn lại; publication snapshot/regrade theo thiết kế đã duyệt có giới hạn. Không tự mở schema nếu chưa làm rõ bảo toàn/rollback; không thêm journal mới trái mốc đóng băng.
-3. **CV025/074:** phần chỉ lưu câu đổi đã làm, không làm lại. Còn Undo bền qua reload/tách lưu ngân hàng và dung lượng ExamRevision chứa ảnh; đo tải theo kịch bản trước khi thay cách chụp phiên bản.
-4. **CV048:** copy theo phiên bản nguồn cũng đã có và HTTP kiểm lại đạt; không giao lại như tính năng còn thiếu. Publication snapshot riêng vẫn chưa triển khai.
-5. **Nội dung/AI:** bám sổ nguồn và checklist môn/lớp; cần giáo viên/mẫu thực tế và một đợt kiểm provider thật có phạm vi/ngân sách rõ trước nghiệm thu. Không đồng nhất bộ kiểm kỹ thuật với chất lượng đề.
-6. Các nhóm sau pilot, Drive tùy chọn và tổng nghiệm thu vẫn trong checklist; không bị bỏ khỏi phạm vi vì đợt này xong.
+1. **Chờ Codex gen 16:** sửa trong xem trước nhập + F20 (CV039), nguồn từng câu và `shareable=false` khi nhập (CV041), hủy yêu cầu AI (CV033), rà CV025, F21 AI trong phiên cộng tác (CV053), `npm run ci` đầy đủ.
+2. **Chờ Gemini gen 16:** viết lại HOP_DONG_KHAI_NIEM (CV007), sửa LOI_DA_BAO (CV006) và MAU_LUONG (CV004), hai đề mẫu THPT (CV004/046), sửa mâu thuẫn dữ liệu học sinh trong thiết kế Drive (CV075).
+3. **Chờ chủ dự án quyết:** CV051 (giải quyết góp ý, bình luận theo phiên bản) cần thêm cột vào `ExamComment` → migration lên DB chính, phải sao lưu trước. Chưa làm khi chưa được đồng ý.
+4. **Claude tự làm:** CV077 (lập lại kế hoạch chuyển tài liệu bằng tìm chuỗi, giữ `docs/TIEN_DO_CAI_TIEN_EXAMCRAFT.md`), rà từng CV còn mở theo đúng "Đạt khi", CV078 cuối cùng.
+5. **Chủ dự án xem bằng mắt khi test toàn bộ:** CV026, 043, 044, 046, 076 (Word thật, in thật) theo [kịch bản kiểm tay](../huong-dan/KICH_BAN_KIEM_TAY_TOAN_DU_AN.md).
 
 ## 4. Môi trường
 

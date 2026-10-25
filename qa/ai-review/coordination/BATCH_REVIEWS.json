@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "updated_at_utc": "2026-10-25T23:00:00.000Z",
+  "updated_at_utc": "2026-10-25T15:02:18.404Z",
   "writer": "CLAUDE",
   "purpose": "Delivery review gates, not product checklist or proof of runtime completion",
   "batches": [
@@ -685,6 +685,152 @@
           ],
           "review_note": "Nạp được, tự chấm đúng, xuất Word đủ ba chế độ (fixture_da_mon).",
           "reviewed_at_utc": "2026-10-25T23:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "task_id": "GEMINI-NEXT",
+      "assignment_generation": 15,
+      "items": [
+        {
+          "id": "GEM-W1",
+          "decision": "REJECTED",
+          "submission_ref": [
+            "qa/ai-review/GEMINI_REMAINING_GAPS.md"
+          ],
+          "review_note": "Tên test có thật (24/24) nhưng cột \"Đạt khi\" không chép nguyên văn: CV019, 020, 021, 025, 028, 063, 064, 065, 066 ghi tiêu chí không có trong checklist; test gắn sai vế (CV051 dẫn nhận xét bài giao cho \"bình luận theo câu\"; CV028 dẫn F13 cho thùng rác). Không dùng để đóng CV.",
+          "reviewed_at_utc": "2026-10-25T15:02:18.404Z"
+        },
+        {
+          "id": "GEM-W2a",
+          "decision": "REJECTED",
+          "submission_ref": [
+            "docs/thiet-ke/MAU_LUONG_VA_DANH_MUC_MON.md"
+          ],
+          "review_note": "Bảng môn–lớp lệch src/config/education/coverage.json (thiếu Âm nhạc, Mĩ thuật, GDTC, HĐTN, GDĐP; gộp \"Tin học và Công nghệ\"; Đạo đức ghi lựa chọn). \"THPT: Toán 9\" sai cấp; không có đề mẫu THPT nào. Nhãn nút đúng (22/22).",
+          "reviewed_at_utc": "2026-10-25T15:02:18.404Z"
+        },
+        {
+          "id": "GEM-W2b",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "submission_ref": [
+            "docs/thiet-ke/KET_QUA_THU_CONG_TAC.md"
+          ],
+          "review_note": "Tên 13 test có thật, quyết định CAS có lý do, mục chưa làm trung thực. Cần sửa: nháp lưu IndexedDB/localStorage theo mã nguồn, không khẳng định một loại.",
+          "reviewed_at_utc": "2026-10-25T15:02:18.404Z"
+        },
+        {
+          "id": "GEM-W2c",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "submission_ref": [
+            "docs/thiet-ke/LOI_DA_BAO_VA_TRANG_THAI.md"
+          ],
+          "review_note": "Test có thật (15/15). Sai: toan6-bay-dang.json chỉ có figures dạng mảng (không có dạng object); bảy dạng câu ghi sai tên (không có \"nhiều lựa chọn\", thiếu sắp xếp); \"8 tệp JSON\" thực là 7. Bảng lỗi chỉ 11 dòng, thiếu nhiều lỗi thật trong CV_CLOSURE_REVIEW.",
+          "reviewed_at_utc": "2026-10-25T15:02:18.404Z"
+        },
+        {
+          "id": "GEM-W2d",
+          "decision": "REJECTED",
+          "submission_ref": [
+            "docs/thiet-ke/HOP_DONG_KHAI_NIEM.md"
+          ],
+          "review_note": "13/27 đường API ghi không tồn tại (auth/session, passages, students, public/share/[token], public/attempts/..., settings/keys, ai/usage...). Sai: survey/comment_only lưu tổng null chứ không 0; migration chính đã áp (CV002), không phải \"chưa áp\". Model và Decimal đúng.",
+          "reviewed_at_utc": "2026-10-25T15:02:18.404Z"
+        },
+        {
+          "id": "GEM-W3",
+          "decision": "REJECTED",
+          "submission_ref": [
+            "docs/chuong-trinh-2018/DANH_MUC_GOI_THEO_MON.md"
+          ],
+          "review_note": "Thiếu các môn Âm nhạc, Mĩ thuật, GDTC, HĐTN, GDĐP có trong coverage.json — trái tiêu chí \"không để môn biến mất\". Gọi fixture đề là \"khung chờ duyệt\" gói nội dung là lẫn hai thứ. Không dùng cột readiness có sẵn của coverage.json.",
+          "reviewed_at_utc": "2026-10-25T15:02:18.404Z"
+        },
+        {
+          "id": "GEM-W4a",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "submission_ref": [
+            "qa/rebuild-2026-10-25/DRIVE_DESIGN_DRAFT.md"
+          ],
+          "review_note": "Đủ backlog, scope drive.file, trạng thái, câu \"không yêu cầu Drive\"/\"chưa triển khai\", quyết định cho chủ dự án. Mâu thuẫn cần sửa: gói sao lưu thật là pg_dump toàn DB (có học sinh, bài làm, khóa mã hóa) trong khi mục 1 nói không đưa học sinh lên Drive.",
+          "reviewed_at_utc": "2026-10-25T15:02:18.404Z"
+        },
+        {
+          "id": "GEM-W4b",
+          "decision": "REJECTED",
+          "submission_ref": [
+            "qa/ai-review/DOC_MOVE_PLAN.md"
+          ],
+          "review_note": "Đề xuất chuyển docs/TIEN_DO_CAI_TIEN_EXAMCRAFT.md — đây là nơi thông báo chung hiện hành (00_DOC_TRUOC) và không liệt kê các liên kết tới nó. Mục 3.4 trích các câu \"không dùng docs/CHECKLIST_TIEN_DO.md\" không có trong 00/02. Claude tự lập lại bằng tìm chuỗi.",
+          "reviewed_at_utc": "2026-10-25T15:02:18.404Z"
+        }
+      ]
+    },
+    {
+      "task_id": "CODEX-NEXT",
+      "assignment_generation": 15,
+      "items": [
+        {
+          "id": "CDX-R1",
+          "decision": "ACCEPTED",
+          "submission_ref": [
+            "23cafd1",
+            "fe1569e",
+            "4ed34cf",
+            "qa/rebuild-2026-10-25/LINT_CLEANUP.md"
+          ],
+          "review_note": "Claude chạy lại npm run ci -- --quick: kiểu, lint, SAFE 431/431 đạt. Lint đã trong CI. HTTP/trình duyệt sau R1 do Codex chạy (99/99, 18/18).",
+          "reviewed_at_utc": "2026-10-25T15:02:18.404Z"
+        },
+        {
+          "id": "CDX-R2",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "submission_ref": [
+            "33b4b1d",
+            "qa/rebuild-2026-10-25/LIBRARY_UI.md"
+          ],
+          "review_note": "F19 ba lượt đạt; sửa hai lỗi thật (nút \"Thêm vào đề\" ở kho báo thành công giả; key React trùng giữa hai hộp). Giới hạn: bỏ đặt loading khi mở lại ngân hàng nên có thể thấy danh sách cũ trong chốc lát; nhỏ, chưa sửa.",
+          "reviewed_at_utc": "2026-10-25T15:02:18.404Z"
+        },
+        {
+          "id": "CDX-R3",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "submission_ref": [
+            "85faa67",
+            "qa/rebuild-2026-10-25/IMPORT_PREVIEW.md"
+          ],
+          "review_note": "Báo trung thực: xem trước chưa cho sửa nội dung/đáp án, không dựng F20 giả. Claude quyết phạm vi ở lượt sau.",
+          "reviewed_at_utc": "2026-10-25T15:02:18.404Z"
+        },
+        {
+          "id": "CDX-R4",
+          "decision": "ACCEPTED",
+          "submission_ref": [
+            "b4bded9",
+            "qa/rebuild-2026-10-25/MIGRATION_CLEAN_CHECKOUT.md"
+          ],
+          "review_note": "Clone ngoài repo, npm ci, DB mới examcraft_migrate_clean_*, deploy/status hai lượt, lượt hai không còn migration. Giới hạn: cùng máy.",
+          "reviewed_at_utc": "2026-10-25T15:02:18.404Z"
+        },
+        {
+          "id": "CDX-R5",
+          "decision": "ACCEPTED",
+          "submission_ref": [
+            "6507d29",
+            "qa/rebuild-2026-10-25/RAW_RUN_ARCHIVE.md"
+          ],
+          "review_note": "git mv 41 tệp sang chay-tho/, SHA256 khớp, không xóa, không liên kết treo.",
+          "reviewed_at_utc": "2026-10-25T15:02:18.404Z"
+        },
+        {
+          "id": "CDX-R6",
+          "decision": "ACCEPTED",
+          "submission_ref": [
+            "2da7413",
+            "qa/rebuild-2026-10-25/IMPORT_SOURCES.md"
+          ],
+          "review_note": "Đọc mã đúng; sửa thật lộ \"Đáp án: 13\" trong nội dung câu. Claude kiểm: trắc nghiệm có khóa số không khớp phương án vẫn để trống đáp án. CV041 còn thiếu nguồn tệp/trang/câu.",
+          "reviewed_at_utc": "2026-10-25T15:02:18.404Z"
         }
       ]
     }
