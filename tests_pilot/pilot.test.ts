@@ -520,8 +520,9 @@ test('F14 two teachers edit the same exam at once: the first save wins, the othe
   const peerContext = await f.context(), peer = await peerContext.newPage();
   await login(peer, f.emails[1], f.password); await peer.waitForURL(origin + '/'); await peer.goto(origin + '/editor/' + id);
   const titleOf = (page: Page) => page.getByTitle('Nhấn để đổi tên đề thi (như Google Docs)');
-  await titleOf(peer).waitFor();
-  const rename = async (page: Page, value: string) => { await titleOf(page).click(); const input = page.locator('header input').first(); await input.fill(value); await input.press('Enter'); };
+  const editable = (page: Page) => page.locator('button[title="Nhấn để đổi tên đề thi (như Google Docs)"]:not([disabled])');
+  await editable(peer).waitFor();
+  const rename = async (page: Page, value: string) => { await editable(page).waitFor(); await titleOf(page).click(); const input = page.locator('header input').first(); await input.fill(value); await input.press('Enter'); };
   // The second teacher loses the connection, edits, and the first teacher saves in the meantime.
   await peerContext.setOffline(true); await rename(peer, 'Bản của đồng nghiệp');
   await peer.getByText('Mất kết nối — đang giữ bản nháp trên máy', { exact: true }).waitFor();

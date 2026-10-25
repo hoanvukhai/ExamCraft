@@ -171,3 +171,6 @@ Mở bằng Microsoft Word thật (tự động hóa COM) 27 tệp xuất đa m�
 
 ## Bổ sung 26/10: bảng Markdown thật, đóng CV046
 Thêm `src/lib/markdown-table.ts` (tách bảng, bỏ qua `|` trong công thức), dựng bảng ở web/in (`MathRenderer`) và Word (câu, ngữ liệu, lời giải; hàng tiêu đề lặp lại, hàng không bị cắt). SAFE 457/457, lint 0 lỗi, build đạt, pilot F2/F15/F18 đạt. Xem lại Word thật: bảng Tin 8 đúng. 6 ảnh kiểm lưu ở qa/rebuild-2026-10-25/anh-kiem-word. Chưa chạy CI đầy đủ (Codex đang làm gen 17).
+
+## Bổ sung 26/10: nhận Codex generation 17
+T1, T2 nhận; T3 nhận có giới hạn. CI độc lập của Claude trên HEAD: kiểu, lint, SAFE 457/457, build, HTTP đạt; trình duyệt 22/23 do F14 rớt vì test bấm đổi tên khi trình soạn thảo chưa sẵn sàng (cùng nguyên nhân F11, sửa ở test; F14 đạt 3/3 riêng). Cần một lượt CI đầy đủ cuối cùng trước tổng nghiệm thu.

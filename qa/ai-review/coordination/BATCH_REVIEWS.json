@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "updated_at_utc": "2026-10-25T15:02:18.404Z",
+  "updated_at_utc": "2026-10-25T18:37:10.380Z",
   "writer": "CLAUDE",
   "purpose": "Delivery review gates, not product checklist or proof of runtime completion",
   "batches": [
@@ -831,6 +831,41 @@
           ],
           "review_note": "Đọc mã đúng; sửa thật lộ \"Đáp án: 13\" trong nội dung câu. Claude kiểm: trắc nghiệm có khóa số không khớp phương án vẫn để trống đáp án. CV041 còn thiếu nguồn tệp/trang/câu.",
           "reviewed_at_utc": "2026-10-25T15:02:18.404Z"
+        }
+      ]
+    },
+    {
+      "task_id": "CODEX-GEN17",
+      "assignment_generation": 17,
+      "items": [
+        {
+          "id": "CDX-T1",
+          "decision": "ACCEPTED",
+          "submission_ref": [
+            "c9e84b8"
+          ],
+          "review_note": "Ghi pilot-results atomic; F3 và F19 đạt trong lượt CI đầy đủ của Claude.",
+          "reviewed_at_utc": "2026-10-25T18:37:10.380Z"
+        },
+        {
+          "id": "CDX-T2",
+          "decision": "ACCEPTED",
+          "submission_ref": [
+            "914f26d",
+            "9114ee9"
+          ],
+          "review_note": "F24 đạt trong lượt CI đầy đủ của Claude. Bắt được lỗi thật (người bị hạ quyền vẫn thấy nút Mở lại) và sửa tối thiểu, không bẻ test.",
+          "reviewed_at_utc": "2026-10-25T18:37:10.380Z"
+        },
+        {
+          "id": "CDX-T3",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "submission_ref": [
+            "e8167b9",
+            "qa/rebuild-2026-10-25/CODEX_GEN17_HANDOFF.md"
+          ],
+          "review_note": "CI Codex 23/23 trình duyệt. CI Claude trên HEAD (gồm sửa Word/bảng): kiểu, lint, SAFE 457/457, build, HTTP đạt; trình duyệt 22/23, F14 rớt do test bấm đổi tên khi trình soạn thảo chưa sẵn sàng (cùng lỗi F11), đã sửa test, F14 đạt 3/3 khi chạy riêng. Chưa có một lượt đầy đủ 23/23 trên HEAD hiện tại.",
+          "reviewed_at_utc": "2026-10-25T18:37:10.380Z"
         }
       ]
     }
