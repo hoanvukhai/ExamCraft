@@ -34,6 +34,7 @@ import { requiresNumericScore } from '@/lib/education-catalog';
 import { ExamStructureEditor } from '@/components/ExamStructureEditor';
 import type { BankQuestion } from '@/lib/question-client';
 import { ExamPresentation } from '@/components/ExamPresentation';
+import { ExamReviewPanel } from '@/components/ExamReviewPanel';
 import { KnowledgeScopeEditor } from '@/components/KnowledgeScopeEditor';
 import { ExamPlanEditor } from '@/components/ExamPlanEditor';
 import { applyHeaderSubmission } from '@/lib/header-layout';
@@ -326,6 +327,8 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         {exam.serverId && <button type="button" onClick={() => setCollaborationOpen(true)} className="underline">Cùng soạn · Góp ý · Lịch sử</button>}
         {exam.access && <span>{exam.access.canManage ? 'Đề của bạn' : exam.access.canEdit ? 'Được mời cùng sửa' : exam.access.canComment ? 'Quyền xem và góp ý' : 'Quyền chỉ xem'}</span>}
       </div>
+
+      {ready && <ExamReviewPanel exam={exam} />}
 
       {(saveState !== 'saved' || saveMessage) && (
         <div role="status" className="px-4 py-2 text-sm border-b bg-white dark:bg-[#202124] flex items-center gap-3 flex-wrap">

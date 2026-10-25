@@ -191,6 +191,26 @@ test('F2 author seven types, image, passage, zero, title and reopen', { timeout:
 
 test('F3 answer views, shuffle, Word and print', { timeout: 120000 }, () => flow('F3', async f => {
   await authenticated(f); await openExam(f,await seedExam(f,'ngu_van'));
+  const review = f.page.locator('details').filter({ has: f.page.locator('summary', { hasText: 'Rà soát đề' }) });
+  await review.locator('summary').click();
+  assert.ok((await review.innerText()).includes('Tổng điểm: 6,00'));
+  assert.ok(!(await review.innerText()).includes(solution));
+  await click(f.page, 'Trình chiếu');
+  const presentation = f.page.getByRole('dialog', { name: 'Trình chiếu đề' });
+  await presentation.waitFor();
+  assert.ok(!(await presentation.innerText()).includes(solution));
+  await presentation.getByRole('button', { name: 'Chữ lớn hơn', exact: true }).click();
+  assert.ok((await presentation.innerText()).includes('26px'));
+  await presentation.getByRole('button', { name: 'Hiện đáp án / lời giải', exact: true }).click();
+  assert.ok((await presentation.innerText()).includes(solution));
+  await presentation.getByLabel('Chọn câu trình chiếu').selectOption('1');
+  assert.ok((await presentation.innerText()).includes('PILOT Q2'));
+  assert.ok(!(await presentation.innerText()).includes(solution));
+  await presentation.getByRole('button', { name: 'Câu sau →', exact: true }).focus();
+  await f.page.keyboard.press('ArrowRight');
+  assert.ok((await presentation.innerText()).includes('PILOT Q3'));
+  await f.page.keyboard.press('Escape');
+  await presentation.waitFor({ state: 'detached' });
   await click(f.page,'Bảng đáp án & Barem'); await f.page.getByText('Chấp nhận: 2', { exact: true }).first().waitFor();
   await click(f.page,'Hướng dẫn giải'); await f.page.getByText(solution, { exact: true }).first().waitFor(); await click(f.page,'Đề thi in ấn');
   const [downloaded] = await Promise.all([f.page.waitForEvent('download',{timeout:60000}),f.page.getByTitle('Tải file Word (.docx) chuẩn công thức OMML').click()]); const file = await downloaded.path(); assert.ok(file); const bytes=fs.readFileSync(file); assert.equal(bytes.subarray(0,2).toString(),'PK'); assert.ok(bytes.length>2000);

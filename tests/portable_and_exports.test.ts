@@ -162,6 +162,43 @@ test('Word solution export labels missing answers explicitly instead of inventin
   assert.ok(document.includes('Thứ tự đúng: ORDER_TWO'));
 });
 
+test('parallel Word pairs each question with its answer and keeps shared passage once', async () => {
+  const before = JSON.stringify(fixture);
+  const blob = await exportExamToDocx(fixture, true, false, 'parallel');
+  const zip = await JSZip.loadAsync(await blob.arrayBuffer());
+  const document = await zip.file('word/document.xml')!.async('string');
+  assert.equal(document.split('NGULIEU_CONTENT').length - 1, 1);
+  assert.ok(document.includes('ĐỀ VÀ ĐÁP ÁN SONG SONG'));
+  assert.ok(document.includes('<w:tblHeader'));
+  for (let i = 0; i < types.length; i++) {
+    const start = document.indexOf(`SENTINEL_${types[i]}`);
+    const next = i + 1 < types.length ? document.indexOf(`SENTINEL_${types[i + 1]}`) : document.length;
+    const answer = document.indexOf('SOLUTION_PRIVATE', start);
+    assert.ok(start >= 0 && answer > start && answer < next, types[i]);
+  }
+  assert.ok(document.includes('LEFT_TEXT') && document.includes('ORDER_TWO'));
+  assert.equal(JSON.stringify(fixture), before);
+  const hidden = await exportExamToDocx(fixture, false, false, 'parallel');
+  const hiddenZip = await JSZip.loadAsync(await hidden.arrayBuffer());
+  assert.ok(!(await hiddenZip.file('word/document.xml')!.async('string')).includes('SOLUTION_PRIVATE'));
+});
+
+test('parallel Word limits image width while keeping aspect ratio and passage math', async () => {
+  const png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=';
+  const exam = structuredClone(fixture);
+  exam.passages![0].content = 'FORMULA $\\frac{1}{2}$';
+  exam.questions[0].figures = [{ id: 'f', kind: 'image', data: {}, renderedBase64: `data:image/png;base64,${png}` }];
+  const blob = await exportExamToDocx(exam, true, false, 'parallel');
+  const zip = await JSZip.loadAsync(await blob.arrayBuffer());
+  const document = await zip.file('word/document.xml')!.async('string');
+  const dimensions = document.match(/<wp:extent cx="(\d+)" cy="(\d+)"/);
+  assert.ok(dimensions);
+  assert.ok(Number(dimensions[1]) <= 230 * 9525);
+  assert.ok(Math.abs(Number(dimensions[1]) / Number(dimensions[2]) - 380 / 240) < 0.01);
+  assert.ok(document.includes('<m:f>'));
+  assert.ok(Object.keys(zip.files).some(name => name.startsWith('word/media/')));
+});
+
 test('legacy import keeps content and zero points but cannot inherit a historical verified badge', () => {
   const result = prepareLegacyExam({ ...fixture, questions: fixture.questions.map(q => ({ ...q, status: 'verified', verifiedBy: 'human' })) });
   assert.equal(result.questions[0].points, 0);

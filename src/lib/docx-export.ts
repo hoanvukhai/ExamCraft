@@ -237,7 +237,7 @@ export function renderLatexRunsForWord(
 /**
  * Chuyển đổi và render hình vẽ, đồ thị hàm số và bảng biến thiên vào file Word docx (EXP-BUG-001)
  */
-export function renderFiguresForDocx(figures?: Figure[]): (Paragraph | Table)[] {
+export function renderFiguresForDocx(figures?: Figure[], compact = false): (Paragraph | Table)[] {
   if (!figures || figures.length === 0) return [];
   const elements: (Paragraph | Table)[] = [];
 
@@ -246,6 +246,9 @@ export function renderFiguresForDocx(figures?: Figure[]): (Paragraph | Table)[] 
       try {
         const cleanBase64 = fig.renderedBase64.replace(/^data:image\/\w+;base64,/, '');
         const imgBuffer = Buffer.from(cleanBase64, 'base64');
+        const dimensions = (fig as Figure & { exportSize?: { width: number; height: number } }).exportSize;
+        const width = dimensions?.width ?? 380, height = dimensions?.height ?? 240;
+        const scale = compact ? globalThis.Math.min(1, 230 / width) : 1;
         elements.push(
           new Paragraph({
             alignment: AlignmentType.CENTER,
@@ -254,8 +257,8 @@ export function renderFiguresForDocx(figures?: Figure[]): (Paragraph | Table)[] 
               new ImageRun({
                 data: imgBuffer,
                 transformation: {
-                  width: (fig as Figure & { exportSize?: { width: number } }).exportSize?.width ?? 380,
-                  height: (fig as Figure & { exportSize?: { height: number } }).exportSize?.height ?? 240,
+                  width: width * scale,
+                  height: height * scale,
                 },
                 type: fig.renderedBase64.startsWith('data:image/jpeg') ? 'jpg' : fig.renderedBase64.startsWith('data:image/gif') ? 'gif' : 'png',
               }),
@@ -270,7 +273,7 @@ export function renderFiguresForDocx(figures?: Figure[]): (Paragraph | Table)[] 
       if (!Array.isArray(vData.xValues) || vData.xValues.length < 2 || !Array.isArray(vData.yPrimeSigns) || !vData.yPrimeSigns.length || !Array.isArray(vData.yValues) || !vData.yValues.length) throw new Error(`Bảng biến thiên “${fig.caption ?? fig.id}” chưa đủ dữ liệu.`);
       if (Array.isArray(vData.xValues) && Array.isArray(vData.yPrimeSigns)) {
         // Tạo bảng biến thiên dạng Table trong docx
-        const totalWidth = 8500; // dxa
+        const totalWidth = compact ? 3450 : 8500; // dxa
         const headerColWidth = 1000;
         const contentColWidth = globalThis.Math.floor((totalWidth - headerColWidth) / globalThis.Math.max(1, vData.xValues.length));
 
@@ -410,7 +413,7 @@ export async function exportExamToDocx(
   exam: Exam, 
   includeSolutions: boolean = true, 
   includeMatrix: boolean = true,
-  view: 'all' | 'exam' | 'answers' | 'solutions' | 'matrix' = 'all'
+  view: 'all' | 'exam' | 'answers' | 'solutions' | 'matrix' | 'parallel' = 'all'
 ): Promise<Blob> {
   const { metadata, questions } = exam;
 
@@ -476,6 +479,7 @@ export async function exportExamToDocx(
   });
 
   const docChildren: (Paragraph | Table)[] = [];
+  const parallelQuestions: (Paragraph | Table)[][] = [], parallelAnswers: (Paragraph | Table)[][] = [];
 
   // Nếu bật tùy chọn Ma trận: Chèn bảng Ma trận CV 7991 lên trang đầu
   if (includeMatrix) {
@@ -518,6 +522,7 @@ export async function exportExamToDocx(
     new Paragraph({ spacing: { before: 150, after: 100 } }),
   );
 
+  const passageStart = docChildren.length;
   // In các ngữ liệu chung (Passages) nếu có
   if (exam.passages && exam.passages.length > 0) {
     for (const p of exam.passages) {
@@ -536,14 +541,7 @@ export async function exportExamToDocx(
         new Paragraph({
           indent: { left: 300, right: 300 },
           spacing: { after: 160 },
-          children: [
-            new TextRun({
-              text: p.content,
-              italics: true,
-              size: 20,
-              font: 'Times New Roman',
-            }),
-          ],
+          children: renderLatexRunsForWord(p.content, { fontSize: 20, italics: true }),
         })
       );
       docChildren.push(...renderFiguresForDocx(p.figures));
@@ -551,10 +549,12 @@ export async function exportExamToDocx(
     }
   }
 
+  const passageBlocks = docChildren.slice(passageStart);
   // Follow the editor's ordering so answer numbers and shared passages remain linked.
   const sections = (exam as Exam & { sections?: { id: string; title?: string; label?: string; name?: string }[] }).sections ?? [];
   let previousSection: string | undefined;
   questions.forEach((q, index) => {
+    const blockStart = docChildren.length;
     if (q.sectionId && q.sectionId !== previousSection) {
       const section = sections.find(section => section.id === q.sectionId);
       if (section?.title || section?.label || section?.name) docChildren.push(new Paragraph({ children: [new TextRun({ text: section.title ?? section.label ?? section.name!, bold: true, size: 23 })], spacing: { before: 200, after: 100 } }));
@@ -580,7 +580,8 @@ export async function exportExamToDocx(
       else docChildren.push(new Paragraph('[Chưa thiết lập các mục sắp xếp]'));
     }
     if (['short_answer', 'fill_blank', 'ordering', 'matching'].includes(q.type)) docChildren.push(new Paragraph('Trả lời: ................................................................................'));
-    docChildren.push(...renderFiguresForDocx(q.figures));
+    docChildren.push(...renderFiguresForDocx(q.figures, view === 'parallel'));
+    parallelQuestions.push(docChildren.slice(blockStart));
   });
 
   docChildren.push(...headerLines.filter(line => line.area === 'footer').map(headerParagraph));
@@ -623,6 +624,7 @@ export async function exportExamToDocx(
     );
 
     questions.forEach((q, idx) => {
+      const answerStart = docChildren.length;
       let answerLabel = '';
       if (q.type === 'multiple_choice') {
         answerLabel = `Đáp án đúng: ${q.correct_answer || 'Chưa đặt đáp án'}`;
@@ -630,9 +632,9 @@ export async function exportExamToDocx(
         const tfDetails = q.sub_questions
           ?.map(sq => `${sq.key}) ${sq.isCorrect === undefined ? 'Chưa có đáp án' : sq.isCorrect ? 'Đúng' : 'Sai'}`)
           .join('   ') || '';
-        answerLabel = `Đáp án: ${tfDetails || (q.correct_answer || '')}`;
+        answerLabel = `Đáp án: ${tfDetails || q.correct_answer?.trim() || 'Chưa đặt đáp án'}`;
       } else if (q.type === 'short_answer' || q.type === 'fill_blank') {
-        answerLabel = `Đáp số: ${q.correct_answer || ''}`;
+        answerLabel = `Đáp số: ${q.correct_answer?.trim() || q.accepted_answers?.filter(value => value.trim()).join(' / ') || 'Chưa đặt đáp án'}`;
       } else if (q.type === 'matching') {
         answerLabel = 'Cặp đúng: ' + (q.matchingPairs?.map(pair => pair.left + ' → ' + pair.right).join('; ') || q.correct_answer || 'Chưa đặt đáp án');
       } else if (q.type === 'ordering') {
@@ -752,7 +754,22 @@ export async function exportExamToDocx(
           })
         );
       }
+      parallelAnswers.push(docChildren.slice(answerStart));
     });
+  }
+
+  if (view === 'parallel') {
+    const label = (text: string) => new Paragraph({ children: [new TextRun({ text, bold: true, font: 'Times New Roman', size: 22 })] });
+    const cell = (children: (Paragraph | Table)[]) => new TableCell({ width: { size: 50, type: WidthType.PERCENTAGE }, children: [...children, new Paragraph('')] });
+    // Reuse exactly the same question/answer renderers; remove their sequential
+    // copies. Shared passages stay full width once, outside the two-column table.
+    docChildren.splice(questionBodyStart, docChildren.length - questionBodyStart,
+      ...headerBlocks, label('ĐỀ VÀ ĐÁP ÁN SONG SONG'), ...passageBlocks,
+      new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [
+        new TableRow({ tableHeader: true, children: [cell([label('Đề bài')]), cell([label('Đáp án / hướng dẫn chấm')])] }),
+        ...parallelQuestions.map((blocks, index) => new TableRow({ children: [cell(blocks), cell(parallelAnswers[index] ?? [new Paragraph('Không kèm đáp án trong lần xuất này.')])] })),
+      ] }),
+      ...headerLines.filter(line => line.area === 'footer').map(headerParagraph));
   }
 
   // Khởi tạo Document

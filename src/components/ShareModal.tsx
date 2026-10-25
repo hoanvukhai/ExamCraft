@@ -5,6 +5,7 @@ import { accountFetch } from '@/lib/account-fetch';
 import { Exam } from '@/types/exam';
 import { persistExam } from '@/lib/exam-client';
 import { buildAssignmentOptions } from '@/lib/assignment-options';
+import { ExamReviewPanel } from '@/components/ExamReviewPanel';
 import Link from 'next/link';
 import {
   Share2,
@@ -220,6 +221,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
       <div className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl max-w-xl w-full p-6 shadow-2xl text-[#202124] dark:text-[#e3e3e3] max-h-[92vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
+        <ExamReviewPanel exam={exam} />
         {/* Header Modal */}
         <div className="flex items-center justify-between pb-4 border-b border-[#dadce0] dark:border-[#3c4043]">
           <div className="flex items-center gap-2.5">

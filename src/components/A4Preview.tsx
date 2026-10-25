@@ -67,7 +67,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
   const handleExportDocx = async () => {
     try {
       setIsExporting(true);
-      const blob = await exportExamToDocx(await prepareExportFigures(exam), viewMode !== 'exam' && viewMode !== 'matrix', viewMode === 'matrix', viewMode === 'parallel' ? 'all' : viewMode);
+      const blob = await exportExamToDocx(await prepareExportFigures(exam), viewMode !== 'exam' && viewMode !== 'matrix', viewMode === 'matrix', viewMode);
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;

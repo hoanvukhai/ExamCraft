@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Question } from '@/types/exam';
 import { MathRenderer } from './MathRenderer';
 import { QuestionEditor } from './QuestionEditor';
@@ -107,6 +107,9 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
   const [undoMessage, setUndoMessage] = useState('');
   const activeUndoHistory = confirmedUndoHistory(undoHistory, pendingUndo ? questionValueStamp(pendingUndo.value) : undefined, question);
   const [bankSavedNotification, setBankSavedNotification] = useState(false);
+  const bankSaveInFlight = useRef(false);
+  const [bankSaving, setBankSaving] = useState(false);
+  const [bankSaveError, setBankSaveError] = useState('');
 
   // Quản lý Thẩm định AI (Dual-Solve Verifier)
   const [isVerifying, setIsVerifying] = useState(false);
@@ -183,14 +186,18 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
 
   // Lưu câu hỏi vào Ngân hàng câu hỏi cá nhân
   const handleSaveToBank = async () => {
+    if (bankSaveInFlight.current || isEditing || pendingNewQuestion) return;
+    bankSaveInFlight.current = true;
+    setBankSaving(true);
+    setBankSaveError('');
+    setBankSavedNotification(false);
     try {
       await dbSaveQuestionToBank(question, ownerId, passage);
       setBankSavedNotification(true);
       setTimeout(() => setBankSavedNotification(false), 2500);
     } catch (err) {
-      console.error('Lỗi khi lưu vào ngân hàng:', err);
-      alert(err instanceof Error ? err.message : 'Chưa lưu được câu hỏi vào ngân hàng');
-    }
+      setBankSaveError(err instanceof Error ? err.message : 'Chưa lưu được câu hỏi vào ngân hàng');
+    } finally { bankSaveInFlight.current = false; setBankSaving(false); }
   };
 
   // Thẩm định đáp án câu hỏi bằng AI Dual-Solve
@@ -304,9 +311,10 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
 
           {bankSavedNotification && (
             <span className="text-[11px] font-bold text-emerald-600 flex items-center gap-1">
-              <Check className="w-3 h-3" /> Đã lưu vào ngân hàng!
+              <Check className="w-3 h-3" /> Đã lưu bản sao riêng vào ngân hàng
             </span>
           )}
+          {bankSaveError && <span role="alert" className="text-xs text-red-600">{bankSaveError}</span>}
         </div>
 
         {/* Nút hành động thanh công cụ Google Ghost Pill */}
@@ -378,7 +386,9 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
 
           <button
             onClick={handleSaveToBank}
-            title="Lưu câu hỏi này vào Ngân hàng câu hỏi cá nhân"
+            disabled={bankSaving || isEditing || !!pendingNewQuestion}
+            aria-label={bankSaving ? 'Đang lưu bản sao vào ngân hàng' : 'Lưu bản sao vào ngân hàng'}
+            title={isEditing || pendingNewQuestion ? 'Áp dụng hoặc đóng bản đang sửa trước khi lưu vào ngân hàng' : 'Lưu bản sao riêng vào ngân hàng; sửa đề sau đó không đổi bản sao này'}
             className="p-1.5 text-[#5f6368] hover:text-emerald-600 dark:text-[#9aa0a6] dark:hover:text-emerald-400 hover:bg-[#f1f3f4] dark:hover:bg-[#282828] rounded-full transition-colors cursor-pointer"
           >
             <BookmarkPlus className="w-4 h-4" />
