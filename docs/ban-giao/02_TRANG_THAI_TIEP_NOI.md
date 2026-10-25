@@ -38,3 +38,5 @@ Cập nhật **26/10/2026**. Viết đè mỗi đợt; bản cũ giữ trong Git
 ## 5. Cách cập nhật
 
 Bằng chứng/số liệu → báo cáo nhóm `qa/rebuild-<ngày>/`; viết đè dòng hiện trạng CV liên quan và các mục hiện hành ở đây. Tiến độ chung chỉ giữ ba thông báo mới, thông báo cũ đưa lịch sử với liên kết đúng. Không tạo master/checklist khác; không đánh dấu hoàn tất chỉ vì có mã hoặc test giả đạt.
+
+- Việc cần chủ dự án tự xem: [DANH_SACH_VIEC_CAN_XEM_BANG_MAT](../huong-dan/DANH_SACH_VIEC_CAN_XEM_BANG_MAT.md) (26/10). Tệp Word mẫu sinh sẵn ở `tmp/xuat-mau/` (không vào Git).
