@@ -12,7 +12,14 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Copies and scratch output that are not source: restored builds, worktrees of other tools, reports.
+    "backups/**",
+    "tmp/**",
+    "qa/**",
+    "protected-secrets/**",
   ]),
+  // Command-line scripts are CommonJS on purpose.
+  { files: ["**/*.cjs"], rules: { "@typescript-eslint/no-require-imports": "off" } },
 ]);
 
 export default eslintConfig;
