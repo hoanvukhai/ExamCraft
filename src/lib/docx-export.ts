@@ -140,6 +140,8 @@ export function renderLatexRunsForWord(
   const runs: (TextRun | Math)[] = [];
   const fontSize = options?.fontSize || 22;
   const font = options?.font || 'Times New Roman';
+  // Word ignores a raw newline inside a run; each line break must be an explicit break so poems, code and multi-line stems keep their lines.
+  const textRuns = (text: string) => text.split(/\r?\n/).map((line, index) => new TextRun({ text: line, ...(index > 0 ? { break: 1 } : {}), font, size: fontSize, bold: options?.bold, italics: options?.italics }));
 
   // Biểu thức tách chuỗi: tìm các đoạn $$...$$ hoặc $...$
   const regex = /(\$\$[\s\S]*?\$\$|\$[^$]+\$)/g;
@@ -148,17 +150,7 @@ export function renderLatexRunsForWord(
 
   while ((match = regex.exec(rawText)) !== null) {
     const textBefore = rawText.slice(lastIndex, match.index);
-    if (textBefore) {
-      runs.push(
-        new TextRun({
-          text: textBefore,
-          font,
-          size: fontSize,
-          bold: options?.bold,
-          italics: options?.italics,
-        })
-      );
-    }
+    if (textBefore) runs.push(...textRuns(textBefore));
 
     const mathExpr = match[0];
     const innerMath = mathExpr.replace(/^\$\$|\$\$$/g, '').replace(/^\$|\$$/g, '').trim();
@@ -171,17 +163,7 @@ export function renderLatexRunsForWord(
 
   // Đoạn văn bản còn lại sau cùng
   const remainingText = rawText.slice(lastIndex);
-  if (remainingText) {
-    runs.push(
-      new TextRun({
-        text: remainingText,
-        font,
-        size: fontSize,
-        bold: options?.bold,
-        italics: options?.italics,
-      })
-    );
-  }
+  if (remainingText) runs.push(...textRuns(remainingText));
 
   // Nếu chuỗi không chứa ký hiệu $ nào, fallback đơn giản
   if (runs.length === 0 && rawText) {

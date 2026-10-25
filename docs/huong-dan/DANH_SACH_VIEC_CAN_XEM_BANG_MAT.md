@@ -8,8 +8,8 @@ Lập 26/10/2026. Còn **18 CV mở** trên 78. Máy đã kiểm mọi thứ má
 
 | CV | Mục kịch bản | Điều cần nhìn bằng mắt |
 |---|---|---|
-| CV026 Hình, công thức, bảng, ngữ liệu | V1-4, V1-7 | Hình tải lên hiện rõ và đúng tỷ lệ; xóa file hình rồi mở lại đề: có chỗ báo "thiếu hình" thay vì trống trơn; ngữ liệu dùng chung hiện **một lần** phía trên nhóm câu, không bị nhân bản |
-| CV043 Xuất Word | V1-7 | Mở tệp bằng **Microsoft Word thật**: bấm vào công thức, Word có nhận là phương trình (Equation) không; không còn chữ thô như `\frac`, `\sqrt`; bảng và hình không bể; sửa được tài liệu |
+| CV026 (đã đóng; xem lại nếu muốn) Hình, công thức, bảng, ngữ liệu | V1-4, V1-7 | Hình tải lên hiện rõ và đúng tỷ lệ; xóa file hình rồi mở lại đề: có chỗ báo "thiếu hình" thay vì trống trơn; ngữ liệu dùng chung hiện **một lần** phía trên nhóm câu, không bị nhân bản |
+| CV043 (đã đóng, Claude đã xem bằng Word thật; bạn xem lại nếu muốn) Xuất Word | V1-7 | Mở tệp bằng **Microsoft Word thật**: bấm vào công thức, Word có nhận là phương trình (Equation) không; không còn chữ thô như `\frac`, `\sqrt`; bảng và hình không bể; sửa được tài liệu |
 | CV044 In/PDF | V1-10 | Đề 60 câu ra nhiều trang A4; không câu nào bị cắt đôi giữa hai trang; không tràn lề phải; nút soạn thảo biến mất khi in; ngữ liệu dùng chung không bị tách khỏi câu của nó. Thử in cả Đề, Đáp án/lời giải, ma trận |
 | CV046 Bộ đề đa môn | V1-5, V1-6, V1-7 | Mở các tệp Word mẫu đã sinh sẵn (xem dưới) và nhìn công thức Lý/Hóa, bảng số liệu, ngữ liệu dài, đề tiểu học |
 | CV040 Nhập Word/ảnh | V1-5 (mở rộng) | Nhập một tệp Word dài và một ảnh đề thật của bạn: có báo phần bị cắt/thiếu; hình và công thức đi theo đúng câu; nhập lại cùng tệp thì không sinh câu trùng ồ ạt; OCR không tự đánh dấu đáp án đúng |
