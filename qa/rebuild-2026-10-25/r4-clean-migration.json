@@ -1,0 +1,52 @@
+{
+  "checkedAt": "2026-10-25T13:40:36.011Z",
+  "status": "PASS",
+  "steps": [
+    {
+      "name": "Source revision",
+      "exitCode": 0
+    },
+    {
+      "name": "Clone local repository (no hardlinks)",
+      "exitCode": 0
+    },
+    {
+      "name": "npm ci in clean checkout",
+      "exitCode": 0
+    },
+    {
+      "name": "Migration deploy pass 1",
+      "exitCode": 0
+    },
+    {
+      "name": "Migration status pass 1",
+      "exitCode": 0
+    },
+    {
+      "name": "Migration deploy pass 2",
+      "exitCode": 0
+    },
+    {
+      "name": "Migration status pass 2",
+      "exitCode": 0
+    },
+    {
+      "name": "Clean checkout status",
+      "exitCode": 0
+    }
+  ],
+  "mainDatabaseWritten": false,
+  "realAiCalls": false,
+  "scratch": "C:\\Users\\ACER\\AppData\\Local\\Temp\\examcraft-clean-migration-ae82c2d3c8",
+  "database": "examcraft_migrate_clean_20261025_ae82c2d3c8",
+  "sourceCommit": "33b4b1dc2a771acbb10cd9f637e990a691d16f86",
+  "databaseCreated": true,
+  "migrations": {
+    "total": 4,
+    "finished": 4,
+    "rolledBack": 0
+  },
+  "cloneStatus": "",
+  "finishedAt": "2026-10-25T13:42:45.560Z",
+  "retained": "Any checkout/database created by this run is retained for review; no database or files deleted."
+}

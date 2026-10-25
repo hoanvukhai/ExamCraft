@@ -1,0 +1,10 @@
+{
+  "checkedAt": "2026-10-25T13:39:58.859Z",
+  "status": "FAIL",
+  "steps": [],
+  "mainDatabaseWritten": false,
+  "realAiCalls": false,
+  "error": "Scratch checkout must be outside the repo",
+  "finishedAt": "2026-10-25T13:39:58.896Z",
+  "retained": "Scratch checkout and newly created migration database retained for review; no database or files deleted."
+}
