@@ -456,6 +456,8 @@ model AiUsageLog {
   completionTokens Int?
   httpStatus       Int?
   latencyMs        Int?
+  promptVersion    String?
+  dataVersion      String?
   createdAt        DateTime @default(now())
 
   @@index([userId, createdAt])

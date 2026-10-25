@@ -1,4 +1,5 @@
 import { Prisma } from '@prisma/client';
+import { promptVersionFor } from './prompt-versions';
 import prisma from './prisma';
 import { decryptApiKey } from './crypto';
 import { applicationDayStart, applicationQuota, classifyProviderFailure, normalizeModelId } from './ai-policy';
@@ -26,7 +27,7 @@ export async function checkUserAiQuota(userId: string) {
   return { ...applicationQuota(user?.aiDailyLimit ?? 0, used), activeKeyCount, source: 'application' as const, providerQuota: null, resetsAt: new Date(applicationDayStart().getTime() + 86400000).toISOString() };
 }
 
-async function reserveOperation(userId: string, endpoint: string, requestedModel?: string) {
+async function reserveOperation(userId: string, endpoint: string, requestedModel?: string, dataVersion?: string) {
   for (let retry = 0; retry < 3; retry++) {
     try {
       return await prisma.$transaction(async tx => {
@@ -36,7 +37,7 @@ async function reserveOperation(userId: string, endpoint: string, requestedModel
         const used = await tx.aiUsageLog.count({ where: { userId, createdAt: { gte: applicationDayStart() }, httpStatus: { in: [102, 200] } } });
         if (!applicationQuota(user.aiDailyLimit, used).allowed) throw new AiRequestError('Đã đạt giới hạn thao tác AI do ứng dụng đặt cho hôm nay (UTC). Giới hạn này không phải quota của Google.', 429, 'APPLICATION_AI_LIMIT');
         const model = resolveModelId(requestedModel ?? user.selectedAiModel);
-        const log = await tx.aiUsageLog.create({ data: { userId, endpoint, model, keyAlias: 'pending', httpStatus: 102 } });
+        const log = await tx.aiUsageLog.create({ data: { userId, endpoint, model, keyAlias: 'pending', httpStatus: 102, promptVersion: promptVersionFor(endpoint), dataVersion: dataVersion?.slice(0, 200) ?? null } });
         return { logId: log.id, model };
       }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
     } catch (error) {
@@ -48,18 +49,32 @@ async function reserveOperation(userId: string, endpoint: string, requestedModel
 }
 
 /** The provider answered, but not with JSON we can read: say so, instead of blaming the request that was sent. */
-export function parseProviderJson(text: string): unknown {
+/**
+ * Reads provider JSON. Models often write LaTeX such as `\omega` with a single backslash inside a string, which is not valid JSON.
+ * Only when the first read fails, a backslash that does not start a valid JSON escape is doubled and the text is read again;
+ * text that already parses is never touched.
+ */
+export function readProviderJson(text: string): unknown {
   try { return JSON.parse(text); }
+  catch (first) {
+    const repaired = text.replace(/\\(?!["\\/bfnrt]|u[0-9a-fA-F]{4})/g, '\\\\');
+    if (repaired === text) throw first;
+    return JSON.parse(repaired);
+  }
+}
+
+export function parseProviderJson(text: string): unknown {
+  try { return readProviderJson(text); }
   catch { throw new ApiError(502, 'AI trả về kết quả không đọc được. Chưa có gì được lưu; hãy thử lại hoặc nhập thủ công.', 'AI_BAD_OUTPUT'); }
 }
 
 /** One authenticated operation uses only the user's temporary key or saved keys. No implicit model change. */
-export async function executeWithKeyRotation<T>(customKey: string | undefined, operation: (apiKey: string, model: string) => Promise<T>, context?: { userId?: string; endpoint?: string; model?: string; signal?: AbortSignal }): Promise<T> {
+export async function executeWithKeyRotation<T>(customKey: string | undefined, operation: (apiKey: string, model: string) => Promise<T>, context?: { userId?: string; endpoint?: string; model?: string; signal?: AbortSignal; dataVersion?: string }): Promise<T> {
   if (!context?.userId) throw new AiRequestError('Vui lòng đăng nhập để dùng AI.', 401, 'UNAUTHORIZED');
   const cancelled = () => new AiRequestError('Đã hủy yêu cầu AI; chưa áp dụng kết quả.', 499, 'AI_CANCELLED');
   if (context.signal?.aborted) throw cancelled();
   const endpoint = context.endpoint ?? 'ai.generate';
-  const reservation = await reserveOperation(context.userId, endpoint, context.model);
+  const reservation = await reserveOperation(context.userId, endpoint, context.model, context.dataVersion);
   const startedAt = Date.now();
   const finish = async (status: number, alias: string) => {
     try { await prisma.aiUsageLog.update({ where: { id: reservation.logId }, data: { httpStatus: status, keyAlias: alias, latencyMs: Date.now() - startedAt } }); }

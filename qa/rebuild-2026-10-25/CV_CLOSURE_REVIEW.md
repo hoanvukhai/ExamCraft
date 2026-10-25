@@ -176,3 +176,6 @@ Thêm `src/lib/markdown-table.ts` (tách bảng, bỏ qua `|` trong công thức
 T1, T2 nhận; T3 nhận có giới hạn. CI độc lập của Claude trên HEAD: kiểu, lint, SAFE 457/457, build, HTTP đạt; trình duyệt 22/23 do F14 rớt vì test bấm đổi tên khi trình soạn thảo chưa sẵn sàng (cùng nguyên nhân F11, sửa ở test; F14 đạt 3/3 riêng). Cần một lượt CI đầy đủ cuối cùng trước tổng nghiệm thu.
 
 - CI độc lập cuối 26/10 trên HEAD c30e7bc: kiểu, lint, SAFE 457, build, HTTP, trình duyệt 23/23 đạt trong cùng một lượt (log ci-claude-final.log, không vào Git).
+
+## Bổ sung 26/10: AI thật, đóng CV034, 035, 037, 038
+Chủ dự án cung cấp 7 khóa Gemini; chạy bằng tệp tạm ngoài kho mã, server thử cô lập (EXAMCRAFT_REAL_AI=1), DB thử. Chi tiết và giới hạn: qa/rebuild-2026-10-25/REAL_AI_EVAL.md. Sửa lỗi thật phát hiện: đọc JSON có LaTeX chưa thoát (Vật lí), phương án LaTeX trần, nhập Word mất công thức, đề 60 câu thiếu mà không báo (chia lô, đối chiếu số câu). Thêm cột promptVersion/dataVersion cho AiUsageLog (sao lưu rồi áp DB chính). CV040 và CV068 giữ mở có ghi lý do. Hạn mức nhà cung cấp hết (429) cuối ngày nên chưa chạy lại đề 60 câu thật. Khuyến nghị: thu hồi/xoay 7 khóa đã dán trong chat sau khi xong.

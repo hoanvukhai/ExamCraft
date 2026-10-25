@@ -5,7 +5,7 @@ import { apiErrorResponse, ApiError } from '@/lib/api-error';
 import prisma from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
 import { requestApiKey } from '@/lib/ai-policy';
-import { executeWithKeyRotation } from '@/lib/gemini-keys';
+import { executeWithKeyRotation, parseProviderJson } from '@/lib/gemini-keys';
 import { upsertTeacherAiMemory } from '@/lib/teacher-profile';
 
 const insightSchema = {
@@ -173,7 +173,7 @@ Yêu cầu:
         });
 
         const text = response.text || '{}';
-        return JSON.parse(text);
+        return parseProviderJson(text) as ReturnType<typeof JSON.parse>;
       },
       {
         userId: user.id,

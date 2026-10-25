@@ -210,6 +210,9 @@ test('AI routes use only the caller key, count usage per key id, fail honestly a
     const text = await md.text();
     assert.ok(text.includes('Có căn cứ ' + mark) && text.includes('Bằng chứng: ' + mark) && text.includes('Nguồn: một câu hỏi; câu: src-q1'), 'the copy names the note, its evidence and its source');
     assert.equal((await fetch(origin + '/api/teacher/ai-memory/archive?format=markdown', { headers: { Origin: origin, Cookie: cookies.b } }).then(r => r.text())).includes(mark), false, 'another teacher never receives these notes');
+    const log = await db.aiUsageLog.findFirstOrThrow({ where: { userId: ids.a, endpoint: 'teacher.ai_memory.analyze' }, orderBy: { createdAt: 'desc' } });
+    assert.equal(log.promptVersion, 'memory-analysis-2026-10-26.2', 'the log names the prompt wording that produced the result'); assert.equal(log.model, 'gemini-3.5-flash'); assert.equal(log.httpStatus, 200);
+    assert.ok(!JSON.stringify(log).includes('memo-key-0123456789abcdef'), 'the log never holds the key');
     checks.push('analysis-provenance');
   });
 

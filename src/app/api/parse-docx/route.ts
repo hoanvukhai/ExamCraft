@@ -6,6 +6,8 @@ import { requestApiKey } from '@/lib/ai-policy';
 import { isSameOriginMutation } from '@/lib/attempt-access';
 
 import mammoth from 'mammoth';
+import { docxWithEquationsAsText } from '@/lib/docx-math';
+import { importInBatches } from '@/lib/import-batching';
 import { GoogleGenAI } from '@google/genai';
 import { executeWithKeyRotation, parseProviderJson } from '@/lib/gemini-keys';
 
@@ -57,7 +59,9 @@ export async function POST(req: NextRequest) {
     if (fileBuffer.length > 20 * 1024 * 1024) throw new ApiError(413, 'Tệp Word vượt 20 MB');
 
     // 1. Dùng mammoth để trích xuất văn bản thô từ file docx
-    const mammothResult = await mammoth.extractRawText({ buffer: fileBuffer });
+    // Equations are Word objects that plain extraction drops, so they are turned into $...$ text first.
+    const withMath = await docxWithEquationsAsText(fileBuffer);
+    const mammothResult = await mammoth.extractRawText({ buffer: withMath.buffer });
     const rawText = mammothResult.value;
 
     if (!rawText || rawText.trim().length === 0) {
@@ -69,37 +73,30 @@ export async function POST(req: NextRequest) {
 
     if (rawText.length > 45000) throw new ApiError(413, 'Văn bản Word vượt 45.000 ký tự. Hãy chia nhỏ tài liệu; hệ thống không tự cắt bỏ phần cuối.');
 
-    // 2. Dùng Gemini AI để phân rã cấu trúc câu hỏi
-    const prompt = `Số hóa văn bản Word sau.
+    // 2. Dùng Gemini AI để phân rã cấu trúc câu hỏi; tài liệu dài được đọc theo từng phần và đối chiếu với số "Câu N" của nguồn
+    const imported = await importInBatches(rawText, async part => {
+      const prompt = `Số hóa văn bản Word sau.
 ${IMPORT_SOURCE_RULES}
 <source_document>
-${rawText}
+${part}
 </source_document>`;
-
-
-    const aiResult = await executeWithKeyRotation(userApiKey, async (apiKey: string, modelName: string) => {
-      const ai = new GoogleGenAI({ apiKey });
-      const response = await ai.models.generateContent({
-        model: modelName,
-        contents: prompt,
-        config: { abortSignal: req.signal,
-          responseMimeType: 'application/json',
-          responseSchema: importResponseSchema,
-          temperature: 0.2,
-        },
-      });
-      return response.text || '{}';
-    }, { userId: currentUser.id, endpoint: 'parse.docx', signal: req.signal });
-
-    if (!aiResult || aiResult === '{}') {
-      return NextResponse.json(
-        { success: false, error: 'AI không thể phân tích văn bản từ file Word.' },
-        { status: 500 }
-      );
-    }
-
-    const imported = parseImportedDocument(parseProviderJson(aiResult), 'Word (.docx)', fileName);
-    imported.warnings.unshift('Luồng Word hiện đọc văn bản; ảnh, bảng phức tạp và công thức Word cần đối chiếu với tệp gốc và bổ sung thủ công.');
+      const aiResult = await executeWithKeyRotation(userApiKey, async (apiKey: string, modelName: string) => {
+        const ai = new GoogleGenAI({ apiKey });
+        const response = await ai.models.generateContent({
+          model: modelName,
+          contents: prompt,
+          config: { abortSignal: req.signal,
+            responseMimeType: 'application/json',
+            responseSchema: importResponseSchema,
+            temperature: 0.2,
+          },
+        });
+        return response.text || '{}';
+      }, { userId: currentUser.id, endpoint: 'parse.docx', signal: req.signal });
+      if (!aiResult || aiResult === '{}') throw new ApiError(502, 'AI không thể phân tích văn bản từ file Word.', 'AI_BAD_OUTPUT');
+      return parseImportedDocument(parseProviderJson(aiResult), 'Word (.docx)', fileName);
+    }, 'tài liệu Word');
+    imported.warnings.unshift(withMath.equations ? `Đã đọc ${withMath.equations} công thức Word thành LaTeX; hình ảnh và bảng phức tạp cần đối chiếu với tệp gốc.` : 'Luồng Word hiện đọc văn bản; ảnh và bảng phức tạp cần đối chiếu với tệp gốc và bổ sung thủ công.');
     return NextResponse.json({ success: true, ...imported, totalCount: imported.questions.length });
   } catch (error: unknown) {
     if (error instanceof Error && ['API_KEY_INPUT_INVALID', 'API_KEY_INPUT_CONFLICT'].includes(error.message)) return NextResponse.json({ error: 'Thông tin khóa không hợp lệ hoặc có nhiều giá trị khác nhau' }, { status: 400 });

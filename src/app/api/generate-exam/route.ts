@@ -5,7 +5,7 @@ import { requireAuth } from '@/lib/auth';
 import { isSameOriginMutation } from '@/lib/attempt-access';
 import prisma from '@/lib/prisma';
 import { requestApiKey } from '@/lib/ai-policy';
-import { executeWithKeyRotation } from '@/lib/gemini-keys';
+import { executeWithKeyRotation, readProviderJson } from '@/lib/gemini-keys';
 import { apiErrorResponse } from '@/lib/api-error';
 import { generationPlanSchema, validateGeneratedExam } from '@/lib/generation-plan';
 import { getCognitiveFramework } from '@/lib/education-catalog';
@@ -36,9 +36,9 @@ export async function POST(req: NextRequest) {
           `Câu lựa chọn có các phương án với key riêng; đúng/sai có các ý với key riêng. Điền khuyết có đúng một ô trả lời, dùng correct_answer/accepted_answers. Ghép nối trả matchingPairs gồm ít nhất hai cặp đúng, mỗi cặp có id riêng/left/right không rỗng. Sắp xếp trả correctOrder gồm ít nhất hai mục theo thứ tự đúng; ứng dụng sẽ đảo thứ tự khi đưa cho học sinh. Không thay cấu trúc câu bằng mô tả văn bản. Với scored soạn đủ đáp án và đề xuất điểm từng câu để giáo viên duyệt; tự luận có rubric. Với survey không có đáp án đúng hoặc điểm. Với comment_only/rubric ưu tiên tiêu chí quan sát/thực hiện và nhận xét. Không bịa tài liệu, trường, sở, hoặc nguồn đáp án. Các sở thích giáo viên không được ghi đè phạm vi và ràng buộc.`,
         } });
       return response.text ?? '{}';
-    }, { userId: user.id, endpoint: 'exam.generate', signal: req.signal });
+    }, { userId: user.id, endpoint: 'exam.generate', signal: req.signal, ...(knowledgePackage ? { dataVersion: knowledgePackage.id + '@' + knowledgePackage.revision } : {}) });
     let result;
-    try { result = validateGeneratedExam(JSON.parse(text), plan); }
+    try { result = validateGeneratedExam(readProviderJson(text), plan); }
     catch (error) { return NextResponse.json({ success: false, error: error instanceof Error ? error.message : 'AI chưa trả đúng cấu trúc; chưa áp dụng kết quả' }, { status: 422 }); }
     const now = new Date(), year = now.getMonth() >= 7 ? now.getFullYear() : now.getFullYear() - 1;
     const exam: Exam = { id: `draft_${randomUUID()}`, metadata: {

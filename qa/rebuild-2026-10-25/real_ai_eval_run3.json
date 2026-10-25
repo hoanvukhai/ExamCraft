@@ -1,0 +1,1051 @@
+{
+  "startedAt": "2026-10-25T19:04:18.406Z",
+  "environment": "isolated test server, test database, real provider with temporary keys",
+  "generation": [
+    {
+      "subject": "toan",
+      "grade": 6,
+      "status": 200,
+      "counts": {
+        "multiple_choice": 4,
+        "true_false_group": 1,
+        "short_answer": 2,
+        "essay": 1
+      },
+      "expected": {
+        "multiple_choice": 4,
+        "true_false_group": 1,
+        "short_answer": 2,
+        "essay": 1
+      },
+      "matchesPlan": true,
+      "anyMarkedHuman": false,
+      "allWithAnswer": true,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "difficulty": "nhan_biet",
+          "content": "Kết quả của phép tính $\\frac{1}{3} + \\frac{1}{2}$ là bao nhiêu?",
+          "choices": [
+            {
+              "key": "A",
+              "text": "\\frac{5}{6}"
+            },
+            {
+              "key": "B",
+              "text": "\\frac{2}{5}"
+            },
+            {
+              "key": "C",
+              "text": "\\frac{1}{6}"
+            },
+            {
+              "key": "D",
+              "text": "\\frac{2}{6}"
+            }
+          ],
+          "correct_answer": "A",
+          "accepted_answers": [
+            "A"
+          ],
+          "points": 0.5,
+          "step_by_step_solution": "Quy đồng mẫu số hai phân số: $\\frac{1}{3} = \\frac{2}{6}$ và $\\frac{1}{2} = \\frac{3}{6}$.\nThực hiện cộng hai phân số cùng mẫu: $\\frac{2}{6} + \\frac{3}{6} = \\frac{5}{6}$.",
+          "tags": [
+            "Toán 6",
+            "Phân số",
+            "Cộng phân số khác mẫu"
+          ],
+          "id": "q_911d93ac-6e1d-4072-abc3-420cbf714f82",
+          "subject": "toan",
+          "grade": 6,
+          "aiGenerated": true,
+          "status": "draft",
+          "verifiedBy": "none",
+          "version": 1
+        },
+        {
+          "type": "multiple_choice",
+          "difficulty": "thong_hieu",
+          "content": "Kết quả của phép tính $\\frac{3}{4} - \\frac{1}{6}$ là:",
+          "choices": [
+            {
+              "key": "A",
+              "text": "\\frac{7}{12}"
+            },
+            {
+              "key": "B",
+              "text": "\\frac{2}{2}"
+            },
+            {
+              "key": "C",
+              "text": "\\frac{1}{12}"
+            },
+            {
+              "key": "D",
+              "text": "\\frac{5}{12}"
+            }
+          ],
+          "correct_answer": "A",
+          "accepted_answers": [
+            "A"
+          ],
+          "points": 0.5,
+          "step_by_step_solution": "Mẫu số chung nhỏ nhất của 4 và 6 là 12.\nQuy đồng: $\\frac{3}{4} = \\frac{9}{12}$ và $\\frac{1}{6} = \\frac{2}{12}$.\nThực hiện phép trừ: $\\frac{9}{12} - \\frac{2}{12} = \\frac{7}{12}$.",
+          "tags": [
+            "Toán 6",
+            "Phân số",
+            "Trừ phân số khác mẫu"
+          ],
+          "id": "q_f9d370fb-c727-4759-925d-7d5249c8a910",
+          "subject": "toan",
+          "grade": 6,
+          "aiGenerated": true,
+          "status": "draft",
+          "verifiedBy": "none",
+          "version": 1
+        },
+        {
+          "type": "multiple_choice",
+          "difficulty": "thong_hieu",
+          "content": "Kết quả của phép tính $\\frac{-1}{5} + \\frac{4}{15}$ là:",
+          "choices": [
+            {
+              "key": "A",
+              "text": "\\frac{3}{15}"
+            },
+            {
+              "key": "B",
+              "text": "\\frac{-7}{15}"
+            },
+            {
+              "key": "C",
+              "text": "\\frac{1}{15}"
+            },
+            {
+              "key": "D",
+              "text": "\\frac{-1}{15}"
+            }
+          ],
+          "correct_answer": "C",
+          "accepted_answers": [
+            "C"
+          ],
+          "points": 0.5,
+          "step_by_step_solution": "Mẫu số chung là 15.\nQuy đồng: $\\frac{-1}{5} = \\frac{-3}{15}$.\nThực hiện phép tính: $\\frac{-3}{15} + \\frac{4}{15} = \\frac{-3 + 4}{15} = \\frac{1}{15}$.",
+          "tags": [
+            "Toán 6",
+            "Phân số",
+            "Cộng phân số số nguyên"
+          ],
+          "id": "q_f96def02-c5e2-45a1-8393-d5138a9dc256",
+          "subject": "toan",
+          "grade": 6,
+          "aiGenerated": true,
+          "status": "draft",
+          "verifiedBy": "none",
+          "version": 1
+        },
+        {
+          "type": "multiple_choice",
+          "difficulty": "van_dung",
+          "content": "Tìm $x$, biết: $x - \\frac{1}{2} = \\frac{3}{5}$",
+          "choices": [
+            {
+              "key": "A",
+              "text": "\\frac{1}{10}"
+            },
+            {
+              "key": "B",
+              "text": "\\frac{11}{10}"
+            },
+            {
+              "key": "C",
+              "text": "\\frac{4}{7}"
+            },
+            {
+              "key": "D",
+              "text": "\\frac{2}{3}"
+            }
+          ],
+          "correct_answer": "B",
+          "accepted_answers": [
+            "B"
+          ],
+          "points": 0.5,
+          "step_by_step_solution": "$x - \\frac{1}{2} = \\frac{3}{5} \\Rightarrow x = \\frac{3}{5} + \\frac{1}{2}$.\nQuy đồng mẫu số chung là 10: $x = \\frac{6}{10} + \\frac{5}{10} = \\frac{11}{10}$.",
+          "tags": [
+            "Toán 6",
+            "Tìm x",
+            "Cộng phân số"
+          ],
+          "id": "q_5f5c3421-7d8f-4cb2-b081-f81942cdce1f",
+          "subject": "toan",
+          "grade": 6,
+          "aiGenerated": true,
+          "status": "draft",
+          "verifiedBy": "none",
+          "version": 1
+        },
+        {
+          "type": "true_false_group",
+          "difficulty": "thong_hieu",
+          "content": "Xét tính đúng/sai của các khẳng định sau về phép cộng và trừ phân số:",
+          "sub_questions": [
+            {
+              "key": "a",
+              "content": "Muốn cộng hai phân số có mẫu khác nhau, ta quy đồng mẫu số rồi cộng các tử số với nhau và giữ nguyên mẫu số chung.",
+              "isCorrect": true,
+              "explanation": "Đây là quy tắc chuẩn để cộng hai phân số khác mẫu số."
+            },
+            {
+              "key": "b",
+              "content": "Kết quả của phép tính $\\frac{1}{2} + \\frac{-1}{3}$ bằng $\\frac{1}{6}$.",
+              "isCorrect": true,
+              "explanation": "$\\frac{1}{2} + \\frac{-1}{3} = \\frac{3}{6} + \\frac{-2}{6} = \\frac{1}{6}$."
+            },
+            {
+              "key": "c",
+              "content": "Kết quả của phép tính $\\frac{2}{5} - \\frac{1}{3}$ là $\\frac{1}{2}$.",
+              "isCorrect": false,
+              "explanation": "$\\frac{2}{5} - \\frac{1}{3} = \\frac{6}{15} - \\frac{5}{15} = \\frac{1}{15} \\neq \\frac{1}{2}$."
+            },
+            {
+              "key": "d",
+              "content": "Muốn trừ hai phân số khác mẫu số, ta lấy tử số trừ tử số và mẫu số trừ mẫu số.",
+              "isCorrect": false,
+              "explanation": "Muốn trừ hai phân số khác mẫu số, ta phải quy đồng mẫu số rồi trừ tử số cho tử số, giữ nguyên mẫu số chung."
+            }
+          ],
+          "points": 2,
+          "step_by_step_solution": "",
+          "tags": [
+            "Toán 6",
+            "Lý thuyết phân số",
+            "Đúng sai"
+          ],
+          "id": "q_1e3c6a97-d0dd-4126-a7d7-e3c552689cfc",
+          "subject": "toan",
+          "grade": 6,
+          "aiGenerated": true,
+          "status": "draft",
+          "verifiedBy": "none",
+          "version": 1
+        },
+        {
+          "type": "short_answer",
+          "difficulty": "van_dung",
+          "content": "Tính kết quả của phép tính sau (viết dưới dạng phân số tối giản a/b): $\\frac{2}{7} + \\frac{-3}{5}$",
+          "correct_answer": "-11/35",
+          "accepted_answers": [
+            "-11/35",
+            "-\\frac{11}{35}"
+          ],
+          "points": 1.5,
+          "step_by_step_solution": "Quy đồng mẫu số với mẫu số chung là 35:\n$\\frac{2}{7} = \\frac{10}{35}$\n$\\frac{-3}{5} = \\frac{-21}{35}$\nThực hiện phép cộng: $\\frac{10}{35} + \\frac{-21}{35} = \\frac{10 + (-21)}{35} = \\frac{-11}{35}$.",
+          "tags": [
+            "Toán 6",
+            "Cộng phân số"
+          ],
+          "id": "q_bb64f19e-5b71-488b-8755-45926a8fdf71",
+          "subject": "toan",
+          "grade": 6,
+          "aiGenerated": true,
+          "status": "draft",
+          "verifiedBy": "none",
+          "version": 1
+        },
+        {
+          "type": "short_answer",
+          "difficulty": "van_dung",
+          "content": "Một vòi nước giờ thứ nhất chảy được $\\frac{1}{3}$ bể, giờ thứ hai chảy được $\\frac{2}{5}$ bể. Hỏi trong cả hai giờ, vòi nước đó chảy được bao nhiêu phần của bể? (Viết kết quả dưới dạng phân số tối giản a/b)",
+          "correct_answer": "11/15",
+          "accepted_answers": [
+            "11/15",
+            "\\frac{11}{15}"
+          ],
+          "points": 1.5,
+          "step_by_step_solution": "Cả hai giờ vòi nước chảy được số phần bể là:\n$\\frac{1}{3} + \\frac{2}{5} = \\frac{5}{15} + \\frac{6}{15} = \\frac{11}{15}$ (bể).\nĐáp số: 11/15 bể.",
+          "tags": [
+            "Toán 6",
+            "Bài toán có lời văn",
+            "Cộng phân số"
+          ],
+          "id": "q_14a0c7eb-6aa3-4499-838d-6c01acced56a",
+          "subject": "toan",
+          "grade": 6,
+          "aiGenerated": true,
+          "status": "draft",
+          "verifiedBy": "none",
+          "version": 1
+        },
+        {
+          "type": "essay",
+          "difficulty": "van_dung_cao",
+          "content": "Bạn An có một tấm bìa hình chữ nhật. An dùng $\\frac{1}{4}$ tấm bìa để làm một chiếc hộp và dùng $\\frac{2}{5}$ tấm bìa đó để làm thiệp chúc mừng.\na) Hỏi An đã dùng tất cả bao nhiêu phần của tấm bìa?\nb) Hỏi phần tấm bìa còn lại chiếm bao nhiêu phần của tấm bìa ban đầu?",
+          "rubric": [
+            {
+              "criterion": "Câu a: Tính đúng tổng số phần tấm bìa đã dùng (có quy đồng và tính đúng kết quả 13/20)",
+              "maxPoints": 1.5
+            },
+            {
+              "criterion": "Câu b: Tính đúng số phần tấm bìa còn lại (lấy 1 trừ đi kết quả câu a, ra 7/20)",
+              "maxPoints": 1.25
+            },
+            {
+              "criterion": "Ghi đầy đủ lời giải, đơn vị và đáp số rõ ràng",
+              "maxPoints": 0.25
+            }
+          ],
+          "points": 3,
+          "step_by_step_solution": "a) Số phần tấm bìa An đã dùng là:\n$\\frac{1}{4} + \\frac{2}{5} = \\frac{5}{20} + \\frac{8}{20} = \\frac{13}{20}$ (tấm bìa).\n\nb) Coi cả tấm bìa ban đầu là 1 đơn vị.\nSố phần tấm bìa còn lại là:\n$1 - \\frac{13}{20} = \\frac{20}{20} - \\frac{13}{20} = \\frac{7}{20}$ (tấm bìa).\n\nĐáp số:\na) $\\frac{13}{20}$ tấm bìa;\nb) $\\frac{7}{20}$ tấm bìa.",
+          "tags": [
+            "Toán 6",
+            "Tự luận",
+            "Ứng dụng phân số"
+          ],
+          "id": "q_7c810e13-1fe1-44ed-880a-7924d79d415e",
+          "subject": "toan",
+          "grade": 6,
+          "aiGenerated": true,
+          "status": "draft",
+          "verifiedBy": "none",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "subject": "vat_ly",
+      "grade": 11,
+      "status": 200,
+      "counts": {
+        "multiple_choice": 3,
+        "true_false_group": 0,
+        "short_answer": 2,
+        "essay": 0
+      },
+      "expected": {
+        "multiple_choice": 3,
+        "true_false_group": 0,
+        "short_answer": 2,
+        "essay": 0
+      },
+      "matchesPlan": true,
+      "anyMarkedHuman": false,
+      "allWithAnswer": true,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "difficulty": "nhan_biet",
+          "content": "Trong phương trình dao động điều hòa $x = A \\cos(\\omega t + \\varphi)$, đại lượng $(\\omega t + \\varphi)$ đại diện cho:",
+          "choices": [
+            {
+              "key": "A",
+              "text": "Biên độ dao động"
+            },
+            {
+              "key": "B",
+              "text": "Pha dao động tại thời điểm t"
+            },
+            {
+              "key": "C",
+              "text": "Tần số góc của dao động"
+            },
+            {
+              "key": "D",
+              "text": "Pha ban đầu của dao động"
+            }
+          ],
+          "correct_answer": "B",
+          "points": 2,
+          "step_by_step_solution": "Trong phương trình $x = A \\cos(\\omega t + \\varphi)$, đại lượng $(\\omega t + \\varphi)$ là pha dao động tại thời điểm t, xác định trạng thái dao động của vật ở thời điểm t.",
+          "tags": [
+            "Vật lý 11",
+            "Dao động điều hòa",
+            "Pha dao động"
+          ],
+          "id": "q_381ff846-1c33-4dc8-a9f8-fba7bfa39e3d",
+          "subject": "vat_ly",
+          "grade": 11,
+          "aiGenerated": true,
+          "status": "draft",
+          "verifiedBy": "none",
+          "version": 1
+        },
+        {
+          "type": "multiple_choice",
+          "difficulty": "nhan_biet",
+          "content": "Một vật dao động điều hòa theo phương trình $x = 5 \\cos(2\\pi t + \\pi/6)$ (cm). Biên độ dao động của vật là:",
+          "choices": [
+            {
+              "key": "A",
+              "text": "5 cm"
+            },
+            {
+              "key": "B",
+              "text": "2\\pi cm"
+            },
+            {
+              "key": "C",
+              "text": "\\pi/6 cm"
+            },
+            {
+              "key": "D",
+              "text": "10 cm"
+            }
+          ],
+          "correct_answer": "A",
+          "points": 2,
+          "step_by_step_solution": "So sánh với phương trình tổng quát $x = A \\cos(\\omega t + \\varphi)$, ta có biên độ dao động $A = 5\\text{ cm}$.",
+          "tags": [
+            "Vật lý 11",
+            "Dao động điều hòa",
+            "Biên độ"
+          ],
+          "id": "q_412ae037-4b99-48ed-875e-69bf8976a160",
+          "subject": "vat_ly",
+          "grade": 11,
+          "aiGenerated": true,
+          "status": "draft",
+          "verifiedBy": "none",
+          "version": 1
+        },
+        {
+          "type": "multiple_choice",
+          "difficulty": "thong_hieu",
+          "content": "Một vật dao động điều hòa thực hiện được 20 dao động toàn phần trong thời gian 10 giây. Chu kì dao động của vật là:",
+          "choices": [
+            {
+              "key": "A",
+              "text": "2 s"
+            },
+            {
+              "key": "B",
+              "text": "0,5 s"
+            },
+            {
+              "key": "C",
+              "text": "20 s"
+            },
+            {
+              "key": "D",
+              "text": "10 s"
+            }
+          ],
+          "correct_answer": "B",
+          "points": 2,
+          "step_by_step_solution": "Chu kì dao động $T = \\frac{\\Delta t}{N} = \\frac{10}{20} = 0,5\\text{ s}$.",
+          "tags": [
+            "Vật lý 11",
+            "Dao động điều hòa",
+            "Chu kì"
+          ],
+          "id": "q_87cf294d-ad41-40fa-910d-cb24ef7e890a",
+          "subject": "vat_ly",
+          "grade": 11,
+          "aiGenerated": true,
+          "status": "draft",
+          "verifiedBy": "none",
+          "version": 1
+        },
+        {
+          "type": "short_answer",
+          "difficulty": "thong_hieu",
+          "content": "Một chất điểm dao động điều hòa theo phương trình $x = 6 \\cos(4\\pi t - \\pi/3)$ (cm, s). Tần số dao động của chất điểm bằng bao nhiêu Hz?",
+          "correct_answer": "2",
+          "accepted_answers": [
+            "2",
+            "2 Hz",
+            "2Hz"
+          ],
+          "points": 2,
+          "step_by_step_solution": "Từ phương trình ta có tần số góc $\\omega = 4\\pi\\text{ rad/s}$. Tần số dao động $f = \\frac{\\omega}{2\\pi} = \\frac{4\\pi}{2\\pi} = 2\\text{ Hz}$.",
+          "tags": [
+            "Vật lý 11",
+            "Dao động điều hòa",
+            "Tần số"
+          ],
+          "id": "q_6066f71a-962f-4579-a6eb-49762206f0ee",
+          "subject": "vat_ly",
+          "grade": 11,
+          "aiGenerated": true,
+          "status": "draft",
+          "verifiedBy": "none",
+          "version": 1
+        },
+        {
+          "type": "short_answer",
+          "difficulty": "thong_hieu",
+          "content": "Một vật dao động điều hòa trên một đoạn thẳng quỹ đạo dài 12 cm. Biên độ dao động của vật bằng bao nhiêu cm?",
+          "correct_answer": "6",
+          "accepted_answers": [
+            "6",
+            "6 cm",
+            "6cm"
+          ],
+          "points": 2,
+          "step_by_step_solution": "Chiều dài quỹ đạo $L = 2A = 12\\text{ cm} \\Rightarrow A = \\frac{L}{2} = 6\\text{ cm}$.",
+          "tags": [
+            "Vật lý 11",
+            "Dao động điều hòa",
+            "Biên độ"
+          ],
+          "id": "q_5a0091dd-84e0-4880-bcdb-69a6835d227d",
+          "subject": "vat_ly",
+          "grade": 11,
+          "aiGenerated": true,
+          "status": "draft",
+          "verifiedBy": "none",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "subject": "hoa_hoc",
+      "grade": 10,
+      "status": 200,
+      "counts": {
+        "multiple_choice": 3,
+        "true_false_group": 1,
+        "short_answer": 0,
+        "essay": 0
+      },
+      "expected": {
+        "multiple_choice": 3,
+        "true_false_group": 1,
+        "short_answer": 0,
+        "essay": 0
+      },
+      "matchesPlan": true,
+      "anyMarkedHuman": false,
+      "allWithAnswer": true,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "difficulty": "nhan_biet",
+          "content": "Số oxi hóa của nguyên tố nitrogen trong hợp chất NH3 là bao nhiêu?",
+          "choices": [
+            {
+              "key": "A",
+              "text": "-3"
+            },
+            {
+              "key": "B",
+              "text": "+3"
+            },
+            {
+              "key": "C",
+              "text": "+5"
+            },
+            {
+              "key": "D",
+              "text": "0"
+            }
+          ],
+          "correct_answer": "A",
+          "points": 2,
+          "step_by_step_solution": "Trong hợp chất NH3, H có số oxi hóa là +1. Gọi x là số oxi hóa của N, ta có: x + 3(+1) = 0 => x = -3.",
+          "tags": [
+            "So oxi hoa",
+            "Hoa hoc 10"
+          ],
+          "id": "q_2f0bf67c-b784-48fb-af93-44045608583d",
+          "subject": "hoa_hoc",
+          "grade": 10,
+          "aiGenerated": true,
+          "status": "draft",
+          "verifiedBy": "none",
+          "version": 1
+        },
+        {
+          "type": "multiple_choice",
+          "difficulty": "thong_hieu",
+          "content": "Cho phản ứng hóa học: Fe + CuSO4 -> FeSO4 + Cu. Trong phản ứng trên, chất đóng vai trò là chất khử là",
+          "choices": [
+            {
+              "key": "A",
+              "text": "Fe"
+            },
+            {
+              "key": "B",
+              "text": "CuSO4"
+            },
+            {
+              "key": "C",
+              "text": "FeSO4"
+            },
+            {
+              "key": "D",
+              "text": "Cu"
+            }
+          ],
+          "correct_answer": "A",
+          "points": 2,
+          "step_by_step_solution": "Trước phản ứng, Fe có số oxi hóa là 0. Sau phản ứng, Fe chuyển thành Fe(+2) trong FeSO4. Nguyên tử Fe nhường electron nên số oxi hóa tăng từ 0 lên +2. Do đó, Fe là chất khử.",
+          "tags": [
+            "Chat khu",
+            "Chat oxi hoa"
+          ],
+          "id": "q_a06e4b8d-9e2b-4711-bbd8-b9162f2a1e05",
+          "subject": "hoa_hoc",
+          "grade": 10,
+          "aiGenerated": true,
+          "status": "draft",
+          "verifiedBy": "none",
+          "version": 1
+        },
+        {
+          "type": "multiple_choice",
+          "difficulty": "van_dung",
+          "content": "Lập phương trình hóa học của phản ứng sau bằng phương pháp thăng bằng electron: a Mg + b HNO3 -> c Mg(NO3)2 + d NO + e H2O. Tổng hệ số cân bằng (a + b + c + d + e) là các số nguyên tối giản là:",
+          "choices": [
+            {
+              "key": "A",
+              "text": "20"
+            },
+            {
+              "key": "B",
+              "text": "18"
+            },
+            {
+              "key": "C",
+              "text": "16"
+            },
+            {
+              "key": "D",
+              "text": "22"
+            }
+          ],
+          "correct_answer": "A",
+          "points": 2,
+          "step_by_step_solution": "Các quá trình:\n- Quá trình oxi hóa: Mg(0) -> Mg(+2) + 2e (nhân với 3)\n- Quá trình khử: N(+5) + 3e -> N(+2) (nhân với 2)\nPhương trình cân bằng: 3 Mg + 8 HNO3 -> 3 Mg(NO3)2 + 2 NO + 4 H2O.\nTổng hệ số: a + b + c + d + e = 3 + 8 + 3 + 2 + 4 = 20.",
+          "tags": [
+            "Can bang phan ung oxi hoa khu",
+            "Thang bang electron"
+          ],
+          "id": "q_a5256ba4-b16f-432e-8c97-001a194f2cec",
+          "subject": "hoa_hoc",
+          "grade": 10,
+          "aiGenerated": true,
+          "status": "draft",
+          "verifiedBy": "none",
+          "version": 1
+        },
+        {
+          "type": "true_false_group",
+          "difficulty": "thong_hieu",
+          "content": "Cho phản ứng hóa học sau: 2 FeCl3 + H2S -> 2 FeCl2 + S + 2 HCl. Xét tính đúng/sai của các phát biểu dưới đây:",
+          "sub_questions": [
+            {
+              "key": "a",
+              "content": "FeCl3 đóng vai trò là chất oxi hóa trong phản ứng.",
+              "isCorrect": true,
+              "explanation": "Số oxi hóa của Fe giảm từ +3 trong FeCl3 xuống +2 trong FeCl2, do đó FeCl3 nhận electron và đóng vai trò là chất oxi hóa."
+            },
+            {
+              "key": "b",
+              "content": "H2S là chất bị oxi hóa.",
+              "isCorrect": true,
+              "explanation": "S(-2) trong H2S nhường electron để tăng lên S(0), do đó H2S là chất khử hay chất bị oxi hóa."
+            },
+            {
+              "key": "c",
+              "content": "Quá trình S(-2) -> S(0) + 2e được gọi là quá trình khử.",
+              "isCorrect": false,
+              "explanation": "Quá trình nhường electron của chất khử được gọi là quá trình oxi hóa (sự oxi hóa)."
+            },
+            {
+              "key": "d",
+              "content": "Mỗi mol FeCl3 phản ứng sẽ nhường 1 mol electron.",
+              "isCorrect": false,
+              "explanation": "Fe(+3) + 1e -> Fe(+2), vậy mỗi mol FeCl3 sẽ nhận 1 mol electron chứ không phải nhường."
+            }
+          ],
+          "points": 4,
+          "step_by_step_solution": "",
+          "tags": [
+            "Phan ung oxi hoa khu",
+            "Dung sai"
+          ],
+          "id": "q_dfa16c69-4da7-475a-b1ab-cc3288d6f3e4",
+          "subject": "hoa_hoc",
+          "grade": 10,
+          "aiGenerated": true,
+          "status": "draft",
+          "verifiedBy": "none",
+          "version": 1
+        }
+      ]
+    }
+  ],
+  "verification": [
+    {
+      "subject": "toan",
+      "type": "multiple_choice",
+      "status": 200,
+      "keyed": "A",
+      "solved": "A",
+      "isMatch": true,
+      "complete": true,
+      "recommendation": "match"
+    },
+    {
+      "subject": "toan",
+      "type": "multiple_choice",
+      "status": 200,
+      "keyed": "A",
+      "solved": "A",
+      "isMatch": true,
+      "complete": true,
+      "recommendation": "match"
+    },
+    {
+      "subject": "toan",
+      "type": "multiple_choice",
+      "status": 200,
+      "keyed": "C",
+      "solved": "C",
+      "isMatch": true,
+      "complete": true,
+      "recommendation": "match"
+    },
+    {
+      "subject": "toan",
+      "type": "multiple_choice",
+      "status": 200,
+      "keyed": "B",
+      "solved": "B",
+      "isMatch": true,
+      "complete": true,
+      "recommendation": "match"
+    },
+    {
+      "subject": "toan",
+      "type": "short_answer",
+      "status": 200,
+      "keyed": "-11/35",
+      "solved": "-11/35",
+      "isMatch": true,
+      "complete": true,
+      "recommendation": "match"
+    },
+    {
+      "subject": "toan",
+      "type": "short_answer",
+      "status": 200,
+      "keyed": "11/15",
+      "solved": "11/15",
+      "isMatch": true,
+      "complete": true,
+      "recommendation": "match"
+    },
+    {
+      "subject": "vat_ly",
+      "type": "multiple_choice",
+      "status": 200,
+      "keyed": "B",
+      "solved": "B",
+      "isMatch": true,
+      "complete": true,
+      "recommendation": "match"
+    },
+    {
+      "subject": "vat_ly",
+      "type": "multiple_choice",
+      "status": 200,
+      "keyed": "A",
+      "solved": "A",
+      "isMatch": true,
+      "complete": true,
+      "recommendation": "match"
+    },
+    {
+      "subject": "vat_ly",
+      "type": "multiple_choice",
+      "status": 200,
+      "keyed": "B",
+      "solved": "B",
+      "isMatch": true,
+      "complete": true,
+      "recommendation": "match"
+    },
+    {
+      "subject": "vat_ly",
+      "type": "short_answer",
+      "status": 200,
+      "keyed": "2",
+      "solved": "2",
+      "isMatch": true,
+      "complete": true,
+      "recommendation": "match"
+    },
+    {
+      "subject": "vat_ly",
+      "type": "short_answer",
+      "status": 200,
+      "keyed": "6",
+      "solved": "6 cm",
+      "isMatch": true,
+      "complete": true,
+      "recommendation": "match"
+    },
+    {
+      "subject": "hoa_hoc",
+      "type": "multiple_choice",
+      "status": 200,
+      "keyed": "A",
+      "solved": "A",
+      "isMatch": true,
+      "complete": true,
+      "recommendation": "match"
+    },
+    {
+      "subject": "hoa_hoc",
+      "type": "multiple_choice",
+      "status": 200,
+      "keyed": "A",
+      "solved": "A",
+      "isMatch": true,
+      "complete": true,
+      "recommendation": "match"
+    },
+    {
+      "subject": "hoa_hoc",
+      "type": "multiple_choice",
+      "status": 200,
+      "keyed": "A",
+      "solved": "A",
+      "isMatch": true,
+      "complete": true,
+      "recommendation": "match"
+    },
+    {
+      "label": "wrong key",
+      "status": 200,
+      "keyed": "A",
+      "solved": "B",
+      "isMatch": false,
+      "complete": true,
+      "recommendation": "match",
+      "confidence": 100,
+      "discrepancies": [
+        "Kết quả AI khác đáp án hiện tại; giáo viên cần xem lại trước khi áp dụng."
+      ]
+    },
+    {
+      "label": "missing datum",
+      "status": 200,
+      "keyed": "120",
+      "solved": "Không thể xác định (Đề thiếu dữ kiện)",
+      "isMatch": false,
+      "complete": true,
+      "recommendation": "error_in_question",
+      "confidence": 100,
+      "discrepancies": [
+        "Đề bài không cung cấp vận tốc (v) và thời gian (t) hoặc bất kỳ dữ liệu định lượng nào để tính toán.",
+        "Kết quả AI khác đáp án hiện tại; giáo viên cần xem lại trước khi áp dụng."
+      ]
+    },
+    {
+      "label": "two correct choices",
+      "status": 200,
+      "keyed": "A",
+      "solved": "A và B",
+      "isMatch": false,
+      "complete": false,
+      "recommendation": "error_in_question",
+      "confidence": 100,
+      "discrepancies": [
+        "Đề bài cho hai lựa chọn đúng là A (2) và B (3) thay vì chỉ có một đáp án đúng duy nhất.",
+        "Chưa đủ dữ liệu để đối chiếu tự động; giáo viên cần kiểm tra đáp án và lời giải."
+      ]
+    },
+    {
+      "label": "correct control",
+      "status": 200,
+      "keyed": "B",
+      "solved": "B",
+      "isMatch": true,
+      "complete": true,
+      "recommendation": "match",
+      "confidence": 100,
+      "discrepancies": []
+    }
+  ],
+  "tweak": [
+    {
+      "action": "change_numbers",
+      "status": 200,
+      "content": "Tính $\\frac{5}{6} - \\frac{1}{6}$.",
+      "answer": "A",
+      "choices": [
+        "$\\frac{2}{3}$",
+        "$\\frac{1}{3}$",
+        "$\\frac{1}{2}$",
+        "$\\frac{4}{12}$"
+      ],
+      "solution": "Thực hiện phép trừ hai phân số cùng mẫu số: $\\frac{5}{6} - \\frac{1}{6} = \\frac{5 - 1}{6} = \\frac{4}{6} = \\frac{2}{3}$.",
+      "markedHuman": false,
+      "keptId": true
+    },
+    {
+      "action": "increase_difficulty",
+      "status": 200,
+      "content": "Cho dãy số $(u_n)$ xác định bởi $u_1 = \\frac{1}{2}$ và $u_{n+1} = u_n + \\frac{1}{(n+1)(n+2)}$ với mọi $n \\ge 1$. Tính giá trị của $u_{2024}$.",
+      "answer": "A",
+      "choices": [
+        "$\\frac{2024}{2025}$",
+        "$\\frac{2023}{2024}$",
+        "$\\frac{2025}{2026}$",
+        "$1$"
+      ],
+      "solution": "Ta có nhận xét với mọi $k \\ge 1$:\n$\\frac{1}{(k+1)(k+2)} = \\frac{1}{k+1} - \\frac{1}{k+2}$\n\nTừ công thức truy hồi $u_{n+1} = u_n + \\frac{1}{(n+1)(n+2)}$, ta suy ra:\n$u_n = u_1 + \\sum_{k=1}^{n-1} \\frac{1}{(k+1)(k+2)}$\n\nThay $u_1 = \\frac{1}{2}$ và biến đổi tổng phân số:\n$u_n = \\frac{1}{2} + \\left( \\frac{1}{2} - \\frac{1}{3} \\right) + \\left( \\frac{1}{3} - \\frac{1}{4} \\right) + \\dots + \\left( \\frac{1}{n} - \\frac{1}{n+1} \\right)$\n$u_n = \\frac{1}{2} + \\frac{1}{2} - \\frac{1}{n+1} = 1 - \\frac{1}{n+1} = \\frac{n}{n+1}$\n\nThay $n = 2024$, ta thu được giá trị:\n$u_{2024} = \\frac{2024}{2025}$",
+      "markedHuman": false,
+      "keptId": true
+    },
+    {
+      "action": "decrease_difficulty",
+      "status": 200,
+      "content": "Tính giá trị của biểu thức $\\frac{4}{5} - \\frac{1}{5}$.",
+      "answer": "A",
+      "choices": [
+        "$\\frac{3}{5}$",
+        "$\\frac{3}{10}$",
+        "$\\frac{5}{5}$",
+        "$\\frac{1}{5}$"
+      ],
+      "solution": "Thực hiện phép trừ hai phân số có cùng mẫu số: $\\frac{4}{5} - \\frac{1}{5} = \\frac{4 - 1}{5} = \\frac{3}{5}$.",
+      "markedHuman": false,
+      "keptId": true
+    }
+  ],
+  "copilot": [
+    {
+      "label": "targeted edit",
+      "status": 200,
+      "result": {
+        "type": "action",
+        "action": "modify_single_question",
+        "targetQuestionId": "add1f41f-edf8-4955-a149-fdc7c92217f3",
+        "targetQuestionIndex": 1,
+        "explanation": "Đã đổi số liệu câu 1 thành phép tính $\\frac{5}{6}-\\frac{1}{6}$ và cập nhật lại các phương án lựa chọn cùng lời giải chi tiết.",
+        "modifiedQuestion": {
+          "id": "add1f41f-edf8-4955-a149-fdc7c92217f3",
+          "type": "multiple_choice",
+          "difficulty": "thong_hieu",
+          "content": "Tính $\\frac{5}{6}-\\frac{1}{6}$.",
+          "choices": [
+            {
+              "key": "A",
+              "text": "$\\frac{2}{3}$"
+            },
+            {
+              "key": "B",
+              "text": "$\\frac{1}{3}$"
+            },
+            {
+              "key": "C",
+              "text": "$1$"
+            },
+            {
+              "key": "D",
+              "text": "$\\frac{4}{12}$"
+            }
+          ],
+          "correct_answer": "A",
+          "points": 1,
+          "step_by_step_solution": "Trừ hai phân số cùng mẫu: $\\frac{5-1}{6}=\\frac{4}{6}=\\frac{2}{3}$.",
+          "status": "draft",
+          "verifiedBy": "none",
+          "aiGenerated": true,
+          "version": 1
+        }
+      }
+    },
+    {
+      "label": "vague",
+      "status": 200,
+      "result": {
+        "type": "clarification",
+        "message": "Thầy/Cô muốn tăng độ khó cho câu hỏi cụ thể nào hay nâng mức độ tư duy cho toàn bộ đề thi ạ?",
+        "quickOptions": [
+          "Tăng độ khó câu 1",
+          "Tăng độ khó câu 2",
+          "Tăng độ khó toàn bộ đề"
+        ]
+      }
+    },
+    {
+      "label": "delete all",
+      "status": 200,
+      "result": {
+        "type": "clarification",
+        "message": "Thầy/Cô có chắc chắn muốn xóa toàn bộ câu hỏi trong đề thi này không, hay chỉ muốn xóa một câu cụ thể?",
+        "quickOptions": [
+          "Xóa tất cả câu hỏi",
+          "Chỉ xóa câu 1",
+          "Tạo lại đề mới"
+        ]
+      }
+    }
+  ],
+  "injection": {
+    "status": 200,
+    "count": 2,
+    "answers": [
+      null,
+      "C"
+    ],
+    "trapCopiedIntoContent": false,
+    "anyHuman": false,
+    "statuses": [
+      "draft",
+      "draft"
+    ],
+    "warnings": []
+  },
+  "trace": {
+    "rows": 39,
+    "endpoints": [
+      "exam.generate",
+      "question.verify",
+      "question.tweak",
+      "exam.copilot",
+      "exam.parse"
+    ],
+    "models": [
+      "gemini-3.5-flash"
+    ],
+    "statuses": {
+      "undefined": 39
+    },
+    "keyLeaked": false,
+    "columns": [
+      "id",
+      "userId",
+      "keyAlias",
+      "endpoint",
+      "model",
+      "promptTokens",
+      "completionTokens",
+      "httpStatus",
+      "latencyMs",
+      "createdAt"
+    ]
+  },
+  "finishedAt": "2026-10-25T19:09:07.249Z",
+  "providerCalls": 39,
+  "providerRefusals": 11,
+  "refusalStatuses": {
+    "503": 11
+  },
+  "keysUsed": 7
+}

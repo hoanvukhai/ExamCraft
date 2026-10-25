@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { importInBatches } from '@/lib/import-batching';
 import { importResponseSchema, parseImportedDocument, IMPORT_SOURCE_RULES } from '@/lib/import-document';
 import { GoogleGenAI } from '@google/genai';
 import { requireRequestAuth } from '@/lib/request-auth';
@@ -43,28 +44,29 @@ export async function POST(req: NextRequest) {
     const systemPrompt = IMPORT_SOURCE_RULES;
 
 
-    const responseText = await executeWithKeyRotation(
-      customApiKey,
-      async (apiKey, modelName) => {
-        const ai = new GoogleGenAI({ apiKey });
-        const response = await ai.models.generateContent({
-          model: modelName,
-          contents: rawText,
-          config: { abortSignal: req.signal,
-            systemInstruction: systemPrompt,
-            responseMimeType: 'application/json',
-            responseSchema: importResponseSchema,
-            temperature: 0.2,
-          },
-        });
-        return response.text || '{}';
-      },
-      {
-        userId: currentUser.id,
-        endpoint: 'exam.parse', signal: req.signal }
-    );
-
-    const imported = parseImportedDocument(parseProviderJson(responseText), 'Văn bản nhập', typeof body.fileName === 'string' ? body.fileName : undefined);
+    const imported = await importInBatches(rawText, async part => {
+      const responseText = await executeWithKeyRotation(
+        customApiKey,
+        async (apiKey, modelName) => {
+          const ai = new GoogleGenAI({ apiKey });
+          const response = await ai.models.generateContent({
+            model: modelName,
+            contents: part,
+            config: { abortSignal: req.signal,
+              systemInstruction: systemPrompt,
+              responseMimeType: 'application/json',
+              responseSchema: importResponseSchema,
+              temperature: 0.2,
+            },
+          });
+          return response.text || '{}';
+        },
+        {
+          userId: currentUser.id,
+          endpoint: 'exam.parse', signal: req.signal }
+      );
+      return parseImportedDocument(parseProviderJson(responseText), 'Văn bản nhập', typeof body.fileName === 'string' ? body.fileName : undefined);
+    }, 'văn bản');
     return NextResponse.json({ success: true, ...imported, totalCount: imported.questions.length });
   } catch (error: unknown) {
     return apiErrorResponse(error, 'Không thể xử lý yêu cầu AI lúc này.');
