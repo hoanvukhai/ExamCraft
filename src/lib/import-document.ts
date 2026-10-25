@@ -1,6 +1,7 @@
 import { Type } from '@google/genai';
 import { normalizeQuestion, DocumentValidationError } from './exam-document';
 import type { Passage } from '@/types/exam';
+import { importSourceLabel } from './import-source';
 
 const text = { type: Type.STRING };
 const strings = { type: Type.ARRAY, items: text };
@@ -33,7 +34,7 @@ Không tự suy đoán mức nhận thức hoặc gắn nhãn đã kiểm địn
 `;
 
 const object = (value: unknown): Record<string, unknown> => value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
-export function parseImportedDocument(value: unknown, source: string) {
+export function parseImportedDocument(value: unknown, source: string, fileName?: string) {
   const raw = object(value);
   if (!Array.isArray(raw.questions) || raw.questions.length < 1 || raw.questions.length > 500) throw new DocumentValidationError('Kết quả nhập cần từ 1 đến 500 câu; hãy chia nhỏ tài liệu nếu quá dài.');
   if (raw.passages != null && (!Array.isArray(raw.passages) || raw.passages.length > 100)) throw new DocumentValidationError('Danh sách ngữ liệu nhập không hợp lệ.');
@@ -48,7 +49,7 @@ export function parseImportedDocument(value: unknown, source: string) {
   const questions = raw.questions.map((value, index) => {
     const q = object(value), oldPassageId = typeof q.passageId === 'string' ? q.passageId : undefined;
     if (oldPassageId && !passageIds.has(oldPassageId)) throw new DocumentValidationError(`Câu ${index + 1}: thiếu ngữ liệu liên kết; cần nhập lại đầy đủ phần văn bản dùng chung.`);
-    return normalizeQuestion({ ...q, id: crypto.randomUUID(), passageId: oldPassageId ? passageIds.get(oldPassageId) : undefined, source, status: 'draft', verifiedBy: 'none', version: 1, aiGenerated: true, step_by_step_solution: q.step_by_step_solution ?? '' }, index);
+    return normalizeQuestion({ ...q, id: crypto.randomUUID(), passageId: oldPassageId ? passageIds.get(oldPassageId) : undefined, source: typeof q.source === 'string' && q.source.trim() ? q.source : importSourceLabel(source, index, fileName), importedFromFile: true, status: 'draft', verifiedBy: 'none', version: 1, aiGenerated: true, step_by_step_solution: q.step_by_step_solution ?? '' }, index);
   });
   return { questions, passages, warnings };
 }

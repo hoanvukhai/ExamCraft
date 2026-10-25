@@ -192,7 +192,8 @@ export function questionToDatabase(q: Question, context: { ownerId: string; subj
     payload: clone({ choices: q.choices, sub_questions: q.sub_questions, correct: q.correct_answer, accepted_answers: q.accepted_answers, rubric: q.rubric, subBranch: q.subBranch, curriculumTrack: q.curriculumTrack, editorData, workspaceExamId: context.examId }) as unknown as Prisma.InputJsonValue,
     solution: q.step_by_step_solution ?? '', points: q.points,
     topics: q.topics ?? [], tags: q.tags ?? [], visibility: 'PRIVATE',
-    sourceKind: q.aiGenerated ? 'AI_GENERATED' : 'TEACHER_WRITTEN',
+    sourceKind: q.importedFromFile ? 'IMPORTED_FILE' : q.aiGenerated ? 'AI_GENERATED' : 'TEACHER_WRITTEN',
+    ...(q.importedFromFile ? { shareable: false } : {}),
     aiGenerated: q.aiGenerated ?? false, source: q.source, licenseNote: q.licenseNote,
     // Saving a draft never grants human verification.
     status: 'DRAFT', verifiedBy: 'NONE', version: 1,

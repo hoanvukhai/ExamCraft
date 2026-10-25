@@ -52,7 +52,7 @@ ${IMPORT_SOURCE_RULES}`;
             text: promptText,
           },
         ],
-        config: {
+        config: { abortSignal: req.signal,
           responseMimeType: 'application/json',
           responseSchema: importResponseSchema,
           temperature: 0.2,
@@ -60,7 +60,7 @@ ${IMPORT_SOURCE_RULES}`;
       });
 
       return response.text || '{}';
-    }, { userId: currentUser.id, endpoint: 'ocr.exam_image' });
+    }, { userId: currentUser.id, endpoint: 'ocr.exam_image', signal: req.signal });
 
     if (!result || result === '{}') {
       return NextResponse.json(
@@ -69,7 +69,7 @@ ${IMPORT_SOURCE_RULES}`;
       );
     }
 
-    const imported = parseImportedDocument(parseProviderJson(result), 'Ảnh OCR');
+    const imported = parseImportedDocument(parseProviderJson(result), 'Ảnh OCR', typeof body.fileName === 'string' ? body.fileName : undefined);
     imported.warnings.unshift('Cần đối chiếu chữ, công thức và hình với ảnh gốc trước khi sử dụng.');
     return NextResponse.json({ success: true, ...imported, totalCount: imported.questions.length });
   } catch (error: unknown) {

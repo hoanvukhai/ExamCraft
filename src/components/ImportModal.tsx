@@ -5,6 +5,8 @@ import { Question, Subject, Passage } from '@/types/exam';
 import { getCatalogSubjects } from '@/lib/education-catalog';
 import { parseExTestLatex, parseRawVietnameseDocument } from '@/lib/exam-parser';
 import { MathRenderer } from './MathRenderer';
+import { ImportQuestionEditor, importAnswerMissing } from './ImportQuestionEditor';
+import { withImportSources } from '@/lib/import-source';
 import { accountFetch } from '@/lib/account-fetch';
 import { isAccountFailure, RequestGate } from '@/lib/template-request-context';
 import { 
@@ -57,11 +59,13 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
   
   // State cho Word & Text & LaTeX
   const [rawText, setRawText] = useState('');
+  const [textFileName, setTextFileName] = useState('');
   const [wordFileName, setWordFileName] = useState<string>('');
   const [wordFile, setWordFile] = useState<File | null>(null);
 
   // State kết quả bóc tách
   const [parsedQuestions, setParsedQuestions] = useState<Question[]>([]);
+  const [editingQuestion, setEditingQuestion] = useState<string | null>(null);
   const [parsedPassages, setParsedPassages] = useState<Passage[]>([]);
   const [importWarnings, setImportWarnings] = useState<string[]>([]);
   const parseRequest = useRef(0);
@@ -78,7 +82,7 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
   const [previousInput, setPreviousInput] = useState({ sourceType, rawText, selectedImage, wordFile, isOpen });
   if (previousInput.sourceType !== sourceType || previousInput.rawText !== rawText || previousInput.selectedImage !== selectedImage || previousInput.wordFile !== wordFile || previousInput.isOpen !== isOpen) {
     setPreviousInput({ sourceType, rawText, selectedImage, wordFile, isOpen });
-    setParsedQuestions([]); setParsedPassages([]); setImportWarnings([]);
+    setParsedQuestions([]); setParsedPassages([]); setImportWarnings([]); setEditingQuestion(null);
     setStatusMessage(null); setErrorMessage(null); setIsLoading(false);
   }
   useEffect(() => {
@@ -90,6 +94,7 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
 
   if (!isOpen) return null;
   const handleClose = () => { requestGate.current?.dispose(); parseRequest.current++; imageRead.current++; textRead.current++; onClose(); };
+  const cancelParsing = () => { requestGate.current?.cancel(); parseRequest.current++; setIsLoading(false); setStatusMessage('Đã hủy yêu cầu. Chưa thêm câu hỏi nào vào đề.'); };
 
   // Xử lý chọn ảnh
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -125,6 +130,7 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
   const handleTextFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setTextFileName(file.name);
 
     const reader = new FileReader();
     setRawText('');
@@ -175,6 +181,7 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             imageBase64: selectedImage,
+            fileName: imageFileName,
             userApiKey: apiKey,
           }),
         });
@@ -222,7 +229,7 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
 
         const questions = parseExTestLatex(rawText);
         if (questions.length > 0) {
-          setParsedQuestions(questions);
+          setParsedQuestions(withImportSources(questions, 'LaTeX EX_Test', textFileName));
           setStatusMessage(`Thành công! Đã bóc tách ${questions.length} câu hỏi chuẩn LaTeX EX_Test.`);
         } else {
           setErrorMessage('Không tìm thấy cấu trúc \\begin{ex}...\\end{ex} hợp lệ.');
@@ -240,6 +247,7 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             rawText,
+            fileName: textFileName,
             customApiKey: apiKey,
           }),
         });
@@ -253,7 +261,7 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
         } else {
           setErrorMessage(data.error || 'AI chưa đọc được tài liệu. Kết quả bên dưới chỉ là tách văn bản cơ bản, cần kiểm tra lại.');
           const fallback = parseRawVietnameseDocument(rawText);
-          setParsedQuestions(fallback.questions);
+          setParsedQuestions(withImportSources(fallback.questions, 'Văn bản nhập', textFileName));
           setParsedPassages(fallback.passages);
           setStatusMessage(`Bóc tách cơ bản ${fallback.questions.length} câu hỏi${fallback.passages.length ? ' và 1 ngữ liệu dùng chung' : ''} theo mẫu tiếng Việt.`);
         }
@@ -561,6 +569,7 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
               {parsedQuestions.map((q, idx) => (
                 <div
                   key={q.id || idx}
+                  data-testid="import-preview-question"
                   className="p-3 bg-white dark:bg-[#282828] rounded-2xl border border-[#dadce0] dark:border-[#3c4043] hover:border-[#1a73e8] dark:hover:border-[#8ab4f8] shadow-xs transition-all space-y-2 relative group"
                 >
                   <div className="flex items-center justify-between text-xs">
@@ -571,6 +580,7 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
                       </span>
                     </div>
 
+                    <button type="button" disabled={isLoading || accountLocked} onClick={() => setEditingQuestion(editingQuestion === q.id ? null : q.id)}>{editingQuestion === q.id ? 'Xong' : 'Sửa'}</button>
                     <button
                       onClick={() => handleDeleteQuestion(q.id)}
                       title="Xóa câu này"
@@ -579,6 +589,9 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
+
+                  {importAnswerMissing(q) && <p role="note" className="text-amber-700 dark:text-amber-300 text-xs">Chưa có đáp án — kiểm lại</p>}
+                  {editingQuestion === q.id && <ImportQuestionEditor question={q} disabled={isLoading || accountLocked} onChange={updated => setParsedQuestions(items => items.map(item => item.id === q.id ? updated : item))} />}
 
                   {/* Nội dung câu hỏi KaTeX */}
                   <div className="text-xs text-[#202124] dark:text-[#e3e3e3] leading-relaxed">
@@ -644,6 +657,7 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
         </div>
 
         {/* Footer */}
+        {isLoading && <button type="button" onClick={cancelParsing}>Hủy yêu cầu AI</button>}
         <div className="pt-3 border-t border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between">
           <button
               onClick={handleClose}

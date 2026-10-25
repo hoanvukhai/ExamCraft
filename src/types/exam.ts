@@ -120,6 +120,7 @@ export interface Question {
   aiGenerated?: boolean;
   verifiedBy?: 'human' | 'dual_solve' | 'sympy' | 'none';
   source?: string;                     // Nguồn gốc câu hỏi
+  importedFromFile?: boolean;          // Text/Word/image transcription; not evidence of permission to share.
   licenseNote?: string;
   version?: number;
   createdAt?: string;

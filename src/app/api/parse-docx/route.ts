@@ -14,6 +14,7 @@ export async function POST(req: NextRequest) {
     const currentUser = await requireRequestAuth(req);
     if (!isSameOriginMutation(req)) throw new ApiError(403, 'Yêu cầu không hợp lệ');
     let fileBuffer: Buffer | null = null;
+    let fileName: string | undefined;
     let userApiKey: string | undefined = undefined;
 
     const contentType = req.headers.get('content-type') || '';
@@ -32,6 +33,7 @@ export async function POST(req: NextRequest) {
       }
 
       const arrayBuffer = await file.arrayBuffer();
+      fileName = file.name;
       fileBuffer = Buffer.from(arrayBuffer);
     } else {
       const body = await req.json();
@@ -80,14 +82,14 @@ ${rawText}
       const response = await ai.models.generateContent({
         model: modelName,
         contents: prompt,
-        config: {
+        config: { abortSignal: req.signal,
           responseMimeType: 'application/json',
           responseSchema: importResponseSchema,
           temperature: 0.2,
         },
       });
       return response.text || '{}';
-    }, { userId: currentUser.id, endpoint: 'parse.docx' });
+    }, { userId: currentUser.id, endpoint: 'parse.docx', signal: req.signal });
 
     if (!aiResult || aiResult === '{}') {
       return NextResponse.json(
@@ -96,7 +98,7 @@ ${rawText}
       );
     }
 
-    const imported = parseImportedDocument(parseProviderJson(aiResult), 'Word (.docx)');
+    const imported = parseImportedDocument(parseProviderJson(aiResult), 'Word (.docx)', fileName);
     imported.warnings.unshift('Luồng Word hiện đọc văn bản; ảnh, bảng phức tạp và công thức Word cần đối chiếu với tệp gốc và bổ sung thủ công.');
     return NextResponse.json({ success: true, ...imported, totalCount: imported.questions.length });
   } catch (error: unknown) {

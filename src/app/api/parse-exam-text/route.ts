@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
         const response = await ai.models.generateContent({
           model: modelName,
           contents: rawText,
-          config: {
+          config: { abortSignal: req.signal,
             systemInstruction: systemPrompt,
             responseMimeType: 'application/json',
             responseSchema: importResponseSchema,
@@ -61,11 +61,10 @@ export async function POST(req: NextRequest) {
       },
       {
         userId: currentUser.id,
-        endpoint: 'exam.parse',
-      }
+        endpoint: 'exam.parse', signal: req.signal }
     );
 
-    const imported = parseImportedDocument(parseProviderJson(responseText), 'Văn bản nhập');
+    const imported = parseImportedDocument(parseProviderJson(responseText), 'Văn bản nhập', typeof body.fileName === 'string' ? body.fileName : undefined);
     return NextResponse.json({ success: true, ...imported, totalCount: imported.questions.length });
   } catch (error: unknown) {
     return apiErrorResponse(error, 'Không thể xử lý yêu cầu AI lúc này.');

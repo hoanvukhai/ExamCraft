@@ -35,8 +35,9 @@ test('Word and text import adapters label their source and retain near variants 
   for (const source of ['Word (.docx)', 'Văn bản nhập']) {
     const imported = parseImportedDocument({ questions: parseRawVietnameseText(text) }, source);
     assert.equal(imported.questions.length, 2);
-    for (const question of imported.questions) {
-      assert.equal(question.source, source);
+    for (const [index, question] of imported.questions.entries()) {
+      assert.equal(question.source, source + ' · câu ' + (index + 1));
+      assert.equal(question.importedFromFile, true);
       assert.equal(question.status, 'draft');
       assert.equal(question.verifiedBy, 'none');
     }
@@ -68,4 +69,13 @@ test('bank client sends provenance but does not copy document sharing instructio
   };
   try { await saveBankQuestion(question, 'fixture-owner'); assert.equal(calls, 1); }
   finally { globalThis.fetch = previous; }
+});
+
+
+test('import source keeps per-question attribution and only adds known filename and ordinal', () => {
+  const imported = parseImportedDocument({ questions: [{ type: 'short_answer', content: 'One', source: 'Original source, page 9' }, { type: 'short_answer', content: 'Two' }] }, 'Word (.docx)', 'sample.docx');
+  assert.equal(imported.questions[0].source, 'Original source, page 9');
+  assert.equal(imported.questions[1].source, 'Word (.docx) · sample.docx · câu 2');
+  const row = questionToDatabase(imported.questions[1], { ownerId: 'owner', examId: 'exam', questionId: 'question', subject: 'toan', grade: 6 });
+  assert.equal(row.sourceKind, 'IMPORTED_FILE'); assert.equal(row.shareable, false); assert.equal(row.visibility, 'PRIVATE');
 });
