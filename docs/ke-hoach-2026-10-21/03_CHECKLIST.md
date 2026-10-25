@@ -370,7 +370,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-01, YC-24, YC-29. Nghiệm thu: NT-05, NT-29.
   - Đạt khi: CI dùng DB thử và fail thật, health/error/usage không lộ dữ liệu; tải đo trên kịch bản xác định, không hứa công suất chưa đo.
 - [x] **CV-075 — Thiết kế kết nối Drive tùy chọn.**
-  - **Chỉ đóng phần thiết kế, chưa triển khai tích hợp.** [DRIVE_DESIGN_DRAFT](../../qa/rebuild-2026-10-25/DRIVE_DESIGN_DRAFT.md) chốt định dạng gói (dựa trên gói sao lưu cục bộ), quyền OAuth tối thiểu, máy trạng thái sao lưu/khôi phục, danh sách việc kỹ thuật và quyết định chủ dự án cần chọn; các đường `/api/drive/*` ghi rõ là tương lai. Ứng dụng không cần Drive để dùng; sao lưu cục bộ đã có (CV011). [Đối chiếu](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md)
+  - **Chỉ đóng phần thiết kế, chưa triển khai tích hợp.** [DRIVE_DESIGN_DRAFT](../../qa/rebuild-2026-10-25/DRIVE_DESIGN_DRAFT.md) chốt định dạng gói (dựa trên gói sao lưu cục bộ), quyền OAuth tối thiểu, máy trạng thái sao lưu/khôi phục, danh sách việc kỹ thuật và quyết định chủ dự án cần chọn; các đường `/api/drive/*` ghi rõ là tương lai. Ứng dụng không cần Drive để dùng; sao lưu cục bộ đã có (CV072). [Đối chiếu](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md)
   - **Ưu tiên thấp (chủ dự án 25/10/2026):** dự án cá nhân, dùng riêng hoặc trong nhóm nhỏ nội bộ do chủ dự án kiểm soát, không phục vụ bên ngoài. Sao lưu đã có bằng gói cục bộ; Drive là tùy chọn về sau. Giữ mở, chỉ làm khi chủ dự án yêu cầu.
   - Phạm vi: YC-24. Nghiệm thu: NT-27.
   - Đạt khi: Chốt backlog/định dạng/quyền tối thiểu/trạng thái backup/restore; chỉ triển khai kết nối khi được chọn, không yêu cầu Drive để dùng app. Không đánh dấu tích hợp hoàn thành nếu mới thiết kế.
