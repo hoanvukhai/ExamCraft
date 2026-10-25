@@ -4,6 +4,8 @@ Cập nhật **25/10/2026**. Viết đè mỗi đợt; bản cũ giữ trong Git
 
 ## 1. Mốc hiện tại
 
+- **Đợt mới nhất:** `23e9eb5` thêm rà soát cấu trúc toàn đề, điều khiển trình chiếu, guard lưu bản sao ngân hàng và Word Song song hai cột. SAFE/build đạt; browser mới bị chặn bởi Docker/DB thử chưa sẵn sàng, chưa kiểm Word trực quan. [Báo cáo nhóm](../../qa/rebuild-2026-10-25/EXAM_REVIEW_AND_PRESENTATION.md). Không schema, không ghi DB chính, không provider.
+
 - **Codex làm một mình** theo yêu cầu mới của chủ dự án: thực hiện mã, kiểm thử, tổng hợp và giữ hồ sơ chung; không giao thêm/chờ Claude hoặc Gemini. Phân công cũ giữ để truy vết.
 - Đã hoàn thiện đợt lưu dữ liệu, kiểm giao diện/offline, CSV nhận xét và cấu hình CI. Mã local: `789d1aa`, `5a5408b` trên `rebuild/2026-10-local`. [Báo cáo đợt25/10](../../qa/rebuild-2026-10-25/BATCH_SUMMARY.md) là nơi chính cho kết quả mới, build ID và giới hạn.
 - Lưu đề chỉ ghi lịch sử câu đổi, giữ bản chụp đề và mọi lịch sử cũ; CAS từng câu chặn ghi đè bản mới. Đã kiểm PostgreSQL thử, quyền, rollback, điểm0/xóa trường/điểm lẻ và ghi đồng thời.
@@ -18,11 +20,12 @@ Cập nhật **25/10/2026**. Viết đè mỗi đợt; bản cũ giữ trong Git
 - Backup/restore đầy đủ đã kiểm local và PowerShell5.1, gồm bản phục hồi riêng; kế thừa [PILOT_CLAUDE_INTEGRATION](../../qa/rebuild-2026-10-24/PILOT_CLAUDE_INTEGRATION.md), không chạy lại chỉ để sửa hồ sơ. Còn chuyển máy/mất DPAPI, nơi giữ bản thứ hai và mục tiêu vận hành.
 - AI có BYOK/quota/đề xuất duyệt trước và ghi chú riêng; chưa kiểm chất lượng provider thật. Khóa mã hóa cũ không được tự xoay vì có thể mất khả năng giải mã dữ liệu cũ.
 - Gói Toán6/môn2 và fixtures là chuẩn bị kỹ thuật/nội dung chờ duyệt. Chưa có giáo viên/reviewer, chưa đủ nội dung đã duyệt cho mọi môn/lớp; không tự ký thay chuyên môn.
-- Word/PDF dài cần kiểm trực quan; Word Song song hiện xuất đề rồi đáp án, chưa hai cột. Cấu hình CI có integration/HTTP nhưng chưa chạy remote vì chưa push. Lint phần mã đổi đạt, chưa chứng minh lint toàn repo sạch.
+- Word Song song đã có hai cột, ngữ liệu và ảnh được kiểm qua cấu trúc DOCX; Word/PDF dài vẫn cần kiểm trực quan. Cấu hình CI có integration/HTTP nhưng chưa chạy remote vì chưa push. Lint phần mã đổi đạt, chưa chứng minh lint toàn repo sạch.
 
 ## 3. Hàng đợi tiếp nối
 
-1. **Dùng thử luồng lõi:** chủ dự án thử theo [hướng dẫn ngắn](../huong-dan/HUONG_DAN_GIAO_VIEN_PILOT.md); ưu tiên dễ hiểu, Word/in trang dài và thao tác thật. Ghi lỗi và kết quả mong muốn; không cần đọc toàn bộ QA.
+1. **Khôi phục điều kiện kiểm:** Docker Desktop đã được mở nhưng PostgreSQL5436 chưa lên; chờ trạng thái Engine từ chủ dự án. Không reset/xóa dữ liệu. Sau khi engine sẵn sàng, kiểm DB thử chính xác rồi chạy F3 mở rộng trên bản dựng hiện tại; chưa báo đã đạt UI mới.
+2. **Dùng thử luồng lõi:** chủ dự án thử theo [hướng dẫn ngắn](../huong-dan/HUONG_DAN_GIAO_VIEN_PILOT.md); ưu tiên dễ hiểu, Word/in trang dài và thao tác thật. Ghi lỗi và kết quả mong muốn; không cần đọc toàn bộ QA.
 2. **Kỹ thuật tiếp theo khi tiếp tục:** hoàn thiện parent journal/storage lỗi, hai engine cộng tác, các chính sách giao/chấm còn lại; publication snapshot/regrade theo thiết kế đã duyệt có giới hạn. Không tự mở schema nếu chưa làm rõ bảo toàn/rollback; không thêm journal mới trái mốc đóng băng.
 3. **CV025/074:** phần chỉ lưu câu đổi đã làm, không làm lại. Còn Undo bền qua reload/tách lưu ngân hàng và dung lượng ExamRevision chứa ảnh; đo tải theo kịch bản trước khi thay cách chụp phiên bản.
 4. **CV048:** copy theo phiên bản nguồn cũng đã có và HTTP kiểm lại đạt; không giao lại như tính năng còn thiếu. Publication snapshot riêng vẫn chưa triển khai.

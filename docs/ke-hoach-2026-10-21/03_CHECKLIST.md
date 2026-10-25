@@ -118,11 +118,11 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-08, YC-09. Nghiệm thu: NT-07, NT-08.
   - Đạt khi: Sửa lựa chọn/ý đúng-sai, thêm kiểu câu phù hợp, thứ tự/ghim; matching/ordering/fill_blank có cấu trúc đủ hoặc báo chưa hỗ trợ rõ.
 - [ ] **CV-024 — Đề, đáp án và song song.**
-  - **Hiện trạng25/10:** Song song có ngữ liệu chung xuất hiện một lần, giữ đủ câu/hai cột và lời giải; browser kiểm cả fixture bảy dạng và Ngữ văn ngữ liệu dài. Đề/đáp án/hướng dẫn vẫn dùng cùng tài liệu. Word của Song song còn xuất bố cục toàn đề rồi đáp án, chưa hai cột; chưa nghiệm thu trực quan Word/PDF. Giữ mở. [Báo cáo đợt](../../qa/rebuild-2026-10-25/BATCH_SUMMARY.md).
+  - **Hiện trạng25/10:** Song song trên màn hình giữ ngữ liệu chung; Word nay có hai cột theo từng câu, ngữ liệu xuất một lần, ảnh thu theo cột. Đã kiểm nội dung/cấu trúc DOCX tự động; chưa mở Word kiểm phân trang trực quan. Giữ mở. [Báo cáo nhóm](../../qa/rebuild-2026-10-25/EXAM_REVIEW_AND_PRESENTATION.md).
   - Phạm vi: YC-09. Nghiệm thu: NT-07, NT-08.
   - Đạt khi: Ba chế độ cùng dữ liệu; đáp án/lời giải/rubric riêng nhưng gắn version, thiếu đáp án không tự điền đúng.
 - [ ] **CV-025 — Lịch sử câu và kiểm định theo phiên bản.**
-  - **Hiện trạng25/10:** Đã sửa chỉ cập nhật/lập lịch sử câu khi dữ liệu câu đổi; đọc theo lô, ghi liên kết và lịch sử theo lô, giữ toàn bộ lịch sử cũ và ExamRevision. Kiểm DB thử: lưu lặp/reorder không thêm lịch sử câu, sửa một câu, xóa trường, điểm thập phân, xóa/ghép lại, rollback, quyền và CAS từng câu đạt. Giữ Undo/Copilot guard đã có; Undo còn RAM và tách lưu ngân hàng/nháp còn mở. [Báo cáo đợt](../../qa/rebuild-2026-10-25/BATCH_SUMMARY.md).
+  - **Hiện trạng25/10:** Đã sửa chỉ cập nhật/lập lịch sử câu khi dữ liệu câu đổi; đọc theo lô, ghi liên kết và lịch sử theo lô, giữ toàn bộ lịch sử cũ và ExamRevision. Kiểm DB thử: lưu lặp/reorder không thêm lịch sử câu, sửa một câu, xóa trường, điểm thập phân, xóa/ghép lại, rollback, quyền và CAS từng câu đạt. Giữ Undo/Copilot guard đã có; Undo còn RAM. Lưu ngân hàng có bản sao riêng; nút nay khóa khi đang gửi hoặc câu chưa áp dụng, thông báo rõ bản sao. Chưa có idempotency khi mất biên nhận, giữ mở. [Nhóm bổ sung](../../qa/rebuild-2026-10-25/EXAM_REVIEW_AND_PRESENTATION.md). [Báo cáo đợt](../../qa/rebuild-2026-10-25/BATCH_SUMMARY.md).
   - Phạm vi: YC-09, YC-13, YC-16. Nghiệm thu: NT-08, NT-15.
   - Đạt khi: Sửa dữ kiện đánh dấu cần kiểm lại, undo/redo và lưu mốc giữ liên kết; chọn lưu ngân hàng khác với lưu nháp.
 - [ ] **CV-026 — Hình, công thức, bảng và ngữ liệu.**
@@ -166,6 +166,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-08, YC-09, YC-15. Nghiệm thu: NT-08, NT-15.
   - Đạt khi: Đổi dữ kiện/câu/lời giải đúng vùng, giữ tiêu đề giáo viên đã sửa và hình liên quan; accept/reject/undo có lịch sử người yêu cầu.
 - [ ] **CV-036 — Validator cấu trúc và toàn đề.**
+  - **Hiện trạng25/10:** Đã có bảng Rà soát đề thu gọn ở bàn soạn và hộp giao bài: bảy dạng, nhãn trùng, liên kết, điểm/đáp án thiếu, đối chiếu kế hoạch. Không sửa tài liệu hoặc chứng nhận chuyên môn; bài không chấm điểm không bị ép đáp án. Unit/render đạt; kiểm giao diện mới đang vướng DB thử chưa chạy. Giữ mở. [Báo cáo nhóm](../../qa/rebuild-2026-10-25/EXAM_REVIEW_AND_PRESENTATION.md).
   - Phạm vi: YC-07, YC-09, YC-16. Nghiệm thu: NT-13, NT-15.
   - Đạt khi: Đủ khóa ý đúng-sai, nhãn duy nhất, tổng điểm/phân bổ, liên kết tệp; thiếu kết quả là chưa kiểm, không trả khớp rỗng.
 - [ ] **CV-037 — Kiểm nội dung theo loại môn.**
@@ -194,13 +195,14 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-17. Nghiệm thu: NT-17.
   - Đạt khi: Seed tái lập, ghim và mọi loại câu giữ đủ; ID đáp án đúng sau đảo; không thay chữ cái bằng regex làm hỏng lời giải.
 - [ ] **CV-043 — Xuất Word và công thức/hình.**
-  - **Hiện trạng24/10:** Sửa ShuffleModal chuẩn bị ảnh trước xuất, báo lỗi và khóa tải trong lúc xử lý; browser tải Word bàn soạn và từng mã, kiểm ZIP/XML/media đủ câu/ảnh nhúng. Build đạt. Chưa mở Word kiểm trực quan công thức/phân trang hoặc tài liệu dài; giữ mở. [PILOT_E2E](../../qa/rebuild-2026-10-24/PILOT_E2E.md).
+  - **Hiện trạng25/10:** Word Song song đã xuất hai cột, giữ thứ tự câu/đáp án và ngữ liệu chung một lần; thu ảnh đúng tỷ lệ, ngữ liệu toán dùng công thức Word. Kiểm ZIP/XML đạt; chưa kiểm trực quan Word dài, phân trang hoặc bản in. Giữ các bằng chứng xuất/trộn trước; CV mở. [Báo cáo nhóm](../../qa/rebuild-2026-10-25/EXAM_REVIEW_AND_PRESENTATION.md).
   - Phạm vi: YC-12, YC-18. Nghiệm thu: NT-18.
   - Đạt khi: Tài liệu mở sửa được, đủ câu/hình/điểm/nguồn hiển thị, fallback có nhãn; kiểm công thức và ngắt trang trực quan.
 - [ ] **CV-044 — In/PDF và các biến thể xuất.**
   - Phạm vi: YC-12, YC-18. Nghiệm thu: NT-18.
   - Đạt khi: Đề/đáp án/lời giải/ma trận riêng hoặc chung, 1–2 cột khi phù hợp, tiêu đề mẫu đồng nhất; câu dài được ngắt có kiểm soát, không tràn/mất.
 - [ ] **CV-045 — Trình chiếu để chữa bài.**
+  - **Hiện trạng25/10:** Bổ sung chọn nhanh câu, cỡ chữ và tránh chiếm phím mũi tên trong select/ô nhập; chuyển câu ẩn lại đáp án. Render kiểm mặc định ẩn đạt; browser mới chưa chạy vì Docker/DB thử chưa sẵn sàng. Chưa nghiệm thu zoom/bàn phím hoặc hiện từng bước lời giải; giữ mở. [Báo cáo nhóm](../../qa/rebuild-2026-10-25/EXAM_REVIEW_AND_PRESENTATION.md).
   - Truy vết24/10: bằng chứng một phần ở [WORKSPACE](../../qa/rebuild-2026-10-22/WORKSPACE.md) và `presentation-verified.png` — chuyển câu, xem ngữ liệu, chủ động hiện/ẩn đáp án/lời giải, quay lại không làm bẩn bản đã lưu. Chưa kiểm phóng to/bàn phím đầy đủ; giữ mở.
   - Phạm vi: YC-18. Nghiệm thu: NT-19.
   - Đạt khi: Phóng to câu, hiện dần lời giải, ẩn đáp án ban đầu, điều khiển bàn phím; không làm đổi nội dung đề.

@@ -1,19 +1,20 @@
 {
-  "run": "872b6276-e97a-478c-a97e-648b41ad8552",
-  "sourceSha256": "0a305f2775aa93cdf71b58b5337d44b6f20b07a63a7f6982dba036f6f233bab7",
-  "buildId": "QQpcA2zF_i_LCPLcpiew-",
-  "browserVersion": "155.0.8059.85",
+  "run": "43b02325-4751-4d64-ae7e-5696db2e029b",
+  "sourceSha256": "2230110daa739502b3156f67938431bec62e0a279acc65d3b29448cb13405d17",
+  "buildId": "qzS3DYG9z10QajL__shoz",
+  "browserVersion": "",
   "browserExecutable": "C:/Program Files/Google/Chrome/Application/chrome.exe",
-  "requestedFlow": "F7",
-  "checkedAt": "2026-10-24T19:05:48.008Z",
+  "requestedFlow": "F3",
+  "checkedAt": "2026-10-25T04:42:55.604Z",
   "environment": "isolatedTest localhost3117 / examcraft_test_20261022",
   "realAiCalls": false,
   "results": [
     {
-      "id": "F7",
-      "status": "PASS",
-      "durationMs": 22238,
-      "cleanupComplete": true
+      "id": "F3",
+      "status": "FAIL",
+      "durationMs": 2102,
+      "cleanupComplete": false,
+      "error": "\nInvalid `prisma.$queryRawUnsafe()` invocation:\n\n\nCan't reach database server at `127.0.0.1:5436`\n\nPlease make sure your database server is running at `127.0.0.1:5436`."
     }
   ]
 }

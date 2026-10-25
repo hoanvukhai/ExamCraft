@@ -1,16 +1,16 @@
 # CODEX status
 
-task_id: SOLO-SAVE-PILOT-OFFLINE-CSV
-assignment_generation: solo-2026-10-25 (yêu cầu chủ dự án thay vai trò generation13)
-state: READY_FOR_REVIEW (chủ dự án; không chờ Claude/Gemini)
-updated_at_utc: 2026-10-24T19:12:11.902Z
+task_id: SOLO-EXAM-REVIEW-PRESENTATION-WORD
+assignment_generation: solo-2026-10-25
+state: NEEDS_RESUME (kiểm browser chờ Docker/DB thử sẵn sàng; không chờ Claude/Gemini)
+updated_at_utc: 2026-10-25T04:51:17.272Z
 branch/worktree: rebuild/2026-10-local, F:/Workspace/Zazz/ExamCraft
-commit mã/tests gần nhất: 5a5408b; nhóm lưu 789d1aa, nền d1d2f62.
+commit mã/tests gần nhất: 23e9eb5
 
-Đã xong đợt: chỉ ghi lịch sử câu đổi, CAS từng câu/rollback/quyền, xử lý xóa trường/điểm lẻ; kiểm Song song ngữ liệu/giờ giao bài; offline/reconnect/xung đột trên Chrome và Edge theo lượt; CSV nhận xét có chống công thức; cấu hình CI integration/HTTP và hướng dẫn giáo viên gọn hơn.
+Đã làm: rà soát cấu trúc toàn đề; chọn câu/cỡ chữ trình chiếu; nút ngân hàng giữ bản sao riêng/chặn gửi lặp và sửa dở; Word Song song hai cột, ảnh vừa cột và công thức ngữ liệu.
 
-Kiểm: SAFE, integration PostgreSQL thử, HTTP, build/typecheck, lint phần đổi và browser liên quan đạt. Số liệu, build ID, từng lượt/giới hạn và source hash chỉ qa/rebuild-2026-10-25/BATCH_SUMMARY.md và verification.json. Cổng QA3117 xác nhận đã dừng. Không provider/key thật, không ghi DB chính, không migration mới.
+Kiểm: SAFE và build tích hợp đạt. Chi tiết/log/số liệu chỉ ở qa/rebuild-2026-10-25/EXAM_REVIEW_AND_PRESENTATION.md. Browser F3 bị chặn trước kiểm bởi DB5436 không chạy. Docker Desktop đã mở nhưng engine/DB chưa sẵn sàng, đã hỏi chủ dự án. QA3117 đã dừng. Chưa kiểm trực quan Word dài. Lint mã mới đạt; tệp cũ có lỗi lint kế thừa, không báo toàn repo sạch.
 
-Bước kế: chủ dự án dùng thử luồng lõi bằng hướng dẫn; xử lý phản hồi và tiếp các mục còn mở trong 03 theo 02. Đây không phải DONE toàn bộ dự án: Word/PDF dài, provider/chuyên môn và backlog sau pilot chưa nghiệm thu; CI remote chưa chạy. Không giao thêm việc hoặc đợi hai AI kia.
+Bước kế: xác nhận Docker Engine và container PostgreSQL; giữ DB chính, chỉ guard DB thử rồi chạy F3 mở rộng và kiểm nút ngân hàng. Sau đó tiếp publication/regrade theo thiết kế và bảo toàn/rollback, không thêm journal trái đóng băng. Không lặp lại các tính năng đã xong, không suy hoàn thành từ test.
 
-Tệp giữ: hồ sơ, hướng dẫn và bằng chứng đợt lưu cùng commit tài liệu sau mốc mã. Giữ tmp/backups/worktree cũ; không push/reset/clean. Không tin runtime/session cũ khi tiếp nối.
+Tệp giữ: mã đã commit; hồ sơ/bằng chứng cùng nhóm. Giữ tmp/backups/worktrees. Không schema mới, provider thật, push/reset/clean.

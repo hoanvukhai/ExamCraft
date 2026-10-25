@@ -4,6 +4,8 @@
 
 Đọc hàng cần làm; không cần đọc hết các tệp bên dưới. Đường dẫn tương đối dùng được khi chuyển checkout. Đây là bản đồ vị trí, không chứng nhận chức năng hoàn tất.
 
+Đợt tiếp25/10: [rà soát, trình chiếu, ngân hàng và Word Song song](../../qa/rebuild-2026-10-25/EXAM_REVIEW_AND_PRESENTATION.md); `exam-review.ts`, `ExamReviewPanel.tsx`, `ExamPresentation.tsx`, `QuestionCard.tsx`, `docx-export.ts`.
+
 ## Tìm đúng phần
 
 | Nhóm / CV | Điểm vào và hợp đồng | Kiểm tra / bằng chứng |

@@ -21,7 +21,7 @@ Sau khi sửa trong form câu hỏi, bấm nút áp dụng của form để đư
 Các nút ở phần xem trước cho phép chuyển giữa **Đề thi in ấn**, **Bảng đáp án & Barem**, **Hướng dẫn giải** và **Song song**.
 
 - **Song song** đặt câu hỏi và đáp án cạnh nhau, kèm ngữ liệu chung để giáo viên đối chiếu. Bản này có đáp án, chỉ dùng khi muốn hiển thị đáp án.
-- Nút tải Word xuất tệp `.docx`. Khi đang xem Song song, Word hiện xuất đề rồi tới đáp án/lời giải, chưa xuất hai cột giống màn hình.
+- Nút tải Word xuất tệp `.docx`. Khi đang xem Song song, Word xuất câu hỏi và đáp án thành hai cột; ngữ liệu chung giữ một lần. Cần xem lại ngắt trang trong Word trước khi in.
 - Nút in mở hộp thoại in của trình duyệt; có thể chọn lưu PDF tại đó. Xem trước số trang và ngắt trang trước khi in.
 - Nút trộn đề tạo các mã đề; kiểm từng mã và tải Word tương ứng.
 
