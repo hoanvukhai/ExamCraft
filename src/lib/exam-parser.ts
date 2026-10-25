@@ -247,6 +247,11 @@ function takeAnswerTail(body: string): { body: string; single?: string; verdicts
   const rest = match[1].trim();
   const single = /^\(?([A-D])\)?[.)]?$/.exec(rest);
   if (single) return { body: body.slice(0, match.index).trimEnd(), single: single[1], list: {} };
+  // An explicit one-line numeric key belongs to the answer, never student content.
+  // Keep unsupported prose/multi-line tails intact for review rather than guessing.
+  if (/^[+-]?\d+(?:[.,]\d+)?(?:\s*\/\s*[+-]?\d+(?:[.,]\d+)?)?$/.test(rest)) {
+    return { body: body.slice(0, match.index).trimEnd(), single: rest, list: {} };
+  }
   const verdicts: Record<string, boolean> = {};
   for (const pair of rest.matchAll(VERDICT)) verdicts[pair[1]] = isTrueVerdict(pair[2]);
   if (Object.keys(verdicts).length === 4) return { body: body.slice(0, match.index).trimEnd(), verdicts, list: {} };

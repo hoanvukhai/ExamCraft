@@ -1,0 +1,72 @@
+TAP version 13
+# Subtest: plain-text near variants retain both contents, answers and separate IDs
+not ok 1 - plain-text near variants retain both contents, answers and separate IDs
+  ---
+  duration_ms: 9.1616
+  type: 'test'
+  location: 'F:\\Workspace\\Zazz\\ExamCraft\\tests\\import_sources.test.ts:2:1258'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+      [
+    +   'Tính 11 + 2.\nĐáp án: 13',
+    +   'Tính 12 + 2.\nĐáp án: 14'
+    -   'Tính 11 + 2.',
+    -   'Tính 12 + 2.'
+      ]
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: 'Tính 11 + 2.'
+    1: 'Tính 12 + 2.'
+  actual:
+    0: |-
+      Tính 11 + 2.
+      Đáp án: 13
+    1: |-
+      Tính 12 + 2.
+      Đáp án: 14
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (F:\Workspace\Zazz\ExamCraft\tests\import_sources.test.ts:14:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.start (node:internal/test_runner/test:944:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)
+  ...
+# Subtest: EX_Test near variants are not deduplicated by a changed number
+ok 2 - EX_Test near variants are not deduplicated by a changed number
+  ---
+  duration_ms: 1.0835
+  type: 'test'
+  ...
+# Subtest: Word and text import adapters label their source and retain near variants without promoting verification
+ok 3 - Word and text import adapters label their source and retain near variants without promoting verification
+  ---
+  duration_ms: 2.4898
+  type: 'test'
+  ...
+# Subtest: explicit provenance survives normalization and private persistence even with untrusted sharing fields
+ok 4 - explicit provenance survives normalization and private persistence even with untrusted sharing fields
+  ---
+  duration_ms: 0.5977
+  type: 'test'
+  ...
+# Subtest: bank client sends provenance but does not copy document sharing instructions into the bank request
+ok 5 - bank client sends provenance but does not copy document sharing instructions into the bank request
+  ---
+  duration_ms: 40.8626
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 4
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7434.4369
