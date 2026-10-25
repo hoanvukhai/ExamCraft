@@ -1141,14 +1141,14 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                           <button
                             onClick={(e) => handleQuickExportDocx(exam, e)}
                             title="Tải Word"
-                            className="p-1.5 rounded-full hover:bg-black/5 text-[#5f6368] hover:text-[#1a73e8] cursor-pointer"
+                            className="p-3 sm:p-1.5 rounded-full hover:bg-black/5 text-[#5f6368] hover:text-[#1a73e8] cursor-pointer"
                           >
                             <Download className="w-3.5 h-3.5" />
                           </button>
                           <button
                             onClick={(e) => handleCloneExam(exam, e)}
                             title="Nhân bản"
-                            className="p-1.5 rounded-full hover:bg-black/5 text-[#5f6368] hover:text-[#1a73e8] cursor-pointer"
+                            className="p-3 sm:p-1.5 rounded-full hover:bg-black/5 text-[#5f6368] hover:text-[#1a73e8] cursor-pointer"
                           >
                             <Copy className="w-3.5 h-3.5" />
                           </button>
@@ -1156,7 +1156,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                             disabled={exam.permissions?.canManage === false}
                           onClick={(e) => handleDeleteExam(exam.id, e)}
                             title={currentView === 'trash' ? 'Khôi phục đề' : 'Chuyển vào thùng rác'}
-                            className="p-1.5 rounded-full hover:bg-red-50 text-[#5f6368] hover:text-red-500 cursor-pointer"
+                            className="p-3 sm:p-1.5 rounded-full hover:bg-red-50 text-[#5f6368] hover:text-red-500 cursor-pointer"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>

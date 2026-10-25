@@ -15,12 +15,12 @@
     {
       "id": "sec_math9_dai_so",
       "name": "PHẦN I. ĐẠI SỐ VÀ CĂN THỨC (6.0 điểm)",
-      "title": "Căn thức bậc hai và hệ phương trình"
+      "title": "Căn thức bậc hai, hàm số và hệ phương trình"
     },
     {
       "id": "sec_math9_hinh_hoc",
       "name": "PHẦN II. HÌNH HỌC PHẲNG (4.0 điểm)",
-      "title": "Đường tròn và tiếp tuyến"
+      "title": "Hệ thức lượng và đường tròn"
     }
   ],
   "questions": [
@@ -32,8 +32,8 @@
       "content": "Cho biểu thức căn thức chứa biến sau (Trường hợp biên: Công thức toán cực dài trên 150 ký tự):\n\n$$P = \\left( \\frac{\\sqrt{x} + 2}{x + 2\\sqrt{x} + 1} - \\frac{\\sqrt{x} - 2}{x - 1} \\right) : \\left( \\frac{\\sqrt{x}}{\\sqrt{x} + 1} - \\frac{\\sqrt{x} - 1}{\\sqrt{x} - 2} + \\frac{3\\sqrt{x} + 1}{x - \\sqrt{x} - 2} \\right)$$\n\nTính giá trị của biểu thức $P$ tại giá trị $x = 4$.",
       "accepted_answers": ["1", "1.0", "1,0"],
       "correct_answer": "1",
-      "points": 3.0,
-      "step_by_step_solution": "Quy đồng mẫu thức và rút gọn từng ngoặc: Ngoặc thứ nhất rút gọn thành $\\frac{2}{(x-1)(\\sqrt{x}+1)}$; ngoặc thứ hai quy đồng rút gọn ra biểu thức tương đương; thay x = 4 ta thu được kết quả chính xác P = 1."
+      "points": 1.0,
+      "step_by_step_solution": "Quy đồng mẫu thức và rút gọn từng ngoặc: Thay x = 4 vào biểu thức rút gọn ta thu được kết quả chính xác P = 1."
     },
     {
       "id": "q_math9_02",
@@ -48,26 +48,143 @@
         { "key": "D", "text": "$(x; y) = (-2; 11)$" }
       ],
       "correct_answer": "A",
-      "points": 3.0,
-      "step_by_step_solution": "Nhân phương trình thứ hai với 3: $9x - 3y = 15$. Cộng với phương trình thứ nhất: $11x = 22 \\Rightarrow x = 2$. Thay vào phương trình thứ hai: $y = 3(2) - 5 = 1$. Vậy hệ có nghiệm duy nhất $(2; 1)$."
+      "points": 1.0,
+      "step_by_step_solution": "Từ 3x - y = 5 => y = 3x - 5. Thay vào phương trình 1: 2x + 3(3x - 5) = 7 => 11x = 22 => x = 2 => y = 1. Nghiệm là (2; 1)."
     },
     {
       "id": "q_math9_03",
+      "sectionId": "sec_math9_dai_so",
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Căn bậc hai số học của 16 là giá trị nào sau đây?",
+      "choices": [
+        { "key": "A", "text": "4" },
+        { "key": "B", "text": "-4" },
+        { "key": "C", "text": "±4" },
+        { "key": "D", "text": "256" }
+      ],
+      "correct_answer": "A",
+      "points": 1.0,
+      "step_by_step_solution": "Căn bậc hai số học của số a không âm là số không âm x sao cho x^2 = a. Do đó căn bậc hai số học của 16 là 4."
+    },
+    {
+      "id": "q_math9_04",
+      "sectionId": "sec_math9_dai_so",
+      "type": "fill_blank",
+      "difficulty": "thong_hieu",
+      "content": "Hàm số bậc nhất $y = (m - 2)x + 5$ đồng biến trên tập số thực $\\mathbb{R}$ khi hệ số góc thỏa mãn $m >$ ________.",
+      "accepted_answers": ["2", "2.0", "2,0"],
+      "correct_answer": "2",
+      "points": 1.0,
+      "step_by_step_solution": "Hàm số bậc nhất y = ax + b đồng biến khi a > 0 <=> m - 2 > 0 <=> m > 2."
+    },
+    {
+      "id": "q_math9_05",
+      "sectionId": "sec_math9_dai_so",
+      "type": "true_false_group",
+      "difficulty": "thong_hieu",
+      "content": "Cho hàm số $y = 2x - 4$ có đồ thị là đường thẳng $(d)$. Hãy xác định tính Đúng hoặc Sai của mỗi khẳng định sau:",
+      "sub_questions": [
+        {
+          "key": "a",
+          "content": "Hàm số đã cho là hàm số bậc nhất đồng biến trên tập số thực R vì hệ số a = 2 > 0.",
+          "isCorrect": true,
+          "explanation": "Hệ số góc a = 2 dương nên hàm số đồng biến."
+        },
+        {
+          "key": "b",
+          "content": "Đường thẳng (d) đi qua điểm A có tọa độ (2; 0).",
+          "isCorrect": true,
+          "explanation": "Thay x = 2 vào ta được y = 2(2) - 4 = 0."
+        },
+        {
+          "key": "c",
+          "content": "Đường thẳng (d) song song với đường thẳng (d') có phương trình y = 2x + 1.",
+          "isCorrect": true,
+          "explanation": "Hai đường thẳng có cùng hệ số góc a = 2 và tung độ gốc khác nhau (-4 != 1)."
+        },
+        {
+          "key": "d",
+          "content": "Đường thẳng (d) cắt trục tung Oy tại điểm có tung độ bằng 4.",
+          "isCorrect": false,
+          "explanation": "Đường thẳng cắt trục tung Oy tại điểm có tung độ b = -4, không phải 4."
+        }
+      ],
+      "points": 1.0,
+      "step_by_step_solution": "Kiểm tra tính chất hàm số bậc nhất và tọa độ giao điểm của đường thẳng với các trục tọa độ."
+    },
+    {
+      "id": "q_math9_06",
+      "sectionId": "sec_math9_dai_so",
+      "type": "short_answer",
+      "difficulty": "van_dung",
+      "content": "Cho phương trình bậc hai $x^2 - 7x + 12 = 0$. Áp dụng định lý Viète, hãy tính tổng hai nghiệm $x_1 + x_2$ của phương trình.",
+      "accepted_answers": ["7", "7.0", "7,0"],
+      "correct_answer": "7",
+      "points": 1.0,
+      "step_by_step_solution": "Theo định lý Viète, tổng hai nghiệm của phương trình ax^2 + bx + c = 0 là x_1 + x_2 = -b / a = -(-7) / 1 = 7."
+    },
+    {
+      "id": "q_math9_07",
+      "sectionId": "sec_math9_dai_so",
+      "type": "ordering",
+      "difficulty": "thong_hieu",
+      "content": "Sắp xếp các bước giải bài toán bằng cách lập hệ phương trình theo đúng quy trình chuẩn:",
+      "correctOrder": [
+        "Chọn hai ẩn số và đặt điều kiện thích hợp cho ẩn",
+        "Biểu diễn các đại lượng chưa biết theo ẩn và các đại lượng đã biết",
+        "Lập hai phương trình biểu thị mối quan hệ giữa các đại lượng",
+        "Giải hệ phương trình vừa lập",
+        "Kiểm tra điều kiện và kết luận bài toán"
+      ],
+      "points": 1.0,
+      "step_by_step_solution": "Quy trình giải bài toán bằng cách lập hệ phương trình gồm 5 bước chuẩn mực."
+    },
+    {
+      "id": "q_math9_08",
+      "sectionId": "sec_math9_hinh_hoc",
+      "type": "matching",
+      "difficulty": "nhan_biet",
+      "content": "Trong tam giác vuông $ABC$ vuông tại $A$ có góc nhọn $B = \\alpha$, hãy ghép nối tỉ số lượng giác ở Cột A với định nghĩa ở Cột B:",
+      "matchingPairs": [
+        { "id": "m_geo1", "left": "sin α", "right": "Tỉ số giữa cạnh đối và cạnh huyền (AC / BC)" },
+        { "id": "m_geo2", "left": "cos α", "right": "Tỉ số giữa cạnh kề và cạnh huyền (AB / BC)" },
+        { "id": "m_geo3", "left": "tan α", "right": "Tỉ số giữa cạnh đối và cạnh kề (AC / AB)" }
+      ],
+      "points": 1.0,
+      "step_by_step_solution": "sin = đối/huyền, cos = kề/huyền, tan = đối/kề."
+    },
+    {
+      "id": "q_math9_09",
+      "sectionId": "sec_math9_hinh_hoc",
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Số đo của góc nội tiếp chắn nửa đường tròn luôn luôn bằng bao nhiêu độ?",
+      "choices": [
+        { "key": "A", "text": "$90^\\circ$" },
+        { "key": "B", "text": "$60^\\circ$" },
+        { "key": "C", "text": "$180^\\circ$" },
+        { "key": "D", "text": "$45^\\circ$" }
+      ],
+      "correct_answer": "A",
+      "points": 1.0,
+      "step_by_step_solution": "Định lý: Góc nội tiếp chắn nửa đường tròn là góc vuông (có số đo bằng 90 độ)."
+    },
+    {
+      "id": "q_math9_10",
       "sectionId": "sec_math9_hinh_hoc",
       "type": "essay",
       "difficulty": "van_dung_cao",
       "content": "Cho đường tròn tâm $O$ bán kính $R$ và một điểm $M$ nằm bên ngoài đường tròn. Từ $M$ kẻ hai tiếp tuyến $MA, MB$ với đường tròn ($A, B$ là các tiếp điểm). Gọi $H$ là giao điểm của $MO$ và đoạn thẳng $AB$.\n\na) Chứng minh rằng tứ giác $MAOB$ nội tiếp một đường tròn.\nb) Biết $R = 3\\text{ cm}$ và $MO = 5\\text{ cm}$, tính độ dài đoạn thẳng $AB$.",
-      "points": 4.0,
+      "points": 1.0,
       "rubric": [
-        { "criterion": "Vẽ hình đúng theo mô tả hình học, ghi giả thiết kết luận", "maxPoints": 0.5 },
-        { "criterion": "Chứng minh góc MAO = góc MBO = 90 độ, suy ra tứ giác MAOB nội tiếp đường tròn đường kính MO", "maxPoints": 1.5 },
-        { "criterion": "Áp dụng định lý Pythagore tính được MA = 4 cm", "maxPoints": 0.5 },
-        { "criterion": "Áp dụng hệ thức lượng AH * MO = MA * OA để tính AH = 2.4 cm và suy ra AB = 4.8 cm", "maxPoints": 1.5 }
+        { "criterion": "Chứng minh tứ giác MAOB nội tiếp đường tròn đường kính MO", "maxPoints": 0.5 },
+        { "criterion": "Tính được MA = 4 cm, AH = 2.4 cm và suy ra AB = 4.8 cm", "maxPoints": 0.5 }
       ],
-      "step_by_step_solution": "a) Vì MA, MB là tiếp tuyến nên góc OAM = góc OBM = 90 độ, tổng hai góc đối bằng 180 độ nên tứ giác MAOB nội tiếp đường tròn đường kính MO.\nb) Trong tam giác vuông MAO vuông tại A: $MA = \\sqrt{MO^2 - OA^2} = \\sqrt{25 - 9} = 4\\text{ cm}$. Đoạn $MO \\perp AB$ tại $H$ và $H$ là trung điểm của $AB$. Hệ thức lượng trong tam giác vuông $MAO$: $AH \\cdot MO = MA \\cdot OA \\Rightarrow AH = \\frac{4 \\cdot 3}{5} = 2.4\\text{ cm}$. Vậy $AB = 2 \\cdot AH = 4.8\\text{ cm}$."
+      "step_by_step_solution": "a) Góc OAM = góc OBM = 90 độ nên tổng hai góc đối bằng 180 độ => tứ giác MAOB nội tiếp đường tròn đường kính MO.\nb) MA = sqrt(5^2 - 3^2) = 4 cm. AH * MO = MA * OA => AH = 4 * 3 / 5 = 2.4 cm => AB = 2 * AH = 4.8 cm."
     }
   ],
   "createdAt": "2026-10-25T07:45:00.000Z",
-  "updatedAt": "2026-10-25T07:45:00.000Z",
-  "version": 1
+  "updatedAt": "2026-10-25T10:00:00.000Z",
+  "version": 2
 }

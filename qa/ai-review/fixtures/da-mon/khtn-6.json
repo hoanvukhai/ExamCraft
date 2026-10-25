@@ -14,13 +14,13 @@
   "sections": [
     {
       "id": "sec_khtn6_phan1",
-      "name": "PHẦN I. TRẮC NGHIỆM KHÁCH QUAN (4.0 điểm)",
-      "title": "Câu trắc nghiệm 4 lựa chọn"
+      "name": "PHẦN I. TRẮC NGHIỆM KHÁCH QUAN (5.0 điểm)",
+      "title": "Câu trắc nghiệm 4 lựa chọn, ghép nối và điền khuyết"
     },
     {
       "id": "sec_khtn6_phan2",
-      "name": "PHẦN II. ĐÚNG / SAI VÀ PHÂN TÍCH BẢNG SỐ LIỆU (6.0 điểm)",
-      "title": "Câu hỏi Đúng/Sai và xử lý dữ liệu thực nghiệm"
+      "name": "PHẦN II. ĐÚNG SAI, TÍNH TOÁN VÀ TỰ LUẬN (5.0 điểm)",
+      "title": "Câu hỏi Đúng/Sai, trả lời ngắn và tự luận thực nghiệm"
     }
   ],
   "questions": [
@@ -38,8 +38,8 @@
         { "key": "D", "text": "Miligam ($\\text{mg}$) và Jun ($\\text{J}$)" }
       ],
       "correct_answer": "A",
-      "points": 2.0,
-      "step_by_step_solution": "Theo quy chuẩn đo lường GDPT 2018 KHTN 6, đơn vị đo khối lượng chính thức trong hệ SI là kilôgam ($\\text{kg}$); đơn vị đo nhiệt độ thường dùng trong đời sống thực tế là độ Celsius ($^\\circ\\text{C}$) và nhiệt độ nhiệt động học là Kelvin ($\\text{K}$)."
+      "points": 1.0,
+      "step_by_step_solution": "Theo quy chuẩn đo lường SI, đơn vị khối lượng là kilôgam (kg); đơn vị nhiệt độ là Kelvin (K) hoặc độ Celsius (°C)."
     },
     {
       "id": "q_khtn6_02",
@@ -55,11 +55,101 @@
         { "key": "D", "text": "Hòa tan đường kính vào nước nóng tạo thành dung dịch đồng nhất" }
       ],
       "correct_answer": "A",
-      "points": 2.0,
-      "step_by_step_solution": "Khí oxygen ($\\text{O}_2$) duy trì sự sống và sự cháy. Dấu hiệu nhận biết là làm que đóm còn tàn đỏ bùng cháy mãnh liệt thành ngọn lửa."
+      "points": 1.0,
+      "step_by_step_solution": "Khí oxygen duy trì sự cháy, dấu hiệu nhận biết là làm bùng cháy lại que đóm còn tàn đỏ."
     },
     {
       "id": "q_khtn6_03",
+      "sectionId": "sec_khtn6_phan1",
+      "subBranch": "biology",
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Thành phần nào sau đây có ở tế bào thực vật nhưng KHÔNG có ở tế bào động vật?",
+      "choices": [
+        { "key": "A", "text": "Lục lạp và thành tế bào (cell wall)" },
+        { "key": "B", "text": "Màng sinh chất và tế bào chất" },
+        { "key": "C", "text": "Nhân tế bào chứa vật chất di truyền" },
+        { "key": "D", "text": "Ty thể tạo năng lượng cho tế bào" }
+      ],
+      "correct_answer": "A",
+      "points": 1.0,
+      "step_by_step_solution": "Tế bào thực vật có thành tế bào bằng cellulose và lục lạp chứa diệp lục để quang hợp, hai thành phần này không có ở tế bào động vật."
+    },
+    {
+      "id": "q_khtn6_04",
+      "sectionId": "sec_khtn6_phan1",
+      "subBranch": "physics",
+      "type": "matching",
+      "difficulty": "thong_hieu",
+      "content": "Ghép mỗi dụng cụ đo ở Cột A với đại lượng vật lý cần đo tương ứng ở Cột B:",
+      "matchingPairs": [
+        { "id": "m_khtn1", "left": "Cân điện tử", "right": "Đo khối lượng của vật mẫu" },
+        { "id": "m_khtn2", "left": "Nhiệt kế thủy ngân", "right": "Đo nhiệt độ cơ thể hoặc dung dịch" },
+        { "id": "m_khtn3", "left": "Ống đong chia vạch", "right": "Đo thể tích của chất lỏng" }
+      ],
+      "points": 1.0,
+      "step_by_step_solution": "Cân đo khối lượng, nhiệt kế đo nhiệt độ, ống đong đo thể tích chất lỏng."
+    },
+    {
+      "id": "q_khtn6_05",
+      "sectionId": "sec_khtn6_phan1",
+      "subBranch": "chemistry",
+      "type": "fill_blank",
+      "difficulty": "nhan_biet",
+      "content": "Nước tinh khiết là một chất tinh khiết có công thức hóa học gồm 2 nguyên tử hydro và 1 nguyên tử oxy, viết là: ________.",
+      "accepted_answers": ["H2O", "H₂O"],
+      "correct_answer": "H2O",
+      "points": 1.0,
+      "step_by_step_solution": "Công thức phân tử của nước là H2O."
+    },
+    {
+      "id": "q_khtn6_06",
+      "sectionId": "sec_khtn6_phan2",
+      "subBranch": "physics",
+      "type": "short_answer",
+      "difficulty": "thong_hieu",
+      "content": "Một học sinh đo chiều dài bàn học được $1.2\\text{ m}$. Hãy đổi chiều dài này sang đơn vị xăng-ti-mét ($\\text{cm}$).",
+      "accepted_answers": ["120", "120 cm", "120cm"],
+      "correct_answer": "120",
+      "points": 1.0,
+      "step_by_step_solution": "1 m = 100 cm, do đó 1.2 m = 1.2 * 100 = 120 cm."
+    },
+    {
+      "id": "q_khtn6_07",
+      "sectionId": "sec_khtn6_phan2",
+      "subBranch": "biology",
+      "type": "ordering",
+      "difficulty": "thong_hieu",
+      "content": "Sắp xếp các cấp độ tổ chức của cơ thể đa bào từ nhỏ nhất đến lớn nhất:",
+      "correctOrder": [
+        "Tế bào",
+        "Mô",
+        "Cơ quan",
+        "Hệ cơ quan",
+        "Cơ thể"
+      ],
+      "points": 1.0,
+      "step_by_step_solution": "Thứ tự tổ chức cơ thể sống: Tế bào -> Mô -> Cơ quan -> Hệ cơ quan -> Cơ thể."
+    },
+    {
+      "id": "q_khtn6_08",
+      "sectionId": "sec_khtn6_phan2",
+      "subBranch": "chemistry",
+      "type": "multiple_choice",
+      "difficulty": "van_dung",
+      "content": "Để tách cát không tan ra khỏi hỗn hợp nước và cát, phương pháp tách chất đơn giản và hiệu quả nhất là gì?",
+      "choices": [
+        { "key": "A", "text": "Phương pháp lọc bằng phễu và giấy lọc" },
+        { "key": "B", "text": "Phương pháp cô cạn đun nóng" },
+        { "key": "C", "text": "Phương pháp chiết bằng phễu chiết" },
+        { "key": "D", "text": "Phương pháp chưng cất phân đoạn" }
+      ],
+      "correct_answer": "A",
+      "points": 1.0,
+      "step_by_step_solution": "Cát không tan trong nước tạo thành huyền phù, dùng giấy lọc để giữ cát lại trên phễu lọc và thu lấy nước trong suốt."
+    },
+    {
+      "id": "q_khtn6_09",
       "sectionId": "sec_khtn6_phan2",
       "subBranch": "biology",
       "type": "true_false_group",
@@ -91,11 +181,25 @@
           "explanation": "Nhiệt độ là yếu tố môi trường cốt lõi tác động trực tiếp đến cường độ thoát hơi nước của lá cây."
         }
       ],
-      "points": 6.0,
+      "points": 1.0,
       "step_by_step_solution": "Phân tích bảng số liệu: Cột lượng nước thoát ra đạt cực đại 35 mL tại 28°C rồi giảm xuống 10 mL tại 38°C do khí khổng khép lại bảo vệ tế bào thực vật."
+    },
+    {
+      "id": "q_khtn6_10",
+      "sectionId": "sec_khtn6_phan2",
+      "subBranch": "biology",
+      "type": "essay",
+      "difficulty": "van_dung_cao",
+      "content": "Trình bày vai trò của khí oxygen đối với sự sống của các sinh vật trên Trái Đất và nêu ít nhất 02 hành động thiết thực của học sinh để bảo vệ nguồn không khí trong lành.",
+      "points": 1.0,
+      "rubric": [
+        { "criterion": "Nêu được vai trò của oxygen đối với quá trình hô hấp của động vật, thực vật và con người", "maxPoints": 0.5 },
+        { "criterion": "Nêu được ít nhất 02 hành động thiết thực bảo vệ môi trường không khí (trồng cây xanh, không xả rác/đốt rác bừa bãi)", "maxPoints": 0.5 }
+      ],
+      "step_by_step_solution": "Học sinh nêu vai trò: cung cấp cho quá trình hô hấp giải phóng năng lượng duy trì sự sống. Biện pháp: trồng và chăm sóc cây xanh, sử dụng phương tiện công cộng hoặc xe đạp, không đốt rơm rạ rác thải bừa bãi."
     }
   ],
   "createdAt": "2026-10-25T07:45:00.000Z",
-  "updatedAt": "2026-10-25T07:45:00.000Z",
-  "version": 1
+  "updatedAt": "2026-10-25T10:00:00.000Z",
+  "version": 2
 }

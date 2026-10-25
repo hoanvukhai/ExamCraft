@@ -721,14 +721,14 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                               <div className="flex items-center justify-end gap-2">
                                 <button
                                   onClick={() => handleOpenAttemptDetail(att.id)}
-                                  className="px-3 py-1.5 bg-[#e8f0fe] dark:bg-[#1e2a38] hover:bg-[#d2e3fc] dark:hover:bg-[#2b3a4a] text-[#1a73e8] dark:text-[#8ab4f8] border border-[#1a73e8]/30 dark:border-[#8ab4f8]/30 rounded-full text-xs font-semibold transition-all flex items-center gap-1 cursor-pointer"
+                                  className="min-h-10 sm:min-h-0 px-3 py-1.5 bg-[#e8f0fe] dark:bg-[#1e2a38] hover:bg-[#d2e3fc] dark:hover:bg-[#2b3a4a] text-[#1a73e8] dark:text-[#8ab4f8] border border-[#1a73e8]/30 dark:border-[#8ab4f8]/30 rounded-full text-xs font-semibold transition-all flex items-center gap-1 cursor-pointer"
                                 >
                                   <Eye className="w-3.5 h-3.5" /> Xem bài
                                 </button>
                                 <button
                                   onClick={() => handleDeleteAttempt(att.id, att.studentName)}
                                   title="Xóa lượt làm này để học sinh làm lại"
-                                  className="p-1.5 text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#c5221f] dark:hover:text-[#f28b82] hover:bg-[#fce8e6] dark:hover:bg-[#371918] rounded-full transition-colors cursor-pointer"
+                                  className="p-3 sm:p-1.5 text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#c5221f] dark:hover:text-[#f28b82] hover:bg-[#fce8e6] dark:hover:bg-[#371918] rounded-full transition-colors cursor-pointer"
                                 >
                                   <Trash2 className="w-4 h-4" />
                                 </button>

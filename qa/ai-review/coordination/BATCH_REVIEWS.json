@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "updated_at_utc": "2026-10-25T13:00:00.000Z",
+  "updated_at_utc": "2026-10-25T15:00:00.000Z",
   "writer": "CLAUDE",
   "purpose": "Delivery review gates, not product checklist or proof of runtime completion",
   "batches": [
@@ -438,6 +438,84 @@
           "submission_ref": [],
           "review_note": "Gemini làm các việc khác với tin giao (phiếu ma trận, 30 lỗi Word, sổ tay học sinh, chương trình 3 môn mới, so sánh 5 dịch vụ AI, kịch bản diễn tập, tổng kết). Không nhận so sánh dịch vụ AI vì ngoài phạm vi. Các việc được giao nhưng chưa làm: rà chữ giao diện và màn hình nhỏ, rà tài liệu, bản mời giáo viên thử, nháp thiết kế Drive, câu hỏi cho chủ dự án, bảng ca thử chấm lại. Giao lại ở tin mới.",
           "reviewed_at_utc": "2026-10-25T13:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "task_id": "GEMINI-NEXT",
+      "assignment_generation": 10,
+      "items": [
+        {
+          "id": "GEM-R1",
+          "decision": "ACCEPTED",
+          "submission_ref": [
+            "docs/huong-dan/HUONG_DAN_HOC_SINH_MOBILE.md"
+          ],
+          "review_note": "check-ui-labels: 16 cụm, 0 lệch.",
+          "reviewed_at_utc": "2026-10-25T15:00:00.000Z"
+        },
+        {
+          "id": "GEM-R2",
+          "decision": "ACCEPTED",
+          "submission_ref": [
+            "qa/ai-review/fixtures/da-mon"
+          ],
+          "review_note": "Sáu đề, mỗi đề 10 câu, 6–7 dạng, mã câu duy nhất, không BOM; test fixture_da_mon đạt.",
+          "reviewed_at_utc": "2026-10-25T15:00:00.000Z"
+        },
+        {
+          "id": "GEM-R3",
+          "decision": "ACCEPTED",
+          "submission_ref": [
+            "qa/ai-review/GEMINI_UI_TEXT_AUDIT.md"
+          ],
+          "review_note": "Chuỗi và lớp CSS trích đều có trong mã. Claude đã sửa nút nhỏ (mục 6, 7, 8). Mục 15 không làm vì bộ kiểm trình duyệt dùng nhãn Đăng nhập hệ thống. Các mục nhãn chờ chủ dự án.",
+          "reviewed_at_utc": "2026-10-25T15:00:00.000Z"
+        },
+        {
+          "id": "GEM-R4",
+          "decision": "ACCEPTED",
+          "submission_ref": [
+            "qa/ai-review/GEMINI_REGRADE_CASES.md"
+          ],
+          "review_note": "20 ca dựng thành http_regrade_cases; số tính tay khớp. Hai lệch: TC09 câu 0 điểm vẫn vào danh sách thay đổi vì cờ đúng/sai đổi; TC18 trả 409 thay vì 404.",
+          "reviewed_at_utc": "2026-10-25T15:00:00.000Z"
+        },
+        {
+          "id": "GEM-R5",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "submission_ref": [
+            "docs/phoi-hop-ai/05_TUYEN_GIAO_VIEN_VA_NGUOI_DUYET.md"
+          ],
+          "review_note": "Dùng được; người thật vẫn do chủ dự án liên hệ.",
+          "reviewed_at_utc": "2026-10-25T15:00:00.000Z"
+        },
+        {
+          "id": "GEM-R6",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "submission_ref": [
+            "qa/ai-review/GEMINI_DOC_AUDIT.md"
+          ],
+          "review_note": "Đề xuất phân loại; Claude chưa thực hiện di chuyển.",
+          "reviewed_at_utc": "2026-10-25T15:00:00.000Z"
+        },
+        {
+          "id": "GEM-R7",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "submission_ref": [
+            "qa/rebuild-2026-10-25/DRIVE_DESIGN_DRAFT.md"
+          ],
+          "review_note": "Bản thảo thiết kế, không triển khai.",
+          "reviewed_at_utc": "2026-10-25T15:00:00.000Z"
+        },
+        {
+          "id": "GEM-R8",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "submission_ref": [
+            "qa/ai-review/GEMINI_QUESTIONS_FOR_OWNER.md"
+          ],
+          "review_note": "Nhiều câu hỏi về việc đã có trong mã; chỉ dùng các câu về quyết định thật.",
+          "reviewed_at_utc": "2026-10-25T15:00:00.000Z"
         }
       ]
     }

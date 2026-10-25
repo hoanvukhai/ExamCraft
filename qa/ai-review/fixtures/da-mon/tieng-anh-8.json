@@ -28,7 +28,7 @@
     {
       "id": "sec_en8_language",
       "name": "PART II. LANGUAGE FOCUS AND MATCHING",
-      "title": "Grammar, Fill-in-blank and Sentence Matching"
+      "title": "Grammar, Fill-in-blank, Ordering and Sentence Matching"
     }
   ],
   "questions": [
@@ -46,7 +46,7 @@
         { "key": "D", "text": "The environmental problems caused by urbanization" }
       ],
       "correct_answer": "A",
-      "points": 2.0,
+      "points": 1.0,
       "step_by_step_solution": "The passage outlines how rural life has changed positively with technology while maintaining its peaceful atmosphere and communal values."
     },
     {
@@ -63,22 +63,113 @@
         { "key": "D", "text": "Limiting Internet access among villagers" }
       ],
       "correct_answer": "A",
-      "points": 2.0,
+      "points": 1.0,
       "step_by_step_solution": "Sentence 3 explicitly mentions: 'Today, tractors and automated harvesting machines have made farm work much easier and more productive.'"
     },
     {
       "id": "q_en8_03",
+      "sectionId": "sec_en8_reading",
+      "passageId": "pas_en8_01",
+      "type": "true_false_group",
+      "difficulty": "thong_hieu",
+      "content": "Decide whether each of the following statements is True or False according to the passage:",
+      "sub_questions": [
+        {
+          "key": "a",
+          "content": "In the past, farmers relied heavily on automated machinery for their daily farm work.",
+          "isCorrect": false,
+          "explanation": "The text states farmers worked hard manually without modern machinery."
+        },
+        {
+          "key": "b",
+          "content": "Internet access allows young villagers to study online and work remotely.",
+          "isCorrect": true,
+          "explanation": "The text states high-speed Internet enables online educational resources and remote work."
+        },
+        {
+          "key": "c",
+          "content": "Rural communities have completely lost their peaceful atmosphere due to technology.",
+          "isCorrect": false,
+          "explanation": "The text says rural areas continue to preserve their peaceful atmosphere."
+        },
+        {
+          "key": "d",
+          "content": "Neighbors in the countryside are willing to help each other during harvest seasons.",
+          "isCorrect": true,
+          "explanation": "The text confirms neighbors lend a helping hand during harvest seasons."
+        }
+      ],
+      "points": 1.0,
+      "step_by_step_solution": "Examine details in the reading passage to verify True or False for each statement."
+    },
+    {
+      "id": "q_en8_04",
+      "sectionId": "sec_en8_reading",
+      "passageId": "pas_en8_01",
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "The word 'close-knit' in the passage is closest in meaning to:",
+      "choices": [
+        { "key": "A", "text": "tightly connected and supportive" },
+        { "key": "B", "text": "isolated and distant" },
+        { "key": "C", "text": "crowded and noisy" },
+        { "key": "D", "text": "strict and uncomfortable" }
+      ],
+      "correct_answer": "A",
+      "points": 1.0,
+      "step_by_step_solution": "'Close-knit' describes a group or community where people have strong, supportive relationships."
+    },
+    {
+      "id": "q_en8_05",
       "sectionId": "sec_en8_language",
       "type": "fill_blank",
       "difficulty": "van_dung",
       "content": "Fill in the blank with the correct form of the word in brackets: 'Living in a peaceful village is more ________ than living in a crowded metropolis.' [PEACE]",
       "correct_answer": "peaceful",
       "accepted_answers": ["peaceful", "PEACEFUL", "Peaceful"],
-      "points": 2.5,
-      "step_by_step_solution": "The comparative form 'more ... than' requires the adjective 'peaceful' derived from the noun 'peace'."
+      "points": 1.0,
+      "step_by_step_solution": "The comparative structure 'more ... than' requires the adjective 'peaceful'."
     },
     {
-      "id": "q_en8_04",
+      "id": "q_en8_06",
+      "sectionId": "sec_en8_language",
+      "type": "fill_blank",
+      "difficulty": "thong_hieu",
+      "content": "Fill in the blank with the correct preposition: 'Farmers usually get up early ________ the morning to feed their cattle.'",
+      "correct_answer": "in",
+      "accepted_answers": ["in", "IN"],
+      "points": 1.0,
+      "step_by_step_solution": "The standard preposition used with 'the morning' is 'in'."
+    },
+    {
+      "id": "q_en8_07",
+      "sectionId": "sec_en8_language",
+      "type": "short_answer",
+      "difficulty": "van_dung",
+      "content": "Give the correct past continuous form of the verb 'plow' for the subject 'The farmers': 'At 9 a.m. yesterday, the farmers ________ (plow) their paddy fields.'",
+      "correct_answer": "were plowing",
+      "accepted_answers": ["were plowing", "were ploughing"],
+      "points": 1.0,
+      "step_by_step_solution": "Past continuous with plural subject 'the farmers' is 'were plowing' (or British spelling 'were ploughing')."
+    },
+    {
+      "id": "q_en8_08",
+      "sectionId": "sec_en8_language",
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Choose the word whose underlined part is pronounced differently from the others:",
+      "choices": [
+        { "key": "A", "text": "harvest" },
+        { "key": "B", "text": "vast" },
+        { "key": "C", "text": "brave" },
+        { "key": "D", "text": "pasture" }
+      ],
+      "correct_answer": "C",
+      "points": 1.0,
+      "step_by_step_solution": "'Brave' is pronounced /eɪ/, whereas harvest, vast, and pasture have the /ɑː/ or /æ/ sound."
+    },
+    {
+      "id": "q_en8_09",
       "sectionId": "sec_en8_language",
       "type": "matching",
       "difficulty": "thong_hieu",
@@ -88,11 +179,25 @@
         { "id": "m2", "left": "If you visit my hometown in the autumn,", "right": "you can enjoy the sweet fragrance of ripe golden rice fields." },
         { "id": "m3", "left": "Local farmers use solar-powered dryers", "right": "in order to preserve their agricultural products efficiently." }
       ],
-      "points": 3.5,
-      "step_by_step_solution": "Pair 1 combines a concession clause (Although...) with a surprising contrast. Pair 2 is a Type 1 conditional sentence. Pair 3 expresses purpose using 'in order to'."
+      "points": 1.0,
+      "step_by_step_solution": "Pair 1 combines a concession clause (Although...) with contrast. Pair 2 is a Type 1 conditional. Pair 3 expresses purpose."
+    },
+    {
+      "id": "q_en8_10",
+      "sectionId": "sec_en8_language",
+      "type": "ordering",
+      "difficulty": "van_dung",
+      "content": "Arrange the following clauses in the correct order to form a coherent compound sentence:",
+      "correctOrder": [
+        "Modern technology has entered the countryside,",
+        "yet villagers still cherish",
+        "their traditional values and hospitality."
+      ],
+      "points": 1.0,
+      "step_by_step_solution": "The logical sentence order is: 'Modern technology has entered the countryside, yet villagers still cherish their traditional values and hospitality.'"
     }
   ],
   "createdAt": "2026-10-25T07:45:00.000Z",
-  "updatedAt": "2026-10-25T07:45:00.000Z",
-  "version": 1
+  "updatedAt": "2026-10-25T10:00:00.000Z",
+  "version": 2
 }

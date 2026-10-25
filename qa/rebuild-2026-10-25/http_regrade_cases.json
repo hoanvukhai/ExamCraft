@@ -1,0 +1,29 @@
+{
+  "checkedAt": "2026-10-25T10:29:14.108Z",
+  "checks": [
+    "TC01",
+    "TC02",
+    "TC03",
+    "TC04",
+    "TC05",
+    "TC06",
+    "TC07",
+    "TC08",
+    "TC09",
+    "TC11",
+    "TC12",
+    "TC13",
+    "TC10",
+    "TC14",
+    "TC15",
+    "TC16",
+    "TC17",
+    "TC18",
+    "TC19",
+    "TC20"
+  ],
+  "cleanupComplete": true,
+  "status": "PASS",
+  "environment": "isolated localhost:3117",
+  "realAiCalls": false
+}

@@ -15,7 +15,7 @@
     {
       "id": "sec_lsdl7_lichsu",
       "name": "PHÂN MÔN LỊCH SỬ (5.0 điểm)",
-      "title": "Tư liệu lịch sử Đại Việt"
+      "title": "Tư liệu lịch sử Đại Việt và thế giới"
     },
     {
       "id": "sec_lsdl7_diali",
@@ -38,8 +38,8 @@
         { "key": "D", "text": "Ban bố bộ luật Hình thư thành văn đầu tiên của nước ta năm 1042" }
       ],
       "correct_answer": "A",
-      "points": 2.5,
-      "step_by_step_solution": "Đoạn trích từ 'Chiếu dời đô' (Thiên đô chiếu) năm Canh Tuất 1010 ghi nhận quyết sách dời kinh đô từ Hoa Lư hiểm trở về đồng bằng Thăng Long trù phú để phát triển đất nước lâu dài."
+      "points": 1.0,
+      "step_by_step_solution": "Đoạn trích từ 'Chiếu dời đô' ghi nhận sự kiện vua Lý Thái Tổ dời đô về Thăng Long năm 1010."
     },
     {
       "id": "q_lsdl7_02",
@@ -53,11 +53,102 @@
         "Thiên đô chiếu",
         "Chiếu dời đô"
       ],
-      "points": 2.5,
-      "step_by_step_solution": "Văn bản lịch sử có tên gọi chữ Hán là Thiên đô chiếu, dịch ra tiếng Việt là Chiếu dời đô."
+      "correct_answer": "Chiếu dời đô",
+      "points": 1.0,
+      "step_by_step_solution": "Văn bản lịch sử có tên chữ Hán là Thiên đô chiếu, tiếng Việt là Chiếu dời đô."
     },
     {
       "id": "q_lsdl7_03",
+      "sectionId": "sec_lsdl7_lichsu",
+      "subBranch": "history",
+      "type": "fill_blank",
+      "difficulty": "nhan_biet",
+      "content": "Vị vua sáng lập nên triều đại nhà Lý vào năm 1009 là Lý ________.",
+      "accepted_answers": ["Thái Tổ", "thái tổ", "Công Uẩn", "công uẩn"],
+      "correct_answer": "Thái Tổ",
+      "points": 1.0,
+      "step_by_step_solution": "Vua sáng lập nhà Lý là Lý Thái Tổ (tên thật là Lý Công Uẩn)."
+    },
+    {
+      "id": "q_lsdl7_04",
+      "sectionId": "sec_lsdl7_lichsu",
+      "subBranch": "history",
+      "type": "matching",
+      "difficulty": "thong_hieu",
+      "content": "Ghép mỗi triều đại phong kiến ở Cột A với tên kinh đô tương ứng ở Cột B:",
+      "matchingPairs": [
+        { "id": "m_ls1", "left": "Triều Đinh", "right": "Kinh đô Hoa Lư" },
+        { "id": "m_ls2", "left": "Triều Lý", "right": "Kinh đô Thăng Long" },
+        { "id": "m_ls3", "left": "Triều Hồ", "right": "Kinh đô Tây Đô (Thanh Hóa)" }
+      ],
+      "points": 1.0,
+      "step_by_step_solution": "Nhà Đinh đóng đô ở Hoa Lư; nhà Lý dời đô về Thăng Long; nhà Hồ xây thành Tây Đô."
+    },
+    {
+      "id": "q_lsdl7_05",
+      "sectionId": "sec_lsdl7_lichsu",
+      "subBranch": "history",
+      "type": "ordering",
+      "difficulty": "thong_hieu",
+      "content": "Sắp xếp các triều đại phong kiến Việt Nam theo đúng thứ tự thời gian thành lập:",
+      "correctOrder": [
+        "Nhà Ngô",
+        "Nhà Đinh",
+        "Nhà Tiền Lê",
+        "Nhà Lý",
+        "Nhà Trần"
+      ],
+      "points": 1.0,
+      "step_by_step_solution": "Trình tự các triều đại: Ngô (939) -> Đinh (968) -> Tiền Lê (980) -> Lý (1009) -> Trần (1225)."
+    },
+    {
+      "id": "q_lsdl7_06",
+      "sectionId": "sec_lsdl7_diali",
+      "subBranch": "geography",
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Dãy núi nào sau đây được coi là ranh giới tự nhiên trên đất liền giữa Châu Âu và Châu Á?",
+      "choices": [
+        { "key": "A", "text": "Dãy U-ran (Ural)" },
+        { "key": "B", "text": "Dãy An-pơ (Alps)" },
+        { "key": "C", "text": "Dãy Hi-ma-lay-a (Himalaya)" },
+        { "key": "D", "text": "Dãy Xcan-đi-na-vi (Scandinavia)" }
+      ],
+      "correct_answer": "A",
+      "points": 1.0,
+      "step_by_step_solution": "Dãy núi U-ran chạy theo hướng bắc - nam là ranh giới tự nhiên phân chia giữa hai châu lục Á và Âu."
+    },
+    {
+      "id": "q_lsdl7_07",
+      "sectionId": "sec_lsdl7_diali",
+      "subBranch": "geography",
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Đới khí hậu nào chiếm diện tích lớn nhất trên lãnh thổ Châu Âu?",
+      "choices": [
+        { "key": "A", "text": "Đới khí hậu ôn đới" },
+        { "key": "B", "text": "Đới khí hậu nhiệt đới" },
+        { "key": "C", "text": "Đới khí hậu xích đạo" },
+        { "key": "D", "text": "Đới khí hậu hàn đới" }
+      ],
+      "correct_answer": "A",
+      "points": 1.0,
+      "step_by_step_solution": "Phần lớn lãnh thổ châu Âu nằm trong đới khí hậu ôn đới (gồm ôn đới hải dương và ôn đới lục địa)."
+    },
+    {
+      "id": "q_lsdl7_08",
+      "sectionId": "sec_lsdl7_diali",
+      "subBranch": "geography",
+      "type": "short_answer",
+      "difficulty": "thong_hieu",
+      "content": "Nêu tên con sông quốc tế dài thứ hai ở Châu Âu, bắt nguồn từ vùng Rừng Đen (Đức) và chảy qua nhiều thủ đô các nước trước khi đổ ra Biển Đen.",
+      "accepted_answers": ["Sông Đa-nuýp", "Đa-nuýp", "Danube", "sông Danube"],
+      "correct_answer": "Sông Đa-nuýp",
+      "points": 1.0,
+      "step_by_step_solution": "Đó là sông Đa-nuýp (Danube), con sông quốc tế chảy qua nhiều quốc gia châu Âu."
+    },
+    {
+      "id": "q_lsdl7_09",
       "sectionId": "sec_lsdl7_diali",
       "subBranch": "geography",
       "type": "true_false_group",
@@ -89,11 +180,25 @@
           "explanation": "Gần 3/4 dân số sinh sống tại các đô thị phản ánh trình độ phát triển kinh tế và đô thị hóa cao."
         }
       ],
-      "points": 5.0,
-      "step_by_step_solution": "Phân tích bảng số liệu: Dân số châu Âu tăng chậm phản ánh tình trạng già hóa dân số; tỉ lệ đô thị hóa cao trên 70% phản ánh đặc trưng của các quốc gia phát triển."
+      "points": 1.0,
+      "step_by_step_solution": "Phân tích bảng số liệu: Dân số châu Âu tăng chậm phản ánh già hóa dân số; tỉ lệ đô thị hóa cao trên 70% là đặc trưng của các nước phát triển."
+    },
+    {
+      "id": "q_lsdl7_10",
+      "sectionId": "sec_lsdl7_lichsu",
+      "subBranch": "history",
+      "type": "essay",
+      "difficulty": "van_dung_cao",
+      "content": "Trình bày ý nghĩa lịch sử của sự kiện vua Lý Thái Tổ quyết định dời đô từ Hoa Lư về Thăng Long năm 1010 đối với sự phát triển lâu dài của đất nước.",
+      "points": 1.0,
+      "rubric": [
+        { "criterion": "Nêu được sự chuyển giao từ thời kỳ phòng thủ quân sự (Hoa Lư) sang thời kỳ hòa bình, mở mang xây dựng đất nước lâu dài (Thăng Long)", "maxPoints": 0.5 },
+        { "criterion": "Khẳng định Thăng Long là trung tâm chính trị, kinh tế, văn hóa trù phú, khẳng định tầm nhìn chiến lược vĩ đại của vua Lý Thái Tổ", "maxPoints": 0.5 }
+      ],
+      "step_by_step_solution": "Ý nghĩa: Đánh dấu bước phát triển vượt bậc của dân tộc, khẳng định thế độc lập tự chủ vững vàng; đặt nền móng xây dựng kinh đô Thăng Long ngàn năm văn hiến."
     }
   ],
   "createdAt": "2026-10-25T07:45:00.000Z",
-  "updatedAt": "2026-10-25T07:45:00.000Z",
-  "version": 1
+  "updatedAt": "2026-10-25T10:00:00.000Z",
+  "version": 2
 }

@@ -66,3 +66,8 @@ Test đề dài 120 câu phát hiện: trước đây chỉ phân số và căn 
 - **Giới hạn nói thẳng:** chưa mở bằng Microsoft Word thật; hệ phương trình vẫn là một dòng ngăn bằng dấu chấm phẩy (chưa xếp dọc); macro lạ giữ nguyên chữ để giáo viên sửa; công thức trong tiêu đề phần/bảng chưa kiểm.
 - Việc tay cần làm: thẻ kiểm Word trong `THE_KIEM_TAY_PILOT_2.md` (mở tệp xuất ra bằng Word, nhìn công thức).
 - Chạy cuối: build đạt, SAFE 365/365 ([log](safe-claude-run6.log)), HTTP 70/70 ([log](http-claude-run18.log)), trình duyệt 13/13 ([log](pilot-claude-run13.log)). Có sửa chập chờn của hàm kiểm dùng chung `studentSubmit` (sau tải lại, trang có thể tự tiếp tục lượt mà không hỏi tên).
+
+## Bổ sung: duyệt Gemini generation 10 và 20 ca chấm lại
+- Gemini nộp R1–R8; nhận toàn bộ (R5–R8 có giới hạn), chi tiết ở BATCH_REVIEWS.json.
+- **CV060:** `http_regrade_cases` dựng đủ 20 ca của bảng R4 với bốn học sinh tính tay (10 / 5 / 4,5 / 2 điểm ban đầu). 19 ca khớp con số ngay lần đầu; TC09 (câu 0 điểm: cờ đúng/sai đổi nên vào danh sách thay đổi dù điểm không đổi) và TC18 (câu không tồn tại: 409 thay vì 404) là hành vi đúng của hệ thống, test ghi theo hành vi thật. Chạy cuối: HTTP 88/88 ([log](http-claude-run19.log)).
+- Nút thao tác nhỏ trên điện thoại ở trang giáo viên đã tăng vùng chạm (kho đề, bài giao, bảng chấm lại); chưa có kiểm trình duyệt riêng cho các nút này.
