@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-require-imports -- local CommonJS maintenance command */
+// Local CommonJS maintenance command; .cjs is supported by the repository lint config.
 const fs = require('node:fs');
 const path = require('node:path');
 const { execFileSync } = require('node:child_process');
@@ -24,11 +24,11 @@ function addReports(relative) {
   }
 }
 addReports('docs'); addReports('qa');
-const references = [...referenceFiles].filter(file => fs.existsSync(path.join(root,file))).map(file => ({ file, text: fs.readFileSync(path.join(root,file),'utf8') }));
+const references = [...referenceFiles].filter(file => fs.existsSync(path.join(root,file))).map(file => ({ file, text: fs.readFileSync(path.join(root,file),'utf8').toLowerCase() }));
 const plan = { checkedAt: new Date().toISOString(), execute: process.argv.includes('--execute'), moved: [], kept: [], untouchedUntracked: [] };
 const hash = file => createHash('sha256').update(fs.readFileSync(file)).digest('hex');
 for (const file of candidates) {
-  const sources = references.filter(source => source.text.includes(path.posix.basename(file))).map(source => source.file);
+  const sources = references.filter(source => source.text.includes(path.posix.basename(file).toLowerCase())).map(source => source.file);
   if (sources.length || changed.has(file)) { plan.kept.push({ file, reason: changed.has(file) ? 'working-tree changes' : 'referenced report/manifest', sources }); continue; }
   const source = path.resolve(root,file), destination = path.resolve(root,archive,path.posix.basename(file));
   assert.ok(!path.relative(path.resolve(root,directory),source).startsWith('..'));

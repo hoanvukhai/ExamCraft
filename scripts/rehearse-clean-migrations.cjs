@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-require-imports -- local guarded CommonJS rehearsal */
+// Local guarded CommonJS rehearsal; .cjs is supported by the repository lint config.
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
