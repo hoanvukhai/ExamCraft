@@ -229,7 +229,8 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Bổ sung23/10: HTTP hai phiên cùng nền, reorder đối đầu xóa/sửa câu–lời giải: một200/một409, mở lại khớp nguyên người thắng. Không partial merge; còn undo/UI/nhiều browser và toàn tiêu chí.
   - Phạm vi: YC-19. Nghiệm thu: NT-20.
   - Đạt khi: Sửa khác/cùng khối, thay cấu trúc câu, reorder, undo từng người; không last-write-wins mất dữ liệu.
-- [ ] **CV-050 — Mất mạng, reconnect và thu hồi quyền đang mở.**
+- [x] **CV-050 — Mất mạng, reconnect và thu hồi quyền đang mở.**
+  - **Nghiệm thu25/10 (Claude): ĐẠT đủ tiêu chí "Đạt khi".** Đồng bộ không nhân đôi/mất: F9 (Chrome và Edge) và http_workflows "structural edits conflict without partial merges and revoked writers cannot retry". Quyền kiểm lại khi gửi, editor bị thu hồi không ghi: "collaboration honors view, edit, CAS, history and revocation" và F4. Giới hạn: hai engine sửa đồng thời, mở ứng dụng từ đầu khi hoàn toàn offline. [Đối chiếu](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md).
   - **Hiện trạng25/10:** Giữ các kiểm hồi đáp trễ, owner/writer/ACK và thu hồi quyền trước. Browser thêm mất mạng, reconnect khi có phiên khác sửa, giữ bản máy chủ và cất nháp thành bản phục hồi; Chrome/Edge kiểm độc lập theo lượt. F4 còn kiểm thu hồi editor đang mở. Chưa hai engine sửa đồng thời hoặc mọi race quyền/ghi; giữ mở. [Báo cáo đợt](../../qa/rebuild-2026-10-25/BATCH_SUMMARY.md).
   - Phạm vi: YC-13, YC-19. Nghiệm thu: NT-20.
   - Đạt khi: Đồng bộ không nhân đôi/mất, quyền kiểm lại khi gửi thay đổi; editor bị thu hồi không tiếp tục ghi.
@@ -250,7 +251,8 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - **Hiện trạng24/10:** Đã tích hợp tùy chọn giao bài nâng cao của Claude; browser giao có/không lớp, đặt thời gian/lượt/mã/trộn, đối chiếu bản lưu; API kiểm giá trị sai và account pin. Giữ snapshot và kiểm quyền trước. Chưa mọi enum/chính sách/tệp, UI xem lại giờ đã giao; giữ mở. [PILOT_E2E](../../qa/rebuild-2026-10-24/PILOT_E2E.md).
   - Phạm vi: YC-20. Nghiệm thu: NT-21.
   - Đạt khi: Enum/API/import thống nhất, nhóm tùy chọn đúng nhận diện; snapshot đủ câu/đáp án/tệp/điểm/mẫu và bất biến.
-- [ ] **CV-055 — Nhận diện và phiên lượt làm.**
+- [x] **CV-055 — Nhận diện và phiên lượt làm.**
+  - **Nghiệm thu25/10 (Claude): ĐẠT đủ tiêu chí "Đạt khi".** FREE_NAME, danh sách, mã vào bài, PIN và link cá nhân kiểm ở máy chủ: http_assignment_options (mã) và http_student_identity (PIN thiếu/sai/chưa đặt, học sinh lớp khác, token sai/của lớp khác, ID không thay token; refusal không tạo lượt). Người biết ID không đọc/sửa/nộp bài khác: public_access "attempt token binds attempt, student, assignment and creation time", http_public_policies "capabilities cannot cross attempts". Giới hạn: PIN do giáo viên đặt ở quản lý lớp. [Đối chiếu](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md).
   - Phạm vi: YC-20, YC-21. Nghiệm thu: NT-21, NT-22.
   - Đạt khi: FREE_NAME/danh sách/mã có kiểm server, membership và PIN nếu bật; người biết ID không được đọc/sửa/nộp bài khác.
 - [ ] **CV-056 — Thời gian, số lượt và cạnh tranh start.**
@@ -258,7 +260,8 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - **Hiện trạng24/10:** Giữ HTTP/PG start đồng thời/cookie khác/grace đã kiểm. Bổ sung UI đặt giờ đóng và chờ đồng hồ thật: vào sau hạn bị từ chối, không tạo lượt. API kiểm thời gian/số lượt/mã/PIN đạt; tương thích mã legacy đã gửi Claude, gia hạn/mở lại/hai browser vẫn mở. [PILOT_E2E](../../qa/rebuild-2026-10-24/PILOT_E2E.md).
   - Phạm vi: YC-20, YC-21. Nghiệm thu: NT-22.
   - Đạt khi: Kiểm opensAt/closesAt/deadline/status, lượt hết hạn xử lý rõ; start đồng thời không tạo trùng hoặc lỗi unique vô nghĩa.
-- [ ] **CV-057 — Lưu nháp và resume thật.**
+- [x] **CV-057 — Lưu nháp và resume thật.**
+  - **Nghiệm thu25/10 (Claude): ĐẠT đủ tiêu chí "Đạt khi".** Kiểm res.ok và trạng thái mạng: student_network (4 ca). Reload lấy đúng nháp và bản chậm không ghi đè: http_workflows (hai nháp tranh nhau, bản cũ 409), attempt_draft_revision, student_draft_journal, F6. Giới hạn: đổi sang thiết bị khác, hai trình duyệt độc lập. [Đối chiếu](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md).
   - **Hiện trạng24/10:** journal riêng từng trang, giữ nhiều bản/raw hỏng/nhập JSON chỉ xem-chọn và không rebase; tự nộp khi conflict chỉ dùng draft máy chủ. Thêm timeout bao gửi/đọc body, lỗi nộp có retry và tải bản dự phòng ngoài vùng khóa khi hết giờ; mobile thấy trạng thái lưu. Build/SAFE/HTTP thử đạt. UI mới, offline thật/hai browser/đổi máy/late ACK chưa kiểm do CUA lỗi. Không đóng CV. [RESTORE_NETWORK_SHARE](../../qa/rebuild-2026-10-24/RESTORE_NETWORK_SHARE.md).
   - Phạm vi: YC-21. Nghiệm thu: NT-04, NT-23.
   - Đạt khi: Method/body chuẩn, kiểm res.ok, trạng thái mạng; reload lấy đúng nháp, không ghi đè câu mới bởi request chậm.
@@ -266,7 +269,8 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - **Mức pilot25/10: đạt trong phạm vi pilot** (theo quy tắc chủ dự án duyệt 24/10; không đổi dấu hoàn thành, không thay "Đạt khi"). Kiểm tự động: F6 làm đủ bảy dạng, tải lại làm tiếp, nộp, không thấy đáp án trước chính sách; public_access/structured_grading. Giới hạn: bàn phím/màn hình nhỏ, âm thanh, hình nâng cao. [Chạy 25/10](../../qa/rebuild-2026-10-25/PILOT_CLAUDE_RUN.md).
   - Phạm vi: YC-10, YC-21. Nghiệm thu: NT-16, NT-23.
   - Đạt khi: Tự luận có ô trả lời, đúng-sai/điền/ghép/sắp xếp dùng được, tệp/hình/âm thanh theo đề; cuộn/keyboard/mobile đúng.
-- [ ] **CV-059 — Chấm server và nộp lặp an toàn.**
+- [x] **CV-059 — Chấm server và nộp lặp an toàn.**
+  - **Nghiệm thu25/10 (Claude): ĐẠT đủ tiêu chí "Đạt khi".** Zero/false/blank phân biệt và đáp án thiếu không nhận blank đúng: public_access, structured_grading, manual_grading (accepted_answers theo câu). Nộp đồng thời một kết quả: http_student_identity (đã tìm và sửa lỗi 503 do P2010/40001). Điểm đúng chính sách ở mọi nhánh: http_public_policies. Giới hạn: biểu thức tương đương chỉ qua danh sách đáp án chấp nhận của từng câu. [Đối chiếu](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md).
   - **Hiện trạng24/10:** giữ CAS/row-lock/retry nộp an toàn và response/snapshot. Đã sửa submit lưu tổng null cho survey/comment_only/rubric thay vì0 giả; bài scored tổng/tối đa0 vẫn giữ0. HTTP kiểm GET và submit lặp theo chính sách hiện tại, không sửa bài đã nộp. Nhánh student/group lưu trữ chặn cả nộp lặp. Chưa tổng nghiệm thu mọi dạng/UI, giữ mở. [PUBLIC_POLICIES_AND_NONNUMERIC](../../qa/rebuild-2026-10-24/PUBLIC_POLICIES_AND_NONNUMERIC.md).
   - Phạm vi: YC-09, YC-21, YC-22. Nghiệm thu: NT-24.
   - Đạt khi: Zero/false/blank phân biệt, số/biểu thức theo câu, đáp án thiếu không nhận blank đúng; submit đồng thời một kết quả, trả điểm đúng chính sách ở mọi nhánh.
@@ -279,7 +283,8 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - **Hiện trạng25/10:** Bổ sung nhận xét từng câu vào CSV bài có điểm, giữ cột điểm cũ; bài không số vẫn giữ đánh giá/nhận xét, không tạo điểm giả. Có kiểm chống công thức CSV, dấu phẩy/ngoặc kép/xuống dòng và quyền xuất. Chưa toàn UI bài không số, gia hạn/mở lại hoặc mọi chính sách; giữ mở. [Báo cáo đợt](../../qa/rebuild-2026-10-25/BATCH_SUMMARY.md).
   - Phạm vi: YC-20, YC-22. Nghiệm thu: NT-25.
   - Đạt khi: Danh sách bài/lượt, progress, gia hạn/mở lại có quyền, thống kê/CSV; leaderboard tùy chọn mặc định tắt và không lộ toàn lớp.
-- [ ] **CV-062 — Hồi quy link và toàn luồng học sinh.**
+- [x] **CV-062 — Hồi quy link và toàn luồng học sinh.**
+  - **Nghiệm thu25/10 (Claude): ĐẠT đủ tiêu chí "Đạt khi".** Khách (cookie bắt buộc), giáo viên khác (404), link cũ (http_student_identity: link thu hồi/hết hạn 404, thu hồi không đăng nhập bị từ chối), đã đóng và đã nộp (http_public_policies, F5), AFTER_CLOSE/NEVER (http_public_policies), không lộ lời giải trong payload/CSV (public_access, http_workflows). Giới hạn: tệp Word đã xuất ra ngoài không thuộc học sinh. [Đối chiếu](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md).
   - **Hiện trạng24/10:** HTTP/PG thử bổ sung ma trận NEVER ở OPEN/CLOSED/ARCHIVED, AFTER_CLOSE theo trạng thái/thời gian, IMMEDIATE; GET và submit idempotent áp dụng quyền hiện tại. Link đề luôn bỏ lời giải, bảng xếp hạng không hiện khi ẩn điểm và top có ẩn tên; cookie thiếu/sai/lượt khác bị chặn. Student/group lưu trữ không dùng capability cũ, teacher vẫn xem dữ liệu. Chưa UI/hai browser/race archive đang ghi/toàn bộ reveal combinations, giữ mở. [PUBLIC_POLICIES_AND_NONNUMERIC](../../qa/rebuild-2026-10-24/PUBLIC_POLICIES_AND_NONNUMERIC.md).
   - Phạm vi: YC-19, YC-20, YC-21, YC-22. Nghiệm thu: NT-06, NT-21, NT-22, NT-24, NT-25.
   - Đạt khi: Thử khách, giáo viên khác, link cũ, đã đóng, đã nộp, AFTER_CLOSE/NEVER; không lộ lời giải trong payload/metadata/file khi chưa được phép.

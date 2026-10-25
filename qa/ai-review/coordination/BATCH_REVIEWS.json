@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "updated_at_utc": "2026-10-24T17:20:32.000Z",
+  "updated_at_utc": "2026-10-25T10:00:00.000Z",
   "writer": "CLAUDE",
   "purpose": "Delivery review gates, not product checklist or proof of runtime completion",
   "batches": [
@@ -349,6 +349,21 @@
           "id": "GEM-P5",
           "decision": "ACCEPTED_WITH_LIMITS",
           "review_note": "Bản đồ caller tài khoản (CV011) chưa đối chiếu lại từng dòng; dùng làm danh mục tra cứu, không thay kiểm HTTP."
+        }
+      ]
+    },
+    {
+      "task_id": "GEMINI-PILOT-PREP",
+      "assignment_generation": 8,
+      "items": [
+        {
+          "id": "GEM-P13",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "submission_ref": [
+            "dce6d0c"
+          ],
+          "review_note": "Bảng vế tiêu chí dùng được để định hướng, nhưng 24 tên ca test trích cho CV050/055/057/059/062 không tồn tại trong tests (mô tả tự đặt). Claude tự kiểm lại bằng tên ca thật: đóng 050/055/057/059/062 (055 và 059 sau khi thêm http_student_identity, 059 sửa lỗi 503 khi nộp đồng thời; 062 thêm ca link cũ). Giữ mở 010, 011, 047, 048, 049, 060. Quy tắc: kết luận ĐỦ chỉ nhận khi trích đúng tên ca và tìm thấy trong mã. Xem CV_CLOSURE_REVIEW.",
+          "reviewed_at_utc": "2026-10-25T10:00:00.000Z"
         }
       ]
     }
