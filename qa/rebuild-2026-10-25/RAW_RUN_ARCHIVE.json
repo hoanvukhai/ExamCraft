@@ -1,0 +1,675 @@
+{
+  "checkedAt": "2026-10-25T13:44:14.623Z",
+  "execute": true,
+  "moved": [
+    {
+      "from": "qa/rebuild-2026-10-25/build-claude-run2.log",
+      "to": "qa/rebuild-2026-10-25/chay-tho/build-claude-run2.log",
+      "sha256": "1849d313c08447cf1b851ed7f6b445eac8540042077b6611efbaa1156ae544e6",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/build-claude-run3.log",
+      "to": "qa/rebuild-2026-10-25/chay-tho/build-claude-run3.log",
+      "sha256": "91bc547577b2e2b30a80745d333494ac55ca510ffd1d071f551e1b18291606ac",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/build-claude-run4.log",
+      "to": "qa/rebuild-2026-10-25/chay-tho/build-claude-run4.log",
+      "sha256": "45e7008302e0abdf56c4cf67854ff6a33ad1b66f7abb3eb8df5c489df9b688fc",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/build-claude-run5.log",
+      "to": "qa/rebuild-2026-10-25/chay-tho/build-claude-run5.log",
+      "sha256": "65444732d9a5d33a49cfbd5429add13d30b01cc004102ac16d78e03e956b3751",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/build-claude-run6.log",
+      "to": "qa/rebuild-2026-10-25/chay-tho/build-claude-run6.log",
+      "sha256": "fd6f4d9c4bd45a479dd29f914285c30637eb85cf759adb0e6625fb586a896abe",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/http-claude-run10-1.log",
+      "to": "qa/rebuild-2026-10-25/chay-tho/http-claude-run10-1.log",
+      "sha256": "73658bc863f02026b2392ae9723a5995aee56e048f230c9e702f4cc46375c640",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/http-claude-run10-2.log",
+      "to": "qa/rebuild-2026-10-25/chay-tho/http-claude-run10-2.log",
+      "sha256": "4f4b46d1a40a11788b70f45aeaa1fd515a41310947508e0ee85d52fb493ef80a",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/http-claude-run10-3.log",
+      "to": "qa/rebuild-2026-10-25/chay-tho/http-claude-run10-3.log",
+      "sha256": "7ad4eda0bfa0572e8ad5111e6472c72485a7f3c061b91640ec2d729a0c88759b",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/http-claude-run11.log",
+      "to": "qa/rebuild-2026-10-25/chay-tho/http-claude-run11.log",
+      "sha256": "087e22e4cc93b953da9364a03000f8a3bab065ef83b2224d88c6b85e96f141b6",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/http-claude-run12.log",
+      "to": "qa/rebuild-2026-10-25/chay-tho/http-claude-run12.log",
+      "sha256": "f279957d73e1cc5d5267f08d88846109a04eac67ee9649de3bfce24213e53887",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/http-claude-run24.log",
+      "to": "qa/rebuild-2026-10-25/chay-tho/http-claude-run24.log",
+      "sha256": "6ef0a23192147df6fb850d41a5c6c25e3640e30e5796bab0e81f02edae4cd26c",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/http-claude-run3.log",
+      "to": "qa/rebuild-2026-10-25/chay-tho/http-claude-run3.log",
+      "sha256": "e5b2638b25c2d438cf752087c1ce9b0bf0218a4f0421561d159317c3f81fd5cd",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/http-claude-run4.log",
+      "to": "qa/rebuild-2026-10-25/chay-tho/http-claude-run4.log",
+      "sha256": "98ad13fe6985b8af0d6f4b3550f5550123690bd2bc8e4743c45254bacbb0e72f",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/http-claude-run6.log",
+      "to": "qa/rebuild-2026-10-25/chay-tho/http-claude-run6.log",
+      "sha256": "37bd80a2e1dfafdb4f85201d5bd01d5f0abd9f3994ddb35b9acfc0897e489e43",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/http-claude-run7-1.log",
+      "to": "qa/rebuild-2026-10-25/chay-tho/http-claude-run7-1.log",
+      "sha256": "245b139d5b37644c05561ee60252052bf09d394267fe5bdc62708b7126f91ad0",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/http-claude-run7-2.log",
+      "to": "qa/rebuild-2026-10-25/chay-tho/http-claude-run7-2.log",
+      "sha256": "dd58e8ca9964b882eceeb0e9feddef74c9ff2285f7e74702c91c809eab8f8bbf",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/http-claude-run8.log",
+      "to": "qa/rebuild-2026-10-25/chay-tho/http-claude-run8.log",
+      "sha256": "0fd85de7105284bf5581fbe7a0c34a3cd6727e9bb76605be74ba872c7673897a",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/http-claude-run9-1.log",
+      "to": "qa/rebuild-2026-10-25/chay-tho/http-claude-run9-1.log",
+      "sha256": "ddabafa5192567b928cf7aab0b309ce1a7ffa0428cf300e5ed7634c8582d7a2c",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/http-claude-run9-2.log",
+      "to": "qa/rebuild-2026-10-25/chay-tho/http-claude-run9-2.log",
+      "sha256": "aeeca1685ed07dd4e388bb4352a678e609723bc6f10db7b9d3f413506c094a77",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/pilot-claude-run18.log",
+      "to": "qa/rebuild-2026-10-25/chay-tho/pilot-claude-run18.log",
+      "sha256": "bc180ac1674af3b8aab095eb26e26202776fabc5091096b3d76cfef9400fc702",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/pilot-claude-run8.log",
+      "to": "qa/rebuild-2026-10-25/chay-tho/pilot-claude-run8.log",
+      "sha256": "2f61aadc8bd6912b0b51fd504fda90f8c3f1720d1faa4b21724a6c1820fe9c49",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/pilot-f10-run1.log",
+      "to": "qa/rebuild-2026-10-25/chay-tho/pilot-f10-run1.log",
+      "sha256": "b4a3494a9bb01383a66605c37cc2afa3ef44d03dcd9d6b1ddf9012d9b3fe070a",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/pilot-f11-run2.log",
+      "to": "qa/rebuild-2026-10-25/chay-tho/pilot-f11-run2.log",
+      "sha256": "bd17a63815d5902bae38822d19326e1fdaaa8f21eb42391d6a6774096306ce16",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/pilot-f12-run1.log",
+      "to": "qa/rebuild-2026-10-25/chay-tho/pilot-f12-run1.log",
+      "sha256": "378457594b6bf1747bf1145b8f732b72f1a4ca5200faff85a0a10df5b3fecf53",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/pilot-f12-run2.log",
+      "to": "qa/rebuild-2026-10-25/chay-tho/pilot-f12-run2.log",
+      "sha256": "a32a023e61f4adb244409df0ecaf3caf93c39522094fac476b231d14fa666fe7",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/pilot-f12-run3.log",
+      "to": "qa/rebuild-2026-10-25/chay-tho/pilot-f12-run3.log",
+      "sha256": "03b05fbef44d2541edc368c4fb1de1813cb4dad3d888228b37af6be326a9552a",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/pilot-f12-run4.log",
+      "to": "qa/rebuild-2026-10-25/chay-tho/pilot-f12-run4.log",
+      "sha256": "102967284ca62d48a8c33955b0d18d7f93862cecfd0b9e2d18880749ee0601b1",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/pilot-run-1605e3cd-8eca-43c0-a313-cb514a989ea3.json",
+      "to": "qa/rebuild-2026-10-25/chay-tho/pilot-run-1605e3cd-8eca-43c0-a313-cb514a989ea3.json",
+      "sha256": "e752fd93863666ed1934063510ea20177e06ec82af90aebf02a4c356cbaa56e0",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/pilot-run-1871508c-d4de-4156-8c62-a28cfc20d596.json",
+      "to": "qa/rebuild-2026-10-25/chay-tho/pilot-run-1871508c-d4de-4156-8c62-a28cfc20d596.json",
+      "sha256": "96bed9ef6dec6f6ac84df328f49af593f12ada3728a4b738f3df822fde37a148",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/pilot-run-1901bcd3-2c32-46f6-bd71-c9cb53ceb2c6.json",
+      "to": "qa/rebuild-2026-10-25/chay-tho/pilot-run-1901bcd3-2c32-46f6-bd71-c9cb53ceb2c6.json",
+      "sha256": "07a401d49103f13885a6421f8d0f23ec5e970617fc99a09fd62b49a5a35144d2",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/pilot-run-4ffaaa5d-10db-484c-921f-3a206f175eb1.json",
+      "to": "qa/rebuild-2026-10-25/chay-tho/pilot-run-4ffaaa5d-10db-484c-921f-3a206f175eb1.json",
+      "sha256": "3f485a1cccb1c908f74b9c44ff107aac27859d6c048bb83ddca0ed7e232de3b0",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/pilot-run-8057c4a6-4822-4687-bf90-d1540191b95c.json",
+      "to": "qa/rebuild-2026-10-25/chay-tho/pilot-run-8057c4a6-4822-4687-bf90-d1540191b95c.json",
+      "sha256": "8a3847a7c58d846f344947e2e6f5a8b00f548347415fc7f2c9894718749dcac6",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/pilot-run-a50938e9-e21a-4ac0-a1a9-c619bc2a2e1b.json",
+      "to": "qa/rebuild-2026-10-25/chay-tho/pilot-run-a50938e9-e21a-4ac0-a1a9-c619bc2a2e1b.json",
+      "sha256": "e4c30497ed312693c64a6020e2b5600cda6d3c1596a382d39532a2d11cc112b2",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/pilot-run-ad140e1a-4516-4971-a920-66b4667f2a63.json",
+      "to": "qa/rebuild-2026-10-25/chay-tho/pilot-run-ad140e1a-4516-4971-a920-66b4667f2a63.json",
+      "sha256": "ab81c51b573801d56d774358f63d27044ce3f9df1fd6f4c5f0d03fa30b18bdc8",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/pilot-run-b188dc00-c511-4e82-b50c-df6e62f4cd2d.json",
+      "to": "qa/rebuild-2026-10-25/chay-tho/pilot-run-b188dc00-c511-4e82-b50c-df6e62f4cd2d.json",
+      "sha256": "25c0c8e85d5000d8f14bb4282e9a745bde3c8553fe7bc93e49cdec25c2cab7a0",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/pilot-run-b1f19420-61bd-4ac6-9b9e-f1cedd3c57f4.json",
+      "to": "qa/rebuild-2026-10-25/chay-tho/pilot-run-b1f19420-61bd-4ac6-9b9e-f1cedd3c57f4.json",
+      "sha256": "0b723744a5ce676889b92a22c8dabdb8b2b6b59d0047a56d828245438973c375",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/pilot-run-c308686e-1f11-4ff5-ad88-8819b09efb7f.json",
+      "to": "qa/rebuild-2026-10-25/chay-tho/pilot-run-c308686e-1f11-4ff5-ad88-8819b09efb7f.json",
+      "sha256": "2a20e2cd81c1c72d347a1b2b0bb2b80c9f893449235eb9549d612cff26fdc229",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/pilot-run-e4cd0fcf-357b-41ad-958e-2caa0b2d08df.json",
+      "to": "qa/rebuild-2026-10-25/chay-tho/pilot-run-e4cd0fcf-357b-41ad-958e-2caa0b2d08df.json",
+      "sha256": "992a6443b009d8df0a7303cbd9acd310028085c1916c8a4722a60037a79a211e",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/pilot-run-ef5f0d7c-0587-4704-b576-e169ccacf703.json",
+      "to": "qa/rebuild-2026-10-25/chay-tho/pilot-run-ef5f0d7c-0587-4704-b576-e169ccacf703.json",
+      "sha256": "222a1a98dd45d2a71a59c80df0e4a1dadc61d2fc875cb555693ea901e070af33",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/pilot-run-f496c73b-b4d3-4daa-aa3c-bd94d48af946.json",
+      "to": "qa/rebuild-2026-10-25/chay-tho/pilot-run-f496c73b-b4d3-4daa-aa3c-bd94d48af946.json",
+      "sha256": "b62b724033a5635c4dd37261011c32eee9398e149e90df6105dc5859152b0e51",
+      "applied": true
+    },
+    {
+      "from": "qa/rebuild-2026-10-25/safe-claude-run13.log",
+      "to": "qa/rebuild-2026-10-25/chay-tho/safe-claude-run13.log",
+      "sha256": "84e93388224d9f8c04a7aaf40fd7053a4dffcbbc4f9f4e9f4502fda4abdf83c0",
+      "applied": true
+    }
+  ],
+  "kept": [
+    {
+      "file": "qa/rebuild-2026-10-25/build-claude-run.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/PILOT_CLAUDE_RUN.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/http-claude-run.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/PILOT_CLAUDE_RUN.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/http-claude-run13.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/http-claude-run14.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/http-claude-run17.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/http-claude-run18.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/http-claude-run19.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/http-claude-run21.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/http-claude-run22.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/http-claude-run23.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/http-claude-run27.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/http-claude-run28.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/http-claude-run5.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/pilot-claude-run10.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/pilot-claude-run11.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/pilot-claude-run13.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/pilot-claude-run15.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/pilot-claude-run16.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/pilot-claude-run17.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/pilot-claude-run5.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/PILOT_CLAUDE_RUN.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/pilot-claude-run6.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/pilot-claude-run7.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/pilot-claude-run9.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/pilot-run-0eab1188-5c6c-4d2b-86cc-267e2be422ed.json",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/BATCH_SUMMARY.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/pilot-run-43b02325-4751-4d64-ae7e-5696db2e029b.json",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/EXAM_REVIEW_AND_PRESENTATION.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/pilot-run-57eafe3a-1e0c-4d7a-bcf5-68758c0882be.json",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/BATCH_SUMMARY.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/pilot-run-872b6276-e97a-478c-a97e-648b41ad8552.json",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/BATCH_SUMMARY.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/pilot-run-ca488cc5-f0be-4cf5-b472-ed184254841c.json",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/BATCH_SUMMARY.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/safe-claude-run.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/PILOT_CLAUDE_RUN.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/safe-claude-run10.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/safe-claude-run11.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/safe-claude-run12.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/safe-claude-run14.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/safe-claude-run2.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/safe-claude-run3.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/safe-claude-run4.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/safe-claude-run5.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/safe-claude-run6.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/safe-claude-run8.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md"
+      ]
+    },
+    {
+      "file": "qa/rebuild-2026-10-25/safe-claude-run9.log",
+      "reason": "referenced report/manifest",
+      "sources": [
+        "qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md"
+      ]
+    }
+  ],
+  "untouchedUntracked": [
+    "qa/rebuild-2026-10-25/build-claude-run10.log",
+    "qa/rebuild-2026-10-25/build-claude-run11.log",
+    "qa/rebuild-2026-10-25/build-claude-run12.log",
+    "qa/rebuild-2026-10-25/build-claude-run13.log",
+    "qa/rebuild-2026-10-25/build-claude-run14.log",
+    "qa/rebuild-2026-10-25/build-claude-run7.log",
+    "qa/rebuild-2026-10-25/build-claude-run8.log",
+    "qa/rebuild-2026-10-25/build-claude-run9.log",
+    "qa/rebuild-2026-10-25/http-claude-run15.log",
+    "qa/rebuild-2026-10-25/http-claude-run16.log",
+    "qa/rebuild-2026-10-25/http-claude-run20.log",
+    "qa/rebuild-2026-10-25/http-claude-run25.log",
+    "qa/rebuild-2026-10-25/http-claude-run26.log",
+    "qa/rebuild-2026-10-25/pilot-claude-run12.log",
+    "qa/rebuild-2026-10-25/pilot-claude-run14.log",
+    "qa/rebuild-2026-10-25/pilot-f13-run1.log",
+    "qa/rebuild-2026-10-25/pilot-f13-run2.log",
+    "qa/rebuild-2026-10-25/pilot-f13-run3.log",
+    "qa/rebuild-2026-10-25/pilot-f13-run4.log",
+    "qa/rebuild-2026-10-25/pilot-f13-run5.log",
+    "qa/rebuild-2026-10-25/pilot-f13-run6.log",
+    "qa/rebuild-2026-10-25/pilot-f14-run1.log",
+    "qa/rebuild-2026-10-25/pilot-f14-run2.log",
+    "qa/rebuild-2026-10-25/pilot-f15-run1.log",
+    "qa/rebuild-2026-10-25/pilot-f15-run2.log",
+    "qa/rebuild-2026-10-25/pilot-f15-run3.log",
+    "qa/rebuild-2026-10-25/pilot-f15-run4.log",
+    "qa/rebuild-2026-10-25/pilot-f15-run5.log",
+    "qa/rebuild-2026-10-25/pilot-f16-run1.log",
+    "qa/rebuild-2026-10-25/pilot-f16-run2.log",
+    "qa/rebuild-2026-10-25/pilot-f16-run3.log",
+    "qa/rebuild-2026-10-25/pilot-f16-run4.log",
+    "qa/rebuild-2026-10-25/pilot-f16-run5.log",
+    "qa/rebuild-2026-10-25/pilot-f16-run6.log",
+    "qa/rebuild-2026-10-25/pilot-F17-run1.log",
+    "qa/rebuild-2026-10-25/pilot-F17-run2.log",
+    "qa/rebuild-2026-10-25/pilot-F17-run3.log",
+    "qa/rebuild-2026-10-25/pilot-F18-run1.log",
+    "qa/rebuild-2026-10-25/pilot-F18-run2.log",
+    "qa/rebuild-2026-10-25/pilot-F18-run3.log",
+    "qa/rebuild-2026-10-25/pilot-F18-run4.log",
+    "qa/rebuild-2026-10-25/pilot-F18-run5.log",
+    "qa/rebuild-2026-10-25/pilot-run-00c49168-7e1a-4229-9c77-21971c1b5170.json",
+    "qa/rebuild-2026-10-25/pilot-run-054f5444-7dbc-43d7-806c-849eb7fc37de.json",
+    "qa/rebuild-2026-10-25/pilot-run-05e939bf-a717-4e82-87a5-5945805a191b.json",
+    "qa/rebuild-2026-10-25/pilot-run-0c0882cc-8862-4bd8-85d4-f58471bde517.json",
+    "qa/rebuild-2026-10-25/pilot-run-0f8b94a5-44e3-428b-af95-46d49686001b.json",
+    "qa/rebuild-2026-10-25/pilot-run-1d65f741-b301-443a-beed-fe15f2fe2934.json",
+    "qa/rebuild-2026-10-25/pilot-run-1e79cda7-df06-4fbd-bca3-17e61d04c93d.json",
+    "qa/rebuild-2026-10-25/pilot-run-1f8c6ad8-4487-4388-80a3-b22d5e3107bf.json",
+    "qa/rebuild-2026-10-25/pilot-run-202791e3-70ac-4b57-b124-192d5f048b89.json",
+    "qa/rebuild-2026-10-25/pilot-run-2341f278-c206-4061-862b-acec25d9a375.json",
+    "qa/rebuild-2026-10-25/pilot-run-247eb835-ebe2-439a-b93f-dc8dddfb905f.json",
+    "qa/rebuild-2026-10-25/pilot-run-25a3e6ff-fe03-4a89-b09a-6d13ee4b3fab.json",
+    "qa/rebuild-2026-10-25/pilot-run-25c5cd82-0ece-4320-b46c-2becfb62a9c6.json",
+    "qa/rebuild-2026-10-25/pilot-run-29e36f7b-e1aa-4c45-ad4d-ab44993b1e9d.json",
+    "qa/rebuild-2026-10-25/pilot-run-2d56577e-7046-4e4c-95a0-96d2e617c7ad.json",
+    "qa/rebuild-2026-10-25/pilot-run-2ddd61b4-76e7-4c52-972a-a6e31ff1804c.json",
+    "qa/rebuild-2026-10-25/pilot-run-34e7a9a4-1eb5-41c6-a2e6-f6d4e64d9b90.json",
+    "qa/rebuild-2026-10-25/pilot-run-38c06ad6-b018-489d-9c55-05a427a94fc7.json",
+    "qa/rebuild-2026-10-25/pilot-run-3ad548d7-4cb4-41e5-a8a8-b086d96053c0.json",
+    "qa/rebuild-2026-10-25/pilot-run-41617c2f-d59f-459c-92cd-8e4c83ee9149.json",
+    "qa/rebuild-2026-10-25/pilot-run-42600ad4-d2f1-4b0f-9707-2372882c62ed.json",
+    "qa/rebuild-2026-10-25/pilot-run-44aa83c3-f2a7-4b60-bb76-3a9731296098.json",
+    "qa/rebuild-2026-10-25/pilot-run-45ca22a8-74d0-4ca1-a857-c5f999e94823.json",
+    "qa/rebuild-2026-10-25/pilot-run-4836800b-6686-4b38-8086-f071cc853545.json",
+    "qa/rebuild-2026-10-25/pilot-run-5343bcd1-2cc7-4f7b-94c8-dd63a1cea357.json",
+    "qa/rebuild-2026-10-25/pilot-run-563f1d94-23f9-4e75-96e7-79fbc11f0560.json",
+    "qa/rebuild-2026-10-25/pilot-run-5655a433-bc68-4ecb-8a8e-66ca69fbfc53.json",
+    "qa/rebuild-2026-10-25/pilot-run-5e354f9f-a4ae-42f9-b8b1-d6c83b59bdd0.json",
+    "qa/rebuild-2026-10-25/pilot-run-5f7ee247-9b66-4e24-aaeb-a4fdec28f964.json",
+    "qa/rebuild-2026-10-25/pilot-run-62749dc9-0f40-4f33-8cd1-17511fb936c9.json",
+    "qa/rebuild-2026-10-25/pilot-run-67dcebbb-6876-451f-96cf-05829fc2d0d1.json",
+    "qa/rebuild-2026-10-25/pilot-run-68893962-5717-4bd6-ad48-aa73fffcccde.json",
+    "qa/rebuild-2026-10-25/pilot-run-68bde80e-3245-43cb-be4c-0ff6c2e102b8.json",
+    "qa/rebuild-2026-10-25/pilot-run-68c66217-e1e6-48e5-80e7-9def8e1d513e.json",
+    "qa/rebuild-2026-10-25/pilot-run-6c679799-4146-49e2-92c6-d3f7fb9ef456.json",
+    "qa/rebuild-2026-10-25/pilot-run-6dbb6f97-c5d3-4d44-959b-e712606b1b43.json",
+    "qa/rebuild-2026-10-25/pilot-run-75638d9a-d4d3-4827-bcf7-705ae4e48ac1.json",
+    "qa/rebuild-2026-10-25/pilot-run-760e9194-fa4c-4f2c-9849-a5646c1f59ca.json",
+    "qa/rebuild-2026-10-25/pilot-run-768dfb24-5051-4b28-b7d9-eaba54a1b771.json",
+    "qa/rebuild-2026-10-25/pilot-run-7aed1bf3-9c7a-4fb7-ac89-1fb7f24961fe.json",
+    "qa/rebuild-2026-10-25/pilot-run-8bb69cf6-616a-42a1-af30-e53edcbfde4d.json",
+    "qa/rebuild-2026-10-25/pilot-run-8e52f13c-1e3f-4b34-b2e2-e6947e0eba4b.json",
+    "qa/rebuild-2026-10-25/pilot-run-9223108b-89b5-4426-b986-85e56e521edd.json",
+    "qa/rebuild-2026-10-25/pilot-run-94704883-6431-477a-bc2d-30479dfbf062.json",
+    "qa/rebuild-2026-10-25/pilot-run-95d40f65-f4a3-4f0d-9598-a8c0afcb9e50.json",
+    "qa/rebuild-2026-10-25/pilot-run-979fe34d-be0f-4973-a155-3ee23a70b92a.json",
+    "qa/rebuild-2026-10-25/pilot-run-a08f4847-76b9-44fe-817e-934f74515b61.json",
+    "qa/rebuild-2026-10-25/pilot-run-b5637d54-e0d5-4a5b-a209-a6c35f99923b.json",
+    "qa/rebuild-2026-10-25/pilot-run-b8909802-fe61-465b-bf34-790153e15a82.json",
+    "qa/rebuild-2026-10-25/pilot-run-b947ed48-0caa-4d8c-b49e-a87bcf7f247e.json",
+    "qa/rebuild-2026-10-25/pilot-run-bce945dc-9932-4ec1-868d-490b97ba4825.json",
+    "qa/rebuild-2026-10-25/pilot-run-c0cf303c-6003-420e-9243-4d73ba447e18.json",
+    "qa/rebuild-2026-10-25/pilot-run-c23f1dd1-ab54-41f0-94c8-1fbdc2c3de99.json",
+    "qa/rebuild-2026-10-25/pilot-run-c481cbd9-a175-4f0f-a303-ca5d511f53e3.json",
+    "qa/rebuild-2026-10-25/pilot-run-c542e001-cb3e-46f6-9e50-5570e00223ad.json",
+    "qa/rebuild-2026-10-25/pilot-run-c549fdc9-4da0-431a-9574-ba2388bb0edf.json",
+    "qa/rebuild-2026-10-25/pilot-run-ccce2a32-d300-4a50-a6e1-ba87993d767e.json",
+    "qa/rebuild-2026-10-25/pilot-run-d0e7fff2-c30a-42b4-a929-408a9e155964.json",
+    "qa/rebuild-2026-10-25/pilot-run-ea98a9f0-d57e-4990-badb-d4ec3cd163a1.json",
+    "qa/rebuild-2026-10-25/pilot-run-eb23cb2a-d4e6-40ba-a9ed-95055eb804e8.json",
+    "qa/rebuild-2026-10-25/pilot-run-f2ecc43c-7840-4ab4-b270-daada95ea513.json",
+    "qa/rebuild-2026-10-25/pilot-run-f4c20abe-4e04-46f2-9d0f-a72ef3f074cb.json",
+    "qa/rebuild-2026-10-25/pilot-run-f8eef425-7e4a-4432-9537-589b5876241a.json",
+    "qa/rebuild-2026-10-25/pilot-run-fa49cc4b-76f3-483f-923e-f54bc6428134.json",
+    "qa/rebuild-2026-10-25/pilot-run-fa8ef3e1-d5a2-44e6-b6e7-162af235576f.json",
+    "qa/rebuild-2026-10-25/pilot-run-fa9e4815-3f08-4337-85fb-df16dbb8b294.json",
+    "qa/rebuild-2026-10-25/safe-claude-run7.log",
+    "qa/rebuild-2026-10-25/server-claude-run.log",
+    "qa/rebuild-2026-10-25/server-claude-run10.log",
+    "qa/rebuild-2026-10-25/server-claude-run11.log",
+    "qa/rebuild-2026-10-25/server-claude-run12.log",
+    "qa/rebuild-2026-10-25/server-claude-run13.log",
+    "qa/rebuild-2026-10-25/server-claude-run14.log",
+    "qa/rebuild-2026-10-25/server-claude-run15.log",
+    "qa/rebuild-2026-10-25/server-claude-run16.log",
+    "qa/rebuild-2026-10-25/server-claude-run17.log",
+    "qa/rebuild-2026-10-25/server-claude-run18.log",
+    "qa/rebuild-2026-10-25/server-claude-run19.log",
+    "qa/rebuild-2026-10-25/server-claude-run2.log",
+    "qa/rebuild-2026-10-25/server-claude-run20.log",
+    "qa/rebuild-2026-10-25/server-claude-run21.log",
+    "qa/rebuild-2026-10-25/server-claude-run22.log",
+    "qa/rebuild-2026-10-25/server-claude-run23.log",
+    "qa/rebuild-2026-10-25/server-claude-run24.log",
+    "qa/rebuild-2026-10-25/server-claude-run25.log",
+    "qa/rebuild-2026-10-25/server-claude-run26.log",
+    "qa/rebuild-2026-10-25/server-claude-run27.log",
+    "qa/rebuild-2026-10-25/server-claude-run28.log",
+    "qa/rebuild-2026-10-25/server-claude-run29.log",
+    "qa/rebuild-2026-10-25/server-claude-run3.log",
+    "qa/rebuild-2026-10-25/server-claude-run4.log",
+    "qa/rebuild-2026-10-25/server-claude-run5.log",
+    "qa/rebuild-2026-10-25/server-claude-run6.log",
+    "qa/rebuild-2026-10-25/server-claude-run7.log",
+    "qa/rebuild-2026-10-25/server-claude-run8.log",
+    "qa/rebuild-2026-10-25/server-claude-run9.log"
+  ],
+  "markdownLinksChanged": 0
+}
