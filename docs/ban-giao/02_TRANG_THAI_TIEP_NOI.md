@@ -4,7 +4,7 @@ Cập nhật **26/10/2026**. Viết đè mỗi đợt; bản cũ giữ trong Git
 
 ## 1. Mốc hiện tại
 
-- **Tiến độ CV: 38/78 đạt đủ tiêu chí** (thêm CV014, 015, 028 ngày 26/10). Mức "đạt trong phạm vi pilot" vẫn tính riêng, không cộng. Mỗi lần đóng có dòng "Nghiệm thu" nêu test và giới hạn; nhật ký ở [CV_CLOSURE_REVIEW](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md).
+- **Tiến độ CV: 39/78 đạt đủ tiêu chí** (thêm CV014, 015, 028, 077 ngày 26/10). Mức "đạt trong phạm vi pilot" vẫn tính riêng, không cộng. Mỗi lần đóng có dòng "Nghiệm thu" nêu test và giới hạn; nhật ký ở [CV_CLOSURE_REVIEW](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md).
 - **Phân công:** Claude chỉ đạo và duyệt (giữ checklist, hồ sơ 02, ASSIGNMENTS.json, BATCH_REVIEWS.json); Codex làm mã/build/DB thử/trình duyệt, không tự tick; Gemini chỉ đọc mã và viết tài liệu, **phải kiểm lại bằng cách tự mở mã** (gen 15 có 5/8 tệp bị từ chối dù công cụ kiểm đều đạt). Việc đang giao: `qa/ai-review/coordination/messages/claude-codex-20261025T150749Z-*.md` (Codex gen 16) và `claude-gemini-20261025T150749Z-*.md` (Gemini gen 16).
 - **Đợt 26/10:** Codex gen 15: lint sạch và vào CI, F19 kho đề (sửa hai lỗi thật), migration từ checkout sạch, gom log thô vào `chay-tho/`, kiểm nguồn nhập (sửa lộ khóa số). Claude chạy lại kiểm nhanh: kiểu, lint, SAFE đạt. Bảng môn–lớp nay sinh bằng máy (`scripts/catalog-table.cjs`) có test chống mất môn.
 - Không ghi DB chính, không gọi AI thật, không đổi schema, không push. `main` vẫn mốc cũ.
@@ -22,8 +22,8 @@ Cập nhật **26/10/2026**. Viết đè mỗi đợt; bản cũ giữ trong Git
 
 1. **Chờ Codex gen 16:** sửa trong xem trước nhập + F20 (CV039), nguồn từng câu và `shareable=false` khi nhập (CV041), hủy yêu cầu AI (CV033), rà CV025, F21 AI trong phiên cộng tác (CV053), `npm run ci` đầy đủ.
 2. **Chờ Gemini gen 16:** viết lại HOP_DONG_KHAI_NIEM (CV007), sửa LOI_DA_BAO (CV006) và MAU_LUONG (CV004), hai đề mẫu THPT (CV004/046), sửa mâu thuẫn dữ liệu học sinh trong thiết kế Drive (CV075).
-3. **Chờ chủ dự án quyết:** CV051 (giải quyết góp ý, bình luận theo phiên bản) cần thêm cột vào `ExamComment` → migration lên DB chính, phải sao lưu trước. Chưa làm khi chưa được đồng ý.
-4. **Claude tự làm:** CV077 (lập lại kế hoạch chuyển tài liệu bằng tìm chuỗi, giữ `docs/TIEN_DO_CAI_TIEN_EXAMCRAFT.md`), rà từng CV còn mở theo đúng "Đạt khi", CV078 cuối cùng.
+3. **CV051 — chủ dự án đồng ý làm (26/10):** thêm cột phiên bản/giải quyết cho `ExamComment`. Làm **sau khi Codex gen 16 xong** (tránh đổi Prisma client giữa lượt build): sao lưu DB chính bằng `backup.ps1` → áp DB thử, chạy test → áp DB chính → tính năng + test.
+4. **Claude tự làm:** rà từng CV còn mở theo đúng "Đạt khi", CV078 cuối cùng. CV077 đã đóng.
 5. **Chủ dự án xem bằng mắt khi test toàn bộ:** CV026, 043, 044, 046, 076 (Word thật, in thật) theo [kịch bản kiểm tay](../huong-dan/KICH_BAN_KIEM_TAY_TOAN_DU_AN.md).
 
 ## 4. Môi trường

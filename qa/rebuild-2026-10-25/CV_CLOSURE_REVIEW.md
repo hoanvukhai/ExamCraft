@@ -138,3 +138,6 @@ Claude chạy lại `npm run ci -- --quick` sau bàn giao Codex: kiểu, lint, S
 - **Codex R6:** sửa lộ khóa "Đáp án: 13" trong nội dung câu trả lời ngắn. Claude kiểm thêm: câu trắc nghiệm có khóa số không khớp phương án vẫn để trống đáp án. CV041 chưa đủ.
 - **Codex R3:** xem trước nhập đề chưa sửa được; không dựng F20 giả. CV039 chờ tính năng.
 - **Gemini generation 15:** nhận có giới hạn KET_QUA_THU_CONG_TAC, LOI_DA_BAO_VA_TRANG_THAI, DRIVE_DESIGN_DRAFT; **từ chối** GEMINI_REMAINING_GAPS (cột "Đạt khi" bịa ở 9 CV, test gắn sai vế), MAU_LUONG_VA_DANH_MUC_MON và DANH_MUC_GOI_THEO_MON (lệch coverage.json, thiếu 5 môn, "THPT: Toán 9"), HOP_DONG_KHAI_NIEM (13/27 đường API không tồn tại), DOC_MOVE_PLAN (đề xuất chuyển tệp thông báo hiện hành). Công cụ check-test-citations/check-ui-labels đạt nhưng không bắt được loại lỗi này. Chi tiết trong BATCH_REVIEWS.json.
+
+## Bổ sung 26/10: đóng CV077
+Chuyển sáu báo cáo V1–V3 sang `docs/lich-su/` bằng `git mv`, sửa liên kết, kiểm 0 gãy; rà caller ba đường mã cũ, cả ba giữ có lý do. Chi tiết: [CV077_DON_DUONG_CU](CV077_DON_DUONG_CU.md). Không chạy build/test vì chỉ di chuyển tài liệu. Chủ dự án đồng ý làm CV051 (thêm cột cho bình luận); sẽ làm sau lượt Codex gen 16, sao lưu DB chính trước.

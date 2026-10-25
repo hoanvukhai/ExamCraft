@@ -1,6 +1,8 @@
+> **Tài liệu lịch sử** (chuyển từ `docs/` ngày 26/10/2026, CV077). Không phải trạng thái hiện hành; xem `docs/ban-giao/00_DOC_TRUOC.md`.
+
 # ExamCraft — Báo cáo phân tích lại dự án và hướng xây khung dữ liệu
 
-> **Tài liệu lịch sử/đầu vào phân tích:** từ 21/10/2026, dùng [bộ tổng kết và kế hoạch hiện hành](ke-hoach-2026-10-21/00_BAT_DAU_TU_DAY.md). Nội dung và dấu hoàn thành dưới đây không tự đại diện cho yêu cầu hoặc tiến độ mới; giữ để đối chiếu nguồn gốc.
+> **Tài liệu lịch sử/đầu vào phân tích:** từ 21/10/2026, dùng [bộ tổng kết và kế hoạch hiện hành](../ke-hoach-2026-10-21/00_BAT_DAU_TU_DAY.md). Nội dung và dấu hoàn thành dưới đây không tự đại diện cho yêu cầu hoặc tiến độ mới; giữ để đối chiếu nguồn gốc.
 
 Ngày lập: **21/10/2026**. Trạng thái: **ĐỀ XUẤT ĐỂ CHỦ DỰ ÁN ĐỌC VÀ CHỐT**, chưa phải đặc tả được phê duyệt.
 
@@ -184,8 +186,8 @@ Schema hiện chưa có các model riêng cho curriculum, learning outcome, scop
 - [Đặc tả dùng nội dung chung](F:/Workspace/Zazz/ExamCraft/src/lib/matrix-spec-generator.ts:194).
 - [Nhập DOCX](F:/Workspace/Zazz/ExamCraft/src/app/api/parse-docx/route.ts:121).
 - [Nhận diện memory là đã kiểm định](F:/Workspace/Zazz/ExamCraft/src/app/api/teacher/ai-memory/analyze/route.ts:228).
-- [Tạo đề và liên kết câu](F:/Workspace/Zazz/ExamCraft/src/app/api/exams/route.ts:128), [sửa đề](../src/app/api/exams/[id]/route.ts).
-- [Bài kiểm thử gán sẵn mức sẵn sàng](../tests/test_phase6_security_audit.ts), [kiểm thử chất lượng Word](../tests/test_phase5_word_quality.ts).
+- [Tạo đề và liên kết câu](F:/Workspace/Zazz/ExamCraft/src/app/api/exams/route.ts:128), [sửa đề](../../src/app/api/exams/[id]/route.ts).
+- [Bài kiểm thử gán sẵn mức sẵn sàng](../../tests/test_phase6_security_audit.ts), [kiểm thử chất lượng Word](../../tests/test_phase5_word_quality.ts).
 
 ### 5.4. Về trình soạn và xuất Word
 

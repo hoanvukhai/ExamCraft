@@ -1,6 +1,8 @@
+> **Tài liệu lịch sử** (chuyển từ `docs/` ngày 26/10/2026, CV077). Không phải trạng thái hiện hành; xem `docs/ban-giao/00_DOC_TRUOC.md`.
+
 # BÁO CÁO TOÀN DIỆN DỰ ÁN EXAMCRAFT (PHIÊN BẢN v3.1)
 
-> **Tài liệu lịch sử/đầu vào phân tích:** từ 21/10/2026, dùng [bộ tổng kết và kế hoạch hiện hành](ke-hoach-2026-10-21/00_BAT_DAU_TU_DAY.md). Nội dung và dấu hoàn thành dưới đây không tự đại diện cho yêu cầu hoặc tiến độ mới; giữ để đối chiếu nguồn gốc.
+> **Tài liệu lịch sử/đầu vào phân tích:** từ 21/10/2026, dùng [bộ tổng kết và kế hoạch hiện hành](../ke-hoach-2026-10-21/00_BAT_DAU_TU_DAY.md). Nội dung và dấu hoàn thành dưới đây không tự đại diện cho yêu cầu hoặc tiến độ mới; giữ để đối chiếu nguồn gốc.
 **Nền Tảng Trợ Lý Soạn Đề AI & Tổ Chức Thi Trực Tuyến Chuẩn GDPT 2018 — 2025**
 
 ---

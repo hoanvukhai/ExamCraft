@@ -79,11 +79,11 @@ Quan sát bổ sung khi chuẩn bị: script backup/restore hiện có kiểm kh
 
 | Tài liệu | Kế thừa | Thay đổi/giới hạn |
 |---|---|---|
-| [V1](../BAO_CAO_PHAN_TICH_DINH_HUONG_2026-10-21.md) | R01–R16, cây/scope/ma trận, bằng chứng test đã chạy | Câu “học sinh được học” thay bằng scope giáo viên; phạm vi Toán không còn là giới hạn |
-| [V2](../BAO_CAO_TONG_HOP_CHUAN_BI_EXAMCRAFT_V2_2026-10-21.md) | Quyền/cộng tác, đáp án, kho AI, đối chiếu audit | D15 giảm thành backup và bản sao, chuyển DB tổng quát hoãn |
-| [V3 bổ sung](../BO_SUNG_CHOT_HUONG_EXAMCRAFT_V3_2026-10-21.md) | BYOK, mọi môn, bài tùy chỉnh, mẫu trực quan, UX | Là đầu vào đã hợp nhất; giờ chuyển từ phân tích sang kế hoạch |
-| [Thiết kế v3.1 lịch sử](../EXAMCRAFT_THIET_KE_V3.md) | Tài khoản, nhóm, bài giao, CSV, ngân hàng, nhập/xuất | Không giữ 7-key, mức cố định, quyền cũ mâu thuẫn hoặc lịch trình cũ |
-| [Checklist cũ](../CHECKLIST_TIEN_DO.md) | Danh mục để đối chiếu không bỏ sót | Dấu hoàn thành chỉ là lịch sử, không chuyển sang checklist mới |
+| [V1](../lich-su/BAO_CAO_PHAN_TICH_DINH_HUONG_2026-10-21.md) | R01–R16, cây/scope/ma trận, bằng chứng test đã chạy | Câu “học sinh được học” thay bằng scope giáo viên; phạm vi Toán không còn là giới hạn |
+| [V2](../lich-su/BAO_CAO_TONG_HOP_CHUAN_BI_EXAMCRAFT_V2_2026-10-21.md) | Quyền/cộng tác, đáp án, kho AI, đối chiếu audit | D15 giảm thành backup và bản sao, chuyển DB tổng quát hoãn |
+| [V3 bổ sung](../lich-su/BO_SUNG_CHOT_HUONG_EXAMCRAFT_V3_2026-10-21.md) | BYOK, mọi môn, bài tùy chỉnh, mẫu trực quan, UX | Là đầu vào đã hợp nhất; giờ chuyển từ phân tích sang kế hoạch |
+| [Thiết kế v3.1 lịch sử](../lich-su/EXAMCRAFT_THIET_KE_V3.md) | Tài khoản, nhóm, bài giao, CSV, ngân hàng, nhập/xuất | Không giữ 7-key, mức cố định, quyền cũ mâu thuẫn hoặc lịch trình cũ |
+| [Checklist cũ](../lich-su/CHECKLIST_TIEN_DO.md) | Danh mục để đối chiếu không bỏ sót | Dấu hoàn thành chỉ là lịch sử, không chuyển sang checklist mới |
 | [Thiết kế dashboard/editor](../../qa/ARCHITECTURE_REDESIGN_MANAGEMENT_AND_WORKSPACE.md) | Tách quản lý và bàn soạn, tìm/lọc/thư mục | Không ép độ sâu hai cấp hoặc thời gian thùng rác như yêu cầu mới đã chốt; không giữ modal giả |
 | [QA v2 lịch sử](../../qa/FINAL_REPORT_v2.md) | Kịch bản HTTP/quyền/load/mutation cần xét | Không tái dùng số PASS hay lỗi cũ như bằng chứng hiện tại |
 | [Audit do bạn gửi](F:/Downloads/EXAMCRAFT_MASTER_AUDIT_AND_ROADMAP.md) | Các lỗi đã đối chiếu trong V2 | Giữ các đính chính về draft, key, admin, Cascade, auto-grader và cấu trúc môn |
