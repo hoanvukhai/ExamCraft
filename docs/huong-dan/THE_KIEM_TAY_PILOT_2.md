@@ -29,6 +29,7 @@
 | [THẺ F14](#thẻ-f14-kiểm-tra-mở-tệp-word-bằng-microsoft-word-thực-tế) | Tương thích Microsoft Word thật | Mở tệp .docx trực tiếp trên Microsoft Word, kiểm tra bảng barem, công thức và hình vẽ |
 | [THẺ F15](#thẻ-f15-kiểm-tra-ngắt-trang-nhiều-trang-khi-in-ấn-a4) | Ngắt trang in ấn đa trang | Kiểm tra chế độ Đề in ấn và Song song không bị cắt đôi câu hỏi hay tràn lề trang |
 | [THẺ F16](#thẻ-f16-kiểm-tra-giao-diện-học-sinh-trên-màn-hình-di-động-375px) | Giao diện học sinh trên điện thoại | Kiểm tra phòng thi trên viewport di động 375px (iPhone SE/Android nhỏ), làm bài mượt mà |
+| [THẺ F17](#thẻ-f17-kiểm-tra-công-thức-toán-học-khi-mở-bằng-microsoft-word-thực-tế) | Hiển thị công thức toán trong Word | Mở file Word xuất từ hệ thống, đối chiếu trực quan 10 dạng công thức toán hiển thị chuẩn OMML |
 
 ---
 
@@ -233,6 +234,41 @@
 #### Đánh giá kết quả kiểm thử:
 - [ ] ĐẠT (Hiển thị hoàn hảo trên màn hình 375px, không cuộn ngang, chạm chọn dễ dàng)
 - [ ] KHÔNG ĐẠT (Bị tràn màn hình, che mất đồng hồ, hoặc nút bấm quá nhỏ khó chạm)
+- Ghi chú: ............................................................................................................
+
+---
+
+### THẺ F17: Kiểm tra công thức toán học khi mở bằng Microsoft Word thực tế
+- **Mã kịch bản:** PILOT-F17
+- **Mã CV đối chiếu:** CV043, CV071, CV076
+- **Vai trò:** Giáo viên hoặc Thư ký kiểm thử tải tệp Word từ hệ thống và mở trực tiếp bằng phần mềm Microsoft Word trên máy tính cá nhân.
+- **Mục tiêu:** Xác minh bộ chuyển đổi công thức toán ngày 25/10 chuyển đổi chính xác cú pháp LaTeX sang định dạng Office Math (OMML), hiển thị sắc nét, đúng hình dạng sư phạm, không bị vỡ hạt, không bị biến thành chuỗi văn bản thô.
+
+#### Các bước thực hiện:
+1. Mở đề thi Toán mẫu hoặc soạn đề thi chứa đầy đủ 10 cấu trúc toán học nâng cao.
+2. Trên thanh công cụ soạn thảo, bấm nút **Tải Word (.docx)**.
+3. Chờ trình duyệt tải tệp về thư mục Downloads của máy tính.
+4. Mở tệp vừa tải bằng ứng dụng Microsoft Word cài đặt trên máy tính (phiên bản Word 2016 trở lên hoặc Microsoft 365).
+5. Quan sát trực quan từng công thức toán học và đối chiếu từng hàng theo bảng kiểm chuẩn bên dưới.
+
+#### Bảng đối chiếu hình dạng đúng mong đợi của 10 dạng công thức:
+
+| STT | Dạng công thức toán | Cú pháp LaTeX mẫu | Hình dạng đúng mong đợi khi nhìn trong Word | Đánh giá |
+|:---:|---|---|---|:---:|
+| 1 | **Phân số lồng nhau** | `\frac{\frac{a}{b} + 1}{\frac{c}{d} - 2}` | Có vạch phân số chính nằm ngang ở giữa, vạch phân số con ngắn hơn ở trên tử và dưới mẫu; chữ số và phép tính không đè lên gạch ngang. | [ ] Đạt<br>[ ] Chưa |
+| 2 | **Căn bậc ba** | `\sqrt[3]{x^2 + 1}` | Dấu căn bậc mở rộng với chữ số 3 nhỏ đặt khít trên rãnh móc căn bên trái; vạch ngang trên đỉnh kéo dài bao trùm toàn bộ biểu thức bên trong. | [ ] Đạt<br>[ ] Chưa |
+| 3 | **Số mũ (Lũy thừa)** | `x^2` hoặc `a^{m+n}` | Chữ số hoặc biểu thức mũ có cỡ chữ nhỏ hơn, được nâng cao lên phía trên bên phải của cơ số; không nằm cùng hàng với cơ số. | [ ] Đạt<br>[ ] Chưa |
+| 4 | **Chỉ số dưới** | `x_1, x_2` hoặc `a_{n+1}` | Chữ số hoặc biểu thức chỉ số nhỏ hơn, hạ thấp xuống phía dưới bên phải của ký tự chính; phân biệt rõ ràng với phép nhân. | [ ] Đạt<br>[ ] Chưa |
+| 5 | **Tổng Sigma với cận** | `\sum_{i=1}^n i^2` | Ký hiệu Sigma lớn $\Sigma$; cận dưới i=1 nằm ngay ngắn chính giữa phía dưới chân; cận trên n nằm chính giữa trên đỉnh đầu Sigma. | [ ] Đạt<br>[ ] Chưa |
+| 6 | **Giới hạn** | `\lim_{x \to 0} \frac{\sin x}{x}` | Chữ lim đứng thẳng (phông đứng); biểu thức x tiến về 0 nằm dưới chân chữ lim kèm mũi tên nhỏ chỉ sang phải rõ nét. | [ ] Đạt<br>[ ] Chưa |
+| 7 | **Tích phân có cận** | `\int_a^b f(x)dx` | Dấu tích phân $\int$ uốn lượn thon dài; cận dưới a nằm ở móc đáy, cận trên b nằm ở móc đỉnh; hàm số và vi phân dx thẳng hàng. | [ ] Đạt<br>[ ] Chưa |
+| 8 | **Hàm lượng giác** | `\sin^2 x + \cos^2 x = 1` | Tên hàm sin và cos hiển thị thẳng đứng (Roman); số mũ 2 nhỏ nâng cao bên trên tên hàm; biến x in nghiêng phía sau. | [ ] Đạt<br>[ ] Chưa |
+| 9 | **Ký hiệu tập hợp** | `A \cap B, x \in \mathbb{R}` | Ký hiệu giao hình móng ngựa úp $\cap$; ký hiệu thuộc $\in$; chữ R tập số thực có nét rỗng đôi $\mathbb{R}$ chuẩn toán học. | [ ] Đạt<br>[ ] Chưa |
+| 10 | **Hệ phương trình** | `\begin{cases} 2x + y = 5 \\ x - 3y = -1 \end{cases}` | Một dấu ngoặc nhọn lớn duy nhất tự co giãn ôm trọn cả 2 dòng phương trình; các dấu bằng và biến số thẳng cột với nhau. | [ ] Đạt<br>[ ] Chưa |
+
+#### Tiêu chí đánh giá kết quả:
+- [ ] **ĐẠT:** Toàn bộ 10 công thức toán học hiển thị dưới dạng khối phương trình Office Math chỉnh sửa được, đúng hình dạng mong đợi, không xuất hiện mã thô $...$.
+- [ ] **KHÔNG ĐẠT:** Xuất hiện chuỗi mã LaTeX thô, công thức bị co rúm biến thành ô vuông hoặc tràn lề trang giấy.
 - Ghi chú: ............................................................................................................
 
 ---

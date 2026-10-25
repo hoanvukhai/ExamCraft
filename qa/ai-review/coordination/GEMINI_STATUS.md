@@ -1,49 +1,34 @@
 # GEMINI status
 task_id: GEMINI-NEXT
-assignment_generation: 10
+assignment_generation: 11
 state: WAITING_REVIEW
-updated_at_utc: 2026-10-25T10:45:00Z
+updated_at_utc: 2026-10-25T11:20:00Z
 baseline: rebuild/2026-10-local HEAD
 director: CLAUDE
 queue_items:
-  GEM-R1: COMPLETED
-  GEM-R2: COMPLETED
-  GEM-R3: COMPLETED
-  GEM-R4: COMPLETED
-  GEM-R5: COMPLETED
-  GEM-R6: COMPLETED
-  GEM-R7: COMPLETED
-  GEM-R8: COMPLETED
+  GEM-S1: COMPLETED
+  GEM-S2: COMPLETED
+  GEM-S3: COMPLETED
+  GEM-S4: COMPLETED
 Đã làm:
-  - Tiếp nhận nhiệm vụ GEMINI-NEXT (Generation 10) gồm 8 việc GEM-R1 đến GEM-R8 theo chỉ đạo của Claude tại tin nhắn giao việc ngày 25/10/2026 (claude-gemini-20261025T133000Z-6b1e9d27-48fa-4c03-b5a7-1e2c9f0d8a64.md).
-  - Tuân thủ quy tắc trích dẫn kiểm thử nghiêm ngặt: Kiểm tra toàn bộ các tài liệu báo cáo bằng thuật toán của check-test-citations, xác nhận 0 cụm từ vi phạm tiêu chuẩn trích dẫn.
-  - Hoàn thành GEM-R1 (P0): Sửa đổi `docs/huong-dan/HUONG_DAN_HOC_SINH_MOBILE.md` đảm bảo 100% nhãn nút bấm và ô nhập liệu khớp nguyên văn mã nguồn giao diện học sinh làm bài `src/app/a/[publicId]/page.tsx` (kiểm tra 0 nhãn bị thiếu).
-  - Hoàn thành GEM-R2 (P0): Mở rộng toàn bộ 6 tệp đề thi mẫu trong `qa/ai-review/fixtures/da-mon/` từ 3-4 câu lên 10 câu/đề, tối thiểu 6-7 dạng câu hỏi mỗi đề, tệp chuẩn UTF-8 không BOM (byte đầu 0x7B), ID câu hỏi duy nhất, khóa đáp án tự chấm khớp 100% bài kiểm tra `tests/fixture_da_mon.test.ts`. Cập nhật tài liệu `qa/ai-review/fixtures/da-mon/README.md`.
-  - Hoàn thành GEM-R3 (P1): Biên soạn `qa/ai-review/GEMINI_UI_TEXT_AUDIT.md` rà soát văn bản giao diện và các điểm có nguy cơ tràn nội dung trên màn hình hẹp 375px (15 phát hiện cụ thể tại A4Preview, ShareModal, TeacherDashboard và các trang giao bài).
-  - Hoàn thành GEM-R4 (P1): Biên soạn `qa/ai-review/GEMINI_REGRADE_CASES.md` gồm 20 tình huống kiểm thử chuyên sâu cho tính năng sửa đáp án và chấm lại (regrade), tính toán tay chính xác từng con số điểm số trước và sau của 4 học sinh, mã HTTP và xung đột CAS (0 lỗi trích dẫn).
-  - Hoàn thành GEM-R5 (P1): Biên soạn `docs/phoi-hop-ai/05_TUYEN_GIAO_VIEN_VA_NGUOI_DUYET.md` kế hoạch tuyển giáo viên 6 môn và chuyên gia thẩm định, 3 mẫu tin mời (email, Zalo, BGH trường), phiếu khảo sát 10 câu hỏi sau thử nghiệm, checklist rà soát cho từng môn (0 lỗi trích dẫn).
-  - Hoàn thành GEM-R6 (P1): Biên soạn `qa/ai-review/GEMINI_DOC_AUDIT.md` rà soát toàn diện cây tài liệu `docs/` và `qa/`, phân loại GIỮ / CHUYỂN_LỊCH_SỬ / GỘP, giải quyết dứt điểm các thư mục phân mảnh mới tạo (0 lỗi trích dẫn).
-  - Hoàn thành GEM-R7 (P2): Biên soạn `qa/rebuild-2026-10-25/DRIVE_DESIGN_DRAFT.md` bản thiết kế sơ bộ tính năng sao lưu Google Drive, cấu trúc gói JSON bundle, phạm vi OAuth tối thiểu drive.file, rủi ro token và luồng xuất tệp cục bộ offline (0 lỗi trích dẫn).
-  - Hoàn thành GEM-R8 (P2): Biên soạn `qa/ai-review/GEMINI_QUESTIONS_FOR_OWNER.md` bộ 58 câu hỏi 1 dòng ngắn tương ứng 58 CV chưa tích trong checklist 03 với lựa chọn A/B và khuyến nghị mặc định, tách riêng 8 CV thuộc nhóm Chờ cho phép gọi AI thật (0 lỗi trích dẫn).
+  - Tiếp nhận nhiệm vụ GEMINI-NEXT (Generation 11) gồm 4 việc GEM-S1 đến GEM-S4 theo chỉ đạo của Claude tại tin nhắn giao việc ngày 25/10/2026 (claude-gemini-20261025T150000Z-4a8c2f61-9e17-4b35-a0d6-3c5e7b1f9d82.md).
+  - Tuân thủ quy tắc trích dẫn kiểm thử nghiêm ngặt: Rà soát toàn bộ các tài liệu báo cáo bằng thuật toán check-test-citations, xác nhận 0 cụm từ vi phạm tiêu chuẩn trích dẫn.
+  - Hoàn thành GEM-S1 (P0): Biên soạn hồ sơ mạch kiến thức và yêu cầu cần đạt GDPT 2018 (TT 32/2018/TT-BGDĐT) theo định dạng chuẩn PILOT-TOAN-6 cho 2 môn:
+    * `docs/chuong-trinh-2018/NGU_VAN_7.md`: Học kỳ I Ngữ văn 7 (5 bài, thể loại truyện ngắn, thơ 4-5 chữ, tùy bút, văn bản thông tin, tiếng Việt; trạng thái CHO_DUYET, 0 lỗi trích dẫn).
+    * `docs/chuong-trinh-2018/TIENG_ANH_8.md`: Học kỳ I Tiếng Anh 8 (6 Unit Global Success, ngữ âm, ngữ pháp, cloze-test, kỹ năng viết; trạng thái CHO_DUYET, 0 lỗi trích dẫn).
+  - Hoàn thành GEM-S2 (P1): Bổ sung vào `docs/huong-dan/THE_KIEM_TAY_PILOT_2.md` thẻ kiểm thử THẺ F17 về mở tệp Word thực tế và đối chiếu trực quan 10 dạng công thức toán học chuyên sâu (phân số lồng nhau, căn bậc ba, số mũ, chỉ số dưới, tổng Sigma, giới hạn, tích phân, hàm lượng giác, ký hiệu tập hợp, hệ phương trình) với mô tả hình dạng đúng mong đợi.
+  - Hoàn thành GEM-S3 (P1): Biên soạn `docs/huong-dan/PHIEU_GHI_LOI.md` mẫu phiếu ghi nhận sự cố dành cho giáo viên và giám thị phòng thi kèm 5 ví dụ thực tế đã điền sẵn cho các lỗi có thật đã gặp trong dự án (form câu biến mất, lỗi 503 khi nộp đồng loạt, nút đúng/sai nhỏ trên mobile, công thức Word hiện mã thô, link chia sẻ khóa phiên bản).
+  - Hoàn thành GEM-S4 (P2): Biên soạn `docs/huong-dan/BANG_THUAT_NGU_GIAO_DIEN.md` bảng đề xuất chuẩn hóa 12 thuật ngữ giao diện cốt lõi (Kho đề của tôi, Tải file Word, Tạo bản sao, Giao bài thi, Số lượt làm bài, Bản nháp tự lưu trên máy, Sửa đáp án và chấm lại, Chia sẻ đề thi, In đề thi A4, Đăng nhập, Bảng xếp hạng lớp, Barem chấm điểm) kèm danh sách vị trí đang dùng khác nhau và cảnh báo kỹ thuật cho nút Đăng nhập hệ thống.
 Đang làm:
-  - Hoàn tất toàn bộ 8/8 mục của Generation 10.
+  - Hoàn tất toàn bộ 4/4 mục của Generation 11.
 Tiếp theo:
-  - Báo cáo Người chỉ đạo Claude nghiệm thu Generation 10 tại BATCH_REVIEWS.json.
+  - Báo cáo Người chỉ đạo Claude nghiệm thu Generation 11.
 Kiểm:
   - Chỉ đọc mã/tài liệu; chỉ ghi các tệp deliverable được giao; không can thiệp DB chính, không gọi AI/provider, không chạy build/server/test ghi. Không sửa mã nguồn src/, tests/ (ngoài fixture), prisma/, không sửa checklist 03, hồ sơ 02, ASSIGNMENTS hay BATCH_REVIEWS. Không đưa số test vào tài liệu.
-Tệp giao trong batch Generation 10:
-  - docs/huong-dan/HUONG_DAN_HOC_SINH_MOBILE.md (GEM-R1)
-  - qa/ai-review/fixtures/da-mon/ngu-van-7.json (GEM-R2)
-  - qa/ai-review/fixtures/da-mon/tieng-anh-8.json (GEM-R2)
-  - qa/ai-review/fixtures/da-mon/khtn-6.json (GEM-R2)
-  - qa/ai-review/fixtures/da-mon/lich-su-dia-ly-7.json (GEM-R2)
-  - qa/ai-review/fixtures/da-mon/tin-hoc-8.json (GEM-R2)
-  - qa/ai-review/fixtures/da-mon/toan-9.json (GEM-R2)
-  - qa/ai-review/fixtures/da-mon/README.md (GEM-R2)
-  - qa/ai-review/GEMINI_UI_TEXT_AUDIT.md (GEM-R3)
-  - qa/ai-review/GEMINI_REGRADE_CASES.md (GEM-R4)
-  - docs/phoi-hop-ai/05_TUYEN_GIAO_VIEN_VA_NGUOI_DUYET.md (GEM-R5)
-  - qa/ai-review/GEMINI_DOC_AUDIT.md (GEM-R6)
-  - qa/rebuild-2026-10-25/DRIVE_DESIGN_DRAFT.md (GEM-R7)
-  - qa/ai-review/GEMINI_QUESTIONS_FOR_OWNER.md (GEM-R8)
+Tệp giao trong batch Generation 11:
+  - docs/chuong-trinh-2018/NGU_VAN_7.md (GEM-S1)
+  - docs/chuong-trinh-2018/TIENG_ANH_8.md (GEM-S1)
+  - docs/huong-dan/THE_KIEM_TAY_PILOT_2.md (GEM-S2, bổ sung THẺ F17)
+  - docs/huong-dan/PHIEU_GHI_LOI.md (GEM-S3)
+  - docs/huong-dan/BANG_THUAT_NGU_GIAO_DIEN.md (GEM-S4)
 Chặn việc: Không. Sẵn sàng chờ Người chỉ đạo Claude review nghiệm thu.

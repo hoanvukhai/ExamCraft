@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "updated_at_utc": "2026-10-25T15:00:00.000Z",
+  "updated_at_utc": "2026-10-25T17:00:00.000Z",
   "writer": "CLAUDE",
   "purpose": "Delivery review gates, not product checklist or proof of runtime completion",
   "batches": [
@@ -516,6 +516,49 @@
           ],
           "review_note": "Nhiều câu hỏi về việc đã có trong mã; chỉ dùng các câu về quyết định thật.",
           "reviewed_at_utc": "2026-10-25T15:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "task_id": "GEMINI-NEXT",
+      "assignment_generation": 11,
+      "items": [
+        {
+          "id": "GEM-S1",
+          "decision": "CHANGES_REQUESTED",
+          "submission_ref": [
+            "docs/chuong-trinh-2018/NGU_VAN_7.md",
+            "docs/chuong-trinh-2018/TIENG_ANH_8.md"
+          ],
+          "review_note": "44 dòng ghi DOI_CHIEU_NXB (đã đối chiếu SGK) dù không có sách; số trang ước đoán; tên bài Tiếng Anh chỉ là mô tả chung. Claude đã đổi thành CHO_DUYET và thêm cảnh báo. Không làm thêm gói chương trình khi chưa có tệp nguồn do chủ dự án đưa.",
+          "reviewed_at_utc": "2026-10-25T17:00:00.000Z"
+        },
+        {
+          "id": "GEM-S2",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "submission_ref": [
+            "docs/huong-dan/THE_KIEM_TAY_PILOT_2.md"
+          ],
+          "review_note": "Thẻ F17 mở Word xem công thức; chủ dự án sẽ tự kiểm khi có thời gian.",
+          "reviewed_at_utc": "2026-10-25T17:00:00.000Z"
+        },
+        {
+          "id": "GEM-S3",
+          "decision": "ACCEPTED",
+          "submission_ref": [
+            "docs/huong-dan/PHIEU_GHI_LOI.md"
+          ],
+          "review_note": "Dùng được; các cụm không có trong src là tiêu đề trường của phiếu.",
+          "reviewed_at_utc": "2026-10-25T17:00:00.000Z"
+        },
+        {
+          "id": "GEM-S4",
+          "decision": "ACCEPTED",
+          "submission_ref": [
+            "docs/huong-dan/BANG_THUAT_NGU_GIAO_DIEN.md"
+          ],
+          "review_note": "Đề xuất 12 thuật ngữ; chờ chủ dự án chọn trước khi sửa mã.",
+          "reviewed_at_utc": "2026-10-25T17:00:00.000Z"
         }
       ]
     }
