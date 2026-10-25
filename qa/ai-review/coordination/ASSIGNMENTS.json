@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "updated_at_utc": "2026-10-24T19:09:37.030Z",
+  "updated_at_utc": "2026-10-25T05:33:52.000Z",
   "coordinator": "CODEX",
   "execution_mode": "solo",
   "current_direction": "2026-10-25: Codex lam mot minh theo yeu cau chu du an; tasks cu giu truy vet, khong cho Claude/Gemini duyet hay giao them.",
@@ -456,7 +456,7 @@
     },
     {
       "task_id": "GEMINI-PILOT-PREP",
-      "assignment_generation": 7,
+      "assignment_generation": 8,
       "owner": "GEMINI",
       "priority": "P0",
       "base_commit": "rebuild/2026-10-local HEAD",
@@ -575,6 +575,15 @@
             "docs/nghien-cuu/goi/PILOT-MON-2/02_DOI_CHIEU_NGUON.md"
           ],
           "scope": "Kiểm lại từng trích dẫn nguồn/trang trong hai gói 00 và 01 đối chiếu với tài liệu có trong docs/nghien-cuu (sổ 05, sach-va-hoc-lieu, nguon/*.pdf nếu đọc được). Bảng: mục | nguồn đã dẫn | đã mở và khớp / chưa mở / không khớp | ghi chú. Mục không kiểm được thì CHUA_XAC_MINH, không điền cho đủ."
+        },
+        {
+          "id": "GEM-P13",
+          "kind": "readonly_report",
+          "priority": "P0",
+          "deliverables": [
+            "qa/ai-review/GEMINI_CV_CRITERIA_AUDIT.md"
+          ],
+          "scope": "Đối chiếu tiêu chí \"Đạt khi\" trong docs/ke-hoach-2026-10-21/03_CHECKLIST.md với bằng chứng hiện có cho các CV: 010, 011, 047, 048, 049, 050, 055, 057, 059, 060, 062. Mỗi CV một khối: (1) trích nguyên văn \"Đạt khi\"; (2) từng vế của tiêu chí → bằng chứng cụ thể (tệp test:tên ca, báo cáo qa/ + mục, ca browser F1–F9) hoặc \"chưa có\"; (3) kết luận một trong ĐỦ / THIẾU (liệt kê vế thiếu) / KHÔNG RÕ; (4) việc nhỏ nhất để đóng nếu THIẾU. Chỉ đọc; không đóng CV, không sửa checklist; không suy từ số test mà phải chỉ đúng ca. Claude sẽ quyết đóng."
         }
       ],
       "rules": [
