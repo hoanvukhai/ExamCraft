@@ -5,9 +5,9 @@ Dành cho người chịu trách nhiệm vận hành. Sao lưu/khôi phục chi 
 ## 1. Ai chịu trách nhiệm
 | Việc | Người | Ghi chú |
 |---|---|---|
-| Bật/tắt ứng dụng, kiểm DB chạy | Chủ dự án hoặc người được chỉ định bằng văn bản | **Chủ dự án điền tên** |
-| Chạy sao lưu hằng ngày, kiểm kết quả | cùng người trên | **Chủ dự án điền tên** |
-| Giữ bản sao lưu thứ hai, chìa khóa cấu hình | chủ dự án | nơi giữ chưa quyết (mục 5) |
+| Bật/tắt ứng dụng, kiểm DB chạy | Chủ dự án (đã duyệt 25/10/2026); người khác chỉ khi chủ dự án chỉ định bằng văn bản | ghi tên người thay vào đây nếu có |
+| Chạy sao lưu hằng ngày, kiểm kết quả | cùng người trên | |
+| Giữ bản sao lưu thứ hai, chìa khóa cấu hình | chủ dự án | ổ ngoài rời máy (mục 5) |
 
 ## 2. Bật và tắt
 1. Kiểm Docker đang chạy container `examcraft_postgres` (cổng 5436).
@@ -27,14 +27,14 @@ Dành cho người chịu trách nhiệm vận hành. Sao lưu/khôi phục chi 
 - Bản cũ: `node scripts/backup-retention.cjs --days 30 --keep 2` chỉ liệt kê, không xóa. Việc xóa do người vận hành quyết.
 - Nhật ký lỗi: ứng dụng ghi ra cửa sổ chạy `npm run start`; **chưa có thư mục log chuẩn**. Đề xuất: chạy bằng `npm run start > logs/app.log 2>&1` và giữ 14 ngày, không ghi khóa/cookie vào log (mã hiện không in chúng).
 
-## 5. Việc chờ chủ dự án duyệt (CV073 chưa đóng khi chưa có các quyết định này)
-Số đo thật ở [OPS_RTO_MEASURE.md](../../qa/rebuild-2026-10-25/OPS_RTO_MEASURE.md).
-1. **RPO (mất dữ liệu tối đa chấp nhận được).** Đề xuất: 24 giờ (sao lưu mỗi tối), cộng một lần sao lưu trước mỗi đợt thay đổi lớn. Nếu cần ngắn hơn trong giờ thi, thêm sao lưu trước và sau buổi thi.
-2. **RTO (thời gian dựng lại).** Đề xuất: 30 phút cho cả quy trình (dựng DB đối chiếu + diễn tập chạy ứng dụng + kiểm tay). Bước dựng DB hiện đo được dưới một phút với dữ liệu nhỏ; bước diễn tập chạy ứng dụng chưa đo.
-3. **Nơi giữ bản sao thứ hai.** Chọn: ổ ngoài rời máy / thư mục đồng bộ tự chọn / không có. Hiện chỉ có một máy: mất máy là mất cả dữ liệu lẫn chìa khóa DPAPI.
-4. **Chuyển máy hoặc mất tài khoản Windows.** Cần cách giữ chìa khóa cấu hình ngoài DPAPI (ví dụ mật khẩu giữ trong trình quản lý mật khẩu) và một lần diễn tập trên máy thứ hai. Chưa làm.
-5. **Dung lượng và chi phí.** Hiện không có dịch vụ trả phí bắt buộc; dung lượng DB tăng chủ yếu theo ảnh trong đề. Đề xuất đo lại sau tuần pilot đầu và đặt ngưỡng cảnh báo khi gói sao lưu vượt 500 MB.
-6. **Tài khoản chịu trách nhiệm** (mục 1): ghi tên.
+## 5. Quyết định đã duyệt (chủ dự án, 25/10/2026) và việc còn lại
+Số đo thật ở [OPS_RTO_MEASURE.md](../../qa/rebuild-2026-10-25/OPS_RTO_MEASURE.md). Chủ dự án giao cho người chỉ đạo chọn phương án hợp lý; các mục 1–3, 5, 6 dưới đây là phương án được chọn và đã duyệt.
+1. **RPO: 24 giờ.** Sao lưu mỗi tối, thêm một lần trước mỗi đợt thay đổi lớn. Trong buổi thi/giao bài quan trọng: sao lưu trước và sau buổi.
+2. **RTO: 30 phút** cho cả quy trình (dựng DB đối chiếu, diễn tập chạy ứng dụng, kiểm tay). Bước dựng DB đo được dưới một phút với dữ liệu nhỏ; bước diễn tập chạy ứng dụng chưa đo.
+3. **Bản sao thứ hai:** ổ ngoài rời máy; sao chép gói `backups/package-...` mới nhất sau mỗi lần sao lưu. **Chưa thực hiện**: cần cắm ổ và chép thử một lần, rồi mở bản chép bằng `restore.ps1` để chắc không hỏng.
+4. **Chuyển máy hoặc mất tài khoản Windows (chưa giải quyết).** Cấu hình trong gói được bảo vệ bằng DPAPI nên không mở được trên máy khác. Cần giữ chìa khóa cấu hình ngoài DPAPI (ví dụ mật khẩu trong trình quản lý mật khẩu của chủ dự án) và diễn tập một lần trên máy thứ hai trước khi giao cho người dùng thật ngoài chủ dự án. Đây là rủi ro đã biết, chấp nhận trong pilot nhỏ.
+5. **Dung lượng và chi phí.** Không có dịch vụ trả phí bắt buộc. Đo lại dung lượng sau tuần pilot đầu; cảnh báo khi một gói sao lưu vượt 500 MB.
+6. **Người chịu trách nhiệm:** chủ dự án (mục 1).
 
 ## 6. Khi có sự cố
 Dùng [kịch bản diễn tập sự cố](../dien-tap/KICH_BAN_DIEN_TAP_SU_CO.md) và [30 lỗi xuất Word](../su-co/30_LOI_XUAT_WORD_VA_CACH_PHONG.md) do Gemini soạn (nội dung chưa kiểm thực tế từng dòng). Nguyên tắc chung: không xóa, không ghi đè DB chính; giữ lần thất bại để chẩn đoán; khôi phục sang tên DB mới rồi đối chiếu.
