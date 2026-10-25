@@ -186,6 +186,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
 ## S5 — Nhập, trộn, xuất và trình chiếu
 
 - [ ] **CV-039 — Nhập text/LaTeX và xem trước hai phía.**
+  - **Bằng chứng25/10:** lỗi thật đã sửa: bộ phân tích văn bản thuần (`parseRawVietnameseText`) không nhận dạng phổ biến nhất (mỗi phương án một dòng) và coi cả đoạn là một câu trả lời ngắn; chữ hoa trong đề như "tam giác ABC." bị cắt nhầm thành phương án; "câu 2" giữa câu bị tách; không hiểu "Đáp án: B" hay bảng đáp án cuối đề. Đã viết lại và có `exam_parser` (11 ca). Giới hạn: chưa kiểm dạng đúng-sai a) b) c) d), ngữ liệu đứng trước nhóm câu, `\(...\)`; bộ phân tích LaTeX ExTest chưa có test; đường nhập bằng AI vẫn chưa kiểm.
   - **Hiện trạng24/10:** giữ nguồn và preview theo loại đầu vào; Word/ảnh/text AI nay gửi pin chủ tài khoản, server chặn sai tài khoản trước body/provider. Modal guard phản hồi/tệp cũ theo đích; lỗi cùng nguồn giữ preview, xác nhận nhập kiểm lại user và callback editor chỉ append đúng đề có quyền. Build/HTTP/kiểm thuần đạt; chưa UI mới/AI thật/chất lượng đa môn và import form bền qua reload. Giữ mở. [TEMPLATE_IMPORT_ACCOUNT](../../qa/rebuild-2026-10-24/TEMPLATE_IMPORT_ACCOUNT.md).
   - Phạm vi: YC-11. Nghiệm thu: NT-16.
   - Đạt khi: Nguồn giữ được, câu tách rõ, phần không hiểu có nhãn; sửa trước lưu, không tự giải giả thành đáp án trích nguồn.

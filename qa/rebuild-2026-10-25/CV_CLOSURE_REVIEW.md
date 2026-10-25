@@ -77,3 +77,8 @@ Test đề dài 120 câu phát hiện: trước đây chỉ phân số và căn 
 - F15 còn kiểm: không câu nào chia đôi hoặc cao hơn trang, không tràn lề, nút soạn thảo ẩn khi in.
 - **Phạm vi:** theo chủ dự án 25/10, ExamCraft là dự án cá nhân/nhóm nhỏ nội bộ. Đã hạ ưu tiên CV065, 066, 071, 074, 075, 078 trong checklist, thêm ghi chú phạm vi vào `04_MOC_PILOT.md` và `05_TUYEN_GIAO_VIEN_VA_NGUOI_DUYET.md`, ghi quy ước vào bộ nhớ làm việc.
 - Chạy cuối: build đạt, SAFE 365/365 ([log](safe-claude-run8.log)), HTTP 88/88 ([log](http-claude-run21.log)), trình duyệt 14/14 ([log](pilot-claude-run15.log)).
+
+## Bổ sung: lỗi nhập đề từ văn bản (CV039, CV040)
+- **Lỗi thật:** `parseRawVietnameseText` chưa từng có test. Khi thử, dạng đề phổ biến nhất (mỗi phương án A. B. C. D. một dòng) hoàn toàn không được nhận ra; chỉ dạng cả bốn phương án trên cùng một dòng mới chạy. Còn các lỗi: chữ hoa trong đề ("Cho tam giác ABC.") bị cắt thành phương án, "câu 2" giữa câu bị tách thành câu mới, không hiểu "Đáp án: B" hay bảng đáp án cuối đề, 2–3 phương án bị gán nhầm là trả lời ngắn, dòng tiêu đề đề thi thành một câu.
+- **Đã sửa:** viết lại hàm, giữ nguyên tên và kiểu trả về; `exam_parser` 11 ca đều đạt. Chạy cuối: SAFE 376/376 ([log](safe-claude-run9.log)).
+- **Chưa làm:** Gemini đang soạn bảng ca nhập đề (GEM-T2) để mở rộng kiểm; dạng đúng-sai nhóm, ngữ liệu đứng trước nhóm câu, công thức `\(...\)`, bộ phân tích LaTeX ExTest, và đường nhập bằng Word/ảnh (dùng AI) chưa kiểm.

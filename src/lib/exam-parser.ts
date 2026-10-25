@@ -168,65 +168,82 @@ export function parseExTestLatex(rawLatex: string): Question[] {
   return questions;
 }
 
+/** A question starts at "Câu 1:" / "Bài 2." at the beginning of a line, or after a space when the number is followed by punctuation. */
+const QUESTION_START = /(?=^[ \t]*(?:Câu|Bài)\s*\d+(?:\s*[:.)\-]|[ \t])|\s(?:Câu|Bài)\s*\d+\s*[:.)\-])/m;
+const QUESTION_HEADER = /^\s*(?:Câu|Bài)\s*(\d+)\s*[:.)\-]?\s*/;
+/** "A." "A)" "(A)" with a space or line start before it, so the "C." in "ABC." is not a choice. */
+const CHOICE_MARKER = /(^|\s)\(?([A-D])[.)]\s*/gm;
+const ANSWER_TAIL = /(?:^|\n)[ \t]*(?:ĐÁP ÁN|Đáp án|Đáp án đúng|ĐA)[ \t]*[:\-]?[ \t]*([\s\S]*)$/;
+
+/** Splits a trailing "Đáp án: B" line or a key list ("1. A  2. C") off a question block. */
+function takeAnswerTail(body: string): { body: string; single?: string; list: Record<number, string> } {
+  const match = ANSWER_TAIL.exec(body);
+  if (!match) return { body, list: {} };
+  const rest = match[1].trim();
+  const single = /^\(?([A-D])\)?[.)]?$/.exec(rest);
+  if (single) return { body: body.slice(0, match.index).trimEnd(), single: single[1], list: {} };
+  const list: Record<number, string> = {};
+  for (const pair of rest.matchAll(/(\d+)\s*[.:)\-]?\s*([A-D])\b/g)) list[Number(pair[1])] = pair[2];
+  if (Object.keys(list).length >= 2) return { body: body.slice(0, match.index).trimEnd(), list };
+  return { body, list: {} };
+}
+
 /**
  * Phân tích đề thi tiếng Việt thông thường (Câu 1:... A. ... B. ... C. ... D. ...)
+ * Hiểu phương án trên một dòng hoặc mỗi phương án một dòng, phương án kéo dài nhiều dòng,
+ * đáp án đánh dấu "(đúng)", dấu *, dòng "Đáp án: B" hoặc bảng đáp án cuối đề.
  */
 export function parseRawVietnameseText(rawText: string): Question[] {
-  const questions: Question[] = [];
+  let blocks = rawText.split(QUESTION_START).filter(block => block.trim());
+  // A title line before "Câu 1" ("ĐỀ KIỂM TRA ...") is not a question.
+  if (blocks.length > 1 && !QUESTION_HEADER.test(blocks[0])) blocks = blocks.slice(1);
 
-  // Tách theo "Câu 1:", "Câu 2:" hoặc "Bài 1:"
-  const questionBlocks = rawText.split(/(?=(?:Câu|Bài)\s*\d+[\s:.-])/i).filter(b => b.trim());
+  const keyList: Record<number, string> = {};
+  const parsed = blocks.map((block, index) => {
+    const number = Number(QUESTION_HEADER.exec(block)?.[1]) || index + 1;
+    let body = block.replace(QUESTION_HEADER, '').trim();
+    const tail = takeAnswerTail(body);
+    body = tail.body;
+    Object.assign(keyList, tail.list);
 
-  questionBlocks.forEach((block, idx) => {
-    let content = block;
-    let choices: ChoiceItem[] = [];
-    let detectedAnswer: string | undefined = undefined;
+    // The last "A." that is followed by "B." starts the choices; earlier capital letters belong to the question text.
+    const markers = [...body.matchAll(CHOICE_MARKER)].map(match => ({ key: match[2], start: (match.index ?? 0) + match[1].length, end: (match.index ?? 0) + match[0].length }));
+    let sequence: typeof markers = [];
+    for (let i = markers.length - 1; i >= 0 && sequence.length < 2; i--) {
+      if (markers[i].key !== 'A') continue;
+      const chain = [markers[i]];
+      for (const next of 'BCD') { const found = markers.find(marker => marker.key === next && marker.start > chain[chain.length - 1].start); if (!found) break; chain.push(found); }
+      if (chain.length >= 2) sequence = chain;
+    }
 
-    // Tìm các phương án A. B. C. D.
-    const choiceRegex = /([A-D])[\.\)]\s*([^\n\r]+?)(?=(?:[A-D][\.\)]|$))/g;
-    const foundChoices: ChoiceItem[] = [];
-    let choiceMatch: RegExpExecArray | null;
-
-    while ((choiceMatch = choiceRegex.exec(block)) !== null) {
-      let choiceText = choiceMatch[2].trim();
-      const choiceKey = choiceMatch[1].toUpperCase();
-
-      // Kiểm tra nếu có đánh dấu đáp án đúng kiểu "(đúng)" hoặc "*"
-      if (/\(đúng\)|\*$/i.test(choiceText)) {
-        detectedAnswer = choiceKey;
-        choiceText = choiceText.replace(/\(đúng\)|\*$/i, '').trim();
-      }
-
-      foundChoices.push({
-        key: choiceKey,
-        text: choiceText,
+    let content = body;
+    let detected = tail.single;
+    const choices: ChoiceItem[] = [];
+    if (sequence.length >= 2) {
+      content = body.slice(0, sequence[0].start).trim();
+      sequence.forEach((marker, i) => {
+        let text = body.slice(marker.end, sequence[i + 1]?.start ?? body.length).replace(/\s*\n\s*/g, ' ').trim();
+        if (/\(đúng\)|\*$/i.test(text)) { detected = marker.key; text = text.replace(/\(đúng\)|\*$/i, '').trim(); }
+        choices.push({ key: marker.key, text });
       });
     }
-
-    if (foundChoices.length >= 2) {
-      choices = foundChoices;
-      const firstChoicePos = block.search(/[A-D][\.\)]/);
-      if (firstChoicePos > 0) {
-        content = block.slice(0, firstChoicePos).trim();
-      }
-    }
-
-    // Làm sạch tiêu đề "Câu 1: " ở đầu
-    content = content.replace(/^(?:Câu|Bài)\s*\d+[\s:.-]\s*/i, '').trim();
-
-    if (content) {
-      questions.push({
-        id: `q_raw_${Date.now()}_${idx + 1}`,
-        type: choices.length === 4 ? 'multiple_choice' : 'short_answer',
-        difficulty: 'thong_hieu',
-        content,
-        choices: choices.length > 0 ? choices : undefined,
-        correct_answer: detectedAnswer,
-        step_by_step_solution: 'Chưa có lời giải chi tiết (bạn có thể nhờ AI giải).',
-        tags: ['Import_Raw'],
-      });
-    }
+    return { number, content: content.trim(), choices, detected };
   });
 
+  const questions: Question[] = [];
+  parsed.forEach(({ number, content, choices, detected }, index) => {
+    if (!content) return;
+    const answer = detected ?? keyList[number];
+    questions.push({
+      id: `q_raw_${Date.now()}_${index + 1}`,
+      type: choices.length >= 2 ? 'multiple_choice' : 'short_answer',
+      difficulty: 'thong_hieu',
+      content,
+      choices: choices.length > 0 ? choices : undefined,
+      correct_answer: answer && (choices.length === 0 || choices.some(choice => choice.key === answer)) ? answer : undefined,
+      step_by_step_solution: 'Chưa có lời giải chi tiết (bạn có thể nhờ AI giải).',
+      tags: ['Import_Raw'],
+    });
+  });
   return questions;
 }
