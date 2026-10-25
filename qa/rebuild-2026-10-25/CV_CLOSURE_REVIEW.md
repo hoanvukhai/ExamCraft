@@ -147,3 +147,6 @@ Chuyển sáu báo cáo V1–V3 sang `docs/lich-su/` bằng `git mv`, sửa liê
 - **Nhận** Codex S1–S6 và Gemini X1–X5. Số trình duyệt "22/22" chưa lặp được trong một lượt đầy đủ trên máy này; coi là 22 luồng đều đạt khi chạy riêng, có flake khoá file báo cáo trên Windows.
 - **Đóng:** CV025, CV033, CV039, CV041, CV053 (dòng Nghiệm thu trong checklist nêu test và giới hạn). CV041 đóng có giới hạn: không dedup gần giống, không số trang.
 - **Còn mở, cần việc tiếp:** CV051 (cột giải quyết góp ý, cần đổi schema, sao lưu DB chính trước), CV006, CV016–022, CV070 và các CV cần mắt chủ dự án.
+
+## Bổ sung 26/10: đóng CV051
+Thêm cột `version`, `resolvedAt`, `resolvedById` vào ExamComment (migration 20261026000100; sao lưu `backups/examcraft-before-cv051-20261025.dump` rồi áp DB chính; DB thử áp cùng SQL). API PATCH giải quyết góp ý; HTTP 102/102 đạt, lint 0 lỗi, tsc sạch, build đạt. Chưa chạy lại luồng trình duyệt; UI cộng tác để chủ dự án xem.

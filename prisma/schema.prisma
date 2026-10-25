@@ -550,6 +550,9 @@ model ExamComment {
   author     User? @relation(fields: [authorId], references: [id], onDelete: SetNull)
   body       String @db.Text
   questionId String?
+  version    Int?
+  resolvedAt DateTime?
+  resolvedById String?
   createdAt  DateTime @default(now())
   @@index([examId, createdAt])
 }

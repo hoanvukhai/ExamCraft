@@ -29,7 +29,7 @@ test('share permission matrix is decided by the server for every operation', { t
       await db.user.deleteMany({ where: { id: { in: all } } });
       const directory = `qa/rebuild-${new Date().toISOString().slice(0, 10)}`;
       fs.mkdirSync(directory, { recursive: true });
-      writeQaReport(`${directory}/http_permission_matrix.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 5 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117', realAiCalls: false }, null, 2));
+      writeQaReport(`${directory}/http_permission_matrix.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 6 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117', realAiCalls: false }, null, 2));
     } finally { await db.$disconnect(); }
   });
   const password = 'fixture-' + randomUUID(), hash = await bcrypt.hash(password, 10), cookies = {} as Record<typeof names[number], string>;
@@ -81,6 +81,30 @@ test('share permission matrix is decided by the server for every operation', { t
     const authors = (await db.examComment.findMany({ where: { examId: id }, select: { authorId: true } })).map(c => c.authorId).sort();
     assert.deepEqual(authors, [ids.commenter, ids.editor].sort(), 'comments carry the real author and the refused viewer wrote none');
     checks.push('comment-and-edit');
+  });
+
+  await t.test('comments record question and version, and only editors or the writer can resolve them', async () => {
+    const post = (name: typeof names[number], body: string, questionId?: string) => request(`/api/exams/${id}/comments`, 'POST', { body, ...(questionId ? { questionId } : {}) }, cookies[name]);
+    assert.equal((await post('commenter', 'về câu 1', 'q1')).status, 200);
+    assert.equal((await post('commenter', 'câu không có', 'nope')).status, 400, 'a comment on a question not in the exam is refused');
+    const list = async (name: typeof names[number] = 'owner') => (await request(`/api/exams/${id}/comments`, 'GET', undefined, cookies[name])).data.comments as { id: string; body: string; questionId: string | null; version: number; resolvedAt: string | null; resolvedByName: string | null; mine: boolean }[];
+    const mineComment = (await list()).find(c => c.body === 'về câu 1')!;
+    assert.equal(mineComment.questionId, 'q1'); assert.equal(mineComment.version, (await current()).version, 'the comment remembers the version it was written on');
+    const resolve = (name: typeof names[number], commentId: string, resolved = true) => request(`/api/exams/${id}/comments`, 'PATCH', { commentId, resolved }, cookies[name]);
+    const editorNote = (await list()).find(c => c.body === 'editor note')!;
+    assert.equal((await resolve('commenter', editorNote.id)).status, 403, 'a commenter cannot close another person comment');
+    assert.equal((await resolve('viewer', mineComment.id)).status, 403, 'a viewer cannot resolve');
+    assert.equal((await resolve('stranger', mineComment.id)).status, 404, 'a stranger does not even see the exam');
+    assert.equal((await resolve('editor', mineComment.id)).status, 200);
+    const closed = (await list('commenter')).find(c => c.id === mineComment.id)!;
+    assert.ok(closed.resolvedAt); assert.equal(closed.resolvedByName, 'Matrix editor'); assert.equal(closed.mine, true);
+    assert.equal((await resolve('commenter', mineComment.id, false)).status, 200, 'the writer can reopen their own comment');
+    assert.equal((await list()).find(c => c.id === mineComment.id)!.resolvedAt, null);
+    assert.equal((await resolve('owner', 'missing')).status, 404);
+    assert.equal((await request(`/api/exams/${id}/comments`, 'PATCH', { commentId: mineComment.id, resolved: true, extra: 1 }, cookies.owner)).status, 400);
+    const history = (await request(`/api/exams/${id}/history`, 'GET', undefined, cookies.owner)).data.revisions as { actor: { name: string } | null }[];
+    assert.ok(history.some(r => r.actor?.name === 'Matrix editor'), 'history shows who made each saved change');
+    checks.push('comment-resolution');
   });
 
   await t.test('manage and publish: only the owner changes members, restores history, shares, assigns or deletes', async () => {

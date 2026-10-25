@@ -248,7 +248,8 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - **Hiện trạng25/10:** Giữ các kiểm hồi đáp trễ, owner/writer/ACK và thu hồi quyền trước. Browser thêm mất mạng, reconnect khi có phiên khác sửa, giữ bản máy chủ và cất nháp thành bản phục hồi; Chrome/Edge kiểm độc lập theo lượt. F4 còn kiểm thu hồi editor đang mở. Chưa hai engine sửa đồng thời hoặc mọi race quyền/ghi; giữ mở. [Báo cáo đợt](../../qa/rebuild-2026-10-25/BATCH_SUMMARY.md).
   - Phạm vi: YC-13, YC-19. Nghiệm thu: NT-20.
   - Đạt khi: Đồng bộ không nhân đôi/mất, quyền kiểm lại khi gửi thay đổi; editor bị thu hồi không tiếp tục ghi.
-- [ ] **CV-051 — Góp ý và lịch sử tác giả.**
+- [x] **CV-051 — Góp ý và lịch sử tác giả.**
+  - **Nghiệm thu26/10 (Claude): ĐẠT đủ tiêu chí "Đạt khi".** Góp ý gắn với câu (chọn trong hộp thoại cộng tác, câu không có trong đề bị từ chối) và ghi phiên bản đề lúc viết; có trạng thái đã giải quyết/mở lại, ghi người giải quyết; chỉ người sửa đề hoặc chính người viết được đóng/mở, người xem 403, người ngoài 404. Lịch sử hiện người lưu từng phiên bản; khôi phục tạo phiên bản mới, không xóa lịch sử (`share permission matrix is decided by the server for every operation` ca mới `comments record question and version, and only editors or the writer can resolve them`; `two people editing different questions never lose work, and history can restore any version`). Thay đổi do AI đi qua lần lưu của người bấm nên được ghi tên người đó (F21 dùng khóa riêng). Đã thêm 3 cột vào `ExamComment` (migration `20261026000100`, đã áp lên DB chính sau khi sao lưu). Giới hạn: giao diện mới chưa có luồng trình duyệt tự động, chủ dự án xem bằng mắt; góp ý cũ không có số phiên bản. [Đối chiếu](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md)
   - Phạm vi: YC-19. Nghiệm thu: NT-20.
   - Đạt khi: Bình luận theo câu/phiên bản, giải quyết góp ý, xem ai đổi gì, phục hồi không xóa lịch sử; AI action gắn người yêu cầu.
 - [ ] **CV-052 — Ngân hàng chung và nhân bản.**
