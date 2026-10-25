@@ -122,7 +122,8 @@ export function parseExTestLatex(rawLatex: string): Question[] {
       const questionContent = contentWithoutSolution.slice(0, choiceIdx).trim();
       let currentIdx = choiceIdx + 7;
       const choices: ChoiceItem[] = [];
-      let correctAnswer = 'A';
+      // No \True means the key is unknown; it is never filled in.
+      let correctAnswer: string | undefined;
       const keys = ['A', 'B', 'C', 'D'];
 
       for (let i = 0; i < 4; i++) {
@@ -141,13 +142,15 @@ export function parseExTestLatex(rawLatex: string): Question[] {
         }
       }
 
+      // Two or three choices are still a choice question; a single one is not.
+      const isChoice = choices.length >= 2;
       questions.push({
         id: `q_parsed_${Date.now()}_${index++}`,
-        type: 'multiple_choice',
+        type: isChoice ? 'multiple_choice' : 'short_answer',
         difficulty,
         content: questionContent,
-        choices: choices.length === 4 ? choices : undefined,
-        correct_answer: correctAnswer,
+        choices: isChoice ? choices : undefined,
+        correct_answer: isChoice ? correctAnswer : undefined,
         step_by_step_solution: solution || 'Xem lời giải trong tài liệu gốc.',
         tags,
       });
@@ -175,13 +178,21 @@ const QUESTION_HEADER = /^\s*(?:Câu|Bài)\s*(\d+)\s*[:.)\-]?\s*/;
 const CHOICE_MARKER = /(^|\s)\(?([A-D])[.)]\s*/gm;
 const ANSWER_TAIL = /(?:^|\n)[ \t]*(?:ĐÁP ÁN|Đáp án|Đáp án đúng|ĐA)[ \t]*[:\-]?[ \t]*([\s\S]*)$/;
 
-/** Splits a trailing "Đáp án: B" line or a key list ("1. A  2. C") off a question block. */
-function takeAnswerTail(body: string): { body: string; single?: string; list: Record<number, string> } {
+/** "a)" "b)" "c)" "d)" for the four statements of a true-false group (lowercase, so they differ from the A-D choices). */
+const STATEMENT_MARKER = /(^|\s)([a-d])\)\s*/gm;
+const VERDICT = /([a-d])\s*[).:\-]?\s*(Đúng|Sai|Đ|S)(?![\p{L}])/gu;
+const isTrueVerdict = (word: string) => word === 'Đ' || word === 'Đúng';
+
+/** Splits a trailing "Đáp án: B" line, a true-false line ("a) Đ, b) S ...") or a key list ("1. A  2. C") off a question block. */
+function takeAnswerTail(body: string): { body: string; single?: string; verdicts?: Record<string, boolean>; list: Record<number, string> } {
   const match = ANSWER_TAIL.exec(body);
   if (!match) return { body, list: {} };
   const rest = match[1].trim();
   const single = /^\(?([A-D])\)?[.)]?$/.exec(rest);
   if (single) return { body: body.slice(0, match.index).trimEnd(), single: single[1], list: {} };
+  const verdicts: Record<string, boolean> = {};
+  for (const pair of rest.matchAll(VERDICT)) verdicts[pair[1]] = isTrueVerdict(pair[2]);
+  if (Object.keys(verdicts).length === 4) return { body: body.slice(0, match.index).trimEnd(), verdicts, list: {} };
   const list: Record<number, string> = {};
   for (const pair of rest.matchAll(/(\d+)\s*[.:)\-]?\s*([A-D])\b/g)) list[Number(pair[1])] = pair[2];
   if (Object.keys(list).length >= 2) return { body: body.slice(0, match.index).trimEnd(), list };
@@ -227,12 +238,45 @@ export function parseRawVietnameseText(rawText: string): Question[] {
         choices.push({ key: marker.key, text });
       });
     }
-    return { number, content: content.trim(), choices, detected };
+    // No A-D choices: four statements a) b) c) d) make a true-false group. Fewer than four are parts of an essay question.
+    let statements: TrueFalseSubItem[] = [];
+    if (choices.length === 0) {
+      const found = [...body.matchAll(STATEMENT_MARKER)].map(match => ({ key: match[2], start: (match.index ?? 0) + match[1].length, end: (match.index ?? 0) + match[0].length }));
+      for (let i = found.length - 1; i >= 0 && statements.length === 0; i--) {
+        if (found[i].key !== 'a') continue;
+        const chain = [found[i]];
+        for (const next of 'bcd') { const hit = found.find(marker => marker.key === next && marker.start > chain[chain.length - 1].start); if (!hit) break; chain.push(hit); }
+        if (chain.length !== 4) continue;
+        content = body.slice(0, chain[0].start).trim();
+        statements = chain.map((marker, k) => {
+          let text = body.slice(marker.end, chain[k + 1]?.start ?? body.length).replace(/\s*\n\s*/g, ' ').trim();
+          const suffix = /\s*\((Đúng|Sai|Đ|S)\)\s*$/.exec(text);
+          if (suffix) text = text.slice(0, suffix.index).trim();
+          const verdict = suffix ? isTrueVerdict(suffix[1]) : tail.verdicts?.[marker.key];
+          return { key: marker.key, content: text, ...(verdict === undefined ? {} : { isCorrect: verdict }) };
+        });
+      }
+    }
+    return { number, content: content.trim(), choices, detected, statements };
   });
 
   const questions: Question[] = [];
-  parsed.forEach(({ number, content, choices, detected }, index) => {
+  parsed.forEach(({ number, content, choices, detected, statements }, index) => {
     if (!content) return;
+    if (statements.length === 4) {
+      questions.push({
+        id: `q_raw_${Date.now()}_${index + 1}`,
+        type: 'true_false_group',
+        difficulty: 'thong_hieu',
+        content,
+        sub_questions: statements,
+        // Only a complete set of verdicts becomes an answer; a missing one is never filled in.
+        correct_answer: statements.every(sub => sub.isCorrect !== undefined) ? statements.map(sub => `${sub.key}:${sub.isCorrect ? 'Đ' : 'S'}`).join(' ') : undefined,
+        step_by_step_solution: 'Chưa có lời giải chi tiết (bạn có thể nhờ AI giải).',
+        tags: ['Import_Raw'],
+      });
+      return;
+    }
     const answer = detected ?? keyList[number];
     questions.push({
       id: `q_raw_${Date.now()}_${index + 1}`,

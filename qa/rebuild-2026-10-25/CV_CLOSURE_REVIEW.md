@@ -82,3 +82,8 @@ Test đề dài 120 câu phát hiện: trước đây chỉ phân số và căn 
 - **Lỗi thật:** `parseRawVietnameseText` chưa từng có test. Khi thử, dạng đề phổ biến nhất (mỗi phương án A. B. C. D. một dòng) hoàn toàn không được nhận ra; chỉ dạng cả bốn phương án trên cùng một dòng mới chạy. Còn các lỗi: chữ hoa trong đề ("Cho tam giác ABC.") bị cắt thành phương án, "câu 2" giữa câu bị tách thành câu mới, không hiểu "Đáp án: B" hay bảng đáp án cuối đề, 2–3 phương án bị gán nhầm là trả lời ngắn, dòng tiêu đề đề thi thành một câu.
 - **Đã sửa:** viết lại hàm, giữ nguyên tên và kiểu trả về; `exam_parser` 11 ca đều đạt. Chạy cuối: SAFE 376/376 ([log](safe-claude-run9.log)).
 - **Chưa làm:** Gemini đang soạn bảng ca nhập đề (GEM-T2) để mở rộng kiểm; dạng đúng-sai nhóm, ngữ liệu đứng trước nhóm câu, công thức `\(...\)`, bộ phân tích LaTeX ExTest, và đường nhập bằng Word/ảnh (dùng AI) chưa kiểm.
+
+## Bổ sung: bộ phân tích LaTeX ExTest và đúng-sai nhóm khi nhập đề
+- **Bộ phân tích LaTeX ExTest** cũng chưa có test. Hai lỗi thật: không có `\True` thì mã tự điền đáp án **A** (trái quy tắc dự án "thiếu đáp án không tự điền"); đề có 2–3 phương án bị mất hết phương án nhưng vẫn gắn nhãn trắc nghiệm. Đã sửa, `ex_test_parser` 6 ca.
+- **Nhập văn bản thuần** nay nhận đúng-sai nhóm a) b) c) d); đáp án đọc từ hậu tố (Đ)/(S)/(Đúng)/(Sai) hoặc dòng "Đáp án: a) Đ, b) S…"; thiếu thì để trống. Bài tự luận có a) b) chỉ hai ý không bị ép thành đúng-sai. `exam_parser` 13 ca.
+- Chạy cuối: SAFE 384/384 ([log](safe-claude-run10.log)). Chưa chạy lại bộ HTTP và trình duyệt vì lượt này chỉ đổi hai hàm phân tích thuần và test của chúng.

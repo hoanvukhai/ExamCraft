@@ -72,3 +72,22 @@ test('a title line before the first question is not turned into a question', () 
   const questions = parse('ĐỀ KIỂM TRA GIỮA KỲ I - TOÁN 6\nThời gian làm bài: 45 phút\n\nCâu 1: Tính 1 + 1.\nA. 1\nB. 2\nC. 3\nD. 4\nCâu 2: Tính 2 + 2.\nA. 1\nB. 2\nC. 3\nD. 4');
   assert.equal(questions.length, 2); assert.equal(questions[0].content, 'Tính 1 + 1.');
 });
+
+test('four statements a) b) c) d) make a true-false group and the answer is read when it is given', () => {
+  const [plain, marked, listed, mixed] = parse('Câu 1: Cho hàm số $y=x^2$. Xét các mệnh đề sau:\na) Hàm số có tập xác định $\mathbb{R}$.\nb) Hàm số đồng biến trên $\mathbb{R}$.\nc) Đồ thị đi qua gốc tọa độ.\nd) Giá trị nhỏ nhất bằng 1.\n'
+    + 'Câu 2: Xét:\na) Một (Đ)\nb) Hai (S)\nc) Ba (Đúng)\nd) Bốn (Sai)\n'
+    + 'Câu 3: Xét:\na) Một\nb) Hai\nc) Ba\nd) Bốn\nĐáp án: a) Đ, b) S, c) Đ, d) S\n'
+    + 'Câu 4: Chọn đúng: A. x B. y C. z D. w');
+  assert.equal(plain.type, 'true_false_group'); assert.equal(plain.content, 'Cho hàm số $y=x^2$. Xét các mệnh đề sau:');
+  assert.deepEqual(plain.sub_questions!.map(sub => sub.key), ['a', 'b', 'c', 'd']); assert.equal(plain.sub_questions![0].content, 'Hàm số có tập xác định $\mathbb{R}$.');
+  assert.ok(plain.sub_questions!.every(sub => sub.isCorrect === undefined), 'no marks, no answers: nothing is invented');
+  assert.equal(plain.correct_answer, undefined);
+  assert.deepEqual(marked.sub_questions!.map(sub => sub.isCorrect), [true, false, true, false]); assert.equal(marked.sub_questions![0].content, 'Một');
+  assert.deepEqual(listed.sub_questions!.map(sub => sub.isCorrect), [true, false, true, false]); assert.ok(!listed.sub_questions![3].content.includes('Đáp án'));
+  assert.equal(mixed.type, 'multiple_choice', 'uppercase choices keep their own meaning');
+});
+
+test('lettered parts of an essay question are not forced into a true-false group', () => {
+  const [q] = parse('Câu 1: Giải các phương trình:\na) $x+1=2$\nb) $2x=4$');
+  assert.notEqual(q.type, 'true_false_group');
+});
