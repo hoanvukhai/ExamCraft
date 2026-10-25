@@ -168,3 +168,6 @@ Thêm test `instructions written inside an imported file stay data...` (HTTP 105
 
 ## Bổ sung 26/10: Word thật, đóng CV043 và CV026
 Mở bằng Microsoft Word thật (tự động hóa COM) 27 tệp xuất đa môn + 2 tệp hình/bảng biến thiên; xuất trang ra ảnh để xem. Tìm và sửa lỗi thật: xuống dòng trong ngữ liệu/câu bị gộp (docx-export, test `docx_line_breaks`, SAFE 450/450). CV046 giữ mở: thiếu bảng số liệu dạng Markdown và bản đồ. Ảnh kiểm ở tmp/xuat-mau-png (không vào Git).
+
+## Bổ sung 26/10: bảng Markdown thật, đóng CV046
+Thêm `src/lib/markdown-table.ts` (tách bảng, bỏ qua `|` trong công thức), dựng bảng ở web/in (`MathRenderer`) và Word (câu, ngữ liệu, lời giải; hàng tiêu đề lặp lại, hàng không bị cắt). SAFE 457/457, lint 0 lỗi, build đạt, pilot F2/F15/F18 đạt. Xem lại Word thật: bảng Tin 8 đúng. 6 ảnh kiểm lưu ở qa/rebuild-2026-10-25/anh-kiem-word. Chưa chạy CI đầy đủ (Codex đang làm gen 17).

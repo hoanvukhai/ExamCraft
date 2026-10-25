@@ -22,3 +22,16 @@ test('text without line breaks adds none', async () => {
   const xml = await body(exam('Một dòng', 'Một ngữ liệu'));
   assert.equal(breaks(xml, 'Một ngữ liệu', 'Một dòng'), 0);
 });
+
+test('a pipe table in a question, a passage or a solution becomes a real Word table with its formulas', async () => {
+  const table = '| $A$ | $B$ |\n|:---:|---:|\n| True | False |\n| False | True |';
+  const value = exam(`Bảng chân trị:\n\n${table}\n\nHãy xác định.`, `Ngữ liệu có bảng\n${table}`);
+  (value.questions[0] as { step_by_step_solution: string }).step_by_step_solution = `Lời giải\n${table}`;
+  const xml = await (async () => (await JSZip.loadAsync(await (await exportExamToDocx(value, true, false)).arrayBuffer())).file('word/document.xml')!.async('string'))();
+  const tables = xml.match(/<w:tbl>/g) ?? [];
+  assert.ok(tables.length >= 3, 'the question, the passage and the solution each get a table (the header block adds its own)');
+  assert.ok(!xml.includes('|:---:|') && !/<w:t[^>]*>[^<]*\| True/.test(xml), 'no raw table markup is left as text');
+  assert.ok(xml.includes('<w:tblHeader'), 'the header row repeats on a new page');
+  assert.ok(xml.includes('Hãy xác định.') && xml.includes('Bảng chân trị:'), 'text around the table is kept');
+  assert.ok((xml.match(/<m:oMath>/g) ?? []).length >= 6, 'formulas in cells are Word equations');
+});

@@ -4,6 +4,7 @@ import React, { useMemo } from 'react';
 import katex from 'katex';
 import 'katex/dist/contrib/mhchem.js';
 import { VariationTable } from './VariationTable';
+import { splitContentBlocks } from '@/lib/markdown-table';
 
 interface MathRendererProps {
   content: string;
@@ -18,6 +19,16 @@ interface MathRendererProps {
  * - [BANG_BIEN_THIEN] hoặc [BBT] : Bảng biến thiên trực quan
  */
 export const MathRenderer: React.FC<MathRendererProps> = ({ content, className = '', inline = false }) => {
+  const blocks = useMemo(() => (inline ? [{ kind: 'text' as const, text: content }] : splitContentBlocks(content)), [content, inline]);
+  if (blocks.some(block => block.kind === 'table')) {
+    return <div className={`math-rendered ${className}`}>{blocks.map((block, i) => block.kind === 'text'
+      ? (block.text.trim() ? <MathRenderer key={i} content={block.text} inline={false} /> : null)
+      : <div key={i} className="my-2 overflow-x-auto"><table className="border-collapse border border-black text-sm"><thead><tr>{block.header.map((cell, c) => <th key={c} className="border border-black px-2 py-1 font-semibold" style={{ textAlign: block.align[c] }}><MathRenderer content={cell} inline /></th>)}</tr></thead><tbody>{block.rows.map((row, r) => <tr key={r}>{row.map((cell, c) => <td key={c} className="border border-black px-2 py-1" style={{ textAlign: block.align[c] }}><MathRenderer content={cell} inline /></td>)}</tr>)}</tbody></table></div>)}</div>;
+  }
+  return <MathText content={content} className={className} inline={inline} />;
+};
+
+const MathText: React.FC<MathRendererProps> = ({ content, className = '', inline = false }) => {
   const renderedContent = useMemo(() => {
     if (!content) return '';
 

@@ -16,6 +16,7 @@ import {
 import { Exam, Figure } from '@/types/exam';
 import { computeExamMatrix, generateDocxMatrixTable } from './matrix-spec-generator';
 import { matchingDisplay, orderingDisplay } from './structured-question';
+import { splitContentBlocks } from './markdown-table';
 import { examPlanOutput } from './exam-plan-output';
 import { resolveHeaderLines } from './header-layout';
 import type { VariationTableData } from '@/components/VariationTable';
@@ -132,6 +133,44 @@ export function cleanLatexForWord(text: string): string {
 /**
  * Tách một chuỗi văn bản có lẫn công thức $...$ hoặc $$...$$ thành mảng các TextRun và Math element của docx (OMML)
  */
+/**
+ * Turns text that may contain pipe tables into paragraphs and real Word tables.
+ * `lead` is a run such as "Câu 1: " that stays at the start of the first paragraph.
+ */
+export function renderContentBlocksForWord(
+  text: string,
+  paragraph: { indent?: { left?: number; right?: number }; spacing?: { before?: number; after?: number } },
+  options: { fontSize?: number; italics?: boolean },
+  lead: TextRun[] = []
+): (Paragraph | Table)[] {
+  const blocks = splitContentBlocks(text ?? '');
+  const out: (Paragraph | Table)[] = [];
+  let leadUsed = false;
+  const fontSize = options.fontSize ?? 22;
+  for (const block of blocks) {
+    if (block.kind === 'text') {
+      if (!block.text.trim() && (leadUsed || !lead.length)) continue;
+      out.push(new Paragraph({ ...paragraph, children: [...(leadUsed ? [] : lead), ...renderLatexRunsForWord(block.text, options)] }));
+      leadUsed = true;
+      continue;
+    }
+    if (!leadUsed && lead.length) { out.push(new Paragraph({ ...paragraph, children: lead })); leadUsed = true; }
+    const cell = (value: string, align: 'left' | 'center' | 'right', bold: boolean) => new TableCell({
+      margins: { top: 40, bottom: 40, left: 80, right: 80 },
+      children: [new Paragraph({ alignment: align === 'center' ? AlignmentType.CENTER : align === 'right' ? AlignmentType.RIGHT : AlignmentType.LEFT, children: renderLatexRunsForWord(value, { fontSize: fontSize > 21 ? 21 : fontSize, bold, italics: options.italics }) })],
+    });
+    out.push(new Table({
+      width: { size: 100, type: WidthType.PERCENTAGE },
+      rows: [
+        new TableRow({ tableHeader: true, cantSplit: true, children: block.header.map((value, c) => cell(value, 'center', true)) }),
+        ...block.rows.map(row => new TableRow({ cantSplit: true, children: row.map((value, c) => cell(value, block.align[c], false)) })),
+      ],
+    }));
+    out.push(new Paragraph({ spacing: { after: 80 }, children: [] }));
+  }
+  return out;
+}
+
 export function renderLatexRunsForWord(
   rawText: string,
   options?: { fontSize?: number; font?: string; bold?: boolean; italics?: boolean }
@@ -485,11 +524,7 @@ export async function exportExamToDocx(
             }),
           ],
         }),
-        new Paragraph({
-          indent: { left: 300, right: 300 },
-          spacing: { after: 160 },
-          children: renderLatexRunsForWord(p.content, { fontSize: 20, italics: true }),
-        })
+        ...renderContentBlocksForWord(p.content, { indent: { left: 300, right: 300 }, spacing: { after: 160 } }, { fontSize: 20, italics: true })
       );
       docChildren.push(...renderFiguresForDocx(p.figures));
       if (p.source) docChildren.push(new Paragraph({ children: [new TextRun({ text: p.source, italics: true, size: 20 })] }));
@@ -507,7 +542,7 @@ export async function exportExamToDocx(
       if (section?.title || section?.label || section?.name) docChildren.push(new Paragraph({ children: [new TextRun({ text: section.title ?? section.label ?? section.name!, bold: true, size: 23 })], spacing: { before: 200, after: 100 } }));
       previousSection = q.sectionId;
     }
-    docChildren.push(new Paragraph({ spacing: { before: 140, after: 80 }, children: [new TextRun({ text: 'Câu ' + (index + 1) + ': ', bold: true, size: 22 }), ...renderLatexRunsForWord(q.content, { fontSize: 22 })] }));
+    docChildren.push(...renderContentBlocksForWord(q.content, { spacing: { before: 140, after: 80 } }, { fontSize: 22 }, [new TextRun({ text: 'Câu ' + (index + 1) + ': ', bold: true, size: 22 })]));
     if (q.passageId) {
       const passage = exam.passages?.find(p => p.id === q.passageId);
       docChildren.push(new Paragraph({ children: [new TextRun({ text: passage ? 'Theo ngữ liệu: ' + (passage.title ?? passage.id) : '[Thiếu ngữ liệu liên kết: ' + q.passageId + ']', italics: true, size: 20 })] }));
@@ -691,15 +726,7 @@ export async function exportExamToDocx(
       }
 
       if (q.step_by_step_solution && view !== 'answers') {
-        docChildren.push(
-          new Paragraph({
-            indent: { left: 400 },
-            spacing: { after: 120 },
-            children: [
-              ...renderLatexRunsForWord(q.step_by_step_solution, { fontSize: 20 }),
-            ],
-          })
-        );
+        docChildren.push(...renderContentBlocksForWord(q.step_by_step_solution, { indent: { left: 400 }, spacing: { after: 120 } }, { fontSize: 20 }));
       }
       parallelAnswers.push(docChildren.slice(answerStart));
     });
