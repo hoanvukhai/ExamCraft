@@ -147,7 +147,7 @@ async function flow(id: string, action: (f: Fixture) => Promise<void>, firstPass
   finally { if (f) { try { await f.cleanup(); cleanupComplete = true; } catch (e) { error ??= e; } } }
   const message = error instanceof Error ? error.message.replaceAll(f?.password ?? '\0', '[fixture-password]') : error ? 'Unknown pilot failure' : undefined;
   results.push({ id, status: error ? 'FAIL' : 'PASS', durationMs: Date.now() - start, cleanupComplete, ...(message ? { error: message } : {}) });
-  fs.mkdirSync(reportDir, { recursive: true }); const evidence=JSON.stringify({ run, sourceSha256, buildId, browserVersion, browserExecutable: process.env.PILOT_BROWSER_PATH, requestedFlow: process.env.PILOT_FLOW ?? 'F1-F7,F9-F23', checkedAt: new Date().toISOString(), environment: 'isolatedTest localhost3117 / examcraft_test_20261022', realAiCalls: false, results }, null, 2);
+  fs.mkdirSync(reportDir, { recursive: true }); const evidence=JSON.stringify({ run, sourceSha256, buildId, browserVersion, browserExecutable: process.env.PILOT_BROWSER_PATH, requestedFlow: process.env.PILOT_FLOW ?? 'F1-F7,F9-F24', checkedAt: new Date().toISOString(), environment: 'isolatedTest localhost3117 / examcraft_test_20261022', realAiCalls: false, results }, null, 2);
   writeQaReport(`${reportDir}/pilot-results.json`,evidence);writeQaReport(`${reportDir}/pilot-run-${run}.json`,evidence);
   if (error) throw Error(`${id}: ${message}`);
 }
@@ -866,4 +866,59 @@ test('F23 manual edits, undo redo and a retried bank save preserve links without
   await f.page.getByText('Đã lưu bản sao riêng vào ngân hàng', { exact: true }).first().waitFor();
   if (bankBodies.length > 1) { const diff = (a: unknown, b: unknown, prefix = ''): string[] => a && b && typeof a === 'object' && typeof b === 'object' ? [...new Set([...Object.keys(a), ...Object.keys(b)])].flatMap(key => diff((a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key], prefix + '.' + key)) : JSON.stringify(a) === JSON.stringify(b) ? [] : [prefix]; console.log('F23 retry changed fields', diff(bankBodies[0], bankBodies[1])); }
   assert.equal(await f.db.question.count({ where: { ownerId: f.ids[0], id: { startsWith: 'q_save_' } } }), 1);
+}));
+
+
+test('F24 comment resolution respects roles and private notes download as readable Markdown', { timeout: 180000 }, () => flow('F24', async f => {
+  await authenticated(f); const id = await seedExam(f); await openExam(f, id);
+  const version = (await f.api('/api/exams/' + id)).document.version;
+  await click(f.page, 'Cùng soạn · Góp ý · Lịch sử');
+  const panel = f.page.getByRole('dialog', { name: 'Cộng tác và lịch sử', exact: true });
+  await panel.getByLabel('Câu được góp ý').waitFor({ state: 'attached' });
+  await openDetails(f.page, 'Góp ý');
+  await panel.getByLabel('Câu được góp ý').selectOption({ index: 1 });
+  const questionId = await panel.getByLabel('Câu được góp ý').inputValue();
+  await panel.getByLabel('Nội dung góp ý').fill('F24 OWNER COMMENT'); await panel.getByRole('button', { name: 'Gửi góp ý', exact: true }).click();
+  const commentCard = (page: Page, body: string) => page.locator('div.border-t').filter({ has: page.getByText(body, { exact: true }) });
+  const ownerCard = commentCard(panel.page(), 'F24 OWNER COMMENT');
+  await ownerCard.getByText('F24 OWNER COMMENT', { exact: true }).waitFor();
+  assert.match(await ownerCard.innerText(), /Câu 1: PILOT Q1/); assert.ok((await ownerCard.innerText()).includes('phiên bản ' + version));
+  const ownerComment = await f.db.examComment.findFirstOrThrow({ where: { examId: id, body: 'F24 OWNER COMMENT' } });
+  assert.equal(ownerComment.questionId, questionId); assert.equal(ownerComment.version, version);
+  await ownerCard.getByRole('button', { name: 'Đánh dấu đã giải quyết', exact: true }).click();
+  await ownerCard.getByText('Đã giải quyết bởi Pilot F24 0', { exact: true }).waitFor();
+  assert.ok((await f.db.examComment.findUniqueOrThrow({ where: { id: ownerComment.id } })).resolvedAt);
+  await ownerCard.getByRole('button', { name: 'Mở lại', exact: true }).click(); await ownerCard.getByText('Chưa giải quyết', { exact: true }).waitFor();
+  assert.equal((await f.db.examComment.findUniqueOrThrow({ where: { id: ownerComment.id } })).resolvedAt, null);
+
+  await f.api('/api/exams/' + id + '/collaborators', 'POST', { email: f.emails[1], role: 'VIEWER' });
+  const peer = await f.context(), b = await peer.newPage(); await login(b, f.emails[1], f.password); await b.waitForURL(origin + '/'); await b.goto(origin + '/editor/' + id);
+  await click(b, 'Cùng soạn · Góp ý · Lịch sử'); await openDetails(b, 'Góp ý');
+  const otherPanel = b.getByRole('dialog', { name: 'Cộng tác và lịch sử', exact: true });
+  await otherPanel.getByText('Chỉ xem', { exact: true }).waitFor();
+  assert.equal(await otherPanel.getByRole('button', { name: 'Đánh dấu đã giải quyết', exact: true }).count(), 0);
+  assert.equal(await otherPanel.getByRole('button', { name: 'Gửi góp ý', exact: true }).count(), 0);
+  const forbiddenResolve = () => peer.request.patch(origin + '/api/exams/' + id + '/comments', { headers: { Origin: origin, 'x-examcraft-user': f.ids[1] }, data: { commentId: ownerComment.id, resolved: true } });
+  assert.equal((await forbiddenResolve()).status(), 403);
+
+  await f.api('/api/exams/' + id + '/collaborators', 'POST', { email: f.emails[1], role: 'COMMENTER' });
+  await b.reload(); await click(b, 'Cùng soạn · Góp ý · Lịch sử'); await otherPanel.getByLabel('Nội dung góp ý').waitFor({ state: 'attached' }); await openDetails(b, 'Góp ý');
+  await otherPanel.getByLabel('Câu được góp ý').selectOption({ index: 2 }); await otherPanel.getByLabel('Nội dung góp ý').fill('F24 PEER COMMENT'); await otherPanel.getByRole('button', { name: 'Gửi góp ý', exact: true }).click();
+  const ownPeerCard = commentCard(b, 'F24 PEER COMMENT'); await ownPeerCard.getByText('F24 PEER COMMENT', { exact: true }).waitFor();
+  assert.equal(await commentCard(b, 'F24 OWNER COMMENT').getByRole('button', { name: 'Đánh dấu đã giải quyết', exact: true }).count(), 0);
+  assert.equal((await forbiddenResolve()).status(), 403);
+  await ownPeerCard.getByRole('button', { name: 'Đánh dấu đã giải quyết', exact: true }).click(); await ownPeerCard.getByText('Đã giải quyết bởi Pilot F24 1', { exact: true }).waitFor();
+  const peerComment = await f.db.examComment.findFirstOrThrow({ where: { examId: id, body: 'F24 PEER COMMENT' } }); assert.ok(peerComment.resolvedAt); assert.equal(peerComment.resolvedById, f.ids[1]);
+
+  await panel.getByRole('button', { name: 'Đóng', exact: true }).click();
+  const secret = 'pilot-f24-canary-key-0123456789'; await f.api('/api/user/keys', 'POST', { apiKey: secret, label: 'F24 fixture only' });
+  await f.page.getByTitle('Xem và chọn ghi chú, cách trình bày riêng cho trợ lý').click(); await click(f.page, 'Dạy AI quy tắc mới');
+  await f.page.getByPlaceholder('Ví dụ: Không cho thử ngược nghiệm Casio').fill('F24 PRIVATE MANUAL NOTE');
+  await f.page.getByPlaceholder(/^Ví dụ: Khi ra câu hỏi phương trình/).fill('F24 chỉ là ghi chú thử do giáo viên nhập.'); await click(f.page, 'Lưu ghi chú');
+  await waitUntil(async () => await f.db.teacherAiMemory.count({ where: { userId: f.ids[0], title: 'F24 PRIVATE MANUAL NOTE' } }) === 1, 'Manual note must persist before export');
+  const [download] = await Promise.all([f.page.waitForEvent('download'), click(f.page, 'Tải bản đọc được (.md)')]);
+  assert.match(download.suggestedFilename(), /\.md$/); const file = await download.path(); assert.ok(file); const markdown = fs.readFileSync(file, 'utf8');
+  for (const expected of ['F24 PRIVATE MANUAL NOTE', 'F24 chỉ là ghi chú thử do giáo viên nhập.', 'Nguồn:', 'Bằng chứng:', 'Điều chưa chắc:']) assert.ok(markdown.includes(expected), 'Markdown must include ' + expected);
+  assert.ok(!markdown.includes(secret)); assert.ok(!/apiKey|keyEncrypted|keyIv|keyTag/i.test(markdown));
+  writeQaReport(reportDir + '/gen17-f24-' + run + '.json', JSON.stringify({ run, version, ownerResolvedAndReopened: true, viewerResolutionForbidden: true, commenterOnlyOwnResolution: true, manualNoteCreatedThroughUi: true, manualEvidenceFieldAvailable: false, markdownHasRequiredLabels: true, apiKeyCanaryExcluded: true, realAiCalls: false }, null, 2));
 }));
