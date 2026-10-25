@@ -75,11 +75,15 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const wordInputRef = useRef<HTMLInputElement>(null);
+  const [previousInput, setPreviousInput] = useState({ sourceType, rawText, selectedImage, wordFile, isOpen });
+  if (previousInput.sourceType !== sourceType || previousInput.rawText !== rawText || previousInput.selectedImage !== selectedImage || previousInput.wordFile !== wordFile || previousInput.isOpen !== isOpen) {
+    setPreviousInput({ sourceType, rawText, selectedImage, wordFile, isOpen });
+    setParsedQuestions([]); setParsedPassages([]); setImportWarnings([]);
+    setStatusMessage(null); setErrorMessage(null); setIsLoading(false);
+  }
   useEffect(() => {
     const gate = new RequestGate(); requestGate.current = gate;
     parseRequest.current += 1;
-    setParsedQuestions([]); setParsedPassages([]); setImportWarnings([]);
-    setStatusMessage(null); setErrorMessage(null); setIsLoading(false);
     return () => { gate.dispose(); parseRequest.current++; };
   }, [sourceType, rawText, selectedImage, wordFile, isOpen]);
   useEffect(() => () => { readContext.current++; imageRead.current++; textRead.current++; }, [isOpen, sourceType]);
@@ -632,7 +636,7 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
                 <div className="h-full flex flex-col items-center justify-center p-8 text-center text-[#5f6368] dark:text-[#9aa0a6]">
                   <Layers className="w-10 h-10 text-[#5f6368] dark:text-[#9aa0a6] mb-2 opacity-40" />
                   <p className="text-xs">Chưa có câu hỏi nào được bóc tách.</p>
-                  <p className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] mt-1">Chọn nguồn bên trái và bấm "Bắt đầu phân rã" để xem kết quả tại đây.</p>
+                  <p className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] mt-1">Chọn nguồn bên trái và bấm &quot;Bắt đầu phân rã&quot; để xem kết quả tại đây.</p>
                 </div>
               )}
             </div>

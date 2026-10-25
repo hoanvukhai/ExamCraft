@@ -55,32 +55,18 @@ export default function AdminAiPage() {
     setTimeout(() => setToastMsg(null), 4000);
   };
 
-  const fetchAiData = async () => {
-    setIsLoading(true);
-    try {
-      const res = await fetch('/api/admin/ai');
-      if (res.status === 401) {
-        router.push('/login');
-        return;
-      }
-      if (res.status === 403) {
-        alert('Bạn không có quyền quản trị viên!');
-        router.push('/');
-        return;
-      }
-      const data = await res.json();
-      setKeyStates(data.keyStates || []);
-      setStats(data.stats || { totalToday: 0, successToday: 0, errorToday: 0, successRate: 100 });
-      setLogs(data.recentLogs || []);
-    } catch {
-      console.error('Lỗi khi tải dữ liệu AI');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const loadAiData = () => fetch('/api/admin/ai').then(async res => {
+    if (res.status === 401) { router.push('/login'); return; }
+    if (res.status === 403) { alert('Bạn không có quyền quản trị viên!'); router.push('/'); return; }
+    const data = await res.json();
+    setKeyStates(data.keyStates || []);
+    setStats(data.stats || { totalToday: 0, successToday: 0, errorToday: 0, successRate: 100 });
+    setLogs(data.recentLogs || []);
+  }).catch(() => { console.error('Lỗi khi tải dữ liệu AI'); }).finally(() => setIsLoading(false));
+  const fetchAiData = () => { setIsLoading(true); return loadAiData(); };
 
   useEffect(() => {
-    fetchAiData();
+    void loadAiData();
     const interval = setInterval(fetchAiData, 10000); // Polling mỗi 10 giây
     return () => clearInterval(interval);
   }, []);

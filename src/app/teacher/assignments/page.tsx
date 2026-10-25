@@ -43,20 +43,11 @@ export default function TeacherAssignmentsListPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
 
-  const fetchAssignments = useCallback(async () => {
+  const fetchAssignments = useCallback(() => {
     if (!accountOwnerId) return;
-    try {
-      setLoading(true);
-      const res = await accountRequest('/api/assignments', { cache: 'no-store' });
-      const data = await res.json();
-      if (res.ok) {
-        setAssignments(data.assignments || []);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+    return accountRequest('/api/assignments', { cache: 'no-store' }).then(async res => {
+      const data = await res.json(); if (res.ok) setAssignments(data.assignments || []);
+    }).catch(err => { console.error(err); }).finally(() => setLoading(false));
   }, [accountOwnerId, accountRequest]);
 
   useEffect(() => {

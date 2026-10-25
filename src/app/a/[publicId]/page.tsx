@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef, use } from 'react';
+import React, { useState, useEffect, useCallback, useRef, use, useLayoutEffect, useSyncExternalStore } from 'react';
+import Link from 'next/link';
 import { MathRenderer } from '@/components/MathRenderer';
 import { VariationTable, VariationTableData } from '@/components/VariationTable';
 import { FunctionPlot, FunctionPlotData } from '@/components/FunctionPlot';
@@ -75,7 +76,7 @@ interface AttemptData {
   attemptNo: number;
   startedAt: string;
   deadlineAt?: string;
-  draft: Record<string, any>;
+  draft: Record<string, unknown>;
   draftRevision: string;
   studentName: string;
 }
@@ -117,6 +118,13 @@ function StructuredAnswer({ question, value, onChange }: { question: Question; v
   return null;
 }
 
+const emptyStudentToken = () => '';
+const readStudentToken = () => new URLSearchParams(window.location.search).get('token') || '';
+function subscribeStudentLocation(changed: () => void) {
+  window.addEventListener('popstate', changed);
+  return () => window.removeEventListener('popstate', changed);
+}
+
 function StudentExamContent({
   params,
 }: {
@@ -138,13 +146,17 @@ function StudentExamContent({
   const [starting, setStarting] = useState(false);
   const [pin, setPin] = useState('');
   const [joinCode, setJoinCode] = useState('');
-  const [personalToken, setPersonalToken] = useState('');
+  const urlToken = useSyncExternalStore(subscribeStudentLocation, readStudentToken, emptyStudentToken);
+  const tokenSource = publicId + ':' + urlToken;
+  const [tokenDraft, setTokenDraft] = useState({ source: '', value: '' });
+  const personalToken = tokenDraft.source === tokenSource ? tokenDraft.value : urlToken;
+  const setPersonalToken = (value: string) => setTokenDraft({ source: tokenSource, value });
   const [saveError, setSaveError] = useState<string | null>(null);
   const [journalNotice, setJournalNotice] = useState<string | null>(null);
 
   // Trạng thái đang làm bài
   const [attempt, setAttempt] = useState<AttemptData | null>(null);
-  const [answers, setAnswers] = useState<Record<string, any>>({});
+  const [answers, setAnswers] = useState<Record<string, unknown>>({});
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [lastSaved, setLastSaved] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -158,7 +170,7 @@ function StudentExamContent({
   const [canStartAnother, setCanStartAnother] = useState(false);
 
   const answersRef = useRef(answers);
-  answersRef.current = answers;
+  useLayoutEffect(() => { answersRef.current = answers; }, [answers]);
   const draftRevisionRef = useRef('');
   const activeAttemptRef = useRef<string | null>(null);
   const draftSaveRef = useRef<Promise<void> | null>(null);
@@ -172,7 +184,6 @@ function StudentExamContent({
 
   // 1. Tải thông tin đề bài từ Server
   useEffect(() => {
-    setPersonalToken(new URLSearchParams(window.location.search).get('token') || '');
     async function loadAssignment() {
       try {
         setLoading(true);
@@ -287,7 +298,7 @@ function StudentExamContent({
 
   // 3. Tự động lưu nháp (Auto-Save Draft)
   const saveDraft = useCallback(
-    async (currentAnswers: Record<string, any>) => {
+    async (currentAnswers: Record<string, unknown>) => {
       if (!attempt?.id || draftSaveRef.current || draftConflictRef.current || submittingRef.current) return;
       const savingAttemptId = attempt.id;
       const savingContext = draftContextRef.current;
@@ -333,7 +344,7 @@ function StudentExamContent({
       await operation;
       if (draftSaveRef.current === operation) draftSaveRef.current = null;
     },
-    [attempt?.id]
+    [attempt]
   );
 
   // Keep edits even during conflicts, still bound to their original server revision.
@@ -416,7 +427,7 @@ function StudentExamContent({
   };
 
   // 6. Nộp bài thi
-  const handleFinalSubmit = async (isAuto = false) => {
+  async function handleFinalSubmit(isAuto = false) {
     if (!attempt?.id || submittingRef.current) return;
     if (draftConflictRef.current && !isAuto) { setSaveError('Nháp đã thay đổi ở trang khác. Hãy tải bản đang nhập trước khi mở lại; chưa nộp bản cũ.'); setShowSubmitModal(false); return; }
 
@@ -468,7 +479,7 @@ function StudentExamContent({
       submittingRef.current = false;
       setSubmitting(false);
     }
-  };
+  }
 
   // Tính số câu đã hoàn thành
   const answeredCount = questions.reduce((acc, q) => {
@@ -502,12 +513,12 @@ function StudentExamContent({
           <ShieldAlert className="w-14 h-14 text-[#c5221f] dark:text-[#f28b82] mx-auto mb-4" />
           <h2 className="text-xl font-bold text-[#202124] dark:text-[#e3e3e3] mb-2">Không thể truy cập bài thi</h2>
           <p className="text-[#5f6368] dark:text-[#9aa0a6] text-sm mb-6 leading-relaxed">{error}</p>
-          <a
+          <Link
             href="/"
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1a73e8] dark:bg-[#8ab4f8] hover:bg-[#1557b0] dark:hover:bg-[#aecbfa] text-white dark:text-[#202124] text-sm font-semibold rounded-full transition-all shadow-xs"
           >
             <ArrowLeft className="w-4 h-4" /> Về trang chủ
-          </a>
+          </Link>
         </div>
       </div>
     );
@@ -931,7 +942,7 @@ function StudentExamContent({
                   <div className="space-y-3 mt-4">
                     {q.payload.sub_questions.map((sub) => {
                       const groupVal = typeof currentAns === 'object' && currentAns !== null ? currentAns : {};
-                      const userVal = groupVal[sub.key];
+                      const userVal = (groupVal as Record<string, unknown>)[sub.key];
 
                       return (
                         <div
@@ -1013,7 +1024,7 @@ function StudentExamContent({
                 let isFilled = q.type === 'ORDERING' && Array.isArray(ans) && ans.length > 0 || q.type === 'MATCHING' && ans && typeof ans === 'object' && !Array.isArray(ans) && Object.values(ans).some(value => typeof value === 'string' && value);
                 if (q.type === 'MULTIPLE_CHOICE' && ans) isFilled = true;
                 if (['SHORT_ANSWER', 'FILL_BLANK', 'ESSAY', 'MATCHING', 'ORDERING'].includes(q.type) && typeof ans === 'string' && ans.trim()) isFilled = true;
-                if (q.type === 'TRUE_FALSE_GROUP' && typeof ans === 'object' && Object.keys(ans).length > 0)
+                if (q.type === 'TRUE_FALSE_GROUP' && ans !== null && typeof ans === 'object' && Object.keys(ans).length > 0)
                   isFilled = true;
 
                 return (

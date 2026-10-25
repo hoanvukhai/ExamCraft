@@ -99,7 +99,8 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
   const [folders, setFolders] = useState<FolderData[]>([]);
   const [exams, setExams] = useState<ExamSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [page, setPage] = useState(1);
+  const [page, setPageValue] = useState(1);
+  const setPage = (value: React.SetStateAction<number>) => { setIsLoading(true); setPageValue(value); };
   const [totalPages, setTotalPages] = useState(1);
   const [totalExams, setTotalExams] = useState(0);
   const loadSequence = useRef(0);
@@ -142,38 +143,19 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
   };
 
   // Nạp trạng thái Khóa AI
-  const loadKeyStatus = async () => {
-    try {
-      const res = await accountFetch(currentUser.id, '/api/user/keys');
-      if (res.ok) {
-        const data = await res.json();
-        const activeKeys = (data.keys || []).filter((k: { isActive: boolean }) => k.isActive);
-        setHasActiveKey(activeKeys.length > 0);
-        setKeyCount(activeKeys.length);
-      }
-    } catch {
-      // ignore
+  const loadKeyStatus = () => accountFetch(currentUser.id, '/api/user/keys').then(async res => {
+    if (res.ok) {
+      const data = await res.json(); const activeKeys = (data.keys || []).filter((key: { isActive: boolean }) => key.isActive);
+      setHasActiveKey(activeKeys.length > 0); setKeyCount(activeKeys.length);
     }
-  };
-
-  // Nạp danh sách Thư mục
-  const loadFolders = async () => {
-    try {
-      const res = await accountFetch(currentUser.id, '/api/folders');
-      if (res.ok) {
-        const data = await res.json();
-        setFolders(data.folders || []);
-      }
-    } catch (e) {
-      console.error('Lỗi nạp thư mục:', e);
-    }
-  };
+  }).catch(() => { /* Keep the last acknowledged state if offline. */ });
+  const loadFolders = () => accountFetch(currentUser.id, '/api/folders').then(async res => {
+    if (res.ok) { const data = await res.json(); setFolders(data.folders || []); }
+  }).catch(error => { console.error('Lỗi nạp thư mục:', error); });
 
   // Nạp danh sách Đề thi theo bộ lọc
-  const loadExams = async () => {
+  const readExams = () => {
     const sequence = ++loadSequence.current;
-    setIsLoading(true);
-    try {
       const params = new URLSearchParams();
       params.set('page', String(page)); params.set('limit', '20');
       if (searchQuery) params.append('search', searchQuery);
@@ -191,7 +173,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
         }
       }
 
-      const res = await accountFetch(currentUser.id, `/api/exams?${params.toString()}`);
+      return accountFetch(currentUser.id, `/api/exams?${params.toString()}`).then(async res => {
       if (res.ok) {
         const data = await res.json();
         if (sequence !== loadSequence.current) return;
@@ -203,24 +185,23 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
         const data = await res.json();
         if (sequence === loadSequence.current) showToast(data.error || 'Chưa tải được kho đề.');
       }
-    } catch (e) {
-      console.error('Lỗi nạp danh sách đề thi:', e);
-    } finally {
-      if (sequence === loadSequence.current) setIsLoading(false);
-    }
+      }).catch(error => { console.error('Lỗi nạp danh sách đề thi:', error); }).finally(() => {
+        if (sequence === loadSequence.current) setIsLoading(false);
+      });
   };
+  const loadExams = () => { setIsLoading(true); return readExams(); };
 
   useEffect(() => {
     loadKeyStatus();
     loadFolders();
   }, []);
 
-  useEffect(() => {
-    setPage(1);
-  }, [currentView, selectedFolderId, selectedSubject, selectedGrade, searchQuery]);
+  const filters = JSON.stringify([currentUser.id, currentView, selectedFolderId, selectedSubject, selectedGrade, searchQuery]);
+  const [previousFilters, setPreviousFilters] = useState(filters);
+  if (previousFilters !== filters) { setPreviousFilters(filters); setPage(1); }
 
   useEffect(() => {
-    loadExams();
+    void readExams();
   }, [currentView, selectedFolderId, selectedSubject, selectedGrade, searchQuery, page]);
 
   // Tạo thư mục mới
@@ -807,7 +788,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
             {([{ value: 'all', name: 'Tất cả' }, { value: 'starred', name: 'Quan trọng' }, { value: 'recent', name: 'Gần đây' }, { value: 'trash', name: 'Thùng rác' }] as const).map(view => <button key={view.value} type="button" className={`border rounded-lg p-2 ${currentView === view.value ? 'bg-blue-600 text-white' : ''}`} onClick={() => { setCurrentView(view.value); setSelectedFolderId(null); }}>{view.name}</button>)}
             <button type="button" className="border rounded-lg p-2" onClick={() => { setTargetParentFolderId(null); setIsCreateFolderModalOpen(true); }}>Tạo thư mục</button>
             <select aria-label="Chọn thư mục" className="border rounded-lg p-2 bg-transparent" value={selectedFolderId ?? ''} onChange={e => { setSelectedFolderId(e.target.value || null); setCurrentView('all'); }}><option value="">Mọi thư mục</option>{folders.flatMap(folder => [folder, ...(folder.children ?? [])]).map(folder => <option key={folder.id} value={folder.id}>{folder.name}</option>)}</select>
-            <a href="/teacher/groups" className="border rounded-lg p-2">Lớp học</a><a href="/teacher/assignments" className="border rounded-lg p-2">Bài đã giao</a>
+            <Link href="/teacher/groups" className="border rounded-lg p-2">Lớp học</Link><Link href="/teacher/assignments" className="border rounded-lg p-2">Bài đã giao</Link>
             <input aria-label="Tìm đề trong kho" placeholder="Tìm tên đề..." className="border rounded-lg p-2 bg-transparent flex-1 min-w-40" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
           </nav>
           {/* Top Quick Actions Banner: 3 thẻ tạo đề */}

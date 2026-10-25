@@ -1,6 +1,6 @@
 /* One command that runs every check in order and stops at the first failure.
- *   npm run ci            type check, safe tests, build, isolated server, HTTP tests, browser flows
- *   npm run ci -- --quick type check and safe tests only (no database, no browser)
+ *   npm run ci            type check, lint, safe tests, build, isolated server, HTTP tests, browser flows
+ *   npm run ci -- --quick type check, lint and safe tests only (no database, no browser)
  * Everything that writes uses the dedicated test database through the guarded scripts; nothing here touches the main database
  * or the real AI service (the test server is pointed at a local imitation of the provider).
  */
@@ -32,6 +32,7 @@ async function health() {
 
 (async () => {
   step('Type check', npm, ['exec', '--', 'tsc', '--noEmit', '-p', '.']);
+  step('Lint', npm, ['run', 'lint']);
   step('Safe tests (no database, no AI)', npm, ['test']);
   if (quick) finish('All quick checks passed');
   if (await health()) finish('FAILED at: a server is already running on port 3117; stop it so the tests cannot hit an old build');

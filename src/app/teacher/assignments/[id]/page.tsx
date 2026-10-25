@@ -55,6 +55,13 @@ interface AssignmentStats {
   };
 }
 
+interface MonitorAssignment {
+  id: string; publicId: string; title: string; status: string;
+  assessmentMode?: AssessmentMode; durationMinutes?: number | null;
+  opensAt?: string | null; closesAt?: string | null; maxAttempts?: number;
+  joinCode?: string | null; group?: { name: string } | null;
+}
+
 interface ItemAnalysis {
   questionId: string;
   questionIndex: number;
@@ -115,7 +122,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [lastRefreshed, setLastRefreshed] = useState<string>('');
 
-  const [assignment, setAssignment] = useState<any>(null);
+  const [assignment, setAssignment] = useState<MonitorAssignment | null>(null);
   const [stats, setStats] = useState<AssignmentStats | null>(null);
   const [itemAnalysis, setItemAnalysis] = useState<ItemAnalysis[]>([]);
   const [attempts, setAttempts] = useState<StudentAttemptItem[]>([]);
@@ -127,7 +134,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
   // Modal xem chi tiết bài làm & chấm tay
   const [selectedAttemptId, setSelectedAttemptId] = useState<string | null>(null);
   const [attemptDetail, setAttemptDetail] = useState<{
-    attempt: any;
+    attempt: { id: string; studentName: string; assessmentMode?: AssessmentMode; score: number | null; maxScore: number | null };
     questions: AttemptDetailQuestion[];
     gradingHistory?: GradeHistoryItem[];
     historyHasMore?: boolean;
@@ -165,10 +172,9 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
   };
 
   // Tải dữ liệu bài thi
-  const fetchAssignmentData = useCallback(async () => {
+  const fetchAssignmentData = useCallback(() => {
     if (!accountOwnerId) return;
-    try {
-      const res = await accountRequest(`/api/teacher/assignments/${id}`, { cache: 'no-store' });
+    return accountRequest(`/api/teacher/assignments/${id}`, { cache: 'no-store' }).then(async res => {
       const data = await res.json();
 
       if (!res.ok) {
@@ -188,11 +194,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
           .toString()
           .padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`
       );
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+    }).catch(err => { console.error(err); }).finally(() => setLoading(false));
   }, [id, accountOwnerId, accountRequest]);
 
   useEffect(() => {
@@ -941,20 +943,17 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                   const previewOpen = restorePreview?.eventId === entry.id && restorePreview.attemptId === attemptDetail.attempt.id;
                   const sides = (['before', 'after'] as const).map(side => ({ side, read: history[side] }));
                   const unusable = sides.find(item => !item.read.ok);
+                  const target = sides.find(item => item.side === restorePreview?.side)?.read;
+                  const hasDraft = question ? isGradeDraftDirty(question, currentDrafts[question.questionId], numericGrading) : false;
+                  const changed = restorePreview?.base !== question?.gradeRevision;
+                  const state = target?.ok ? target.state : null;
                   return <li key={entry.id} className="border-t pt-2">
                   <p>{new Date(entry.createdAt).toLocaleString('vi-VN')} · Câu {question?.index ?? 'trong bản đề'}: {history.before.ok && history.after.ok ? numericGrading ? `${history.before.state.earned} → ${history.after.state.earned} điểm` : 'Thay đổi nhận xét' : 'Chưa đọc đủ trạng thái của lần chấm này.'}{history.restored ? ' (khôi phục từ một lần chấm trước)' : ''}</p>
                   {history.after.ok && history.before.ok && history.after.state.comment !== history.before.state.comment && <p>Nhận xét mới: {history.after.state.comment || '(để trống)'}</p>}
                   {!question ? <p>Câu này không còn trong bản đề nên không khôi phục được.</p> : unusable && !unusable.read.ok ? <p>Không khôi phục được lần này: {unusable.read.message}</p> : !previewOpen && <div className="flex gap-2 mt-1">
                     {sides.map(({ side }) => <button key={side} type="button" disabled={savingGrade} onClick={() => setRestorePreview({ attemptId: attemptDetail.attempt.id, eventId: entry.id, side, questionKey: question.questionId, base: question.gradeRevision })} className="px-3 py-1 border rounded-full cursor-pointer disabled:opacity-50">{side === 'before' ? 'Xem trước: khôi phục trạng thái trước lần này' : 'Xem trước: khôi phục trạng thái sau lần này'}</button>)}
                   </div>}
-                  {previewOpen && question && restorePreview && (() => {
-                    const target = sides.find(item => item.side === restorePreview.side)?.read;
-                    const draft = currentDrafts[question.questionId];
-                    const hasDraft = isGradeDraftDirty(question, draft, numericGrading);
-                    const changed = restorePreview.base !== question.gradeRevision;
-                    if (!target?.ok) return null;
-                    const state = target.state;
-                    return <div role="group" aria-label="Xem trước khôi phục" className="mt-2 p-3 rounded-xl border border-[#1a73e8] space-y-1">
+                  {previewOpen && question && restorePreview && state && <div role="group" aria-label="Xem trước khôi phục" className="mt-2 p-3 rounded-xl border border-[#1a73e8] space-y-1">
                       <p className="font-semibold">Khôi phục câu {question.index} về trạng thái {restorePreview.side === 'before' ? 'trước' : 'sau'} lần chấm này</p>
                       <p>Hiện tại: {isPendingGrade(question, numericGrading) ? 'Chờ chấm' : numericGrading ? `${question.earned} điểm` : 'Bài nhận xét/khảo sát'} · Nhận xét: {question.teacherComment === null || question.teacherComment === undefined ? '(chưa có)' : question.teacherComment || '(để trống)'}</p>
                       <p>Sau khôi phục: {!numericGrading ? state.manualScore === null ? 'Chờ nhận xét' : 'Đã nhận xét' : state.manualScore === null ? (state.isCorrect === null && state.earned === 0 ? 'Chờ chấm (chưa có điểm chấm tay)' : `${state.earned} điểm (điểm tự động, chưa chấm tay)`) : `${state.manualScore} điểm (chấm tay)`} · Nhận xét: {state.comment === null ? '(chưa có)' : state.comment || '(để trống)'}</p>
@@ -962,12 +961,11 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                       {hasDraft && <p role="status" className="text-amber-900">Câu này đang có chỉnh sửa chưa lưu. Hãy lưu hoặc bỏ chỉnh sửa trước khi khôi phục.</p>}
                       {changed && <p role="status" className="text-amber-900">Điểm hoặc nhận xét của câu đã đổi từ lúc xem trước. Hãy hủy rồi xem trước lại.</p>}
                       <div className="flex gap-2 pt-1">
-                        <button type="button" onClick={handleConfirmRestore} disabled={savingGrade || hasDraft || changed} className="px-3 py-1 rounded-full bg-[#1a73e8] text-white font-semibold disabled:opacity-40 cursor-pointer">{savingGrade ? 'Đang khôi phục...' : 'Xác nhận khôi phục'}</button>
+                        <button type="button" onClick={() => void handleConfirmRestore()} disabled={savingGrade || hasDraft || changed} className="px-3 py-1 rounded-full bg-[#1a73e8] text-white font-semibold disabled:opacity-40 cursor-pointer">{savingGrade ? 'Đang khôi phục...' : 'Xác nhận khôi phục'}</button>
                         {hasDraft && <button type="button" onClick={() => discardDraft(question.questionId)} disabled={savingGrade} className="px-3 py-1 border rounded-full cursor-pointer disabled:opacity-40">Bỏ chỉnh sửa của câu này</button>}
                         <button type="button" onClick={() => setRestorePreview(null)} disabled={savingGrade} className="px-3 py-1 border rounded-full cursor-pointer disabled:opacity-40">Hủy</button>
                       </div>
-                    </div>;
-                  })()}
+                    </div>}
                 </li>;
                 })}</ol>
                 {hasMoreHistory && <div className="mt-2 space-y-1">

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
@@ -79,15 +79,12 @@ export const Header: React.FC<HeaderProps> = ({
   const router = useRouter();
   const { theme, toggleTheme } = useTheme();
   const [isEditingTitle, setIsEditingTitle] = useState(false);
-  const [tempTitle, setTempTitle] = useState(examTitle);
+  const [titleDraft, setTitleDraft] = useState({ source: examTitle, value: examTitle });
+  const tempTitle = titleDraft.source === examTitle ? titleDraft.value : examTitle;
+  const setTempTitle = (value: string) => setTitleDraft({ source: examTitle, value });
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [logoutError, setLogoutError] = useState('');
   const [loggingOut, setLoggingOut] = useState(false);
-
-  // Cập nhật tempTitle khi examTitle từ props đổi
-  useEffect(() => {
-    setTempTitle(examTitle);
-  }, [examTitle]);
 
   const handleTitleSubmit = () => {
     setIsEditingTitle(false);

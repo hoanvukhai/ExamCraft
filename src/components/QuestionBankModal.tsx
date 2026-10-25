@@ -7,8 +7,8 @@ import { dbGetAllQuestionsFromBank, dbDeleteQuestionFromBank, dbSaveQuestionToBa
 import { bankPassage, type BankQuestion } from '@/lib/question-client';
 import { getAllSupportedSubjects } from '@/lib/subject-config';
 import { MathRenderer } from './MathRenderer';
-import { VariationTable } from './VariationTable';
-import { FunctionPlot } from './FunctionPlot';
+import { VariationTable, type VariationTableData } from './VariationTable';
+import { FunctionPlot, type FunctionPlotData } from './FunctionPlot';
 import { 
   X, 
   Search, 
@@ -49,7 +49,7 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all');
   const [insertedIds, setInsertedIds] = useState<Set<string>>(new Set());
   const [bankTab, setBankTab] = useState<'personal' | 'shared'>('personal');
-  const [sharedQuestions, setSharedQuestions] = useState<any[]>([]);
+  const [sharedQuestions, setSharedQuestions] = useState<(BankQuestion & { solution?: string; author?: { id: string; name: string } })[]>([]);
   const [loadingShared, setLoadingShared] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -59,46 +59,27 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
   };
 
   // Nạp danh sách câu hỏi cá nhân từ IndexedDB
-  const loadBankQuestions = async () => {
-    setLoading(true);
-    try {
-      const allQ = await dbGetAllQuestionsFromBank(ownerId);
-      setQuestions(allQ);
-    } catch (err) {
-      console.error('Lỗi khi nạp ngân hàng câu hỏi:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const readBankQuestions = () => dbGetAllQuestionsFromBank(ownerId).then(allQ => setQuestions(allQ)).catch(err => {
+    console.error('Lỗi khi nạp ngân hàng câu hỏi:', err);
+  }).finally(() => setLoading(false));
+  const loadBankQuestions = () => { setLoading(true); return readBankQuestions(); };
 
   // Nạp danh sách câu hỏi dùng chung nội bộ từ PostgreSQL server
-  const loadSharedQuestions = async () => {
-    setLoadingShared(true);
-    try {
-      const res = await accountFetch(ownerId, '/api/questions/shared');
-      if (res.ok) {
-        const data = await res.json();
-        setSharedQuestions(data.questions || []);
-      }
-    } catch (e) {
-      console.error('Lỗi khi nạp ngân hàng dùng chung:', e);
-    } finally {
-      setLoadingShared(false);
-    }
-  };
+  const readSharedQuestions = () => accountFetch(ownerId, '/api/questions/shared').then(async res => {
+    if (res.ok) { const data = await res.json(); setSharedQuestions(data.questions || []); }
+  }).catch(error => { console.error('Lỗi khi nạp ngân hàng dùng chung:', error); }).finally(() => setLoadingShared(false));
 
+  const [previousScope, setPreviousScope] = useState({ isOpen, bankTab, ownerId });
+  if (previousScope.isOpen !== isOpen || previousScope.bankTab !== bankTab || previousScope.ownerId !== ownerId) {
+    setPreviousScope({ isOpen, bankTab, ownerId });
+    if (isOpen) { setLoading(bankTab === 'personal'); setLoadingShared(bankTab === 'shared'); }
+  }
   useEffect(() => {
-    if (isOpen) {
-      if (bankTab === 'personal') {
-        loadBankQuestions();
-      } else {
-        loadSharedQuestions();
-      }
-    }
-  }, [isOpen, bankTab]);
+    if (isOpen) { if (bankTab === 'personal') void readBankQuestions(); else void readSharedQuestions(); }
+  }, [isOpen, bankTab, ownerId]);
 
   // Nhân bản câu hỏi dùng chung về kho cá nhân
-  const handleForkQuestion = async (q: any) => {
+  const handleForkQuestion = async (q: { id: string }) => {
     try {
       const res = await accountFetch(ownerId, `/api/questions/${q.id}/fork`, { method: 'POST' });
       const data = await res.json();
@@ -238,10 +219,10 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
   };
 
   // Lọc danh sách câu hỏi theo tab đang chọn (Cá nhân hoặc Dùng chung nội bộ)
-  const targetList = bankTab === 'personal' ? questions : sharedQuestions;
+  const targetList: (BankQuestion & { solution?: string; author?: { id: string; name: string } })[] = bankTab === 'personal' ? questions : sharedQuestions;
 
   const filteredQuestions = useMemo(() => {
-    return targetList.filter((q: any) => {
+    return targetList.filter((q) => {
       // 1. Lọc theo từ khóa
       if (searchQuery.trim()) {
         const query = searchQuery.toLowerCase();
@@ -527,11 +508,11 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
                     {/* Figures nếu có */}
                     {q.figures && q.figures.length > 0 && (
                       <div className="my-2 space-y-2">
-                        {q.figures.map((fig: any) => {
-                          if (fig.kind === 'variation_table') return <VariationTable key={fig.id} data={fig.data as any} />;
-                          if (fig.kind === 'function_plot') return <FunctionPlot key={fig.id} data={fig.data as any} />;
+                        {q.figures.map((fig) => {
+                          if (fig.kind === 'variation_table') return <VariationTable key={fig.id} data={fig.data as VariationTableData} />;
+                          if (fig.kind === 'function_plot') return <FunctionPlot key={fig.id} data={fig.data as FunctionPlotData} />;
                           if (fig.kind === 'image') {
-                            const src = (fig.data as any)?.url || fig.renderedBase64 || (typeof fig.data === 'string' ? fig.data : '');
+                            const src = (fig.data as { url?: string })?.url || fig.renderedBase64 || (typeof fig.data === 'string' ? fig.data : '');
                             if (src) {
                               return (
                                 <div key={fig.id} className="py-1">
@@ -552,7 +533,7 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
                     {/* Choices */}
                     {q.choices && q.choices.length > 0 && (
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-xs">
-                        {q.choices.map((c: any) => {
+                        {q.choices.map((c) => {
                           const isCorrect = c.key === q.correct_answer;
                           return (
                             <div
@@ -581,7 +562,7 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
                     {/* Sub questions Đúng/Sai */}
                     {q.sub_questions && q.sub_questions.length > 0 && (
                       <div className="space-y-1.5 pt-1 text-xs">
-                        {q.sub_questions.map((sub: any) => (
+                        {q.sub_questions.map((sub) => (
                           <div key={sub.key} className="flex items-baseline justify-between p-2 rounded-xl bg-[#f8f9fa] dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] text-[#3c4043] dark:text-[#e3e3e3]">
                             <div className="flex items-baseline gap-2 grow pr-2">
                               <span className="font-bold text-[#202124] dark:text-[#e3e3e3]">{sub.key})</span>

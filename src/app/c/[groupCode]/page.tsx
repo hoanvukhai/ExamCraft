@@ -57,30 +57,15 @@ function ClassPortalContent({
   const [group, setGroup] = useState<GroupData | null>(null);
   const [selectedStudentId, setSelectedStudentId] = useState<string>('');
 
-  const fetchGroupData = async (studentId?: string) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const url = `/api/public/groups/${groupCode}${studentId ? `?studentId=${studentId}` : ''}`;
-      const res = await fetch(url);
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.error || 'Không thể tìm thấy lớp học');
-        return;
-      }
-
-      setGroup(data.group);
-    } catch (err) {
-      console.error(err);
-      setError('Lỗi kết nối máy chủ, vui lòng thử lại.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const loadGroupData = (studentId?: string) => fetch(`/api/public/groups/${groupCode}${studentId ? `?studentId=${studentId}` : ''}`).then(async res => {
+    const data = await res.json();
+    if (!res.ok) { setError(data.error || 'Không thể tìm thấy lớp học'); return; }
+    setGroup(data.group);
+  }).catch(err => { console.error(err); setError('Lỗi kết nối máy chủ, vui lòng thử lại.'); }).finally(() => setLoading(false));
+  const fetchGroupData = (studentId?: string) => { setLoading(true); setError(null); return loadGroupData(studentId); };
 
   useEffect(() => {
-    fetchGroupData();
+    void loadGroupData();
   }, [groupCode]);
 
   const handleSelectStudent = (studentId: string) => {

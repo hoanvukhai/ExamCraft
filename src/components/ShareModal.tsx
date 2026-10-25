@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useSyncExternalStore } from 'react';
 import { accountFetch } from '@/lib/account-fetch';
 import { Exam } from '@/types/exam';
 import { persistExam } from '@/lib/exam-client';
@@ -26,6 +26,10 @@ import {
 
 /** Share links end in `.v<version>` (see src/lib/share-version.ts, which is server-only). */
 const pinnedVersionOf = (path: string) => /\.v(\d{1,9})$/.exec(path)?.[1] ?? '';
+
+const subscribeOrigin = () => () => {};
+const browserOrigin = () => window.location.origin;
+const serverOrigin = () => '';
 
 interface GroupItem {
   id: string;
@@ -54,7 +58,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   const active = useRef(isOpen);
   useEffect(() => { active.current = isOpen; return () => { active.current = false; }; }, [isOpen]);
   const [activeTab, setActiveTab] = useState<'assign' | 'share'>('assign');
-  const [origin, setOrigin] = useState('');
+  const origin = useSyncExternalStore(subscribeOrigin, browserOrigin, serverOrigin);
 
   // Trạng thái Lớp học
   const [groups, setGroups] = useState<GroupItem[]>([]);
@@ -62,9 +66,9 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   const [loadingGroups, setLoadingGroups] = useState(false);
 
   // Cấu hình giao bài
-  const [assignmentTitle, setAssignmentTitle] = useState(
-    exam?.metadata?.title || 'Bài kiểm tra trực tuyến'
-  );
+  const [titleDraft, setTitleDraft] = useState({ source: exam.metadata.title, value: exam.metadata.title || 'Bài kiểm tra trực tuyến' });
+  const assignmentTitle = exam.metadata.title && titleDraft.source !== exam.metadata.title ? exam.metadata.title : titleDraft.value;
+  const setAssignmentTitle = (value: string) => setTitleDraft({ source: exam.metadata.title, value });
   const [mode, setMode] = useState<'HOMEWORK' | 'CLASSWORK' | 'EXAM'>('CLASSWORK');
   const [identityMode, setIdentityMode] = useState<'PICK_FROM_LIST' | 'FREE_NAME'>('PICK_FROM_LIST');
   const [durationMinutes, setDurationMinutes] = useState<number>(
@@ -94,18 +98,6 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   const [sharing, setSharing] = useState(false);
   const [shareAnswers, setShareAnswers] = useState(false);
   const [shareCopy, setShareCopy] = useState(false);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setOrigin(window.location.origin);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (exam?.metadata?.title) {
-      setAssignmentTitle(exam.metadata.title);
-    }
-  }, [exam?.metadata?.title]);
 
   // Tải danh sách lớp của giáo viên
   useEffect(() => {

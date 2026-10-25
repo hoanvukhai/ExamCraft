@@ -39,7 +39,7 @@ export const TeacherAiSecretaryDrawer: React.FC<TeacherAiSecretaryDrawerProps> =
   currentUser,
   onOpenAiLearningModal,
 }) => {
-  const [messages, setMessages] = useState<ChatMessage[]>([
+  const [messages, setMessages] = useState<ChatMessage[]>(() => [
     {
       id: 'msg_welcome',
       role: 'assistant',
@@ -73,7 +73,7 @@ export const TeacherAiSecretaryDrawer: React.FC<TeacherAiSecretaryDrawerProps> =
     if (!text || isLoading) return;
 
     const userMsg: ChatMessage = {
-      id: `user_${Date.now()}`,
+      id: `user_${crypto.randomUUID()}`,
       role: 'user',
       content: text,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -101,7 +101,7 @@ export const TeacherAiSecretaryDrawer: React.FC<TeacherAiSecretaryDrawerProps> =
       const data = await res.json();
       if (data.success && data.reply) {
         const aiMsg: ChatMessage = {
-          id: `ai_${Date.now()}`,
+          id: `ai_${crypto.randomUUID()}`,
           role: 'assistant',
           content: data.reply,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -109,7 +109,7 @@ export const TeacherAiSecretaryDrawer: React.FC<TeacherAiSecretaryDrawerProps> =
         setMessages((prev) => [...prev, aiMsg]);
       } else {
         const errorMsg: ChatMessage = {
-          id: `ai_err_${Date.now()}`,
+          id: `ai_err_${crypto.randomUUID()}`,
           role: 'assistant',
           content: data.error || 'Dạ thưa Thầy/Cô, hiện tại em chưa kết nối được máy chủ AI. Thầy/Cô vui lòng kiểm tra lại Khóa AI cá nhân ạ.',
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -119,7 +119,7 @@ export const TeacherAiSecretaryDrawer: React.FC<TeacherAiSecretaryDrawerProps> =
     } catch (err) {
       console.error(err);
       const errorMsg: ChatMessage = {
-        id: `ai_err_${Date.now()}`,
+        id: `ai_err_${crypto.randomUUID()}`,
         role: 'assistant',
         content: 'Dạ, có lỗi kết nối mạng. Thầy/Cô vui lòng thử lại sau giây lát ạ.',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),

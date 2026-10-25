@@ -19,12 +19,9 @@ export default function RegradePanel({ assignmentId, request, onChanged }: { ass
   const url = `/api/teacher/assignments/${assignmentId}/regrade`;
   const item = items.find(entry => entry.id === selected);
 
-  const load = useCallback(async () => {
-    try {
-      const response = await request(url, { cache: 'no-store' });
-      if (response.ok) setItems((await response.json()).questions as Item[]);
-    } catch { /* The panel stays empty; grading itself is unaffected. */ }
-  }, [request, url]);
+  const load = useCallback(() => request(url, { cache: 'no-store' }).then(async response => {
+    if (response.ok) setItems((await response.json()).questions as Item[]);
+  }).catch(() => { /* Keep previous data on a network failure. */ }), [request, url]);
   useEffect(() => { void load(); }, [load]);
 
   const choose = (id: string) => {

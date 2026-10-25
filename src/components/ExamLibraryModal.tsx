@@ -21,7 +21,7 @@ export function ExamLibraryModal({ isOpen, onClose, onLoadExam, ownerId }: Props
   const [preparedDownloads, setPreparedDownloads] = useState<{ url: string; name: string; examCount: number }[]>([]);
   useEffect(() => () => { for (const file of preparedDownloads) URL.revokeObjectURL(file.url); }, [preparedDownloads]);
   const upload = useRef<HTMLInputElement>(null);
-  async function list() {
+  async function readList() {
     const all: Summary[] = [];
     for (let page = 1; ; page++) {
       const response = await fetch(`/api/exams?limit=100&page=${page}`, { cache: 'no-store', headers: { 'x-examcraft-user': ownerId } });
@@ -30,9 +30,12 @@ export function ExamLibraryModal({ isOpen, onClose, onLoadExam, ownerId }: Props
       all.push(...data.exams);
       if (page >= data.pagination.totalPages) break;
     }
-    setExams(all); return all;
+    return all;
   }
-  useEffect(() => { if (isOpen) { setMessage(''); void list().catch(e => setMessage(e.message)); } }, [isOpen]);
+  function list() { return readList().then(all => { setExams(all); return all; }); }
+  const [previousOpen, setPreviousOpen] = useState(isOpen);
+  if (previousOpen !== isOpen) { setPreviousOpen(isOpen); if (isOpen) setMessage(''); }
+  useEffect(() => { if (isOpen) void list().catch(e => setMessage(e.message)); }, [isOpen]);
   if (!isOpen) return null;
   async function action(fn: () => Promise<void>) {
     setBusy(true); setMessage('');

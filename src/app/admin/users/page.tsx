@@ -82,43 +82,20 @@ export default function AdminUsersPage() {
     setTimeout(() => setToastMessage(null), 4000);
   };
 
-  const fetchUsers = async () => {
-    setIsLoading(true);
-    try {
-      const res = await fetch('/api/admin/users');
-      if (res.status === 401) {
-        router.push('/login');
-        return;
-      }
-      if (res.status === 403) {
-        alert('Bạn không có quyền truy cập trang quản trị!');
-        router.push('/');
-        return;
-      }
-      const data = await res.json();
-      setUsers(data.users || []);
-    } catch {
-      console.error('Không tải được danh sách giáo viên');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const loadUsers = () => fetch('/api/admin/users').then(async res => {
+    if (res.status === 401) { router.push('/login'); return; }
+    if (res.status === 403) { alert('Bạn không có quyền truy cập trang quản trị!'); router.push('/'); return; }
+    const data = await res.json(); setUsers(data.users || []);
+  }).catch(() => { console.error('Không tải được danh sách giáo viên'); }).finally(() => setIsLoading(false));
+  const fetchUsers = () => { setIsLoading(true); return loadUsers(); };
 
-  const fetchCurrentUser = async () => {
-    try {
-      const res = await fetch('/api/auth/me');
-      const data = await res.json();
-      if (data.user) {
-        setCurrentUser(data.user);
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  };
+  const fetchCurrentUser = () => fetch('/api/auth/me').then(async res => {
+    const data = await res.json(); if (data.user) setCurrentUser(data.user);
+  }).catch(error => { console.error(error); });
 
   useEffect(() => {
-    fetchUsers();
-    fetchCurrentUser();
+    void loadUsers();
+    void fetchCurrentUser();
   }, []);
 
   const handleLogout = async () => {

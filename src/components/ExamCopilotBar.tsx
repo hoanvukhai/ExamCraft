@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { Exam, Question } from '@/types/exam';
 import { AiProposalPreview } from './AiProposalPreview';
 import { 
@@ -39,9 +39,11 @@ export const ExamCopilotBar: React.FC<ExamCopilotBarProps> = ({
   onDeleteQuestion,
   onBatchUpdateQuestions,
 }) => {
-  const [command, setCommand] = useState('');
+  const [commandDraft, setCommandDraft] = useState({ external: externalCommand, value: '' });
+  const command = externalCommand && commandDraft.external !== externalCommand ? externalCommand : commandDraft.value;
+  const setCommand = (value: string) => setCommandDraft({ external: externalCommand, value });
   const liveExam = useRef(exam);
-  liveExam.current = exam;
+  useLayoutEffect(() => { liveExam.current = exam; }, [exam]);
   const [proposal, setProposal] = useState<{ result: { action: string; modifiedQuestion?: Question; targetQuestionId?: string; explanation?: string }; base: string } | null>(null);
   const acceptProposal = () => {
     if (!proposal) return;
@@ -64,7 +66,6 @@ export const ExamCopilotBar: React.FC<ExamCopilotBarProps> = ({
 
   useEffect(() => {
     if (externalCommand) {
-      setCommand(externalCommand);
       const inputEl = document.getElementById('exam-copilot-input');
       if (inputEl) {
         inputEl.focus();
@@ -119,7 +120,7 @@ export const ExamCopilotBar: React.FC<ExamCopilotBarProps> = ({
         setProposal({ result, base });
         setCommand('');
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Lỗi gọi Copilot:', err);
       setErrorMessage('Không thể kết nối đến máy chủ AI. Vui lòng kiểm tra lại mạng hoặc API Key.');
     } finally {

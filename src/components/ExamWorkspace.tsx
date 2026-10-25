@@ -3,6 +3,7 @@
 import { applyCopilotSubmission } from '@/lib/copilot-submission';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import Link from 'next/link';
 import { Exam, Question } from '@/types/exam';
 import { Header } from '@/components/Header';
 import { LeftNavigationRail } from '@/components/LeftNavigationRail';
@@ -115,9 +116,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   });
 
   // Kiểm tra trạng thái Key từ server khi load
-  const checkUserKeys = async () => {
-    try {
-      const res = await accountFetch(currentUser.id, '/api/user/keys');
+  const checkUserKeys = () => accountFetch(currentUser.id, '/api/user/keys').then(async res => {
       if (res.ok) {
         const data = await res.json();
         const keysList = data.keys || [];
@@ -132,10 +131,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
           quota: data.quota || { dailyLimit: 0, usedToday: 0, remaining: 0 },
         });
       }
-    } catch {
-      // ignore
-    }
-  };
+  }).catch(() => { /* Preserve the last acknowledged key state on network errors. */ });
 
   useEffect(() => { void checkUserKeys(); }, []);
 
@@ -322,7 +318,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       />
 
       <div className="no-print px-4 py-2 border-b flex flex-wrap gap-4 items-center text-sm">
-        <a href="/" className="underline">Về kho đề</a>
+        <Link href="/" prefetch={false} onNavigate={event => { event.preventDefault(); window.location.assign('/'); }} className="underline">Về kho đề</Link>
         <button type="button" disabled={!ready || !exam.questions.length} onClick={() => setPresentationOpen(true)} className="underline">Trình chiếu</button>
         {exam.serverId && <button type="button" onClick={() => setCollaborationOpen(true)} className="underline">Cùng soạn · Góp ý · Lịch sử</button>}
         {exam.access && <span>{exam.access.canManage ? 'Đề của bạn' : exam.access.canEdit ? 'Được mời cùng sửa' : exam.access.canComment ? 'Quyền xem và góp ý' : 'Quyền chỉ xem'}</span>}

@@ -21,22 +21,16 @@ export const ShuffleModal: React.FC<ShuffleModalProps> = ({
   onSelectVariant,
 }) => {
   const [numVariants, setNumVariants] = useState<number>(4);
-  const [variants, setVariants] = useState<ShuffledExamVariant[]>([]);
+  const [reshuffle, setReshuffle] = useState(0);
+  const variants = React.useMemo<ShuffledExamVariant[]>(() => isOpen ? generateShuffledExams(baseExam, numVariants, 101) : [], [isOpen, baseExam, numVariants, reshuffle]);
   const [copiedMatrix, setCopiedMatrix] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState('');
 
-  // Chỉ sinh các mã đề xáo trộn ngẫu nhiên khi modal được mở ra
-  React.useEffect(() => {
-    if (isOpen) {
-      setVariants(generateShuffledExams(baseExam, numVariants, 101));
-    }
-  }, [isOpen, baseExam, numVariants]);
-
   if (!isOpen) return null;
 
   const handleReshuffle = () => {
-    setVariants(generateShuffledExams(baseExam, numVariants, 101));
+    setReshuffle(value => value + 1);
   };
 
   const matrix = buildAnswerMatrix(variants);
