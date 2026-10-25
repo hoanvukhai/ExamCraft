@@ -678,6 +678,26 @@
           "id": "CDX-S6 F21 AI in collaboration (CV053)"
         }
       ]
+    },
+    {
+      "task_id": "CODEX-GEN17",
+      "assignment_generation": 17,
+      "owner": "CODEX",
+      "priority": "P1",
+      "base_commit": "rebuild/2026-10-local HEAD",
+      "status_file": "CODEX_STATUS.md",
+      "queue_file": "qa/ai-review/coordination/messages/claude-codex-20261026T120000Z-da6c8599-e02d-421a-98cb-6635d87c4c76.md",
+      "queue_items": [
+        {
+          "id": "CDX-T1 atomic write of pilot-results.json (F3/F19 flake)"
+        },
+        {
+          "id": "CDX-T2 pilot F24: comment resolve (CV051) and notes .md download (CV063)"
+        },
+        {
+          "id": "CDX-T3 final full CI report"
+        }
+      ]
     }
   ],
   "batch_protocol": "docs/phoi-hop-ai/03_HANG_DOI_LIEN_MACH.md",
