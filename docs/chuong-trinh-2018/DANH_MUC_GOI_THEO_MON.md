@@ -57,8 +57,8 @@ Ký hiệu trong ô:
 | Lịch sử | Bắt buộc | chờ duyệt | chờ duyệt | chờ duyệt | TK-0024, TK-0019, TK-0020 |
 | Địa lí | Lựa chọn | chờ duyệt | chờ duyệt | chờ duyệt | TK-0025, TK-0020 |
 | Giáo dục kinh tế và pháp luật | Lựa chọn | chờ duyệt | chờ duyệt | chờ duyệt | TK-0005, TK-0020 |
-| Vật lí | Lựa chọn | chờ duyệt | chờ duyệt | chờ duyệt | TK-0015 |
-| Hóa học | Lựa chọn | chờ duyệt | chờ duyệt | chờ duyệt | TK-0026 |
+| Vật lí | Lựa chọn | chờ duyệt | chờ duyệt; đề mẫu: vat-li-11.json | chờ duyệt | TK-0015 |
+| Hóa học | Lựa chọn | chờ duyệt; đề mẫu: hoa-hoc-10.json | chờ duyệt | chờ duyệt | TK-0026 |
 | Sinh học | Lựa chọn | chờ duyệt | chờ duyệt | chờ duyệt | TK-0027 |
 | Công nghệ | Lựa chọn | chờ duyệt | chờ duyệt | chờ duyệt | TK-0008 |
 | Tin học | Lựa chọn | chờ duyệt | chờ duyệt | chờ duyệt | TK-0009 |
@@ -76,7 +76,7 @@ Ký hiệu trong ô:
 
 ## Tổng hợp
 
-- Ô môn–lớp: 161; gói kiến thức: 1 (personal-fixture-math6, needs_review); đề mẫu: 7.
-- Đề mẫu theo cấp: Tiểu học 1, THCS 6, THPT 0.
+- Ô môn–lớp: 161; gói kiến thức: 1 (personal-fixture-math6, needs_review); đề mẫu: 9.
+- Đề mẫu theo cấp: Tiểu học 1, THCS 6, THPT 2.
 - Đề mẫu có môn/lớp không khớp danh mục: tieu-hoc-3.json (tieu_hoc, lớp 3).
 - Việc còn thiếu ở mọi ô: yêu cầu cần đạt đã đối chiếu, mục lục đúng ấn bản, bộ đề–đáp án–rubric được giáo viên duyệt (đúng như `getEducationReadiness`).

@@ -63,18 +63,7 @@ Hệ thống ExamCraft tổ chức luồng thao tác của giáo viên qua 4 kh�
 
 ## 2. BẢNG DANH MỤC MÔN - LỚP THEO CHƯƠNG TRÌNH GDPT 2018
 
-Căn cứ mã nguồn chuẩn hóa tại `src/lib/education-catalog.ts`, hệ thống hỗ trợ danh mục môn học toàn diện qua 3 cấp học:
-
-| Cấp học | Khối lớp | Môn học bắt buộc | Môn học lựa chọn / Tự chọn | Trạng thái gói dữ liệu |
-|---|---|---|---|---|
-| **Tiểu học** | Lớp 1, 2 | Tiếng Việt, Toán | Tiếng Anh (Tự chọn), Tự nhiên và Xã hội | Khung chờ duyệt |
-| | Lớp 3 | Tiếng Việt, Toán, Tiếng Anh, Tin học và Công nghệ | Đạo đức, Tự nhiên và Xã hội | Đã có fixture mẫu (`tieu-hoc-3.json`), khung chờ duyệt |
-| | Lớp 4, 5 | Tiếng Việt, Toán, Tiếng Anh, Lịch sử và Địa lí, Khoa học, Tin học và Công nghệ | Đạo đức | Khung chờ duyệt |
-| **THCS** | Lớp 6 | Ngữ văn, Toán, Tiếng Anh, Khoa học tự nhiên, Lịch sử và Địa lí, Giáo dục công dân, Tin học, Công nghệ | Ngoại ngữ 2, Tiếng dân tộc | Đã có gói nạp Toán 6 (gói PILOT-TOAN-6); KHTN 6 có fixture mẫu |
-| | Lớp 7 | Ngữ văn, Toán, Tiếng Anh, Khoa học tự nhiên, Lịch sử và Địa lí, Giáo dục công dân, Tin học, Công nghệ | Ngoại ngữ 2, Tiếng dân tộc | Ngữ văn 7, Lịch sử và Địa lí 7 có fixture mẫu (thư mục da-mon) |
-| | Lớp 8 | Ngữ văn, Toán, Tiếng Anh, Khoa học tự nhiên, Lịch sử và Địa lí, Giáo dục công dân, Tin học, Công nghệ | Ngoại ngữ 2, Tiếng dân tộc | Tiếng Anh 8, Tin học 8 có fixture mẫu (thư mục da-mon) |
-| | Lớp 9 | Ngữ văn, Toán, Tiếng Anh, Khoa học tự nhiên, Lịch sử và Địa lí, Giáo dục công dân, Tin học, Công nghệ | Ngoại ngữ 2, Tiếng dân tộc | Toán 9 có fixture mẫu (toan-9.json) |
-| **THPT** | Lớp 10, 11, 12 | Ngữ văn, Toán, Ngoại ngữ 1, Lịch sử, Giáo dục quốc phòng | Vật lí, Hóa học, Sinh học, Địa lí, Giáo dục kinh tế và pháp luật, Tin học, Công nghệ, Âm nhạc, Mĩ thuật | Khung tham khảo 3 mức (CV7991), khung chờ duyệt |
+Chi tiết bảng danh mục môn – lớp đầy đủ cho cả ba cấp học (Tiểu học, THCS, THPT) và tình trạng gói nội dung trong hệ thống được quản lý tập trung và tự động đồng bộ tại docs/chuong-trinh-2018/DANH_MUC_GOI_THEO_MON.md.
 
 ---
 
@@ -87,14 +76,15 @@ Hệ thống đã triển khai sẵn sàng các bộ đề mẫu fixture đa mô
 - Môn học: Tích hợp Toán học 3 và Tiếng Việt 3.
 - Quy mô & Cấu trúc: 10 câu hỏi, số nhỏ trong phạm vi 1000, câu hỏi ngắn gọn, có hình vẽ mô tả đồng hồ bằng văn bản và ngữ liệu bài thơ Mùa thu của em. Tự chấm điểm 100% qua bộ kiểm tra tự động.
 
-### 3.2 Cấp Trung học cơ sở (Đại diện: Ngữ văn 7, Tiếng Anh 8, KHTN 6)
-- Tệp mẫu 1: qa/ai-review/fixtures/da-mon/ngu-van-7.json (Ngữ văn 7 có 2 ngữ liệu dài trên 500 từ và câu tự luận có rubric chấm điểm 4 tiêu chí).
-- Tệp mẫu 2: qa/ai-review/fixtures/da-mon/tieng-anh-8.json (Tiếng Anh 8 có bài đọc hiểu, trắc nghiệm đọc, câu hỏi Đúng/Sai nhóm và ghép nối mệnh đề).
-- Tệp mẫu 3: qa/ai-review/fixtures/da-mon/khtn-6.json (Khoa học tự nhiên 6 tích hợp Vật lý, Hóa học và Sinh học).
+### 3.2 Cấp Trung học cơ sở (Đại diện: Toán 9, Ngữ văn 7, Tiếng Anh 8, KHTN 6)
+- Tệp mẫu 1: qa/ai-review/fixtures/da-mon/toan-9.json (Toán 9 với công thức đại số, căn thức lồng nhau, hệ phương trình và hình học).
+- Tệp mẫu 2: qa/ai-review/fixtures/da-mon/ngu-van-7.json (Ngữ văn 7 có 2 ngữ liệu dài trên 500 từ và câu tự luận có rubric chấm điểm 4 tiêu chí).
+- Tệp mẫu 3: qa/ai-review/fixtures/da-mon/tieng-anh-8.json (Tiếng Anh 8 có bài đọc hiểu, trắc nghiệm đọc, câu hỏi Đúng/Sai nhóm và ghép nối mệnh đề).
+- Tệp mẫu 4: qa/ai-review/fixtures/da-mon/khtn-6.json (Khoa học tự nhiên 6 tích hợp Vật lý, Hóa học và Sinh học).
 
-### 3.3 Cấp Trung học phổ thông (Đại diện: Toán 9 & VTeX EX_Test THPT)
-- Tệp mẫu: qa/ai-review/fixtures/da-mon/toan-9.json và bộ 22 ca qa/ai-review/GEMINI_EXTEST_CASES.md.
-- Đặc trưng: Công thức toán học phức tạp, phân số nhiều tầng, tích phân, căn thức lồng nhau, hệ phương trình macro heva và câu hỏi Đúng/Sai nhóm 4 ý theo định dạng thi tốt nghiệp THPT 2025.
+### 3.3 Cấp Trung học phổ thông (Đại diện: Vật lí 11 và Hóa học 10)
+- Tệp mẫu: Dùng đề mẫu mới ở GEM-X4 gồm Vật lí 11 (qa/ai-review/fixtures/da-mon/vat-li-11.json) và Hóa học 10 (qa/ai-review/fixtures/da-mon/hoa-hoc-10.json).
+- Đặc trưng: Đầy đủ công thức vật lí, đơn vị đo lường, phương trình phản ứng hóa học có chỉ số dưới, bảng số liệu thực nghiệm và câu hỏi tự luận có rubric chấm điểm theo chương trình GDPT 2018 cấp THPT.
 
 ---
 *Tài liệu thiết kế luồng giao diện và danh mục môn học — ExamCraft 2026.*

@@ -1,10 +1,10 @@
 # TÀI LIỆU THIẾT KẾ KỸ THUẬT: TÙY CHỌN ĐỒNG BỘ GOOGLE DRIVE (CV075)
 
 *Tài liệu thiết kế kiến trúc và danh mục nhiệm vụ tồn đọng (Design Specification & Backlog) — Dự án ExamCraft*
-*Căn cứ phân công điều phối: Nhiệm vụ GEM-W4 (P1, Generation 15), hoàn thiện tiêu chí CV075*
+*Căn cứ phân công điều phối: Nhiệm vụ GEM-X5 (P2, Generation 16), hoàn thiện tiêu chí CV075*
 
 - Người thực hiện: Gemini (Kiến trúc & Phân tích hệ thống)
-- Thời điểm chốt tài liệu: 2026-10-26T00:00:00Z
+- Thời điểm cập nhật chốt: 2026-10-26T00:00:00Z
 - Trạng thái kỹ thuật: BẢN THIẾT KẾ CHỐT (CHƯA TRIỂN KHAI MÃ NGUỒN)
 - Tuyên bố bắt buộc:
   1. Ứng dụng không yêu cầu Google Drive để hoạt động. Mọi tính năng tạo đề, quản lý câu hỏi, làm bài và xuất bản đều hoạt động bình thường, độc lập hoàn toàn ở chế độ cục bộ (local/offline).
@@ -20,24 +20,25 @@
 2. Nguyên tắc bảo mật và quyền riêng tư:
    - Nguyên tắc đặc quyền tối thiểu (Least Privilege): Chỉ yêu cầu quyền đối với các tệp do chính ứng dụng tạo ra.
    - Quyền tự chủ dữ liệu (Self-Sovereign Data): Toàn bộ dữ liệu nằm trên Drive cá nhân của giáo viên; hệ thống không chuyển tiếp hay lưu giữ dữ liệu trên bất kỳ máy chủ trung gian nào của bên thứ ba.
-   - Không đưa thông tin nhạy cảm của học sinh lên Drive cá nhân (chỉ sao lưu ngân hàng câu hỏi, đề thi, ma trận, ngữ liệu; không sao lưu danh sách học sinh và kết quả bài làm).
+   - Bảo vệ dữ liệu học sinh và bí mật hệ thống: Gói sao lưu hiện có của hệ thống là bản trích xuất toàn diện cơ sở dữ liệu (chứa cả học sinh, bài làm và khóa API mã hóa). Do đó, khi đưa gói này lên Drive cá nhân, bắt buộc phải có cơ chế mã hóa mật khẩu bảo vệ để tuân thủ quyền riêng tư giáo dục.
 
 ---
 
 ## 2. Định dạng gói đồng bộ (Dựa trên gói sao lưu cục bộ hiện có)
 
-Thay vì phát triển một định dạng đóng gói mới, tính năng Drive Sync kế thừa và tái sử dụng trực tiếp cấu trúc gói sao lưu chuẩn của dự án được quy định tại docs/van-hanh/SAO_LUU_KHOI_PHUC_LOCAL.md:
+Tính năng Drive Sync kế thừa và tái sử dụng trực tiếp cấu trúc gói sao lưu chuẩn của dự án được quy định tại docs/van-hanh/SAO_LUU_KHOI_PHUC_LOCAL.md và scripts/backup-package.cjs:
 
 1. Cấu trúc thư mục gói sao lưu (Package Structure):
-   - manifest.json: Tệp thông tin định danh và băm kiểm tra toàn vẹn (SHA-256) của gói.
+   - manifest.json: Tệp thông tin định danh và băm kiểm tra toàn vẹn (SHA-256) của gói:
      - status: BACKUP_PACKAGE_CREATED
-     - formatVersion: 1
      - createdAt: Thời điểm tạo bản sao lưu (chuẩn ISO UTC).
-     - sourceDatabase: Tên cơ sở dữ liệu nguồn.
+     - sourceDatabase: Tên cơ sở dữ liệu nguồn (examcraft).
+     - sourceTables: Bảng kiểm kê toàn bộ các bảng trong CSDL kèm số dòng và mã băm digest.
      - publicFiles: Danh sách các tệp hình ảnh, tài nguyên đi kèm (đường dẫn tương đối, dung lượng bytes, mã băm sha256).
-     - backup: Chứa dumpBytes, dumpSha256 và chữ ký kiểm tra.
-   - database.dump: Tệp trích xuất dữ liệu nhị phân hoặc JSON xuất khẩu của các bảng nghiệp vụ sư phạm (Exam, Question, Passage, ExamTemplate, TeacherAiMemory).
-   - public/: Thư mục chứa các tệp hình ảnh minh họa (figures) được nhúng trong đề thi.
+     - backup: Chứa đường dẫn tương đối, dumpBytes, dumpSha256 và dpapiSha256.
+   - database.dump: Tệp trích xuất toàn bộ cơ sở dữ liệu PostgreSQL ở định dạng custom dump (lệnh pg_dump --format=custom --dbname examcraft). Tệp này bao gồm toàn bộ dữ liệu nghiệp vụ của hệ thống: tài khoản người dùng, danh sách học sinh, bài giao, lượt làm bài, câu trả lời, ngân hàng câu hỏi, đề thi, ma trận, ngữ liệu và nhật ký hệ thống.
+   - public/: Thư mục chứa toàn bộ các tệp tài sản hình ảnh minh họa (figures) được nhúng trong đề thi.
+   - config.dpapi: Tệp cấu hình biến môi trường (.env) được mã hóa bảo vệ qua Windows DPAPI (chỉ có thể giải mã trên cùng máy trạm và cùng danh tính người dùng Windows đã tạo).
 
 2. Tính toàn vẹn và an toàn đường dẫn:
    - Tuân thủ quy tắc kiểm tra nghiêm ngặt của bộ công cụ backup-package-tools: Từ chối mọi tệp có đường dẫn thoát ra ngoài thư mục gói (chặn path traversal ../).
@@ -64,7 +65,7 @@ Thay vì phát triển một định dạng đóng gói mới, tính năng Drive
 
 ## 4. Máy trạng thái sao lưu và khôi phục (Backup & Restore State Machine)
 
-Quá trình tương tác giữa máy khách ExamCraft và Google Drive được mô hình hóa thành máy trạng thái hữu hạn (FSM) gồm các trạng thái rõ ràng:
+Quá trình tương tác giữa máy khách ExamCraft và Google Drive được mô hình hóa thành máy trạng thái hữu hạn gồm các trạng thái rõ ràng:
 
 1. IDLE (Sẵn sàng): Trạng thái nghỉ. Chưa có thao tác đồng bộ nào đang chạy.
 2. CONNECTING (Đang kết nối): Đang thực hiện luồng trao đổi token OAuth 2.0 hoặc làm mới Access Token từ Refresh Token.
@@ -96,16 +97,20 @@ Khi chủ dự án quyết định triển khai tính năng Google Drive, các �
 
 ## 6. Quyết định chủ dự án cần chọn
 
-Để làm căn cứ phê duyệt đưa vào triển khai thực tế, Chủ dự án chỉ cần lựa chọn 3 vấn đề kiến trúc sau:
+Để làm căn cứ phê duyệt đưa vào triển khai thực tế, Chủ dự án chỉ cần lựa chọn các vấn đề kiến trúc sau:
 
-1. Phương thức lưu trữ ưu tiên:
+1. Phạm vi dữ liệu đưa lên Google Drive:
+   - Lựa chọn A: Đưa nguyên gói sao lưu toàn bộ (Full DB package theo scripts/backup.ps1 chứa toàn bộ CSDL gồm học sinh, bài làm, bảng điểm và cấu hình mã hóa; bắt buộc phải đặt mật khẩu mã hóa bảo vệ khi tải lên đám mây).
+   - Lựa chọn B: Chỉ trích xuất riêng gói tài nguyên sư phạm (Chỉ xuất đề thi, câu hỏi, ngữ liệu, mẫu đề dưới dạng JSON thuần túy; hoàn toàn không chứa thông tin học sinh, bài làm hay khóa bí mật).
+
+2. Phương thức lưu trữ ưu tiên:
    - Lựa chọn A: Chỉ sử dụng tính năng Xuất/Nhập gói sao lưu thủ công cục bộ (.zip) về máy tính cá nhân (Đơn giản, an toàn tuyệt đối, không phụ thuộc Google).
    - Lựa chọn B: Tích hợp thêm tùy chọn đồng bộ Google Drive cá nhân theo bản thiết kế trên (Thuận tiện khi chuyển đổi máy, cần duy trì kết nối OAuth).
 
-2. Cơ chế kích hoạt sao lưu:
+3. Cơ chế kích hoạt sao lưu:
    - Lựa chọn A: Sao lưu thủ công theo yêu cầu (Chỉ sao lưu khi giáo viên chủ động bấm nút yêu cầu sao lưu).
    - Lựa chọn B: Sao lưu tự động định kỳ (Hệ thống tự động sao lưu mỗi tuần một lần khi có kết nối mạng).
 
-3. Mã hóa dữ liệu gói sao lưu:
-   - Lựa chọn A: Giữ nguyên gói nén JSON tiêu chuẩn (Dễ xem, dễ kiểm tra cấu trúc).
-   - Lựa chọn B: Bổ sung tùy chọn đặt mật khẩu mã hóa (AES-GCM) trước khi tải lên Drive (Chống lộ đề ngay cả khi Drive bị người khác truy cập).
+4. Mã hóa bảo mật gói sao lưu:
+   - Lựa chọn A: Giữ nguyên gói nén tiêu chuẩn (Dễ kiểm tra cấu trúc cục bộ).
+   - Lựa chọn B: Bổ sung tùy chọn đặt mật khẩu mã hóa (AES-GCM) trước khi tải lên Drive (Chống lộ đề và bảo vệ dữ liệu ngay cả khi Drive bị người khác truy cập).

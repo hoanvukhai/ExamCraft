@@ -444,6 +444,7 @@ test('F10 switching accounts in one browser keeps a local draft private to its o
 test('F11 a reload that fails with no network loses nothing and the draft reaches the server on reconnect', { timeout: 150000 }, () => flow('F11', async f => {
   await authenticated(f); const id = await seedExam(f); await openExam(f, id);
   const offlineTitle = 'Pilot giữ nháp qua lần tải lại hỏng';
+  await f.page.locator('button[title="Nhấn để đổi tên đề thi (như Google Docs)"]:not([disabled])').waitFor();
   await f.owner.setOffline(true);
   await f.page.getByTitle('Nhấn để đổi tên đề thi (như Google Docs)').click(); const input = f.page.locator('header input').first(); await input.fill(offlineTitle); await input.press('Enter');
   await f.page.getByText('Mất kết nối — đang giữ bản nháp trên máy', { exact: true }).waitFor();

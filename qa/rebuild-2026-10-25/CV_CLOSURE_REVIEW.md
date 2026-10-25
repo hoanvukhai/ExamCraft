@@ -141,3 +141,9 @@ Claude chạy lại `npm run ci -- --quick` sau bàn giao Codex: kiểu, lint, S
 
 ## Bổ sung 26/10: đóng CV077
 Chuyển sáu báo cáo V1–V3 sang `docs/lich-su/` bằng `git mv`, sửa liên kết, kiểm 0 gãy; rà caller ba đường mã cũ, cả ba giữ có lý do. Chi tiết: [CV077_DON_DUONG_CU](CV077_DON_DUONG_CU.md). Không chạy build/test vì chỉ di chuyển tài liệu. Chủ dự án đồng ý làm CV051 (thêm cột cho bình luận); sẽ làm sau lượt Codex gen 16, sao lưu DB chính trước.
+
+## Bổ sung 26/10: nhận Codex generation 16, đóng CV025, 033, 039, 041, 053
+- **Kiểm độc lập** (`npm run ci` đầy đủ, log `ci-full-run3.log`): TypeScript, lint, SAFE 441/441, build, HTTP 101/101 đạt; trình duyệt 19/22 ở lượt đầy đủ. Ba luồng rớt chạy lại riêng: F3 và F19 đạt (lỗi Windows khoá `pilot-results.json` lúc ghi báo cáo, không phải sản phẩm); F11 rớt lặp lại vì test bật ngoại tuyến trước khi trình soạn thảo tải xong (nút đổi tên còn khoá đúng thiết kế) — đã sửa test chờ nút mở khoá, F11 đạt hai lần liên tiếp. Server 3117 đã dừng.
+- **Nhận** Codex S1–S6 và Gemini X1–X5. Số trình duyệt "22/22" chưa lặp được trong một lượt đầy đủ trên máy này; coi là 22 luồng đều đạt khi chạy riêng, có flake khoá file báo cáo trên Windows.
+- **Đóng:** CV025, CV033, CV039, CV041, CV053 (dòng Nghiệm thu trong checklist nêu test và giới hạn). CV041 đóng có giới hạn: không dedup gần giống, không số trang.
+- **Còn mở, cần việc tiếp:** CV051 (cột giải quyết góp ý, cần đổi schema, sao lưu DB chính trước), CV006, CV016–022, CV070 và các CV cần mắt chủ dự án.

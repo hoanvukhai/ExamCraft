@@ -1,0 +1,168 @@
+{
+  "id": "exam_fixture_hoa_hoc_10",
+  "metadata": {
+    "title": "Đề kiểm tra định kỳ Hóa học 10 (Bộ fixture kiểm thử GDPT 2018)",
+    "schoolName": "Trường THPT Chuyên Quốc Học Huế",
+    "departmentName": "Tổ Hóa học",
+    "subject": "hoa_hoc",
+    "grade": 10,
+    "durationMinutes": 45,
+    "academicYear": "2026-2027",
+    "semester": "Học kỳ 1",
+    "notes": "Học sinh được sử dụng bảng tuần hoàn các nguyên tố hóa học."
+  },
+  "sections": [
+    {
+      "id": "sec_hh10_p1",
+      "name": "PHẦN I. TRẮC NGHIỆM NHIỀU PHƯƠNG ÁN (3.0 điểm)",
+      "title": "Cấu tạo nguyên tử và liên kết hóa học"
+    },
+    {
+      "id": "sec_hh10_p2",
+      "name": "PHẦN II. TRẮC NGHIỆM ĐÚNG SAI (2.0 điểm)",
+      "title": "Bảng tuần hoàn và phản ứng oxi hóa khử"
+    },
+    {
+      "id": "sec_hh10_p3",
+      "name": "PHẦN III. TRẢ LỜI NGẮN (2.0 điểm)",
+      "title": "Cân bằng phương trình và hạt nguyên tử"
+    },
+    {
+      "id": "sec_hh10_p4",
+      "name": "PHẦN IV. TỰ LUẬN VÀ BẢNG SỐ LIỆU (3.0 điểm)",
+      "title": "Quy luật biến đổi tuần hoàn nguyên tố"
+    }
+  ],
+  "questions": [
+    {
+      "id": "q_hh10_01",
+      "sectionId": "sec_hh10_p1",
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Hạt mang điện tích âm trong cấu tạo nguyên tử là loại hạt vi mô nào sau đây?",
+      "choices": [
+        { "key": "A", "text": "Electron" },
+        { "key": "B", "text": "Proton" },
+        { "key": "C", "text": "Neutron" },
+        { "key": "D", "text": "Hạt nhân" }
+      ],
+      "correct_answer": "A",
+      "points": 0.75,
+      "step_by_step_solution": "Hạt mang điện âm trong vỏ nguyên tử là electron (e)."
+    },
+    {
+      "id": "q_hh10_02",
+      "sectionId": "sec_hh10_p1",
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Nguyên tố Clo có số hiệu nguyên tử $Z = 17$. Cấu hình electron nguyên tử ở trạng thái cơ bản của Clo là cấu hình nào?",
+      "choices": [
+        { "key": "A", "text": "$1s^2 2s^2 2p^6 3s^2 3p^5$" },
+        { "key": "B", "text": "$1s^2 2s^2 2p^6 3s^2 3p^6$" },
+        { "key": "C", "text": "$1s^2 2s^2 2p^6 3s^1$" },
+        { "key": "D", "text": "$1s^2 2s^2 2p^5$" }
+      ],
+      "correct_answer": "A",
+      "points": 0.75,
+      "step_by_step_solution": "Z = 17 có 17 electron, cấu hình lần lượt điền vào các phân lớp: 1s^2 2s^2 2p^6 3s^2 3p^5."
+    },
+    {
+      "id": "q_hh10_03",
+      "sectionId": "sec_hh10_p1",
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Cho phương trình hóa học của phản ứng oxi hóa khử sau: $\\text{Fe} + 2\\text{HCl} \\rightarrow \\text{FeCl}_2 + \\text{H}_2$. Trong phản ứng này, chất đóng vai trò chất khử là chất nào?",
+      "choices": [
+        { "key": "A", "text": "$\\text{Fe}$" },
+        { "key": "B", "text": "$\\text{HCl}$" },
+        { "key": "C", "text": "$\\text{FeCl}_2$" },
+        { "key": "D", "text": "$\\text{H}_2$" }
+      ],
+      "correct_answer": "A",
+      "points": 0.75,
+      "step_by_step_solution": "Số oxi hóa của Fe tăng từ 0 lên +2 trong FeCl_2 nên Fe là chất khử."
+    },
+    {
+      "id": "q_hh10_04",
+      "sectionId": "sec_hh10_p1",
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Liên kết hóa học được hình thành do lực hút tĩnh điện giữa các ion mang điện tích trái dấu được gọi là loại liên kết nào?",
+      "choices": [
+        { "key": "A", "text": "Liên kết ion" },
+        { "key": "B", "text": "Liên kết cộng hóa trị" },
+        { "key": "C", "text": "Liên kết kim loại" },
+        { "key": "D", "text": "Liên kết hydro" }
+      ],
+      "correct_answer": "A",
+      "points": 0.75,
+      "step_by_step_solution": "Liên kết ion là liên kết được tạo thành do lực hút tĩnh điện giữa các ion mang điện tích trái dấu."
+    },
+    {
+      "id": "q_hh10_05",
+      "sectionId": "sec_hh10_p2",
+      "type": "true_false_group",
+      "difficulty": "thong_hieu",
+      "content": "Xem xét quy luật biến đổi tính chất của các nguyên tố trong bảng tuần hoàn. Các nhận định sau đây là đúng hay sai?",
+      "sub_questions": [
+        { "key": "a", "content": "Trong một chu kỳ theo chiều tăng dần của điện tích hạt nhân, bán kính nguyên tử có xu hướng giảm dần.", "isCorrect": true, "explanation": "Trong một chu kỳ điện tích hạt nhân tăng làm tăng lực hút với lớp vỏ nên bán kính giảm dần." },
+        { "key": "b", "content": "Trong một nhóm A theo chiều từ trên xuống dưới, độ âm điện của các nguyên tố có xu hướng tăng dần.", "isCorrect": false, "explanation": "Trong nhóm A từ trên xuống dưới, bán kính tăng nên độ âm điện giảm dần." },
+        { "key": "c", "content": "Tính kim loại của các nguyên tố có xu hướng tăng dần từ trên xuống dưới trong cùng một nhóm A.", "isCorrect": true, "explanation": "Từ trên xuống dưới bán kính tăng, lực giữ electron giảm nên tính kim loại tăng." },
+        { "key": "d", "content": "Các nguyên tố khí hiếm thuộc nhóm VIIIA có lớp electron ngoài cùng bão hòa bền vững.", "isCorrect": true, "explanation": "Nhóm VIIIA có cấu hình bền vững ns^2 np^6 (hoặc 1s^2 với He)." }
+      ],
+      "points": 1.0,
+      "step_by_step_solution": "Áp dụng định luật tuần hoàn và quy luật biến đổi tính chất các nguyên tố."
+    },
+    {
+      "id": "q_hh10_06",
+      "sectionId": "sec_hh10_p2",
+      "type": "true_false_group",
+      "difficulty": "van_dung",
+      "content": "Xét phản ứng nhiệt phân muối kali clorat: $2\\text{KClO}_3 \\rightarrow 2\\text{KCl} + 3\\text{O}_2$. Các nhận định sau đây về sự thay đổi số oxi hóa là đúng hay sai?",
+      "sub_questions": [
+        { "key": "a", "content": "Số oxi hóa của nguyên tố Clo trong hợp chất $\\text{KClO}_3$ là $+5$.", "isCorrect": true, "explanation": "Trong KClO_3: +1 + x + 3(-2) = 0 => x = +5." },
+        { "key": "b", "content": "Số oxi hóa của nguyên tố Clo trong hợp chất $\\text{KCl}$ là $-1$.", "isCorrect": true, "explanation": "Trong KCl: +1 + y = 0 => y = -1." },
+        { "key": "c", "content": "Nguyên tố Oxy đóng vai trò là chất khử trong phản ứng nhiệt phân trên.", "isCorrect": true, "explanation": "Số oxi hóa của Oxy tăng từ -2 lên 0 nên O đóng vai trò chất khử." },
+        { "key": "d", "content": "Nguyên tố Kali thay đổi số oxi hóa từ $+1$ lên $+2$ sau phản ứng.", "isCorrect": false, "explanation": "Số oxi hóa của Kali không đổi, luôn là +1." }
+      ],
+      "points": 1.0,
+      "step_by_step_solution": "Xác định số oxi hóa của các nguyên tố trước và sau phản ứng nhiệt phân."
+    },
+    {
+      "id": "q_hh10_07",
+      "sectionId": "sec_hh10_p3",
+      "type": "short_answer",
+      "difficulty": "thong_hieu",
+      "content": "Tổng số hạt proton, neutron và electron trong một nguyên tử nguyên tố X là 40, trong đó số hạt mang điện nhiều hơn số hạt không mang điện là 12. Số hiệu nguyên tử $Z$ của nguyên tố X bằng bao nhiêu?",
+      "accepted_answers": ["13"],
+      "correct_answer": "13",
+      "points": 1.0,
+      "step_by_step_solution": "Ta có hệ: 2Z + N = 40 và 2Z - N = 12 => 4Z = 52 => Z = 13 (nguyên tố Al)."
+    },
+    {
+      "id": "q_hh10_08",
+      "sectionId": "sec_hh10_p3",
+      "type": "short_answer",
+      "difficulty": "van_dung",
+      "content": "Cho phương trình phản ứng hóa học sau đã cân bằng: $2\\text{Al} + 6\\text{HCl} \\rightarrow 2\\text{AlCl}_3 + 3\\text{H}_2$. Tổng các hệ số nguyên tối giản của tất cả các chất trong phương trình bằng bao nhiêu?",
+      "accepted_answers": ["13"],
+      "correct_answer": "13",
+      "points": 1.0,
+      "step_by_step_solution": "Tổng hệ số: 2 + 6 + 2 + 3 = 13."
+    },
+    {
+      "id": "q_hh10_09",
+      "sectionId": "sec_hh10_p4",
+      "type": "essay",
+      "difficulty": "van_dung_cao",
+      "content": "Cho bảng số liệu thực nghiệm về bán kính nguyên tử và độ âm điện của các nguyên tố thuộc chu kỳ 3 sau đây:\n\n| Nguyên tố | Natri (Na) | Magie (Mg) | Nhôm (Al) | Silic (Si) | Photpho (P) | Lưu huỳnh (S) | Clo (Cl) |\n| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |\n| Số hiệu $Z$ | 11 | 12 | 13 | 14 | 15 | 16 | 17 |\n| Bán kính (pm) | 186 | 160 | 143 | 118 | 110 | 102 | 99 |\n| Độ âm điện | 0,93 | 1,31 | 1,61 | 1,90 | 2,19 | 2,58 | 3,16 |\n\nEm hãy: (a) Nhận xét quy luật biến đổi bán kính nguyên tử và độ âm điện của các nguyên tố khi đi từ Na đến Cl; (b) Giải thích nguyên nhân của quy luật biến đổi trên dựa vào điện tích hạt nhân và số lớp electron.",
+      "points": 3.0,
+      "rubric": [
+        { "criterion": "Nêu đúng quy luật bán kính nguyên tử giảm dần từ 186 pm (Na) xuống 99 pm (Cl)", "maxPoints": 1.0 },
+        { "criterion": "Nêu đúng quy luật độ âm điện tăng dần từ 0,93 (Na) lên 3,16 (Cl)", "maxPoints": 1.0 },
+        { "criterion": "Giải thích đúng nguyên nhân: trong chu kỳ 3 có cùng 3 lớp electron, khi Z tăng từ 11 đến 17 thì lực hút tĩnh điện giữa hạt nhân với electron lớp ngoài cùng tăng", "maxPoints": 1.0 }
+      ],
+      "step_by_step_solution": "Phân tích quy luật biến đổi tuần hoàn về bán kính và độ âm điện trong chu kỳ 3."
+    }
+  ]
+}
