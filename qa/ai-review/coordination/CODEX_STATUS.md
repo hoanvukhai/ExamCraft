@@ -1,14 +1,15 @@
 # CODEX status
 
-task_id: CODEX-NEXT / CDX-R1–R6
-assignment_generation: 15
+task_id: CODEX-NEXT / CDX-S1–S6
+assignment_generation: 16
 state: WAITING_REVIEW
-updated_at_utc: 2026-10-25T13:57:59.786100+00:00
+updated_at_utc: 2026-10-25T16:12:05.692Z
 branch/worktree: rebuild/2026-10-local, F:/Workspace/Zazz/ExamCraft
-commits: R1 23cafd1,fe1569e,4ed34cf; R2 33b4b1d; R3 85faa67; R4 b4bded9; R5 6507d29; R6 2da7413
+commit mã gần nhất: c3a3c0d
+commits: a68963a (QA writer), fcaf785 (hủy AI), 2ee7473 (preview/nguồn), 9ee1f39 (ngân hàng/redo/loading), c3a3c0d (pilot)
 
-Đã xong phần thực thi và bằng chứng để Claude duyệt. Đang chờ quyết định R3 về sửa trực tiếp preview; các thiếu hụt nguồn/quyền của R6 chưa đóng. Bước kế: Claude review và giao phạm vi bổ sung nếu cần.
+Đã thực hiện S1–S6 và kiểm trên môi trường cô lập: sửa preview, nguồn từng câu/quyền nhân bản mặc định, hủy AI, undo/redo và retry ngân hàng, loading và Copilot cộng tác. CI đầy đủ đã đạt; server thử và mock đã dừng. Bước kế: Claude duyệt CODEX_GEN16_HANDOFF.md, không tự đóng CV.
 
-Test đã chạy: TypeScript, lint, SAFE, build/HTTP/browser R1–R2, parser/nguồn R6, migration clone ngoài repo. Chưa chạy runtime lại sau helper số R6. Số liệu và giới hạn: qa/rebuild-2026-10-25/CODEX_GEN15_HANDOFF.md cùng báo cáo nhóm.
+Đã kiểm TypeScript/lint/SAFE/build/HTTP/browser, preview lặp liên tiếp. Chưa chạy backup F8/integration riêng hoặc AI thật, chưa có nghiệm thu chuyên môn/Word bằng mắt. Số liệu/log/giới hạn chỉ qa/rebuild-2026-10-25/. Request ID và undo/redo còn theo phiên; không suy chống trùng qua reload hoặc tự xác minh nguồn.
 
-Giữ DB chính, dữ liệu, scratch/DB migration và thay đổi Claude/Gemini. Server QA đã dừng. Không provider thật, push/reset/clean hoặc tự đóng CV. Các HTTP JSON cập nhật do lượt runtime và raw log vẫn giữ; cây chung không sạch. Không sửa ASSIGNMENTS/BATCH_REVIEWS/checklist03/hồ sơ02.
+Giữ dữ liệu chính, thay đổi tài liệu/fixture Claude/Gemini và raw log. Mã đã commit, cây chung còn tài liệu/đầu ra runtime. Không schema/provider thật/push/reset/clean; không sửa checklist03/hồ sơ02/ASSIGNMENTS/BATCH_REVIEWS.
