@@ -1,4 +1,4 @@
-import { Question, ChoiceItem, TrueFalseSubItem, DifficultyLevel } from '@/types/exam';
+import { Question, ChoiceItem, TrueFalseSubItem, DifficultyLevel, Passage } from '@/types/exam';
 
 /**
  * Trích xuất một khối nội dung nằm trong cặp ngoặc nhọn {...} bắt đầu từ vị trí startIdx.
@@ -176,7 +176,30 @@ const QUESTION_START = /(?=^[ \t]*(?:Câu|Bài)\s*\d+(?:\s*[:.)\-]|[ \t])|\s(?:C
 const QUESTION_HEADER = /^\s*(?:Câu|Bài)\s*(\d+)\s*[:.)\-]?\s*/;
 /** "A." "A)" "(A)" with a space or line start before it, so the "C." in "ABC." is not a choice. */
 const CHOICE_MARKER = /(^|\s)\(?([A-D])[.)]\s*/gm;
-const ANSWER_TAIL = /(?:^|\n)[ \t]*(?:ĐÁP ÁN|Đáp án|Đáp án đúng|ĐA)[ \t]*[:\-]?[ \t]*([\s\S]*)$/;
+const ANSWER_TAIL = /(?:^|\n)[ \t]*(?:BẢNG ĐÁP ÁN|Bảng đáp án|ĐÁP ÁN|Đáp án|Đáp án đúng|ĐA)[ \t]*[:\-]?[ \t]*([\s\S]*)$/;
+/** With no "Câu"/"Bài" in the text, a bare "1)" or "1." at the start of a line numbers the questions. */
+const NUMBER_START = /(?=^[ \t]*\d{1,3}[.)]\s)/m;
+const NUMBER_HEADER = /^\s*(\d{1,3})[.)]\s*/;
+/** A reading instruction before the first question: the text that follows is a shared passage, not a title. */
+const PASSAGE_HINT = /(?:^|\s)(?:Đọc|đọc|Cho đoạn|đoạn văn|đoạn thơ|đoạn trích|ngữ liệu)/;
+const LEVELS: Record<string, DifficultyLevel> = { NB: 'nhan_biet', TH: 'thong_hieu', VD: 'van_dung', VDC: 'van_dung_cao' };
+
+/** Reads leading tags such as "[1,0 điểm] [TH]"; a tag that is not a score or a level is left in the text. */
+function takeTags(content: string): { content: string; points?: number; difficulty?: DifficultyLevel } {
+  let rest = content, points: number | undefined, difficulty: DifficultyLevel | undefined;
+  for (;;) {
+    const tag = /^\[([^\]]{1,40})\]\s*/.exec(rest);
+    if (!tag) break;
+    const inner = tag[1].trim();
+    const score = /^(\d+(?:[.,]\d+)?)\s*điểm$/i.exec(inner);
+    const level = LEVELS[inner.toUpperCase()];
+    if (score) points = Number(score[1].replace(',', '.'));
+    else if (level) difficulty = level;
+    else break;
+    rest = rest.slice(tag[0].length);
+  }
+  return { content: rest, points, difficulty };
+}
 
 /** "a)" "b)" "c)" "d)" for the four statements of a true-false group (lowercase, so they differ from the A-D choices). */
 const STATEMENT_MARKER = /(^|\s)([a-d])\)\s*/gm;
@@ -194,6 +217,10 @@ function takeAnswerTail(body: string): { body: string; single?: string; verdicts
   for (const pair of rest.matchAll(VERDICT)) verdicts[pair[1]] = isTrueVerdict(pair[2]);
   if (Object.keys(verdicts).length === 4) return { body: body.slice(0, match.index).trimEnd(), verdicts, list: {} };
   const list: Record<number, string> = {};
+  // An answer table: a row of question numbers ("Câu: 1 | 2") above a row of letters ("Đáp án: B | A").
+  const table = /Câu[^\n:]*:?[ \t]*([^\n]+)\n[ \t]*Đáp án[ \t]*:?[ \t]*([^\n]+)/i.exec(rest);
+  const numbers = table?.[1].match(/\d+/g), letters = table?.[2].match(/[A-D]/g);
+  if (numbers && letters && numbers.length === letters.length && numbers.length >= 2) numbers.forEach((n, i) => { list[Number(n)] = letters[i]; });
   for (const pair of rest.matchAll(/(\d+)\s*[.:)\-]?\s*([A-D])\b/g)) list[Number(pair[1])] = pair[2];
   if (Object.keys(list).length >= 2) return { body: body.slice(0, match.index).trimEnd(), list };
   return { body, list: {} };
@@ -205,14 +232,31 @@ function takeAnswerTail(body: string): { body: string; single?: string; verdicts
  * đáp án đánh dấu "(đúng)", dấu *, dòng "Đáp án: B" hoặc bảng đáp án cuối đề.
  */
 export function parseRawVietnameseText(rawText: string): Question[] {
-  let blocks = rawText.split(QUESTION_START).filter(block => block.trim());
-  // A title line before "Câu 1" ("ĐỀ KIỂM TRA ...") is not a question.
-  if (blocks.length > 1 && !QUESTION_HEADER.test(blocks[0])) blocks = blocks.slice(1);
+  return parseRawVietnameseDocument(rawText).questions;
+}
+
+/** Same as parseRawVietnameseText, and a reading passage placed before the first question is returned and linked. */
+export function parseRawVietnameseDocument(rawText: string): { questions: Question[]; passages: Passage[] } {
+  const hasWordHeaders = /^[ \t]*(?:Câu|Bài)\s*\d+(?:\s*[:.)\-]|[ \t])|\s(?:Câu|Bài)\s*\d+\s*[:.)\-]/m.test(rawText);
+  const start = hasWordHeaders ? QUESTION_START : NUMBER_START, header = hasWordHeaders ? QUESTION_HEADER : NUMBER_HEADER;
+  let blocks = rawText.split(start).filter(block => block.trim());
+  // Text before "Câu 1": a reading passage when it says so ("Đọc đoạn văn sau..."), otherwise a title ("ĐỀ KIỂM TRA ...") that is dropped.
+  const passages: Passage[] = [];
+  let passageRange: [number, number] | undefined;
+  if (blocks.length > 1 && !header.test(blocks[0])) {
+    const preamble = blocks[0].trim();
+    if (PASSAGE_HINT.test(preamble)) {
+      const range = /từ\s*(?:câu\s*)?(\d+)\s*(?:đến|[-–])\s*(?:câu\s*)?(\d+)/i.exec(preamble);
+      if (range) passageRange = [Number(range[1]), Number(range[2])];
+      passages.push({ id: `p_raw_${Date.now()}`, title: preamble.split('\n')[0].trim().slice(0, 80), content: preamble });
+    }
+    blocks = blocks.slice(1);
+  }
 
   const keyList: Record<number, string> = {};
   const parsed = blocks.map((block, index) => {
-    const number = Number(QUESTION_HEADER.exec(block)?.[1]) || index + 1;
-    let body = block.replace(QUESTION_HEADER, '').trim();
+    const number = Number(header.exec(block)?.[1]) || index + 1;
+    let body = block.replace(header, '').trim();
     const tail = takeAnswerTail(body);
     body = tail.body;
     Object.assign(keyList, tail.list);
@@ -261,13 +305,16 @@ export function parseRawVietnameseText(rawText: string): Question[] {
   });
 
   const questions: Question[] = [];
-  parsed.forEach(({ number, content, choices, detected, statements }, index) => {
+  parsed.forEach(({ number, content: rawContent, choices, detected, statements }, index) => {
+    const { content, points, difficulty: level } = takeTags(rawContent);
     if (!content) return;
+    const extra = { ...(points === undefined ? {} : { points }), ...(passages[0] && (!passageRange || (number >= passageRange[0] && number <= passageRange[1])) ? { passageId: passages[0].id } : {}) };
     if (statements.length === 4) {
       questions.push({
         id: `q_raw_${Date.now()}_${index + 1}`,
         type: 'true_false_group',
-        difficulty: 'thong_hieu',
+        difficulty: level ?? 'thong_hieu',
+        ...extra,
         content,
         sub_questions: statements,
         // Only a complete set of verdicts becomes an answer; a missing one is never filled in.
@@ -281,7 +328,8 @@ export function parseRawVietnameseText(rawText: string): Question[] {
     questions.push({
       id: `q_raw_${Date.now()}_${index + 1}`,
       type: choices.length >= 2 ? 'multiple_choice' : 'short_answer',
-      difficulty: 'thong_hieu',
+      difficulty: level ?? 'thong_hieu',
+      ...extra,
       content,
       choices: choices.length > 0 ? choices : undefined,
       correct_answer: answer && (choices.length === 0 || choices.some(choice => choice.key === answer)) ? answer : undefined,
@@ -289,5 +337,5 @@ export function parseRawVietnameseText(rawText: string): Question[] {
       tags: ['Import_Raw'],
     });
   });
-  return questions;
+  return { questions, passages: questions.some(q => q.passageId) ? passages : [] };
 }

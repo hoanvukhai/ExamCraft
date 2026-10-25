@@ -1,4 +1,5 @@
 import { asObject, sanitizeSnapshotForStudent } from './public-exam';
+import { shuffleQuestionUnits } from './question-order';
 
 function shuffled<T>(values: T[], random: () => number) {
   const result = [...values];
@@ -14,7 +15,8 @@ export function createAttemptLayout(snapshot: unknown, seed: number, shuffleQues
   let state = seed >>> 0;
   const random = () => { state = (Math.imul(state, 1664525) + 1013904223) >>> 0; return state / 4294967296; };
   const exam = sanitizeSnapshotForStudent(snapshot);
-  const questions = shuffleQuestions ? shuffled(exam.questions, random) : exam.questions;
+  // Sections keep their order and the questions of one passage stay together; only the blocks inside a section move.
+  const questions = shuffleQuestions ? shuffleQuestionUnits(exam.questions, random) : exam.questions;
   return {
     questionOrder: questions.map(q => String(q.id)),
     choiceOrder: Object.fromEntries(questions.map(q => [String(q.id),

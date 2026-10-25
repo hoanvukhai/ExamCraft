@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "updated_at_utc": "2026-10-25T17:00:00.000Z",
+  "updated_at_utc": "2026-10-25T19:00:00.000Z",
   "writer": "CLAUDE",
   "purpose": "Delivery review gates, not product checklist or proof of runtime completion",
   "batches": [
@@ -559,6 +559,48 @@
           ],
           "review_note": "Đề xuất 12 thuật ngữ; chờ chủ dự án chọn trước khi sửa mã.",
           "reviewed_at_utc": "2026-10-25T17:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "task_id": "GEMINI-NEXT",
+      "assignment_generation": 12,
+      "items": [
+        {
+          "id": "GEM-T1",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "submission_ref": [
+            "qa/ai-review/GEMINI_CV_GAPS.md"
+          ],
+          "review_note": "48 cụm trích đều có thật. Chưa cập nhật các test trộn đề mới; vài vế tiêu chí ghép test hơi rộng. Dùng nhãn PHỦ MỘT PHẦN.",
+          "reviewed_at_utc": "2026-10-25T19:00:00.000Z"
+        },
+        {
+          "id": "GEM-T2",
+          "decision": "ACCEPTED",
+          "submission_ref": [
+            "qa/ai-review/GEMINI_IMPORT_CASES.md"
+          ],
+          "review_note": "28 ca dựng thành exam_parser_cases; bộ phân tích đã sửa để đạt cả 28 (số trần, bảng đáp án, thẻ điểm, ngữ liệu đứng đầu).",
+          "reviewed_at_utc": "2026-10-25T19:00:00.000Z"
+        },
+        {
+          "id": "GEM-T3",
+          "decision": "ACCEPTED",
+          "submission_ref": [
+            "docs/huong-dan/THE_KIEM_IN.md"
+          ],
+          "review_note": "Chủ dự án sẽ tự in thử cuối đợt.",
+          "reviewed_at_utc": "2026-10-25T19:00:00.000Z"
+        },
+        {
+          "id": "GEM-T4",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "submission_ref": [
+            "qa/ai-review/GEMINI_SCOPE_WORDING.md"
+          ],
+          "review_note": "Đề xuất cách viết theo phạm vi cá nhân; chưa áp dụng.",
+          "reviewed_at_utc": "2026-10-25T19:00:00.000Z"
         }
       ]
     }

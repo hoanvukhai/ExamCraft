@@ -94,3 +94,9 @@ Chạy cuối: build đạt, SAFE 391/391 ([log](safe-claude-run11.log)), HTTP 8
 - **Điều cần chủ dự án quyết (không sửa khi chưa hỏi):** với đề có phần hoặc ngữ liệu (mọi đề lưu trên máy chủ đều có phần mặc định), trộn mã đề **chỉ đảo phương án, không đảo thứ tự câu**; các mã đề cùng thứ tự câu. Đề xuất: đảo thứ tự câu trong từng phần nhưng giữ nhóm ngữ liệu nguyên khối. Cần bạn xác nhận vì đổi cách ra đề.
 - **CV029 đóng** nhờ F13 và F16. F16 phát hiện một nút hiện/ẩn mật khẩu ở trang đăng nhập không có tên, đã thêm nhãn "Hiện mật khẩu"/"Ẩn mật khẩu".
 - **CV058 vẫn mở:** mô hình đề chưa có âm thanh hoặc tệp đính kèm; tiêu chí nhắc đến "tệp/âm thanh theo đề". Cần chủ dự án quyết có cần không.
+
+## Bổ sung: đảo thứ tự câu khi trộn đề và 28 ca nhập đề của Gemini
+Chạy cuối: build đạt, SAFE 408/408 ([log](safe-claude-run12.log)), HTTP 88/88 ([log](http-claude-run23.log)), trình duyệt 15/15 ([log](pilot-claude-run17.log)).
+- **Theo quyết định của chủ dự án (có đảo câu):** thêm `question-order.ts`; trộn mã đề và trộn theo từng học sinh khi giao bài đều đảo thứ tự câu trong từng phần, mỗi phần giữ nguyên vị trí, nhóm câu dùng chung ngữ liệu đi nguyên khối và đúng thứ tự riêng. Trước đó đường học sinh đảo phẳng mọi câu, bỏ qua cả phần lẫn ngữ liệu. Hai test cũ khẳng định "đề có phần thì không đảo câu" đã đổi theo quy tắc mới. Lượt làm đã bắt đầu giữ nguyên bố cục đã lưu nên không bị ảnh hưởng.
+- **Nhập đề từ văn bản:** `exam_parser_cases` (11 test gom 28 ca của Gemini) đạt toàn bộ sau khi bổ sung số trần "1)", bảng đáp án, thẻ [điểm] [mức], và ngữ liệu đứng đầu đề (hàm mới `parseRawVietnameseDocument` trả cả ngữ liệu; hộp thoại nhập dùng nó ở đường dự phòng). Đây là đường chạy khi AI lỗi hoặc chưa có khóa.
+- Gemini generation 12: nhận T2, T3; nhận có giới hạn T1, T4. Đã giao generation 13.

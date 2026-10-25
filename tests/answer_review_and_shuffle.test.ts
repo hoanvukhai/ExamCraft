@@ -37,7 +37,8 @@ test('shuffle preserves all seven types, missing answers and shared passage orde
     assert.equal(variant.exam.questions.find(q => q.type === 'multiple_choice')?.correct_answer, undefined);
   }
   original.questions.forEach(q => { q.sectionId = 'section'; });
-  assert.deepEqual(generateShuffledExams(original, 1)[0].exam.questions.map(q => q.id), original.questions.map(q => q.id));
+  // Inside one section the questions may be reordered, but none is lost or repeated.
+  assert.deepEqual(generateShuffledExams(original, 1)[0].exam.questions.map(q => q.id).sort(), original.questions.map(q => q.id).sort());
   original.questions.forEach(q => { delete q.sectionId; });
   assert.equal(JSON.stringify(original), source);
 });
@@ -58,10 +59,12 @@ test('shuffle respects pinned choices and builds keys for fill, matching and rep
  const q = { ...question('multiple_choice'), choices: [{ key: 'A', text: 'Một', pinned: true }, { key: 'B', text: 'Hai' }], correct_answer: 'B' };
  const source = exam([q, { ...question('fill_blank'), accepted_answers: ['one', '1'] }, { ...question('matching'), matchingPairs: [{ id: 'a', left: 'A', right: 'Z' }, { id: 'b', left: 'B', right: 'X' }] }, { ...question('ordering'), correctOrder: ['z', 'a', 'z'] }]);
  source.questions.forEach(q => { q.sectionId = 'fixed'; });
+ // Questions of one section are shuffled now, so each one is found by its type instead of its position.
  for (const variant of generateShuffledExams(source, 3)) {
-   assert.deepEqual(variant.exam.questions[0].choices, q.choices);
-   assert.equal(variant.answerKey[2], 'one / 1');
-   assert.equal(variant.answerKey[3], '1–2; 2–1');
-   assert.equal(variant.answerKey[4], '2 → 1 → 3');
+   const number = (type: string) => variant.exam.questions.findIndex(item => item.type === type) + 1;
+   assert.deepEqual(variant.exam.questions.find(item => item.type === 'multiple_choice')!.choices, q.choices);
+   assert.equal(variant.answerKey[number('fill_blank')], 'one / 1');
+   assert.equal(variant.answerKey[number('matching')], '1–2; 2–1');
+   assert.equal(variant.answerKey[number('ordering')], '2 → 1 → 3');
  }
 });

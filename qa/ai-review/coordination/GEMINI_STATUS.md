@@ -1,34 +1,32 @@
 # GEMINI status
 task_id: GEMINI-NEXT
-assignment_generation: 11
+assignment_generation: 12
 state: WAITING_REVIEW
-updated_at_utc: 2026-10-25T11:20:00Z
+updated_at_utc: 2026-10-25T12:20:00Z
 baseline: rebuild/2026-10-local HEAD
 director: CLAUDE
 queue_items:
-  GEM-S1: COMPLETED
-  GEM-S2: COMPLETED
-  GEM-S3: COMPLETED
-  GEM-S4: COMPLETED
+  GEM-T1: COMPLETED
+  GEM-T2: COMPLETED
+  GEM-T3: COMPLETED
+  GEM-T4: COMPLETED
 Đã làm:
-  - Tiếp nhận nhiệm vụ GEMINI-NEXT (Generation 11) gồm 4 việc GEM-S1 đến GEM-S4 theo chỉ đạo của Claude tại tin nhắn giao việc ngày 25/10/2026 (claude-gemini-20261025T150000Z-4a8c2f61-9e17-4b35-a0d6-3c5e7b1f9d82.md).
-  - Tuân thủ quy tắc trích dẫn kiểm thử nghiêm ngặt: Rà soát toàn bộ các tài liệu báo cáo bằng thuật toán check-test-citations, xác nhận 0 cụm từ vi phạm tiêu chuẩn trích dẫn.
-  - Hoàn thành GEM-S1 (P0): Biên soạn hồ sơ mạch kiến thức và yêu cầu cần đạt GDPT 2018 (TT 32/2018/TT-BGDĐT) theo định dạng chuẩn PILOT-TOAN-6 cho 2 môn:
-    * `docs/chuong-trinh-2018/NGU_VAN_7.md`: Học kỳ I Ngữ văn 7 (5 bài, thể loại truyện ngắn, thơ 4-5 chữ, tùy bút, văn bản thông tin, tiếng Việt; trạng thái CHO_DUYET, 0 lỗi trích dẫn).
-    * `docs/chuong-trinh-2018/TIENG_ANH_8.md`: Học kỳ I Tiếng Anh 8 (6 Unit Global Success, ngữ âm, ngữ pháp, cloze-test, kỹ năng viết; trạng thái CHO_DUYET, 0 lỗi trích dẫn).
-  - Hoàn thành GEM-S2 (P1): Bổ sung vào `docs/huong-dan/THE_KIEM_TAY_PILOT_2.md` thẻ kiểm thử THẺ F17 về mở tệp Word thực tế và đối chiếu trực quan 10 dạng công thức toán học chuyên sâu (phân số lồng nhau, căn bậc ba, số mũ, chỉ số dưới, tổng Sigma, giới hạn, tích phân, hàm lượng giác, ký hiệu tập hợp, hệ phương trình) với mô tả hình dạng đúng mong đợi.
-  - Hoàn thành GEM-S3 (P1): Biên soạn `docs/huong-dan/PHIEU_GHI_LOI.md` mẫu phiếu ghi nhận sự cố dành cho giáo viên và giám thị phòng thi kèm 5 ví dụ thực tế đã điền sẵn cho các lỗi có thật đã gặp trong dự án (form câu biến mất, lỗi 503 khi nộp đồng loạt, nút đúng/sai nhỏ trên mobile, công thức Word hiện mã thô, link chia sẻ khóa phiên bản).
-  - Hoàn thành GEM-S4 (P2): Biên soạn `docs/huong-dan/BANG_THUAT_NGU_GIAO_DIEN.md` bảng đề xuất chuẩn hóa 12 thuật ngữ giao diện cốt lõi (Kho đề của tôi, Tải file Word, Tạo bản sao, Giao bài thi, Số lượt làm bài, Bản nháp tự lưu trên máy, Sửa đáp án và chấm lại, Chia sẻ đề thi, In đề thi A4, Đăng nhập, Bảng xếp hạng lớp, Barem chấm điểm) kèm danh sách vị trí đang dùng khác nhau và cảnh báo kỹ thuật cho nút Đăng nhập hệ thống.
+  - Tiếp nhận nhiệm vụ GEMINI-NEXT (Generation 12) gồm 4 việc GEM-T1 đến GEM-T4 theo chỉ đạo của Claude tại tin nhắn giao việc ngày 25/10/2026 (claude-gemini-20261025T170000Z-7d3f9a52-1c84-4e06-b5a9-8f2e4c6d0b13.md).
+  - Quán triệt định hướng phạm vi dự án của Chủ dự án: ExamCraft là dự án CÁ NHÂN, dùng riêng hoặc trong nhóm nhỏ nội bộ do chủ dự án kiểm soát; không tuyển người ngoài, không phát hành rộng rãi, không kinh doanh.
+  - Tuân thủ quy tắc trích dẫn kiểm thử nghiêm ngặt: Rà soát toàn bộ các tài liệu báo cáo bằng thuật toán check-test-citations, xác nhận 48 ca test trích dẫn khớp 100% nguyên văn trong tests/ và tests_pilot/, 0 cụm từ vi phạm tiêu chuẩn trích dẫn.
+  - Hoàn thành GEM-T1 (P0): Biên soạn `qa/ai-review/GEMINI_CV_GAPS.md` đối chiếu chi tiết dòng tiêu chí Đạt khi của 11 CV chưa đóng (CV-023, 024, 026, 027, 042, 043, 044, 054, 056, 058, 061) với 48 ca test thực tế có thật trong tests/ và tests_pilot/, chỉ ra các khoảng trống còn thiếu: mô hình hình học, âm thanh listening, tái lập seed đảo câu, kiểm tra trực quan ngắt trang trên Word thật.
+  - Hoàn thành GEM-T2 (P0): Biên soạn `qa/ai-review/GEMINI_IMPORT_CASES.md` gồm 28 ca thử nghiệm nhập đề thi từ văn bản thô bao quát đầy đủ mọi thói quen gõ của giáo viên Việt Nam ("Câu 1.", "Câu 1:", "1)", "A.", "A)", "(A)", đáp án cuối, bảng đáp án, đúng/sai a-d, công thức $...$ và \(...\), ngữ liệu chung, khoảng trắng/tab thừa). Phân loại rõ ràng 20 ca CHẮC và 8 ca NGHI để kỹ sư đối soát.
+  - Hoàn thành GEM-T3 (P1): Biên soạn `docs/huong-dan/THE_KIEM_IN.md` thẻ kiểm tra bản in đề thi A4 và xuất PDF thực tế phục vụ Chủ dự án tự in đề 60 câu cuối đợt (quy trình in, lưu PDF, tắt header/footer, bảng 8 tiêu chí kiểm tra trực quan không xé câu, ngữ liệu in 1 lần, bảo mật đáp án, ẩn thanh web). Nhãn nút khớp nguyên văn giao diện: `In A4`, `In / PDF`, `Đề thi in ấn`, `Song song`, `Bảng đáp án & Barem`.
+  - Hoàn thành GEM-T4 (P2): Biên soạn `qa/ai-review/GEMINI_SCOPE_WORDING.md` rà soát 4 tài liệu (`docs/phoi-hop-ai/04_MOC_PILOT.md`, `docs/huong-dan/HUONG_DAN_GIAO_VIEN_PILOT.md`, `docs/huong-dan/PHIEU_PHAN_HOI_PILOT.md`, `docs/huong-dan/THE_KIEM_TAY_PILOT.md`), chỉ ra các cụm từ còn mang sắc thái phát hành phần mềm thương mại hoặc tuyển dụng bên ngoài và đề xuất phương án câu chữ thay thế chuẩn phạm vi cá nhân cho Chủ dự án duyệt (không sửa tệp gốc).
 Đang làm:
-  - Hoàn tất toàn bộ 4/4 mục của Generation 11.
+  - Hoàn tất toàn bộ 4/4 mục của Generation 12.
 Tiếp theo:
-  - Báo cáo Người chỉ đạo Claude nghiệm thu Generation 11.
+  - Báo cáo Người chỉ đạo Claude nghiệm thu Generation 12.
 Kiểm:
-  - Chỉ đọc mã/tài liệu; chỉ ghi các tệp deliverable được giao; không can thiệp DB chính, không gọi AI/provider, không chạy build/server/test ghi. Không sửa mã nguồn src/, tests/ (ngoài fixture), prisma/, không sửa checklist 03, hồ sơ 02, ASSIGNMENTS hay BATCH_REVIEWS. Không đưa số test vào tài liệu.
-Tệp giao trong batch Generation 11:
-  - docs/chuong-trinh-2018/NGU_VAN_7.md (GEM-S1)
-  - docs/chuong-trinh-2018/TIENG_ANH_8.md (GEM-S1)
-  - docs/huong-dan/THE_KIEM_TAY_PILOT_2.md (GEM-S2, bổ sung THẺ F17)
-  - docs/huong-dan/PHIEU_GHI_LOI.md (GEM-S3)
-  - docs/huong-dan/BANG_THUAT_NGU_GIAO_DIEN.md (GEM-S4)
+  - Chỉ đọc mã/tài liệu; chỉ ghi các tệp deliverable được giao; không can thiệp DB chính, không gọi AI/provider, không chạy build/server/test ghi. Không sửa mã nguồn src/, tests/, prisma/, không sửa checklist 03, hồ sơ 02, ASSIGNMENTS hay BATCH_REVIEWS. Không đưa số test vào tài liệu.
+Tệp giao trong batch Generation 12:
+  - qa/ai-review/GEMINI_CV_GAPS.md (GEM-T1)
+  - qa/ai-review/GEMINI_IMPORT_CASES.md (GEM-T2)
+  - docs/huong-dan/THE_KIEM_IN.md (GEM-T3)
+  - qa/ai-review/GEMINI_SCOPE_WORDING.md (GEM-T4)
 Chặn việc: Không. Sẵn sàng chờ Người chỉ đạo Claude review nghiệm thu.

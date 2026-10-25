@@ -1,5 +1,6 @@
 import { Exam, Question, ShuffledExamVariant, ChoiceItem } from '@/types/exam';
 import { matchingDefinition, orderingDefinition } from './structured-question';
+import { shuffleQuestionUnits } from './question-order';
 
 /**
  * Thuật toán sinh số ngẫu nhiên có Seed (Mulberry32)
@@ -121,9 +122,10 @@ export function generateShuffledExams(
       ...shuffledPart4,
     ];
 
-    // Shared passages and explicit sections keep their author-defined order.
+    // Exams with sections or shared passages keep their sections in order; inside a section the questions are shuffled,
+    // and the questions of one passage move together as a block.
     const allShuffledQuestions = baseExam.passages?.length || baseExam.questions.some(q => q.passageId || q.sectionId)
-      ? baseExam.questions.map(q => q.type === 'multiple_choice' ? shuffleMultipleChoiceQuestion(q, randomFn) : q)
+      ? shuffleQuestionUnits(baseExam.questions, randomFn).map(q => q.type === 'multiple_choice' ? shuffleMultipleChoiceQuestion(q, randomFn) : q)
       : reorderedQuestions;
 
     // Tạo bảng đáp án chi tiết cho mã đề này

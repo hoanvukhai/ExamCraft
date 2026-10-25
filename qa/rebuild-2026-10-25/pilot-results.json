@@ -1,18 +1,102 @@
 {
-  "run": "45ca22a8-74d0-4ca1-a857-c5f999e94823",
+  "run": "c481cbd9-a175-4f0f-a303-ca5d511f53e3",
   "sourceSha256": "635eb6bed497c96c3b1f87db5846dfcc25be94937807d032e1aed52f7f6775dc",
-  "buildId": "Ro_22UQJOJxK8jMK9wET-",
+  "buildId": "-9MCoVEDxry7HA_9XUQdv",
   "browserVersion": "155.0.8059.85",
   "browserExecutable": "C:/Program Files/Google/Chrome/Application/chrome.exe",
-  "requestedFlow": "F16",
-  "checkedAt": "2026-10-25T11:24:15.054Z",
+  "requestedFlow": "F1-F7,F9-F16",
+  "checkedAt": "2026-10-25T11:35:29.513Z",
   "environment": "isolatedTest localhost3117 / examcraft_test_20261022",
   "realAiCalls": false,
   "results": [
     {
+      "id": "F1",
+      "status": "PASS",
+      "durationMs": 3447,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F2",
+      "status": "PASS",
+      "durationMs": 9618,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F3",
+      "status": "PASS",
+      "durationMs": 6681,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F4",
+      "status": "PASS",
+      "durationMs": 8797,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F5",
+      "status": "PASS",
+      "durationMs": 42537,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F6",
+      "status": "PASS",
+      "durationMs": 18033,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F7",
+      "status": "PASS",
+      "durationMs": 19045,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F9",
+      "status": "PASS",
+      "durationMs": 8401,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F10",
+      "status": "PASS",
+      "durationMs": 8676,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F11",
+      "status": "PASS",
+      "durationMs": 5203,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F12",
+      "status": "PASS",
+      "durationMs": 18741,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F13",
+      "status": "PASS",
+      "durationMs": 19977,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F14",
+      "status": "PASS",
+      "durationMs": 8000,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F15",
+      "status": "PASS",
+      "durationMs": 3631,
+      "cleanupComplete": true
+    },
+    {
       "id": "F16",
       "status": "PASS",
-      "durationMs": 39894,
+      "durationMs": 39122,
       "cleanupComplete": true
     }
   ]

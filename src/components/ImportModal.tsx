@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Question, Subject, Passage } from '@/types/exam';
 import { getCatalogSubjects } from '@/lib/education-catalog';
-import { parseExTestLatex, parseRawVietnameseText } from '@/lib/exam-parser';
+import { parseExTestLatex, parseRawVietnameseDocument } from '@/lib/exam-parser';
 import { MathRenderer } from './MathRenderer';
 import { accountFetch } from '@/lib/account-fetch';
 import { isAccountFailure, RequestGate } from '@/lib/template-request-context';
@@ -248,9 +248,10 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
           setStatusMessage(`AI đã chuyển đổi thành công ${data.questions.length} câu hỏi có công thức KaTeX!`);
         } else {
           setErrorMessage(data.error || 'AI chưa đọc được tài liệu. Kết quả bên dưới chỉ là tách văn bản cơ bản, cần kiểm tra lại.');
-          const fallback = parseRawVietnameseText(rawText);
-          setParsedQuestions(fallback);
-          setStatusMessage(`Bóc tách cơ bản ${fallback.length} câu hỏi theo mẫu tiếng Việt.`);
+          const fallback = parseRawVietnameseDocument(rawText);
+          setParsedQuestions(fallback.questions);
+          setParsedPassages(fallback.passages);
+          setStatusMessage(`Bóc tách cơ bản ${fallback.questions.length} câu hỏi${fallback.passages.length ? ' và 1 ngữ liệu dùng chung' : ''} theo mẫu tiếng Việt.`);
         }
       }
     } catch (err: unknown) {
