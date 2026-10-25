@@ -12,15 +12,15 @@ import { requireTestDatabase } from './helpers/test-database';
 // Nothing in this file reaches the real service.
 const db = new PrismaClient({ datasources: { db: { url: requireTestDatabase() } }, log: [] });
 const origin = 'http://127.0.0.1:3117';
-type Seen = { method: string; path: string; key: string };
+type Seen = { method: string; path: string; key: string; body: string };
 const seen: Seen[] = [];
 let behave: (key: string) => { status: number; body: unknown; delayMs?: number } = () => ({ status: 200, body: {} });
 const imported = { questions: [{ type: 'multiple_choice', difficulty: 'thong_hieu', content: 'AI MOCK Q', choices: ['A', 'B', 'C', 'D'].map(key => ({ key, text: key })), correct_answer: 'A', points: 1 }], passages: [], warnings: [] };
 const reply = (text: string) => ({ candidates: [{ content: { role: 'model', parts: [{ text }] }, finishReason: 'STOP' }], usageMetadata: { promptTokenCount: 5, candidatesTokenCount: 5, totalTokenCount: 10 } });
 const ok = () => ({ status: 200, body: reply(JSON.stringify(imported)) });
 const provider = http.createServer((req, res) => {
-  req.on('data', () => {}); req.on('end', () => {
-    const key = String(req.headers['x-goog-api-key'] ?? ''); seen.push({ method: req.method ?? '', path: req.url ?? '', key });
+  const chunks: Buffer[] = []; req.on('data', chunk => chunks.push(chunk)); req.on('end', () => {
+    const key = String(req.headers['x-goog-api-key'] ?? ''); seen.push({ method: req.method ?? '', path: req.url ?? '', key, body: Buffer.concat(chunks).toString('utf8') });
     const result = req.url?.startsWith('/v1beta/models?') ? { status: 200, body: { models: [{ name: 'models/gemini-3.5-flash', displayName: 'Gemini 3.5 Flash', supportedGenerationMethods: ['generateContent'] }] } } : behave(key);
     const send = () => { res.statusCode = result.status; res.setHeader('content-type', 'application/json'); res.end(JSON.stringify(result.body)); };
     const timer = setTimeout(send, 'delayMs' in result ? result.delayMs ?? 0 : 0); res.on('close', () => clearTimeout(timer));
@@ -42,13 +42,14 @@ test('AI routes use only the caller key, count usage per key id, fail honestly a
     try {
       provider.close();
       const all = Object.values(ids);
+      await db.teacherAiMemory.deleteMany({ where: { userId: { in: all } } });
       await db.aiUsageLog.deleteMany({ where: { userId: { in: all } } });
       await db.userApiKey.deleteMany({ where: { userId: { in: all } } });
       await db.auditLog.deleteMany({ where: { actorId: { in: all } } });
       await db.user.deleteMany({ where: { id: { in: all } } });
       const directory = `qa/rebuild-${new Date().toISOString().slice(0, 10)}`;
       fs.mkdirSync(directory, { recursive: true });
-      writeQaReport(`${directory}/http_ai_mock.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 11 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117 with a local provider imitation on 3118', realAiCalls: false }, null, 2));
+      writeQaReport(`${directory}/http_ai_mock.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 12 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117 with a local provider imitation on 3118', realAiCalls: false }, null, 2));
     } finally { await db.$disconnect(); }
   });
   const cookies: Record<string, string> = {};
@@ -175,6 +176,20 @@ test('AI routes use only the caller key, count usage per key id, fail honestly a
       assert.equal(r.status, 422, `${name} is refused`); assert.notEqual(r.data.success, true); assert.equal(r.data.exam, undefined, `${name}: nothing is applied`); assert.match(String(r.data.error), message); assert.equal(seen.length, 1, `${name}: no retry`);
     }
     checks.push('generation-matches-plan');
+  });
+
+  await t.test('private notes reach only their owner and only while switched on; nothing else of theirs enters a prompt', async () => {
+    const params = { subject: 'toan', grade: 6, topic: 'Cộng phân số', durationMinutes: 15, numMultipleChoice: 1, numTrueFalse: 0, numShortAnswer: 0, numEssay: 0 };
+    const on = 'NOTE_ON_' + randomUUID(), off = 'NOTE_OFF_' + randomUUID();
+    await db.teacherAiMemory.createMany({ data: [{ userId: ids.a, title: on, insight: 'ghi chú đang bật', category: 'PEDAGOGICAL_STYLE', sourceAction: 'MANUAL_NOTE' }, { userId: ids.a, title: off, insight: 'ghi chú đã tắt', category: 'PEDAGOGICAL_STYLE', sourceAction: 'MANUAL_NOTE', isActive: false }] });
+    const generate = (who: string) => { reset(() => ({ status: 200, body: reply(JSON.stringify({ title: 'Đề nháp AI', questions: [{ type: 'multiple_choice', difficulty: 'thong_hieu', content: 'AI Q1', choices: [{ key: 'A', text: '1' }, { key: 'B', text: '2' }], correct_answer: 'A', step_by_step_solution: 'x' }] })) })); return request('/api/generate-exam', 'POST', { params, customApiKey: 'note-key-0123456789abcdef' }, cookies[who]); };
+    assert.equal((await generate('a')).status, 200);
+    const mine = seen.map(s => s.body).join(' | ');
+    assert.ok(mine.includes(on), 'the owner active note is sent'); assert.ok(!mine.includes(off), 'a switched-off note is never sent');
+    assert.equal((await generate('b')).status, 200);
+    const theirs = seen.map(s => s.body).join(' | ');
+    assert.ok(!theirs.includes(on) && !theirs.includes(off), 'another teacher never receives these notes');
+    checks.push('private-notes-in-prompts');
   });
 
   await t.test('provider errors are reported without retry storms; testing a key reads only the model list; keys of others cannot be tested', async () => {

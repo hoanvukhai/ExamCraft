@@ -91,6 +91,14 @@ test('a share link stays on the version it was made from and later edits never r
       assert.equal(oldCopy.status, 403, 'the old link never allowed copying');
       assert.equal((await request(`/api/exams/${examId}/share`, 'DELETE', { linkId: old.id }, owner)).status, 200);
       assert.equal((await view(old.token)).status, 404, 'a revoked pinned link stops serving');
+      assert.equal((await request(`/api/exams/${examId}/share`, 'DELETE', { linkId: copyable.id }, owner)).status, 200);
+      assert.equal((await view(copyable.token)).status, 404, 'the link that made the copy is revoked too');
+      const keptCopy = await request(`/api/exams/${copied.data.id}`, 'GET', undefined, otherLogin.cookie);
+      assert.equal(keptCopy.status, 200, 'revoking a link never takes back a copy that was already made');
+      const edited = await request(`/api/exams/${copied.data.id}`, 'PATCH', { baseVersion: keptCopy.data.document.version, document: { ...keptCopy.data.document, metadata: { ...keptCopy.data.document.metadata, title: 'Bản sao đã sửa' } } }, otherLogin.cookie);
+      assert.equal(edited.status, 200, edited.data.error);
+      const source = (await request(`/api/exams/${examId}`, 'GET', undefined, owner)).data.document;
+      assert.notEqual(source.metadata.title, 'Bản sao đã sửa', 'editing the copy never changes the original');
     } finally { await db.exam.deleteMany({ where: { ownerId: other } }); await db.question.deleteMany({ where: { ownerId: other } }); await db.auditLog.deleteMany({ where: { actorId: other } }); await db.user.deleteMany({ where: { id: other } }); }
     checks.push('revoke-and-copy');
   });

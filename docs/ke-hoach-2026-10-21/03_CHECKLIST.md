@@ -33,17 +33,21 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Bằng chứng22/10: sửa exitcode/statistics và tách SAFE/DB/HTTP; audit AI thật và mutation cũ không dùng mặc định; fake/helper/transaction/HTTP được phân biệt trong [TESTING](../../qa/rebuild-2026-10-22/TESTING.md). Lint mới chạy theo file; chưa claim lint toàn repo. Mốc webpack25383 exit0/typecheck; SAFE20+87, realDB7/7, HTTP13/13. Build sau bổ sung đổi tài khoản được ghi riêng khi có kết quả. Đánh giá runner đã xong, không đồng nghĩa mọi CV/NT đã đạt.
   - Phạm vi: YC-29. Nghiệm thu: NT-01.
   - Đạt khi: Sửa tiêu chí báo fail/exit code khi bắt đầu code; ghi kết quả thực theo cây code, phân biệt test gọi hàm giả với code thật; không kế thừa PASS lịch sử.
-- [ ] **CV-004 — Dựng mẫu luồng dễ hiểu và danh mục môn.**
+- [x] **CV-004 — Dựng mẫu luồng dễ hiểu và danh mục môn.**
+  - **Nghiệm thu26/10 (Claude): ĐẠT đủ tiêu chí "Đạt khi".** [MAU_LUONG_VA_DANH_MUC_MON](../thiet-ke/MAU_LUONG_VA_DANH_MUC_MON.md) mô tả theo giao diện thật các luồng tạo bài, đáp án/lời giải, khóa AI, chia sẻ và giao bài; danh mục môn–lớp sinh bằng máy từ danh mục ứng dụng dùng (xem CV022); ba cấp có ca đại diện (Tiểu học 3; THCS Toán 9, Ngữ văn 7, Tiếng Anh 8, KHTN 6; THPT Vật lí 11, Hóa học 10) và đề thử tương ứng trong `qa/ai-review/fixtures/da-mon/` (fixture_da_mon đạt). Đường dẫn tệp trong tài liệu đã kiểm tồn tại. [Đối chiếu](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md)
   - Phạm vi: YC-04, YC-06, YC-07, YC-26, YC-27. Nghiệm thu: NT-11, NT-28.
   - Đạt khi: Có mẫu màn hình tạo bài/đáp án/key/chia sẻ, danh mục môn-lớp cần xác minh và ca đại diện ba cấp; Toán không là giới hạn.
-- [ ] **CV-005 — Thử nhỏ cộng tác trước thiết kế lưu chính thức.**
+- [x] **CV-005 — Thử nhỏ cộng tác trước thiết kế lưu chính thức.**
+  - **Nghiệm thu26/10 (Claude): ĐẠT đủ tiêu chí "Đạt khi".** Quyết định đồng bộ có lý do ở [COLLABORATION](../../qa/rebuild-2026-10-22/COLLABORATION.md): lưu nội dung đầy đủ kèm phiên bản (CAS), người lưu sau nhận 409 và giữ nháp, không ghép từng ký tự. Kết quả đã chạy: hai người sửa cùng lúc (`two people editing different questions never lose work, and history can restore any version`, F14), mất mạng rồi nối lại (F9, F11), hoàn tác và khôi phục (`after a restore a stale editor is refused and a refreshed editor continues; editors cannot restore`, F23), đổi cấu trúc chỉ chủ đề được làm (`share permission matrix is decided by the server for every operation`). Giới hạn: hoàn tác theo toàn đề qua lịch sử phiên bản, chưa có ngăn xếp hoàn tác riêng từng người trong phiên trực tiếp. [Đối chiếu](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md)
   - Truy vết24/10: quyết định đã ghi ở [COLLABORATION](../../qa/rebuild-2026-10-22/COLLABORATION.md) — nội dung đầy đủ + version CAS, kiểm thay đổi theo chu kỳ/focus; người lưu sau nhận409 và giữ nháp, chưa ghép từng ký tự. Ca hai phiên HTTP/hai tab nằm ở CV049/050. Chưa có thử offline/undo của từng người và hai browser độc lập nên giữ mở.
   - Phạm vi: YC-13, YC-19. Nghiệm thu: NT-20.
   - Đạt khi: Ghi kết quả hai người sửa, offline/reconnect, undo và đổi cấu trúc; quyết định cơ chế đồng bộ có lý do, không chỉ chọn tên thư viện.
-- [ ] **CV-006 — Thu thập fixture và tái lập các lỗi báo cáo.**
+- [x] **CV-006 — Thu thập fixture và tái lập các lỗi báo cáo.**
+  - **Nghiệm thu26/10 (Claude): ĐẠT đủ tiêu chí "Đạt khi".** Có mẫu phẳng/DB payload (`tests/fixtures/pilot/toan6-bay-dang.json`), đủ 7 loại câu, ngữ liệu (`mon2-ngu-lieu.json`), đề dài 120 câu (`docx_long_exam`), hình dạng mảng và dạng đối tượng (`figures stored as an array or as an object keyed by id normalize to the same list`, `an unsupported figure kind is refused instead of silently dropped`). [LOI_DA_BAO_VA_TRANG_THAI](../thiet-ke/LOI_DA_BAO_VA_TRANG_THAI.md) liệt kê 19 lỗi với trạng thái đã sửa / hiện còn / chưa tái lập và ca kiểm chứng. [Đối chiếu](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md)
   - Phạm vi: YC-11, YC-18, YC-30. Nghiệm thu: NT-03, NT-16, NT-18.
   - Đạt khi: Mẫu local phẳng/DB payload, figures object/mảng, 7 loại câu, ngữ liệu và file dài; từng lỗi đánh dấu hiện còn/đã sửa/chưa tái lập.
-- [ ] **CV-007 — Chốt hợp đồng khái niệm bằng ví dụ.**
+- [x] **CV-007 — Chốt hợp đồng khái niệm bằng ví dụ.**
+  - **Nghiệm thu26/10 (Claude): ĐẠT đủ tiêu chí "Đạt khi".** [HOP_DONG_KHAI_NIEM](../thiet-ke/HOP_DONG_KHAI_NIEM.md) ánh xạ khung dữ liệu sang model Prisma, 53 route API (máy kiểm: đủ, không thiếu), cột phiên bản (Question, Exam, bảng revision, hậu tố `.v<N>` của liên kết chia sẻ) và quy tắc điểm đến phần trăm có ví dụ điểm lẻ 0,25 (`all seven types remain independent and decimals 0.1 plus0.2 and explicit0 are exact`, `a share link stays on the version it was made from and later edits never reach it`). Không có migration chờ: DB chính và DB thử đã khớp schema. [Đối chiếu](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md)
   - Phạm vi: YC-04, YC-07, YC-09, YC-12, YC-13, YC-25. Nghiệm thu: NT-11, NT-12.
   - Đạt khi: Khung tại 06 được ánh xạ model/API, xác định version và điểm chính xác; chưa migration khi còn xung đột nguồn lưu.
 
@@ -259,7 +263,8 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - **Nghiệm thu26/10 (Claude): ĐẠT đủ tiêu chí "Đạt khi".** Góp ý gắn với câu (chọn trong hộp thoại cộng tác, câu không có trong đề bị từ chối) và ghi phiên bản đề lúc viết; có trạng thái đã giải quyết/mở lại, ghi người giải quyết; chỉ người sửa đề hoặc chính người viết được đóng/mở, người xem 403, người ngoài 404. Lịch sử hiện người lưu từng phiên bản; khôi phục tạo phiên bản mới, không xóa lịch sử (`share permission matrix is decided by the server for every operation` ca mới `comments record question and version, and only editors or the writer can resolve them`; `two people editing different questions never lose work, and history can restore any version`). Thay đổi do AI đi qua lần lưu của người bấm nên được ghi tên người đó (F21 dùng khóa riêng). Đã thêm 3 cột vào `ExamComment` (migration `20261026000100`, đã áp lên DB chính sau khi sao lưu). Giới hạn: giao diện mới chưa có luồng trình duyệt tự động, chủ dự án xem bằng mắt; góp ý cũ không có số phiên bản. [Đối chiếu](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md)
   - Phạm vi: YC-19. Nghiệm thu: NT-20.
   - Đạt khi: Bình luận theo câu/phiên bản, giải quyết góp ý, xem ai đổi gì, phục hồi không xóa lịch sử; AI action gắn người yêu cầu.
-- [ ] **CV-052 — Ngân hàng chung và nhân bản.**
+- [x] **CV-052 — Ngân hàng chung và nhân bản.**
+  - **Nghiệm thu26/10 (Claude): ĐẠT đủ tiêu chí "Đạt khi".** Bản sao nhận độ trôi phiên bản riêng, giữ nguồn gốc mà không sao chép định danh máy chủ (`versioned copies keep legacy identity and separate source revisions without copying server identity`); sửa bản sao không đổi bản gốc (`share copy does not mutate its source`, test thu hồi liên kết: bản sao đã nhận vẫn mở được và sửa nó không đổi đề gốc, trong `revoking still works for a pinned link and the copy is the pinned version`); bản sao vào thư viện người nhận đúng một lần (`a shared copy lands in the recipient personal library, once, and the source library is unchanged`); dùng lại được kiểm quyền (`fork rejects unavailable, private, unlicensed and foreign private passages`). Giới hạn: phạm vi nhóm nhỏ, chưa có kho công khai cho nhiều người. [Đối chiếu](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md)
   - Phạm vi: YC-14. Nghiệm thu: NT-06, NT-07.
   - Đạt khi: Tác giả/origin/version giữ đúng, sửa bản sao không đổi gốc, gỡ chia sẻ không phá bản sao hợp lệ; quyền dùng lại được kiểm.
 - [x] **CV-053 — AI trong phiên cộng tác.**
@@ -312,9 +317,11 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
 ## S8 — Tri thức và trợ lý
 
 - [ ] **CV-063 — Phân tích có cấu trúc và bản đọc được.**
+  - **Rà26/10 (Claude):** giữ mở. Ghi chú AI hiện chỉ có tiêu đề, nhận định, câu mẫu và độ tin cậy; chưa có nguồn/phiên bản/trang/câu, chưa có phần bằng chứng và điều chưa chắc, chưa có bản Markdown liên kết dữ liệu gốc. Cần thêm trường và thay đổi schema.
   - Phạm vi: YC-23, YC-25. Nghiệm thu: NT-26.
   - Đạt khi: Lưu nguồn/version/trang/câu, nhận xét/bằng chứng/điều chưa chắc; Markdown liên kết dữ liệu gốc, không chỉ một đoạn chat.
-- [ ] **CV-064 — Bộ nhớ cá nhân có quyền kiểm soát.**
+- [x] **CV-064 — Bộ nhớ cá nhân có quyền kiểm soát.**
+  - **Nghiệm thu26/10 (Claude): ĐẠT đủ tiêu chí "Đạt khi".** Ghi chú riêng tách khỏi kiến thức đã duyệt: nguồn ghi chú là `MANUAL_NOTE` / `AI_ANALYSIS_PENDING`, không đường nào đặt `QUESTION_VERIFIED` từ độ tin cậy; xem, sửa, bật/tắt, xóa và tải về đều có, chỉ chủ ghi chú thấy và đổi được (`private memory import is previewed, owner-isolated and inactive by default`); ghi chú đã tắt hoặc của người khác không bao giờ vào lời nhắc gửi AI (`private notes reach only their owner and only while switched on; nothing else of theirs enters a prompt`). Giới hạn: chưa đánh giá chất lượng ghi chú AI đúc kết bằng AI thật. [Đối chiếu](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md)
   - **Hiện trạng24/10:** Đã mount journal riêng từng owner/writer trong ghi chú AI: chọn khôi phục, xác nhận thay form, ACK đúng nội dung mới dọn bản gửi, giữ chữ gõ sau gửi; có tải raw/RAM. Nhãn ghi chú riêng không hứa AI tự học hay xác nhận chuyên môn. Helper/render tĩnh/build/API DB thử đạt; UI mới, chất lượng dùng ghi chú và tiêu chí còn lại chưa nghiệm thu. [DRAFT_RECOVERY_INTEGRATION](../../qa/rebuild-2026-10-24/DRAFT_RECOVERY_INTEGRATION.md).
   - Phạm vi: YC-23. Nghiệm thu: NT-26.
   - Đạt khi: Sở thích khác kiến thức đã duyệt, xem/sửa/xóa/không dùng lại; không tự gắn QUESTION_VERIFIED từ confidence.
@@ -327,6 +334,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-23, YC-25. Nghiệm thu: NT-11, NT-26.
   - Đạt khi: Nguồn mới/thay thế/thu hồi đánh dấu phân tích phụ thuộc cần xem lại; công khai label đúng phạm vi/hiệu lực.
 - [ ] **CV-067 — Truy xuất và trợ lý trong quyền.**
+  - **Rà26/10 (Claude):** giữ mở một phần. Đã kiểm: chỉ ghi chú đang bật của chính người dùng vào lời nhắc (`private notes reach only their owner and only while switched on; nothing else of theirs enters a prompt`); chat phạm vi coi dữ liệu gói là không tin cậy và chỉ cho xem trước. Chưa có kiểm thử lệnh cài trong tệp nhập (Word/ảnh) và chưa có truy xuất tài liệu dùng chung.
   - Phạm vi: YC-23, YC-28. Nghiệm thu: NT-06, NT-26.
   - Đạt khi: Lọc quyền trước tìm/đưa vào prompt, không dùng tài liệu riêng cho người khác; đề nghị quản lý có xem trước, không làm theo lệnh trong file nguồn.
 - [ ] **CV-068 — Đánh giá cải thiện AI.**
@@ -361,7 +369,8 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - **Nghiệm thu26/10 (Claude): ĐẠT đủ tiêu chí "Đạt khi".** `npm run ci` chạy lần lượt kiểm kiểu, kiểm an toàn, dựng bản, bật server thử riêng, kiểm HTTP và luồng trình duyệt; mọi bước ghi dữ liệu đi qua các script có kiểm đích là DB thử `examcraft_test_20261022` và máy chủ Gemini giả cục bộ, không đụng DB chính hay AI thật. Fail thật: dừng ở bước hỏng và thoát mã 1; từ chối chạy khi cổng 3117 đã có server cũ (đã chứng minh bằng một server giả chiếm cổng: CI dừng sau kiểm kiểu và kiểm an toàn). Bản chạy đầy đủ đạt cả 6 bước. `/api/health` chỉ trả `status` và cờ `isolatedTest`, không có đường dẫn hay cấu hình; nhật ký dùng AI cần đăng nhập và không chứa khóa; lỗi máy chủ chỉ ghi tên loại lỗi. Tải: `scripts/load-class.cjs` mô phỏng 40 học sinh cùng bắt đầu, lưu nháp, nộp (ca xác định, không lỗi 5xx), báo cáo ghi rõ đây là một máy, một bài một câu, không phải công suất cam kết. Giới hạn: lint chưa nằm trong CI (còn lỗi cũ, Codex đang dọn). [Đối chiếu](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md).
   - Phạm vi: YC-01, YC-24, YC-29. Nghiệm thu: NT-05, NT-29.
   - Đạt khi: CI dùng DB thử và fail thật, health/error/usage không lộ dữ liệu; tải đo trên kịch bản xác định, không hứa công suất chưa đo.
-- [ ] **CV-075 — Thiết kế kết nối Drive tùy chọn.**
+- [x] **CV-075 — Thiết kế kết nối Drive tùy chọn.**
+  - **Chỉ đóng phần thiết kế, chưa triển khai tích hợp.** [DRIVE_DESIGN_DRAFT](../../qa/rebuild-2026-10-25/DRIVE_DESIGN_DRAFT.md) chốt định dạng gói (dựa trên gói sao lưu cục bộ), quyền OAuth tối thiểu, máy trạng thái sao lưu/khôi phục, danh sách việc kỹ thuật và quyết định chủ dự án cần chọn; các đường `/api/drive/*` ghi rõ là tương lai. Ứng dụng không cần Drive để dùng; sao lưu cục bộ đã có (CV011). [Đối chiếu](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md)
   - **Ưu tiên thấp (chủ dự án 25/10/2026):** dự án cá nhân, dùng riêng hoặc trong nhóm nhỏ nội bộ do chủ dự án kiểm soát, không phục vụ bên ngoài. Sao lưu đã có bằng gói cục bộ; Drive là tùy chọn về sau. Giữ mở, chỉ làm khi chủ dự án yêu cầu.
   - Phạm vi: YC-24. Nghiệm thu: NT-27.
   - Đạt khi: Chốt backlog/định dạng/quyền tối thiểu/trạng thái backup/restore; chỉ triển khai kết nối khi được chọn, không yêu cầu Drive để dùng app. Không đánh dấu tích hợp hoàn thành nếu mới thiết kế.

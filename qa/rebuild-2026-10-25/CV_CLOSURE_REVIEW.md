@@ -153,3 +153,6 @@ Thêm cột `version`, `resolvedAt`, `resolvedById` vào ExamComment (migration 
 
 ## Bổ sung 26/10: rà CV016–022 và CV070
 Đóng CV016, 018, 019, 020, 021, 022, 070 theo từng vế "Đạt khi", dẫn test nguyên văn (đã kiểm có thật). Giữ mở CV017: mới có cơ chế gói, chưa có gói Toán ba bộ sách thật, cần chủ dự án cung cấp. Sửa mã môn `tieu_hoc` sai trong `qa/ai-review/fixtures/da-mon/tieu-hoc-3.json` thành `toan` (fixture_da_mon 19/19 đạt). Chưa kiểm AI thật cho chat phạm vi; bố cục in ma trận để chủ dự án xem.
+
+## Bổ sung 26/10: CV004, 005, 006, 007, 052, 064, 075
+Đóng bảy CV theo bằng chứng đã kiểm (route/đường dẫn của bốn tài liệu thiết kế bằng máy: đủ; tên test dẫn đều có thật). Thêm test mới: `tests/figures_shape.test.ts` (hình dạng mảng/đối tượng), mở rộng `http_share_pin` (thu hồi liên kết không lấy lại bản sao, sửa bản sao không đổi gốc) và `http_ai_mock` (ghi chú riêng chỉ vào lời nhắc của chủ, chỉ khi bật). HTTP 103/103 đạt, tsc sạch. CV075 chỉ đóng phần thiết kế. Giữ mở có ghi lý do: CV063 (thiếu trường nguồn/bằng chứng), CV067 (thiếu kiểm lệnh cài trong tệp), CV065/066 (ưu tiên thấp theo chủ dự án).
