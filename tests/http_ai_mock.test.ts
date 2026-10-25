@@ -46,7 +46,7 @@ test('AI routes use only the caller key, count usage per key id, fail honestly a
       await db.user.deleteMany({ where: { id: { in: all } } });
       const directory = `qa/rebuild-${new Date().toISOString().slice(0, 10)}`;
       fs.mkdirSync(directory, { recursive: true });
-      fs.writeFileSync(`${directory}/http_ai_mock.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 9 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117 with a local provider imitation on 3118', realAiCalls: false }, null, 2));
+      fs.writeFileSync(`${directory}/http_ai_mock.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 10 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117 with a local provider imitation on 3118', realAiCalls: false }, null, 2));
     } finally { await db.$disconnect(); }
   });
   const cookies: Record<string, string> = {};
@@ -138,6 +138,26 @@ test('AI routes use only the caller key, count usage per key id, fail honestly a
     assert.equal(r.status, 502); assert.equal(r.data.code, 'AI_BAD_OUTPUT'); assert.match(String(r.data.error), /AI trả về/); assert.equal(r.data.questions, undefined);
     assert.equal(seen.length, 1, 'no retry loop');
     checks.push('bad-output');
+  });
+
+  await t.test('generated exams must match the plan exactly; extra, missing or unanswered questions are refused and nothing is applied', async () => {
+    const params = { subject: 'toan', grade: 6, topic: 'Cộng phân số', durationMinutes: 15, numMultipleChoice: 1, numTrueFalse: 0, numShortAnswer: 0, numEssay: 0 };
+    const mcq = (n: number, extra: Record<string, unknown> = {}) => ({ type: 'multiple_choice', difficulty: 'thong_hieu', content: `AI Q${n}`, choices: [{ key: 'A', text: '1' }, { key: 'B', text: '2' }], correct_answer: 'A', step_by_step_solution: 'x', ...extra });
+    const tf = { type: 'true_false_group', difficulty: 'thong_hieu', content: 'AI TF', sub_questions: [{ key: 'a', content: 'Một', isCorrect: true }, { key: 'b', content: 'Hai', isCorrect: false }], step_by_step_solution: 'x' };
+    const generate = (questions: unknown[], plan: Record<string, unknown> = params) => { reset(() => ({ status: 200, body: reply(JSON.stringify({ title: 'Đề nháp AI', questions })) })); return request('/api/generate-exam', 'POST', { params: plan, customApiKey: 'gen-key-0123456789abcdef' }, cookies.a); };
+    const good = await generate([mcq(1)]);
+    assert.equal(good.status, 200, String(good.data.error)); assert.equal(good.data.exam.questions.length, 1); assert.equal(good.data.isFallback, false);
+    assert.match(String(good.data.warnings[0]), /cần kiểm/); assert.notEqual(good.data.exam.questions[0].verifiedBy, 'human', 'AI output is never marked as checked by a person');
+    for (const [name, questions, plan, message] of [
+      ['an extra type the plan set to zero', [mcq(1), tf], params, /true_false_group/],
+      ['fewer questions than the plan', [mcq(1)], { ...params, numMultipleChoice: 2 }, /multiple_choice/],
+      ['a choice question without a valid answer', [mcq(1, { correct_answer: undefined })], params, /đáp án/],
+      ['duplicate choice keys', [mcq(1, { choices: [{ key: 'A', text: '1' }, { key: 'A', text: '2' }] })], params, /trùng/],
+    ] as const) {
+      const r = await generate([...questions], { ...plan });
+      assert.equal(r.status, 422, `${name} is refused`); assert.notEqual(r.data.success, true); assert.equal(r.data.exam, undefined, `${name}: nothing is applied`); assert.match(String(r.data.error), message); assert.equal(seen.length, 1, `${name}: no retry`);
+    }
+    checks.push('generation-matches-plan');
   });
 
   await t.test('provider errors are reported without retry storms; testing a key reads only the model list; keys of others cannot be tested', async () => {

@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-25T12:08:08.713Z",
+  "checkedAt": "2026-10-25T12:15:23.328Z",
   "checks": [
     "no-key-no-call",
     "temporary-key",
@@ -9,6 +9,7 @@
     "daily-limit",
     "choose-and-model",
     "bad-output",
+    "generation-matches-plan",
     "outage-test-delete"
   ],
   "cleanupComplete": true,

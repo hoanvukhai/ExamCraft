@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "updated_at_utc": "2026-10-25T22:00:00.000Z",
+  "updated_at_utc": "2026-10-25T23:00:00.000Z",
   "writer": "CLAUDE",
   "purpose": "Delivery review gates, not product checklist or proof of runtime completion",
   "batches": [
@@ -643,6 +643,48 @@
           ],
           "review_note": "60 cụm trích, 0 không tìm thấy.",
           "reviewed_at_utc": "2026-10-25T22:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "task_id": "GEMINI-NEXT",
+      "assignment_generation": 14,
+      "items": [
+        {
+          "id": "GEM-V1",
+          "decision": "ACCEPTED",
+          "submission_ref": [
+            "docs/huong-dan/KICH_BAN_KIEM_TAY_TOAN_DU_AN.md"
+          ],
+          "review_note": "check-ui-labels: 48 cụm, 0 lệch. Chủ dự án dùng để test toàn bộ.",
+          "reviewed_at_utc": "2026-10-25T23:00:00.000Z"
+        },
+        {
+          "id": "GEM-V2",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "submission_ref": [
+            "docs/huong-dan/DE_MAU_DE_KIEM_TAY.md"
+          ],
+          "review_note": "Đề dán sẵn; kết quả mong đợi dựa trên các ca đã dựng test.",
+          "reviewed_at_utc": "2026-10-25T23:00:00.000Z"
+        },
+        {
+          "id": "GEM-V3",
+          "decision": "ACCEPTED_WITH_LIMITS",
+          "submission_ref": [
+            "docs/huong-dan/NHUNG_DIEU_CHUA_CO.md"
+          ],
+          "review_note": "Danh sách điều chưa có; cần đối chiếu lại sau mỗi đợt sửa.",
+          "reviewed_at_utc": "2026-10-25T23:00:00.000Z"
+        },
+        {
+          "id": "GEM-V4",
+          "decision": "ACCEPTED",
+          "submission_ref": [
+            "qa/ai-review/fixtures/da-mon/tieu-hoc-3.json"
+          ],
+          "review_note": "Nạp được, tự chấm đúng, xuất Word đủ ba chế độ (fixture_da_mon).",
+          "reviewed_at_utc": "2026-10-25T23:00:00.000Z"
         }
       ]
     }

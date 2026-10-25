@@ -121,3 +121,9 @@ Chạy cuối: build đạt, SAFE 425/425 ([log](safe-claude-run14.log)), HTTP 9
 - **Lỗi thật sửa:** khi AI trả về nội dung không phải JSON, sáu route AI báo "dữ liệu gửi lên không phải JSON" (sai người, mã 400). Nay có `parseProviderJson`: mã 502 `AI_BAD_OUTPUT`, nói rõ lỗi ở AI và chưa lưu gì; test tĩnh buộc mọi route đọc kết quả AI qua hàm này.
 - **EX_Test:** 22 ca của Gemini làm lộ ba lỗi thật (immini, shortans, heva), đã sửa. **Fixture:** xuất Word đủ ba chế độ cho cả 7 đề mẫu.
 - Gemini generation 13: nhận U1, U3, U4; U2 nhận có giới hạn.
+
+## Bổ sung: đóng CV036, bằng chứng CV034, duyệt Gemini generation 14
+Chạy cuối: HTTP 99/99 ([log](http-claude-run28.log)); SAFE 425/425 và trình duyệt 17/17 ở các lần trước, không đổi mã sản phẩm sau đó.
+- **CV036 đóng**; **CV034** thêm bằng chứng nhưng giữ mở (sinh từng ô riêng và chất lượng nội dung chưa kiểm).
+- **CV053** (AI trong phiên cộng tác): route Copilot nhận đề từ trình duyệt; phần so phiên bản trước khi áp dụng là logic phía trình duyệt, đã có test đơn vị, chưa có kiểm thêm.
+- Gemini generation 14 nhận cả bốn việc; kịch bản kiểm tay toàn dự án (48 nhãn, 0 lệch) đã sẵn cho chủ dự án.
