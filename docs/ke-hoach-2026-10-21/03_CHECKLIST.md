@@ -57,11 +57,13 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Bằng chứng nền22/10: browser tạo/lưu/reload và [editor-saved.png](../../qa/rebuild-2026-10-22/editor-saved.png), HTTP tạo/mở/sửa/quyền và mock lỗi409 giữ nháp; serverId tách local version. Browser phát hiện403 Origin đã được sửa và hồi quy. QA offline đầy đủ còn CV010; bổ sung chặn tab cũ đổi tài khoản đang có vòng xác minh riêng.
   - Phạm vi: YC-02, YC-13. Nghiệm thu: NT-02, NT-04.
   - Đạt khi: Tạo/sửa/mở lại trên phiên khác đúng dữ liệu; lỗi mạng/HTTP không báo đã lưu; ID server cập nhật đúng.
-- [ ] **CV-010 — Nháp offline, version và chống ghi đè.**
+- [x] **CV-010 — Nháp offline, version và chống ghi đè.**
+  - **Nghiệm thu25/10 (Claude): ĐẠT đủ tiêu chí "Đạt khi".** Nháp phục hồi sau reload, tách tài khoản, version conflict, bản đến muộn không ghi đè: F9 (mất mạng, nối lại lưu đúng, phiên khác sửa trước thì giữ nháp thành đề riêng), F11 (tải lại hỏng khi không có mạng không mất nháp, nối lại lưu một đề duy nhất), F10 (nháp không sang tài khoản khác), http_workflows (409 bản cũ). Giới hạn: ứng dụng chưa có bản mở offline, nên mở trang mới hoàn toàn không mạng không hiển thị được (nháp vẫn giữ); hai engine sửa đồng thời chưa kiểm. [Đối chiếu](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md).
   - **Hiện trạng25/10:** Đã kiểm trình duyệt mất mạng khi đang mở đề, giữ nháp trên máy, nối lại lưu đúng; nếu phiên khác sửa thì không ghi đè và lưu nháp thành đề riêng. Chrome và Edge chạy độc lập theo lượt. Giữ các kiểm nháp owner/writer/ACK trước; chưa mở ứng dụng từ đầu khi hoàn toàn offline, chưa đủ parent journal/storage lỗi/hai engine sửa đồng thời. Giữ mở. [Báo cáo đợt](../../qa/rebuild-2026-10-25/BATCH_SUMMARY.md).
   - Phạm vi: YC-13. Nghiệm thu: NT-04, NT-20.
   - Đạt khi: Nháp phục hồi sau reload, tách tài khoản, có version conflict; bản đến muộn không ghi đè bản mới, không đồng bộ sang sai tài khoản.
-- [ ] **CV-011 — Quyền đối tượng và liên kết.**
+- [x] **CV-011 — Quyền đối tượng và liên kết.**
+  - **Nghiệm thu25/10 (Claude): ĐẠT đủ tiêu chí "Đạt khi".** Quyền folder/question/template/exam/group kiểm ở server và xét quyền cộng tác (http_workflows, http_public_policies, OBJECT_ACCESS 23/10); hai giáo viên có dữ liệu riêng. Nay có kiểm giao diện đổi tài khoản trong cùng trình duyệt: F10 — nháp trên máy của A không hiện cho B, không lưu lên máy chủ khi B đăng nhập, không tạo dữ liệu dưới B, A đăng nhập lại thì nháp phục hồi và lưu vào đề của A. [Đối chiếu](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md).
   - **Hiện trạng24/10:** Giữ kiểm owner/link/C01/share đã có. C02/C03 đã tích hợp và mount: lọc namespace cả raw hỏng, gate tài khoản và ACK theo đúng ngữ cảnh; không dọn nháp từ receipt khác. Kiểm helper/render tĩnh/build/API DB thử đạt, không provider. UI đổi tài khoản mới chưa kiểm do CUA lỗi; giữ mở. [DRAFT_RECOVERY_INTEGRATION](../../qa/rebuild-2026-10-24/DRAFT_RECOVERY_INTEGRATION.md).
   - Phạm vi: YC-01, YC-19, YC-24. Nghiệm thu: NT-05, NT-06.
   - Đạt khi: Kiểm quyền folder/question/template/exam/group ở server, xét quyền cộng tác thay vì chỉ owner; thử hai giáo viên và dữ liệu riêng.

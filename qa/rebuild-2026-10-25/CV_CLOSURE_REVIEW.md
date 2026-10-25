@@ -24,3 +24,8 @@ Việc nhỏ nhất để đóng thêm: CV011 (một ca trình duyệt đổi t�
 
 ## Giới hạn
 - Các CV đóng ở đây theo phạm vi sản phẩm đang có (local, một máy, DB thử); chưa tổng nghiệm thu. Không đóng CV về nội dung, AI thật, độ phủ môn lớp.
+
+## Bổ sung: đóng CV011 và CV010 (cùng ngày)
+- Thêm hai luồng trình duyệt: **F10** (đổi tài khoản trong cùng trình duyệt: nháp chưa lưu của A không hiện cho B, không lưu lên máy chủ khi B đăng nhập, không tạo dữ liệu dưới B; A đăng nhập lại thì nháp phục hồi) và **F11** (tải lại thất bại khi không có mạng không làm mất nháp; nối lại lưu đúng một đề). Chạy toàn bộ trình duyệt: 10/10 ([log](pilot-claude-run7.log)).
+- **CV011 đóng.** **CV010 đóng** theo "Đạt khi" của checklist.
+- Giới hạn nói thẳng: ứng dụng **chưa có bản mở offline** (không service worker). Mở trang mới hoàn toàn không mạng sẽ không hiển thị; nháp trên máy được giữ và lưu khi có mạng. Nếu cần "mở lại hoàn toàn offline" thì là tính năng mới (service worker), chưa làm. Hai engine sửa đồng thời cũng chưa kiểm.

@@ -1,60 +1,72 @@
 {
-  "run": "e4cd0fcf-357b-41ad-958e-2caa0b2d08df",
-  "sourceSha256": "7cfde4d5f24da7acf28a3a27318c19f2706c2817e7b13e7b717ca1a99bd118c1",
+  "run": "ef5f0d7c-0587-4704-b576-e169ccacf703",
+  "sourceSha256": "279d2a9ef5ca17aacc489c346d195549cb7ccbb7801810fb3f913cb9bf9c4186",
   "buildId": "Jv-P8qgxyuGDAL6fyXVSC",
   "browserVersion": "155.0.8059.85",
   "browserExecutable": "C:/Program Files/Google/Chrome/Application/chrome.exe",
-  "requestedFlow": "F1-F7,F9",
-  "checkedAt": "2026-10-25T05:46:46.018Z",
+  "requestedFlow": "F1-F7,F9,F10,F11",
+  "checkedAt": "2026-10-25T05:59:59.304Z",
   "environment": "isolatedTest localhost3117 / examcraft_test_20261022",
   "realAiCalls": false,
   "results": [
     {
       "id": "F1",
       "status": "PASS",
-      "durationMs": 3901,
+      "durationMs": 2706,
       "cleanupComplete": true
     },
     {
       "id": "F2",
       "status": "PASS",
-      "durationMs": 9811,
+      "durationMs": 8211,
       "cleanupComplete": true
     },
     {
       "id": "F3",
       "status": "PASS",
-      "durationMs": 6160,
+      "durationMs": 5541,
       "cleanupComplete": true
     },
     {
       "id": "F4",
       "status": "PASS",
-      "durationMs": 8659,
+      "durationMs": 9003,
       "cleanupComplete": true
     },
     {
       "id": "F5",
       "status": "PASS",
-      "durationMs": 52471,
+      "durationMs": 26354,
       "cleanupComplete": true
     },
     {
       "id": "F6",
       "status": "PASS",
-      "durationMs": 18142,
+      "durationMs": 18001,
       "cleanupComplete": true
     },
     {
       "id": "F7",
       "status": "PASS",
-      "durationMs": 19165,
+      "durationMs": 18963,
       "cleanupComplete": true
     },
     {
       "id": "F9",
       "status": "PASS",
-      "durationMs": 8150,
+      "durationMs": 7973,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F10",
+      "status": "PASS",
+      "durationMs": 8691,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F11",
+      "status": "PASS",
+      "durationMs": 5115,
       "cleanupComplete": true
     }
   ]

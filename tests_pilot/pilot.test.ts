@@ -138,7 +138,7 @@ async function flow(id: string, action: (f: Fixture) => Promise<void>, firstPass
   finally { if (f) { try { await f.cleanup(); cleanupComplete = true; } catch (e) { error ??= e; } } }
   const message = error instanceof Error ? error.message.replaceAll(f?.password ?? '\0', '[fixture-password]') : error ? 'Unknown pilot failure' : undefined;
   results.push({ id, status: error ? 'FAIL' : 'PASS', durationMs: Date.now() - start, cleanupComplete, ...(message ? { error: message } : {}) });
-  fs.mkdirSync(reportDir, { recursive: true }); const evidence=JSON.stringify({ run, sourceSha256, buildId, browserVersion, browserExecutable: process.env.PILOT_BROWSER_PATH, requestedFlow: process.env.PILOT_FLOW ?? 'F1-F7,F9', checkedAt: new Date().toISOString(), environment: 'isolatedTest localhost3117 / examcraft_test_20261022', realAiCalls: false, results }, null, 2);
+  fs.mkdirSync(reportDir, { recursive: true }); const evidence=JSON.stringify({ run, sourceSha256, buildId, browserVersion, browserExecutable: process.env.PILOT_BROWSER_PATH, requestedFlow: process.env.PILOT_FLOW ?? 'F1-F7,F9,F10,F11', checkedAt: new Date().toISOString(), environment: 'isolatedTest localhost3117 / examcraft_test_20261022', realAiCalls: false, results }, null, 2);
   fs.writeFileSync(`${reportDir}/pilot-results.json`,evidence);fs.writeFileSync(`${reportDir}/pilot-run-${run}.json`,evidence);
   if (error) throw Error(`${id}: ${message}`);
 }
@@ -357,4 +357,43 @@ test('F9 offline edits reconnect safely and preserve a conflicting draft as a se
   await waitUntil(async()=>await f.db.exam.count({where:{ownerId:f.ids[0],title:'Pilot offline cần giữ riêng (Bản sao phục hồi)'}})===1,'Conflicting draft copy was not saved');
   assert.equal((await f.db.exam.findUniqueOrThrow({where:{id}})).title,'Pilot bản mới từ phiên khác');
   assert.equal(await f.db.exam.count({where:{ownerId:f.ids[0]}}),2);
+}));
+
+test('F10 switching accounts in one browser keeps a local draft private to its owner and recoverable', { timeout: 150000 }, () => flow('F10', async f => {
+  await authenticated(f); const id = await seedExam(f); await openExam(f, id);
+  const titleOf = () => f.page.getByTitle('Nhấn để đổi tên đề thi (như Google Docs)');
+  const secret = 'Pilot nháp riêng của A';
+  // Hold back every save so the edit stays a local draft that only account A owns.
+  await f.page.route('**/api/exams/**', route => route.request().method() === 'PATCH' ? route.abort() : route.continue());
+  await titleOf().click(); const input = f.page.locator('header input').first(); await input.fill(secret); await input.press('Enter');
+  await waitUntil(async () => await f.page.evaluate(text => Object.values(localStorage).some(value => value.includes(text)), secret), 'Draft was not kept on this machine');
+  await f.page.unroute('**/api/exams/**');
+  // Same browser profile, account B signs in over A.
+  await login(f.page, f.emails[1], f.password); await f.page.waitForURL(origin + '/');
+  assert.ok(!(await f.page.content()).includes(secret), 'Account B must not see the draft of A in the library');
+  await f.page.goto(origin + '/editor/' + id);
+  await new Promise(resolve => setTimeout(resolve, 4000));
+  assert.ok(!(await f.page.content()).includes(secret), 'Account B must not be shown the draft of A in A\'s editor URL');
+  assert.notEqual((await f.db.exam.findUniqueOrThrow({ where: { id } })).title, secret, 'A\'s draft must not be saved while B is signed in');
+  assert.equal(await f.db.exam.count({ where: { ownerId: f.ids[1] } }), 0, 'Nothing is created under account B');
+  // A signs back in: the draft is still there and now reaches A's own exam.
+  await login(f.page, f.emails[0], f.password); await f.page.waitForURL(origin + '/');
+  await f.page.goto(origin + '/editor/' + id);
+  await waitUntil(async () => (await f.db.exam.findUniqueOrThrow({ where: { id } })).title === secret, 'A\'s draft was not recovered after signing back in', 30000);
+  assert.equal(await f.db.exam.count({ where: { ownerId: f.ids[1] } }), 0);
+}));
+
+test('F11 a reload that fails with no network loses nothing and the draft reaches the server on reconnect', { timeout: 150000 }, () => flow('F11', async f => {
+  await authenticated(f); const id = await seedExam(f); await openExam(f, id);
+  const offlineTitle = 'Pilot giữ nháp qua lần tải lại hỏng';
+  await f.owner.setOffline(true);
+  await f.page.getByTitle('Nhấn để đổi tên đề thi (như Google Docs)').click(); const input = f.page.locator('header input').first(); await input.fill(offlineTitle); await input.press('Enter');
+  await f.page.getByText('Mất kết nối — đang giữ bản nháp trên máy', { exact: true }).waitFor();
+  // The app has no offline shell, so a full reload cannot render; the draft on this machine must survive the failed attempt.
+  await f.page.reload({ waitUntil: 'domcontentloaded' }).catch(() => {});
+  assert.equal((await f.db.exam.findUniqueOrThrow({ where: { id } })).title, 'Pilot fixture', 'Nothing reaches the server while offline');
+  await f.owner.setOffline(false);
+  await f.page.goto(origin + '/editor/' + id);
+  await waitUntil(async () => (await f.db.exam.findUniqueOrThrow({ where: { id } })).title === offlineTitle, 'Offline draft was not saved after reconnecting', 30000);
+  assert.equal(await f.db.exam.count({ where: { ownerId: f.ids[0] } }), 1, 'No duplicate exam from recovery');
 }));
