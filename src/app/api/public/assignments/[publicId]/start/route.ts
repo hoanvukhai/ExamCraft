@@ -8,6 +8,7 @@ import { attachAttemptCookie, attemptDeadline, attemptSessionToken, hasAttemptAc
 import { createAttemptLayout, examForAttempt } from '@/lib/attempt-layout';
 import { attemptDraftRevision } from '@/lib/attempt-draft-revision';
 import { joinCodeMatches } from '@/lib/assignment-options';
+import { isRetryableTransactionError } from '@/lib/transaction-retry';
 
 const Schema = z.object({ studentId: z.string().max(100).optional(), freeName: z.string().trim().min(1).max(120).optional(), personalToken: z.string().max(200).optional(), pin: z.string().max(100).optional(), joinCode: z.string().max(100).optional() });
 class StartError extends Error { constructor(message: string, public status = 403) { super(message); } }
@@ -70,7 +71,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pub
           id: attempt.id, attemptNo: attempt.attemptNo, startedAt: attempt.startedAt, deadlineAt: attempt.deadlineAt, draft: attempt.draft, draftRevision: attemptDraftRevision(attempt.draft), studentName,
         }, exam: examForAttempt(snapshot, attempt.layout) }), attempt);
       } catch (error) {
-        if (error instanceof Prisma.PrismaClientKnownRequestError && ['P2034', 'P2002'].includes(error.code) && retry < 2) continue;
+        if (isRetryableTransactionError(error) && retry < 2) continue;
         throw error;
       }
     }

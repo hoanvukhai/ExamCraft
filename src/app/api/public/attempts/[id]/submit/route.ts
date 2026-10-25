@@ -5,6 +5,7 @@ import prisma from '@/lib/prisma';
 import { hasActiveAttemptAccess, canAcceptSubmissionAnswers, isPolicyVisible, isSameOriginMutation } from '@/lib/attempt-access';
 import { asObject, snapshotQuestions, solutionForQuestion, validateResponses } from '@/lib/public-exam';
 import { gradeSnapshot } from '@/lib/attempt-grading';
+import { isRetryableTransactionError } from '@/lib/transaction-retry';
 import { requiresNumericScore, type AssessmentMode } from '@/lib/education-catalog';
 
 const include = { assignment: { include: { group: true } }, student: { select: { displayName: true, archivedAt: true, groupId: true } } } as const;
@@ -83,7 +84,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         if ('error' in outcome) return NextResponse.json({ error: outcome.error, code: 'code' in outcome ? outcome.code : undefined }, { status: outcome.status });
         return resultResponse(outcome.attempt, outcome.idempotent);
       } catch (error) {
-        if (retry < 2 && (error instanceof Prisma.PrismaClientKnownRequestError && ['P2034', 'P2002'].includes(error.code) || error instanceof Error && error.message === 'ATTEMPT_WRITE_CONFLICT')) continue;
+        if (retry < 2 && (isRetryableTransactionError(error) || error instanceof Error && error.message === 'ATTEMPT_WRITE_CONFLICT')) continue;
         throw error;
       }
     }
