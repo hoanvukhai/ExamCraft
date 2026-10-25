@@ -79,6 +79,17 @@ body {
     display: none !important;
   }
 
+  /* The editor shell is a fixed-height, scrolling layout. When printing, every wrapper must grow with its content
+     or the sheet is cut off after the first page. */
+  .print-flow {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
   .print-only {
     display: block !important;
   }

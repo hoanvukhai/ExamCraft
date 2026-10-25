@@ -50,4 +50,6 @@ next-env.d.ts
 tests/*.docx
 /qa/ai-review/*.zip
 
-
+# raw run output: keep the reports of each batch, not every server log and per-run json
+/qa/rebuild-*/server-*.log
+/qa/rebuild-*/pilot-run-*.json

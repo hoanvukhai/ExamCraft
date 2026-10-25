@@ -71,3 +71,9 @@ Test đề dài 120 câu phát hiện: trước đây chỉ phân số và căn 
 - Gemini nộp R1–R8; nhận toàn bộ (R5–R8 có giới hạn), chi tiết ở BATCH_REVIEWS.json.
 - **CV060:** `http_regrade_cases` dựng đủ 20 ca của bảng R4 với bốn học sinh tính tay (10 / 5 / 4,5 / 2 điểm ban đầu). 19 ca khớp con số ngay lần đầu; TC09 (câu 0 điểm: cờ đúng/sai đổi nên vào danh sách thay đổi dù điểm không đổi) và TC18 (câu không tồn tại: 409 thay vì 404) là hành vi đúng của hệ thống, test ghi theo hành vi thật. Chạy cuối: HTTP 88/88 ([log](http-claude-run19.log)).
 - Nút thao tác nhỏ trên điện thoại ở trang giáo viên đã tăng vùng chạm (kho đề, bài giao, bảng chấm lại); chưa có kiểm trình duyệt riêng cho các nút này.
+
+## Bổ sung: lỗi in nhiều trang và sửa phạm vi tài liệu (CV044)
+- **Lỗi thật:** F3 chỉ kiểm nút In có gọi `window.print` một lần, chưa ai kiểm tờ in. Luồng mới **F15** (đề 60 câu có ngữ liệu và công thức, giả lập chế độ in A4) cho thấy PDF chỉ có **1 trang**: ba lớp bọc của trình soạn (`h-screen overflow-hidden`, `flex overflow-hidden`, `h-full overflow-y-auto`) cắt nội dung khi in. Đã thêm lớp `print-flow` cho ba chỗ đó và quy tắc in tương ứng trong `globals.css`; PDF nay 8 trang.
+- F15 còn kiểm: không câu nào chia đôi hoặc cao hơn trang, không tràn lề, nút soạn thảo ẩn khi in.
+- **Phạm vi:** theo chủ dự án 25/10, ExamCraft là dự án cá nhân/nhóm nhỏ nội bộ. Đã hạ ưu tiên CV065, 066, 071, 074, 075, 078 trong checklist, thêm ghi chú phạm vi vào `04_MOC_PILOT.md` và `05_TUYEN_GIAO_VIEN_VA_NGUOI_DUYET.md`, ghi quy ước vào bộ nhớ làm việc.
+- Chạy cuối: build đạt, SAFE 365/365 ([log](safe-claude-run8.log)), HTTP 88/88 ([log](http-claude-run21.log)), trình duyệt 14/14 ([log](pilot-claude-run15.log)).

@@ -139,7 +139,7 @@ async function flow(id: string, action: (f: Fixture) => Promise<void>, firstPass
   finally { if (f) { try { await f.cleanup(); cleanupComplete = true; } catch (e) { error ??= e; } } }
   const message = error instanceof Error ? error.message.replaceAll(f?.password ?? '\0', '[fixture-password]') : error ? 'Unknown pilot failure' : undefined;
   results.push({ id, status: error ? 'FAIL' : 'PASS', durationMs: Date.now() - start, cleanupComplete, ...(message ? { error: message } : {}) });
-  fs.mkdirSync(reportDir, { recursive: true }); const evidence=JSON.stringify({ run, sourceSha256, buildId, browserVersion, browserExecutable: process.env.PILOT_BROWSER_PATH, requestedFlow: process.env.PILOT_FLOW ?? 'F1-F7,F9-F14', checkedAt: new Date().toISOString(), environment: 'isolatedTest localhost3117 / examcraft_test_20261022', realAiCalls: false, results }, null, 2);
+  fs.mkdirSync(reportDir, { recursive: true }); const evidence=JSON.stringify({ run, sourceSha256, buildId, browserVersion, browserExecutable: process.env.PILOT_BROWSER_PATH, requestedFlow: process.env.PILOT_FLOW ?? 'F1-F7,F9-F15', checkedAt: new Date().toISOString(), environment: 'isolatedTest localhost3117 / examcraft_test_20261022', realAiCalls: false, results }, null, 2);
   fs.writeFileSync(`${reportDir}/pilot-results.json`,evidence);fs.writeFileSync(`${reportDir}/pilot-run-${run}.json`,evidence);
   if (error) throw Error(`${id}: ${message}`);
 }
@@ -528,4 +528,30 @@ test('F14 two teachers edit the same exam at once: the first save wins, the othe
   await waitUntil(async () => await f.db.exam.count({ where: { ownerId: f.ids[1], title: 'Bản của đồng nghiệp (Bản sao phục hồi)' } }) === 1, 'The colleague draft was not saved as their own copy');
   assert.equal((await f.db.exam.findUniqueOrThrow({ where: { id } })).title, 'Bản của chủ đề', 'The owner exam is unchanged by the copy');
   assert.equal(await f.db.exam.count({ where: { ownerId: f.ids[0] } }), 1, 'The owner library has no extra exam');
+}));
+
+test('F15 a 60-question exam prints on A4 pages without sideways overflow or questions taller than a page', { timeout: 180000 }, () => flow('F15', async f => {
+  await authenticated(f);
+  const longExam = document();
+  longExam.passages = [{ id: 'p1', title: 'Ngữ liệu dài', content: 'Lan đọc sách ở thư viện. '.repeat(60) }];
+  longExam.questions = Array.from({ length: 60 }, (_, i) => ({ id: `q${i + 1}`, type: 'multiple_choice' as const, difficulty: 'thong_hieu' as const, content: `LONG Q${i + 1} tính $\frac{${i + 1}}{2} + x^2$ rồi chọn đáp án đúng cho bài toán số ${i + 1}.`, points: 0.25,
+    choices: [{ key: 'A', text: 'Phương án một' }, { key: 'B', text: 'Phương án hai' }, { key: 'C', text: 'Phương án ba' }, { key: 'D', text: 'Phương án bốn' }], correct_answer: 'A', step_by_step_solution: solution, ...(i % 5 === 0 ? { passageId: 'p1' } : {}) }));
+  const id = (await f.api('/api/exams', 'POST', { document: longExam })).exam.id as string;
+  await openExam(f, id);
+  await f.page.locator('.question-item').first().waitFor();
+  assert.equal(await f.page.locator('.question-item').count(), 60, 'every question is in the printable sheet');
+  await f.page.emulateMedia({ media: 'print' }); await f.page.setViewportSize({ width: 680, height: 1020 }); // the printable width and height of an A4 page after margins
+  // A plain string avoids the helper that the TypeScript runner injects into nested functions, which does not exist in the page.
+  const sheet = await f.page.evaluate(`(() => {
+    const items = Array.from(window.document.querySelectorAll('.question-item'));
+    const notAvoided = items.filter(el => { const s = window.getComputedStyle(el); return s.breakInside !== 'avoid' && s.breakInside !== 'avoid-page' && s.pageBreakInside !== 'avoid'; }).length;
+    return { count: items.length, notAvoided, tallest: Math.max(...items.map(el => el.getBoundingClientRect().height)), scrollWidth: window.document.documentElement.scrollWidth, innerWidth: window.innerWidth, toolbarVisible: window.document.body.innerText.includes('Trình chiếu') };
+  })()`) as { count: number; notAvoided: number; tallest: number; scrollWidth: number; innerWidth: number; toolbarVisible: boolean };
+  assert.equal(sheet.notAvoided, 0, 'no question may be split across two pages');
+  assert.ok(sheet.tallest < 1000, `the tallest question (${Math.round(sheet.tallest)}px) fits on one page`);
+  assert.ok(sheet.scrollWidth <= sheet.innerWidth + 2, `nothing runs past the right margin (${sheet.scrollWidth}px in ${sheet.innerWidth}px)`);
+  assert.equal(sheet.toolbarVisible, false, 'editor buttons are hidden when printing');
+  const pdf = await f.page.pdf({ preferCSSPageSize: true, printBackground: true });
+  const pages = Number(/\/Type\s*\/Pages\s*\/Count\s+(\d+)/.exec(pdf.toString('latin1'))?.[1] ?? 0);
+  assert.ok(pdf.subarray(0, 5).toString() === '%PDF-' && pages >= 5 && pages <= 40, `the PDF has a sensible page count (${pages})`);
 }));

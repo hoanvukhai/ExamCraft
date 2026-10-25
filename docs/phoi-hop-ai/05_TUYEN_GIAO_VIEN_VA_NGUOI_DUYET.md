@@ -1,4 +1,6 @@
 # KẾ HOẠCH TUYỂN GIÁO VIÊN VÀ NGƯỜI DUYỆT CHUYÊN MÔN THÍ ĐIỂM (PILOT)
+
+> **Không còn áp dụng (chủ dự án 25/10/2026):** dự án cá nhân, nhóm nhỏ nội bộ do chủ dự án kiểm soát, không tuyển người ngoài. Giữ tài liệu để tham khảo nếu sau này dùng ở một trung tâm nội bộ; phiếu phản hồi và phiếu duyệt vẫn dùng được cho vài người do chủ dự án chọn.
 *Tài liệu hướng dẫn điều phối dành riêng cho Chủ dự án ExamCraft*
 *Căn cứ mốc kế hoạch điều phối 24/10/2026: docs/phoi-hop-ai/04_MOC_PILOT.md*
 

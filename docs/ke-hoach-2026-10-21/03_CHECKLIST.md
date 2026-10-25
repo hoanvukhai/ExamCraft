@@ -207,6 +207,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-12, YC-18. Nghiệm thu: NT-18.
   - Đạt khi: Tài liệu mở sửa được, đủ câu/hình/điểm/nguồn hiển thị, fallback có nhãn; kiểm công thức và ngắt trang trực quan.
 - [ ] **CV-044 — In/PDF và các biến thể xuất.**
+  - **Bằng chứng25/10:** lỗi thật đã sửa: in từ trình soạn chỉ ra **một trang** (ba lớp bọc cố định chiều cao cắt nội dung); nay đề 60 câu ra nhiều trang. Luồng F15 đo bằng trình duyệt: mọi câu nằm trong tờ in, không câu nào bị chia đôi hay cao hơn một trang, không tràn lề phải, nút soạn thảo ẩn khi in, PDF A4 nhiều trang. Giới hạn: chưa xem bằng mắt; ngắt trang giữa câu và ngữ liệu dùng chung dựa vào CSS, chưa so với máy in thật.
   - Phạm vi: YC-12, YC-18. Nghiệm thu: NT-18.
   - Đạt khi: Đề/đáp án/lời giải/ma trận riêng hoặc chung, 1–2 cột khi phù hợp, tiêu đề mẫu đồng nhất; câu dài được ngắt có kiểm soát, không tràn/mất.
 - [ ] **CV-045 — Trình chiếu để chữa bài.**
@@ -302,9 +303,11 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-23. Nghiệm thu: NT-26.
   - Đạt khi: Sở thích khác kiến thức đã duyệt, xem/sửa/xóa/không dùng lại; không tự gắn QUESTION_VERIFIED từ confidence.
 - [ ] **CV-065 — Đóng góp kho chung chủ động.**
+  - **Ưu tiên thấp (chủ dự án 25/10/2026):** dự án cá nhân, dùng riêng hoặc trong nhóm nhỏ nội bộ do chủ dự án kiểm soát, không phục vụ bên ngoài. Đóng góp vào kho chung cho nhiều người không phải mục tiêu hiện tại. Giữ mở, chỉ làm khi chủ dự án yêu cầu.
   - Phạm vi: YC-23, YC-25. Nghiệm thu: NT-26.
   - Đạt khi: Preview bản chia sẻ, loại dữ liệu riêng không cần, kiểm quyền nguồn, review/thu hồi; không public toàn bộ chat/tài liệu gốc.
 - [ ] **CV-066 — Cập nhật nguồn và vòng đời mẫu.**
+  - **Ưu tiên thấp (chủ dự án 25/10/2026):** dự án cá nhân, dùng riêng hoặc trong nhóm nhỏ nội bộ do chủ dự án kiểm soát, không phục vụ bên ngoài. Vòng đời mẫu dùng chung cho nhiều người không phải mục tiêu hiện tại. Giữ mở, chỉ làm khi chủ dự án yêu cầu.
   - Phạm vi: YC-23, YC-25. Nghiệm thu: NT-11, NT-26.
   - Đạt khi: Nguồn mới/thay thế/thu hồi đánh dấu phân tích phụ thuộc cần xem lại; công khai label đúng phạm vi/hiệu lực.
 - [ ] **CV-067 — Truy xuất và trợ lý trong quyền.**
@@ -324,6 +327,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-04, YC-07, YC-25, YC-27. Nghiệm thu: NT-11, NT-28.
   - Đạt khi: Mỗi gói có trạng thái/tài liệu/khả năng/người duyệt hoặc thiếu người; không để các môn ngoài Toán biến mất khỏi bảng.
 - [ ] **CV-071 — Duyệt chuyên môn và dùng thử.**
+  - **Ưu tiên thấp (chủ dự án 25/10/2026):** dự án cá nhân, dùng riêng hoặc trong nhóm nhỏ nội bộ do chủ dự án kiểm soát, không phục vụ bên ngoài. Không tuyển giáo viên thử hay người duyệt độc lập; chủ dự án tự dùng và tự duyệt nội dung của mình. Giữ mở, chỉ làm khi chủ dự án yêu cầu.
   - Phạm vi: YC-27, YC-29. Nghiệm thu: NT-28, NT-30.
   - Đạt khi: Tuyển reviewer theo môn/cấp khi có, nhận mẫu được phép; ghi sửa đổi và vấn đề chưa đồng thuận, không tự ký thay giáo viên.
 - [x] **CV-072 — Backup/restore và cảnh báo lỗi.**
@@ -336,10 +340,12 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Đạt khi: Runbook secrets/config/log/restore, tài khoản chịu trách nhiệm; mục tiêu RPO/RTO, dung lượng và chi phí có chủ dự án duyệt trước triển khai thật.
 
 - [ ] **CV-074 — CI, kiểm tải và giám sát.**
+  - **Ưu tiên thấp (chủ dự án 25/10/2026):** dự án cá nhân, dùng riêng hoặc trong nhóm nhỏ nội bộ do chủ dự án kiểm soát, không phục vụ bên ngoài. Chỉ cần kiểm tải ở quy mô một lớp (đã có) và sao lưu; không cần CI hay giám sát cho nhiều người dùng. Giữ mở, chỉ làm khi chủ dự án yêu cầu.
   - **Hiện trạng25/10:** Đã đo lưu đề mẫu trên DB thử; CI thêm DB thử riêng, migration, integration và HTTP sau build, giữ chạy tuần tự giới hạn RAM; không tự tải log ra ngoài. Các lệnh tương ứng kiểm local, YAML đọc được; workflow remote chưa chạy vì chưa push. Chưa đo tải nhiều người hay giám sát vận hành đầy đủ; giữ mở. [Báo cáo đợt](../../qa/rebuild-2026-10-25/BATCH_SUMMARY.md).
   - Phạm vi: YC-01, YC-24, YC-29. Nghiệm thu: NT-05, NT-29.
   - Đạt khi: CI dùng DB thử và fail thật, health/error/usage không lộ dữ liệu; tải đo trên kịch bản xác định, không hứa công suất chưa đo.
 - [ ] **CV-075 — Thiết kế kết nối Drive tùy chọn.**
+  - **Ưu tiên thấp (chủ dự án 25/10/2026):** dự án cá nhân, dùng riêng hoặc trong nhóm nhỏ nội bộ do chủ dự án kiểm soát, không phục vụ bên ngoài. Sao lưu đã có bằng gói cục bộ; Drive là tùy chọn về sau. Giữ mở, chỉ làm khi chủ dự án yêu cầu.
   - Phạm vi: YC-24. Nghiệm thu: NT-27.
   - Đạt khi: Chốt backlog/định dạng/quyền tối thiểu/trạng thái backup/restore; chỉ triển khai kết nối khi được chọn, không yêu cầu Drive để dùng app. Không đánh dấu tích hợp hoàn thành nếu mới thiết kế.
 - [ ] **CV-076 — Hướng dẫn giáo viên và kiểm dễ dùng.**
@@ -354,6 +360,7 @@ Mã YC tra ở 01, NT tra ở 04. Mỗi CV ghi bằng chứng theo mẫu cuối 
   - Phạm vi: YC-29, YC-30. Nghiệm thu: NT-01, NT-03, NT-31.
   - Đạt khi: Rà caller/dữ liệu/link trước bỏ; tài liệu không còn hứa 7-key/100% sai; xóa/hạ schema chỉ sau migration/rollback đã kiểm.
 - [ ] **CV-078 — Tổng nghiệm thu và quyết định phát hành.**
+  - **Ưu tiên thấp (chủ dự án 25/10/2026):** dự án cá nhân, dùng riêng hoặc trong nhóm nhỏ nội bộ do chủ dự án kiểm soát, không phục vụ bên ngoài. Không có quyết định phát hành ra ngoài; chỉ cần chủ dự án tự xác nhận dùng được. Giữ mở, chỉ làm khi chủ dự án yêu cầu.
   - Phạm vi: YC-01, YC-24, YC-27, YC-29. Nghiệm thu: NT-31.
   - Đạt khi: Tất cả YC có kết quả hoặc ngoại lệ được chấp nhận có phạm vi; không còn lỗi chặn quyền/mất dữ liệu/đáp án/điểm; phát hành và rollback có người quyết định.
 

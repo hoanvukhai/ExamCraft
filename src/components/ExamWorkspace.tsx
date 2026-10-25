@@ -299,7 +299,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   };
 
   return (
-    <div className="h-screen w-screen overflow-hidden flex flex-col bg-[#F8F9FA] dark:bg-[#121212] font-sans text-[#202124] dark:text-[#e3e3e3] transition-colors duration-200">
+    <div className="print-flow h-screen w-screen overflow-hidden flex flex-col bg-[#F8F9FA] dark:bg-[#121212] font-sans text-[#202124] dark:text-[#e3e3e3] transition-colors duration-200">
       {/* HEADER GOOGLE MINIMALIST */}
       <Header
         canEdit={canEdit}
@@ -341,7 +341,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       )}
       {!ready && <div className="p-4">{saveMessage || 'Đang tải nội dung. Vui lòng chờ trước khi sửa.'}</div>}
       {/* 3-ZONE ARCHITECTURE: LEFT RAIL + INDEPENDENT SCROLL WORKSPACE + RIGHT COMPANION RAIL */}
-      <div className="flex-1 flex overflow-hidden min-h-0 relative">
+      <div className="print-flow flex-1 flex overflow-hidden min-h-0 relative">
         {canEdit && !isSidebarCollapsed && <button type="button" aria-label="Đóng bảng công cụ" className="no-print absolute inset-0 z-10 bg-black/40 lg:hidden" onClick={() => setIsSidebarCollapsed(true)} />}
         {/* ZONE 1: LEFT NAVIGATION RAIL */}
         {canEdit && <LeftNavigationRail
@@ -368,7 +368,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         />}
 
         {/* ZONE 2: VÙNG NỘI DUNG CHÍNH (CANVAS CHỦ ĐẠO MÀU TRẮNG GOOGLE, CUỘN ĐỘC LẬP) */}
-        <div className="flex-1 h-full overflow-y-auto px-4 sm:px-6 py-5 min-w-0">
+        <div className="print-flow flex-1 h-full overflow-y-auto px-4 sm:px-6 py-5 min-w-0">
           <LocalDraftsPanel ownerId={currentUser.id} />
           <QuestionDraftPanel key={`${currentUser.id}:${exam.id}`} ownerId={currentUser.id} documentId={exam.id} questionIds={exam.questions.map(question => question.id)} exam={exam} />
           <AiProposalJournalPanel key={`ai:${currentUser.id}:${exam.id}`} ownerId={currentUser.id} documentId={exam.id} questionIds={exam.questions.map(question => question.id)} onOpenCopilot={() => setIsCopilotOpen(true)} />
