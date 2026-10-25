@@ -609,7 +609,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       {/* CÁC MODALS NGHIỆP VỤ */}
       {presentationOpen && <ExamPresentation exam={exam} onClose={() => setPresentationOpen(false)} />}
       {collaborationOpen && exam.serverId && <div role="dialog" aria-modal="true" aria-label="Cộng tác và lịch sử" className="fixed inset-0 z-50 bg-black/50 p-4 flex items-center justify-center"><div className="w-full max-w-3xl max-h-[90vh] overflow-auto bg-white dark:bg-[#202124] rounded-2xl p-5"><button type="button" className="float-right px-3 py-2" onClick={() => setCollaborationOpen(false)}>Đóng</button><ExamCollaboratorsPanel key={`${exam.serverId}-${currentUser.id}`} examId={exam.serverId} expectedUserId={currentUser.id} onRestored={document => { acceptServerDocument(document); }} beforeRestore={() => { if (saveState !== 'saved') { alert('Hãy lưu xong hoặc giữ bản nháp thành đề mới trước khi khôi phục lịch sử.'); return false; } return true; }} /></div></div>}
-      <ApiKeyModal ownerId={currentUser.id} key={currentUser.id}
+      <ApiKeyModal ownerId={currentUser.id} key={`keys:${currentUser.id}`}
         isOpen={isApiKeyModalOpen}
         onClose={() => setIsApiKeyModalOpen(false)}
         onKeyUpdated={checkUserKeys}
@@ -668,7 +668,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         onSaveMetadata={(submission) => setExam(previous => applyHeaderSubmission(previous, submission))}
       />
 
-      <QuestionBankModal ownerId={currentUser.id} key={currentUser.id}
+      <QuestionBankModal ownerId={currentUser.id} key={`bank:${currentUser.id}`}
         isOpen={isQuestionBankModalOpen}
         onClose={() => setIsQuestionBankModalOpen(false)}
         onInsertQuestion={(q, passage) => {

@@ -32,6 +32,7 @@ interface QuestionBankModalProps {
   isOpen: boolean;
   onClose: () => void;
   onInsertQuestion: (question: BankQuestion, passage?: Passage) => void;
+  allowInsert?: boolean;
 }
 
 export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
@@ -39,6 +40,7 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
   isOpen,
   onClose,
   onInsertQuestion,
+  allowInsert = true,
 }) => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(false);
@@ -69,11 +71,6 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
     if (res.ok) { const data = await res.json(); setSharedQuestions(data.questions || []); }
   }).catch(error => { console.error('Lỗi khi nạp ngân hàng dùng chung:', error); }).finally(() => setLoadingShared(false));
 
-  const [previousScope, setPreviousScope] = useState({ isOpen, bankTab, ownerId });
-  if (previousScope.isOpen !== isOpen || previousScope.bankTab !== bankTab || previousScope.ownerId !== ownerId) {
-    setPreviousScope({ isOpen, bankTab, ownerId });
-    if (isOpen) { setLoading(bankTab === 'personal'); setLoadingShared(bankTab === 'shared'); }
-  }
   useEffect(() => {
     if (isOpen) { if (bankTab === 'personal') void readBankQuestions(); else void readSharedQuestions(); }
   }, [isOpen, bankTab, ownerId]);
@@ -107,6 +104,7 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
 
   // Thêm vào đề thi hiện tại
   const handleInsert = (q: Question) => {
+    if (!allowInsert) return;
     const passage = bankPassage((q as BankQuestion).passage);
     if ((q as BankQuestion).passageUnavailable || (q.passageId && !passage)) { showToast('Câu này chưa có ngữ liệu được phép dùng. Hãy bổ sung ngữ liệu trước khi chèn.'); return; }
     onInsertQuestion(q, passage);
@@ -283,6 +281,7 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
             )}
             <button
               onClick={onClose}
+              aria-label="Đóng ngân hàng câu hỏi"
               className="p-1.5 text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3] rounded-full hover:bg-[#f1f3f4] dark:hover:bg-[#282828] transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
@@ -477,6 +476,8 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
 
                       <button
                         onClick={() => handleInsert(q)}
+                        disabled={!allowInsert}
+                        title={!allowInsert ? 'Hãy mở một đề rồi chọn ngân hàng câu hỏi để chèn.' : 'Thêm câu này vào đề đang mở'}
                         className={`flex items-center gap-1 px-3.5 py-1 text-xs font-medium rounded-full transition-all shadow-xs cursor-pointer ${
                           isInserted
                             ? 'bg-[#137333] text-white dark:bg-[#5bb98c] dark:text-[#0f291e]'
@@ -484,7 +485,7 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
                         }`}
                       >
                         {isInserted ? <Check className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
-                        <span>{isInserted ? 'Đã thêm vào đề!' : 'Thêm vào đề'}</span>
+                        <span>{!allowInsert ? 'Mở đề để chèn' : isInserted ? 'Đã thêm vào đề!' : 'Thêm vào đề'}</span>
                       </button>
 
                       {bankTab === 'personal' && (

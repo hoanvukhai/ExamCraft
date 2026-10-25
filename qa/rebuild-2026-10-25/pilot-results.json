@@ -1,114 +1,120 @@
 {
-  "run": "1f8c6ad8-4487-4388-80a3-b22d5e3107bf",
-  "sourceSha256": "96281e6a2d437c0a1ae7ac221e95c1c15d3ae8018aab6e1ca99bcc33eb6a56b2",
-  "buildId": "pgQNz2JGEeYN9j_IfUj2R",
+  "run": "6c679799-4146-49e2-92c6-d3f7fb9ef456",
+  "sourceSha256": "a6800b55e7d44bf5d5649281a1d6412c6f67c12fc1252132dde0b74cfc2376fc",
+  "buildId": "3SJcl88zzKpSQKY0ij_vF",
   "browserVersion": "155.0.8059.85",
   "browserExecutable": "C:/Program Files/Google/Chrome/Application/chrome.exe",
-  "requestedFlow": "F1-F7,F9-F18",
-  "checkedAt": "2026-10-25T12:30:33.638Z",
+  "requestedFlow": "F1-F7,F9-F19",
+  "checkedAt": "2026-10-25T13:25:43.549Z",
   "environment": "isolatedTest localhost3117 / examcraft_test_20261022",
   "realAiCalls": false,
   "results": [
     {
       "id": "F1",
       "status": "PASS",
-      "durationMs": 3282,
+      "durationMs": 5138,
       "cleanupComplete": true
     },
     {
       "id": "F2",
       "status": "PASS",
-      "durationMs": 10409,
+      "durationMs": 10317,
       "cleanupComplete": true
     },
     {
       "id": "F3",
       "status": "PASS",
-      "durationMs": 6034,
+      "durationMs": 5264,
       "cleanupComplete": true
     },
     {
       "id": "F4",
       "status": "PASS",
-      "durationMs": 9754,
+      "durationMs": 8570,
       "cleanupComplete": true
     },
     {
       "id": "F5",
       "status": "PASS",
-      "durationMs": 73897,
+      "durationMs": 24556,
       "cleanupComplete": true
     },
     {
       "id": "F6",
       "status": "PASS",
-      "durationMs": 18526,
+      "durationMs": 18078,
       "cleanupComplete": true
     },
     {
       "id": "F7",
       "status": "PASS",
-      "durationMs": 18787,
+      "durationMs": 18621,
       "cleanupComplete": true
     },
     {
       "id": "F9",
       "status": "PASS",
-      "durationMs": 8081,
+      "durationMs": 8077,
       "cleanupComplete": true
     },
     {
       "id": "F10",
       "status": "PASS",
-      "durationMs": 8746,
+      "durationMs": 8604,
       "cleanupComplete": true
     },
     {
       "id": "F11",
       "status": "PASS",
-      "durationMs": 5057,
+      "durationMs": 4963,
       "cleanupComplete": true
     },
     {
       "id": "F12",
       "status": "PASS",
-      "durationMs": 18627,
+      "durationMs": 19091,
       "cleanupComplete": true
     },
     {
       "id": "F13",
       "status": "PASS",
-      "durationMs": 19836,
+      "durationMs": 19799,
       "cleanupComplete": true
     },
     {
       "id": "F14",
       "status": "PASS",
-      "durationMs": 7540,
+      "durationMs": 7853,
       "cleanupComplete": true
     },
     {
       "id": "F15",
       "status": "PASS",
-      "durationMs": 3197,
+      "durationMs": 3513,
       "cleanupComplete": true
     },
     {
       "id": "F16",
       "status": "PASS",
-      "durationMs": 38983,
+      "durationMs": 39235,
       "cleanupComplete": true
     },
     {
       "id": "F17",
       "status": "PASS",
-      "durationMs": 3045,
+      "durationMs": 3222,
       "cleanupComplete": true
     },
     {
       "id": "F18",
       "status": "PASS",
-      "durationMs": 2385,
+      "durationMs": 2332,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F19",
+      "status": "PASS",
+      "durationMs": 9406,
       "cleanupComplete": true
     }
   ]

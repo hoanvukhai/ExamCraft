@@ -1498,13 +1498,14 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
         apiKey=""
       />
 
-      <QuestionBankModal ownerId={currentUser.id} key={currentUser.id}
+      <QuestionBankModal ownerId={currentUser.id} key={`bank:${currentUser.id}`}
         isOpen={isQuestionBankOpen}
+        allowInsert={false}
         onClose={() => setIsQuestionBankOpen(false)}
         onInsertQuestion={() => {}}
       />
 
-      <ApiKeyModal ownerId={currentUser.id} key={currentUser.id}
+      <ApiKeyModal ownerId={currentUser.id} key={`keys:${currentUser.id}`}
         isOpen={isApiKeyModalOpen}
         onClose={() => {
           setIsApiKeyModalOpen(false);

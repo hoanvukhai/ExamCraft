@@ -1,0 +1,45 @@
+{
+  "sourceSha256": "a6800b55e7d44bf5d5649281a1d6412c6f67c12fc1252132dde0b74cfc2376fc",
+  "buildId": "3SJcl88zzKpSQKY0ij_vF",
+  "runs": [
+    {
+      "file": "pilot-run-eb23cb2a-d4e6-40ba-a9ed-95055eb804e8.json",
+      "libraryFile": "library-ui-eb23cb2a-d4e6-40ba-a9ed-95055eb804e8.json",
+      "checkedAt": "2026-10-25T13:19:54.985Z",
+      "results": [
+        {
+          "id": "F19",
+          "status": "PASS",
+          "durationMs": 13491,
+          "cleanupComplete": true
+        }
+      ]
+    },
+    {
+      "file": "pilot-run-f8eef425-7e4a-4432-9537-589b5876241a.json",
+      "libraryFile": "library-ui-f8eef425-7e4a-4432-9537-589b5876241a.json",
+      "checkedAt": "2026-10-25T13:20:08.569Z",
+      "results": [
+        {
+          "id": "F19",
+          "status": "PASS",
+          "durationMs": 11893,
+          "cleanupComplete": true
+        }
+      ]
+    },
+    {
+      "file": "pilot-run-05e939bf-a717-4e82-87a5-5945805a191b.json",
+      "libraryFile": "library-ui-05e939bf-a717-4e82-87a5-5945805a191b.json",
+      "checkedAt": "2026-10-25T13:20:21.278Z",
+      "results": [
+        {
+          "id": "F19",
+          "status": "PASS",
+          "durationMs": 11158,
+          "cleanupComplete": true
+        }
+      ]
+    }
+  ]
+}

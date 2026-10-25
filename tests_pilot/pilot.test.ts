@@ -139,7 +139,7 @@ async function flow(id: string, action: (f: Fixture) => Promise<void>, firstPass
   finally { if (f) { try { await f.cleanup(); cleanupComplete = true; } catch (e) { error ??= e; } } }
   const message = error instanceof Error ? error.message.replaceAll(f?.password ?? '\0', '[fixture-password]') : error ? 'Unknown pilot failure' : undefined;
   results.push({ id, status: error ? 'FAIL' : 'PASS', durationMs: Date.now() - start, cleanupComplete, ...(message ? { error: message } : {}) });
-  fs.mkdirSync(reportDir, { recursive: true }); const evidence=JSON.stringify({ run, sourceSha256, buildId, browserVersion, browserExecutable: process.env.PILOT_BROWSER_PATH, requestedFlow: process.env.PILOT_FLOW ?? 'F1-F7,F9-F18', checkedAt: new Date().toISOString(), environment: 'isolatedTest localhost3117 / examcraft_test_20261022', realAiCalls: false, results }, null, 2);
+  fs.mkdirSync(reportDir, { recursive: true }); const evidence=JSON.stringify({ run, sourceSha256, buildId, browserVersion, browserExecutable: process.env.PILOT_BROWSER_PATH, requestedFlow: process.env.PILOT_FLOW ?? 'F1-F7,F9-F19', checkedAt: new Date().toISOString(), environment: 'isolatedTest localhost3117 / examcraft_test_20261022', realAiCalls: false, results }, null, 2);
   fs.writeFileSync(`${reportDir}/pilot-results.json`,evidence);fs.writeFileSync(`${reportDir}/pilot-run-${run}.json`,evidence);
   if (error) throw Error(`${id}: ${message}`);
 }
@@ -653,4 +653,93 @@ test('F18 the presentation moves with the arrow keys, hides the answer until ask
   await f.page.keyboard.press('Escape'); await dialog.waitFor({ state: 'detached' });
   const after = await f.db.exam.findUniqueOrThrow({ where: { id } });
   assert.equal(after.version, before.version); assert.equal(after.title, before.title); assert.equal(await f.db.examQuestion.count({ where: { examId: id } }), 7, 'presenting changes nothing');
+}));
+
+
+test('F19 library search, starred, recent, trash, restore and safe controls', { timeout: 150000 }, () => flow('F19', async f => {
+  await authenticated(f);
+  const titles = ['KHO_A_Toan', 'KHO_B_NguVan', 'KHO_C_HinhHoc', 'KHO_D_OnTap'];
+  const ids: string[] = [];
+  for (const title of titles) { const exam = document(); exam.metadata.title = title; exam.questions[0].content = title + '_CONTENT'; ids.push((await f.api('/api/exams', 'POST', { document: exam })).exam.id); }
+  await f.page.reload();
+  const visibleTitles = () => f.page.locator('h4').filter({ visible: true }).allTextContents();
+  const card = (title: string) => f.page.locator('div.group').filter({ has: f.page.getByRole('heading', { name: title, exact: true }) }).first();
+  const waitTitles = (expected: string[]) => waitUntil(async () => JSON.stringify((await visibleTitles()).map(x => x.trim()).sort()) === JSON.stringify([...expected].sort()), 'Library contents should match current filter');
+  await waitTitles(titles);
+  const inventory = await f.page.getByRole('button').filter({ visible: true }).evaluateAll(buttons => buttons.map(button => ({ text: button.textContent?.trim(), title: button.getAttribute('title'), label: button.getAttribute('aria-label'), disabled: button.hasAttribute('disabled') })));
+  const checked: string[] = [];
+  const search = f.page.getByPlaceholder('Tìm kiếm theo tên đề, mã môn, năm học...');
+  await search.fill('KHO_C'); await waitTitles([titles[2]]); await search.fill(''); await waitTitles(titles); checked.push('search');
+  await card(titles[0]).getByTitle('Gắn sao đề quan trọng', { exact: true }).click();
+  await waitUntil(async () => (await f.db.exam.findUniqueOrThrow({ where: { id: ids[0] } })).isStarred, 'Star must persist');
+  await click(f.page, 'Đề quan trọng (Gắn sao)'); await waitTitles([titles[0]]); checked.push('starred');
+  await click(f.page, 'Đã sửa gần đây'); await waitTitles(titles); checked.push('recent');
+  await f.page.getByRole('button', { name: /^Tất cả đề thi/ }).click(); await waitTitles(titles);
+  await card(titles[1]).getByTitle('Chuyển vào thùng rác', { exact: true }).click();
+  await waitUntil(async () => Boolean((await f.db.exam.findUniqueOrThrow({ where: { id: ids[1] } })).deletedAt), 'Trash must persist');
+  await waitTitles([titles[0], titles[2], titles[3]]);
+  await f.page.getByRole('button', { name: 'Thùng rác', exact: true }).filter({ visible: true }).click(); await waitTitles([titles[1]]);
+  await card(titles[1]).getByTitle('Khôi phục đề', { exact: true }).click(); await waitTitles([]);
+  assert.equal((await f.db.exam.findUniqueOrThrow({ where: { id: ids[1] } })).deletedAt, null);
+  await f.page.getByRole('button', { name: /^Tất cả đề thi/ }).click(); await waitTitles(titles); checked.push('trash-and-restore');
+  await card(titles[1]).click(); await f.page.getByTitle('Lưu các thay đổi lên máy chủ').first().waitFor();
+  assert.ok((await f.page.locator('body').innerText()).includes(titles[1] + '_CONTENT'));
+  await f.page.getByRole('link', { name: 'Về kho đề', exact: true }).click(); await waitTitles(titles); checked.push('open-and-return');
+  await f.page.getByTitle('Chế độ xem danh sách', { exact: true }).click(); await f.page.getByRole('table').waitFor();
+  await f.page.getByTitle('Chế độ xem thẻ', { exact: true }).click(); await waitTitles(titles); checked.push('grid-and-list');
+  const dark = await f.page.locator('html').evaluate(el => el.classList.contains('dark'));
+  await f.page.getByTitle('Đổi giao diện Sáng / Tối', { exact: true }).click();
+  await waitUntil(async () => (await f.page.locator('html').evaluate(el => el.classList.contains('dark'))) !== dark, 'Theme toggle must change the page');
+  await f.page.getByTitle('Đổi giao diện Sáng / Tối', { exact: true }).click(); checked.push('theme');
+  const [word] = await Promise.all([f.page.waitForEvent('download'), card(titles[0]).getByTitle('Tải file Word (.docx)', { exact: true }).click()]);
+  const wordPath = await word.path(); assert.ok(wordPath); const zip = await JSZip.loadAsync(fs.readFileSync(wordPath)); assert.ok((await zip.file('word/document.xml')!.async('string')).includes(titles[0] + '_CONTENT')); checked.push('download-word');
+  await card(titles[2]).getByTitle('Đổi tên đề', { exact: true }).click();
+  const rename = f.page.locator('form').filter({ has: f.page.getByRole('heading', { name: 'Đổi tên đề thi', exact: true }) });
+  await rename.locator('input').fill('KHO_C_Renamed'); await click(f.page, 'Lưu tên mới'); titles[2] = 'KHO_C_Renamed'; await waitTitles(titles); checked.push('rename');
+  await card(titles[3]).getByTitle('Nhân bản đề này', { exact: true }).click();
+  await waitUntil(async () => (await f.db.exam.count({ where: { ownerId: f.ids[0] } })) === 5, 'Clone must create a separate exam');
+  const all = await f.db.exam.findMany({ where: { ownerId: f.ids[0] } }); assert.equal(all.filter(row => row.title.includes(titles[3])).length, 2); checked.push('clone');
+  await f.page.getByTitle('Tạo thư mục mới (Cấp 1)', { exact: true }).click();
+  await f.page.getByPlaceholder('Ví dụ: Khối 12, Học kỳ 1, Ôn thi HSG...').fill('F19 Folder');
+  await f.page.getByRole('button', { name: 'Tạo thư mục', exact: true }).filter({ visible: true }).click();
+  await waitUntil(async () => (await f.db.folder.count({ where: { ownerId: f.ids[0], name: 'F19 Folder' } })) === 1, 'Folder creation must persist');
+  const folder = await f.db.folder.findFirstOrThrow({ where: { ownerId: f.ids[0], name: 'F19 Folder' } });
+  await card(titles[3]).getByTitle('Di chuyển vào thư mục', { exact: true }).click();
+  await f.page.locator('div.fixed.inset-0').filter({ visible: true }).last().getByRole('button', { name: 'F19 Folder', exact: true }).click();
+  await waitUntil(async () => (await f.db.exam.findUniqueOrThrow({ where: { id: ids[3] } })).folderId === folder.id, 'Move must persist'); checked.push('create-folder-and-move');
+  const openClose = async (control: ReturnType<Page['locator']>, label: string) => {
+    console.log('F19 opening ' + label);
+    await control.click(); const modal = f.page.locator('div.fixed.inset-0').filter({ visible: true }).last(); await modal.waitFor();
+    const layer = await modal.elementHandle(); assert.ok(layer);
+    if (label === 'bank-0') {
+      const seed = modal.getByRole('button', { name: 'Nạp 4 câu mẫu chuẩn', exact: true });
+      if (await seed.count()) await seed.click();
+      await waitUntil(async () => (await modal.getByRole('button', { name: 'Mở đề để chèn', exact: true }).count()) === 4, 'Bank must expose a truthful non-inserting action without an open exam');
+      for (const button of await modal.getByRole('button', { name: 'Mở đề để chèn', exact: true }).all()) assert.equal(await button.isDisabled(), true);
+      checked.push('bank-no-false-insert-success');
+    }
+    const close = label.startsWith('bank-') ? modal.getByRole('button', { name: 'Đóng ngân hàng câu hỏi', exact: true }) : modal.locator('button:has(svg.lucide-x)').filter({ visible: true }).last();
+    await close.click();
+    await layer.waitForElementState('hidden'); checked.push(label);
+    console.log('F19 closed ' + label);
+  };
+  await openClose(f.page.getByTitle('Quản lý Google Gemini API Key', { exact: true }), 'key-management');
+  await openClose(f.page.getByTitle('Kho Khóa AI', { exact: true }), 'key-management-rail');
+  await openClose(f.page.getByTitle('Bộ não AI Sư Phạm: Xem và dạy các phong cách ra đề cho AI', { exact: true }), 'memory');
+  const bankButtons = f.page.getByTitle('Ngân hàng câu hỏi', { exact: true }).filter({ visible: true });
+  for (let i=0;i<await bankButtons.count();i++) await openClose(bankButtons.nth(i), 'bank-' + i);
+  await openClose(f.page.getByText('AI Sinh đề theo Ma trận', { exact: true }), 'generate-open-only');
+  await openClose(f.page.getByText('Nhập từ Word / Ảnh OCR', { exact: true }), 'import-open-only');
+  await f.page.getByTitle('Mở Thư ký AI trợ lý riêng của Thầy/Cô', { exact: true }).click();
+  await f.page.getByText('Tính năng đang trong giai đoạn phát triển', { exact: false }).waitFor();
+  await click(f.page, 'Đã hiểu'); checked.push('secretary-explicit-development-notice');
+  await f.page.getByTitle('Trợ lý Thư ký AI Cá Nhân (Bấm để xem)', { exact: true }).click();
+  await f.page.getByText('Tính năng đang trong giai đoạn phát triển', { exact: false }).waitFor();
+  await click(f.page, 'Đã hiểu'); checked.push('secretary-rail-development-notice');
+  await f.page.getByRole('button', { name: 'Soạn Đề Thi Mới', exact: true }).click();
+  await f.page.getByTitle('Lưu các thay đổi lên máy chủ').first().waitFor();
+  await f.page.getByRole('link', { name: 'Về kho đề', exact: true }).click();
+  for (const id of ids) assert.equal((await f.db.exam.findUniqueOrThrow({ where: { id } })).deletedAt, null);
+  checked.push('new-exam-and-return-keeps-originals');
+  fs.writeFileSync(reportDir + '/library-ui-' + run + '.json', JSON.stringify({ run, buildId, checkedAt: new Date().toISOString(), inventory, checked, limitation: 'Inventory includes safe controls covered by other pilot flows; this flow does not send AI prompts, submit keys, delete folders or log out.' }, null, 2));
 }));
