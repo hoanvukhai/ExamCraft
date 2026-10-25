@@ -2,6 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequestIdentity, isAccountFailure, RequestGate } from '../src/lib/template-request-context';
 
+test('cancel invalidates a late result but permits a fresh request in the same panel', () => {
+  const gate = new RequestGate(), old = gate.begin()!;
+  gate.cancel(); assert.equal(old.signal.aborted, true); assert.equal(old.isLive(), false);
+  const next = gate.begin()!; assert.equal(next.isLive(), true);
+  old.release(); assert.equal(next.isLive(), true); next.release();
+});
+
 test('only one request runs at a time and a released slot can be taken again', () => {
   const gate = new RequestGate();
   const first = gate.begin();

@@ -54,8 +54,10 @@ export function parseProviderJson(text: string): unknown {
 }
 
 /** One authenticated operation uses only the user's temporary key or saved keys. No implicit model change. */
-export async function executeWithKeyRotation<T>(customKey: string | undefined, operation: (apiKey: string, model: string) => Promise<T>, context?: { userId?: string; endpoint?: string; model?: string }): Promise<T> {
+export async function executeWithKeyRotation<T>(customKey: string | undefined, operation: (apiKey: string, model: string) => Promise<T>, context?: { userId?: string; endpoint?: string; model?: string; signal?: AbortSignal }): Promise<T> {
   if (!context?.userId) throw new AiRequestError('Vui lòng đăng nhập để dùng AI.', 401, 'UNAUTHORIZED');
+  const cancelled = () => new AiRequestError('Đã hủy yêu cầu AI; chưa áp dụng kết quả.', 499, 'AI_CANCELLED');
+  if (context.signal?.aborted) throw cancelled();
   const endpoint = context.endpoint ?? 'ai.generate';
   const reservation = await reserveOperation(context.userId, endpoint, context.model);
   const startedAt = Date.now();
@@ -78,8 +80,13 @@ export async function executeWithKeyRotation<T>(customKey: string | undefined, o
   for (let index = 0; index < keys.length; index++) {
     const key = keys[index];
     let result: T;
-    try { result = await operation(key.rawKey, reservation.model); }
+    try {
+      if (context.signal?.aborted) throw cancelled();
+      result = await operation(key.rawKey, reservation.model);
+      if (context.signal?.aborted) throw cancelled();
+    }
     catch (error) {
+      if (context.signal?.aborted) { await finish(499, key.alias); throw cancelled(); }
       const failure = classifyProviderFailure(error);
       if (key.id) {
         try { await prisma.userApiKey.updateMany({ where: { id: key.id, userId: context.userId }, data: { errorCount: { increment: 1 }, ...(failure.disableKey ? { isActive: false } : {}) } }); }

@@ -28,6 +28,8 @@ export class RequestGate {
     return token;
   }
   private stop() { this.holder?.controller.abort(); this.holder = null; }
+  /** Cancel the active operation while leaving this panel available for another attempt. */
+  cancel() { this.stop(); }
   /** Panel unmounted or switched to another exam/account. */
   dispose() { this.closed = true; this.stop(); }
   /** The server said the account or session changed; nothing more is sent from this page. */

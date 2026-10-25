@@ -33,6 +33,7 @@ export const GenerateModal: React.FC<Props> = ({ isOpen, onClose, onExamGenerate
   const controller = useRef<AbortController | null>(null), requestId = useRef(0);
   useEffect(() => () => { controller.current?.abort(); }, [isOpen]);
   const close = () => { requestId.current += 1; controller.current?.abort(); setIsLoading(false); setProposal(null); onClose(); };
+  const cancel = () => { requestId.current += 1; controller.current?.abort(); setIsLoading(false); setError('Đã hủy yêu cầu. Chưa áp dụng bản nháp nào.'); };
   const config = getSubjectConfig(subject, grade);
   const readiness = getEducationReadiness(subject, grade);
   const total = Object.values(counts).reduce((sum, count) => sum + count, 0);
@@ -96,6 +97,7 @@ export const GenerateModal: React.FC<Props> = ({ isOpen, onClose, onExamGenerate
     finally { if (request === requestId.current) setIsLoading(false); }
   };
   return <div className="fixed inset-0 z-50 bg-black/60 p-4 flex items-center justify-center"><section role="dialog" aria-modal="true" aria-label="Soạn bản nháp với AI" className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl p-6 bg-white dark:bg-[#1e1e1e] text-[#202124] dark:text-[#e3e3e3] space-y-4">
+    {isLoading && <button type="button" onClick={cancel}>Hủy yêu cầu AI</button>}
     <header className="flex items-center justify-between"><h2 className="font-bold text-lg">Soạn bản nháp với AI</h2><button onClick={close} aria-label="Đóng"><X /></button></header>
     <div className="grid grid-cols-2 gap-3"><label>Lớp<select className={inputClass} value={grade} onChange={e => { const value = Number(e.target.value); setGrade(value); if (!getSubjectsForGrade(value).some(s => s.key === subject)) setSubject(getSubjectsForGrade(value)[0].key); }}>{Array.from({ length: 12 }, (_, i) => i + 1).map(g => <option key={g} value={g}>Lớp {g}</option>)}</select></label><label>Môn / hoạt động<select className={inputClass} value={subject} onChange={e => setSubject(e.target.value as Subject)}>{getSubjectsForGrade(grade).map(s => <option key={s.key} value={s.key}>{s.label}</option>)}</select></label></div>
     <label className="block">Phạm vi bài / chương / yêu cầu cần đạt<textarea className={inputClass} rows={3} value={topic} onChange={e => setTopic(e.target.value)} placeholder="Nhập phần kiến thức muốn soạn; có thể dán yêu cầu cần đạt đã kiểm tra." /></label>

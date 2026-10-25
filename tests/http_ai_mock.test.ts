@@ -1,3 +1,4 @@
+import { writeQaReport } from './helpers/qa-report';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import http from 'node:http';
@@ -13,7 +14,7 @@ const db = new PrismaClient({ datasources: { db: { url: requireTestDatabase() } 
 const origin = 'http://127.0.0.1:3117';
 type Seen = { method: string; path: string; key: string };
 const seen: Seen[] = [];
-let behave: (key: string) => { status: number; body: unknown } = () => ({ status: 200, body: {} });
+let behave: (key: string) => { status: number; body: unknown; delayMs?: number } = () => ({ status: 200, body: {} });
 const imported = { questions: [{ type: 'multiple_choice', difficulty: 'thong_hieu', content: 'AI MOCK Q', choices: ['A', 'B', 'C', 'D'].map(key => ({ key, text: key })), correct_answer: 'A', points: 1 }], passages: [], warnings: [] };
 const reply = (text: string) => ({ candidates: [{ content: { role: 'model', parts: [{ text }] }, finishReason: 'STOP' }], usageMetadata: { promptTokenCount: 5, candidatesTokenCount: 5, totalTokenCount: 10 } });
 const ok = () => ({ status: 200, body: reply(JSON.stringify(imported)) });
@@ -21,7 +22,8 @@ const provider = http.createServer((req, res) => {
   req.on('data', () => {}); req.on('end', () => {
     const key = String(req.headers['x-goog-api-key'] ?? ''); seen.push({ method: req.method ?? '', path: req.url ?? '', key });
     const result = req.url?.startsWith('/v1beta/models?') ? { status: 200, body: { models: [{ name: 'models/gemini-3.5-flash', displayName: 'Gemini 3.5 Flash', supportedGenerationMethods: ['generateContent'] }] } } : behave(key);
-    res.statusCode = result.status; res.setHeader('content-type', 'application/json'); res.end(JSON.stringify(result.body));
+    const send = () => { res.statusCode = result.status; res.setHeader('content-type', 'application/json'); res.end(JSON.stringify(result.body)); };
+    const timer = setTimeout(send, 'delayMs' in result ? result.delayMs ?? 0 : 0); res.on('close', () => clearTimeout(timer));
   });
 });
 
@@ -46,7 +48,7 @@ test('AI routes use only the caller key, count usage per key id, fail honestly a
       await db.user.deleteMany({ where: { id: { in: all } } });
       const directory = `qa/rebuild-${new Date().toISOString().slice(0, 10)}`;
       fs.mkdirSync(directory, { recursive: true });
-      fs.writeFileSync(`${directory}/http_ai_mock.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 10 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117 with a local provider imitation on 3118', realAiCalls: false }, null, 2));
+      writeQaReport(`${directory}/http_ai_mock.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 11 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117 with a local provider imitation on 3118', realAiCalls: false }, null, 2));
     } finally { await db.$disconnect(); }
   });
   const cookies: Record<string, string> = {};
@@ -58,6 +60,21 @@ test('AI routes use only the caller key, count usage per key id, fail honestly a
   const addKey = async (who: string, apiKey: string, label = 'Khóa thử') => { const r = await request('/api/user/keys', 'POST', { apiKey, label }, cookies[who]); assert.equal(r.status, 200, String(r.data.error)); return r.data.key.id as string; };
   const reset = (next: typeof behave = ok) => { seen.length = 0; behave = next; };
 
+
+  await t.test('aborting a slow provider request records cancellation without saving or retrying keys', async () => {
+    reset(() => ({ ...ok(), delayMs: 15000 }));
+    const controller = new AbortController();
+    const pending = fetch(origin + '/api/parse-exam-text', { method: 'POST', signal: controller.signal, headers: { Origin: origin, Cookie: cookies.a, 'Content-Type': 'application/json' }, body: JSON.stringify({ rawText: 'Câu 1: Tính hai cộng hai.', customApiKey: 'cancel-fixture-key-0123456789' }) });
+    const rejected = assert.rejects(pending, { name: 'AbortError' });
+    const deadline = Date.now() + 10000;
+    while (seen.length < 1 && Date.now() < deadline) await new Promise(resolve => setTimeout(resolve, 50));
+    assert.equal(seen.length, 1); controller.abort(); await rejected;
+    let log;
+    while (Date.now() < deadline) { log = await db.aiUsageLog.findFirst({ where: { userId: ids.a, httpStatus: 499 } }); if (log) break; await new Promise(resolve => setTimeout(resolve, 100)); }
+    assert.ok(log, 'cancellation is finalized as 499, not success or a pending reservation');
+    assert.equal(await db.question.count({ where: { ownerId: ids.a } }), 0);
+    assert.equal(seen.length, 1, 'no automatic retry after cancellation'); checks.push('cancelled-no-save-no-retry'); reset();
+  });
   await t.test('no key means no provider call and a clear message', async () => {
     reset(); const r = await parse('a');
     assert.equal(r.status, 401); assert.match(String(r.data.error), /API Key|khóa/i); assert.equal(seen.length, 0, 'nothing reached the provider');
