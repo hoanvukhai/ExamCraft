@@ -1,6 +1,6 @@
 {
   "port": 3117,
-  "holder": "TESTERS",
-  "note": "Rebuilt at 07:50Z with the import/generation fixes; fresh isolated test server on 3117 is running. Testers (Gemini, owner) use it. Nobody runs npm run build / npm run ci or restarts 3117 while this says TESTERS; message Claude first. Claude's real-provider evaluation uses port 3120 only.",
-  "since_utc": "2026-10-26T07:50:30Z"
+  "holder": "FREE",
+  "note": "Final npm run ci finished green at 10:55Z; the isolated server it started has stopped. Anyone may use 3117 and .next; rebuild before testing.",
+  "since_utc": "2026-10-26T10:33:04.232Z"
 }
