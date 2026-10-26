@@ -255,7 +255,7 @@ export const TeacherAiSecretaryDrawer: React.FC<TeacherAiSecretaryDrawerProps> =
           <button
             type="submit"
             disabled={!inputValue.trim() || isLoading}
-            className="w-7 h-7 rounded-full bg-[#1a73e8] hover:bg-[#1557b0] text-white flex items-center justify-center disabled:opacity-40 transition-all cursor-pointer shadow-2xs shrink-0"
+            className="w-7 h-7 rounded-full app-button-primary text-white flex items-center justify-center disabled:opacity-40 transition-all cursor-pointer shadow-2xs shrink-0"
           >
             <Send className="w-3.5 h-3.5" />
           </button>

@@ -12,7 +12,7 @@ export function StudentResultsModal({ isOpen, onClose, exam, onOpenShareModal }:
       <div className="flex justify-between gap-4"><h2 className="text-lg font-semibold">Bài đã giao và kết quả học sinh</h2><button type="button" onClick={onClose}>Đóng</button></div>
       <p className="text-sm">{exam.metadata.title}</p>
       <p className="text-sm">Mỗi lần giao bài có bản đề riêng và bảng điểm riêng. Mở bài đã giao để xem lượt làm, chấm tự luận, điều chỉnh điểm hoặc xuất CSV.</p>
-      <Link href="/teacher/assignments" className="inline-block rounded bg-blue-600 text-white px-4 py-2">Mở bài đã giao và bảng điểm</Link>
+      <Link href="/teacher/assignments" className="inline-block rounded app-button-primary text-white px-4 py-2">Mở bài đã giao và bảng điểm</Link>
       <button type="button" onClick={onOpenShareModal} className="block underline">Giao đề này cho học sinh</button>
     </section>
   </div>;

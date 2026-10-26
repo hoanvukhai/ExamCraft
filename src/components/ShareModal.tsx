@@ -242,7 +242,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
             onClick={() => setActiveTab('assign')}
             className={`flex-1 py-2 rounded-full text-xs font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
               activeTab === 'assign'
-                ? 'bg-[#1a73e8] text-white dark:bg-[#8ab4f8] dark:text-[#202124] shadow-xs'
+                ? 'app-button-primary text-white dark:bg-[#8ab4f8] dark:text-[#202124] shadow-xs'
                 : 'text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3]'
             }`}
           >
@@ -252,7 +252,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
             onClick={() => setActiveTab('share')}
             className={`flex-1 py-2 rounded-full text-xs font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
               activeTab === 'share'
-                ? 'bg-[#1a73e8] text-white dark:bg-[#8ab4f8] dark:text-[#202124] shadow-xs'
+                ? 'app-button-primary text-white dark:bg-[#8ab4f8] dark:text-[#202124] shadow-xs'
                 : 'text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3]'
             }`}
           >
@@ -285,7 +285,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                   />
                   <button
                     onClick={() => copyToClipboard(fullAssignUrl, 'assign')}
-                    className="px-3.5 py-1.5 bg-[#1a73e8] hover:bg-[#1557b0] dark:bg-[#8ab4f8] dark:hover:bg-[#a8c7fa] text-white dark:text-[#202124] rounded-full text-xs font-medium flex items-center gap-1 shrink-0 transition-all cursor-pointer shadow-xs"
+                    className="px-3.5 py-1.5 app-button-primary dark:bg-[#8ab4f8] dark:hover:bg-[#a8c7fa] text-white dark:text-[#202124] rounded-full text-xs font-medium flex items-center gap-1 shrink-0 transition-all cursor-pointer shadow-xs"
                   >
                     {copiedLink ? (
                       <>
@@ -500,7 +500,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                 <button
                   type="submit"
                   disabled={assigning}
-                  className="w-full py-3 bg-[#1a73e8] hover:bg-[#1557b0] dark:bg-[#8ab4f8] dark:hover:bg-[#a8c7fa] text-white dark:text-[#202124] font-medium text-xs sm:text-sm rounded-full shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
+                  className="w-full py-3 app-button-primary dark:bg-[#8ab4f8] dark:hover:bg-[#a8c7fa] text-white dark:text-[#202124] font-medium text-xs sm:text-sm rounded-full shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
                 >
                   {assigning ? (
                     <div className="w-4 h-4 border-2 border-white dark:border-[#202124] border-t-transparent rounded-full animate-spin" />
@@ -522,7 +522,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
             <p data-testid="share-pin-note" className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">Link giữ bản đề tại thời điểm tạo. Nếu bạn sửa đề sau đó, hãy tạo link mới để người xem thấy bản mới.{pinnedVersionOf(sharePath) ? <> Link hiện tại giữ <strong>phiên bản {pinnedVersionOf(sharePath)}</strong> của đề.</> : null}</p>
             <label className="block text-sm"><input type="checkbox" checked={shareAnswers} onChange={e => setShareAnswers(e.target.checked)} /> Kèm đáp án và lời giải</label>
             <label className="block text-sm"><input type="checkbox" checked={shareCopy} onChange={e => setShareCopy(e.target.checked)} /> Cho giáo viên đã đăng nhập tạo bản sao</label>
-            <button disabled={sharing} onClick={createShareLink} className="px-4 py-2 rounded-full bg-blue-600 text-white disabled:opacity-50">{sharing ? 'Đang tạo…' : 'Tạo link chia sẻ'}</button>
+            <button disabled={sharing} onClick={createShareLink} className="px-4 py-2 rounded-full app-button-primary text-white disabled:opacity-50">{sharing ? 'Đang tạo…' : 'Tạo link chia sẻ'}</button>
             {sharePath && <button onClick={revokeShareLink} className="ml-3 text-sm text-red-600">Thu hồi link này</button>}
             <div className="p-4 rounded-2xl bg-[#f8f9fa] dark:bg-[#282828]/60 border border-[#dadce0] dark:border-[#3c4043] space-y-3">
               <div className="flex items-center justify-between">
@@ -549,7 +549,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                 />
                 <button
                   disabled={!shareWordUrl} onClick={() => copyToClipboard(shareWordUrl, 'share')}
-                  className="px-3.5 py-1.5 bg-[#1a73e8] hover:bg-[#1557b0] dark:bg-[#8ab4f8] dark:hover:bg-[#a8c7fa] text-white dark:text-[#202124] rounded-full text-xs font-medium flex items-center gap-1 shrink-0 transition-all cursor-pointer shadow-xs"
+                  className="px-3.5 py-1.5 app-button-primary dark:bg-[#8ab4f8] dark:hover:bg-[#a8c7fa] text-white dark:text-[#202124] rounded-full text-xs font-medium flex items-center gap-1 shrink-0 transition-all cursor-pointer shadow-xs"
                 >
                   {copiedShareLink ? (
                     <>

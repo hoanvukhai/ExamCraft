@@ -263,7 +263,7 @@ export default function AdminUsersPage() {
       )}
 
       {/* Top Navbar */}
-      <header className="border-b border-[#dadce0] dark:border-[#3c4043] bg-white/80 dark:bg-[#1e1e1e]/80 backdrop-blur-md sticky top-0 z-30 px-4 sm:px-8 py-3.5 flex items-center justify-between">
+      <header className="app-bar app-admin-bar border-b sticky top-0 z-30 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-2xl bg-[#1a73e8] dark:bg-[#8ab4f8] text-white dark:text-[#181818] flex items-center justify-center shadow-md">
             <Sparkles className="w-5 h-5" />
@@ -395,7 +395,7 @@ export default function AdminUsersPage() {
                 setCreatePassword(generateRandomPassword());
                 setShowCreateModal(true);
               }}
-              className="px-4 py-2.5 rounded-full bg-[#1a73e8] hover:bg-[#1557b0] text-white dark:bg-[#8ab4f8] dark:hover:bg-[#aecbfa] dark:text-[#181818] text-xs font-semibold shadow-xs flex items-center gap-2 transition-all cursor-pointer"
+              className="px-4 py-2.5 rounded-full app-button-primary text-white dark:bg-[#8ab4f8] dark:hover:bg-[#aecbfa] dark:text-[#181818] text-xs font-semibold shadow-xs flex items-center gap-2 transition-all cursor-pointer"
             >
               <UserPlus className="w-4 h-4" />
               <span>Cấp tài khoản giáo viên mới</span>
@@ -556,7 +556,7 @@ export default function AdminUsersPage() {
       {/* Modal: Tạo tài khoản giáo viên mới */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="w-full max-w-md bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl shadow-2xl p-6 sm:p-7 relative">
+          <div className="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl shadow-2xl p-6 sm:p-7 relative">
             <button
               onClick={() => setShowCreateModal(false)}
               className="absolute right-4 top-4 text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-white p-1 rounded-full cursor-pointer"
@@ -648,7 +648,7 @@ export default function AdminUsersPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-2.5 px-4 rounded-full bg-[#1a73e8] hover:bg-[#1557b0] text-white dark:bg-[#8ab4f8] dark:hover:bg-[#aecbfa] dark:text-[#181818] text-xs font-semibold shadow-xs flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
+                  className="w-full py-2.5 px-4 rounded-full app-button-primary text-white dark:bg-[#8ab4f8] dark:hover:bg-[#aecbfa] dark:text-[#181818] text-xs font-semibold shadow-xs flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
                 >
                   {isSubmitting ? 'Đang tạo...' : 'Tạo tài khoản và cấp quyền'}
                 </button>
@@ -661,7 +661,7 @@ export default function AdminUsersPage() {
       {/* Modal: Đặt lại mật khẩu tạm */}
       {showResetModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="w-full max-w-md bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl shadow-2xl p-6 relative">
+          <div className="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl shadow-2xl p-6 relative">
             <button
               onClick={() => setShowResetModal(null)}
               className="absolute right-4 top-4 text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-white p-1 rounded-full cursor-pointer"
@@ -720,7 +720,7 @@ export default function AdminUsersPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-4 py-2 rounded-full bg-[#1a73e8] hover:bg-[#1557b0] text-white dark:bg-[#8ab4f8] dark:hover:bg-[#aecbfa] dark:text-[#181818] text-xs font-semibold cursor-pointer"
+                  className="px-4 py-2 rounded-full app-button-primary text-white dark:bg-[#8ab4f8] dark:hover:bg-[#aecbfa] dark:text-[#181818] text-xs font-semibold cursor-pointer"
                 >
                   {isSubmitting ? 'Đang lưu...' : 'Xác nhận cấp lại'}
                 </button>
@@ -733,7 +733,7 @@ export default function AdminUsersPage() {
       {/* Modal: Chỉnh sửa thông tin & Hạn mức */}
       {showEditModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="w-full max-w-md bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl shadow-2xl p-6 relative">
+          <div className="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl shadow-2xl p-6 relative">
             <button
               onClick={() => setShowEditModal(null)}
               className="absolute right-4 top-4 text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-white p-1 rounded-full cursor-pointer"
@@ -790,7 +790,7 @@ export default function AdminUsersPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-4 py-2 rounded-full bg-[#1a73e8] hover:bg-[#1557b0] text-white dark:bg-[#8ab4f8] dark:hover:bg-[#aecbfa] dark:text-[#181818] text-xs font-semibold cursor-pointer"
+                  className="px-4 py-2 rounded-full app-button-primary text-white dark:bg-[#8ab4f8] dark:hover:bg-[#aecbfa] dark:text-[#181818] text-xs font-semibold cursor-pointer"
                 >
                   {isSubmitting ? 'Đang lưu...' : 'Lưu thay đổi'}
                 </button>

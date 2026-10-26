@@ -456,7 +456,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
           <p className="text-[#5f6368] dark:text-[#9aa0a6] text-sm mb-6">{error}</p>
           <Link
             href="/"
-            className="inline-flex items-center justify-center px-5 py-2.5 bg-[#1a73e8] dark:bg-[#8ab4f8] hover:bg-[#1557b0] dark:hover:bg-[#aecbfa] text-white dark:text-[#202124] text-sm font-semibold rounded-full transition-all shadow-xs"
+            className="inline-flex items-center justify-center px-5 py-2.5 app-button-primary dark:bg-[#8ab4f8] hover:bg-[#1557b0] dark:hover:bg-[#aecbfa] text-white dark:text-[#202124] text-sm font-semibold rounded-full transition-all shadow-xs"
           >
             Về trang chủ
           </Link>
@@ -961,7 +961,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                       {hasDraft && <p role="status" className="text-amber-900">Câu này đang có chỉnh sửa chưa lưu. Hãy lưu hoặc bỏ chỉnh sửa trước khi khôi phục.</p>}
                       {changed && <p role="status" className="text-amber-900">Điểm hoặc nhận xét của câu đã đổi từ lúc xem trước. Hãy hủy rồi xem trước lại.</p>}
                       <div className="flex gap-2 pt-1">
-                        <button type="button" onClick={() => void handleConfirmRestore()} disabled={savingGrade || hasDraft || changed} className="px-3 py-1 rounded-full bg-[#1a73e8] text-white font-semibold disabled:opacity-40 cursor-pointer">{savingGrade ? 'Đang khôi phục...' : 'Xác nhận khôi phục'}</button>
+                        <button type="button" onClick={() => void handleConfirmRestore()} disabled={savingGrade || hasDraft || changed} className="px-3 py-1 rounded-full app-button-primary text-white font-semibold disabled:opacity-40 cursor-pointer">{savingGrade ? 'Đang khôi phục...' : 'Xác nhận khôi phục'}</button>
                         {hasDraft && <button type="button" onClick={() => discardDraft(question.questionId)} disabled={savingGrade} className="px-3 py-1 border rounded-full cursor-pointer disabled:opacity-40">Bỏ chỉnh sửa của câu này</button>}
                         <button type="button" onClick={() => setRestorePreview(null)} disabled={savingGrade} className="px-3 py-1 border rounded-full cursor-pointer disabled:opacity-40">Hủy</button>
                       </div>
@@ -977,7 +977,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                 <div role="alertdialog" aria-label="Có chỉnh sửa chưa lưu" className="p-3 my-3 rounded-xl bg-amber-50 text-amber-900 border border-amber-300 text-xs space-y-2">
                   <p>Có chỉnh sửa chưa lưu lên máy chủ ở {dirtyCount} câu. Bản dự phòng đã lưu trên trình duyệt vẫn được giữ khi đóng. Nếu trình duyệt báo không lưu được, hãy tải bản đang nhập trước khi đóng.</p>
                   <div className="flex gap-2">
-                    <button type="button" onClick={() => setLeavePrompt(false)} className="px-3 py-1 rounded-full bg-[#1a73e8] text-white font-semibold cursor-pointer">Giữ lại và tiếp tục sửa</button>
+                    <button type="button" onClick={() => setLeavePrompt(false)} className="px-3 py-1 rounded-full app-button-primary text-white font-semibold cursor-pointer">Giữ lại và tiếp tục sửa</button>
                     <button type="button" onClick={closeAttemptDetail} className="px-3 py-1 rounded-full border cursor-pointer">Đóng, chưa lưu điểm</button>
                   </div>
                 </div>

@@ -1,0 +1,452 @@
+[
+  {
+    "label": "dashboard-initial",
+    "bodyOverflow": "visible",
+    "button": {
+      "background": "rgb(138, 180, 248)",
+      "color": "rgb(6, 46, 111)",
+      "radius": "9999px"
+    },
+    "dark": true,
+    "header": {
+      "background": "rgb(30, 30, 30)",
+      "width": 1280
+    },
+    "panel": {
+      "background": "rgb(30, 30, 30)",
+      "border": "rgb(60, 64, 67)"
+    },
+    "scrollSize": [
+      1280,
+      720
+    ],
+    "url": "/",
+    "viewport": [
+      1280,
+      720
+    ]
+  },
+  {
+    "label": "dashboard-light",
+    "bodyOverflow": "visible",
+    "button": {
+      "background": "rgb(26, 115, 232)",
+      "color": "rgb(255, 255, 255)",
+      "radius": "9999px"
+    },
+    "dark": false,
+    "header": {
+      "background": "rgb(255, 255, 255)",
+      "width": 1280
+    },
+    "panel": {
+      "background": "rgb(255, 255, 255)",
+      "border": "rgb(218, 220, 224)"
+    },
+    "scrollSize": [
+      1280,
+      720
+    ],
+    "url": "/",
+    "viewport": [
+      1280,
+      720
+    ]
+  },
+  {
+    "label": "admin-users-dark",
+    "bodyOverflow": "visible",
+    "button": {
+      "background": "rgb(138, 180, 248)",
+      "color": "rgb(6, 46, 111)",
+      "radius": "9999px"
+    },
+    "dark": true,
+    "header": {
+      "background": "rgb(30, 30, 30)",
+      "width": 1274.4000244140625
+    },
+    "panel": null,
+    "scrollSize": [
+      1274,
+      1705
+    ],
+    "url": "/admin/users",
+    "viewport": [
+      1280,
+      720
+    ]
+  },
+  {
+    "label": "admin-users-375",
+    "bodyOverflow": "visible",
+    "button": {
+      "background": "rgb(138, 180, 248)",
+      "color": "rgb(6, 46, 111)",
+      "radius": "9999px"
+    },
+    "dark": true,
+    "header": {
+      "background": "rgb(30, 30, 30)",
+      "width": 369.6000061035156
+    },
+    "panel": null,
+    "scrollSize": [
+      463,
+      2783
+    ],
+    "url": "/admin/users",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "admin-ai-375",
+    "bodyOverflow": "visible",
+    "button": {
+      "background": "rgb(138, 180, 248)",
+      "color": "rgb(6, 46, 111)",
+      "radius": "9999px"
+    },
+    "dark": true,
+    "header": {
+      "background": "rgb(30, 30, 30)",
+      "width": 369.6000061035156
+    },
+    "panel": null,
+    "scrollSize": [
+      480,
+      1067
+    ],
+    "url": "/admin/ai",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "admin-keys-375",
+    "bodyOverflow": "visible",
+    "button": {
+      "background": "rgb(138, 180, 248)",
+      "color": "rgb(6, 46, 111)",
+      "radius": "9999px"
+    },
+    "dark": true,
+    "header": null,
+    "panel": null,
+    "scrollSize": [
+      370,
+      792
+    ],
+    "url": "/admin/keys",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "teacher-groups-375",
+    "bodyOverflow": "visible",
+    "button": {
+      "background": "rgb(138, 180, 248)",
+      "color": "rgb(6, 46, 111)",
+      "radius": "9999px"
+    },
+    "dark": true,
+    "header": null,
+    "panel": null,
+    "scrollSize": [
+      375,
+      667
+    ],
+    "url": "/teacher/groups",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "admin-users-375-fixed",
+    "bodyOverflow": "visible",
+    "button": {
+      "background": "rgb(138, 180, 248)",
+      "color": "rgb(6, 46, 111)",
+      "radius": "9999px"
+    },
+    "dark": true,
+    "header": {
+      "background": "rgb(30, 30, 30)",
+      "width": 369.6000061035156
+    },
+    "panel": null,
+    "scrollSize": [
+      370,
+      915
+    ],
+    "url": "/admin/users",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "admin-ai-375-fixed",
+    "bodyOverflow": "visible",
+    "button": {
+      "background": "rgb(138, 180, 248)",
+      "color": "rgb(6, 46, 111)",
+      "radius": "9999px"
+    },
+    "dark": true,
+    "header": {
+      "background": "rgb(30, 30, 30)",
+      "width": 369.6000061035156
+    },
+    "panel": null,
+    "scrollSize": [
+      370,
+      1107
+    ],
+    "url": "/admin/ai",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "dashboard-375",
+    "bodyOverflow": "visible",
+    "button": {
+      "background": "rgb(138, 180, 248)",
+      "color": "rgb(6, 46, 111)",
+      "radius": "9999px"
+    },
+    "dark": true,
+    "header": {
+      "background": "rgb(30, 30, 30)",
+      "width": 375.2000122070313
+    },
+    "panel": {
+      "background": "rgb(30, 30, 30)",
+      "border": "rgb(60, 64, 67)"
+    },
+    "scrollSize": [
+      375,
+      667
+    ],
+    "url": "/",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "admin-scroll-keyboard",
+    "maximum": 985,
+    "scrollY": 0,
+    "stickyHeader": 0
+  },
+  {
+    "label": "FINAL-dashboard-375",
+    "bodyOverflow": "visible",
+    "button": {
+      "background": "rgb(138, 180, 248)",
+      "color": "rgb(6, 46, 111)",
+      "radius": "9999px"
+    },
+    "dark": true,
+    "header": {
+      "background": "rgb(30, 30, 30)",
+      "width": 375.2000122070313
+    },
+    "panel": {
+      "background": "rgb(30, 30, 30)",
+      "border": "rgb(60, 64, 67)"
+    },
+    "scrollSize": [
+      375,
+      667
+    ],
+    "url": "/",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "FINAL-admin-users-375",
+    "bodyOverflow": "visible",
+    "button": {
+      "background": "rgb(138, 180, 248)",
+      "color": "rgb(6, 46, 111)",
+      "radius": "9999px"
+    },
+    "dark": true,
+    "header": {
+      "background": "rgb(30, 30, 30)",
+      "width": 369.6000061035156
+    },
+    "panel": null,
+    "scrollSize": [
+      370,
+      915
+    ],
+    "url": "/admin/users",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "FINAL-admin-actual-scroll",
+    "headerTop": 0,
+    "max": 1121,
+    "scrollY": 1120.800048828125
+  },
+  {
+    "label": "FINAL-admin-light",
+    "bodyOverflow": "visible",
+    "button": {
+      "background": "rgb(26, 115, 232)",
+      "color": "rgb(255, 255, 255)",
+      "radius": "9999px"
+    },
+    "dark": false,
+    "header": {
+      "background": "rgb(255, 255, 255)",
+      "width": 1274.4000244140625
+    },
+    "panel": null,
+    "scrollSize": [
+      1274,
+      1841
+    ],
+    "url": "/admin/users",
+    "viewport": [
+      1280,
+      720
+    ]
+  },
+  {
+    "label": "FINAL-admin-ai-375-dark",
+    "bodyOverflow": "visible",
+    "button": {
+      "background": "rgb(138, 180, 248)",
+      "color": "rgb(6, 46, 111)",
+      "radius": "9999px"
+    },
+    "dark": true,
+    "header": {
+      "background": "rgb(30, 30, 30)",
+      "width": 369.6000061035156
+    },
+    "panel": null,
+    "scrollSize": [
+      370,
+      1107
+    ],
+    "url": "/admin/ai",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "FINAL-admin-keys-375",
+    "bodyOverflow": "visible",
+    "button": {
+      "background": "rgb(138, 180, 248)",
+      "color": "rgb(6, 46, 111)",
+      "radius": "9999px"
+    },
+    "dark": true,
+    "header": null,
+    "panel": null,
+    "scrollSize": [
+      370,
+      792
+    ],
+    "url": "/admin/keys",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "FINAL-assignments-375",
+    "bodyOverflow": "visible",
+    "button": {
+      "background": "rgb(138, 180, 248)",
+      "color": "rgb(6, 46, 111)",
+      "radius": "9999px"
+    },
+    "dark": true,
+    "header": null,
+    "panel": null,
+    "scrollSize": [
+      375,
+      667
+    ],
+    "url": "/teacher/assignments",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "FINAL-editor-375",
+    "bodyOverflow": "visible",
+    "button": {
+      "background": "rgb(138, 180, 248)",
+      "color": "rgb(6, 46, 111)",
+      "radius": "9999px"
+    },
+    "dark": true,
+    "header": {
+      "background": "rgb(30, 30, 30)",
+      "width": 375.2000122070313
+    },
+    "panel": {
+      "background": "rgb(30, 30, 30)",
+      "border": "rgb(60, 64, 67)"
+    },
+    "scrollSize": [
+      375,
+      667
+    ],
+    "url": "/editor/ex_f07f9be62b9bcf18eb5997563157ee3e361c6092",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "FINAL-dashboard-desktop",
+    "bodyOverflow": "visible",
+    "button": {
+      "background": "rgb(138, 180, 248)",
+      "color": "rgb(6, 46, 111)",
+      "radius": "9999px"
+    },
+    "dark": true,
+    "header": {
+      "background": "rgb(30, 30, 30)",
+      "width": 1280
+    },
+    "panel": {
+      "background": "rgb(30, 30, 30)",
+      "border": "rgb(60, 64, 67)"
+    },
+    "scrollSize": [
+      1280,
+      720
+    ],
+    "url": "/",
+    "viewport": [
+      1280,
+      720
+    ]
+  }
+]

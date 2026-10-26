@@ -295,7 +295,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   };
 
   return (
-    <div className="print-flow h-screen w-screen overflow-hidden flex flex-col bg-[#F8F9FA] dark:bg-[#121212] font-sans text-[#202124] dark:text-[#e3e3e3] transition-colors duration-200">
+    <div className="print-flow h-dvh w-full overflow-hidden flex flex-col bg-[#F8F9FA] dark:bg-[#121212] font-sans text-[#202124] dark:text-[#e3e3e3] transition-colors duration-200">
       {/* HEADER GOOGLE MINIMALIST */}
       <Header
         canEdit={canEdit}
@@ -518,7 +518,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                     <div className="flex items-center justify-center gap-3">
                       <button
                         onClick={() => setIsGenerateModalOpen(true)}
-                        className="px-4 py-2 bg-[#1a73e8] hover:bg-[#1557b0] text-white rounded-full text-xs font-semibold shadow-xs cursor-pointer flex items-center gap-1.5 transition-colors"
+                        className="px-4 py-2 app-button-primary text-white rounded-full text-xs font-semibold shadow-xs cursor-pointer flex items-center gap-1.5 transition-colors"
                       >
                         <Sparkles className="w-3.5 h-3.5" />
                         <span>Sinh đề bằng AI</span>
@@ -549,7 +549,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                     onClick={handleMergeSelected}
                     disabled={selectedQuestionIds.length < 2}
                     title={selectedQuestionIds.length < 2 ? "Chọn ít nhất 2 câu để gộp thành 1 câu tự luận" : "Gộp các câu đã chọn thành 1 câu tự luận tổng hợp có nhiều ý a, b, c..."}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full bg-[#1a73e8] hover:bg-[#1557b0] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-xs cursor-pointer"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full app-button-primary disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-xs cursor-pointer"
                   >
                     <Link2 className="w-3.5 h-3.5" />
                     <span>Gộp thành 1 câu tự luận</span>

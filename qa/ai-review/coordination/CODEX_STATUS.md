@@ -1,13 +1,11 @@
 # CODEX status
 
-task_id: CODEX-NEXT / CDX-T1–T3
-assignment_generation: 17
+task_id: OWNER-UI-GOOGLE-20261027
 state: WAITING_REVIEW
-updated_at_utc: 2026-10-25T18:16:53.219Z
 branch/worktree: rebuild/2026-10-local, F:/Workspace/Zazz/ExamCraft
-commits: c9e84b8 (T1), 914f26d (F24), 9114ee9 (UI hạ quyền + hồi quy)
 
-Đã thực hiện và kiểm T1–T3; CI cuối sau sửa quyền đạt toàn bộ, server3117/mock3118 đã dừng. Bước kế: Claude duyệt qa/rebuild-2026-10-25/CODEX_GEN17_HANDOFF.md. Không tự đóng CV.
-Đã kiểm lặp F3/F19, F24 góp ý/Markdown, kiểu/lint/SAFE/build/HTTP/browser. Số liệu/log và giới hạn chỉ ở báo cáo nhóm. Không chạy lại backup/integration riêng hoặc AI thật.
-Giữ diff mới ngoài phạm vi ở package.json và src/lib/docx-export.ts xuất hiện sau build: CI này không chứng nhận các diff đó, không lấy vào commit. Giữ các đầu ra runtime và dữ liệu có sẵn.
-Không schema/DB chính/.env/backup/bí mật/provider thật/push/reset/clean; không sửa checklist/02/ASSIGNMENTS/BATCH_REVIEWS.
+Theo yêu cầu trực tiếp của chủ dự án: đã thống nhất nút và surface theo theme Google; sửa body khóa cuộn, viền sáng ở chế độ tối, thanh admin và nút kho đề bị khuất trên màn hình hẹp. Đã kiểm kiểu/lint/build, giao diện sáng/tối và responsive, soạn/lưu/in hồi quy trên DB thử. Bằng chứng và giới hạn ở qa/rebuild-2026-10-26/ui-google/BAO_CAO.md.
+Lượt đầu kiểm lưu gặp xung đột, chạy lại đạt cùng mã; đã giữ ảnh/log để Claude theo dõi, không sửa nghiệp vụ lưu trong đợt UI. Chưa tổng nghiệm thu. Bản test 11 chưa làm xong, đã được thay bởi yêu cầu UI hiện tại.
+Không sửa checklist/02/ASSIGNMENTS/BATCH_REVIEWS; không đóng CV. Dữ liệu thật và bí mật giữ nguyên. Không schema/DB chính/provider thật/push/reset/clean. Giữ scratch và tệp QA có sẵn.
+Bàn giao gen17 trước: qa/rebuild-2026-10-25/CODEX_GEN17_HANDOFF.md (đã được Claude duyệt).
+Server thử đã dừng, LOCK_3117=FREE; sẵn sàng Claude duyệt hoặc chủ dự án xem UI.

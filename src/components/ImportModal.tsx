@@ -344,7 +344,7 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
             disabled={isLoading || accountLocked} onClick={() => setSourceType('image')}
             className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
               sourceType === 'image'
-                ? 'bg-[#1a73e8] text-white dark:bg-[#8ab4f8] dark:text-[#202124] shadow-xs'
+                ? 'app-button-primary text-white dark:bg-[#8ab4f8] dark:text-[#202124] shadow-xs'
                 : 'bg-[#f1f3f4] dark:bg-[#282828] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#e8eaed] dark:hover:bg-[#303134]'
             }`}
           >
@@ -356,7 +356,7 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
             disabled={isLoading || accountLocked} onClick={() => setSourceType('word')}
             className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
               sourceType === 'word'
-                ? 'bg-[#1a73e8] text-white dark:bg-[#8ab4f8] dark:text-[#202124] shadow-xs'
+                ? 'app-button-primary text-white dark:bg-[#8ab4f8] dark:text-[#202124] shadow-xs'
                 : 'bg-[#f1f3f4] dark:bg-[#282828] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#e8eaed] dark:hover:bg-[#303134]'
             }`}
           >
@@ -368,7 +368,7 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
             disabled={isLoading || accountLocked} onClick={() => setSourceType('text')}
             className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
               sourceType === 'text'
-                ? 'bg-[#1a73e8] text-white dark:bg-[#8ab4f8] dark:text-[#202124] shadow-xs'
+                ? 'app-button-primary text-white dark:bg-[#8ab4f8] dark:text-[#202124] shadow-xs'
                 : 'bg-[#f1f3f4] dark:bg-[#282828] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#e8eaed] dark:hover:bg-[#303134]'
             }`}
           >
@@ -380,7 +380,7 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
             disabled={isLoading || accountLocked} onClick={() => setSourceType('latex')}
             className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
               sourceType === 'latex'
-                ? 'bg-[#1a73e8] text-white dark:bg-[#8ab4f8] dark:text-[#202124] shadow-xs'
+                ? 'app-button-primary text-white dark:bg-[#8ab4f8] dark:text-[#202124] shadow-xs'
                 : 'bg-[#f1f3f4] dark:bg-[#282828] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#e8eaed] dark:hover:bg-[#303134]'
             }`}
           >
@@ -513,7 +513,7 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
               <button
                 onClick={handleStartParsing}
                 disabled={isLoading || accountLocked}
-                className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-white bg-[#1a73e8] hover:bg-[#1557b0] dark:bg-[#8ab4f8] dark:hover:bg-[#a8c7fa] dark:text-[#202124] rounded-full shadow-xs transition-all cursor-pointer disabled:opacity-50"
+                className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-white app-button-primary dark:bg-[#8ab4f8] dark:hover:bg-[#a8c7fa] dark:text-[#202124] rounded-full shadow-xs transition-all cursor-pointer disabled:opacity-50"
               >
                 {isLoading ? (
                   <>

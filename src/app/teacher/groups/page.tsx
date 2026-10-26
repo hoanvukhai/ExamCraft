@@ -229,7 +229,7 @@ export default function TeacherGroupsPage() {
 
           <button
             onClick={() => setShowCreateModal(true)}
-            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#1a73e8] hover:bg-[#1557b0] dark:bg-[#8ab4f8] dark:text-[#181818] dark:hover:bg-[#a8c7fa] text-white text-sm font-semibold rounded-full shadow-xs transition-all cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 app-button-primary dark:bg-[#8ab4f8] dark:text-[#181818] dark:hover:bg-[#a8c7fa] text-white text-sm font-semibold rounded-full shadow-xs transition-all cursor-pointer"
           >
             <Plus className="w-4 h-4" /> Tạo Lớp Mới
           </button>
@@ -267,7 +267,7 @@ export default function TeacherGroupsPage() {
             </p>
             <button
               onClick={() => setShowCreateModal(true)}
-              className="px-5 py-2.5 bg-[#1a73e8] hover:bg-[#1557b0] dark:bg-[#8ab4f8] dark:text-[#181818] text-white text-xs font-semibold rounded-full shadow-xs transition-all cursor-pointer"
+              className="px-5 py-2.5 app-button-primary dark:bg-[#8ab4f8] dark:text-[#181818] text-white text-xs font-semibold rounded-full shadow-xs transition-all cursor-pointer"
             >
               Tạo Lớp Đầu Tiên
             </button>
@@ -417,7 +417,7 @@ export default function TeacherGroupsPage() {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="px-5 py-2 bg-[#1a73e8] hover:bg-[#1557b0] dark:bg-[#8ab4f8] dark:text-[#181818] disabled:opacity-50 text-white text-xs font-semibold rounded-full shadow-xs flex items-center gap-1.5 cursor-pointer"
+                    className="px-5 py-2 app-button-primary dark:bg-[#8ab4f8] dark:text-[#181818] disabled:opacity-50 text-white text-xs font-semibold rounded-full shadow-xs flex items-center gap-1.5 cursor-pointer"
                   >
                     {submitting ? 'Đang tạo...' : 'Xác Nhận Tạo Lớp'}
                   </button>
@@ -458,7 +458,7 @@ export default function TeacherGroupsPage() {
                 />
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-[#1a73e8] hover:bg-[#1557b0] dark:bg-[#8ab4f8] dark:text-[#181818] text-white text-xs font-semibold rounded-full shrink-0 shadow-xs cursor-pointer"
+                  className="px-5 py-2 app-button-primary dark:bg-[#8ab4f8] dark:text-[#181818] text-white text-xs font-semibold rounded-full shrink-0 shadow-xs cursor-pointer"
                 >
                   Thêm
                 </button>

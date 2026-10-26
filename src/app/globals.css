@@ -18,6 +18,11 @@
   --google-text-primary: #202124;
   --google-text-secondary: #5f6368;
   --google-blue: #1a73e8;
+  --google-on-primary: #ffffff;
+  --google-primary-hover: #1765cc;
+  --google-primary-container: #d3e3fd;
+  --google-on-primary-container: #041e49;
+  color-scheme: light;
 }
 
 .dark {
@@ -29,6 +34,11 @@
   --google-text-primary: #e3e3e3;
   --google-text-secondary: #9aa0a6;
   --google-blue: #8ab4f8;
+  --google-on-primary: #062e6f;
+  --google-primary-hover: #aecbfa;
+  --google-primary-container: #0842a0;
+  --google-on-primary-container: #d3e3fd;
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -42,9 +52,67 @@ body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), 'Google Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  overflow: hidden;
-  height: 100vh;
-  width: 100vw;
+  min-height: 100dvh;
+  width: 100%;
+}
+
+/* Bare `border` utilities inherit the text colour in Tailwind 4. Keep shared
+   forms, recovery panels and dialogs on the same quiet outline in both themes. */
+@layer base {
+  *, ::before, ::after {
+    border-color: var(--google-border);
+  }
+
+  :where(button, a, summary, input, select, textarea):focus-visible {
+    outline: 2px solid var(--google-blue);
+    outline-offset: 3px;
+  }
+}
+
+/* Shared Google-style roles. Existing spacing stays local to each control. */
+.app-button-primary {
+  background-color: var(--google-blue);
+  color: var(--google-on-primary);
+  border-color: transparent;
+  border-radius: 9999px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 150ms ease, box-shadow 150ms ease;
+}
+.app-button-primary:hover:not(:disabled) {
+  background-color: var(--google-primary-hover);
+  box-shadow: 0 1px 2px #00000026;
+}
+.app-button-primary:disabled { cursor: default; }
+.app-button-tonal {
+  background-color: var(--google-primary-container);
+  color: var(--google-on-primary-container);
+  border-color: transparent;
+  border-radius: 9999px;
+}
+.app-bar {
+  background-color: var(--google-surface);
+  color: var(--google-text-primary);
+  border-color: var(--google-border);
+}
+.app-recovery-panel {
+  background-color: var(--google-surface);
+  border-color: var(--google-border);
+  color: var(--google-text-primary);
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 639px) {
+  .app-dashboard-bar > div:first-child { gap: 0.5rem; flex-shrink: 0; }
+  .app-dashboard-bar > div:last-child { gap: 0.25rem; flex-shrink: 0; }
+  .app-dashboard-bar > div:last-child > button { padding-inline: 0.5rem; }
+  .app-admin-bar { flex-wrap: wrap; }
+  .app-admin-bar > div { min-width: 0; }
+  .app-admin-bar > div:last-child {
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
 }
 
 /* Print styling for A4 Exam Paper */

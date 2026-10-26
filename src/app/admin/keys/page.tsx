@@ -92,7 +92,7 @@ export default function AdminKeyGrantsPage() {
               {!visible.length && <li className="px-3 py-4 text-sm text-[#5f6368] dark:text-[#9aa0a6]">Không có giáo viên phù hợp.</li>}
             </ul>
           </div>
-          <button type="submit" disabled={busy} className="px-5 py-2 rounded-full bg-[#1a73e8] text-white text-sm font-semibold disabled:opacity-50">Cấp khóa cho người đã chọn</button>
+          <button type="submit" disabled={busy} className="px-5 py-2 rounded-full app-button-primary text-white text-sm font-semibold disabled:opacity-50">Cấp khóa cho người đã chọn</button>
         </form>
 
         <section className="space-y-3" aria-label="Các khóa đã cấp">

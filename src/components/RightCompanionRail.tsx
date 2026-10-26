@@ -404,7 +404,7 @@ export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
               <button
                 onClick={() => handleSendCommand()}
                   disabled={isLoading || !!proposal || !command.trim()}
-                className="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium transition-all shadow-xs cursor-pointer disabled:cursor-not-allowed bg-[#1a73e8] hover:bg-[#1557b0] text-white dark:bg-[#8ab4f8] dark:hover:bg-[#a8c7fa] dark:text-[#041e49] disabled:opacity-40"
+                className="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium transition-all shadow-xs cursor-pointer disabled:cursor-not-allowed app-button-primary text-white dark:bg-[#8ab4f8] dark:hover:bg-[#a8c7fa] dark:text-[#041e49] disabled:opacity-40"
               >
                 {isLoading ? (
                   <>

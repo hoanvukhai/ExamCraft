@@ -85,7 +85,7 @@ export default function TeacherAssignmentsListPage() {
 
           <Link
             href="/"
-            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#1a73e8] hover:bg-[#1557b0] dark:bg-[#8ab4f8] dark:text-[#181818] text-white text-sm font-semibold rounded-full shadow-xs transition-all"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 app-button-primary dark:bg-[#8ab4f8] dark:text-[#181818] text-white text-sm font-semibold rounded-full shadow-xs transition-all"
           >
             <Plus className="w-4 h-4" /> Giao Bài Mới
           </Link>
@@ -123,7 +123,7 @@ export default function TeacherAssignmentsListPage() {
             </p>
             <Link
               href="/"
-              className="px-5 py-2.5 bg-[#1a73e8] hover:bg-[#1557b0] dark:bg-[#8ab4f8] dark:text-[#181818] text-white text-xs font-semibold rounded-full shadow-xs"
+              className="px-5 py-2.5 app-button-primary dark:bg-[#8ab4f8] dark:text-[#181818] text-white text-xs font-semibold rounded-full shadow-xs"
             >
               Về Trang Soạn Đề
             </Link>
@@ -187,7 +187,7 @@ export default function TeacherAssignmentsListPage() {
 
                   <Link
                     href={`/teacher/assignments/${asg.id}`}
-                    className="px-5 py-2.5 bg-[#1a73e8] hover:bg-[#1557b0] dark:bg-[#8ab4f8] dark:text-[#181818] text-white font-semibold text-xs rounded-full shadow-xs flex items-center gap-1.5 transition-all"
+                    className="px-5 py-2.5 app-button-primary dark:bg-[#8ab4f8] dark:text-[#181818] text-white font-semibold text-xs rounded-full shadow-xs flex items-center gap-1.5 transition-all"
                   >
                     <Users className="w-4 h-4" /> Giám sát & Bảng điểm
                   </Link>

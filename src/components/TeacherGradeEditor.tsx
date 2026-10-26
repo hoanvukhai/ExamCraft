@@ -41,7 +41,7 @@ export function TeacherGradeEditor({ question, numeric, draft, busy, onChange, o
       {stale && <p role="status" className="p-2 rounded-lg bg-amber-50 text-amber-900 border border-amber-300">Điểm hoặc nhận xét của câu này đã đổi (lưu ở nơi khác hoặc khôi phục) sau khi bạn bắt đầu sửa. Bản bạn đang nhập vẫn được giữ, nhưng chưa thể lưu đè. Hãy bỏ bản nhập để dùng giá trị hiện tại rồi sửa lại nếu cần.</p>}
       {dirty && built && !built.ok && !stale && <p role="status" className="text-[#b06000]">{built.message}</p>}
       <div className="flex items-center gap-2">
-        <button type="button" onClick={onSave} disabled={busy || !dirty || stale || !built?.ok} className="px-3 py-1 rounded-full bg-[#1a73e8] text-white font-semibold disabled:opacity-40 cursor-pointer">{busy ? 'Đang lưu...' : numeric ? 'Lưu điểm và nhận xét' : 'Lưu nhận xét'}</button>
+        <button type="button" onClick={onSave} disabled={busy || !dirty || stale || !built?.ok} className="px-3 py-1 rounded-full app-button-primary text-white font-semibold disabled:opacity-40 cursor-pointer">{busy ? 'Đang lưu...' : numeric ? 'Lưu điểm và nhận xét' : 'Lưu nhận xét'}</button>
         {dirty && <button type="button" onClick={onDiscard} disabled={busy} className="px-3 py-1 rounded-full border cursor-pointer disabled:opacity-40">{stale ? 'Bỏ bản nhập, dùng giá trị hiện tại' : 'Bỏ thay đổi'}</button>}
         <span className="text-[#5f6368] dark:text-[#9aa0a6]">{dirty ? 'Có thay đổi chưa lưu.' : 'Chưa có thay đổi.'}</span>
       </div>

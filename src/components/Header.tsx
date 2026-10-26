@@ -110,7 +110,7 @@ export const Header: React.FC<HeaderProps> = ({
     : 0;
 
   return (
-    <header className="no-print h-14 bg-white dark:bg-[#181818] border-b border-[#dadce0] dark:border-[#3c4043] shrink-0 z-30 px-3 sm:px-5 flex items-center justify-between gap-3 shadow-xs transition-colors duration-200">
+    <header className="app-bar no-print h-14 bg-white dark:bg-[#181818] border-b border-[#dadce0] dark:border-[#3c4043] shrink-0 z-30 px-3 sm:px-5 flex items-center justify-between gap-3 shadow-xs transition-colors duration-200">
       {/* KHU VỰC TRÁI: Toggle menu, Logo ExamCraft, Tiêu đề đề thi & Trạng thái lưu Google Docs style */}
       <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
         {/* Nút toggle Sidebar */}
@@ -208,7 +208,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={onExportWord}
               title="Tải file Word (.docx) chuẩn công thức OMML"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-[#1a73e8] hover:bg-[#1557b0] text-white shadow-2xs transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold app-button-primary text-white shadow-2xs transition-colors cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
               <span className="hidden md:inline">Tải Word (.docx)</span>
@@ -418,7 +418,7 @@ export const Header: React.FC<HeaderProps> = ({
         ) : (
           <Link
             href="/login"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-xs transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white app-button-primary  shadow-xs transition-colors"
           >
             <UserIcon className="w-3.5 h-3.5" />
             <span>Đăng nhập</span>

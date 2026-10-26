@@ -515,7 +515,7 @@ function StudentExamContent({
           <p className="text-[#5f6368] dark:text-[#9aa0a6] text-sm mb-6 leading-relaxed">{error}</p>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1a73e8] dark:bg-[#8ab4f8] hover:bg-[#1557b0] dark:hover:bg-[#aecbfa] text-white dark:text-[#202124] text-sm font-semibold rounded-full transition-all shadow-xs"
+            className="inline-flex items-center gap-2 px-5 py-2.5 app-button-primary dark:bg-[#8ab4f8] hover:bg-[#1557b0] dark:hover:bg-[#aecbfa] text-white dark:text-[#202124] text-sm font-semibold rounded-full transition-all shadow-xs"
           >
             <ArrowLeft className="w-4 h-4" /> Về trang chủ
           </Link>
@@ -564,7 +564,7 @@ function StudentExamContent({
             </p>
           </div>
 
-          {canStartAnother && <button onClick={() => { setSubmitResult(null); setAttempt(null); setAnswers({}); setTimeLeft(null); }} className="px-5 py-3 rounded-full bg-blue-600 text-white">Làm lượt tiếp theo</button>}
+          {canStartAnother && <button onClick={() => { setSubmitResult(null); setAttempt(null); setAnswers({}); setTimeLeft(null); }} className="px-5 py-3 rounded-full app-button-primary text-white">Làm lượt tiếp theo</button>}
 
           {/* Bảng xếp hạng Top & Me */}
           {submitResult.leaderboard && (
@@ -747,7 +747,7 @@ function StudentExamContent({
             <button
               type="submit"
               disabled={starting}
-              className="w-full py-3 bg-[#1a73e8] hover:bg-[#1557b0] dark:bg-[#8ab4f8] dark:hover:bg-[#aecbfa] disabled:opacity-50 text-white dark:text-[#202124] font-semibold text-sm rounded-full shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
+              className="w-full py-3 app-button-primary dark:bg-[#8ab4f8] dark:hover:bg-[#aecbfa] disabled:opacity-50 text-white dark:text-[#202124] font-semibold text-sm rounded-full shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
             >
               {starting ? (
                 <div className="w-5 h-5 border-2 border-white dark:border-[#202124] border-t-transparent rounded-full animate-spin" />
@@ -1035,7 +1035,7 @@ function StudentExamContent({
                     href={`#q-${idx + 1}`}
                     className={`h-9 rounded-xl flex items-center justify-center text-xs font-bold transition-all ${
                       isFilled
-                        ? 'bg-[#1a73e8] dark:bg-[#8ab4f8] text-white dark:text-[#202124] shadow-xs'
+                        ? 'app-button-primary dark:bg-[#8ab4f8] text-white dark:text-[#202124] shadow-xs'
                         : 'bg-[#f1f3f4] dark:bg-[#282828] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#e8eaed] dark:hover:bg-[#333538]'
                     }`}
                   >

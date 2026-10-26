@@ -122,7 +122,7 @@ function ShareExamContent({ examId }: { examId: string }) {
           <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] mb-6">{error}</p>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#1a73e8] hover:bg-[#1557b0] dark:bg-[#8ab4f8] dark:text-[#181818] text-white text-xs font-semibold"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full app-button-primary dark:bg-[#8ab4f8] dark:text-[#181818] text-white text-xs font-semibold"
           >
             Về trang chủ ExamCraft
           </Link>

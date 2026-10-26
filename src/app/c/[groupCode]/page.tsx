@@ -93,7 +93,7 @@ function ClassPortalContent({
           <p className="text-[#5f6368] dark:text-[#9aa0a6] text-sm mb-6">{error}</p>
           <Link
             href="/"
-            className="inline-flex items-center justify-center px-5 py-2.5 bg-[#1a73e8] dark:bg-[#8ab4f8] hover:bg-[#1557b0] dark:hover:bg-[#aecbfa] text-white dark:text-[#202124] text-sm font-semibold rounded-full transition-all shadow-xs"
+            className="inline-flex items-center justify-center px-5 py-2.5 app-button-primary dark:bg-[#8ab4f8] hover:bg-[#1557b0] dark:hover:bg-[#aecbfa] text-white dark:text-[#202124] text-sm font-semibold rounded-full transition-all shadow-xs"
           >
             Về trang chủ
           </Link>
@@ -220,7 +220,7 @@ function ClassPortalContent({
                             ? 'bg-[#f1f3f4] hover:bg-[#e8eaed] dark:bg-[#282828] dark:hover:bg-[#333538] text-[#202124] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043]'
                             : isInProgress
                             ? 'bg-[#b06000] hover:bg-[#924f00] text-white shadow-xs'
-                            : 'bg-[#1a73e8] hover:bg-[#1557b0] dark:bg-[#8ab4f8] dark:hover:bg-[#aecbfa] text-white dark:text-[#202124] shadow-xs'
+                            : 'app-button-primary dark:bg-[#8ab4f8] dark:hover:bg-[#aecbfa] text-white dark:text-[#202124] shadow-xs'
                         }`}
                       >
                         {isSubmitted ? (

@@ -67,6 +67,6 @@ function HeaderForm({ metadata, documentId, onClose, onSaveMetadata }: HeaderSet
     {conflict && <p role="alert" className="text-sm text-amber-700">Trường đang sửa đã đổi ở bản mới. Nháp của bạn vẫn giữ trong hộp này; chưa ghi đè.</p>}
     {applied && <p role="status" className="text-sm text-emerald-700">Đã áp dụng các trường vào bản soạn. Bấm Lưu đề để lưu trên máy chủ.</p>}
     {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
-    <div className="flex gap-4"><button type="button" className="bg-blue-600 text-white rounded px-3 py-2 text-sm disabled:opacity-50" disabled={applied || !Object.keys(submission.patch).length} onClick={submit}>Áp dụng các trường đã sửa</button><button type="button" onClick={onClose}>Đóng, giữ bản soạn hiện tại</button></div>
+    <div className="flex gap-4"><button type="button" className="app-button-primary text-white rounded px-3 py-2 text-sm disabled:opacity-50" disabled={applied || !Object.keys(submission.patch).length} onClick={submit}>Áp dụng các trường đã sửa</button><button type="button" onClick={onClose}>Đóng, giữ bản soạn hiện tại</button></div>
   </div></div>;
 }

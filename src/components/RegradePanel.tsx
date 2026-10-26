@@ -71,7 +71,7 @@ export default function RegradePanel({ assignmentId, request, onChanged }: { ass
           </label>
           <div className="flex gap-2">
             <button type="button" disabled={busy || reason.trim().length < 3} onClick={() => void send(true)} className="min-h-10 sm:min-h-0 px-3 py-1.5 rounded-full border disabled:opacity-50">Xem trước ảnh hưởng</button>
-            <button type="button" disabled={busy || reason.trim().length < 3 || !effect?.preview} onClick={() => void send(false)} className="min-h-10 sm:min-h-0 px-3 py-1.5 rounded-full bg-[#1a73e8] text-white disabled:opacity-50">Sửa đáp án và chấm lại</button>
+            <button type="button" disabled={busy || reason.trim().length < 3 || !effect?.preview} onClick={() => void send(false)} className="min-h-10 sm:min-h-0 px-3 py-1.5 rounded-full app-button-primary text-white disabled:opacity-50">Sửa đáp án và chấm lại</button>
           </div>
           {effect && <div data-testid="regrade-effect" className="rounded-lg bg-[#f1f3f4] dark:bg-[#282828] p-2">
             {effect.preview ? 'Xem trước: ' : 'Đã ghi: '}{effect.changed.length} bài đổi điểm, {effect.keptManual} bài đã chấm tay được giữ nguyên, {effect.unchanged} bài không đổi (tổng {effect.submitted} bài đã nộp).

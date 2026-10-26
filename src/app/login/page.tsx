@@ -203,7 +203,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full mt-3 py-3 px-4 rounded-full bg-[#1a73e8] hover:bg-[#1557b0] text-white dark:bg-[#8ab4f8] dark:hover:bg-[#aecbfa] dark:text-[#181818] text-sm font-semibold shadow-xs flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              className="w-full mt-3 py-3 px-4 rounded-full app-button-primary text-white dark:bg-[#8ab4f8] dark:hover:bg-[#aecbfa] dark:text-[#181818] text-sm font-semibold shadow-xs flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {isLoading ? (
                 <>
@@ -286,7 +286,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isChangingPassword}
-                className="w-full mt-2 py-3 px-4 rounded-full bg-[#1a73e8] hover:bg-[#1557b0] text-white dark:bg-[#8ab4f8] dark:hover:bg-[#aecbfa] dark:text-[#181818] text-sm font-semibold shadow-xs flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
+                className="w-full mt-2 py-3 px-4 rounded-full app-button-primary text-white dark:bg-[#8ab4f8] dark:hover:bg-[#aecbfa] dark:text-[#181818] text-sm font-semibold shadow-xs flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
               >
                 {isChangingPassword ? 'Đang cập nhật...' : 'Lưu mật khẩu và tiếp tục'}
               </button>

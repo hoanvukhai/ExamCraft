@@ -287,7 +287,7 @@ const QuestionBankContent: React.FC<QuestionBankModalProps> = ({
             {questions.length === 0 && (
               <button
                 onClick={handleSeedSampleQuestions}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#1a73e8] hover:bg-[#1557b0] text-xs font-medium text-white transition-colors shadow-xs cursor-pointer"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full app-button-primary text-xs font-medium text-white transition-colors shadow-xs cursor-pointer"
               >
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>Nạp 4 câu mẫu chuẩn</span>
@@ -429,7 +429,7 @@ const QuestionBankContent: React.FC<QuestionBankModalProps> = ({
               {questions.length === 0 && (
                 <button
                   onClick={handleSeedSampleQuestions}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#1a73e8] hover:bg-[#1557b0] text-white text-xs font-medium rounded-full shadow-xs transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 app-button-primary text-white text-xs font-medium rounded-full shadow-xs transition-colors cursor-pointer"
                 >
                   <Sparkles className="w-4 h-4" />
                   <span>Nạp 4 câu hỏi mẫu chuẩn vào ngân hàng</span>
@@ -496,7 +496,7 @@ const QuestionBankContent: React.FC<QuestionBankModalProps> = ({
                         className={`flex items-center gap-1 px-3.5 py-1 text-xs font-medium rounded-full transition-all shadow-xs cursor-pointer ${
                           isInserted
                             ? 'bg-[#137333] text-white dark:bg-[#5bb98c] dark:text-[#0f291e]'
-                            : 'bg-[#1a73e8] hover:bg-[#1557b0] text-white dark:bg-[#8ab4f8] dark:hover:bg-[#a8c7fa] dark:text-[#202124]'
+                            : 'app-button-primary text-white dark:bg-[#8ab4f8] dark:hover:bg-[#a8c7fa] dark:text-[#202124]'
                         }`}
                       >
                         {isInserted ? <Check className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}

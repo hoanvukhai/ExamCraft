@@ -117,7 +117,7 @@ export default function AdminAiPage() {
       )}
 
       {/* Top Navbar */}
-      <header className="border-b border-[#dadce0] dark:border-[#3c4043] bg-white/80 dark:bg-[#1e1e1e]/80 backdrop-blur-md sticky top-0 z-30 px-4 sm:px-8 py-3.5 flex items-center justify-between">
+      <header className="app-bar app-admin-bar border-b sticky top-0 z-30 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-2xl bg-[#1a73e8] dark:bg-[#8ab4f8] text-white dark:text-[#181818] flex items-center justify-center shadow-md">
             <Bot className="w-5 h-5" />
@@ -206,7 +206,7 @@ export default function AdminAiPage() {
             </div>
             <button
               onClick={handleResetAll}
-              className="mt-2 w-full py-2 px-3 rounded-full bg-[#1a73e8] hover:bg-[#1557b0] text-white dark:bg-[#8ab4f8] dark:hover:bg-[#aecbfa] dark:text-[#181818] text-xs font-semibold transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
+              className="mt-2 w-full py-2 px-3 rounded-full app-button-primary text-white dark:bg-[#8ab4f8] dark:hover:bg-[#aecbfa] dark:text-[#181818] text-xs font-semibold transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               <span>Kích hoạt lại 7 Keys</span>

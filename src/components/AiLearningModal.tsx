@@ -537,7 +537,7 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
           </p>
           <button
             onClick={requestClose}
-            className="px-4 py-2 text-xs bg-[#1a73e8] hover:bg-[#1557b0] text-white rounded-full font-semibold shadow-xs cursor-pointer"
+            className="px-4 py-2 text-xs app-button-primary text-white rounded-full font-semibold shadow-xs cursor-pointer"
           >
             Đóng
           </button>

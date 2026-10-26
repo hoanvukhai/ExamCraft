@@ -108,6 +108,6 @@ export function QuestionEditor({ ownerId, documentId, sourceStamp, question, fra
       </> : <p className="text-xs">Có thể tự mô tả yêu cầu bằng chữ. Muốn gắn mã, hãy chọn gói trong mục Kiến thức và phạm vi ra đề.</p>}
       {framework && <label className="block text-sm">{framework.label}<select aria-label="Mức nhận thức" className={field} value={draft.cognitiveLevel ?? ''} onChange={e => update({ cognitiveLevel: e.target.value || undefined })}><option value="">Chưa gắn mức</option>{framework.levels.map(level => <option key={level.id} value={level.id}>{level.label}</option>)}</select></label>}
     </div></details>
-    <div className="flex flex-wrap gap-3 justify-end"><button type="button" onClick={onCancel}>Đóng, giữ nháp</button><button type="button" disabled={stale || acknowledged} className="px-4 py-2 rounded bg-blue-600 text-white disabled:opacity-50" onClick={submit}>Áp dụng câu vào đề</button></div>
+    <div className="flex flex-wrap gap-3 justify-end"><button type="button" onClick={onCancel}>Đóng, giữ nháp</button><button type="button" disabled={stale || acknowledged} className="px-4 py-2 rounded app-button-primary text-white disabled:opacity-50" onClick={submit}>Áp dụng câu vào đề</button></div>
   </div>;
 }

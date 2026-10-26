@@ -179,7 +179,7 @@ export const ExamCopilotBar: React.FC<ExamCopilotBarProps> = ({
         <button
           onClick={() => handleSendCommand()}
           disabled={isLoading || !command.trim()}
-          className="flex items-center gap-1.5 px-4 py-1.5 bg-[#1a73e8] hover:bg-[#1557b0] dark:bg-[#8ab4f8] dark:hover:bg-[#aecbfa] disabled:opacity-40 text-white dark:text-[#202124] rounded-full text-xs font-semibold transition-all shadow-xs shrink-0 cursor-pointer disabled:cursor-not-allowed"
+          className="flex items-center gap-1.5 px-4 py-1.5 app-button-primary dark:bg-[#8ab4f8] dark:hover:bg-[#aecbfa] disabled:opacity-40 text-white dark:text-[#202124] rounded-full text-xs font-semibold transition-all shadow-xs shrink-0 cursor-pointer disabled:cursor-not-allowed"
         >
           {isLoading ? (
             <>

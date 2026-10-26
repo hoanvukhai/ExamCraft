@@ -1,6 +1,6 @@
 {
   "port": 3117,
   "holder": "FREE",
-  "note": "No server is running on 3117. The owner starts their own for the by-hand test; see docs/huong-dan/HUONG_DAN_CHAY_VA_TEST_LOCAL.md.",
+  "note": "Codex UI Google verification complete; isolated server stopped. Report qa/rebuild-2026-10-26/ui-google/BAO_CAO.md",
   "since_utc": "2026-10-26T15:12:25.278Z"
 }
