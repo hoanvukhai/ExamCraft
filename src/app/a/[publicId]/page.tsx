@@ -538,7 +538,7 @@ function StudentExamContent({
             </div>
 
             <h1 className="text-2xl font-bold text-[#202124] dark:text-[#e3e3e3] mb-2">{assignment.title}</h1>
-            <p className="text-[#5f6368] dark:text-[#9aa0a6] text-sm mb-6">
+            <p className="text-[#5f6368] dark:text-[#9aa0a6] text-sm mb-6 [overflow-wrap:anywhere]">
               Học sinh: <span className="font-semibold text-[#137333] dark:text-[#5bb98c]">{submitResult.studentName}</span>
             </p>
 
@@ -769,16 +769,16 @@ function StudentExamContent({
       {/* Top Bar Cố Định */}
       <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#1e1e1e]/95 backdrop-blur-md border-b border-[#dadce0] dark:border-[#3c4043] px-4 py-3">
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
-          <div>
+          <div className="min-w-0">
             <h1 className="text-sm md:text-base font-bold text-[#202124] dark:text-[#e3e3e3] truncate max-w-xs md:max-w-md">
               {assignment.title}
             </h1>
-            <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">
+            <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] [overflow-wrap:anywhere]">
               Học sinh: <span className="text-[#1a73e8] dark:text-[#8ab4f8] font-semibold">{attempt.studentName}</span>
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 shrink-0">
             {/* Đồng hồ đếm ngược */}
             {timeLeft !== null && (
               <div

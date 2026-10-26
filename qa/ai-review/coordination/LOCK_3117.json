@@ -1,6 +1,6 @@
 {
   "port": 3117,
   "holder": "FREE",
-  "note": "Final npm run ci finished green at 10:55Z; the isolated server it started has stopped. Anyone may use 3117 and .next; rebuild before testing.",
-  "since_utc": "2026-10-26T10:33:04.232Z"
+  "note": "Claude finished the by-eye checks. A test server on 3117 is running the latest build (after the mobile header fix); anyone may use it. Rebuild before changing code.",
+  "since_utc": "2026-10-26T10:44:36.372Z"
 }
