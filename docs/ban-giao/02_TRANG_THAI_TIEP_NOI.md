@@ -42,3 +42,4 @@ Bằng chứng/số liệu → báo cáo nhóm `qa/rebuild-<ngày>/`; viết đ�
 - Việc cần chủ dự án tự xem: [DANH_SACH_VIEC_CAN_XEM_BANG_MAT](../huong-dan/DANH_SACH_VIEC_CAN_XEM_BANG_MAT.md) (26/10). Tệp Word mẫu sinh sẵn ở `tmp/xuat-mau/` (không vào Git).
 
 - Đối chiếu YC→CV cho CV078: [CV078_YC_COVERAGE](../../qa/rebuild-2026-10-25/CV078_YC_COVERAGE.md), sinh lại bằng `node scripts/yc-coverage.cjs <tệp>`; 14 YC còn CV mở nằm ở nhóm AI, xuất/in, nhập tài liệu, duyệt chuyên môn.
+- Bản test đầy đủ cho chủ dự án và người test cùng: [ban-test-day-du](../huong-dan/ban-test-day-du/00_HUONG_DAN_DUNG_VA_CHUAN_BI.md); tệp mẫu ở `docs/huong-dan/mau-test/` (sinh lại bằng `node --import tsx scripts/make-test-samples.ts`). Có thêm chức năng cấp PIN cho học sinh ở trang lớp (trước đó tùy chọn "Yêu cầu PIN" không có cách cấp PIN).

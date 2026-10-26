@@ -931,3 +931,40 @@ test('F24 comment resolution respects roles and private notes download as readab
   assert.ok(!markdown.includes(secret)); assert.ok(!/apiKey|keyEncrypted|keyIv|keyTag/i.test(markdown));
   writeQaReport(reportDir + '/gen17-f24-' + run + '.json', JSON.stringify({ run, version, ownerResolvedAndReopened: true, viewerResolutionForbidden: true, commenterOnlyOwnResolution: true, manualNoteCreatedThroughUi: true, manualEvidenceFieldAvailable: false, markdownHasRequiredLabels: true, apiKeyCanaryExcluded: true, realAiCalls: false }, null, 2));
 }));
+
+test('F25 the teacher issues PINs from the class page, the list is shown once, and a student gets in only with their own PIN', { timeout: 180000 }, () => flow('F25', async f => {
+  await authenticated(f); const examId = await seedExam(f);
+  const group = (await f.api('/api/groups', 'POST', { name: 'Lớp PIN pilot', studentNames: ['Học sinh Một', 'Học sinh Hai'] })).group;
+  await f.page.goto(origin + '/teacher/groups');
+  await f.page.locator('div', { hasText: 'Lớp PIN pilot' }).getByRole('button', { name: 'Xem Danh Sách', exact: true }).first().click();
+  await f.page.getByText('Chưa có PIN', { exact: true }).first().waitFor();
+  await click(f.page, 'Cấp PIN cho cả lớp');
+  const panel = f.page.getByRole('status', { name: 'PIN vừa cấp' }); await panel.waitFor();
+  const lines = await panel.locator('li').allInnerTexts(); assert.equal(lines.length, 2);
+  const pins = new Map(lines.map(line => { const m = /^(.*): (\d{6})$/.exec(line.trim()); assert.ok(m, 'name and a six-digit PIN: ' + line); return [m![1], m![2]] as const; }));
+  assert.equal(new Set(pins.values()).size, 2, 'the two PINs differ');
+  const students = await f.db.student.findMany({ where: { groupId: group.id }, orderBy: { displayName: 'asc' } });
+  assert.ok(students.every(s => s.pinHash && ![...pins.values()].some(pin => JSON.stringify(s).includes(pin))), 'only hashes are stored');
+  assert.equal(await f.page.getByText('Đã có PIN', { exact: true }).count(), 2);
+  const [download] = await Promise.all([f.page.waitForEvent('download'), click(f.page, 'Tải PIN (CSV)')]);
+  const csv = fs.readFileSync((await download.path())!, 'utf8');
+  for (const [name, pin] of pins) assert.ok(csv.includes(name) && csv.includes(`="${pin}"`), 'the CSV lists ' + name);
+  const asg = (await f.api('/api/assignments', 'POST', { examId, title: 'Pilot bài có PIN', groupId: group.id, identityMode: 'PICK_FROM_LIST', requirePin: true, mode: 'CLASSWORK', durationMinutes: 15, maxAttempts: 3, showResult: 'IMMEDIATE', showSolution: 'AFTER_CLOSE' })).assignment as { id: string; publicId: string };
+  const student = await f.context(), page = await student.newPage();
+  const enter = async (name: string, pin: string) => { await page.goto(origin + '/a/' + asg.publicId); await page.getByLabel('Chọn tên của em trong danh sách lớp:').selectOption({ label: name }); await page.getByLabel(/PIN/).fill(pin); await click(page, 'Bắt đầu làm bài'); };
+  const refused = page.waitForEvent('dialog'); await enter('Học sinh Một', '000000'); await refused; await page.waitForTimeout(700); // the page shows its refusal in an alert that the harness accepts
+  assert.equal(await page.getByRole('button', { name: 'Nộp bài', exact: true }).count(), 0, 'a wrong PIN does not open the exam');
+  assert.equal(await f.db.attempt.count({ where: { assignmentId: asg.id } }), 0, 'a wrong PIN starts nothing');
+  await enter('Học sinh Một', pins.get('Học sinh Một')!); await page.getByRole('button', { name: 'Nộp bài', exact: true }).first().waitFor();
+  assert.equal(await f.db.attempt.count({ where: { assignmentId: asg.id } }), 1, 'the right PIN starts the attempt');
+  await click(f.page, 'Đã ghi lại, ẩn PIN'); await panel.waitFor({ state: 'detached' });
+  await f.page.reload(); await f.page.locator('div', { hasText: 'Lớp PIN pilot' }).getByRole('button', { name: 'Xem Danh Sách', exact: true }).first().click();
+  await f.page.getByText('Đã có PIN', { exact: true }).first().waitFor();
+  assert.equal(await f.page.getByRole('status', { name: 'PIN vừa cấp' }).count(), 0, 'a PIN is never shown a second time');
+  await f.page.getByRole('button', { name: 'Cấp lại PIN', exact: true }).first().click();
+  await f.page.getByRole('status', { name: 'PIN vừa cấp' }).waitFor();
+  const fresh = (await f.page.getByRole('status', { name: 'PIN vừa cấp' }).locator('li').allInnerTexts()).map(line => /^(.*): (\d{6})$/.exec(line.trim())!);
+  assert.equal(fresh.length, 1); assert.notEqual(fresh[0][2], pins.get(fresh[0][1]), 'a reissued PIN is a new one');
+  const old = await fetch(origin + `/api/public/assignments/${asg.publicId}/start`, { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: origin }, body: JSON.stringify({ studentId: students.find(s => s.displayName === fresh[0][1])!.id, pin: pins.get(fresh[0][1]) }) });
+  assert.equal(old.status, 403, 'the replaced PIN no longer works');
+}));

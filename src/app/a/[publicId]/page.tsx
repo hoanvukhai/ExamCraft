@@ -709,10 +709,11 @@ function StudentExamContent({
               <label className="block text-sm">Mã link cá nhân<input required value={personalToken} onChange={e => setPersonalToken(e.target.value)} className="w-full border rounded-xl px-4 py-2 mt-2" /></label>
             ) : assignment.identityMode === 'PICK_FROM_LIST' && assignment.group?.students ? (
               <div>
-                <label className="block text-xs font-semibold text-[#5f6368] dark:text-[#9aa0a6] uppercase tracking-wider mb-2">
+                <label htmlFor="student-pick" className="block text-xs font-semibold text-[#5f6368] dark:text-[#9aa0a6] uppercase tracking-wider mb-2">
                   Chọn tên của em trong danh sách lớp:
                 </label>
                 <select
+                  id="student-pick"
                   value={selectedStudentId}
                   onChange={(e) => setSelectedStudentId(e.target.value)}
                   className="w-full bg-[#f8f9fa] dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2.5 text-sm text-[#202124] dark:text-[#e3e3e3] focus:outline-none focus:border-[#1a73e8] dark:focus:border-[#8ab4f8]"
@@ -728,10 +729,11 @@ function StudentExamContent({
               </div>
             ) : (
               <div>
-                <label className="block text-xs font-semibold text-[#5f6368] dark:text-[#9aa0a6] uppercase tracking-wider mb-2">
+                <label htmlFor="student-free-name" className="block text-xs font-semibold text-[#5f6368] dark:text-[#9aa0a6] uppercase tracking-wider mb-2">
                   Nhập họ và tên của em:
                 </label>
                 <input
+                  id="student-free-name"
                   type="text"
                   value={freeName}
                   onChange={(e) => setFreeName(e.target.value)}
