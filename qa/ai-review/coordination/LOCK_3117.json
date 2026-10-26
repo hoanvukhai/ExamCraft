@@ -1,6 +1,6 @@
 {
   "port": 3117,
-  "holder": "CODEX",
-  "note": "Codex manual test per handoff 11; isolated server 3117 build Wr9jgsZFnuleCd1lX2OUm. No concurrent build/CI. Report qa/test-run-2026-10-26-codex/BAO_CAO.md",
-  "rule": "Before starting a server on 3117 or running npm run build / npm run ci, read this file. If holder is not FREE, do not start. Set holder to your name while you hold it and back to FREE when done."
+  "holder": "TESTERS",
+  "note": "Codex ran out of budget and stopped. Its isolated server on 3117 (current build) stays up for the manual test run by Gemini and the owner. Nobody runs npm run build / npm run ci or restarts 3117 while this says TESTERS; message Claude first. Claude's real-provider evaluation uses port 3120 and does not touch 3117.",
+  "since_utc": "2026-10-26T07:09:17Z"
 }
