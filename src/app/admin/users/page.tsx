@@ -253,10 +253,10 @@ export default function AdminUsersPage() {
   const totalExams = users.reduce((acc, u) => acc + (u._count?.exams || 0), 0);
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#181818] text-[#202124] dark:text-[#e3e3e3] flex flex-col transition-colors duration-200">
+    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] text-[#202124] dark:text-[#e3e3e3] flex flex-col transition-colors duration-200">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-5 right-5 z-50 bg-[#137333] text-white px-4 py-3 rounded-full shadow-2xl flex items-center gap-2.5 animate-in slide-in-from-top-3 duration-200 text-sm font-medium">
+        <div className="fixed top-5 right-5 z-50 bg-[#137333] text-white px-4 py-3 rounded-full shadow-xs flex items-center gap-2.5 animate-in slide-in-from-top-3 duration-200 text-sm font-medium">
           <CheckCircle2 className="w-5 h-5 shrink-0" />
           <span>{toastMessage}</span>
         </div>
@@ -265,13 +265,13 @@ export default function AdminUsersPage() {
       {/* Top Navbar */}
       <header className="app-bar app-admin-bar border-b sticky top-0 z-30 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-2xl bg-[#1a73e8] dark:bg-[#8ab4f8] text-white dark:text-[#181818] flex items-center justify-center shadow-md">
+          <div className="w-9 h-9 rounded-xl bg-[#3c4043] dark:bg-[#e3e3e3] text-white dark:text-[#17181a] flex items-center justify-center shadow-xs">
             <Sparkles className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <span className="font-bold text-base tracking-tight text-[#202124] dark:text-[#e3e3e3]">ExamCraft</span>
-              <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] font-semibold uppercase tracking-wider border border-[#1a73e8]/20 dark:border-[#8ab4f8]/30">
+              <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] font-semibold uppercase tracking-wider border border-[#3c4043]/20 dark:border-[#e3e3e3]/30">
                 Admin Panel
               </span>
             </div>
@@ -283,14 +283,14 @@ export default function AdminUsersPage() {
           {/* Link to AI Hub */}
           <Link
             href="/admin/ai"
-            className="text-xs text-[#1a73e8] hover:text-[#1557b0] dark:text-[#8ab4f8] dark:hover:text-[#aecbfa] px-3.5 py-1.5 rounded-full border border-[#1a73e8]/30 dark:border-[#8ab4f8]/30 bg-[#e8f0fe] dark:bg-[#1e2a38] transition-colors flex items-center gap-1.5"
+            className="text-xs text-[#3c4043] hover:text-[#303134] dark:text-[#e3e3e3] dark:hover:text-[#f1f3f4] px-3.5 py-1.5 rounded-lg border border-[#3c4043]/30 dark:border-[#e3e3e3]/30 bg-[#f1f3f4] dark:bg-[#292a2d] transition-colors flex items-center gap-1.5"
           >
             <Bot className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Giám sát AI Keys</span>
           </Link>
           <Link
             href="/admin/keys"
-            className="text-xs text-[#1a73e8] hover:text-[#1557b0] dark:text-[#8ab4f8] dark:hover:text-[#aecbfa] px-3.5 py-1.5 rounded-full border border-[#1a73e8]/30 dark:border-[#8ab4f8]/30 flex items-center gap-1.5"
+            className="text-xs text-[#3c4043] hover:text-[#303134] dark:text-[#e3e3e3] dark:hover:text-[#f1f3f4] px-3.5 py-1.5 rounded-lg border border-[#3c4043]/30 dark:border-[#e3e3e3]/30 flex items-center gap-1.5"
           >
             <KeyRound className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Cấp khóa AI</span>
@@ -298,7 +298,7 @@ export default function AdminUsersPage() {
 
           <button
             onClick={() => router.push('/')}
-            className="text-xs text-[#3c4043] dark:text-[#e3e3e3] hover:text-black dark:hover:text-white px-3.5 py-1.5 rounded-full border border-[#dadce0] dark:border-[#3c4043] hover:border-[#bdc1c6] dark:hover:border-[#5f6368] bg-white dark:bg-[#242424] transition-colors cursor-pointer"
+            className="text-xs text-[#3c4043] dark:text-[#e3e3e3] hover:text-black dark:hover:text-white px-3.5 py-1.5 rounded-lg border border-[#dadce0] dark:border-[#3c4043] hover:border-[#bdc1c6] dark:hover:border-[#5f6368] bg-white dark:bg-[#242424] transition-colors cursor-pointer"
           >
             ← Về trang Soạn Đề
           </button>
@@ -308,14 +308,14 @@ export default function AdminUsersPage() {
             type="button"
             onClick={toggleTheme}
             title={theme === 'dark' ? 'Chuyển sang giao diện Sáng' : 'Chuyển sang giao diện Tối'}
-            className="p-2 rounded-full border border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#242424] text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] transition-colors cursor-pointer"
+            className="p-2 rounded-lg border border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#242424] text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
           >
             {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-[#5f6368]" />}
           </button>
 
           {currentUser && (
             <div className="hidden sm:flex items-center gap-2 bg-white dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] px-3.5 py-1.5 rounded-full text-xs">
-              <ShieldCheck className="w-4 h-4 text-[#1a73e8] dark:text-[#8ab4f8]" />
+              <ShieldCheck className="w-4 h-4 text-[#3c4043] dark:text-[#e3e3e3]" />
               <span className="text-[#3c4043] dark:text-[#e3e3e3] font-medium">{currentUser.email}</span>
             </div>
           )}
@@ -323,7 +323,7 @@ export default function AdminUsersPage() {
           <button
             onClick={handleLogout}
             title="Đăng xuất"
-            className="p-2 rounded-full text-[#5f6368] dark:text-[#9aa0a6] hover:text-rose-600 dark:hover:text-[#f28b82] hover:bg-rose-50 dark:hover:bg-[#371918] transition-colors cursor-pointer"
+            className="p-2 rounded-lg text-[#5f6368] dark:text-[#9aa0a6] hover:text-rose-600 dark:hover:text-[#f28b82] hover:bg-rose-50 dark:hover:bg-[#371918] transition-colors cursor-pointer"
           >
             <LogOut className="w-4 h-4" />
           </button>
@@ -335,10 +335,10 @@ export default function AdminUsersPage() {
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-8 space-y-6">
         {/* Stat Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-5 shadow-xs">
+          <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-xl p-5 shadow-xs">
             <div className="flex items-center justify-between text-[#5f6368] dark:text-[#9aa0a6] mb-2">
               <span className="text-xs font-medium">Tổng giáo viên</span>
-              <Users className="w-4 h-4 text-[#1a73e8] dark:text-[#8ab4f8]" />
+              <Users className="w-4 h-4 text-[#3c4043] dark:text-[#e3e3e3]" />
             </div>
             <div className="text-2xl font-bold text-[#202124] dark:text-[#e3e3e3]">{totalTeachers}</div>
             <div className="text-[11px] text-emerald-600 dark:text-[#5bb98c] mt-1 flex items-center gap-1">
@@ -346,10 +346,10 @@ export default function AdminUsersPage() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-5 shadow-xs">
+          <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-xl p-5 shadow-xs">
             <div className="flex items-center justify-between text-[#5f6368] dark:text-[#9aa0a6] mb-2">
               <span className="text-xs font-medium">Đề thi trên hệ thống</span>
-              <FileText className="w-4 h-4 text-[#1a73e8] dark:text-[#8ab4f8]" />
+              <FileText className="w-4 h-4 text-[#3c4043] dark:text-[#e3e3e3]" />
             </div>
             <div className="text-2xl font-bold text-[#202124] dark:text-[#e3e3e3]">{totalExams}</div>
             <div className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] mt-1">Lưu trữ trên PostgreSQL server</div>
@@ -357,11 +357,11 @@ export default function AdminUsersPage() {
 
           <Link
             href="/admin/ai"
-            className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] hover:border-[#1a73e8]/40 dark:hover:border-[#8ab4f8]/40 rounded-2xl p-5 shadow-xs transition-colors block cursor-pointer group"
+            className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] hover:border-[#3c4043]/40 dark:hover:border-[#e3e3e3]/40 rounded-xl p-5 shadow-xs transition-colors block cursor-pointer group"
           >
             <div className="flex items-center justify-between text-[#5f6368] dark:text-[#9aa0a6] mb-2">
               <span className="text-xs font-medium">Hạ tầng AI</span>
-              <Bot className="w-4 h-4 text-amber-500 dark:text-[#fdd663] group-hover:scale-110 transition-transform" />
+              <Bot className="w-4 h-4 text-amber-500 dark:text-[#fdd663]  transition-transform" />
             </div>
             <div className="text-2xl font-bold text-[#202124] dark:text-[#e3e3e3]">7 Gemini Keys</div>
             <div className="text-[11px] text-emerald-600 dark:text-[#5bb98c] mt-1">Hệ thống xoay tua chống nghẽn 429 →</div>
@@ -377,7 +377,7 @@ export default function AdminUsersPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Tìm theo tên hoặc email giáo viên..."
-              className="w-full bg-white dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-full pl-10 pr-4 py-2.5 text-xs text-[#202124] dark:text-[#e3e3e3] placeholder-[#9aa0a6] dark:placeholder-[#5f6368] focus:outline-none focus:border-[#1a73e8] dark:focus:border-[#8ab4f8]"
+              className="w-full bg-white dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-full pl-10 pr-4 py-2.5 text-xs text-[#202124] dark:text-[#e3e3e3] placeholder-[#9aa0a6] dark:placeholder-[#5f6368] focus:outline-none focus:border-[#3c4043] dark:focus:border-[#e3e3e3]"
             />
           </div>
 
@@ -385,7 +385,7 @@ export default function AdminUsersPage() {
             <button
               onClick={fetchUsers}
               title="Tải lại"
-              className="p-2.5 rounded-full bg-white dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-white transition-colors cursor-pointer"
+              className="p-2.5 rounded-lg bg-white dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-white transition-colors cursor-pointer"
             >
               <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
             </button>
@@ -395,7 +395,7 @@ export default function AdminUsersPage() {
                 setCreatePassword(generateRandomPassword());
                 setShowCreateModal(true);
               }}
-              className="px-4 py-2.5 rounded-full app-button-primary text-white dark:bg-[#8ab4f8] dark:hover:bg-[#aecbfa] dark:text-[#181818] text-xs font-semibold shadow-xs flex items-center gap-2 transition-all cursor-pointer"
+              className="px-4 py-2.5 rounded-lg app-button-primary text-white dark:bg-[#e3e3e3] dark:hover:bg-[#f1f3f4] dark:text-[#17181a] text-xs font-semibold shadow-xs flex items-center gap-2 transition-all cursor-pointer"
             >
               <UserPlus className="w-4 h-4" />
               <span>Cấp tài khoản giáo viên mới</span>
@@ -404,7 +404,7 @@ export default function AdminUsersPage() {
         </div>
 
         {/* Teachers Table Card */}
-        <div className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl overflow-hidden shadow-xs">
+        <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-[#f8f9fa] dark:bg-[#242424] border-b border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] uppercase tracking-wider text-[11px]">
@@ -423,7 +423,7 @@ export default function AdminUsersPage() {
                   <tr>
                     <td colSpan={7} className="px-5 py-12 text-center text-[#5f6368] dark:text-[#9aa0a6]">
                       <div className="flex items-center justify-center gap-2">
-                        <div className="w-4 h-4 border-2 border-[#1a73e8] dark:border-[#8ab4f8] border-t-transparent rounded-full animate-spin" />
+                        <div className="w-4 h-4 border-2 border-[#3c4043] dark:border-[#e3e3e3] border-t-transparent rounded-full animate-spin" />
                         <span>Đang tải danh sách tài khoản...</span>
                       </div>
                     </td>
@@ -436,7 +436,7 @@ export default function AdminUsersPage() {
                   </tr>
                 ) : (
                   filteredUsers.map((u) => (
-                    <tr key={u.id} className="hover:bg-[#f8f9fa] dark:hover:bg-[#282828] transition-colors">
+                    <tr key={u.id} className="hover:bg-[#f8f9fa] dark:hover:bg-[#292a2d] transition-colors">
                       {/* Teacher Column */}
                       <td className="px-5 py-4">
                         <div className="font-medium text-[#202124] dark:text-[#e3e3e3]">{u.name}</div>
@@ -451,7 +451,7 @@ export default function AdminUsersPage() {
                       {/* Role Column */}
                       <td className="px-4 py-4">
                         {u.role === 'SUPER_ADMIN' ? (
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] border border-[#1a73e8]/20 dark:border-[#8ab4f8]/30">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border border-[#3c4043]/20 dark:border-[#e3e3e3]/30">
                             SUPER ADMIN
                           </span>
                         ) : (
@@ -465,7 +465,7 @@ export default function AdminUsersPage() {
                       <td className="px-4 py-4">
                         {u.isActive ? (
                           <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 dark:bg-[#0f291e] text-emerald-700 dark:text-[#5bb98c] border border-emerald-200 dark:border-[#1e4d38]">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-[#5bb98c] animate-pulse" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-[#5bb98c] " />
                             Đang hoạt động
                           </span>
                         ) : (
@@ -508,7 +508,7 @@ export default function AdminUsersPage() {
                             <button
                               onClick={() => handleToggleActive(u)}
                               title={u.isActive ? 'Khóa tài khoản' : 'Mở khóa tài khoản'}
-                              className={`p-2 rounded-full transition-colors cursor-pointer ${
+                              className={`p-2 rounded-lg transition-colors cursor-pointer ${
                                 u.isActive
                                   ? 'text-[#5f6368] dark:text-[#9aa0a6] hover:text-rose-600 dark:hover:text-[#f28b82] hover:bg-rose-50 dark:hover:bg-[#371918]'
                                   : 'text-emerald-600 dark:text-[#5bb98c] hover:bg-emerald-50 dark:hover:bg-[#0f291e]'
@@ -525,7 +525,7 @@ export default function AdminUsersPage() {
                               setShowResetModal(u);
                             }}
                             title="Cấp lại mật khẩu tạm"
-                            className="p-2 rounded-full text-[#5f6368] dark:text-[#9aa0a6] hover:text-amber-600 dark:hover:text-[#fdd663] hover:bg-amber-50 dark:hover:bg-[#33250b] transition-colors cursor-pointer"
+                            className="p-2 rounded-lg text-[#5f6368] dark:text-[#9aa0a6] hover:text-amber-600 dark:hover:text-[#fdd663] hover:bg-amber-50 dark:hover:bg-[#33250b] transition-colors cursor-pointer"
                           >
                             <KeyRound className="w-4 h-4" />
                           </button>
@@ -538,7 +538,7 @@ export default function AdminUsersPage() {
                               setShowEditModal(u);
                             }}
                             title="Chỉnh sửa thông tin & hạn mức"
-                            className="p-2 rounded-full text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#1a73e8] dark:hover:text-[#8ab4f8] hover:bg-blue-50 dark:hover:bg-[#1e2a38] transition-colors cursor-pointer"
+                            className="p-2 rounded-lg text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#3c4043] dark:hover:text-[#e3e3e3] hover:bg-neutral-50 dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
                           >
                             <Sliders className="w-4 h-4" />
                           </button>
@@ -556,16 +556,16 @@ export default function AdminUsersPage() {
       {/* Modal: Tạo tài khoản giáo viên mới */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl shadow-2xl p-6 sm:p-7 relative">
+          <div className="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl shadow-xs p-6 sm:p-7 relative">
             <button
               onClick={() => setShowCreateModal(false)}
-              className="absolute right-4 top-4 text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-white p-1 rounded-full cursor-pointer"
+              className="absolute right-4 top-4 text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-white p-1 rounded-lg cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="flex items-center gap-3 mb-5">
-              <div className="p-2.5 rounded-2xl bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] border border-[#1a73e8]/20 dark:border-[#8ab4f8]/30">
+              <div className="p-2.5 rounded-xl bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border border-[#3c4043]/20 dark:border-[#e3e3e3]/30">
                 <UserPlus className="w-5 h-5" />
               </div>
               <div>
@@ -575,7 +575,7 @@ export default function AdminUsersPage() {
             </div>
 
             {createError && (
-              <div className="mb-4 p-3 rounded-2xl bg-[#fce8e6] dark:bg-[#371918] border border-[#f5c2c7] dark:border-[#5c2523] text-[#c5221f] dark:text-[#f28b82] text-xs flex items-center gap-2">
+              <div className="mb-4 p-3 rounded-xl bg-[#fce8e6] dark:bg-[#371918] border border-[#f5c2c7] dark:border-[#5c2523] text-[#c5221f] dark:text-[#f28b82] text-xs flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{createError}</span>
               </div>
@@ -592,7 +592,7 @@ export default function AdminUsersPage() {
                   value={createName}
                   onChange={(e) => setCreateName(e.target.value)}
                   placeholder="Ví dụ: Thầy Nguyễn Văn An"
-                  className="w-full bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2 text-xs text-[#202124] dark:text-[#e3e3e3] placeholder-[#9aa0a6] dark:placeholder-[#5f6368] focus:outline-none focus:border-[#1a73e8] dark:focus:border-[#8ab4f8]"
+                  className="w-full bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2 text-xs text-[#202124] dark:text-[#e3e3e3] placeholder-[#9aa0a6] dark:placeholder-[#5f6368] focus:outline-none focus:border-[#3c4043] dark:focus:border-[#e3e3e3]"
                 />
               </div>
 
@@ -606,7 +606,7 @@ export default function AdminUsersPage() {
                   value={createEmail}
                   onChange={(e) => setCreateEmail(e.target.value)}
                   placeholder="giaovien@school.edu.vn"
-                  className="w-full bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2 text-xs text-[#202124] dark:text-[#e3e3e3] placeholder-[#9aa0a6] dark:placeholder-[#5f6368] focus:outline-none focus:border-[#1a73e8] dark:focus:border-[#8ab4f8]"
+                  className="w-full bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2 text-xs text-[#202124] dark:text-[#e3e3e3] placeholder-[#9aa0a6] dark:placeholder-[#5f6368] focus:outline-none focus:border-[#3c4043] dark:focus:border-[#e3e3e3]"
                 />
               </div>
 
@@ -616,7 +616,7 @@ export default function AdminUsersPage() {
                   <button
                     type="button"
                     onClick={() => setCreatePassword(generateRandomPassword())}
-                    className="text-[11px] text-[#1a73e8] hover:text-[#1557b0] dark:text-[#8ab4f8] dark:hover:text-[#aecbfa] flex items-center gap-1 cursor-pointer"
+                    className="text-[11px] text-[#3c4043] hover:text-[#303134] dark:text-[#e3e3e3] dark:hover:text-[#f1f3f4] flex items-center gap-1 cursor-pointer"
                   >
                     <RefreshCw className="w-3 h-3" /> Sinh ngẫu nhiên
                   </button>
@@ -626,7 +626,7 @@ export default function AdminUsersPage() {
                   required
                   value={createPassword}
                   onChange={(e) => setCreatePassword(e.target.value)}
-                  className="w-full bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2 text-xs font-mono text-emerald-600 dark:text-[#5bb98c] placeholder-[#9aa0a6] dark:placeholder-[#5f6368] focus:outline-none focus:border-[#1a73e8] dark:focus:border-[#8ab4f8]"
+                  className="w-full bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2 text-xs font-mono text-emerald-600 dark:text-[#5bb98c] placeholder-[#9aa0a6] dark:placeholder-[#5f6368] focus:outline-none focus:border-[#3c4043] dark:focus:border-[#e3e3e3]"
                 />
               </div>
 
@@ -640,7 +640,7 @@ export default function AdminUsersPage() {
                   max={1000}
                   value={createAiLimit}
                   onChange={(e) => setCreateAiLimit(parseInt(e.target.value) || 100)}
-                  className="w-full bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2 text-xs text-[#202124] dark:text-[#e3e3e3] placeholder-[#9aa0a6] dark:placeholder-[#5f6368] focus:outline-none focus:border-[#1a73e8] dark:focus:border-[#8ab4f8]"
+                  className="w-full bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2 text-xs text-[#202124] dark:text-[#e3e3e3] placeholder-[#9aa0a6] dark:placeholder-[#5f6368] focus:outline-none focus:border-[#3c4043] dark:focus:border-[#e3e3e3]"
                 />
               </div>
 
@@ -648,7 +648,7 @@ export default function AdminUsersPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-2.5 px-4 rounded-full app-button-primary text-white dark:bg-[#8ab4f8] dark:hover:bg-[#aecbfa] dark:text-[#181818] text-xs font-semibold shadow-xs flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
+                  className="w-full py-2.5 px-4 rounded-lg app-button-primary text-white dark:bg-[#e3e3e3] dark:hover:bg-[#f1f3f4] dark:text-[#17181a] text-xs font-semibold shadow-xs flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
                 >
                   {isSubmitting ? 'Đang tạo...' : 'Tạo tài khoản và cấp quyền'}
                 </button>
@@ -661,16 +661,16 @@ export default function AdminUsersPage() {
       {/* Modal: Đặt lại mật khẩu tạm */}
       {showResetModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl shadow-2xl p-6 relative">
+          <div className="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl shadow-xs p-6 relative">
             <button
               onClick={() => setShowResetModal(null)}
-              className="absolute right-4 top-4 text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-white p-1 rounded-full cursor-pointer"
+              className="absolute right-4 top-4 text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-white p-1 rounded-lg cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="flex items-center gap-3 mb-4">
-              <div className="p-2.5 rounded-2xl bg-amber-50 dark:bg-[#33250b] text-amber-700 dark:text-[#fdd663] border border-amber-200 dark:border-[#4d380e]">
+              <div className="p-2.5 rounded-xl bg-amber-50 dark:bg-[#33250b] text-amber-700 dark:text-[#fdd663] border border-amber-200 dark:border-[#4d380e]">
                 <KeyRound className="w-5 h-5" />
               </div>
               <div>
@@ -680,7 +680,7 @@ export default function AdminUsersPage() {
             </div>
 
             {resetError && (
-              <div className="mb-4 p-3 rounded-2xl bg-[#fce8e6] dark:bg-[#371918] border border-[#f5c2c7] dark:border-[#5c2523] text-[#c5221f] dark:text-[#f28b82] text-xs">
+              <div className="mb-4 p-3 rounded-xl bg-[#fce8e6] dark:bg-[#371918] border border-[#f5c2c7] dark:border-[#5c2523] text-[#c5221f] dark:text-[#f28b82] text-xs">
                 {resetError}
               </div>
             )}
@@ -692,7 +692,7 @@ export default function AdminUsersPage() {
                   <button
                     type="button"
                     onClick={() => setResetPasswordVal(generateRandomPassword())}
-                    className="text-[11px] text-[#1a73e8] hover:text-[#1557b0] dark:text-[#8ab4f8] dark:hover:text-[#aecbfa] flex items-center gap-1 cursor-pointer"
+                    className="text-[11px] text-[#3c4043] hover:text-[#303134] dark:text-[#e3e3e3] dark:hover:text-[#f1f3f4] flex items-center gap-1 cursor-pointer"
                   >
                     <RefreshCw className="w-3 h-3" /> Sinh ngẫu nhiên
                   </button>
@@ -713,14 +713,14 @@ export default function AdminUsersPage() {
                 <button
                   type="button"
                   onClick={() => setShowResetModal(null)}
-                  className="px-4 py-2 rounded-full text-xs text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] cursor-pointer"
+                  className="px-4 py-2 rounded-lg text-xs text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] cursor-pointer"
                 >
                   Hủy
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-4 py-2 rounded-full app-button-primary text-white dark:bg-[#8ab4f8] dark:hover:bg-[#aecbfa] dark:text-[#181818] text-xs font-semibold cursor-pointer"
+                  className="px-4 py-2 rounded-lg app-button-primary text-white dark:bg-[#e3e3e3] dark:hover:bg-[#f1f3f4] dark:text-[#17181a] text-xs font-semibold cursor-pointer"
                 >
                   {isSubmitting ? 'Đang lưu...' : 'Xác nhận cấp lại'}
                 </button>
@@ -733,16 +733,16 @@ export default function AdminUsersPage() {
       {/* Modal: Chỉnh sửa thông tin & Hạn mức */}
       {showEditModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl shadow-2xl p-6 relative">
+          <div className="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl shadow-xs p-6 relative">
             <button
               onClick={() => setShowEditModal(null)}
-              className="absolute right-4 top-4 text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-white p-1 rounded-full cursor-pointer"
+              className="absolute right-4 top-4 text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-white p-1 rounded-lg cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="flex items-center gap-3 mb-4">
-              <div className="p-2.5 rounded-2xl bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] border border-[#1a73e8]/20 dark:border-[#8ab4f8]/30">
+              <div className="p-2.5 rounded-xl bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border border-[#3c4043]/20 dark:border-[#e3e3e3]/30">
                 <Sliders className="w-5 h-5" />
               </div>
               <div>
@@ -761,7 +761,7 @@ export default function AdminUsersPage() {
                   required
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2 text-xs text-[#202124] dark:text-[#e3e3e3] focus:outline-none focus:border-[#1a73e8] dark:focus:border-[#8ab4f8]"
+                  className="w-full bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2 text-xs text-[#202124] dark:text-[#e3e3e3] focus:outline-none focus:border-[#3c4043] dark:focus:border-[#e3e3e3]"
                 />
               </div>
 
@@ -775,7 +775,7 @@ export default function AdminUsersPage() {
                   max={2000}
                   value={editAiLimit}
                   onChange={(e) => setEditAiLimit(parseInt(e.target.value) || 100)}
-                  className="w-full bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2 text-xs text-[#202124] dark:text-[#e3e3e3] focus:outline-none focus:border-[#1a73e8] dark:focus:border-[#8ab4f8]"
+                  className="w-full bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2 text-xs text-[#202124] dark:text-[#e3e3e3] focus:outline-none focus:border-[#3c4043] dark:focus:border-[#e3e3e3]"
                 />
               </div>
 
@@ -783,14 +783,14 @@ export default function AdminUsersPage() {
                 <button
                   type="button"
                   onClick={() => setShowEditModal(null)}
-                  className="px-4 py-2 rounded-full text-xs text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] cursor-pointer"
+                  className="px-4 py-2 rounded-lg text-xs text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] cursor-pointer"
                 >
                   Hủy
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-4 py-2 rounded-full app-button-primary text-white dark:bg-[#8ab4f8] dark:hover:bg-[#aecbfa] dark:text-[#181818] text-xs font-semibold cursor-pointer"
+                  className="px-4 py-2 rounded-lg app-button-primary text-white dark:bg-[#e3e3e3] dark:hover:bg-[#f1f3f4] dark:text-[#17181a] text-xs font-semibold cursor-pointer"
                 >
                   {isSubmitting ? 'Đang lưu...' : 'Lưu thay đổi'}
                 </button>

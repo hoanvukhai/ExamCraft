@@ -12,32 +12,32 @@
   --font-geist-mono: Consolas, "Courier New", monospace;
   --background: #f8f9fa;
   --foreground: #202124;
-  --google-surface: #ffffff;
-  --google-surface-variant: #f1f3f4;
-  --google-border: #dadce0;
-  --google-text-primary: #202124;
-  --google-text-secondary: #5f6368;
-  --google-blue: #1a73e8;
-  --google-on-primary: #ffffff;
-  --google-primary-hover: #1765cc;
-  --google-primary-container: #d3e3fd;
-  --google-on-primary-container: #041e49;
+  --ui-surface: #ffffff;
+  --ui-surface-variant: #f1f3f4;
+  --ui-border: #dadce0;
+  --ui-text-primary: #202124;
+  --ui-text-secondary: #5f6368;
+  --ui-accent: #202124;
+  --ui-on-primary: #ffffff;
+  --ui-primary-hover: #3c4043;
+  --ui-primary-container: #e8eaed;
+  --ui-on-primary-container: #202124;
   color-scheme: light;
 }
 
 .dark {
-  --background: #121212;
+  --background: #17181a;
   --foreground: #e3e3e3;
-  --google-surface: #1e1e1e;
-  --google-surface-variant: #282828;
-  --google-border: #3c4043;
-  --google-text-primary: #e3e3e3;
-  --google-text-secondary: #9aa0a6;
-  --google-blue: #8ab4f8;
-  --google-on-primary: #062e6f;
-  --google-primary-hover: #aecbfa;
-  --google-primary-container: #0842a0;
-  --google-on-primary-container: #d3e3fd;
+  --ui-surface: #202124;
+  --ui-surface-variant: #292a2d;
+  --ui-border: #3c4043;
+  --ui-text-primary: #e3e3e3;
+  --ui-text-secondary: #9aa0a6;
+  --ui-accent: #e3e3e3;
+  --ui-on-primary: #202124;
+  --ui-primary-hover: #ffffff;
+  --ui-primary-container: #303134;
+  --ui-on-primary-container: #e3e3e3;
   color-scheme: dark;
 }
 
@@ -60,45 +60,62 @@ body {
    forms, recovery panels and dialogs on the same quiet outline in both themes. */
 @layer base {
   *, ::before, ::after {
-    border-color: var(--google-border);
+    border-color: var(--ui-border);
   }
 
   :where(button, a, summary, input, select, textarea):focus-visible {
-    outline: 2px solid var(--google-blue);
+    outline: 2px solid var(--ui-accent);
     outline-offset: 3px;
   }
 }
 
-/* Shared Google-style roles. Existing spacing stays local to each control. */
+/* Neutral UI roles; exam content and semantic error/warning colours stay local. */
 .app-button-primary {
-  background-color: var(--google-blue);
-  color: var(--google-on-primary);
+  background-color: var(--ui-accent);
+  color: var(--ui-on-primary);
   border-color: transparent;
-  border-radius: 9999px;
+  border-radius: 10px;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 150ms ease, box-shadow 150ms ease;
+  transition: opacity 150ms ease;
 }
 .app-button-primary:hover:not(:disabled) {
-  background-color: var(--google-primary-hover);
-  box-shadow: 0 1px 2px #00000026;
+  background-color: var(--ui-primary-hover);
 }
 .app-button-primary:disabled { cursor: default; }
 .app-button-tonal {
-  background-color: var(--google-primary-container);
-  color: var(--google-on-primary-container);
+  background-color: var(--ui-primary-container);
+  color: var(--ui-on-primary-container);
   border-color: transparent;
-  border-radius: 9999px;
+  border-radius: 10px;
+}
+.app-button-secondary {
+  background-color: var(--ui-surface);
+  color: var(--ui-text-primary);
+  border: 1px solid var(--ui-border);
+  border-radius: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+.app-button-secondary:hover:not(:disabled),
+.app-button-tonal:hover:not(:disabled) {
+  background-color: var(--ui-surface-variant);
+}
+.app-button-secondary:disabled { cursor: default; }
+.app-neutral-icon {
+  background-color: var(--ui-surface-variant);
+  color: var(--ui-text-primary);
 }
 .app-bar {
-  background-color: var(--google-surface);
-  color: var(--google-text-primary);
-  border-color: var(--google-border);
+  background-color: var(--ui-surface);
+  color: var(--ui-text-primary);
+  border-color: var(--ui-border);
 }
 .app-recovery-panel {
-  background-color: var(--google-surface);
-  border-color: var(--google-border);
-  color: var(--google-text-primary);
+  background-color: var(--ui-surface);
+  border-color: var(--ui-border);
+  color: var(--ui-text-primary);
   margin-bottom: 1rem;
 }
 

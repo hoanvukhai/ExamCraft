@@ -62,7 +62,7 @@ export default function TeacherAssignmentsListPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#181818] text-[#202124] dark:text-[#e3e3e3] py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] text-[#202124] dark:text-[#e3e3e3] py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#dadce0] dark:border-[#3c4043]">
@@ -72,10 +72,10 @@ export default function TeacherAssignmentsListPage() {
                 <ArrowLeft className="w-3.5 h-3.5" /> Soạn đề thi
               </Link>
               <span>/</span>
-              <span className="text-[#1a73e8] dark:text-[#8ab4f8] font-semibold">Danh sách bài đã giao</span>
+              <span className="text-[#3c4043] dark:text-[#e3e3e3] font-semibold">Danh sách bài đã giao</span>
             </div>
             <h1 className="text-2xl font-bold text-[#202124] dark:text-[#e3e3e3] flex items-center gap-2.5">
-              <BookOpen className="w-7 h-7 text-[#1a73e8] dark:text-[#8ab4f8]" />
+              <BookOpen className="w-7 h-7 text-[#3c4043] dark:text-[#e3e3e3]" />
               Quản Lý Bài Giao & Bảng Điểm
             </h1>
             <p className="text-xs sm:text-sm text-[#5f6368] dark:text-[#9aa0a6] mt-1">
@@ -85,7 +85,7 @@ export default function TeacherAssignmentsListPage() {
 
           <Link
             href="/"
-            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 app-button-primary dark:bg-[#8ab4f8] dark:text-[#181818] text-white text-sm font-semibold rounded-full shadow-xs transition-all"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 app-button-primary dark:bg-[#e3e3e3] dark:text-[#17181a] text-white text-sm font-semibold rounded-lg shadow-xs transition-all"
           >
             <Plus className="w-4 h-4" /> Giao Bài Mới
           </Link>
@@ -100,7 +100,7 @@ export default function TeacherAssignmentsListPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Tìm kiếm theo tiêu đề hoặc tên lớp..."
-              className="w-full bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-full pl-10 pr-4 py-2.5 text-xs sm:text-sm text-[#202124] dark:text-[#e3e3e3] placeholder-[#5f6368] dark:placeholder-[#9aa0a6] focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] outline-hidden"
+              className="w-full bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-full pl-10 pr-4 py-2.5 text-xs sm:text-sm text-[#202124] dark:text-[#e3e3e3] placeholder-[#5f6368] dark:placeholder-[#9aa0a6] focus:border-[#3c4043] dark:focus:border-[#e3e3e3] outline-hidden"
             />
           </div>
           <span className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">
@@ -111,11 +111,11 @@ export default function TeacherAssignmentsListPage() {
         {/* Danh sách bài giao */}
         {loading ? (
           <div className="py-20 flex flex-col items-center justify-center text-[#5f6368] dark:text-[#9aa0a6]">
-            <div className="w-8 h-8 border-4 border-[#1a73e8] dark:border-[#8ab4f8] border-t-transparent rounded-full animate-spin mb-3" />
+            <div className="w-8 h-8 border-4 border-[#3c4043] dark:border-[#e3e3e3] border-t-transparent rounded-full animate-spin mb-3" />
             <p className="text-xs">Đang tải danh sách bài đã giao...</p>
           </div>
         ) : filtered.length === 0 ? (
-          <div className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl p-12 text-center">
+          <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-12 text-center">
             <BookOpen className="w-12 h-12 text-[#5f6368] dark:text-[#9aa0a6] mx-auto mb-3" />
             <h3 className="text-base font-bold text-[#202124] dark:text-[#e3e3e3]">Chưa có bài nào được giao</h3>
             <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] mt-1 mb-5">
@@ -123,7 +123,7 @@ export default function TeacherAssignmentsListPage() {
             </p>
             <Link
               href="/"
-              className="px-5 py-2.5 app-button-primary dark:bg-[#8ab4f8] dark:text-[#181818] text-white text-xs font-semibold rounded-full shadow-xs"
+              className="px-5 py-2.5 app-button-primary dark:bg-[#e3e3e3] dark:text-[#17181a] text-white text-xs font-semibold rounded-lg shadow-xs"
             >
               Về Trang Soạn Đề
             </Link>
@@ -133,7 +133,7 @@ export default function TeacherAssignmentsListPage() {
             {filtered.map((asg) => (
               <div
                 key={asg.id}
-                className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] hover:border-[#1a73e8] dark:hover:border-[#8ab4f8] rounded-2xl p-5 shadow-xs hover:shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all"
+                className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] hover:border-[#3c4043] dark:hover:border-[#e3e3e3] rounded-xl p-5 shadow-xs hover:shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all"
               >
                 <div className="space-y-1.5 flex-1">
                   <div className="flex items-center gap-2">
@@ -146,7 +146,7 @@ export default function TeacherAssignmentsListPage() {
                     >
                       {asg.status === 'OPEN' ? 'Đang mở' : 'Đã đóng'}
                     </span>
-                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] border border-[#d2e3fc] dark:border-[#2a3f58] uppercase tracking-wider">
+                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043] uppercase tracking-wider">
                       {asg.mode}
                     </span>
                     {asg.group && (
@@ -179,7 +179,7 @@ export default function TeacherAssignmentsListPage() {
                     href={`/a/${asg.publicId}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="p-2.5 bg-[#f1f3f4] hover:bg-[#e8eaed] dark:bg-[#282828] dark:hover:bg-[#303134] text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] rounded-full border border-[#dadce0] dark:border-[#3c4043] transition-all"
+                    className="p-2.5 bg-[#f1f3f4] hover:bg-[#e8eaed] dark:bg-[#292a2d] dark:hover:bg-[#303134] text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] rounded-lg border border-[#dadce0] dark:border-[#3c4043] transition-all"
                     title="Mở phòng thi học sinh"
                   >
                     <ExternalLink className="w-4 h-4" />
@@ -187,7 +187,7 @@ export default function TeacherAssignmentsListPage() {
 
                   <Link
                     href={`/teacher/assignments/${asg.id}`}
-                    className="px-5 py-2.5 app-button-primary dark:bg-[#8ab4f8] dark:text-[#181818] text-white font-semibold text-xs rounded-full shadow-xs flex items-center gap-1.5 transition-all"
+                    className="px-5 py-2.5 app-button-primary dark:bg-[#e3e3e3] dark:text-[#17181a] text-white font-semibold text-xs rounded-lg shadow-xs flex items-center gap-1.5 transition-all"
                   >
                     <Users className="w-4 h-4" /> Giám sát & Bảng điểm
                   </Link>

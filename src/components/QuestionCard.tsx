@@ -12,15 +12,15 @@ import { accountFetch } from '@/lib/account-fetch';
 import { normalizeQuestion } from '@/lib/exam-document';
 import { getCognitiveFramework } from '@/lib/education-catalog';
 import { FigureView } from './FigureView';
-import { 
-  Sparkles, 
-  RefreshCw, 
-  ArrowUpRight, 
-  ArrowDownRight, 
-  Trash2, 
-  Edit3, 
-  Check, 
-  ChevronDown, 
+import {
+  Sparkles,
+  RefreshCw,
+  ArrowUpRight,
+  ArrowDownRight,
+  Trash2,
+  Edit3,
+  Check,
+  ChevronDown,
   ChevronUp,
   CheckCircle2,
   XCircle,
@@ -249,7 +249,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
       case 'nhan_biet':
         return <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#e6f4ea] dark:bg-[#0f291e] text-[#137333] dark:text-[#5bb98c] border border-[#ceead6] dark:border-[#1e4a34]">Nhận biết</span>;
       case 'thong_hieu':
-        return <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] border border-[#d2e3fc] dark:border-[#2a3f58]">Thông hiểu</span>;
+        return <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043]">Thông hiểu</span>;
       case 'van_dung':
         return <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#fef7e0] dark:bg-[#33250b] text-[#b06000] dark:text-[#fdd663] border border-[#feefc3] dark:border-[#533f16]">Vận dụng</span>;
       case 'van_dung_cao':
@@ -262,34 +262,34 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
   const getTypeBadge = (type: string) => {
     switch (type) {
       case 'multiple_choice':
-        return <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#f1f3f4] dark:bg-[#282828] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043]">Trắc nghiệm 4 lựa chọn</span>;
+        return <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043]">Trắc nghiệm 4 lựa chọn</span>;
       case 'true_false_group':
-        return <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#f1f3f4] dark:bg-[#282828] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043]">Đúng / Sai (4 ý)</span>;
+        return <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043]">Đúng / Sai (4 ý)</span>;
       case 'short_answer':
-        return <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#f1f3f4] dark:bg-[#282828] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043]">Trả lời ngắn</span>;
+        return <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043]">Trả lời ngắn</span>;
       case 'essay':
-        return <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#f1f3f4] dark:bg-[#282828] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043]">Tự luận</span>;
+        return <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043]">Tự luận</span>;
       default:
         return null;
     }
   };
 
   return (
-    <div className={`bg-white dark:bg-[#1e1e1e] rounded-3xl border transition-all duration-200 overflow-hidden relative group ${
-      isSelected 
-        ? 'border-blue-500 dark:border-[#8ab4f8] ring-2 ring-[#8ab4f8]/30 shadow-md' 
-        : 'border-[#dadce0] dark:border-[#3c4043] shadow-xs hover:shadow-md'
+    <div className={`bg-white dark:bg-[#202124] rounded-2xl border transition-all duration-200 overflow-hidden relative group ${
+      isSelected
+        ? 'border-[var(--ui-border)] dark:border-[#e3e3e3] ring-2 ring-[#e3e3e3]/30 shadow-xs'
+        : 'border-[#dadce0] dark:border-[#3c4043] shadow-xs hover:shadow-xs'
     }`}>
       {/* Loading Overlay khi AI đang xử lý */}
       {isLoadingAi && (
-        <div className="absolute inset-0 bg-white/85 dark:bg-[#1e1e1e]/85 backdrop-blur-xs z-20 flex flex-col items-center justify-center gap-2">
+        <div className="absolute inset-0 bg-white/85 dark:bg-[#202124]/85 backdrop-blur-xs z-20 flex flex-col items-center justify-center gap-2">
           <RefreshCw className="w-6 h-6 text-[#202124] dark:text-[#e3e3e3] animate-spin" />
           <span className="text-sm font-semibold text-[#202124] dark:text-[#e3e3e3]">{aiActionMessage}</span>
         </div>
       )}
 
       {/* Header của thẻ câu hỏi */}
-      <div className="bg-[#f8f9fa] dark:bg-[#282828]/60 px-4 py-2.5 border-b border-[#dadce0] dark:border-[#3c4043] flex flex-wrap items-center justify-between gap-2">
+      <div className="bg-[#f8f9fa] dark:bg-[#292a2d]/60 px-4 py-2.5 border-b border-[#dadce0] dark:border-[#3c4043] flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           {onToggleSelect && (
             <input
@@ -297,14 +297,14 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
               checked={isSelected || false}
               onChange={() => onToggleSelect(question.id)}
               title="Chọn câu hỏi này để gộp câu hoặc thao tác hàng loạt"
-              className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-[#dadce0] cursor-pointer"
+              className="w-4 h-4 rounded text-[var(--ui-accent)] focus:ring-[var(--ui-accent)] border-[#dadce0] cursor-pointer"
             />
           )}
           <span className="w-7 h-7 rounded-full bg-[#202124] text-white dark:bg-[#303134] dark:text-[#e3e3e3] dark:border dark:border-[#3c4043] font-bold text-xs flex items-center justify-center shadow-2xs">
             {index + 1}
           </span>
           {getTypeBadge(question.type)}
-          {question.cognitiveLevel && <span className="px-2 py-1 text-xs rounded bg-blue-50 text-blue-800">{getCognitiveFramework(cognitiveFrameworkId)?.levels.find(level => level.id === question.cognitiveLevel)?.label ?? 'Mức cần kiểm tra'}</span>}
+          {question.cognitiveLevel && <span className="px-2 py-1 text-xs rounded bg-neutral-50 text-[var(--ui-accent)]">{getCognitiveFramework(cognitiveFrameworkId)?.levels.find(level => level.id === question.cognitiveLevel)?.label ?? 'Mức cần kiểm tra'}</span>}
           <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800">
             {numericScore ? displayPoints === undefined ? 'Chưa đặt điểm' : formatPointsString(displayPoints) : 'Không chấm điểm số'}
           </span>
@@ -315,7 +315,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
             <button
               onClick={handleUndo}
               title={`Hoàn tác về phiên bản trước (còn ${activeUndoHistory.length} bản lưu)`}
-              className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#f1f3f4] dark:bg-[#282828] text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#e8eaed] dark:hover:bg-[#383a3d] border border-[#dadce0] dark:border-[#3c4043] transition-colors"
+              className="flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#e8eaed] dark:hover:bg-[#383a3d] border border-[#dadce0] dark:border-[#3c4043] transition-colors"
             >
               <Undo2 className="w-3 h-3" />
               <span>Hoàn tác ({activeUndoHistory.length})</span>
@@ -336,7 +336,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
             onClick={() => handleAiTweak('change_numbers')}
             disabled={isLoadingAi || !!pendingNewQuestion}
             title="Đổi số liệu bài toán bằng AI"
-            className="flex items-center gap-1.5 px-3 py-1 text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] bg-white dark:bg-[#282828] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] rounded-full transition-colors border border-[#dadce0] dark:border-[#3c4043] shadow-2xs cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1 text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] bg-white dark:bg-[#292a2d] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] rounded-lg transition-colors border border-[#dadce0] dark:border-[#3c4043] shadow-2xs cursor-pointer"
           >
             <Sparkles className="w-3.5 h-3.5 text-amber-500" />
             <span>Đổi số liệu</span>
@@ -346,7 +346,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
             onClick={() => handleAiTweak('similar_question')}
             disabled={isLoadingAi || !!pendingNewQuestion}
             title="Tạo câu hỏi tương đương bằng AI"
-            className="flex items-center gap-1.5 px-3 py-1 text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] bg-white dark:bg-[#282828] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] rounded-full transition-colors border border-[#dadce0] dark:border-[#3c4043] shadow-2xs cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1 text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] bg-white dark:bg-[#292a2d] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] rounded-lg transition-colors border border-[#dadce0] dark:border-[#3c4043] shadow-2xs cursor-pointer"
           >
             <RefreshCw className="w-3.5 h-3.5 text-[#5f6368] dark:text-[#9aa0a6]" />
             <span className="hidden sm:inline">Câu tương tự</span>
@@ -357,12 +357,12 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
             onClick={handleVerifyQuestion}
             disabled={isVerifying}
             title="Thẩm định độc lập bằng AI: AI giải từ đầu không nhìn đáp án để kiểm tra tính chính xác"
-            className={`flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-full transition-colors border shadow-2xs cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-lg transition-colors border shadow-2xs cursor-pointer ${
               question.status === 'verified'
                 ? 'bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100'
                 : verifyResult && !verifyResult.isMatch
                 ? 'bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100'
-                : 'bg-white dark:bg-[#282828] text-[#3c4043] dark:text-[#e3e3e3] border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f8f9fa] dark:hover:bg-[#303134]'
+                : 'bg-white dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f8f9fa] dark:hover:bg-[#303134]'
             }`}
           >
             {isVerifying ? (
@@ -390,7 +390,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
             <button
               onClick={() => onAskAiAboutQuestion(index)}
               title="Bảo Trợ lý AI ở bên phải chỉnh sửa câu hỏi này theo ý bạn"
-              className="flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-full bg-white dark:bg-[#282828] text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] border border-[#dadce0] dark:border-[#3c4043] shadow-2xs transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-lg bg-white dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] border border-[#dadce0] dark:border-[#3c4043] shadow-2xs transition-colors cursor-pointer"
             >
               <Sparkles className="w-3.5 h-3.5 text-amber-500" />
               <span>Bảo AI sửa câu này</span>
@@ -402,7 +402,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
             disabled={bankSaving || isEditing || !!pendingNewQuestion}
             aria-label={bankSaving ? 'Đang lưu bản sao vào ngân hàng' : 'Lưu bản sao vào ngân hàng'}
             title={isEditing || pendingNewQuestion ? 'Áp dụng hoặc đóng bản đang sửa trước khi lưu vào ngân hàng' : 'Lưu bản sao riêng vào ngân hàng; sửa đề sau đó không đổi bản sao này'}
-            className="p-1.5 text-[#5f6368] hover:text-emerald-600 dark:text-[#9aa0a6] dark:hover:text-emerald-400 hover:bg-[#f1f3f4] dark:hover:bg-[#282828] rounded-full transition-colors cursor-pointer"
+            className="p-1.5 text-[#5f6368] hover:text-emerald-600 dark:text-[#9aa0a6] dark:hover:text-emerald-400 hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] rounded-lg transition-colors cursor-pointer"
           >
             <BookmarkPlus className="w-4 h-4" />
           </button>
@@ -412,7 +412,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
               onClick={onMoveUp}
               disabled={isFirst}
               title="Di chuyển câu hỏi lên trên (↑)"
-              className="p-1.5 text-[#5f6368] hover:text-blue-600 dark:text-[#9aa0a6] dark:hover:text-[#8ab4f8] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] disabled:opacity-25 disabled:cursor-not-allowed rounded-full transition-colors cursor-pointer"
+              className="p-1.5 text-[#5f6368] hover:text-[var(--ui-accent)] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] disabled:opacity-25 disabled:cursor-not-allowed rounded-lg transition-colors cursor-pointer"
             >
               <ArrowUp className="w-4 h-4" />
             </button>
@@ -423,7 +423,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
               onClick={onMoveDown}
               disabled={isLast}
               title="Di chuyển câu hỏi xuống dưới (↓)"
-              className="p-1.5 text-[#5f6368] hover:text-blue-600 dark:text-[#9aa0a6] dark:hover:text-[#8ab4f8] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] disabled:opacity-25 disabled:cursor-not-allowed rounded-full transition-colors cursor-pointer"
+              className="p-1.5 text-[#5f6368] hover:text-[var(--ui-accent)] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] disabled:opacity-25 disabled:cursor-not-allowed rounded-lg transition-colors cursor-pointer"
             >
               <ArrowDown className="w-4 h-4" />
             </button>
@@ -433,7 +433,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
             <button
               onClick={onDuplicate}
               title="Nhân bản (sao chép) câu hỏi này"
-              className="p-1.5 text-[#5f6368] hover:text-emerald-600 dark:text-[#9aa0a6] dark:hover:text-emerald-400 hover:bg-[#f1f3f4] dark:hover:bg-[#282828] rounded-full transition-colors cursor-pointer"
+              className="p-1.5 text-[#5f6368] hover:text-emerald-600 dark:text-[#9aa0a6] dark:hover:text-emerald-400 hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] rounded-lg transition-colors cursor-pointer"
             >
               <Copy className="w-4 h-4" />
             </button>
@@ -442,7 +442,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
           <button
             onClick={() => setIsEditing(!isEditing)}
             title="Sửa nội dung câu hỏi thủ công"
-            className="p-1.5 text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] rounded-full transition-colors cursor-pointer"
+            className="p-1.5 text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] rounded-lg transition-colors cursor-pointer"
           >
             <Edit3 className="w-4 h-4" />
           </button>
@@ -450,7 +450,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
           <button
             onClick={() => onDelete(question.id)}
             title="Xóa câu hỏi này"
-            className="p-1.5 text-[#5f6368] hover:text-red-600 dark:text-[#9aa0a6] dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-full transition-colors cursor-pointer"
+            className="p-1.5 text-[#5f6368] hover:text-red-600 dark:text-[#9aa0a6] dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg transition-colors cursor-pointer"
           >
             <Trash2 className="w-4 h-4" />
           </button>
@@ -488,13 +488,13 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 font-sans">
-            <div className="p-2.5 bg-white dark:bg-[#282828] rounded-xl border border-[#dadce0] dark:border-[#3c4043]">
+            <div className="p-2.5 bg-white dark:bg-[#292a2d] rounded-xl border border-[#dadce0] dark:border-[#3c4043]">
               <span className="text-[#5f6368] dark:text-[#9aa0a6] font-semibold block text-[11px]">Đáp án hiện tại trong đề:</span>
               <span className="text-[#202124] dark:text-[#e3e3e3] font-bold font-mono text-sm">{question.correct_answer || 'Chưa thiết lập'}</span>
             </div>
-            <div className="p-2.5 bg-white dark:bg-[#282828] rounded-xl border border-[#dadce0] dark:border-[#3c4043]">
+            <div className="p-2.5 bg-white dark:bg-[#292a2d] rounded-xl border border-[#dadce0] dark:border-[#3c4043]">
               <span className="text-[#5f6368] dark:text-[#9aa0a6] font-semibold block text-[11px]">AI thẩm định giải độc lập ra:</span>
-              <span className={`font-mono text-sm ${verifyResult.isMatch ? 'text-emerald-700 dark:text-emerald-300 font-bold' : 'text-amber-800 dark:text-amber-300 font-extrabold'}`}>
+              <span className={`font-mono text-sm ${verifyResult.isMatch ? 'text-emerald-700 dark:text-emerald-300 font-bold' : 'text-amber-800 dark:text-amber-300 font-semibold'}`}>
                 {verifyResult.solvedAnswer}
               </span>
             </div>
@@ -512,7 +512,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
             </div>
           )}
 
-          <div className="p-2.5 bg-white dark:bg-[#282828] rounded-xl border border-[#dadce0] dark:border-[#3c4043] leading-relaxed font-serif text-[#202124] dark:text-[#e3e3e3]">
+          <div className="p-2.5 bg-white dark:bg-[#292a2d] rounded-xl border border-[#dadce0] dark:border-[#3c4043] leading-relaxed font-serif text-[#202124] dark:text-[#e3e3e3]">
             <span className="font-bold font-sans text-[#5f6368] dark:text-[#9aa0a6] block text-[11px] mb-1">Lời giải kiểm định độc lập của AI:</span>
             <MathRenderer content={verifyResult.solutionSteps} />
           </div>
@@ -615,7 +615,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
         {!isEditing && question.type === 'short_answer' && (
           <div className="p-3 bg-[#e6f4ea]/80 dark:bg-[#0f291e] border border-[#ceead6] dark:border-[#1e4a34] rounded-xl flex items-center gap-3 text-xs">
             <span className="font-bold text-[#137333] dark:text-[#5bb98c]">Đáp số chuẩn xác:</span>
-            <span className="px-3 py-1 bg-white dark:bg-[#1e1e1e] font-mono font-bold text-[#137333] dark:text-[#5bb98c] border border-[#ceead6] dark:border-[#1e4a34] rounded-lg shadow-2xs">
+            <span className="px-3 py-1 bg-white dark:bg-[#202124] font-mono font-bold text-[#137333] dark:text-[#5bb98c] border border-[#ceead6] dark:border-[#1e4a34] rounded-lg shadow-2xs">
               {question.correct_answer || 'Chưa thiết lập'}
             </span>
           </div>
@@ -628,7 +628,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
               <div className="p-3 bg-[#fef7e0]/80 dark:bg-[#33250b] border border-[#feefc3] dark:border-[#533f16] rounded-xl space-y-2 text-xs">
                 <span className="font-bold text-[#b06000] dark:text-[#fdd663] block">Barem tiêu chí chấm điểm chi tiết:</span>
                 <div className="overflow-x-auto">
-                  <table className="w-full border-collapse border border-[#feefc3] dark:border-[#533f16] text-left bg-white dark:bg-[#1e1e1e] rounded-lg overflow-hidden">
+                  <table className="w-full border-collapse border border-[#feefc3] dark:border-[#533f16] text-left bg-white dark:bg-[#202124] rounded-lg overflow-hidden">
                     <thead>
                       <tr className="bg-[#feefc3] dark:bg-[#533f16]/60 text-[#b06000] dark:text-[#fdd663] font-bold text-[11px]">
                         <th className="border border-[#feefc3] dark:border-[#533f16] px-3 py-1.5">Tiêu chí đánh giá / Yêu cầu cần đạt</th>
@@ -652,10 +652,10 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
 
         {/* ĐIỀN TỪ VÀO CHỖ TRỐNG (Fill Blank) */}
         {!isEditing && question.type === 'fill_blank' && (
-          <div className="p-3 bg-[#e8f0fe]/80 dark:bg-[#1e2a38] border border-[#d2e3fc] dark:border-[#2a3f58] rounded-xl space-y-2 text-xs">
-            <span className="font-bold text-[#1a73e8] dark:text-[#8ab4f8] block">Đáp án điền từ vào chỗ trống:</span>
+          <div className="p-3 bg-[#f1f3f4]/80 dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] rounded-xl space-y-2 text-xs">
+            <span className="font-bold text-[#3c4043] dark:text-[#e3e3e3] block">Đáp án điền từ vào chỗ trống:</span>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="px-3 py-1 bg-white dark:bg-[#1e1e1e] font-mono font-bold text-[#1a73e8] dark:text-[#8ab4f8] border border-[#d2e3fc] dark:border-[#2a3f58] rounded-lg shadow-2xs">
+              <span className="px-3 py-1 bg-white dark:bg-[#202124] font-mono font-bold text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043] rounded-lg shadow-2xs">
                 {question.correct_answer || 'Chưa thiết lập'}
               </span>
               {question.accepted_answers && question.accepted_answers.length > 0 && (
@@ -669,9 +669,9 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
 
         {/* GHÉP NỐI HAI CỘT (Matching) */}
         {!isEditing && question.type === 'matching' && (
-          <div className="p-3 bg-[#e8f0fe]/80 dark:bg-[#1e2a38] border border-[#d2e3fc] dark:border-[#2a3f58] rounded-xl space-y-2 text-xs">
-            <span className="font-bold text-[#1a73e8] dark:text-[#8ab4f8] block">Ghép nối tương ứng:</span>
-            <div className="text-[#1a73e8] dark:text-[#8ab4f8] font-mono font-bold">
+          <div className="p-3 bg-[#f1f3f4]/80 dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] rounded-xl space-y-2 text-xs">
+            <span className="font-bold text-[#3c4043] dark:text-[#e3e3e3] block">Ghép nối tương ứng:</span>
+            <div className="text-[#3c4043] dark:text-[#e3e3e3] font-mono font-bold">
               {question.matchingPairs?.map(pair => `${pair.left} → ${pair.right}`).join('; ') || question.correct_answer || 'Chưa thiết lập'}
             </div>
           </div>
@@ -681,7 +681,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
         <div className="pt-2 border-t border-[#dadce0] dark:border-[#3c4043]">
           <button
             onClick={() => setShowSolution(!showSolution)}
-            className="flex items-center gap-1.5 text-xs font-semibold text-[#1a73e8] dark:text-[#8ab4f8] hover:text-[#1557b0] dark:hover:text-[#a8c7fa] cursor-pointer"
+            className="flex items-center gap-1.5 text-xs font-semibold text-[#3c4043] dark:text-[#e3e3e3] hover:text-[#303134] dark:hover:text-[#f1f3f4] cursor-pointer"
           >
             {showSolution ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
             <span>{showSolution ? 'Thu gọn lời giải' : 'Xem lời giải chi tiết'}</span>
@@ -689,7 +689,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
 
           {showSolution && (
             <div className="mt-2.5 p-3.5 bg-[#f8f9fa] dark:bg-[#242424] rounded-xl border border-[#dadce0] dark:border-[#3c4043] text-xs text-[#202124] dark:text-[#e3e3e3] space-y-1.5 leading-relaxed font-serif">
-              <div className="font-bold text-[#1a73e8] dark:text-[#8ab4f8] font-sans text-xs">Hướng dẫn giải từng bước:</div>
+              <div className="font-bold text-[#3c4043] dark:text-[#e3e3e3] font-sans text-xs">Hướng dẫn giải từng bước:</div>
               <MathRenderer content={question.step_by_step_solution} />
             </div>
           )}

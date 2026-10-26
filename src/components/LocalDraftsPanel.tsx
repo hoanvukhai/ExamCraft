@@ -12,7 +12,7 @@ export function LocalDraftsPanel({ ownerId }: { ownerId: string }) {
     const url = URL.createObjectURL(new Blob([content], { type: 'application/json' }));
     const anchor = document.createElement('a'); anchor.href = url; anchor.download = filename; anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
-  return <details className="no-print app-recovery-panel border rounded-2xl p-4 text-sm" onToggle={e => {
+  return <details className="no-print app-recovery-panel border rounded-xl p-4 text-sm" onToggle={e => {
     if (!e.currentTarget.open) return;
     try { const result = listUnsavedDrafts(localStorage, ownerId); setItems(result.drafts); setUnreadable(result.unreadable); }
     catch { setMessage('Bộ nhớ trình duyệt đang bị chặn. Các tệp đã tải xuống vẫn dùng được.'); }

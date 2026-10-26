@@ -1,0 +1,177 @@
+{
+  "method": "AST comparison masking className, utility style strings and literal hex colours; does not certify appearance or replace runtime checks",
+  "files": [
+    {
+      "file": "src/app/a/[publicId]/page.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/app/admin/ai/page.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/app/admin/keys/page.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/app/admin/users/page.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/app/c/[groupCode]/page.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/app/editor/[id]/page.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/app/layout.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/app/login/page.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/app/page.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/app/share/[id]/page.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/app/teacher/assignments/[id]/page.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/app/teacher/assignments/page.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/app/teacher/groups/page.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/app/test/[id]/page.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/A4Preview.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/AiLearningModal.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/ApiKeyModal.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/ExamCollaboratorsPanel.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/ExamCopilotBar.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/ExamLibraryModal.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/ExamPlanEditor.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/ExamStructureEditor.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/ExamTemplatePanel.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/ExamWorkspace.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/FunctionPlot.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/GenerateModal.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/Header.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/HeaderSettingsModal.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/ImportModal.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/KnowledgeScopeEditor.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/LeftNavigationRail.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/LocalDraftsPanel.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/QuestionBankModal.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/QuestionCard.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/RegradePanel.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/RightCompanionRail.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/ShareModal.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/ShuffleModal.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/StudentResultsModal.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/TeacherAiSecretaryDrawer.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/TeacherDashboard.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/TeacherGradeEditor.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/VariationTable.tsx",
+      "nonPresentationAstUnchanged": true
+    }
+  ]
+}

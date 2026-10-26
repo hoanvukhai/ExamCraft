@@ -56,7 +56,7 @@ export function ExamLibraryModal({ isOpen, onClose, onLoadExam, ownerId }: Props
     setCopyConflicts(asCopies); setPending(data); setReport(result); setMessage('Đã xem trước. Chỉ nhập các tài liệu thuộc quyền của bạn. Nguồn cũ được giữ nguyên.');
   }
   return <div role="dialog" aria-modal="true" aria-label="Kho đề và chuyển dữ liệu cũ" className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-    <div className="bg-white dark:bg-[#202124] rounded-2xl p-5 max-w-4xl w-full max-h-[90vh] overflow-auto space-y-4">
+    <div className="bg-white dark:bg-[#202124] rounded-xl p-5 max-w-4xl w-full max-h-[90vh] overflow-auto space-y-4">
       <div className="flex justify-between"><h2 className="text-lg font-bold">Kho đề trên máy chủ</h2><button onClick={onClose} aria-label="Đóng kho đề">Đóng</button></div>
       <p className="text-sm">Kho này thuộc tài khoản đang đăng nhập. Bản nháp trên máy được giữ riêng cho từng tài khoản.</p>
       <div className="flex gap-3 flex-wrap text-sm">
@@ -65,8 +65,8 @@ export function ExamLibraryModal({ isOpen, onClose, onLoadExam, ownerId }: Props
         <button disabled={busy} onClick={() => void action(async () => { const old = JSON.parse(await dbExportDatabaseToJson()); const current = localStorage.getItem('examcraft_current_exam'); if (current) { const doc = JSON.parse(current); if (!old.exams.some((e: Exam) => e.id === doc.id)) old.exams.push(doc); } await inspect({ exams: old.exams ?? [], questions: old.questions ?? [] }); })}>Xem dữ liệu cũ trên trình duyệt</button>
         <input ref={upload} aria-label="Chọn tệp sao lưu JSON" type="file" accept=".json,application/json" className="hidden" onChange={event => { const file = event.target.files?.[0]; if (file) { setPending(null); setReport(null); setConfirmImport(false); void action(async () => { if (file.size > BACKUP_FILE_MAX_BYTES) throw Error('Tệp vượt 30 MB. Hãy chọn từng phần sao lưu để nhập.'); await inspect(parseBackupText(await file.text())); }); } event.target.value = ''; }} />
       </div>
-      {message && <p role="status" className="text-sm bg-blue-50 dark:bg-slate-800 p-3 rounded">{message}</p>}
-      {preparedDownloads.map((file, index) => <a key={file.url} href={file.url} download={file.name} className="mr-2 inline-block rounded-lg app-button-primary px-4 py-2 text-sm font-semibold text-white">{preparedDownloads.length === 1 ? 'Tải tệp sao lưu đã chuẩn bị' : `Tải phần ${index + 1}/${preparedDownloads.length} (${file.examCount} đề)`}</a>)}
+      {message && <p role="status" className="text-sm bg-neutral-50 dark:bg-slate-800 p-3 rounded">{message}</p>}
+      {preparedDownloads.map((file, index) => <a key={file.url} href={file.url} download={file.name} className="mr-2 inline-block rounded-lg app-button-secondary px-4 py-2 text-sm font-semibold text-white">{preparedDownloads.length === 1 ? 'Tải tệp sao lưu đã chuẩn bị' : `Tải phần ${index + 1}/${preparedDownloads.length} (${file.examCount} đề)`}</a>)}
       {report && <section className="border rounded p-3 text-sm space-y-2">
         <h3 className="font-semibold">{report.dryRun ? 'Xem trước bản nhập' : 'Kết quả nhập'}</h3>
         <p>{report.results.filter(r => r.status === (report.dryRun ? 'ready' : 'imported')).length} {report.dryRun ? 'mục sẵn sàng' : 'mục vừa nhập'}; {report.results.filter(r => r.status === 'already_imported').length} mục đã chuyển trước đó; {report.errorCount} mục cần xử lý.</p>

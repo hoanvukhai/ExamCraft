@@ -265,17 +265,17 @@ const QuestionBankContent: React.FC<QuestionBankModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4">
-      <div className="bg-white dark:bg-[#1e1e1e] rounded-3xl shadow-2xl border border-[#dadce0] dark:border-[#3c4043] w-full max-w-5xl h-[90vh] flex flex-col overflow-hidden text-[#202124] dark:text-[#e3e3e3] animate-in fade-in zoom-in-95 duration-150">
+      <div className="bg-white dark:bg-[#202124] rounded-2xl shadow-xs border border-[#dadce0] dark:border-[#3c4043] w-full max-w-5xl h-[90vh] flex flex-col overflow-hidden text-[#202124] dark:text-[#e3e3e3] animate-in fade-in zoom-in-95 duration-150">
         {/* Header Modal */}
-        <div className="px-6 py-4 bg-white dark:bg-[#1e1e1e] border-b border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between shrink-0">
+        <div className="px-6 py-4 bg-white dark:bg-[#202124] border-b border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] border border-[#d2e3fc] dark:border-[#29425e] flex items-center justify-center shadow-xs">
-              <BookMarked className="w-5 h-5 text-[#1a73e8] dark:text-[#8ab4f8]" />
+            <div className="w-10 h-10 rounded-xl bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043] flex items-center justify-center shadow-xs">
+              <BookMarked className="w-5 h-5 text-[#3c4043] dark:text-[#e3e3e3]" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="font-bold text-lg text-[#202124] dark:text-[#e3e3e3]">Ngân hàng Câu hỏi Nguyên tử (Atomic Question Bank)</h3>
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#e8f0fe] dark:bg-[#1e2a38] border border-[#d2e3fc] dark:border-[#29425e] text-[#1a73e8] dark:text-[#8ab4f8]">
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#f1f3f4] dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] text-[#3c4043] dark:text-[#e3e3e3]">
                   {questions.length} câu đã lưu
                 </span>
               </div>
@@ -287,7 +287,7 @@ const QuestionBankContent: React.FC<QuestionBankModalProps> = ({
             {questions.length === 0 && (
               <button
                 onClick={handleSeedSampleQuestions}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full app-button-primary text-xs font-medium text-white transition-colors shadow-xs cursor-pointer"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg app-button-primary text-xs font-medium text-white transition-colors shadow-xs cursor-pointer"
               >
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>Nạp 4 câu mẫu chuẩn</span>
@@ -296,7 +296,7 @@ const QuestionBankContent: React.FC<QuestionBankModalProps> = ({
             <button
               onClick={onClose}
               aria-label="Đóng ngân hàng câu hỏi"
-              className="p-1.5 text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3] rounded-full hover:bg-[#f1f3f4] dark:hover:bg-[#282828] transition-colors cursor-pointer"
+              className="p-1.5 text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3] rounded-lg hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -312,14 +312,14 @@ const QuestionBankContent: React.FC<QuestionBankModalProps> = ({
         )}
 
         {/* Tab Switcher: Ngân hàng của tôi vs Ngân hàng dùng chung nội bộ */}
-        <div className="bg-[#f8f9fa] dark:bg-[#181818] px-5 py-2.5 border-b border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between shrink-0">
+        <div className="bg-[#f8f9fa] dark:bg-[#17181a] px-5 py-2.5 border-b border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2">
             <button
               onClick={() => changeTab('personal')}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                 bankTab === 'personal'
-                  ? 'bg-white dark:bg-[#282828] text-[#1a73e8] dark:text-[#8ab4f8] shadow-xs border border-[#dadce0] dark:border-[#3c4043]'
-                  : 'text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828]'
+                  ? 'bg-white dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] shadow-xs border border-[#dadce0] dark:border-[#3c4043]'
+                  : 'text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d]'
               }`}
             >
               <BookMarked className="w-3.5 h-3.5" />
@@ -328,10 +328,10 @@ const QuestionBankContent: React.FC<QuestionBankModalProps> = ({
 
             <button
               onClick={() => changeTab('shared')}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                 bankTab === 'shared'
-                  ? 'bg-white dark:bg-[#282828] text-[#1a73e8] dark:text-[#8ab4f8] shadow-xs border border-[#dadce0] dark:border-[#3c4043]'
-                  : 'text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828]'
+                  ? 'bg-white dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] shadow-xs border border-[#dadce0] dark:border-[#3c4043]'
+                  : 'text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d]'
               }`}
             >
               <Globe className="w-3.5 h-3.5" />
@@ -341,7 +341,7 @@ const QuestionBankContent: React.FC<QuestionBankModalProps> = ({
         </div>
 
         {/* Thanh tìm kiếm & Bộ lọc nâng cao */}
-        <div className="p-4 bg-[#f8f9fa] dark:bg-[#181818] border-b border-[#dadce0] dark:border-[#3c4043] shrink-0 space-y-3">
+        <div className="p-4 bg-[#f8f9fa] dark:bg-[#17181a] border-b border-[#dadce0] dark:border-[#3c4043] shrink-0 space-y-3">
           <div className="flex flex-col sm:flex-row items-center gap-3">
             <div className="relative grow w-full">
               <Search className="w-4 h-4 text-[#5f6368] dark:text-[#9aa0a6] absolute left-3 top-1/2 -translate-y-1/2" />
@@ -350,11 +350,11 @@ const QuestionBankContent: React.FC<QuestionBankModalProps> = ({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Tìm kiếm nội dung, công thức LaTeX, chủ đề kiến thức, từ khóa tag..."
-                className="w-full text-xs pl-9 pr-3 py-2 bg-white dark:bg-[#282828] text-[#202124] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043] rounded-full focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] focus:ring-1 focus:ring-[#1a73e8] dark:focus:ring-[#8ab4f8] focus:outline-hidden"
+                className="w-full text-xs pl-9 pr-3 py-2 bg-white dark:bg-[#292a2d] text-[#202124] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043] rounded-full focus:border-[#3c4043] dark:focus:border-[#e3e3e3] focus:ring-1 focus:ring-[#3c4043] dark:focus:ring-[#e3e3e3] focus:outline-hidden"
               />
             </div>
             <div className="text-xs text-[#5f6368] dark:text-[#9aa0a6] font-medium shrink-0">
-              Khớp <span className="text-[#1a73e8] dark:text-[#8ab4f8] font-bold">{filteredQuestions.length}</span> / {questions.length} câu
+              Khớp <span className="text-[#3c4043] dark:text-[#e3e3e3] font-bold">{filteredQuestions.length}</span> / {questions.length} câu
             </div>
           </div>
 
@@ -363,7 +363,7 @@ const QuestionBankContent: React.FC<QuestionBankModalProps> = ({
             <select
               value={selectedSubject}
               onChange={(e) => setSelectedSubject(e.target.value)}
-              className="px-3 py-1.5 bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] rounded-full text-[#202124] dark:text-[#e3e3e3] font-medium focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] outline-hidden cursor-pointer"
+              className="px-3 py-1.5 bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] rounded-full text-[#202124] dark:text-[#e3e3e3] font-medium focus:border-[#3c4043] dark:focus:border-[#e3e3e3] outline-hidden cursor-pointer"
             >
               <option value="all">Tất cả môn học</option>
               {getAllSupportedSubjects().map((sub) => (
@@ -377,7 +377,7 @@ const QuestionBankContent: React.FC<QuestionBankModalProps> = ({
             <select
               value={selectedGrade}
               onChange={(e) => setSelectedGrade(e.target.value)}
-              className="px-3 py-1.5 bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] rounded-full text-[#202124] dark:text-[#e3e3e3] font-medium focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] outline-hidden cursor-pointer"
+              className="px-3 py-1.5 bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] rounded-full text-[#202124] dark:text-[#e3e3e3] font-medium focus:border-[#3c4043] dark:focus:border-[#e3e3e3] outline-hidden cursor-pointer"
             >
               <option value="all">Tất cả các lớp</option>
               {[12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1].map((g) => (
@@ -389,7 +389,7 @@ const QuestionBankContent: React.FC<QuestionBankModalProps> = ({
             <select
               value={selectedType}
               onChange={(e) => setSelectedType(e.target.value)}
-              className="px-3 py-1.5 bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] rounded-full text-[#202124] dark:text-[#e3e3e3] font-medium focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] outline-hidden cursor-pointer"
+              className="px-3 py-1.5 bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] rounded-full text-[#202124] dark:text-[#e3e3e3] font-medium focus:border-[#3c4043] dark:focus:border-[#e3e3e3] outline-hidden cursor-pointer"
             >
               <option value="all">Tất cả dạng câu</option>
               <option value="multiple_choice">Trắc nghiệm 4 lựa chọn</option>
@@ -402,7 +402,7 @@ const QuestionBankContent: React.FC<QuestionBankModalProps> = ({
             <select
               value={selectedDifficulty}
               onChange={(e) => setSelectedDifficulty(e.target.value)}
-              className="px-3 py-1.5 bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] rounded-full text-[#202124] dark:text-[#e3e3e3] font-medium focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] outline-hidden cursor-pointer"
+              className="px-3 py-1.5 bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] rounded-full text-[#202124] dark:text-[#e3e3e3] font-medium focus:border-[#3c4043] dark:focus:border-[#e3e3e3] outline-hidden cursor-pointer"
             >
               <option value="all">Tất cả mức độ</option>
               <option value="nhan_biet">Nhận biết</option>
@@ -414,12 +414,12 @@ const QuestionBankContent: React.FC<QuestionBankModalProps> = ({
         </div>
 
         {/* Nội dung danh sách câu hỏi */}
-        <div className="grow overflow-y-auto p-4 space-y-3 bg-[#f8f9fa] dark:bg-[#181818]">
+        <div className="grow overflow-y-auto p-4 space-y-3 bg-[#f8f9fa] dark:bg-[#17181a]">
           {loading ? (
             <div className="py-20 text-center text-[#5f6368] dark:text-[#9aa0a6]">Đang nạp ngân hàng câu hỏi...</div>
           ) : filteredQuestions.length === 0 ? (
             <div className="py-16 text-center space-y-3">
-              <div className="w-14 h-14 rounded-2xl bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] flex items-center justify-center mx-auto shadow-xs">
+              <div className="w-14 h-14 rounded-xl bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] flex items-center justify-center mx-auto shadow-xs">
                 <BookMarked className="w-7 h-7" />
               </div>
               <div className="text-[#202124] dark:text-[#e3e3e3] font-bold text-sm">Chưa có câu hỏi nào phù hợp với bộ lọc</div>
@@ -429,7 +429,7 @@ const QuestionBankContent: React.FC<QuestionBankModalProps> = ({
               {questions.length === 0 && (
                 <button
                   onClick={handleSeedSampleQuestions}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 app-button-primary text-white text-xs font-medium rounded-full shadow-xs transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 app-button-primary text-white text-xs font-medium rounded-lg shadow-xs transition-colors cursor-pointer"
                 >
                   <Sparkles className="w-4 h-4" />
                   <span>Nạp 4 câu hỏi mẫu chuẩn vào ngân hàng</span>
@@ -441,11 +441,11 @@ const QuestionBankContent: React.FC<QuestionBankModalProps> = ({
               const isInserted = insertedIds.has(q.id);
 
               return (
-                <div key={q.id} className="bg-white dark:bg-[#282828] rounded-2xl border border-[#dadce0] dark:border-[#3c4043] shadow-xs hover:border-[#1a73e8] dark:hover:border-[#8ab4f8] transition-all overflow-hidden">
+                <div key={q.id} className="bg-white dark:bg-[#292a2d] rounded-xl border border-[#dadce0] dark:border-[#3c4043] shadow-xs hover:border-[#3c4043] dark:hover:border-[#e3e3e3] transition-all overflow-hidden">
                   {/* Top Bar của câu hỏi */}
-                  <div className="bg-[#f8f9fa] dark:bg-[#1e1e1e] px-4 py-2 border-b border-[#dadce0] dark:border-[#3c4043] flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <div className="bg-[#f8f9fa] dark:bg-[#202124] px-4 py-2 border-b border-[#dadce0] dark:border-[#3c4043] flex flex-wrap items-center justify-between gap-2 text-xs">
                     <div className="flex items-center gap-2">
-                      <span className="w-6 h-6 rounded-full bg-[#1a73e8] text-white font-bold text-[11px] flex items-center justify-center">
+                      <span className="w-6 h-6 rounded-full bg-[#3c4043] text-white font-bold text-[11px] flex items-center justify-center">
                         #{idx + 1}
                       </span>
                       <span className="font-bold text-[#202124] dark:text-[#e3e3e3] uppercase text-[11px]">
@@ -456,9 +456,9 @@ const QuestionBankContent: React.FC<QuestionBankModalProps> = ({
                       </span>
                       <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                         q.difficulty === 'nhan_biet' ? 'bg-[#e6f4ea] dark:bg-[#0f291e] text-[#137333] dark:text-[#5bb98c] border border-[#ceead6] dark:border-[#1d4834]' :
-                        q.difficulty === 'thong_hieu' ? 'bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] border border-[#d2e3fc] dark:border-[#29425e]' :
+                        q.difficulty === 'thong_hieu' ? 'bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043]' :
                         q.difficulty === 'van_dung' ? 'bg-[#fef7e0] dark:bg-[#33250b] text-[#b06000] dark:text-[#fdd663] border border-[#feefc3] dark:border-[#5e410f]' :
-                        'bg-[#f3e8fd] dark:bg-[#2b193d] text-[#9333ea] dark:text-[#d8b4fe] border border-[#e9d5ff] dark:border-[#4c1d95]'
+                        'bg-[#f1f3f4] dark:bg-[#2b193d] text-[#9333ea] dark:text-[#e3e3e3] border border-[#e8eaed] dark:border-[#4c1d95]'
                       }`}>
                         {q.difficulty === 'nhan_biet' ? 'Nhận biết' : q.difficulty === 'thong_hieu' ? 'Thông hiểu' : q.difficulty === 'van_dung' ? 'Vận dụng' : 'Vận dụng cao'}
                       </span>
@@ -469,7 +469,7 @@ const QuestionBankContent: React.FC<QuestionBankModalProps> = ({
                       )}
 
                       {bankTab === 'shared' && q.author?.name && (
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] border border-[#d2e3fc] dark:border-[#29425e] flex items-center gap-1">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043] flex items-center gap-1">
                           <Users className="w-3 h-3" />
                           <span>Tác giả: {q.author.name}</span>
                         </span>
@@ -482,7 +482,7 @@ const QuestionBankContent: React.FC<QuestionBankModalProps> = ({
                         <button
                           onClick={() => handleForkQuestion(q)}
                           title="Nhân bản câu hỏi này về ngân hàng cá nhân của bạn"
-                          className="flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-full bg-white dark:bg-[#282828] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] text-[#1a73e8] dark:text-[#8ab4f8] border border-[#dadce0] dark:border-[#3c4043] transition-colors cursor-pointer"
+                          className="flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-lg bg-white dark:bg-[#292a2d] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043] transition-colors cursor-pointer"
                         >
                           <GitFork className="w-3.5 h-3.5" />
                           <span>Nhân bản</span>
@@ -493,10 +493,10 @@ const QuestionBankContent: React.FC<QuestionBankModalProps> = ({
                         onClick={() => handleInsert(q)}
                         disabled={!allowInsert}
                         title={!allowInsert ? 'Hãy mở một đề rồi chọn ngân hàng câu hỏi để chèn.' : 'Thêm câu này vào đề đang mở'}
-                        className={`flex items-center gap-1 px-3.5 py-1 text-xs font-medium rounded-full transition-all shadow-xs cursor-pointer ${
+                        className={`flex items-center gap-1 px-3.5 py-1 text-xs font-medium rounded-lg transition-all shadow-xs cursor-pointer ${
                           isInserted
                             ? 'bg-[#137333] text-white dark:bg-[#5bb98c] dark:text-[#0f291e]'
-                            : 'app-button-primary text-white dark:bg-[#8ab4f8] dark:hover:bg-[#a8c7fa] dark:text-[#202124]'
+                            : 'app-button-primary text-white dark:bg-[#e3e3e3] dark:hover:bg-[#f1f3f4] dark:text-[#202124]'
                         }`}
                       >
                         {isInserted ? <Check className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
@@ -507,7 +507,7 @@ const QuestionBankContent: React.FC<QuestionBankModalProps> = ({
                         <button
                           onClick={() => handleDelete(q.id)}
                           title="Xóa khỏi ngân hàng"
-                          className="p-1.5 text-[#5f6368] hover:text-[#c5221f] dark:text-[#9aa0a6] dark:hover:text-[#f28b82] rounded-full hover:bg-[#fce8e6] dark:hover:bg-[#371918] transition-colors cursor-pointer"
+                          className="p-1.5 text-[#5f6368] hover:text-[#c5221f] dark:text-[#9aa0a6] dark:hover:text-[#f28b82] rounded-lg hover:bg-[#fce8e6] dark:hover:bg-[#371918] transition-colors cursor-pointer"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -535,7 +535,7 @@ const QuestionBankContent: React.FC<QuestionBankModalProps> = ({
                                   <img
                                     src={src}
                                     alt={fig.caption || ''}
-                                    className="max-h-40 max-w-full rounded-xl border border-[#dadce0] dark:border-[#3c4043] object-contain bg-white dark:bg-[#1e1e1e]"
+                                    className="max-h-40 max-w-full rounded-xl border border-[#dadce0] dark:border-[#3c4043] object-contain bg-white dark:bg-[#202124]"
                                   />
                                 </div>
                               );
@@ -557,7 +557,7 @@ const QuestionBankContent: React.FC<QuestionBankModalProps> = ({
                               className={`p-2.5 rounded-xl border flex items-baseline gap-2 ${
                                 isCorrect
                                   ? 'bg-[#e6f4ea] dark:bg-[#0f291e] border-[#ceead6] dark:border-[#1d4834] text-[#137333] dark:text-[#5bb98c] font-medium'
-                                  : 'bg-[#f8f9fa] dark:bg-[#1e1e1e] border-[#dadce0] dark:border-[#3c4043] text-[#3c4043] dark:text-[#e3e3e3]'
+                                  : 'bg-[#f8f9fa] dark:bg-[#202124] border-[#dadce0] dark:border-[#3c4043] text-[#3c4043] dark:text-[#e3e3e3]'
                               }`}
                             >
                               <span className={`w-4 h-4 rounded-full font-bold text-[10px] flex items-center justify-center shrink-0 ${
@@ -579,7 +579,7 @@ const QuestionBankContent: React.FC<QuestionBankModalProps> = ({
                     {q.sub_questions && q.sub_questions.length > 0 && (
                       <div className="space-y-1.5 pt-1 text-xs">
                         {q.sub_questions.map((sub) => (
-                          <div key={sub.key} className="flex items-baseline justify-between p-2 rounded-xl bg-[#f8f9fa] dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] text-[#3c4043] dark:text-[#e3e3e3]">
+                          <div key={sub.key} className="flex items-baseline justify-between p-2 rounded-xl bg-[#f8f9fa] dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] text-[#3c4043] dark:text-[#e3e3e3]">
                             <div className="flex items-baseline gap-2 grow pr-2">
                               <span className="font-bold text-[#202124] dark:text-[#e3e3e3]">{sub.key})</span>
                               <MathRenderer content={sub.content} inline />
@@ -596,9 +596,9 @@ const QuestionBankContent: React.FC<QuestionBankModalProps> = ({
 
                     {/* Short Answer */}
                     {q.type === 'short_answer' && (
-                      <div className="p-2.5 bg-[#e8f0fe]/60 dark:bg-[#1e2a38]/60 border border-[#d2e3fc] dark:border-[#29425e] rounded-xl text-xs flex items-center gap-2">
-                        <span className="font-bold text-[#1a73e8] dark:text-[#8ab4f8]">Đáp án:</span>
-                        <span className="font-mono font-bold text-[#1a73e8] dark:text-[#8ab4f8] bg-white dark:bg-[#1e1e1e] px-2.5 py-0.5 rounded border border-[#d2e3fc] dark:border-[#29425e]">
+                      <div className="p-2.5 bg-[#f1f3f4]/60 dark:bg-[#292a2d]/60 border border-[#dadce0] dark:border-[#3c4043] rounded-xl text-xs flex items-center gap-2">
+                        <span className="font-bold text-[#3c4043] dark:text-[#e3e3e3]">Đáp án:</span>
+                        <span className="font-mono font-bold text-[#3c4043] dark:text-[#e3e3e3] bg-white dark:bg-[#202124] px-2.5 py-0.5 rounded border border-[#dadce0] dark:border-[#3c4043]">
                           {q.correct_answer}
                         </span>
                       </div>
@@ -606,8 +606,8 @@ const QuestionBankContent: React.FC<QuestionBankModalProps> = ({
 
                     {/* Solution */}
                     {q.step_by_step_solution && (
-                      <div className="p-3 bg-[#f8f9fa] dark:bg-[#1e1e1e] rounded-xl border border-[#dadce0] dark:border-[#3c4043] text-xs text-[#3c4043] dark:text-[#e3e3e3] font-serif leading-relaxed">
-                        <span className="font-bold font-sans text-[#1a73e8] dark:text-[#8ab4f8] block text-[11px] mb-1">Lời giải:</span>
+                      <div className="p-3 bg-[#f8f9fa] dark:bg-[#202124] rounded-xl border border-[#dadce0] dark:border-[#3c4043] text-xs text-[#3c4043] dark:text-[#e3e3e3] font-serif leading-relaxed">
+                        <span className="font-bold font-sans text-[#3c4043] dark:text-[#e3e3e3] block text-[11px] mb-1">Lời giải:</span>
                         <MathRenderer content={q.step_by_step_solution} />
                       </div>
                     )}

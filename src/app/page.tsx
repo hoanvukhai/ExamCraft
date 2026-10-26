@@ -24,7 +24,7 @@ export default function Page() {
   return (
     <Suspense
       fallback={
-        <div className="h-screen w-screen bg-[#F8F9FA] dark:bg-[#181818] flex items-center justify-center text-sm font-medium text-[#5f6368] dark:text-[#9aa0a6]">
+        <div className="h-screen w-screen bg-[#F8F9FA] dark:bg-[#17181a] flex items-center justify-center text-sm font-medium text-[#5f6368] dark:text-[#9aa0a6]">
           Đang tải kho đề thi ExamCraft...
         </div>
       }

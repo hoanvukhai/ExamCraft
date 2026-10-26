@@ -113,7 +113,7 @@ function StructuredAnswer({ question, value, onChange }: { question: Question; v
   if (question.ordering) {
     const selected = Array.isArray(value) ? value.filter(key => typeof key === 'string' && question.ordering!.items.some(item => item.key === key)) as string[] : [];
     const move = (i: number, offset: number) => { const target = i + offset; if (target < 0 || target >= selected.length) return; const next = [...selected]; [next[i], next[target]] = [next[target], next[i]]; onChange(next); };
-    return <div className="space-y-3 mt-4"><p className="text-xs">Thêm các mục theo thứ tự mong muốn; dùng nút lên/xuống để sửa.</p><ol className="space-y-2">{selected.map((key, i) => <li key={key} className="border rounded-xl p-3 flex items-center gap-3"><span>{i + 1}.</span><div className="flex-1"><MathRenderer content={question.ordering!.items.find(item => item.key === key)!.text} /></div><button type="button" aria-label={'Đưa mục ' + (i + 1) + ' lên'} disabled={i === 0} onClick={() => move(i, -1)}>↑</button><button type="button" aria-label={'Đưa mục ' + (i + 1) + ' xuống'} disabled={i === selected.length - 1} onClick={() => move(i, 1)}>↓</button><button type="button" onClick={() => onChange(selected.filter(item => item !== key))}>Bỏ</button></li>)}</ol><div className="space-y-2">{question.ordering.items.filter(item => !selected.includes(item.key)).map(item => <button key={item.key} type="button" onClick={() => onChange([...selected, item.key])} className="block text-left w-full border rounded-xl p-3"><span className="text-xs text-blue-600">Thêm vào thứ tự: </span><MathRenderer content={item.text} inline /></button>)}</div></div>;
+    return <div className="space-y-3 mt-4"><p className="text-xs">Thêm các mục theo thứ tự mong muốn; dùng nút lên/xuống để sửa.</p><ol className="space-y-2">{selected.map((key, i) => <li key={key} className="border rounded-xl p-3 flex items-center gap-3"><span>{i + 1}.</span><div className="flex-1"><MathRenderer content={question.ordering!.items.find(item => item.key === key)!.text} /></div><button type="button" aria-label={'Đưa mục ' + (i + 1) + ' lên'} disabled={i === 0} onClick={() => move(i, -1)}>↑</button><button type="button" aria-label={'Đưa mục ' + (i + 1) + ' xuống'} disabled={i === selected.length - 1} onClick={() => move(i, 1)}>↓</button><button type="button" onClick={() => onChange(selected.filter(item => item !== key))}>Bỏ</button></li>)}</ol><div className="space-y-2">{question.ordering.items.filter(item => !selected.includes(item.key)).map(item => <button key={item.key} type="button" onClick={() => onChange([...selected, item.key])} className="block text-left w-full border rounded-xl p-3"><span className="text-xs text-[var(--ui-accent)]">Thêm vào thứ tự: </span><MathRenderer content={item.text} inline /></button>)}</div></div>;
   }
   return null;
 }
@@ -499,8 +499,8 @@ function StudentExamContent({
   // MÀN HÌNH 1: ĐANG TẢI HOẶC LỖI
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#181818] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
-        <div className="w-10 h-10 border-3 border-[#1a73e8] dark:border-[#8ab4f8] border-t-transparent rounded-full animate-spin mb-4" />
+      <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
+        <div className="w-10 h-10 border-3 border-[#3c4043] dark:border-[#e3e3e3] border-t-transparent rounded-full animate-spin mb-4" />
         <p className="text-[#5f6368] dark:text-[#9aa0a6] font-medium text-sm">Đang tải phòng thi trực tuyến...</p>
       </div>
     );
@@ -508,14 +508,14 @@ function StudentExamContent({
 
   if (error || !assignment) {
     return (
-      <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#181818] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
-        <div className="max-w-md w-full bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl p-8 text-center shadow-xl">
+      <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
+        <div className="max-w-md w-full bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-8 text-center shadow-xs">
           <ShieldAlert className="w-14 h-14 text-[#c5221f] dark:text-[#f28b82] mx-auto mb-4" />
           <h2 className="text-xl font-bold text-[#202124] dark:text-[#e3e3e3] mb-2">Không thể truy cập bài thi</h2>
           <p className="text-[#5f6368] dark:text-[#9aa0a6] text-sm mb-6 leading-relaxed">{error}</p>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 px-5 py-2.5 app-button-primary dark:bg-[#8ab4f8] hover:bg-[#1557b0] dark:hover:bg-[#aecbfa] text-white dark:text-[#202124] text-sm font-semibold rounded-full transition-all shadow-xs"
+            className="inline-flex items-center gap-2 px-5 py-2.5 app-button-primary dark:bg-[#e3e3e3] hover:bg-[#303134] dark:hover:bg-[#f1f3f4] text-white dark:text-[#202124] text-sm font-semibold rounded-lg transition-all shadow-xs"
           >
             <ArrowLeft className="w-4 h-4" /> Về trang chủ
           </Link>
@@ -527,12 +527,12 @@ function StudentExamContent({
   // MÀN HÌNH 3: KẾT QUẢ SAU KHI NỘP BÀI THÀNH CÔNG
   if (submitResult) {
     return (
-      <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#181818] text-[#202124] dark:text-[#e3e3e3] py-10 px-4">
+      <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] text-[#202124] dark:text-[#e3e3e3] py-10 px-4">
         <div className="max-w-3xl mx-auto space-y-6">
-          {submitNotice && <p role="status" className="p-4 border rounded-xl bg-sky-50 text-sky-900">{submitNotice}</p>}
+          {submitNotice && <p role="status" className="p-4 border rounded-xl bg-neutral-50 text-[var(--ui-accent)]">{submitNotice}</p>}
           <StudentDraftRecovery entries={recoveryEntries} />
           {/* Card điểm số chính */}
-          <div className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl p-8 text-center relative overflow-hidden shadow-xl">
+          <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-8 text-center relative overflow-hidden shadow-xs">
             <div className="w-16 h-16 bg-[#e6f4ea] dark:bg-[#0f291e] text-[#137333] dark:text-[#5bb98c] rounded-full flex items-center justify-center mx-auto mb-4 border border-[#ceead6] dark:border-[#1e4d38]">
               <CheckCircle2 className="w-8 h-8" />
             </div>
@@ -543,7 +543,7 @@ function StudentExamContent({
             </p>
 
             {submitResult.score !== null ? (
-              <div className="inline-block bg-[#f8f9fa] dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl px-8 py-5 my-2 shadow-xs">
+              <div className="inline-block bg-[#f8f9fa] dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-8 py-5 my-2 shadow-xs">
                 <span className="text-xs uppercase tracking-wider text-[#5f6368] dark:text-[#9aa0a6] font-semibold block mb-1">
                   {submitResult.needsGrading ? 'Điểm tạm tính — còn câu chờ giáo viên chấm' : 'Điểm số đạt được'}
                 </span>
@@ -553,7 +553,7 @@ function StudentExamContent({
                 </div>
               </div>
             ) : (
-              <div className="bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-4 text-sm text-[#5f6368] dark:text-[#9aa0a6]">
+              <div className="bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-xl p-4 text-sm text-[#5f6368] dark:text-[#9aa0a6]">
                 {submitResult.message || 'Bài làm của em đã được ghi nhận.'}
               </div>
             )}
@@ -564,11 +564,11 @@ function StudentExamContent({
             </p>
           </div>
 
-          {canStartAnother && <button onClick={() => { setSubmitResult(null); setAttempt(null); setAnswers({}); setTimeLeft(null); }} className="px-5 py-3 rounded-full app-button-primary text-white">Làm lượt tiếp theo</button>}
+          {canStartAnother && <button onClick={() => { setSubmitResult(null); setAttempt(null); setAnswers({}); setTimeLeft(null); }} className="px-5 py-3 rounded-lg app-button-primary text-white">Làm lượt tiếp theo</button>}
 
           {/* Bảng xếp hạng Top & Me */}
           {submitResult.leaderboard && (
-            <div className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl p-6 shadow-xs">
+            <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-6 shadow-xs">
               <div className="flex items-center gap-2 mb-4">
                 <Trophy className="w-5 h-5 text-[#b06000] dark:text-[#fdd663]" />
                 <h3 className="text-base font-bold text-[#202124] dark:text-[#e3e3e3]">Bảng xếp hạng lớp</h3>
@@ -578,7 +578,7 @@ function StudentExamContent({
                 {submitResult.leaderboard.top.map((item) => (
                   <div
                     key={item.rank}
-                    className="flex items-center justify-between px-4 py-3 bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl"
+                    className="flex items-center justify-between px-4 py-3 bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-xl"
                   >
                     <div className="flex items-center gap-3">
                       <span
@@ -602,17 +602,17 @@ function StudentExamContent({
               </div>
 
               {/* Dòng vị trí riêng của chính học sinh */}
-              <div className="flex items-center justify-between px-4 py-3 bg-[#e8f0fe] dark:bg-[#1e2a38] border border-[#1a73e8]/30 dark:border-[#8ab4f8]/30 rounded-2xl">
+              <div className="flex items-center justify-between px-4 py-3 bg-[#f1f3f4] dark:bg-[#292a2d] border border-[#3c4043]/30 dark:border-[#e3e3e3]/30 rounded-xl">
                 <div className="flex items-center gap-3">
-                  <Award className="w-5 h-5 text-[#1a73e8] dark:text-[#8ab4f8]" />
+                  <Award className="w-5 h-5 text-[#3c4043] dark:text-[#e3e3e3]" />
                   <div>
-                    <span className="text-xs text-[#1a73e8] dark:text-[#8ab4f8] font-semibold block">Vị trí của em</span>
+                    <span className="text-xs text-[#3c4043] dark:text-[#e3e3e3] font-semibold block">Vị trí của em</span>
                     <span className="text-sm font-bold text-[#202124] dark:text-[#e3e3e3]">
                       {submitResult.leaderboard.me.rank === null ? 'Chưa xếp hạng — chờ điểm chốt' : `Hạng #${submitResult.leaderboard.me.rank} / ${submitResult.leaderboard.me.total} bạn`}
                     </span>
                   </div>
                 </div>
-                <span className="text-base font-bold text-[#1a73e8] dark:text-[#8ab4f8]">
+                <span className="text-base font-bold text-[#3c4043] dark:text-[#e3e3e3]">
                   {submitResult.leaderboard.me.score === null ? 'Chờ chấm' : `${submitResult.leaderboard.me.score} đ`}
                 </span>
               </div>
@@ -621,9 +621,9 @@ function StudentExamContent({
 
           {/* Chi tiết lời giải và đáp án */}
           {submitResult.solutions && (
-            <div className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl p-6 shadow-xs space-y-6">
+            <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-6 shadow-xs space-y-6">
               <h3 className="text-base font-bold text-[#202124] dark:text-[#e3e3e3] flex items-center gap-2">
-                <HelpCircle className="w-5 h-5 text-[#1a73e8] dark:text-[#8ab4f8]" /> Đáp án & Lời giải chi tiết
+                <HelpCircle className="w-5 h-5 text-[#3c4043] dark:text-[#e3e3e3]" /> Đáp án & Lời giải chi tiết
               </h3>
 
               <div className="space-y-6">
@@ -632,9 +632,9 @@ function StudentExamContent({
                   const studentAns = answers[q.id];
 
                   return (
-                    <div key={q.id} className="p-4 bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl space-y-3">
+                    <div key={q.id} className="p-4 bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-xl space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold px-2.5 py-1 bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] rounded-full">
+                        <span className="text-xs font-bold px-2.5 py-1 bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] rounded-full">
                           Câu {idx + 1}
                         </span>
                         <span className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">{assignment.assessmentMode === undefined || assignment.assessmentMode === 'scored' ? (q.points ?? 0) + ' điểm' : 'Nhận xét / rubric'}</span>
@@ -660,8 +660,8 @@ function StudentExamContent({
                         {sol?.matchingPairs?.length ? <p>Ghép đúng: {sol.matchingPairs.map(pair => pair.left + ' → ' + pair.right).join('; ')}</p> : null}
                         {sol?.correctOrder?.length ? <p>Thứ tự đúng: {sol.correctOrder.join(' → ')}</p> : null}
                         {sol?.solution && (
-                          <div className="p-3 bg-white dark:bg-[#1e1e1e] rounded-xl border border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] mt-2">
-                            <span className="text-[#1a73e8] dark:text-[#8ab4f8] font-semibold block mb-1">Hướng dẫn giải:</span>
+                          <div className="p-3 bg-white dark:bg-[#202124] rounded-xl border border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] mt-2">
+                            <span className="text-[#3c4043] dark:text-[#e3e3e3] font-semibold block mb-1">Hướng dẫn giải:</span>
                             <MathRenderer content={sol.solution} />
                           </div>
                         )}
@@ -680,13 +680,13 @@ function StudentExamContent({
   // MÀN HÌNH 2: FORM ĐIỀN TÊN TRƯỚC KHI BẮT ĐẦU
   if (!attempt) {
     return (
-      <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#181818] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
-        <div className="max-w-md w-full bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl p-8 shadow-xl">
-          <div className="w-12 h-12 bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] rounded-2xl flex items-center justify-center mb-5 border border-[#1a73e8]/30 dark:border-[#8ab4f8]/30">
+      <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
+        <div className="max-w-md w-full bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-8 shadow-xs">
+          <div className="w-12 h-12 bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] rounded-xl flex items-center justify-center mb-5 border border-[#3c4043]/30 dark:border-[#e3e3e3]/30">
             <User className="w-6 h-6" />
           </div>
 
-          <span className="text-xs font-semibold uppercase tracking-wider text-[#1a73e8] dark:text-[#8ab4f8]">
+          <span className="text-xs font-semibold uppercase tracking-wider text-[#3c4043] dark:text-[#e3e3e3]">
             {assignment.group?.name || 'Phòng thi trực tuyến'}
           </span>
           <h1 className="text-2xl font-bold text-[#202124] dark:text-[#e3e3e3] mt-1 mb-2 leading-tight">{assignment.title}</h1>
@@ -716,7 +716,7 @@ function StudentExamContent({
                   id="student-pick"
                   value={selectedStudentId}
                   onChange={(e) => setSelectedStudentId(e.target.value)}
-                  className="w-full bg-[#f8f9fa] dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2.5 text-sm text-[#202124] dark:text-[#e3e3e3] focus:outline-none focus:border-[#1a73e8] dark:focus:border-[#8ab4f8]"
+                  className="w-full bg-[#f8f9fa] dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2.5 text-sm text-[#202124] dark:text-[#e3e3e3] focus:outline-none focus:border-[#3c4043] dark:focus:border-[#e3e3e3]"
                   required
                 >
                   <option value="">-- Chọn họ và tên --</option>
@@ -738,7 +738,7 @@ function StudentExamContent({
                   value={freeName}
                   onChange={(e) => setFreeName(e.target.value)}
                   placeholder="Ví dụ: Nguyễn Văn An"
-                  className="w-full bg-[#f8f9fa] dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2.5 text-sm text-[#202124] dark:text-[#e3e3e3] placeholder-[#5f6368] dark:placeholder-[#9aa0a6] focus:outline-none focus:border-[#1a73e8] dark:focus:border-[#8ab4f8]"
+                  className="w-full bg-[#f8f9fa] dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2.5 text-sm text-[#202124] dark:text-[#e3e3e3] placeholder-[#5f6368] dark:placeholder-[#9aa0a6] focus:outline-none focus:border-[#3c4043] dark:focus:border-[#e3e3e3]"
                   required
                 />
               </div>
@@ -747,7 +747,7 @@ function StudentExamContent({
             <button
               type="submit"
               disabled={starting}
-              className="w-full py-3 app-button-primary dark:bg-[#8ab4f8] dark:hover:bg-[#aecbfa] disabled:opacity-50 text-white dark:text-[#202124] font-semibold text-sm rounded-full shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
+              className="w-full py-3 app-button-primary dark:bg-[#e3e3e3] dark:hover:bg-[#f1f3f4] disabled:opacity-50 text-white dark:text-[#202124] font-semibold text-sm rounded-lg shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
             >
               {starting ? (
                 <div className="w-5 h-5 border-2 border-white dark:border-[#202124] border-t-transparent rounded-full animate-spin" />
@@ -765,16 +765,16 @@ function StudentExamContent({
 
   // MÀN HÌNH 4: PHÒNG THI ĐANG DIỄN RA (EXAM ROOM)
   return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#181818] text-[#202124] dark:text-[#e3e3e3] flex flex-col">
+    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] text-[#202124] dark:text-[#e3e3e3] flex flex-col">
       {/* Top Bar Cố Định */}
-      <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#1e1e1e]/95 backdrop-blur-md border-b border-[#dadce0] dark:border-[#3c4043] px-4 py-3">
+      <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#202124]/95 backdrop-blur-md border-b border-[#dadce0] dark:border-[#3c4043] px-4 py-3">
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
           <div className="min-w-0">
             <h1 className="text-sm md:text-base font-bold text-[#202124] dark:text-[#e3e3e3] truncate max-w-xs md:max-w-md">
               {assignment.title}
             </h1>
             <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] [overflow-wrap:anywhere]">
-              Học sinh: <span className="text-[#1a73e8] dark:text-[#8ab4f8] font-semibold">{attempt.studentName}</span>
+              Học sinh: <span className="text-[#3c4043] dark:text-[#e3e3e3] font-semibold">{attempt.studentName}</span>
             </p>
           </div>
 
@@ -785,7 +785,7 @@ function StudentExamContent({
                 className={`flex items-center gap-1.5 px-3 py-1 rounded-full font-mono text-sm font-bold border ${
                   timeLeft <= 300
                     ? 'bg-[#fce8e6] dark:bg-[#371918] text-[#c5221f] dark:text-[#f28b82] border-[#fad2cf] dark:border-[#5c2523] animate-pulse'
-                    : 'bg-[#f1f3f4] dark:bg-[#282828] text-[#1a73e8] dark:text-[#8ab4f8] border-[#dadce0] dark:border-[#3c4043]'
+                    : 'bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border-[#dadce0] dark:border-[#3c4043]'
                 }`}
               >
                 <Clock className="w-4 h-4" />
@@ -810,7 +810,7 @@ function StudentExamContent({
             <button
               onClick={() => setShowSubmitModal(true)}
               disabled={submitting}
-              className="px-4 py-2 bg-[#137333] hover:bg-[#0f5c29] text-white font-semibold text-xs md:text-sm rounded-full shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
+              className="px-4 py-2 bg-[#137333] hover:bg-[#0f5c29] text-white font-semibold text-xs md:text-sm rounded-lg shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
             >
               <Send className="w-4 h-4" /> Nộp bài
             </button>
@@ -826,7 +826,7 @@ function StudentExamContent({
         {timeLeft === 0 && <p>Đã hết giờ nên không sửa thêm đáp án. Khi kết nối lại, máy chủ xác nhận phần bài được nhận trong thời gian cho phép; các bản khác giữ để đối chiếu.</p>}
         <button type="button" disabled={submitting} onClick={() => handleFinalSubmit(timeLeft === 0)} className="border rounded-lg p-2 mt-2">{submitting ? 'Đang xác nhận...' : 'Thử nộp lại khi có mạng'}</button>
       </div>}
-      {journalNotice && !saveError && <div role="status" className="max-w-6xl mx-auto w-full px-4 py-3 text-sm bg-sky-50 text-sky-900 border border-sky-300 rounded-xl">{journalNotice}</div>}
+      {journalNotice && !saveError && <div role="status" className="max-w-6xl mx-auto w-full px-4 py-3 text-sm bg-neutral-50 text-[var(--ui-accent)] border border-[var(--ui-border)] rounded-xl">{journalNotice}</div>}
       <StudentDraftRecovery entries={recoveryEntries} onImport={raw => {
         if (!attempt || activeAttemptRef.current !== attempt.id) return 'Lượt làm bài đã thay đổi. Hãy mở lại tệp ở đúng lượt.';
         const imported = importStudentJournal(() => localStorage, attempt.id, crypto.randomUUID(), raw);
@@ -867,12 +867,12 @@ function StudentExamContent({
               <div
                 key={q.id}
                 id={`q-${index + 1}`}
-                className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl p-5 md:p-6 shadow-xs transition-all hover:border-[#bdc1c6] dark:hover:border-[#5f6368]"
+                className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-5 md:p-6 shadow-xs transition-all hover:border-[#bdc1c6] dark:hover:border-[#5f6368]"
               >
                 {/* Header câu hỏi */}
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <span className="w-8 h-8 rounded-full bg-[#e8f0fe] dark:bg-[#1e2a38] border border-[#1a73e8]/30 dark:border-[#8ab4f8]/30 text-[#1a73e8] dark:text-[#8ab4f8] flex items-center justify-center font-bold text-sm">
+                    <span className="w-8 h-8 rounded-full bg-[#f1f3f4] dark:bg-[#292a2d] border border-[#3c4043]/30 dark:border-[#e3e3e3]/30 text-[#3c4043] dark:text-[#e3e3e3] flex items-center justify-center font-bold text-sm">
                       {index + 1}
                     </span>
                     <span className="text-xs font-semibold text-[#5f6368] dark:text-[#9aa0a6] uppercase tracking-wider">
@@ -888,7 +888,7 @@ function StudentExamContent({
                   {(assignment.assessmentMode === undefined || assignment.assessmentMode === 'scored') && q.points !== undefined && <span className="text-xs text-[#5f6368] dark:text-[#9aa0a6] font-medium">{q.points} điểm</span>}
                 </div>
 
-                {q.passageId && passages.some(p => p.id === q.passageId) && <div className="mb-4 border rounded-xl p-4 bg-blue-50/30"><h3 className="font-semibold text-sm mb-2">{passages.find(p => p.id === q.passageId)?.title || 'Ngữ liệu dùng chung'}</h3><MathRenderer content={passages.find(p => p.id === q.passageId)?.content || ''} /></div>}
+                {q.passageId && passages.some(p => p.id === q.passageId) && <div className="mb-4 border rounded-xl p-4 bg-neutral-50/30"><h3 className="font-semibold text-sm mb-2">{passages.find(p => p.id === q.passageId)?.title || 'Ngữ liệu dùng chung'}</h3><MathRenderer content={passages.find(p => p.id === q.passageId)?.content || ''} /></div>}
                 {/* Nội dung câu hỏi KaTeX */}
                 <div className="text-sm md:text-base text-[#202124] dark:text-[#e3e3e3] leading-relaxed mb-4">
                   <MathRenderer content={q.content} />
@@ -898,7 +898,7 @@ function StudentExamContent({
                 {q.figures && q.figures.length > 0 && (
                   <div className="my-4 flex flex-wrap gap-4">
                     {q.figures.map((fig, fIdx) => (
-                      <div key={fIdx} className="bg-[#f8f9fa] dark:bg-[#202124] p-2 rounded-2xl border border-[#dadce0] dark:border-[#3c4043]">
+                      <div key={fIdx} className="bg-[#f8f9fa] dark:bg-[#202124] p-2 rounded-xl border border-[#dadce0] dark:border-[#3c4043]">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <>{fig.kind === 'variation_table' ? <VariationTable data={fig.data as VariationTableData} /> : fig.kind === 'function_plot' ? <FunctionPlot data={fig.data as FunctionPlotData} /> : <img src={fig.url || (typeof fig.data === 'string' ? fig.data : (fig.data as { url?: string })?.url) || fig.renderedBase64} alt={fig.caption || `Hình ${fIdx + 1}`} className="max-h-60 rounded-xl" />}</>
                         {fig.caption && <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] text-center mt-1">{fig.caption}</p>}
@@ -917,15 +917,15 @@ function StudentExamContent({
                           key={c.key}
                           type="button"
                           onClick={() => handleSelectChoice(q.id, c.key)}
-                          className={`flex items-start gap-3 p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
+                          className={`flex items-start gap-3 p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
                             isSelected
-                              ? 'bg-[#e8f0fe] dark:bg-[#1e2a38] border-[#1a73e8] dark:border-[#8ab4f8] text-[#1a73e8] dark:text-[#8ab4f8] ring-1 ring-[#1a73e8] dark:ring-[#8ab4f8]'
+                              ? 'bg-[#f1f3f4] dark:bg-[#292a2d] border-[#3c4043] dark:border-[#e3e3e3] text-[#3c4043] dark:text-[#e3e3e3] ring-1 ring-[#3c4043] dark:ring-[#e3e3e3]'
                               : 'bg-[#f8f9fa] dark:bg-[#242424] border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#2c2c2c]'
                           }`}
                         >
                           <span
                             className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0 mt-0.5 ${
-                              isSelected ? 'bg-[#1a73e8] dark:bg-[#8ab4f8] text-white dark:text-[#202124]' : 'bg-[#e8eaed] dark:bg-[#333538] text-[#5f6368] dark:text-[#9aa0a6]'
+                              isSelected ? 'bg-[#3c4043] dark:bg-[#e3e3e3] text-white dark:text-[#202124]' : 'bg-[#e8eaed] dark:bg-[#333538] text-[#5f6368] dark:text-[#9aa0a6]'
                             }`}
                           >
                             {c.key}
@@ -949,7 +949,7 @@ function StudentExamContent({
                       return (
                         <div
                           key={sub.key}
-                          className="flex flex-col md:flex-row md:items-center justify-between gap-3 p-3.5 bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl"
+                          className="flex flex-col md:flex-row md:items-center justify-between gap-3 p-3.5 bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-xl"
                         >
                           <div className="flex items-start gap-2.5">
                             <span className="w-5 h-5 rounded-full bg-[#e8eaed] dark:bg-[#333538] text-[#5f6368] dark:text-[#9aa0a6] font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
@@ -964,10 +964,10 @@ function StudentExamContent({
                             <button
                               type="button"
                               onClick={() => handleSelectTrueFalse(q.id, sub.key, true)}
-                              className={`min-h-10 min-w-16 px-4 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                              className={`min-h-10 min-w-16 px-4 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                                 userVal === true
                                   ? 'bg-[#137333] dark:bg-[#5bb98c] text-white dark:text-[#0f291e] shadow-xs'
-                                  : 'bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#282828]'
+                                  : 'bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d]'
                               }`}
                             >
                               ĐÚNG
@@ -975,10 +975,10 @@ function StudentExamContent({
                             <button
                               type="button"
                               onClick={() => handleSelectTrueFalse(q.id, sub.key, false)}
-                              className={`min-h-10 min-w-16 px-4 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                              className={`min-h-10 min-w-16 px-4 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                                 userVal === false
                                   ? 'bg-[#c5221f] dark:text-[#371918] text-white dark:bg-[#f28b82] shadow-xs'
-                                  : 'bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#282828]'
+                                  : 'bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d]'
                               }`}
                             >
                               SAI
@@ -1001,7 +1001,7 @@ function StudentExamContent({
                       value={typeof currentAns === 'string' ? currentAns : ''}
                       onChange={(e) => handleShortAnswerChange(q.id, e.target.value)}
                       placeholder="Ví dụ: 3.14 hoặc 1/2..."
-                      className="w-full md:w-80 bg-[#f8f9fa] dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2 text-sm text-[#202124] dark:text-[#e3e3e3] font-mono focus:outline-none focus:border-[#1a73e8] dark:focus:border-[#8ab4f8]"
+                      className="w-full md:w-80 bg-[#f8f9fa] dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2 text-sm text-[#202124] dark:text-[#e3e3e3] font-mono focus:outline-none focus:border-[#3c4043] dark:focus:border-[#e3e3e3]"
                     />
                   </div>
                 )}
@@ -1012,7 +1012,7 @@ function StudentExamContent({
 
         {/* Thanh Navigator Cố Định bên Phải */}
         <aside className="w-full md:w-72 shrink-0 space-y-4">
-          <div className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl p-5 sticky top-20 shadow-xs">
+          <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-5 sticky top-20 shadow-xs">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-xs font-bold uppercase tracking-wider text-[#5f6368] dark:text-[#9aa0a6]">Bảng câu hỏi</h3>
               <span className="text-xs font-semibold text-[#137333] dark:text-[#5bb98c]">
@@ -1035,8 +1035,8 @@ function StudentExamContent({
                     href={`#q-${idx + 1}`}
                     className={`h-9 rounded-xl flex items-center justify-center text-xs font-bold transition-all ${
                       isFilled
-                        ? 'app-button-primary dark:bg-[#8ab4f8] text-white dark:text-[#202124] shadow-xs'
-                        : 'bg-[#f1f3f4] dark:bg-[#282828] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#e8eaed] dark:hover:bg-[#333538]'
+                        ? 'app-button-primary dark:bg-[#e3e3e3] text-white dark:text-[#202124] shadow-xs'
+                        : 'bg-[#f1f3f4] dark:bg-[#292a2d] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#e8eaed] dark:hover:bg-[#333538]'
                     }`}
                   >
                     {idx + 1}
@@ -1049,7 +1049,7 @@ function StudentExamContent({
               <button
                 type="button"
                 onClick={() => setShowSubmitModal(true)}
-                className="w-full py-3 bg-[#137333] hover:bg-[#0f5c29] text-white font-semibold text-sm rounded-full shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
+                className="w-full py-3 bg-[#137333] hover:bg-[#0f5c29] text-white font-semibold text-sm rounded-lg shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
               >
                 <Send className="w-4 h-4" /> Nộp bài thi
               </button>
@@ -1061,7 +1061,7 @@ function StudentExamContent({
       {/* Modal Xác Nhận Nộp Bài */}
       {showSubmitModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="max-w-md w-full bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl p-6 shadow-2xl">
+          <div className="max-w-md w-full bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-6 shadow-xs">
             <div className="w-12 h-12 rounded-full bg-[#fef7e0] dark:bg-[#33250b] text-[#b06000] dark:text-[#fdd663] flex items-center justify-center mb-4 border border-[#feefc3] dark:border-[#4d380e]">
               <AlertCircle className="w-6 h-6" />
             </div>
@@ -1081,7 +1081,7 @@ function StudentExamContent({
               <button
                 type="button"
                 onClick={() => setShowSubmitModal(false)}
-                className="flex-1 py-2.5 bg-[#f1f3f4] hover:bg-[#e8eaed] dark:bg-[#282828] dark:hover:bg-[#333538] text-[#202124] dark:text-[#e3e3e3] text-sm font-semibold rounded-full transition-all cursor-pointer"
+                className="flex-1 py-2.5 bg-[#f1f3f4] hover:bg-[#e8eaed] dark:bg-[#292a2d] dark:hover:bg-[#333538] text-[#202124] dark:text-[#e3e3e3] text-sm font-semibold rounded-lg transition-all cursor-pointer"
               >
                 Làm tiếp
               </button>
@@ -1089,7 +1089,7 @@ function StudentExamContent({
                 type="button"
                 onClick={() => handleFinalSubmit(false)}
                 disabled={submitting}
-                className="flex-1 py-2.5 bg-[#137333] hover:bg-[#0f5c29] disabled:opacity-50 text-white text-sm font-semibold rounded-full shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                className="flex-1 py-2.5 bg-[#137333] hover:bg-[#0f5c29] disabled:opacity-50 text-white text-sm font-semibold rounded-lg shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 {submitting ? (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -1109,8 +1109,8 @@ export default function StudentExamPage(props: { params: Promise<{ publicId: str
   return (
     <React.Suspense
       fallback={
-        <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#181818] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
-          <div className="w-10 h-10 border-3 border-[#1a73e8] dark:border-[#8ab4f8] border-t-transparent rounded-full animate-spin mb-4" />
+        <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
+          <div className="w-10 h-10 border-3 border-[#3c4043] dark:border-[#e3e3e3] border-t-transparent rounded-full animate-spin mb-4" />
           <p className="text-[#5f6368] dark:text-[#9aa0a6] font-medium text-sm">Đang tải phòng thi trực tuyến...</p>
         </div>
       }

@@ -440,8 +440,8 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
 
   if (loading && !assignment) {
     return (
-      <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#181818] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
-        <div className="w-10 h-10 border-3 border-[#1a73e8] dark:border-[#8ab4f8] border-t-transparent rounded-full animate-spin mb-4" />
+      <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
+        <div className="w-10 h-10 border-3 border-[#3c4043] dark:border-[#e3e3e3] border-t-transparent rounded-full animate-spin mb-4" />
         <p className="text-[#5f6368] dark:text-[#9aa0a6] font-medium text-sm">Đang tải màn hình giám sát thi trực tuyến...</p>
       </div>
     );
@@ -449,14 +449,14 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
 
   if (error || !assignment) {
     return (
-      <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#181818] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
-        <div className="max-w-md w-full bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl p-8 text-center shadow-xl">
+      <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
+        <div className="max-w-md w-full bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-8 text-center shadow-xs">
           <AlertCircle className="w-12 h-12 text-[#c5221f] dark:text-[#f28b82] mx-auto mb-4" />
           <h2 className="text-xl font-bold text-[#202124] dark:text-[#e3e3e3] mb-2">Không tìm thấy bài giao</h2>
           <p className="text-[#5f6368] dark:text-[#9aa0a6] text-sm mb-6">{error}</p>
           <Link
             href="/"
-            className="inline-flex items-center justify-center px-5 py-2.5 app-button-primary dark:bg-[#8ab4f8] hover:bg-[#1557b0] dark:hover:bg-[#aecbfa] text-white dark:text-[#202124] text-sm font-semibold rounded-full transition-all shadow-xs"
+            className="inline-flex items-center justify-center px-5 py-2.5 app-button-primary dark:bg-[#e3e3e3] hover:bg-[#303134] dark:hover:bg-[#f1f3f4] text-white dark:text-[#202124] text-sm font-semibold rounded-lg transition-all shadow-xs"
           >
             Về trang chủ
           </Link>
@@ -466,7 +466,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
   }
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#181818] text-[#202124] dark:text-[#e3e3e3] py-6 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] text-[#202124] dark:text-[#e3e3e3] py-6 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Top Header Bar */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-[#dadce0] dark:border-[#3c4043]">
@@ -480,7 +480,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                 Lớp học
               </Link>
               <span>/</span>
-              <span className="text-[#1a73e8] dark:text-[#8ab4f8] font-semibold">Giám sát bài thi</span>
+              <span className="text-[#3c4043] dark:text-[#e3e3e3] font-semibold">Giám sát bài thi</span>
             </div>
 
             <div className="flex items-center gap-3">
@@ -504,7 +504,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
             <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] mt-1">
               Lớp: <strong className="text-[#202124] dark:text-[#e3e3e3]">{assignment.group?.name || 'Tự do'}</strong> • Thời lượng:{' '}
               {assignment.durationMinutes ? `${assignment.durationMinutes} phút` : 'Tự do'} • Mã phòng:{' '}
-              <span className="font-mono text-[#1a73e8] dark:text-[#8ab4f8] font-bold">{assignment.publicId}</span>
+              <span className="font-mono text-[#3c4043] dark:text-[#e3e3e3] font-bold">{assignment.publicId}</span>
             </p>
             <p data-testid="assignment-window" className="text-xs text-[#5f6368] dark:text-[#9aa0a6] mt-1">
               Mở: <strong>{formatLocalDateTime(assignment.opensAt) || 'ngay khi giao'}</strong> • Đóng: <strong>{formatLocalDateTime(assignment.closesAt) || 'không đặt hạn'}</strong> • Số lượt: <strong>{assignment.maxAttempts ?? 1}</strong>{assignment.joinCode ? <> • Mã vào bài: <strong className="font-mono">{assignment.joinCode}</strong></> : null} <span className="opacity-70">(giờ theo máy này)</span>
@@ -517,10 +517,10 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
             <button
               onClick={() => setAutoRefresh(!autoRefresh)}
               title="Tự động cập nhật bài nộp mỗi 4 giây"
-              className={`px-3.5 py-1.5 rounded-full text-xs font-medium border flex items-center gap-1.5 transition-all cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-medium border flex items-center gap-1.5 transition-all cursor-pointer ${
                 autoRefresh
-                  ? 'bg-[#e8f0fe] dark:bg-[#1e2a38] border-[#1a73e8]/30 dark:border-[#8ab4f8]/30 text-[#1a73e8] dark:text-[#8ab4f8]'
-                  : 'bg-[#f1f3f4] dark:bg-[#282828] border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6]'
+                  ? 'bg-[#f1f3f4] dark:bg-[#292a2d] border-[#3c4043]/30 dark:border-[#e3e3e3]/30 text-[#3c4043] dark:text-[#e3e3e3]'
+                  : 'bg-[#f1f3f4] dark:bg-[#292a2d] border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6]'
               }`}
             >
               <RefreshCw className={`w-3.5 h-3.5 ${autoRefresh ? 'animate-spin' : ''}`} />
@@ -530,7 +530,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
             {/* Nút Chép Link Học Sinh */}
             <button
               onClick={copyExamLink}
-              className="px-3.5 py-1.5 bg-white dark:bg-[#202124] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] rounded-full text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
+              className="px-3.5 py-1.5 bg-white dark:bg-[#202124] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
             >
               {copiedLink ? (
                 <>
@@ -546,7 +546,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
             {/* Nút Đóng / Mở bài thi */}
             <button
               onClick={handleToggleStatus}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer ${
                 assignment.status === 'OPEN'
                   ? 'bg-[#fce8e6] hover:bg-[#fad2cf] dark:bg-[#371918] dark:hover:bg-[#4a2221] text-[#c5221f] dark:text-[#f28b82] border border-[#fad2cf] dark:border-[#5c2523]'
                   : 'bg-[#e6f4ea] hover:bg-[#ceead6] dark:bg-[#0f291e] dark:hover:bg-[#1a4030] text-[#137333] dark:text-[#5bb98c] border border-[#ceead6] dark:border-[#1e4d38]'
@@ -567,7 +567,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
             <button
               type="button"
               onClick={() => void downloadCsv()}
-              className="px-4 py-1.5 bg-[#137333] hover:bg-[#0f5c29] text-white rounded-full text-xs font-semibold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+              className="px-4 py-1.5 bg-[#137333] hover:bg-[#0f5c29] text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
             >
               <FileSpreadsheet className="w-3.5 h-3.5" /> Xuất Excel (CSV)
             </button>
@@ -577,33 +577,33 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
         {/* Khối Thống Kê Tổng Quan & Phổ Điểm */}
         {stats && (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-            <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-4 text-center shadow-xs">
+            <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-xl p-4 text-center shadow-xs">
               <span className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] block mb-1">Tổng học sinh</span>
               <span className="text-2xl font-bold text-[#202124] dark:text-[#e3e3e3]">{stats.totalStudents}</span>
             </div>
-            <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-4 text-center shadow-xs">
+            <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-xl p-4 text-center shadow-xs">
               <span className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] block mb-1">Đã nộp bài</span>
               <span className="text-2xl font-bold text-[#137333] dark:text-[#5bb98c]">{stats.totalSubmitted}</span>
               <span className="text-[11px] block text-[#b06000]">{stats.totalPendingGrading} bài chờ chấm</span>
             </div>
-            <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-4 text-center shadow-xs">
+            <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-xl p-4 text-center shadow-xs">
               <span className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] block mb-1">Đang làm bài</span>
               <span className="text-2xl font-bold text-[#b06000] dark:text-[#fdd663]">{stats.totalInProgress}</span>
             </div>
             {requiresNumericScore(assignment.assessmentMode) ? <>
-            <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-4 text-center shadow-xs">
+            <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-xl p-4 text-center shadow-xs">
               <span className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] block mb-1">Điểm trung bình đã chốt</span>
-              <span className="text-2xl font-bold text-[#1a73e8] dark:text-[#8ab4f8]">{stats.totalGraded ? stats.avgScore ?? '—' : '—'}</span>
+              <span className="text-2xl font-bold text-[#3c4043] dark:text-[#e3e3e3]">{stats.totalGraded ? stats.avgScore ?? '—' : '—'}</span>
             </div>
-            <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-4 text-center shadow-xs">
+            <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-xl p-4 text-center shadow-xs">
               <span className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] block mb-1">Điểm cao nhất</span>
               <span className="text-2xl font-bold text-[#137333] dark:text-[#5bb98c]">{stats.totalGraded ? stats.maxScore ?? '—' : '—'}</span>
             </div>
-            <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-4 text-center shadow-xs">
+            <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-xl p-4 text-center shadow-xs">
               <span className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] block mb-1">Điểm giỏi (≥ 8.0)</span>
-              <span className="text-2xl font-bold text-[#1a73e8] dark:text-[#8ab4f8]">{stats.distribution.from8to10}</span>
+              <span className="text-2xl font-bold text-[#3c4043] dark:text-[#e3e3e3]">{stats.distribution.from8to10}</span>
             </div>
-            </> : <div className="border rounded-2xl p-4 text-sm">Bài này ghi nhận phản hồi hoặc nhận xét, không dùng điểm số.</div>}
+            </> : <div className="border rounded-xl p-4 text-sm">Bài này ghi nhận phản hồi hoặc nhận xét, không dùng điểm số.</div>}
           </div>
         )}
 
@@ -613,7 +613,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
             onClick={() => setActiveTab('students')}
             className={`pb-3 border-b-2 flex items-center gap-2 transition-all cursor-pointer ${
               activeTab === 'students'
-                ? 'border-[#1a73e8] dark:border-[#8ab4f8] text-[#1a73e8] dark:text-[#8ab4f8]'
+                ? 'border-[#3c4043] dark:border-[#e3e3e3] text-[#3c4043] dark:text-[#e3e3e3]'
                 : 'border-transparent text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3]'
             }`}
           >
@@ -623,7 +623,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
             onClick={() => setActiveTab('analysis')}
             className={`pb-3 border-b-2 flex items-center gap-2 transition-all cursor-pointer ${
               activeTab === 'analysis'
-                ? 'border-[#1a73e8] dark:border-[#8ab4f8] text-[#1a73e8] dark:text-[#8ab4f8]'
+                ? 'border-[#3c4043] dark:border-[#e3e3e3] text-[#3c4043] dark:text-[#e3e3e3]'
                 : 'border-transparent text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3]'
             }`}
           >
@@ -642,7 +642,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Tìm kiếm theo tên học sinh..."
-                  className="w-full bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-full pl-10 pr-4 py-2 text-xs text-[#202124] dark:text-[#e3e3e3] placeholder-[#5f6368] dark:placeholder-[#9aa0a6] focus:outline-none focus:border-[#1a73e8] dark:focus:border-[#8ab4f8]"
+                  className="w-full bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-full pl-10 pr-4 py-2 text-xs text-[#202124] dark:text-[#e3e3e3] placeholder-[#5f6368] dark:placeholder-[#9aa0a6] focus:outline-none focus:border-[#3c4043] dark:focus:border-[#e3e3e3]"
                 />
               </div>
               <span className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">
@@ -651,11 +651,11 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
             </div>
 
             {filteredAttempts.length === 0 ? (
-              <div className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-10 text-center text-[#5f6368] dark:text-[#9aa0a6] text-xs">
+              <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-xl p-10 text-center text-[#5f6368] dark:text-[#9aa0a6] text-xs">
                 Chưa có học sinh nào nộp bài hoặc bắt đầu làm bài.
               </div>
             ) : (
-              <div className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl overflow-hidden shadow-xs">
+              <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-xl overflow-hidden shadow-xs">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs text-[#202124] dark:text-[#e3e3e3]">
                     <thead className="bg-[#f8f9fa] dark:bg-[#242424] text-[11px] uppercase font-bold text-[#5f6368] dark:text-[#9aa0a6] border-b border-[#dadce0] dark:border-[#3c4043]">
@@ -674,7 +674,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                         const isSubmitted = att.status === 'SUBMITTED';
 
                         return (
-                          <tr key={att.id} className="hover:bg-[#f1f3f4] dark:hover:bg-[#282828] transition-colors">
+                          <tr key={att.id} className="hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors">
                             <td className="py-3.5 px-4 font-semibold text-[#202124] dark:text-[#e3e3e3]">
                               {att.studentName}
                             </td>
@@ -697,7 +697,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                                     att.score >= 8.0
                                       ? 'bg-[#e6f4ea] dark:bg-[#0f291e] text-[#137333] dark:text-[#5bb98c]'
                                       : att.score >= 5.0
-                                      ? 'bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8]'
+                                      ? 'bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3]'
                                       : 'bg-[#fce8e6] dark:bg-[#371918] text-[#c5221f] dark:text-[#f28b82]'
                                   }`}
                                 >
@@ -723,14 +723,14 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                               <div className="flex items-center justify-end gap-2">
                                 <button
                                   onClick={() => handleOpenAttemptDetail(att.id)}
-                                  className="min-h-10 sm:min-h-0 px-3 py-1.5 bg-[#e8f0fe] dark:bg-[#1e2a38] hover:bg-[#d2e3fc] dark:hover:bg-[#2b3a4a] text-[#1a73e8] dark:text-[#8ab4f8] border border-[#1a73e8]/30 dark:border-[#8ab4f8]/30 rounded-full text-xs font-semibold transition-all flex items-center gap-1 cursor-pointer"
+                                  className="min-h-10 sm:min-h-0 px-3 py-1.5 bg-[#f1f3f4] dark:bg-[#292a2d] hover:bg-[#dadce0] dark:hover:bg-[#2b3a4a] text-[#3c4043] dark:text-[#e3e3e3] border border-[#3c4043]/30 dark:border-[#e3e3e3]/30 rounded-lg text-xs font-semibold transition-all flex items-center gap-1 cursor-pointer"
                                 >
                                   <Eye className="w-3.5 h-3.5" /> Xem bài
                                 </button>
                                 <button
                                   onClick={() => handleDeleteAttempt(att.id, att.studentName)}
                                   title="Xóa lượt làm này để học sinh làm lại"
-                                  className="p-3 sm:p-1.5 text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#c5221f] dark:hover:text-[#f28b82] hover:bg-[#fce8e6] dark:hover:bg-[#371918] rounded-full transition-colors cursor-pointer"
+                                  className="p-3 sm:p-1.5 text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#c5221f] dark:hover:text-[#f28b82] hover:bg-[#fce8e6] dark:hover:bg-[#371918] rounded-lg transition-colors cursor-pointer"
                                 >
                                   <Trash2 className="w-4 h-4" />
                                 </button>
@@ -750,7 +750,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
         {/* TAB 2: ITEM ANALYSIS - PHÂN TÍCH THEO CÂU HỎI */}
         {activeTab === 'analysis' && (
           <div className="space-y-4">
-            <div className="p-4 bg-[#e8f0fe] dark:bg-[#1e2a38] border border-[#1a73e8]/20 dark:border-[#8ab4f8]/20 rounded-2xl text-xs text-[#1a73e8] dark:text-[#8ab4f8] leading-relaxed">
+            <div className="p-4 bg-[#f1f3f4] dark:bg-[#292a2d] border border-[#3c4043]/20 dark:border-[#e3e3e3]/20 rounded-xl text-xs text-[#3c4043] dark:text-[#e3e3e3] leading-relaxed">
               <strong>Mẹo sư phạm:</strong> Hệ thống tự động đo lường tỷ lệ trả lời đúng của từng câu hỏi.
               Những câu có tỷ lệ đúng <span className="font-bold text-[#c5221f] dark:text-[#f28b82]">&lt; 50%</span> là những điểm học sinh hay nhầm lẫn, giáo viên nên dành thời gian chữa chi tiết trên lớp.
             </div>
@@ -761,7 +761,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
               {itemAnalysis.map((item) => (
                 <div
                   key={item.questionId}
-                  className={`bg-white dark:bg-[#1e1e1e] border rounded-2xl p-5 shadow-xs space-y-3 transition-all ${
+                  className={`bg-white dark:bg-[#202124] border rounded-xl p-5 shadow-xs space-y-3 transition-all ${
                     item.correctRate < 50
                       ? 'border-[#f28b82]/50 hover:border-[#f28b82]'
                       : 'border-[#dadce0] dark:border-[#3c4043] hover:border-[#bdc1c6] dark:hover:border-[#5f6368]'
@@ -769,7 +769,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="w-7 h-7 rounded-full bg-[#f1f3f4] dark:bg-[#282828] text-[#1a73e8] dark:text-[#8ab4f8] font-bold text-xs flex items-center justify-center border border-[#dadce0] dark:border-[#3c4043]">
+                      <span className="w-7 h-7 rounded-full bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] font-bold text-xs flex items-center justify-center border border-[#dadce0] dark:border-[#3c4043]">
                         {item.questionIndex}
                       </span>
                       <span className="text-[11px] font-bold text-[#5f6368] dark:text-[#9aa0a6] uppercase tracking-wider">
@@ -783,7 +783,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                           item.correctRate >= 75
                             ? 'bg-[#e6f4ea] dark:bg-[#0f291e] text-[#137333] dark:text-[#5bb98c] border-[#ceead6] dark:border-[#1e4d38]'
                             : item.correctRate >= 50
-                            ? 'bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] border-[#1a73e8]/30 dark:border-[#8ab4f8]/30'
+                            ? 'bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border-[#3c4043]/30 dark:border-[#e3e3e3]/30'
                             : 'bg-[#fce8e6] dark:bg-[#371918] text-[#c5221f] dark:text-[#f28b82] border-[#fad2cf] dark:border-[#5c2523] animate-pulse'
                         }`}
                       >
@@ -793,13 +793,13 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                   </div>
 
                   {/* Thanh biểu đồ tỷ lệ đúng */}
-                  <div className="w-full bg-[#f1f3f4] dark:bg-[#282828] rounded-full h-2 overflow-hidden">
+                  <div className="w-full bg-[#f1f3f4] dark:bg-[#292a2d] rounded-full h-2 overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all duration-500 ${
                         item.correctRate >= 75
                           ? 'bg-[#137333] dark:bg-[#5bb98c]'
                           : item.correctRate >= 50
-                          ? 'bg-[#1a73e8] dark:bg-[#8ab4f8]'
+                          ? 'bg-[#3c4043] dark:bg-[#e3e3e3]'
                           : 'bg-[#c5221f] dark:bg-[#f28b82]'
                       }`}
                       style={{ width: `${item.correctRate}%` }}
@@ -823,7 +823,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
         {/* Modal Xem Chi Tiết Bài Làm & Chấm Điểm Thủ Công */}
         {selectedAttemptId && (
           <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="max-w-3xl w-full bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl p-6 shadow-2xl max-h-[92vh] overflow-y-auto">
+            <div className="max-w-3xl w-full bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-6 shadow-xs max-h-[92vh] overflow-y-auto">
               <div className="flex items-center justify-between pb-4 border-b border-[#dadce0] dark:border-[#3c4043]">
                 <div>
                   <h3 className="text-base font-bold text-[#202124] dark:text-[#e3e3e3]">
@@ -838,7 +838,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                 </div>
                 <button
                   onClick={requestClose}
-                  className="p-1.5 rounded-full text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] hover:text-[#202124] dark:hover:text-[#e3e3e3] transition-colors cursor-pointer"
+                  className="p-1.5 rounded-lg text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] hover:text-[#202124] dark:hover:text-[#e3e3e3] transition-colors cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -847,7 +847,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
               {detailError && <p role="alert" className="p-3 my-3 rounded-xl bg-amber-50 text-amber-900 border border-amber-300">{detailError}</p>}
               {loadingDetail ? (
                 <div className="py-20 flex flex-col items-center justify-center text-[#5f6368] dark:text-[#9aa0a6]">
-                  <div className="w-8 h-8 border-3 border-[#1a73e8] dark:border-[#8ab4f8] border-t-transparent rounded-full animate-spin mb-3" />
+                  <div className="w-8 h-8 border-3 border-[#3c4043] dark:border-[#e3e3e3] border-t-transparent rounded-full animate-spin mb-3" />
                   <p className="text-xs">Đang tải chi tiết từng câu trả lời...</p>
                 </div>
               ) : attemptDetail ? (
@@ -875,10 +875,10 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                   {attemptDetail.questions.map((q) => (
                     <div
                       key={q.questionId}
-                      className="p-4 bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl space-y-3"
+                      className="p-4 bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-xl space-y-3"
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-[#1a73e8] dark:text-[#8ab4f8]">
+                        <span className="text-xs font-bold text-[#3c4043] dark:text-[#e3e3e3]">
                           Câu {q.index}{numericGrading ? ` (${q.points}đ)` : ''}
                         </span>
                         <span
@@ -898,7 +898,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                         <MathRenderer content={q.content} />
                       </div>
 
-                      <div className="text-xs space-y-1.5 p-3 bg-white dark:bg-[#1e1e1e] rounded-xl border border-[#dadce0] dark:border-[#3c4043]">
+                      <div className="text-xs space-y-1.5 p-3 bg-white dark:bg-[#202124] rounded-xl border border-[#dadce0] dark:border-[#3c4043]">
                         <div>
                           <span className="text-[#5f6368] dark:text-[#9aa0a6]">Học sinh chọn: </span>
                           <span className="font-semibold text-[#202124] dark:text-[#e3e3e3]">
@@ -913,7 +913,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                         )}
                         {q.solution && (
                           <div className="mt-2 text-[#5f6368] dark:text-[#9aa0a6]">
-                            <span className="text-[#1a73e8] dark:text-[#8ab4f8] font-semibold block mb-1">Hướng dẫn giải:</span>
+                            <span className="text-[#3c4043] dark:text-[#e3e3e3] font-semibold block mb-1">Hướng dẫn giải:</span>
                             <MathRenderer content={q.solution} />
                           </div>
                         )}
@@ -951,9 +951,9 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                   <p>{new Date(entry.createdAt).toLocaleString('vi-VN')} · Câu {question?.index ?? 'trong bản đề'}: {history.before.ok && history.after.ok ? numericGrading ? `${history.before.state.earned} → ${history.after.state.earned} điểm` : 'Thay đổi nhận xét' : 'Chưa đọc đủ trạng thái của lần chấm này.'}{history.restored ? ' (khôi phục từ một lần chấm trước)' : ''}</p>
                   {history.after.ok && history.before.ok && history.after.state.comment !== history.before.state.comment && <p>Nhận xét mới: {history.after.state.comment || '(để trống)'}</p>}
                   {!question ? <p>Câu này không còn trong bản đề nên không khôi phục được.</p> : unusable && !unusable.read.ok ? <p>Không khôi phục được lần này: {unusable.read.message}</p> : !previewOpen && <div className="flex gap-2 mt-1">
-                    {sides.map(({ side }) => <button key={side} type="button" disabled={savingGrade} onClick={() => setRestorePreview({ attemptId: attemptDetail.attempt.id, eventId: entry.id, side, questionKey: question.questionId, base: question.gradeRevision })} className="px-3 py-1 border rounded-full cursor-pointer disabled:opacity-50">{side === 'before' ? 'Xem trước: khôi phục trạng thái trước lần này' : 'Xem trước: khôi phục trạng thái sau lần này'}</button>)}
+                    {sides.map(({ side }) => <button key={side} type="button" disabled={savingGrade} onClick={() => setRestorePreview({ attemptId: attemptDetail.attempt.id, eventId: entry.id, side, questionKey: question.questionId, base: question.gradeRevision })} className="px-3 py-1 border rounded-lg cursor-pointer disabled:opacity-50">{side === 'before' ? 'Xem trước: khôi phục trạng thái trước lần này' : 'Xem trước: khôi phục trạng thái sau lần này'}</button>)}
                   </div>}
-                  {previewOpen && question && restorePreview && state && <div role="group" aria-label="Xem trước khôi phục" className="mt-2 p-3 rounded-xl border border-[#1a73e8] space-y-1">
+                  {previewOpen && question && restorePreview && state && <div role="group" aria-label="Xem trước khôi phục" className="mt-2 p-3 rounded-xl border border-[#3c4043] space-y-1">
                       <p className="font-semibold">Khôi phục câu {question.index} về trạng thái {restorePreview.side === 'before' ? 'trước' : 'sau'} lần chấm này</p>
                       <p>Hiện tại: {isPendingGrade(question, numericGrading) ? 'Chờ chấm' : numericGrading ? `${question.earned} điểm` : 'Bài nhận xét/khảo sát'} · Nhận xét: {question.teacherComment === null || question.teacherComment === undefined ? '(chưa có)' : question.teacherComment || '(để trống)'}</p>
                       <p>Sau khôi phục: {!numericGrading ? state.manualScore === null ? 'Chờ nhận xét' : 'Đã nhận xét' : state.manualScore === null ? (state.isCorrect === null && state.earned === 0 ? 'Chờ chấm (chưa có điểm chấm tay)' : `${state.earned} điểm (điểm tự động, chưa chấm tay)`) : `${state.manualScore} điểm (chấm tay)`} · Nhận xét: {state.comment === null ? '(chưa có)' : state.comment || '(để trống)'}</p>
@@ -961,15 +961,15 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                       {hasDraft && <p role="status" className="text-amber-900">Câu này đang có chỉnh sửa chưa lưu. Hãy lưu hoặc bỏ chỉnh sửa trước khi khôi phục.</p>}
                       {changed && <p role="status" className="text-amber-900">Điểm hoặc nhận xét của câu đã đổi từ lúc xem trước. Hãy hủy rồi xem trước lại.</p>}
                       <div className="flex gap-2 pt-1">
-                        <button type="button" onClick={() => void handleConfirmRestore()} disabled={savingGrade || hasDraft || changed} className="px-3 py-1 rounded-full app-button-primary text-white font-semibold disabled:opacity-40 cursor-pointer">{savingGrade ? 'Đang khôi phục...' : 'Xác nhận khôi phục'}</button>
-                        {hasDraft && <button type="button" onClick={() => discardDraft(question.questionId)} disabled={savingGrade} className="px-3 py-1 border rounded-full cursor-pointer disabled:opacity-40">Bỏ chỉnh sửa của câu này</button>}
-                        <button type="button" onClick={() => setRestorePreview(null)} disabled={savingGrade} className="px-3 py-1 border rounded-full cursor-pointer disabled:opacity-40">Hủy</button>
+                        <button type="button" onClick={() => void handleConfirmRestore()} disabled={savingGrade || hasDraft || changed} className="px-3 py-1 rounded-lg app-button-primary text-white font-semibold disabled:opacity-40 cursor-pointer">{savingGrade ? 'Đang khôi phục...' : 'Xác nhận khôi phục'}</button>
+                        {hasDraft && <button type="button" onClick={() => discardDraft(question.questionId)} disabled={savingGrade} className="px-3 py-1 border rounded-lg cursor-pointer disabled:opacity-40">Bỏ chỉnh sửa của câu này</button>}
+                        <button type="button" onClick={() => setRestorePreview(null)} disabled={savingGrade} className="px-3 py-1 border rounded-lg cursor-pointer disabled:opacity-40">Hủy</button>
                       </div>
                     </div>}
                 </li>;
                 })}</ol>
                 {hasMoreHistory && <div className="mt-2 space-y-1">
-                  <button type="button" onClick={handleLoadOlderHistory} disabled={loadingOlder} className="px-3 py-1 border rounded-full cursor-pointer disabled:opacity-50">{loadingOlder ? 'Đang tải...' : olderError ? 'Thử lại' : 'Xem lịch sử cũ hơn'}</button>
+                  <button type="button" onClick={handleLoadOlderHistory} disabled={loadingOlder} className="px-3 py-1 border rounded-lg cursor-pointer disabled:opacity-50">{loadingOlder ? 'Đang tải...' : olderError ? 'Thử lại' : 'Xem lịch sử cũ hơn'}</button>
                   {olderError && <p role="alert">{olderError}</p>}
                 </div>}
               </details>}
@@ -977,15 +977,15 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                 <div role="alertdialog" aria-label="Có chỉnh sửa chưa lưu" className="p-3 my-3 rounded-xl bg-amber-50 text-amber-900 border border-amber-300 text-xs space-y-2">
                   <p>Có chỉnh sửa chưa lưu lên máy chủ ở {dirtyCount} câu. Bản dự phòng đã lưu trên trình duyệt vẫn được giữ khi đóng. Nếu trình duyệt báo không lưu được, hãy tải bản đang nhập trước khi đóng.</p>
                   <div className="flex gap-2">
-                    <button type="button" onClick={() => setLeavePrompt(false)} className="px-3 py-1 rounded-full app-button-primary text-white font-semibold cursor-pointer">Giữ lại và tiếp tục sửa</button>
-                    <button type="button" onClick={closeAttemptDetail} className="px-3 py-1 rounded-full border cursor-pointer">Đóng, chưa lưu điểm</button>
+                    <button type="button" onClick={() => setLeavePrompt(false)} className="px-3 py-1 rounded-lg app-button-primary text-white font-semibold cursor-pointer">Giữ lại và tiếp tục sửa</button>
+                    <button type="button" onClick={closeAttemptDetail} className="px-3 py-1 rounded-lg border cursor-pointer">Đóng, chưa lưu điểm</button>
                   </div>
                 </div>
               )}
               <div className="pt-4 border-t border-[#dadce0] dark:border-[#3c4043] flex justify-end">
                 <button
                   onClick={requestClose}
-                  className="px-5 py-2 bg-[#f1f3f4] hover:bg-[#e8eaed] dark:bg-[#282828] dark:hover:bg-[#333538] text-[#202124] dark:text-[#e3e3e3] text-xs font-semibold rounded-full cursor-pointer transition-colors"
+                  className="px-5 py-2 bg-[#f1f3f4] hover:bg-[#e8eaed] dark:bg-[#292a2d] dark:hover:bg-[#333538] text-[#202124] dark:text-[#e3e3e3] text-xs font-semibold rounded-lg cursor-pointer transition-colors"
                 >
                   Đóng
                 </button>
@@ -1002,8 +1002,8 @@ export default function TeacherMonitorPage(props: { params: Promise<{ id: string
   return (
     <React.Suspense
       fallback={
-        <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#181818] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
-          <div className="w-10 h-10 border-3 border-[#1a73e8] dark:border-[#8ab4f8] border-t-transparent rounded-full animate-spin mb-4" />
+        <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
+          <div className="w-10 h-10 border-3 border-[#3c4043] dark:border-[#e3e3e3] border-t-transparent rounded-full animate-spin mb-4" />
           <p className="text-[#5f6368] dark:text-[#9aa0a6] font-medium text-sm">Đang tải màn hình giám sát...</p>
         </div>
       }

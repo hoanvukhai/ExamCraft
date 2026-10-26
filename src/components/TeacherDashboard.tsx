@@ -124,7 +124,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
   const [isCreateFolderModalOpen, setIsCreateFolderModalOpen] = useState(false);
   const [targetParentFolderId, setTargetParentFolderId] = useState<string | null>(null);
   const [folderNameInput, setFolderNameInput] = useState('');
-  const [folderColorInput, setFolderColorInput] = useState('#1a73e8');
+  const [folderColorInput, setFolderColorInput] = useState('#3c4043');
 
   // Thao tác với đề thi
   const [isRenameExamModalOpen, setIsRenameExamModalOpen] = useState(false);
@@ -404,24 +404,24 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
     folders.flatMap(f => f.children || []).find(c => c.id === selectedFolderId);
 
   return (
-    <div className="flex flex-col h-dvh w-full bg-[#F8F9FA] dark:bg-[#181818] text-[#202124] dark:text-[#E3E3E3] font-sans antialiased overflow-hidden select-none">
+    <div className="flex flex-col h-dvh w-full bg-[#F8F9FA] dark:bg-[#17181a] text-[#202124] dark:text-[#E3E3E3] font-sans antialiased overflow-hidden select-none">
       {/* ─────────────────────────────────────────────────────────────
           1. HEADER TRÊN CÙNG (Google App Bar Style)
       ───────────────────────────────────────────────────────────── */}
-      <header className="app-bar app-dashboard-bar h-16 px-4 sm:px-6 bg-white dark:bg-[#1e1e1e] border-b border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between z-30 shrink-0 shadow-2xs">
+      <header className="app-bar app-dashboard-bar h-16 px-4 sm:px-6 bg-white dark:bg-[#202124] border-b border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between z-30 shrink-0 shadow-2xs">
         {/* Góc trái: Logo & Định danh thương hiệu */}
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-[#1a73e8] flex items-center justify-center text-white shadow-xs">
+          <div className="w-10 h-10 rounded-xl bg-[#3c4043] flex items-center justify-center text-white shadow-xs">
             <GraduationCap className="w-6 h-6" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-extrabold text-base tracking-tight text-[#202124] dark:text-white">ExamCraft</span>
-              <span className="hidden sm:inline-flex text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8]">
+              <span className="font-semibold text-base tracking-tight text-[#202124] dark:text-white">ExamCraft</span>
+              <span className="hidden sm:inline-flex text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3]">
                 Kho Đề Cá Nhân
               </span>
             </div>
-            <p className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] hidden sm:block">
+            <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] hidden sm:block">
               Soạn đề, quản lý câu hỏi và giao bài
             </p>
           </div>
@@ -436,7 +436,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Tìm kiếm theo tên đề, mã môn, năm học..."
-              className="w-full pl-10 pr-9 py-2 bg-[#f1f3f4] dark:bg-[#282828] border border-transparent focus:border-[#1a73e8] focus:bg-white dark:focus:bg-[#1e1e1e] rounded-full text-xs text-[#202124] dark:text-[#e3e3e3] outline-hidden transition-all shadow-2xs"
+              className="w-full pl-10 pr-9 py-2 bg-[#f1f3f4] dark:bg-[#292a2d] border border-transparent focus:border-[#3c4043] focus:bg-white dark:focus:bg-[#202124] rounded-full text-xs text-[#202124] dark:text-[#e3e3e3] outline-hidden transition-all shadow-2xs"
             />
             {searchQuery && (
               <button
@@ -454,34 +454,34 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
           {/* Nút Bộ Não AI Tự Học */}
           <button
             onClick={() => setIsAiLearningModalOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-[var(--google-surface)] border border-[var(--google-border)] text-[var(--google-text-secondary)] hover:bg-[var(--google-surface-variant)] transition-colors cursor-pointer shadow-2xs"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--ui-surface)] border border-[var(--ui-border)] text-[var(--ui-text-secondary)] hover:bg-[var(--ui-surface-variant)] transition-colors cursor-pointer shadow-2xs"
             title="Bộ não AI Sư Phạm: Xem và dạy các phong cách ra đề cho AI"
           >
-            <Brain className="w-3.5 h-3.5 text-[var(--google-blue)]" />
+            <Brain className="w-3.5 h-3.5 text-[var(--ui-accent)]" />
             <span className="hidden sm:inline">Bộ não AI</span>
           </button>
 
           {/* Nút Thư Ký AI */}
           <button
             onClick={() => setIsAiSecretaryModalOpen(!isAiSecretaryModalOpen)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors cursor-pointer shadow-2xs ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors cursor-pointer shadow-2xs ${
               isAiSecretaryModalOpen
-                ? 'app-button-primary text-white border-[#1a73e8]'
-                : 'bg-white dark:bg-[#282828] border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#303134]'
+                ? 'app-button-primary text-white border-[#3c4043]'
+                : 'bg-white dark:bg-[#292a2d] border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#303134]'
             }`}
             title="Mở Thư ký AI trợ lý riêng của Thầy/Cô"
           >
-            <Bot className="w-3.5 h-3.5 text-blue-600 dark:text-[#8ab4f8]" />
+            <Bot className="w-3.5 h-3.5 text-[var(--ui-accent)] dark:text-[#e3e3e3]" />
             <span className="hidden sm:inline">Thư ký AI</span>
           </button>
 
           {/* Nút Kho Khóa AI */}
           <button
             onClick={() => setIsApiKeyModalOpen(true)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors cursor-pointer ${
               hasActiveKey
-                ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300'
-                : 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300'
+                ? 'bg-transparent border-[#dadce0] dark:border-[#3c4043] text-[#3c4043] dark:text-[#e3e3e3] font-medium'
+                : 'bg-transparent border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] font-normal'
             }`}
             title="Quản lý Google Gemini API Key"
           >
@@ -492,15 +492,15 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
           {/* Nút Dark/Light Mode */}
           <button
             onClick={toggleTheme}
-            className="w-9 h-9 rounded-full flex items-center justify-center text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] transition-colors cursor-pointer"
+            className="w-9 h-9 rounded-lg flex items-center justify-center text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
             title="Đổi giao diện Sáng / Tối"
           >
-            {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4" />}
+            {theme === 'dark' ? <Sun className="w-4 h-4 text-[var(--ui-text-secondary)]" /> : <Moon className="w-4 h-4" />}
           </button>
 
           {/* Avatar User */}
           <div className="flex items-center gap-2 pl-2 border-l border-[#dadce0] dark:border-[#3c4043]">
-            <div className="w-8 h-8 rounded-full bg-[#1a73e8] text-white flex items-center justify-center font-bold text-xs shadow-2xs">
+            <div className="w-8 h-8 rounded-full bg-[#3c4043] text-white flex items-center justify-center font-semibold text-xs shadow-2xs">
               {currentUser.name.charAt(0).toUpperCase()}
             </div>
             <div className="hidden lg:block text-left text-xs">
@@ -516,13 +516,13 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
       ───────────────────────────────────────────────────────────── */}
       <div className="flex-1 flex overflow-hidden min-h-0 relative">
         {/* CỘT TRÁI: MENU QUẢN LÝ & CÂY THƯ MỤC */}
-        <aside className="w-64 bg-white dark:bg-[#181818] border-r border-[#dadce0] dark:border-[#3c4043] hidden lg:flex flex-col justify-between shrink-0 overflow-y-auto p-3 shadow-2xs z-20">
+        <aside className="w-64 bg-white dark:bg-[#17181a] border-r border-[#dadce0] dark:border-[#3c4043] hidden lg:flex flex-col justify-between shrink-0 overflow-y-auto p-3 shadow-2xs z-20">
           <div className="space-y-4">
             {/* Nút Tạo đề mới to kiểu Google FAB */}
             <div>
               <button
                 onClick={() => handleOpenEditor()}
-                className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-2xl app-button-primary text-white font-semibold text-xs shadow-md transition-all cursor-pointer"
+                className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl app-button-primary text-white font-semibold text-xs shadow-xs transition-all cursor-pointer"
               >
                 <Plus className="w-4 h-4" />
                 <span>Soạn Đề Thi Mới</span>
@@ -535,8 +535,8 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                 onClick={() => { setCurrentView('all'); setSelectedFolderId(null); }}
                 className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
                   currentView === 'all' && !selectedFolderId
-                    ? 'bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] font-bold'
-                    : 'text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828]'
+                    ? 'bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] font-semibold'
+                    : 'text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d]'
                 }`}
               >
                 <div className="flex items-center gap-2.5">
@@ -550,11 +550,11 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                 onClick={() => { setCurrentView('starred'); setSelectedFolderId(null); }}
                 className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
                   currentView === 'starred'
-                    ? 'bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] font-bold'
-                    : 'text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828]'
+                    ? 'bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] font-semibold'
+                    : 'text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d]'
                 }`}
               >
-                <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+                <Star className="w-4 h-4 text-[var(--ui-text-secondary)] fill-current" />
                 <span>Đề quan trọng (Gắn sao)</span>
               </button>
 
@@ -562,8 +562,8 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                 onClick={() => { setCurrentView('recent'); setSelectedFolderId(null); }}
                 className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
                   currentView === 'recent'
-                    ? 'bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] font-bold'
-                    : 'text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828]'
+                    ? 'bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] font-semibold'
+                    : 'text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d]'
                 }`}
               >
                 <Clock className="w-4 h-4 text-[#5f6368] dark:text-[#9aa0a6]" />
@@ -574,7 +574,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
             {/* CÂY THƯ MỤC CÁ NHÂN (Tối đa 2 cấp) */}
             <div className="pt-2 border-t border-[#f1f3f4] dark:border-[#3c4043]">
               <div className="flex items-center justify-between px-3 mb-1.5">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#5f6368] dark:text-[#9aa0a6]">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-[#5f6368] dark:text-[#9aa0a6]">
                   Thư mục của tôi
                 </span>
                 <button
@@ -584,7 +584,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                     setIsCreateFolderModalOpen(true);
                   }}
                   title="Tạo thư mục mới (Cấp 1)"
-                  className="p-1 rounded-md text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] hover:text-[#1a73e8] cursor-pointer"
+                  className="p-1 rounded-md text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] hover:text-[#3c4043] cursor-pointer"
                 >
                   <FolderPlus className="w-3.5 h-3.5" />
                 </button>
@@ -608,8 +608,8 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                         <div
                           className={`group flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
                             isSelected
-                              ? 'bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] font-semibold'
-                              : 'text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828]'
+                              ? 'bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] font-semibold'
+                              : 'text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d]'
                           }`}
                           onClick={() => {
                             setSelectedFolderId(folder.id);
@@ -632,7 +632,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                             )}
                             <Folder
                               className="w-4 h-4 shrink-0"
-                              style={{ color: folder.color || '#1a73e8' }}
+                              style={{ color: folder.color || '#3c4043' }}
                             />
                             <span className="truncate">{folder.name}</span>
                           </div>
@@ -650,7 +650,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                                 setIsCreateFolderModalOpen(true);
                               }}
                               title="Thêm thư mục con vào đây"
-                              className="opacity-0 group-hover:opacity-100 p-0.5 rounded text-[#5f6368] hover:text-[#1a73e8] cursor-pointer"
+                              className="opacity-0 group-hover:opacity-100 p-0.5 rounded text-[#5f6368] hover:text-[#3c4043] cursor-pointer"
                             >
                               <Plus className="w-3 h-3" />
                             </button>
@@ -678,8 +678,8 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                                   key={sub.id}
                                   className={`group flex items-center justify-between px-2 py-1 rounded-lg text-xs transition-colors cursor-pointer ${
                                     isSubSelected
-                                      ? 'bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] font-semibold'
-                                      : 'text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828]'
+                                      ? 'bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] font-semibold'
+                                      : 'text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d]'
                                   }`}
                                   onClick={() => {
                                     setSelectedFolderId(sub.id);
@@ -689,7 +689,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                                   <div className="flex items-center gap-2 truncate">
                                     <Folder
                                       className="w-3.5 h-3.5 shrink-0"
-                                      style={{ color: sub.color || folder.color || '#1a73e8' }}
+                                      style={{ color: sub.color || folder.color || '#3c4043' }}
                                     />
                                     <span className="truncate">{sub.name}</span>
                                   </div>
@@ -722,13 +722,13 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
 
             {/* DẠY HỌC & KHẢO THÍ */}
             <div className="pt-2 border-t border-[#f1f3f4] dark:border-[#3c4043] space-y-0.5">
-              <span className="px-3 text-[10px] font-bold uppercase tracking-wider text-[#5f6368] dark:text-[#9aa0a6] block mb-1">
+              <span className="px-3 text-[10px] font-semibold uppercase tracking-wider text-[#5f6368] dark:text-[#9aa0a6] block mb-1">
                 Khảo thí & Lớp
               </span>
 
               <Link
                 href="/teacher/groups"
-                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] transition-colors"
+                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors"
               >
                 <Users className="w-4 h-4 text-[#5f6368] dark:text-[#9aa0a6]" />
                 <span>Quản lý Lớp học</span>
@@ -736,7 +736,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
 
               <Link
                 href="/teacher/assignments"
-                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] transition-colors"
+                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors"
               >
                 <GraduationCap className="w-4 h-4 text-[#5f6368] dark:text-[#9aa0a6]" />
                 <span>Khảo thí & Bảng điểm</span>
@@ -744,7 +744,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
 
               <button
                 onClick={() => setIsQuestionBankOpen(true)}
-                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] transition-colors cursor-pointer"
+                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
               >
                 <Database className="w-4 h-4 text-[#5f6368] dark:text-[#9aa0a6]" />
                 <span>Ngân hàng câu hỏi</span>
@@ -758,7 +758,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                 className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
                   currentView === 'trash'
                     ? 'bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 font-semibold'
-                    : 'text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#282828]'
+                    : 'text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d]'
                 }`}
               >
                 <Trash2 className="w-4 h-4" />
@@ -772,7 +772,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
             <div className="pt-3 border-t border-[#f1f3f4] dark:border-[#3c4043]">
               <Link
                 href="/admin/users"
-                className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-[#1a73e8] dark:text-[#8ab4f8] font-semibold bg-[#e8f0fe] dark:bg-[#1e2a38] hover:bg-[#d2e3fc] transition-colors"
+                className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-[#3c4043] dark:text-[#e3e3e3] font-semibold bg-[#f1f3f4] dark:bg-[#292a2d] hover:bg-[#dadce0] transition-colors"
               >
                 <ShieldCheck className="w-4 h-4" />
                 <span>Trang Quản trị Hệ thống</span>
@@ -785,7 +785,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
         <main className="flex-1 overflow-y-auto px-4 sm:px-6 py-5 min-w-0">
           <LocalDraftsPanel ownerId={currentUser.id} />
           <nav aria-label="Điều hướng kho đề" className="lg:hidden my-3 flex flex-wrap items-center gap-2 text-xs">
-            {([{ value: 'all', name: 'Tất cả' }, { value: 'starred', name: 'Quan trọng' }, { value: 'recent', name: 'Gần đây' }, { value: 'trash', name: 'Thùng rác' }] as const).map(view => <button key={view.value} type="button" className={`border rounded-lg p-2 ${currentView === view.value ? 'app-button-tonal' : 'hover:bg-[var(--google-surface-variant)]'}`} onClick={() => { setCurrentView(view.value); setSelectedFolderId(null); }}>{view.name}</button>)}
+            {([{ value: 'all', name: 'Tất cả' }, { value: 'starred', name: 'Quan trọng' }, { value: 'recent', name: 'Gần đây' }, { value: 'trash', name: 'Thùng rác' }] as const).map(view => <button key={view.value} type="button" className={`border rounded-lg p-2 ${currentView === view.value ? 'app-button-tonal' : 'hover:bg-[var(--ui-surface-variant)]'}`} onClick={() => { setCurrentView(view.value); setSelectedFolderId(null); }}>{view.name}</button>)}
             <button type="button" className="border rounded-lg p-2" onClick={() => { setTargetParentFolderId(null); setIsCreateFolderModalOpen(true); }}>Tạo thư mục</button>
             <select aria-label="Chọn thư mục" className="border rounded-lg p-2 bg-transparent" value={selectedFolderId ?? ''} onChange={e => { setSelectedFolderId(e.target.value || null); setCurrentView('all'); }}><option value="">Mọi thư mục</option>{folders.flatMap(folder => [folder, ...(folder.children ?? [])]).map(folder => <option key={folder.id} value={folder.id}>{folder.name}</option>)}</select>
             <Link href="/teacher/groups" className="border rounded-lg p-2">Lớp học</Link><Link href="/teacher/assignments" className="border rounded-lg p-2">Bài đã giao</Link>
@@ -796,13 +796,13 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
             {/* Thẻ 1: Soạn đề trống */}
             <div
               onClick={() => handleOpenEditor()}
-              className="bg-white dark:bg-[#1e1e1e] p-4 rounded-2xl border border-[#dadce0] dark:border-[#3c4043] hover:shadow-md hover:border-[#1a73e8] dark:hover:border-[#8ab4f8] transition-all cursor-pointer group flex items-start gap-3"
+              className="bg-white dark:bg-[#202124] p-4 rounded-xl border border-[#dadce0] dark:border-[#3c4043] hover:shadow-xs hover:border-[#3c4043] dark:hover:border-[#e3e3e3] transition-all cursor-pointer group flex items-start gap-3"
             >
-              <div className="w-10 h-10 rounded-xl bg-[var(--google-surface-variant)] text-[var(--google-blue)] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <div className="w-10 h-10 rounded-xl bg-[var(--ui-surface-variant)] text-[var(--ui-accent)] flex items-center justify-center shrink-0  transition-transform">
                 <Plus className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-bold text-xs text-[#202124] dark:text-white mb-0.5">Soạn đề trống mới</h3>
+                <h3 className="font-semibold text-xs text-[#202124] dark:text-white mb-0.5">Soạn đề trống mới</h3>
                 <p className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] leading-relaxed">
                   Mở trang giấy A4 trắng tinh để tự nhập câu hỏi thủ công.
                 </p>
@@ -812,15 +812,15 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
             {/* Thẻ 2: AI Sinh đề */}
             <div
               onClick={() => setIsGenerateModalOpen(true)}
-              className="bg-white dark:bg-[#1e1e1e] p-4 rounded-2xl border border-[#dadce0] dark:border-[#3c4043] hover:shadow-md hover:border-[#1a73e8] dark:hover:border-[#8ab4f8] transition-all cursor-pointer group flex items-start gap-3"
+              className="bg-white dark:bg-[#202124] p-4 rounded-xl border border-[#dadce0] dark:border-[#3c4043] hover:shadow-xs hover:border-[#3c4043] dark:hover:border-[#e3e3e3] transition-all cursor-pointer group flex items-start gap-3"
             >
-              <div className="w-10 h-10 rounded-xl bg-[var(--google-surface-variant)] text-[var(--google-blue)] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <div className="w-10 h-10 rounded-xl bg-[var(--ui-surface-variant)] text-[var(--ui-accent)] flex items-center justify-center shrink-0  transition-transform">
                 <Sparkles className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-bold text-xs text-[#202124] dark:text-white mb-0.5 flex items-center gap-1.5">
+                <h3 className="font-semibold text-xs text-[#202124] dark:text-white mb-0.5 flex items-center gap-1.5">
                   <span>AI Sinh đề theo Ma trận</span>
-                  <span className="text-[9px] font-bold px-1.5 py-0.2 bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-200 rounded-full">AI</span>
+                  <span className="text-[9px] font-semibold px-1.5 py-0.2 bg-[var(--ui-surface-variant)] text-[var(--ui-text-secondary)] rounded-full">AI</span>
                 </h3>
                 <p className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] leading-relaxed">
                   Chọn môn, lớp và nội dung; AI đề xuất câu hỏi để thầy cô kiểm tra.
@@ -831,13 +831,13 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
             {/* Thẻ 3: Nhập từ file Word / Ảnh */}
             <div
               onClick={() => setIsImportModalOpen(true)}
-              className="bg-white dark:bg-[#1e1e1e] p-4 rounded-2xl border border-[#dadce0] dark:border-[#3c4043] hover:shadow-md hover:border-[#1a73e8] dark:hover:border-[#8ab4f8] transition-all cursor-pointer group flex items-start gap-3"
+              className="bg-white dark:bg-[#202124] p-4 rounded-xl border border-[#dadce0] dark:border-[#3c4043] hover:shadow-xs hover:border-[#3c4043] dark:hover:border-[#e3e3e3] transition-all cursor-pointer group flex items-start gap-3"
             >
-              <div className="w-10 h-10 rounded-xl bg-[var(--google-surface-variant)] text-[var(--google-blue)] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <div className="w-10 h-10 rounded-xl bg-[var(--ui-surface-variant)] text-[var(--ui-accent)] flex items-center justify-center shrink-0  transition-transform">
                 <Upload className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-bold text-xs text-[#202124] dark:text-white mb-0.5">Nhập từ Word / Ảnh OCR</h3>
+                <h3 className="font-semibold text-xs text-[#202124] dark:text-white mb-0.5">Nhập từ Word / Ảnh OCR</h3>
                 <p className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] leading-relaxed">
                   Bóc tách câu hỏi tự động từ file docx hoặc hình chụp đề.
                 </p>
@@ -846,7 +846,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
           </div>
 
           {/* Thanh Toolbar lọc & chế độ xem */}
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-4 bg-white dark:bg-[#1e1e1e] p-3 rounded-2xl border border-[#dadce0] dark:border-[#3c4043]">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4 bg-white dark:bg-[#202124] p-3 rounded-xl border border-[#dadce0] dark:border-[#3c4043]">
             {/* Breadcrumb tiêu đề vùng làm việc */}
             <div className="flex items-center gap-2 text-xs font-semibold">
               <span className="text-[#5f6368] dark:text-[#9aa0a6]">
@@ -855,7 +855,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
               {currentFolder && (
                 <>
                   <ChevronRight className="w-3.5 h-3.5 text-[#5f6368]" />
-                  <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8]">
+                  <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3]">
                     <Folder className="w-3 h-3" style={{ color: currentFolder.color }} />
                     <span>{currentFolder.name}</span>
                   </span>
@@ -872,7 +872,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
               <select
                 value={selectedSubject}
                 onChange={(e) => setSelectedSubject(e.target.value)}
-                className="px-2.5 py-1.5 text-xs bg-[#f1f3f4] dark:bg-[#282828] border border-transparent rounded-lg text-[#3c4043] dark:text-[#e3e3e3] outline-hidden cursor-pointer"
+                className="px-2.5 py-1.5 text-xs bg-[#f1f3f4] dark:bg-[#292a2d] border border-transparent rounded-lg text-[#3c4043] dark:text-[#e3e3e3] outline-hidden cursor-pointer"
               >
                 <option value="all">Tất cả môn</option>
                 {getCatalogSubjects(selectedGrade === 'all' ? undefined : Number(selectedGrade)).map(subject => <option key={subject.key} value={subject.key}>{subject.label}</option>)}
@@ -882,19 +882,19 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
               <select
                 value={selectedGrade}
                 onChange={(e) => { setSelectedGrade(e.target.value); setSelectedSubject('all'); }}
-                className="px-2.5 py-1.5 text-xs bg-[#f1f3f4] dark:bg-[#282828] border border-transparent rounded-lg text-[#3c4043] dark:text-[#e3e3e3] outline-hidden cursor-pointer"
+                className="px-2.5 py-1.5 text-xs bg-[#f1f3f4] dark:bg-[#292a2d] border border-transparent rounded-lg text-[#3c4043] dark:text-[#e3e3e3] outline-hidden cursor-pointer"
               >
                 <option value="all">Tất cả khối</option>
                 {Array.from({ length: 12 }, (_, index) => index + 1).map(grade => <option key={grade} value={grade}>Lớp {grade}</option>)}
               </select>
 
               {/* Toggle Grid / List view */}
-              <div className="flex items-center bg-[#f1f3f4] dark:bg-[#282828] p-0.5 rounded-lg border border-transparent">
+              <div className="flex items-center bg-[#f1f3f4] dark:bg-[#292a2d] p-0.5 rounded-lg border border-transparent">
                 <button
                   onClick={() => setViewMode('grid')}
                   title="Chế độ xem thẻ"
                   className={`p-1.5 rounded-md cursor-pointer transition-colors ${
-                    viewMode === 'grid' ? 'bg-white dark:bg-[#1e1e1e] shadow-xs text-[#1a73e8]' : 'text-[#5f6368]'
+                    viewMode === 'grid' ? 'bg-white dark:bg-[#202124] shadow-xs text-[#3c4043]' : 'text-[#5f6368]'
                   }`}
                 >
                   <LayoutGrid className="w-3.5 h-3.5" />
@@ -903,7 +903,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                   onClick={() => setViewMode('list')}
                   title="Chế độ xem danh sách"
                   className={`p-1.5 rounded-md cursor-pointer transition-colors ${
-                    viewMode === 'list' ? 'bg-white dark:bg-[#1e1e1e] shadow-xs text-[#1a73e8]' : 'text-[#5f6368]'
+                    viewMode === 'list' ? 'bg-white dark:bg-[#202124] shadow-xs text-[#3c4043]' : 'text-[#5f6368]'
                   }`}
                 >
                   <List className="w-3.5 h-3.5" />
@@ -918,11 +918,11 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
               Đang tải danh sách đề thi...
             </div>
           ) : exams.length === 0 ? (
-            <div className="p-16 text-center bg-white dark:bg-[#1e1e1e] rounded-3xl border border-dashed border-[#dadce0] dark:border-[#3c4043]">
-              <div className="w-14 h-14 rounded-2xl bg-[#f1f3f4] dark:bg-[#282828] flex items-center justify-center mx-auto mb-3 text-[#5f6368]">
+            <div className="p-16 text-center bg-white dark:bg-[#202124] rounded-2xl border border-dashed border-[#dadce0] dark:border-[#3c4043]">
+              <div className="w-14 h-14 rounded-xl bg-[#f1f3f4] dark:bg-[#292a2d] flex items-center justify-center mx-auto mb-3 text-[#5f6368]">
                 <FileText className="w-7 h-7" />
               </div>
-              <h3 className="font-bold text-[#202124] dark:text-[#e3e3e3] text-sm mb-1">
+              <h3 className="font-semibold text-[#202124] dark:text-[#e3e3e3] text-sm mb-1">
                 {currentView === 'trash' ? 'Thùng rác trống' : 'Chưa có đề thi nào trong mục này'}
               </h3>
               <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] mb-5 max-w-sm mx-auto">
@@ -934,14 +934,14 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                 <div className="flex items-center justify-center gap-3">
                   <button
                     onClick={() => handleOpenEditor()}
-                    className="px-4 py-2 app-button-primary text-white rounded-full text-xs font-semibold shadow-xs cursor-pointer flex items-center gap-1.5"
+                    className="px-4 py-2 app-button-primary text-white rounded-lg text-xs font-semibold shadow-xs cursor-pointer flex items-center gap-1.5"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Soạn đề trống</span>
                   </button>
                   <button
                     onClick={() => setIsGenerateModalOpen(true)}
-                    className="px-4 py-2 bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f8f9fa] rounded-full text-xs font-semibold shadow-2xs cursor-pointer flex items-center gap-1.5"
+                    className="px-4 py-2 bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f8f9fa] rounded-lg text-xs font-semibold shadow-2xs cursor-pointer flex items-center gap-1.5"
                   >
                     <Sparkles className="w-3.5 h-3.5 text-amber-500" />
                     <span>Sinh đề AI</span>
@@ -956,17 +956,17 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                 <div
                   key={exam.id}
                   onClick={() => handleOpenEditor(exam.id)}
-                  className="group bg-white dark:bg-[#1e1e1e] p-4 rounded-2xl border border-[#dadce0] dark:border-[#3c4043] hover:border-[#1a73e8] dark:hover:border-[#8ab4f8] hover:shadow-md transition-all cursor-pointer relative flex flex-col justify-between"
+                  className="group bg-white dark:bg-[#202124] p-4 rounded-xl border border-[#dadce0] dark:border-[#3c4043] hover:border-[#3c4043] dark:hover:border-[#e3e3e3] hover:shadow-xs transition-all cursor-pointer relative flex flex-col justify-between"
                 >
                   {/* Top card: Badge môn học & Nút gắn sao */}
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8]">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3]">
                           {exam.subject} {exam.grade ? `Khối ${exam.grade}` : ''}
                         </span>
                         {exam.folder && (
-                          <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#f1f3f4] dark:bg-[#282828] text-[#5f6368] dark:text-[#9aa0a6]">
+                          <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#f1f3f4] dark:bg-[#292a2d] text-[#5f6368] dark:text-[#9aa0a6]">
                             <Folder className="w-2.5 h-2.5" style={{ color: exam.folder.color }} />
                             <span>{exam.folder.name}</span>
                           </span>
@@ -978,7 +978,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                           disabled={exam.permissions?.canManage === false}
                           onClick={(e) => handleToggleStar(exam, e)}
                           title={exam.isStarred ? 'Bỏ gắn sao' : 'Gắn sao đề quan trọng'}
-                          className="p-1 rounded-full text-[#5f6368] hover:text-amber-500 hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
+                          className="p-1 rounded-lg text-[#5f6368] hover:text-amber-500 hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
                         >
                           <Star className={`w-4 h-4 ${exam.isStarred ? 'text-amber-500 fill-amber-500' : ''}`} />
                         </button>
@@ -986,7 +986,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                     </div>
 
                     {/* Tiêu đề đề thi */}
-                    <h4 className="font-bold text-xs text-[#202124] dark:text-white line-clamp-2 mb-2 group-hover:text-[#1a73e8] transition-colors">
+                    <h4 className="font-semibold text-xs text-[#202124] dark:text-white line-clamp-2 mb-2 group-hover:text-[#3c4043] transition-colors">
                       {exam.title}
                       {exam.permissions?.canManage === false && <span className="block text-xs font-normal mt-1">Được mời: {exam.permissions.canEdit ? 'Cùng sửa' : exam.permissions.canComment ? 'Góp ý' : 'Chỉ xem'}</span>}
                     </h4>
@@ -1005,7 +1005,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                       <button
                         onClick={(e) => handleQuickExportDocx(exam, e)}
                         title="Tải file Word (.docx)"
-                        className="p-1.5 rounded-full hover:bg-[#f1f3f4] dark:hover:bg-[#282828] text-[#5f6368] hover:text-[#1a73e8] cursor-pointer"
+                        className="p-1.5 rounded-lg hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] text-[#5f6368] hover:text-[#3c4043] cursor-pointer"
                       >
                         <Download className="w-3.5 h-3.5" />
                       </button>
@@ -1014,7 +1014,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                       <button
                         onClick={(e) => handleCloneExam(exam, e)}
                         title="Nhân bản đề này"
-                        className="p-1.5 rounded-full hover:bg-[#f1f3f4] dark:hover:bg-[#282828] text-[#5f6368] hover:text-[#1a73e8] cursor-pointer"
+                        className="p-1.5 rounded-lg hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] text-[#5f6368] hover:text-[#3c4043] cursor-pointer"
                       >
                         <Copy className="w-3.5 h-3.5" />
                       </button>
@@ -1028,7 +1028,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                         }}
                         disabled={exam.permissions?.canManage === false}
                           title="Di chuyển vào thư mục"
-                        className="p-1.5 rounded-full hover:bg-[#f1f3f4] dark:hover:bg-[#282828] text-[#5f6368] hover:text-[#1a73e8] cursor-pointer"
+                        className="p-1.5 rounded-lg hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] text-[#5f6368] hover:text-[#3c4043] cursor-pointer"
                       >
                         <Folder className="w-3.5 h-3.5" />
                       </button>
@@ -1043,7 +1043,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                         }}
                         disabled={exam.permissions?.canManage === false}
                           title="Đổi tên đề"
-                        className="p-1.5 rounded-full hover:bg-[#f1f3f4] dark:hover:bg-[#282828] text-[#5f6368] hover:text-[#1a73e8] cursor-pointer"
+                        className="p-1.5 rounded-lg hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] text-[#5f6368] hover:text-[#3c4043] cursor-pointer"
                       >
                         <Edit3 className="w-3.5 h-3.5" />
                       </button>
@@ -1053,7 +1053,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                         disabled={exam.permissions?.canManage === false}
                           onClick={(e) => handleDeleteExam(exam.id, e)}
                         title={currentView === 'trash' ? 'Khôi phục đề' : 'Chuyển vào thùng rác'}
-                        className="p-1.5 rounded-full hover:bg-red-50 dark:hover:bg-red-950/40 text-[#5f6368] hover:text-red-500 cursor-pointer"
+                        className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 text-[#5f6368] hover:text-red-500 cursor-pointer"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -1064,10 +1064,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
             </div>
           ) : (
             /* DẠNG BẢNG DANH SÁCH (LIST VIEW) */
-            <div className="bg-white dark:bg-[#1e1e1e] rounded-2xl border border-[#dadce0] dark:border-[#3c4043] overflow-hidden shadow-2xs">
+            <div className="bg-white dark:bg-[#202124] rounded-xl border border-[#dadce0] dark:border-[#3c4043] overflow-hidden shadow-2xs">
               <table className="w-full border-collapse text-left text-xs">
                 <thead>
-                  <tr className="bg-[#f8f9fa] dark:bg-[#282828] border-b border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] font-semibold">
+                  <tr className="bg-[#f8f9fa] dark:bg-[#292a2d] border-b border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] font-semibold">
                     <th className="py-3 px-4 w-10 text-center">⭐</th>
                     <th className="py-3 px-4">Tên đề thi</th>
                     <th className="py-3 px-4">Môn & Khối</th>
@@ -1082,7 +1082,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                     <tr
                       key={exam.id}
                       onClick={() => handleOpenEditor(exam.id)}
-                      className="hover:bg-[#f8f9fa] dark:hover:bg-[#282828] transition-colors cursor-pointer group"
+                      className="hover:bg-[#f8f9fa] dark:hover:bg-[#292a2d] transition-colors cursor-pointer group"
                     >
                       <td className="py-3 px-4 text-center">
                         <button
@@ -1093,11 +1093,11 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                           <Star className={`w-3.5 h-3.5 ${exam.isStarred ? 'text-amber-500 fill-amber-500' : 'text-[#dadce0]'}`} />
                         </button>
                       </td>
-                      <td className="py-3 px-4 font-semibold text-[#202124] dark:text-white group-hover:text-[#1a73e8]">
+                      <td className="py-3 px-4 font-semibold text-[#202124] dark:text-white group-hover:text-[#3c4043]">
                         {exam.title}
                       </td>
                       <td className="py-3 px-4">
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8]">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3]">
                           {exam.subject} {exam.grade ? `K${exam.grade}` : ''}
                         </span>
                       </td>
@@ -1122,14 +1122,14 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                           <button
                             onClick={(e) => handleQuickExportDocx(exam, e)}
                             title="Tải Word"
-                            className="p-3 sm:p-1.5 rounded-full hover:bg-black/5 text-[#5f6368] hover:text-[#1a73e8] cursor-pointer"
+                            className="p-3 sm:p-1.5 rounded-lg hover:bg-black/5 text-[#5f6368] hover:text-[#3c4043] cursor-pointer"
                           >
                             <Download className="w-3.5 h-3.5" />
                           </button>
                           <button
                             onClick={(e) => handleCloneExam(exam, e)}
                             title="Nhân bản"
-                            className="p-3 sm:p-1.5 rounded-full hover:bg-black/5 text-[#5f6368] hover:text-[#1a73e8] cursor-pointer"
+                            className="p-3 sm:p-1.5 rounded-lg hover:bg-black/5 text-[#5f6368] hover:text-[#3c4043] cursor-pointer"
                           >
                             <Copy className="w-3.5 h-3.5" />
                           </button>
@@ -1137,7 +1137,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                             disabled={exam.permissions?.canManage === false}
                           onClick={(e) => handleDeleteExam(exam.id, e)}
                             title={currentView === 'trash' ? 'Khôi phục đề' : 'Chuyển vào thùng rác'}
-                            className="p-3 sm:p-1.5 rounded-full hover:bg-red-50 text-[#5f6368] hover:text-red-500 cursor-pointer"
+                            className="p-3 sm:p-1.5 rounded-lg hover:bg-red-50 text-[#5f6368] hover:text-red-500 cursor-pointer"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -1156,14 +1156,14 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
             CỘT PHẢI: TRỢ LÝ THƯ KÝ AI (COMPANION RAIL)
             (Theo đúng yêu cầu của người dùng: Ấn vào báo đang phát triển)
         ───────────────────────────────────────────────────────────── */}
-        <aside className="w-14 bg-white dark:bg-[#181818] border-l border-[#dadce0] dark:border-[#3c4043] hidden lg:flex flex-col items-center py-4 space-y-4 shrink-0 z-20">
+        <aside className="w-14 bg-white dark:bg-[#17181a] border-l border-[#dadce0] dark:border-[#3c4043] hidden lg:flex flex-col items-center py-4 space-y-4 shrink-0 z-20">
           <button
             onClick={() => setIsAiSecretaryModalOpen(true)}
             title="Trợ lý Thư ký AI Cá Nhân (Bấm để xem)"
-            className="w-10 h-10 rounded-2xl app-button-tonal flex items-center justify-center shadow-xs hover:shadow-md transition-all cursor-pointer relative group"
+            className="w-10 h-10 rounded-xl app-button-tonal flex items-center justify-center shadow-xs hover:shadow-xs transition-all cursor-pointer relative group"
           >
-            <Bot className="w-5 h-5 animate-pulse" />
-            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-amber-400 ring-2 ring-white dark:ring-[#181818]" />
+            <Bot className="w-5 h-5 " />
+            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-[#9aa0a6] ring-2 ring-white dark:ring-[#17181a]" />
           </button>
 
           <div className="w-8 h-px bg-[#dadce0] dark:border-[#3c4043]" />
@@ -1171,7 +1171,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
           <button
             onClick={() => setIsApiKeyModalOpen(true)}
             title="Kho Khóa AI"
-            className="w-10 h-10 rounded-xl text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] flex items-center justify-center cursor-pointer transition-colors"
+            className="w-10 h-10 rounded-xl text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] flex items-center justify-center cursor-pointer transition-colors"
           >
             <Key className="w-4 h-4" />
           </button>
@@ -1179,7 +1179,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
           <button
             onClick={() => setIsQuestionBankOpen(true)}
             title="Ngân hàng câu hỏi"
-            className="w-10 h-10 rounded-xl text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] flex items-center justify-center cursor-pointer transition-colors"
+            className="w-10 h-10 rounded-xl text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] flex items-center justify-center cursor-pointer transition-colors"
           >
             <Database className="w-4 h-4" />
           </button>
@@ -1191,29 +1191,29 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
       ───────────────────────────────────────────────────────────── */}
       {isAiSecretaryModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#1e1e1e] rounded-3xl p-6 max-w-md w-full border border-[#dadce0] dark:border-[#3c4043] shadow-2xl animate-in fade-in zoom-in-95">
+          <div className="bg-white dark:bg-[#202124] rounded-2xl p-6 max-w-md w-full border border-[#dadce0] dark:border-[#3c4043] shadow-xs animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between pb-3 border-b border-[#dadce0] dark:border-[#3c4043]">
               <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white flex items-center justify-center shadow-md">
+                <div className="w-10 h-10 rounded-xl app-neutral-icon text-white flex items-center justify-center shadow-xs">
                   <Bot className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm text-[#202124] dark:text-white">Trợ Lý Thư Ký AI Cá Nhân</h3>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300">
+                  <h3 className="font-semibold text-sm text-[#202124] dark:text-white">Trợ Lý Thư Ký AI Cá Nhân</h3>
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-neutral-100 dark:bg-neutral-900 text-[var(--ui-accent)] dark:text-[var(--ui-accent)]">
                     BETA / ĐANG HUẤN LUYỆN
                   </span>
                 </div>
               </div>
               <button
                 onClick={() => setIsAiSecretaryModalOpen(false)}
-                className="p-1 rounded-full text-[#5f6368] hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
+                className="p-1 rounded-lg text-[#5f6368] hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <div className="py-4 space-y-3 text-xs text-[#3c4043] dark:text-[#e3e3e3] leading-relaxed">
-              <div className="p-3 bg-purple-50 dark:bg-purple-950/40 rounded-2xl border border-purple-200 dark:border-purple-800 text-purple-900 dark:text-purple-200">
+              <div className="p-3 bg-neutral-50 dark:bg-neutral-900/40 rounded-xl border border-[var(--ui-border)] dark:border-[var(--ui-border)] text-[var(--ui-accent)] dark:text-[var(--ui-accent)]">
                 🚀 <strong>Tính năng đang trong giai đoạn phát triển & hoàn thiện!</strong>
                 <p className="mt-1 text-[11px] opacity-90">
                   Thư ký AI sẽ được cấp quyền riêng biệt để quản lý tài nguyên cá nhân của riêng Thầy/Cô, giúp giảm 80% thời gian tìm kiếm và dọn dẹp đề thi.
@@ -1221,20 +1221,20 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
               </div>
 
               <div className="space-y-2 pt-2">
-                <h4 className="font-bold text-xs uppercase tracking-wider text-[#5f6368] dark:text-[#9aa0a6]">
+                <h4 className="font-semibold text-xs uppercase tracking-wider text-[#5f6368] dark:text-[#9aa0a6]">
                   Các quyền năng sắp ra mắt:
                 </h4>
                 <div className="space-y-2">
                   <div className="flex items-start gap-2">
-                    <Check className="w-3.5 h-3.5 text-purple-600 shrink-0 mt-0.5" />
+                    <Check className="w-3.5 h-3.5 text-[var(--ui-accent)] shrink-0 mt-0.5" />
                     <span><strong>Tìm kiếm đề bằng tiếng Việt:</strong> <em>&quot;Tìm giúp tôi các đề kiểm tra 1 tiết Toán 11 có phần Hình không gian&quot;</em></span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Check className="w-3.5 h-3.5 text-purple-600 shrink-0 mt-0.5" />
+                    <Check className="w-3.5 h-3.5 text-[var(--ui-accent)] shrink-0 mt-0.5" />
                     <span><strong>Tự động dọn dẹp thư mục:</strong> <em>&quot;Tạo thư mục Ôn thi Đại học và gom 5 đề thi thử vào đó&quot;</em></span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Check className="w-3.5 h-3.5 text-purple-600 shrink-0 mt-0.5" />
+                    <Check className="w-3.5 h-3.5 text-[var(--ui-accent)] shrink-0 mt-0.5" />
                     <span><strong>Thư ký phân tích học tập:</strong> Tự động phát hiện dạng câu hỏi mà học sinh lớp của Thầy/Cô hay làm sai nhất.</span>
                   </div>
                 </div>
@@ -1244,7 +1244,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
             <div className="pt-3 border-t border-[#dadce0] dark:border-[#3c4043] flex justify-end">
               <button
                 onClick={() => setIsAiSecretaryModalOpen(false)}
-                className="px-5 py-2 app-button-primary text-white rounded-full text-xs font-semibold cursor-pointer shadow-xs"
+                className="px-5 py-2 app-button-secondary text-white rounded-lg text-xs font-semibold cursor-pointer shadow-xs"
               >
                 Đã hiểu
               </button>
@@ -1260,17 +1260,17 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
           <form
             onSubmit={handleCreateFolder}
-            className="bg-white dark:bg-[#1e1e1e] rounded-3xl p-6 max-w-sm w-full border border-[#dadce0] dark:border-[#3c4043] shadow-2xl animate-in fade-in zoom-in-95"
+            className="bg-white dark:bg-[#202124] rounded-2xl p-6 max-w-sm w-full border border-[#dadce0] dark:border-[#3c4043] shadow-xs animate-in fade-in zoom-in-95"
           >
             <div className="flex items-center justify-between pb-3 border-b border-[#dadce0] dark:border-[#3c4043] mb-4">
-              <h3 className="font-bold text-sm text-[#202124] dark:text-white flex items-center gap-2">
-                <FolderPlus className="w-4 h-4 text-[#1a73e8]" />
+              <h3 className="font-semibold text-sm text-[#202124] dark:text-white flex items-center gap-2">
+                <FolderPlus className="w-4 h-4 text-[#3c4043]" />
                 <span>{targetParentFolderId ? 'Tạo Thư Mục Con (Cấp 2)' : 'Tạo Thư Mục Mới (Cấp 1)'}</span>
               </h3>
               <button
                 type="button"
                 onClick={() => setIsCreateFolderModalOpen(false)}
-                className="p-1 rounded-full text-[#5f6368] hover:bg-black/5 cursor-pointer"
+                className="p-1 rounded-lg text-[#5f6368] hover:bg-black/5 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1285,19 +1285,19 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                   value={folderNameInput}
                   onChange={(e) => setFolderNameInput(e.target.value)}
                   placeholder="Ví dụ: Khối 12, Học kỳ 1, Ôn thi HSG..."
-                  className="w-full px-3.5 py-2 text-xs bg-[#f1f3f4] dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] rounded-xl outline-hidden focus:border-[#1a73e8]"
+                  className="w-full px-3.5 py-2 text-xs bg-[#f1f3f4] dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] rounded-xl outline-hidden focus:border-[#3c4043]"
                 />
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-[#5f6368] mb-1">Màu sắc nhận diện</label>
                 <div className="flex items-center gap-2">
-                  {['#1a73e8', '#e53935', '#43a047', '#fb8c00', '#8e24aa', '#00acc1'].map(color => (
+                  {['#202124', '#3c4043', '#5f6368', '#80868b', '#9aa0a6', '#bdc1c6'].map(color => (
                     <button
                       key={color}
                       type="button"
                       onClick={() => setFolderColorInput(color)}
-                      className={`w-6 h-6 rounded-full cursor-pointer transition-transform ${
+                      className={`w-6 h-6 rounded-lg cursor-pointer transition-transform ${
                         folderColorInput === color ? 'scale-125 ring-2 ring-black/40' : ''
                       }`}
                       style={{ backgroundColor: color }}
@@ -1311,13 +1311,13 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
               <button
                 type="button"
                 onClick={() => setIsCreateFolderModalOpen(false)}
-                className="px-4 py-2 text-xs text-[#5f6368] hover:bg-black/5 rounded-full cursor-pointer font-medium"
+                className="px-4 py-2 text-xs text-[#5f6368] hover:bg-black/5 rounded-lg cursor-pointer font-medium"
               >
                 Hủy
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 text-xs app-button-primary text-white rounded-full font-semibold shadow-xs cursor-pointer"
+                className="px-4 py-2 text-xs app-button-primary text-white rounded-lg font-semibold shadow-xs cursor-pointer"
               >
                 Tạo thư mục
               </button>
@@ -1331,15 +1331,15 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
       ───────────────────────────────────────────────────────────── */}
       {isMoveExamModalOpen && activeExam && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#1e1e1e] rounded-3xl p-6 max-w-sm w-full border border-[#dadce0] dark:border-[#3c4043] shadow-2xl animate-in fade-in zoom-in-95">
+          <div className="bg-white dark:bg-[#202124] rounded-2xl p-6 max-w-sm w-full border border-[#dadce0] dark:border-[#3c4043] shadow-xs animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between pb-3 border-b border-[#dadce0] dark:border-[#3c4043] mb-3">
-              <h3 className="font-bold text-sm text-[#202124] dark:text-white flex items-center gap-2">
-                <Folder className="w-4 h-4 text-[#1a73e8]" />
+              <h3 className="font-semibold text-sm text-[#202124] dark:text-white flex items-center gap-2">
+                <Folder className="w-4 h-4 text-[#3c4043]" />
                 <span>Di chuyển đề thi</span>
               </h3>
               <button
                 onClick={() => setIsMoveExamModalOpen(false)}
-                className="p-1 rounded-full text-[#5f6368] hover:bg-black/5 cursor-pointer"
+                className="p-1 rounded-lg text-[#5f6368] hover:bg-black/5 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1353,7 +1353,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
               <button
                 type="button"
                 onClick={() => handleMoveExam(null)}
-                className="w-full text-left px-3 py-2 rounded-lg text-xs hover:bg-[#f1f3f4] dark:hover:bg-[#282828] cursor-pointer flex items-center gap-2 font-medium"
+                className="w-full text-left px-3 py-2 rounded-lg text-xs hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] cursor-pointer flex items-center gap-2 font-medium"
               >
                 <FileText className="w-3.5 h-3.5 text-[#5f6368]" />
                 <span>-- Thư viện gốc (Không thuộc thư mục nào) --</span>
@@ -1364,7 +1364,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                   <button
                     type="button"
                     onClick={() => handleMoveExam(folder.id)}
-                    className="w-full text-left px-3 py-1.5 rounded-lg text-xs hover:bg-[#f1f3f4] dark:hover:bg-[#282828] cursor-pointer flex items-center gap-2 font-medium"
+                    className="w-full text-left px-3 py-1.5 rounded-lg text-xs hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] cursor-pointer flex items-center gap-2 font-medium"
                   >
                     <Folder className="w-3.5 h-3.5" style={{ color: folder.color }} />
                     <span>{folder.name}</span>
@@ -1375,7 +1375,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                       key={sub.id}
                       type="button"
                       onClick={() => handleMoveExam(sub.id)}
-                      className="w-full text-left pl-6 pr-3 py-1.5 rounded-lg text-xs hover:bg-[#f1f3f4] dark:hover:bg-[#282828] cursor-pointer flex items-center gap-2 text-[#5f6368]"
+                      className="w-full text-left pl-6 pr-3 py-1.5 rounded-lg text-xs hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] cursor-pointer flex items-center gap-2 text-[#5f6368]"
                     >
                       <Folder className="w-3 h-3" style={{ color: sub.color || folder.color }} />
                       <span>{sub.name}</span>
@@ -1389,7 +1389,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
               <button
                 type="button"
                 onClick={() => setIsMoveExamModalOpen(false)}
-                className="px-4 py-1.5 text-xs text-[#5f6368] hover:bg-black/5 rounded-full cursor-pointer font-medium"
+                className="px-4 py-1.5 text-xs text-[#5f6368] hover:bg-black/5 rounded-lg cursor-pointer font-medium"
               >
                 Đóng
               </button>
@@ -1405,17 +1405,17 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
           <form
             onSubmit={handleRenameExam}
-            className="bg-white dark:bg-[#1e1e1e] rounded-3xl p-6 max-w-sm w-full border border-[#dadce0] dark:border-[#3c4043] shadow-2xl animate-in fade-in zoom-in-95"
+            className="bg-white dark:bg-[#202124] rounded-2xl p-6 max-w-sm w-full border border-[#dadce0] dark:border-[#3c4043] shadow-xs animate-in fade-in zoom-in-95"
           >
             <div className="flex items-center justify-between pb-3 border-b border-[#dadce0] dark:border-[#3c4043] mb-4">
-              <h3 className="font-bold text-sm text-[#202124] dark:text-white flex items-center gap-2">
-                <Edit3 className="w-4 h-4 text-[#1a73e8]" />
+              <h3 className="font-semibold text-sm text-[#202124] dark:text-white flex items-center gap-2">
+                <Edit3 className="w-4 h-4 text-[#3c4043]" />
                 <span>Đổi tên đề thi</span>
               </h3>
               <button
                 type="button"
                 onClick={() => setIsRenameExamModalOpen(false)}
-                className="p-1 rounded-full text-[#5f6368] hover:bg-black/5 cursor-pointer"
+                className="p-1 rounded-lg text-[#5f6368] hover:bg-black/5 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1428,7 +1428,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                 required
                 value={newExamTitle}
                 onChange={(e) => setNewExamTitle(e.target.value)}
-                className="w-full px-3.5 py-2 text-xs bg-[#f1f3f4] dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] rounded-xl outline-hidden focus:border-[#1a73e8]"
+                className="w-full px-3.5 py-2 text-xs bg-[#f1f3f4] dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] rounded-xl outline-hidden focus:border-[#3c4043]"
               />
             </div>
 
@@ -1436,13 +1436,13 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
               <button
                 type="button"
                 onClick={() => setIsRenameExamModalOpen(false)}
-                className="px-4 py-2 text-xs text-[#5f6368] hover:bg-black/5 rounded-full cursor-pointer font-medium"
+                className="px-4 py-2 text-xs text-[#5f6368] hover:bg-black/5 rounded-lg cursor-pointer font-medium"
               >
                 Hủy
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 text-xs app-button-primary text-white rounded-full font-semibold shadow-xs cursor-pointer"
+                className="px-4 py-2 text-xs app-button-primary text-white rounded-lg font-semibold shadow-xs cursor-pointer"
               >
                 Lưu tên mới
               </button>
@@ -1453,7 +1453,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
 
       {/* TOAST NOTIFICATION */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#202124] text-white px-4 py-2.5 rounded-full text-xs font-semibold shadow-xl flex items-center gap-2 animate-in fade-in slide-in-from-bottom-4">
+        <div className="fixed bottom-6 right-6 z-50 bg-[#202124] text-white px-4 py-2.5 rounded-full text-xs font-semibold shadow-xs flex items-center gap-2 animate-in fade-in slide-in-from-bottom-4">
           <Check className="w-4 h-4 text-emerald-400" />
           <span>{toastMessage}</span>
         </div>

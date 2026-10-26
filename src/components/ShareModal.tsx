@@ -215,12 +215,12 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl max-w-xl w-full p-6 shadow-2xl text-[#202124] dark:text-[#e3e3e3] max-h-[92vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
+      <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl max-w-xl w-full p-6 shadow-xs text-[#202124] dark:text-[#e3e3e3] max-h-[92vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
         <ExamReviewPanel exam={exam} />
         {/* Header Modal */}
         <div className="flex items-center justify-between pb-4 border-b border-[#dadce0] dark:border-[#3c4043]">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-2xl bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] flex items-center justify-center border border-[#d2e3fc] dark:border-[#29425e] shadow-xs">
+            <div className="w-10 h-10 rounded-xl bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] flex items-center justify-center border border-[#dadce0] dark:border-[#3c4043] shadow-xs">
               <Share2 className="w-5 h-5" />
             </div>
             <div>
@@ -230,19 +230,19 @@ export const ShareModal: React.FC<ShareModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-full text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex p-1 bg-[#f1f3f4] dark:bg-[#282828] rounded-full my-4 border border-[#dadce0] dark:border-[#3c4043]">
+        <div className="flex p-1 bg-[#f1f3f4] dark:bg-[#292a2d] rounded-full my-4 border border-[#dadce0] dark:border-[#3c4043]">
           <button
             onClick={() => setActiveTab('assign')}
-            className={`flex-1 py-2 rounded-full text-xs font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+            className={`flex-1 py-2 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
               activeTab === 'assign'
-                ? 'app-button-primary text-white dark:bg-[#8ab4f8] dark:text-[#202124] shadow-xs'
+                ? 'app-button-primary text-white dark:bg-[#e3e3e3] dark:text-[#202124] shadow-xs'
                 : 'text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3]'
             }`}
           >
@@ -250,9 +250,9 @@ export const ShareModal: React.FC<ShareModalProps> = ({
           </button>
           <button
             onClick={() => setActiveTab('share')}
-            className={`flex-1 py-2 rounded-full text-xs font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+            className={`flex-1 py-2 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
               activeTab === 'share'
-                ? 'app-button-primary text-white dark:bg-[#8ab4f8] dark:text-[#202124] shadow-xs'
+                ? 'app-button-secondary text-white dark:bg-[#e3e3e3] dark:text-[#202124] shadow-xs'
                 : 'text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3]'
             }`}
           >
@@ -265,7 +265,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
           <div className="space-y-4">
             {createdPublicLink ? (
               /* MÀN HÌNH SAU KHI GIAO BÀI THÀNH CÔNG */
-              <div className="p-5 rounded-2xl bg-[#e8f0fe]/50 dark:bg-[#1e2a38]/60 border border-[#d2e3fc] dark:border-[#29425e] space-y-4 text-center">
+              <div className="p-5 rounded-xl bg-[#f1f3f4]/50 dark:bg-[#292a2d]/60 border border-[#dadce0] dark:border-[#3c4043] space-y-4 text-center">
                 <div className="w-12 h-12 bg-[#e6f4ea] dark:bg-[#0f291e] text-[#137333] dark:text-[#5bb98c] rounded-full flex items-center justify-center mx-auto border border-[#ceead6] dark:border-[#1d4834]">
                   <CheckCircle2 className="w-6 h-6" />
                 </div>
@@ -276,16 +276,16 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2 bg-white dark:bg-[#1e1e1e] rounded-2xl p-2 border border-[#dadce0] dark:border-[#3c4043] text-left">
+                <div className="flex items-center gap-2 bg-white dark:bg-[#202124] rounded-xl p-2 border border-[#dadce0] dark:border-[#3c4043] text-left">
                   <input
                     type="text"
                     readOnly
                     value={fullAssignUrl}
-                    className="grow bg-transparent text-xs text-[#1a73e8] dark:text-[#8ab4f8] font-mono px-2 outline-none select-all truncate"
+                    className="grow bg-transparent text-xs text-[#3c4043] dark:text-[#e3e3e3] font-mono px-2 outline-none select-all truncate"
                   />
                   <button
                     onClick={() => copyToClipboard(fullAssignUrl, 'assign')}
-                    className="px-3.5 py-1.5 app-button-primary dark:bg-[#8ab4f8] dark:hover:bg-[#a8c7fa] text-white dark:text-[#202124] rounded-full text-xs font-medium flex items-center gap-1 shrink-0 transition-all cursor-pointer shadow-xs"
+                    className="px-3.5 py-1.5 app-button-primary dark:bg-[#e3e3e3] dark:hover:bg-[#f1f3f4] text-white dark:text-[#202124] rounded-lg text-xs font-medium flex items-center gap-1 shrink-0 transition-all cursor-pointer shadow-xs"
                   >
                     {copiedLink ? (
                       <>
@@ -304,13 +304,13 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                     href={createdPublicLink}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-[#282828] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043] text-xs font-medium rounded-full transition-all"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-[#292a2d] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043] text-xs font-medium rounded-lg transition-all"
                   >
                     Vào phòng thi thử <ExternalLink className="w-3.5 h-3.5" />
                   </a>
                   <button
                     onClick={() => setCreatedPublicLink(null)}
-                    className="px-4 py-2 bg-white dark:bg-[#282828] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043] text-xs font-medium rounded-full transition-all cursor-pointer"
+                    className="px-4 py-2 bg-white dark:bg-[#292a2d] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043] text-xs font-medium rounded-lg transition-all cursor-pointer"
                   >
                     Tạo đợt thi khác
                   </button>
@@ -327,7 +327,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                     type="text"
                     value={assignmentTitle}
                     onChange={(e) => setAssignmentTitle(e.target.value)}
-                    className="w-full bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-[#202124] dark:text-[#e3e3e3] focus:outline-hidden focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] focus:ring-1 focus:ring-[#1a73e8] dark:focus:ring-[#8ab4f8]"
+                    className="w-full bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-[#202124] dark:text-[#e3e3e3] focus:outline-hidden focus:border-[#3c4043] dark:focus:border-[#e3e3e3] focus:ring-1 focus:ring-[#3c4043] dark:focus:ring-[#e3e3e3]"
                     required
                   />
                 </div>
@@ -341,7 +341,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                     <Link
                       href="/teacher/groups"
                       target="_blank"
-                      className="text-[11px] text-[#1a73e8] dark:text-[#8ab4f8] hover:underline flex items-center gap-1"
+                      className="text-[11px] text-[#3c4043] dark:text-[#e3e3e3] hover:underline flex items-center gap-1"
                     >
                       <Users className="w-3 h-3" /> Quản lý danh sách lớp
                     </Link>
@@ -350,7 +350,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                     aria-label="Giao cho lớp học"
                     value={selectedGroupId}
                     onChange={(e) => setSelectedGroupId(e.target.value)}
-                    className="w-full bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-[#202124] dark:text-[#e3e3e3] focus:outline-hidden focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] focus:ring-1 focus:ring-[#1a73e8] dark:focus:ring-[#8ab4f8] cursor-pointer"
+                    className="w-full bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-[#202124] dark:text-[#e3e3e3] focus:outline-hidden focus:border-[#3c4043] dark:focus:border-[#e3e3e3] focus:ring-1 focus:ring-[#3c4043] dark:focus:ring-[#e3e3e3] cursor-pointer"
                   >
                     <option value="">-- Làm tự do (Học sinh tự gõ tên) --</option>
                     {groups.map((g) => (
@@ -369,7 +369,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                         type="radio"
                         checked={identityMode === 'PICK_FROM_LIST'}
                         onChange={() => setIdentityMode('PICK_FROM_LIST')}
-                        className="text-[#1a73e8] focus:ring-0"
+                        className="text-[#3c4043] focus:ring-0"
                       />
                       Chọn tên từ danh sách lớp
                     </label>
@@ -378,7 +378,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                         type="radio"
                         checked={identityMode === 'FREE_NAME'}
                         onChange={() => setIdentityMode('FREE_NAME')}
-                        className="text-[#1a73e8] focus:ring-0"
+                        className="text-[#3c4043] focus:ring-0"
                       />
                       Tự gõ tên
                     </label>
@@ -395,10 +395,10 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                       setShowResult('IMMEDIATE');
                       setShowSolution('AFTER_CLOSE');
                     }}
-                    className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                    className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
                       mode === 'CLASSWORK'
-                        ? 'bg-[#e8f0fe] dark:bg-[#1e2a38] border-[#1a73e8] dark:border-[#8ab4f8] text-[#1a73e8] dark:text-[#8ab4f8] shadow-xs'
-                        : 'bg-[#f8f9fa] dark:bg-[#282828] border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#e8eaed] dark:hover:bg-[#303134]'
+                        ? 'bg-[#f1f3f4] dark:bg-[#292a2d] border-[#3c4043] dark:border-[#e3e3e3] text-[#3c4043] dark:text-[#e3e3e3] shadow-xs'
+                        : 'bg-[#f8f9fa] dark:bg-[#292a2d] border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#e8eaed] dark:hover:bg-[#303134]'
                     }`}
                   >
                     <span className="text-xs font-bold block">Bài Trên Lớp</span>
@@ -413,10 +413,10 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                       setShowResult('IMMEDIATE');
                       setShowSolution('IMMEDIATE');
                     }}
-                    className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                    className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
                       mode === 'HOMEWORK'
-                        ? 'bg-[#e8f0fe] dark:bg-[#1e2a38] border-[#1a73e8] dark:border-[#8ab4f8] text-[#1a73e8] dark:text-[#8ab4f8] shadow-xs'
-                        : 'bg-[#f8f9fa] dark:bg-[#282828] border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#e8eaed] dark:hover:bg-[#303134]'
+                        ? 'bg-[#f1f3f4] dark:bg-[#292a2d] border-[#3c4043] dark:border-[#e3e3e3] text-[#3c4043] dark:text-[#e3e3e3] shadow-xs'
+                        : 'bg-[#f8f9fa] dark:bg-[#292a2d] border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#e8eaed] dark:hover:bg-[#303134]'
                     }`}
                   >
                     <span className="text-xs font-bold block">Về Nhà</span>
@@ -431,10 +431,10 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                       setShowResult('AFTER_CLOSE');
                       setShowSolution('NEVER');
                     }}
-                    className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                    className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
                       mode === 'EXAM'
-                        ? 'bg-[#e8f0fe] dark:bg-[#1e2a38] border-[#1a73e8] dark:border-[#8ab4f8] text-[#1a73e8] dark:text-[#8ab4f8] shadow-xs'
-                        : 'bg-[#f8f9fa] dark:bg-[#282828] border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#e8eaed] dark:hover:bg-[#303134]'
+                        ? 'bg-[#f1f3f4] dark:bg-[#292a2d] border-[#3c4043] dark:border-[#e3e3e3] text-[#3c4043] dark:text-[#e3e3e3] shadow-xs'
+                        : 'bg-[#f8f9fa] dark:bg-[#292a2d] border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#e8eaed] dark:hover:bg-[#303134]'
                     }`}
                   >
                     <span className="text-xs font-bold block">Phòng Thi</span>
@@ -449,7 +449,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                       type="number"
                       value={durationMinutes}
                       onChange={(e) => setDurationMinutes(Number(e.target.value))}
-                      className="w-full bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3 py-2 text-[#202124] dark:text-[#e3e3e3] focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] outline-hidden"
+                      className="w-full bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3 py-2 text-[#202124] dark:text-[#e3e3e3] focus:border-[#3c4043] dark:focus:border-[#e3e3e3] outline-hidden"
                       min={5}
                       max={300}
                     />
@@ -463,7 +463,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                       className={`w-full py-2 px-3 rounded-xl border font-medium flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                         enableLeaderboard
                           ? 'bg-[#e6f4ea] dark:bg-[#0f291e] border-[#ceead6] dark:border-[#1d4834] text-[#137333] dark:text-[#5bb98c]'
-                          : 'bg-[#f8f9fa] dark:bg-[#282828] border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6]'
+                          : 'bg-[#f8f9fa] dark:bg-[#292a2d] border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6]'
                       }`}
                     >
                       <Trophy className="w-3.5 h-3.5" />
@@ -472,20 +472,20 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                   </div>
                 </div>
 
-                <details className="rounded-xl border border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#1e1e1e] px-3.5 py-2.5 text-xs">
+                <details className="rounded-xl border border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#202124] px-3.5 py-2.5 text-xs">
                   <summary className="cursor-pointer font-medium text-[#202124] dark:text-[#e3e3e3]">Tùy chọn nâng cao: giờ mở/đóng, số lượt, mã vào bài</summary>
                   <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <label className="block text-[#5f6368] dark:text-[#9aa0a6]">Giờ mở (để trống: mở ngay)
-                      <input type="datetime-local" value={opensAtLocal} onChange={e => setOpensAtLocal(e.target.value)} className="mt-1 w-full bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3 py-2 text-[#202124] dark:text-[#e3e3e3]" />
+                      <input type="datetime-local" value={opensAtLocal} onChange={e => setOpensAtLocal(e.target.value)} className="mt-1 w-full bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3 py-2 text-[#202124] dark:text-[#e3e3e3]" />
                     </label>
                     <label className="block text-[#5f6368] dark:text-[#9aa0a6]">Giờ đóng (để trống: không hạn)
-                      <input type="datetime-local" value={closesAtLocal} onChange={e => setClosesAtLocal(e.target.value)} className="mt-1 w-full bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3 py-2 text-[#202124] dark:text-[#e3e3e3]" />
+                      <input type="datetime-local" value={closesAtLocal} onChange={e => setClosesAtLocal(e.target.value)} className="mt-1 w-full bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3 py-2 text-[#202124] dark:text-[#e3e3e3]" />
                     </label>
                     <label className="block text-[#5f6368] dark:text-[#9aa0a6]">Số lượt làm (1–10)
-                      <input type="number" inputMode="numeric" min={1} max={10} placeholder={mode === 'EXAM' ? '1 (phòng thi)' : '3'} value={maxAttemptsText} onChange={e => setMaxAttemptsText(e.target.value)} className="mt-1 w-full bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3 py-2 text-[#202124] dark:text-[#e3e3e3]" />
+                      <input type="number" inputMode="numeric" min={1} max={10} placeholder={mode === 'EXAM' ? '1 (phòng thi)' : '3'} value={maxAttemptsText} onChange={e => setMaxAttemptsText(e.target.value)} className="mt-1 w-full bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3 py-2 text-[#202124] dark:text-[#e3e3e3]" />
                     </label>
                     <label className="block text-[#5f6368] dark:text-[#9aa0a6]">Mã vào bài (4–12 chữ/số, tùy chọn)
-                      <input type="text" autoComplete="off" maxLength={12} value={joinCodeText} onChange={e => setJoinCodeText(e.target.value)} className="mt-1 w-full bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3 py-2 uppercase text-[#202124] dark:text-[#e3e3e3]" />
+                      <input type="text" autoComplete="off" maxLength={12} value={joinCodeText} onChange={e => setJoinCodeText(e.target.value)} className="mt-1 w-full bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3 py-2 uppercase text-[#202124] dark:text-[#e3e3e3]" />
                     </label>
                   </div>
                   <div className="mt-3 space-y-1.5 text-[#202124] dark:text-[#e3e3e3]">
@@ -500,7 +500,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                 <button
                   type="submit"
                   disabled={assigning}
-                  className="w-full py-3 app-button-primary dark:bg-[#8ab4f8] dark:hover:bg-[#a8c7fa] text-white dark:text-[#202124] font-medium text-xs sm:text-sm rounded-full shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
+                  className="w-full py-3 app-button-primary dark:bg-[#e3e3e3] dark:hover:bg-[#f1f3f4] text-white dark:text-[#202124] font-medium text-xs sm:text-sm rounded-lg shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
                 >
                   {assigning ? (
                     <div className="w-4 h-4 border-2 border-white dark:border-[#202124] border-t-transparent rounded-full animate-spin" />
@@ -522,25 +522,25 @@ export const ShareModal: React.FC<ShareModalProps> = ({
             <p data-testid="share-pin-note" className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">Link giữ bản đề tại thời điểm tạo. Nếu bạn sửa đề sau đó, hãy tạo link mới để người xem thấy bản mới.{pinnedVersionOf(sharePath) ? <> Link hiện tại giữ <strong>phiên bản {pinnedVersionOf(sharePath)}</strong> của đề.</> : null}</p>
             <label className="block text-sm"><input type="checkbox" checked={shareAnswers} onChange={e => setShareAnswers(e.target.checked)} /> Kèm đáp án và lời giải</label>
             <label className="block text-sm"><input type="checkbox" checked={shareCopy} onChange={e => setShareCopy(e.target.checked)} /> Cho giáo viên đã đăng nhập tạo bản sao</label>
-            <button disabled={sharing} onClick={createShareLink} className="px-4 py-2 rounded-full app-button-primary text-white disabled:opacity-50">{sharing ? 'Đang tạo…' : 'Tạo link chia sẻ'}</button>
+            <button disabled={sharing} onClick={createShareLink} className="px-4 py-2 rounded-lg app-button-primary text-white disabled:opacity-50">{sharing ? 'Đang tạo…' : 'Tạo link chia sẻ'}</button>
             {sharePath && <button onClick={revokeShareLink} className="ml-3 text-sm text-red-600">Thu hồi link này</button>}
-            <div className="p-4 rounded-2xl bg-[#f8f9fa] dark:bg-[#282828]/60 border border-[#dadce0] dark:border-[#3c4043] space-y-3">
+            <div className="p-4 rounded-xl bg-[#f8f9fa] dark:bg-[#292a2d]/60 border border-[#dadce0] dark:border-[#3c4043] space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-[#202124] dark:text-[#e3e3e3] flex items-center gap-1.5">
-                  <FileDown className="w-4 h-4 text-[#1a73e8] dark:text-[#8ab4f8]" /> Link Xem, In A4 & Tải file Word:
+                  <FileDown className="w-4 h-4 text-[#3c4043] dark:text-[#e3e3e3]" /> Link Xem, In A4 & Tải file Word:
                 </span>
                 <a
                   href={shareWordUrl || undefined}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-[11px] font-medium text-[#1a73e8] dark:text-[#8ab4f8] hover:underline flex items-center gap-1"
+                  className="text-[11px] font-medium text-[#3c4043] dark:text-[#e3e3e3] hover:underline flex items-center gap-1"
                 >
                   <span>Mở xem</span>
                   <ExternalLink className="w-3 h-3" />
                 </a>
               </div>
 
-              <div className="flex items-center gap-2 bg-white dark:bg-[#1e1e1e] rounded-2xl p-2 border border-[#dadce0] dark:border-[#3c4043]">
+              <div className="flex items-center gap-2 bg-white dark:bg-[#202124] rounded-xl p-2 border border-[#dadce0] dark:border-[#3c4043]">
                 <input
                   type="text"
                   readOnly
@@ -549,7 +549,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                 />
                 <button
                   disabled={!shareWordUrl} onClick={() => copyToClipboard(shareWordUrl, 'share')}
-                  className="px-3.5 py-1.5 app-button-primary dark:bg-[#8ab4f8] dark:hover:bg-[#a8c7fa] text-white dark:text-[#202124] rounded-full text-xs font-medium flex items-center gap-1 shrink-0 transition-all cursor-pointer shadow-xs"
+                  className="px-3.5 py-1.5 app-button-primary dark:bg-[#e3e3e3] dark:hover:bg-[#f1f3f4] text-white dark:text-[#202124] rounded-lg text-xs font-medium flex items-center gap-1 shrink-0 transition-all cursor-pointer shadow-xs"
                 >
                   {copiedShareLink ? (
                     <>
@@ -573,7 +573,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
         <div className="mt-6 flex justify-end">
           <button
             onClick={onClose}
-            className="px-5 py-2 rounded-full bg-[#f1f3f4] hover:bg-[#e8eaed] dark:bg-[#282828] dark:hover:bg-[#303134] text-[#3c4043] dark:text-[#e3e3e3] text-xs font-medium transition-all cursor-pointer"
+            className="px-5 py-2 rounded-lg bg-[#f1f3f4] hover:bg-[#e8eaed] dark:bg-[#292a2d] dark:hover:bg-[#303134] text-[#3c4043] dark:text-[#e3e3e3] text-xs font-medium transition-all cursor-pointer"
           >
             Đóng
           </button>

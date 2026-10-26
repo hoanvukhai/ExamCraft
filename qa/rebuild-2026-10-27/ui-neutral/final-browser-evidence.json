@@ -1,0 +1,700 @@
+{
+  "checks": {
+    "themeMismatches": [],
+    "horizontalOverflow": [],
+    "blueRgbControls": []
+  },
+  "screens": [
+    {
+      "label": "FINAL-editor-dark",
+      "blueRgbControls": [],
+      "dark": true,
+      "documentHeight": 720,
+      "documentWidth": 1280,
+      "header": {
+        "background": "rgb(32, 33, 36)",
+        "border": "rgb(60, 64, 67)",
+        "color": "rgb(227, 227, 227)",
+        "radius": "0px",
+        "scrollWidth": 1280,
+        "width": 1280
+      },
+      "nonRgbControlColors": [],
+      "paper": [
+        "rgb(255, 255, 255)"
+      ],
+      "path": "/editor/ex_f07f9be62b9bcf18eb5997563157ee3e361c6092",
+      "primary": [
+        {
+          "background": "rgb(227, 227, 227)",
+          "border": "rgba(0, 0, 0, 0)",
+          "color": "rgb(32, 33, 36)",
+          "radius": "10px",
+          "text": "Lưu bản mẫu riêng"
+        },
+        {
+          "background": "rgb(227, 227, 227)",
+          "border": "rgba(0, 0, 0, 0)",
+          "color": "rgb(32, 33, 36)",
+          "radius": "10px",
+          "text": "Áp dụng kế hoạch vào đề"
+        },
+        {
+          "background": "rgb(227, 227, 227)",
+          "border": "rgba(0, 0, 0, 0)",
+          "color": "rgb(32, 33, 36)",
+          "radius": "10px",
+          "text": "Sinh đề bằng AI"
+        }
+      ],
+      "scrollY": 0,
+      "secondary": [
+        {
+          "background": "rgb(32, 33, 36)",
+          "border": "rgb(60, 64, 67)",
+          "color": "rgb(227, 227, 227)",
+          "radius": "10px",
+          "text": "Tải Word (.docx)"
+        }
+      ],
+      "viewport": [
+        1280,
+        720
+      ]
+    },
+    {
+      "label": "FINAL-editor-light",
+      "blueRgbControls": [],
+      "dark": false,
+      "documentHeight": 720,
+      "documentWidth": 1280,
+      "header": {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(218, 220, 224)",
+        "color": "rgb(33, 34, 37)",
+        "radius": "0px",
+        "scrollWidth": 1280,
+        "width": 1280
+      },
+      "nonRgbControlColors": [],
+      "paper": [
+        "rgb(255, 255, 255)"
+      ],
+      "path": "/editor/ex_f07f9be62b9bcf18eb5997563157ee3e361c6092",
+      "primary": [
+        {
+          "background": "rgb(32, 33, 36)",
+          "border": "rgba(0, 0, 0, 0)",
+          "color": "rgb(255, 255, 255)",
+          "radius": "10px",
+          "text": "Lưu bản mẫu riêng"
+        },
+        {
+          "background": "rgb(32, 33, 36)",
+          "border": "rgba(0, 0, 0, 0)",
+          "color": "rgb(255, 255, 255)",
+          "radius": "10px",
+          "text": "Áp dụng kế hoạch vào đề"
+        },
+        {
+          "background": "rgb(32, 33, 36)",
+          "border": "rgba(0, 0, 0, 0)",
+          "color": "rgb(255, 255, 255)",
+          "radius": "10px",
+          "text": "Sinh đề bằng AI"
+        }
+      ],
+      "scrollY": 0,
+      "secondary": [
+        {
+          "background": "rgb(255, 255, 255)",
+          "border": "rgb(218, 220, 224)",
+          "color": "rgb(32, 33, 36)",
+          "radius": "10px",
+          "text": "Tải Word (.docx)"
+        }
+      ],
+      "viewport": [
+        1280,
+        720
+      ]
+    },
+    {
+      "label": "FINAL-editor-375-light",
+      "blueRgbControls": [],
+      "dark": false,
+      "documentHeight": 667,
+      "documentWidth": 375,
+      "header": {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(218, 220, 224)",
+        "color": "rgb(32, 33, 36)",
+        "radius": "0px",
+        "scrollWidth": 375,
+        "width": 375
+      },
+      "nonRgbControlColors": [],
+      "paper": [
+        "rgb(255, 255, 255)"
+      ],
+      "path": "/editor/ex_f07f9be62b9bcf18eb5997563157ee3e361c6092",
+      "primary": [
+        {
+          "background": "rgb(32, 33, 36)",
+          "border": "rgba(0, 0, 0, 0)",
+          "color": "rgb(255, 255, 255)",
+          "radius": "10px",
+          "text": "Lưu bản mẫu riêng"
+        },
+        {
+          "background": "rgb(32, 33, 36)",
+          "border": "rgba(0, 0, 0, 0)",
+          "color": "rgb(255, 255, 255)",
+          "radius": "10px",
+          "text": "Áp dụng kế hoạch vào đề"
+        },
+        {
+          "background": "rgb(32, 33, 36)",
+          "border": "rgba(0, 0, 0, 0)",
+          "color": "rgb(255, 255, 255)",
+          "radius": "10px",
+          "text": "Sinh đề bằng AI"
+        }
+      ],
+      "scrollY": 0,
+      "secondary": [],
+      "viewport": [
+        375,
+        667
+      ]
+    },
+    {
+      "label": "FINAL-dashboard-light",
+      "blueRgbControls": [],
+      "dark": false,
+      "documentHeight": 720,
+      "documentWidth": 1280,
+      "header": {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(218, 220, 224)",
+        "color": "rgb(32, 33, 36)",
+        "radius": "0px",
+        "scrollWidth": 1280,
+        "width": 1280
+      },
+      "nonRgbControlColors": [],
+      "paper": [],
+      "path": "/",
+      "primary": [
+        {
+          "background": "rgb(32, 33, 36)",
+          "border": "rgba(0, 0, 0, 0)",
+          "color": "rgb(255, 255, 255)",
+          "radius": "10px",
+          "text": "Soạn Đề Thi Mới"
+        },
+        {
+          "background": "rgb(32, 33, 36)",
+          "border": "rgba(0, 0, 0, 0)",
+          "color": "rgb(255, 255, 255)",
+          "radius": "10px",
+          "text": "Soạn đề trống"
+        }
+      ],
+      "scrollY": 0,
+      "secondary": [],
+      "viewport": [
+        1280,
+        720
+      ]
+    },
+    {
+      "label": "FINAL-dashboard-dark",
+      "blueRgbControls": [],
+      "dark": true,
+      "documentHeight": 720,
+      "documentWidth": 1280,
+      "header": {
+        "background": "rgb(32, 33, 36)",
+        "border": "rgb(60, 64, 67)",
+        "color": "rgb(227, 227, 227)",
+        "radius": "0px",
+        "scrollWidth": 1280,
+        "width": 1280
+      },
+      "nonRgbControlColors": [],
+      "paper": [],
+      "path": "/",
+      "primary": [
+        {
+          "background": "rgb(227, 227, 227)",
+          "border": "rgba(0, 0, 0, 0)",
+          "color": "rgb(32, 33, 36)",
+          "radius": "10px",
+          "text": "Soạn Đề Thi Mới"
+        },
+        {
+          "background": "rgb(227, 227, 227)",
+          "border": "rgba(0, 0, 0, 0)",
+          "color": "rgb(32, 33, 36)",
+          "radius": "10px",
+          "text": "Soạn đề trống"
+        }
+      ],
+      "scrollY": 0,
+      "secondary": [],
+      "viewport": [
+        1280,
+        720
+      ]
+    },
+    {
+      "label": "FINAL-dashboard-375-dark",
+      "blueRgbControls": [],
+      "dark": true,
+      "documentHeight": 667,
+      "documentWidth": 375,
+      "header": {
+        "background": "rgb(32, 33, 36)",
+        "border": "rgb(60, 64, 67)",
+        "color": "rgb(227, 227, 227)",
+        "radius": "0px",
+        "scrollWidth": 375,
+        "width": 375
+      },
+      "nonRgbControlColors": [],
+      "paper": [
+        "rgb(255, 255, 255)"
+      ],
+      "path": "/",
+      "primary": [],
+      "scrollY": 0,
+      "secondary": [],
+      "viewport": [
+        375,
+        667
+      ]
+    },
+    {
+      "label": "FINAL-learning-dark",
+      "blueRgbControls": [],
+      "dark": true,
+      "documentHeight": 720,
+      "documentWidth": 1280,
+      "header": {
+        "background": "rgb(32, 33, 36)",
+        "border": "rgb(60, 64, 67)",
+        "color": "rgb(227, 227, 227)",
+        "radius": "0px",
+        "scrollWidth": 1280,
+        "width": 1280
+      },
+      "nonRgbControlColors": [],
+      "paper": [
+        "rgb(255, 255, 255)"
+      ],
+      "path": "/",
+      "primary": [
+        {
+          "background": "rgb(227, 227, 227)",
+          "border": "rgba(0, 0, 0, 0)",
+          "color": "rgb(32, 33, 36)",
+          "radius": "10px",
+          "text": "Soạn Đề Thi Mới"
+        }
+      ],
+      "scrollY": 0,
+      "secondary": [
+        {
+          "background": "rgb(32, 33, 36)",
+          "border": "rgb(60, 64, 67)",
+          "color": "rgb(227, 227, 227)",
+          "radius": "10px",
+          "text": "Đóng"
+        }
+      ],
+      "viewport": [
+        1280,
+        720
+      ]
+    },
+    {
+      "label": "FINAL-keys-dark",
+      "blueRgbControls": [],
+      "dark": true,
+      "documentHeight": 720,
+      "documentWidth": 1280,
+      "header": {
+        "background": "rgb(32, 33, 36)",
+        "border": "rgb(60, 64, 67)",
+        "color": "rgb(227, 227, 227)",
+        "radius": "0px",
+        "scrollWidth": 1280,
+        "width": 1280
+      },
+      "nonRgbControlColors": [],
+      "paper": [
+        "rgb(255, 255, 255)"
+      ],
+      "path": "/",
+      "primary": [
+        {
+          "background": "rgb(227, 227, 227)",
+          "border": "rgba(0, 0, 0, 0)",
+          "color": "rgb(32, 33, 36)",
+          "radius": "10px",
+          "text": "Soạn Đề Thi Mới"
+        },
+        {
+          "background": "rgb(227, 227, 227)",
+          "border": "rgba(0, 0, 0, 0)",
+          "color": "rgb(32, 33, 36)",
+          "radius": "10px",
+          "text": "Lưu model"
+        },
+        {
+          "background": "rgb(227, 227, 227)",
+          "border": "rgba(0, 0, 0, 0)",
+          "color": "rgb(32, 33, 36)",
+          "radius": "10px",
+          "text": "Lưu khóa"
+        }
+      ],
+      "scrollY": 0,
+      "secondary": [],
+      "viewport": [
+        1280,
+        720
+      ]
+    },
+    {
+      "label": "FINAL-keys-light",
+      "blueRgbControls": [],
+      "dark": false,
+      "documentHeight": 720,
+      "documentWidth": 1280,
+      "header": {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(218, 220, 224)",
+        "color": "rgb(32, 33, 36)",
+        "radius": "0px",
+        "scrollWidth": 1280,
+        "width": 1280
+      },
+      "nonRgbControlColors": [],
+      "paper": [
+        "rgb(255, 255, 255)"
+      ],
+      "path": "/",
+      "primary": [
+        {
+          "background": "rgb(32, 33, 36)",
+          "border": "rgba(0, 0, 0, 0)",
+          "color": "rgb(255, 255, 255)",
+          "radius": "10px",
+          "text": "Soạn Đề Thi Mới"
+        },
+        {
+          "background": "rgb(32, 33, 36)",
+          "border": "rgba(0, 0, 0, 0)",
+          "color": "rgb(255, 255, 255)",
+          "radius": "10px",
+          "text": "Lưu model"
+        },
+        {
+          "background": "rgb(32, 33, 36)",
+          "border": "rgba(0, 0, 0, 0)",
+          "color": "rgb(255, 255, 255)",
+          "radius": "10px",
+          "text": "Lưu khóa"
+        }
+      ],
+      "scrollY": 0,
+      "secondary": [],
+      "viewport": [
+        1280,
+        720
+      ]
+    },
+    {
+      "label": "FINAL-admin-users-light",
+      "blueRgbControls": [],
+      "dark": false,
+      "documentHeight": 1705,
+      "documentWidth": 1274,
+      "header": {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(218, 220, 224)",
+        "color": "rgb(32, 33, 36)",
+        "radius": "0px",
+        "scrollWidth": 1274,
+        "width": 1274
+      },
+      "nonRgbControlColors": [
+        "oklch(0.596 0.145 163.225)"
+      ],
+      "paper": [],
+      "path": "/admin/users",
+      "primary": [
+        {
+          "background": "rgb(32, 33, 36)",
+          "border": "rgba(0, 0, 0, 0)",
+          "color": "rgb(255, 255, 255)",
+          "radius": "10px",
+          "text": "Cấp tài khoản giáo viên mới"
+        }
+      ],
+      "scrollY": 0,
+      "secondary": [],
+      "viewport": [
+        1280,
+        720
+      ]
+    },
+    {
+      "label": "FINAL-admin-users-dark",
+      "blueRgbControls": [],
+      "dark": true,
+      "documentHeight": 1705,
+      "documentWidth": 1274,
+      "header": {
+        "background": "rgb(32, 33, 36)",
+        "border": "rgb(60, 64, 67)",
+        "color": "rgb(227, 227, 227)",
+        "radius": "0px",
+        "scrollWidth": 1274,
+        "width": 1274
+      },
+      "nonRgbControlColors": [],
+      "paper": [],
+      "path": "/admin/users",
+      "primary": [
+        {
+          "background": "rgb(227, 227, 227)",
+          "border": "rgba(0, 0, 0, 0)",
+          "color": "rgb(32, 33, 36)",
+          "radius": "10px",
+          "text": "Cấp tài khoản giáo viên mới"
+        }
+      ],
+      "scrollY": 0,
+      "secondary": [],
+      "viewport": [
+        1280,
+        720
+      ]
+    },
+    {
+      "label": "FINAL-admin-scroll",
+      "headerTop": 0,
+      "maxScroll": 985,
+      "scrollY": 984.7999877929688
+    },
+    {
+      "label": "FINAL-admin-users-375",
+      "blueRgbControls": [],
+      "dark": true,
+      "documentHeight": 2792,
+      "documentWidth": 370,
+      "header": {
+        "background": "rgb(32, 33, 36)",
+        "border": "rgb(60, 64, 67)",
+        "color": "rgb(227, 227, 227)",
+        "radius": "0px",
+        "scrollWidth": 370,
+        "width": 370
+      },
+      "nonRgbControlColors": [],
+      "paper": [],
+      "path": "/admin/users",
+      "primary": [
+        {
+          "background": "rgb(227, 227, 227)",
+          "border": "rgba(0, 0, 0, 0)",
+          "color": "rgb(32, 33, 36)",
+          "radius": "10px",
+          "text": "Cấp tài khoản giáo viên mới"
+        }
+      ],
+      "scrollY": 984.7999877929688,
+      "secondary": [],
+      "viewport": [
+        375,
+        667
+      ]
+    },
+    {
+      "label": "FINAL-admin-ai-375",
+      "blueRgbControls": [],
+      "dark": true,
+      "documentHeight": 1107,
+      "documentWidth": 370,
+      "header": {
+        "background": "rgb(32, 33, 36)",
+        "border": "rgb(60, 64, 67)",
+        "color": "rgb(227, 227, 227)",
+        "radius": "0px",
+        "scrollWidth": 370,
+        "width": 370
+      },
+      "nonRgbControlColors": [],
+      "paper": [],
+      "path": "/admin/ai",
+      "primary": [
+        {
+          "background": "rgb(227, 227, 227)",
+          "border": "rgba(0, 0, 0, 0)",
+          "color": "rgb(32, 33, 36)",
+          "radius": "10px",
+          "text": "Kích hoạt lại 7 Keys"
+        }
+      ],
+      "scrollY": 0,
+      "secondary": [],
+      "viewport": [
+        375,
+        667
+      ]
+    },
+    {
+      "label": "FINAL-admin-keys-375",
+      "blueRgbControls": [],
+      "dark": true,
+      "documentHeight": 962,
+      "documentWidth": 370,
+      "header": null,
+      "nonRgbControlColors": [],
+      "paper": [],
+      "path": "/admin/keys",
+      "primary": [
+        {
+          "background": "rgb(227, 227, 227)",
+          "border": "rgba(0, 0, 0, 0)",
+          "color": "rgb(32, 33, 36)",
+          "radius": "10px",
+          "text": "Cấp khóa cho người đã chọn"
+        }
+      ],
+      "scrollY": 0,
+      "secondary": [],
+      "viewport": [
+        375,
+        667
+      ]
+    },
+    {
+      "label": "FINAL-groups-375-dark",
+      "blueRgbControls": [],
+      "dark": true,
+      "documentHeight": 667,
+      "documentWidth": 375,
+      "header": null,
+      "nonRgbControlColors": [],
+      "paper": [],
+      "path": "/teacher/groups",
+      "primary": [
+        {
+          "background": "rgb(227, 227, 227)",
+          "border": "rgba(0, 0, 0, 0)",
+          "color": "rgb(32, 33, 36)",
+          "radius": "10px",
+          "text": "Tạo Lớp Mới"
+        },
+        {
+          "background": "rgb(227, 227, 227)",
+          "border": "rgba(0, 0, 0, 0)",
+          "color": "rgb(32, 33, 36)",
+          "radius": "10px",
+          "text": "Tạo Lớp Đầu Tiên"
+        }
+      ],
+      "scrollY": 0,
+      "secondary": [],
+      "viewport": [
+        375,
+        667
+      ]
+    },
+    {
+      "label": "FINAL-assignments-375-dark",
+      "blueRgbControls": [],
+      "dark": true,
+      "documentHeight": 667,
+      "documentWidth": 375,
+      "header": null,
+      "nonRgbControlColors": [],
+      "paper": [],
+      "path": "/teacher/assignments",
+      "primary": [
+        {
+          "background": "rgb(227, 227, 227)",
+          "border": "rgba(0, 0, 0, 0)",
+          "color": "rgb(32, 33, 36)",
+          "radius": "10px",
+          "text": "Giao Bài Mới"
+        },
+        {
+          "background": "rgb(227, 227, 227)",
+          "border": "rgba(0, 0, 0, 0)",
+          "color": "rgb(32, 33, 36)",
+          "radius": "10px",
+          "text": "Về Trang Soạn Đề"
+        }
+      ],
+      "scrollY": 0,
+      "secondary": [],
+      "viewport": [
+        375,
+        667
+      ]
+    },
+    {
+      "label": "FINAL-learning-light",
+      "blueRgbControls": [],
+      "dark": false,
+      "documentHeight": 720,
+      "documentWidth": 1280,
+      "header": {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(218, 220, 224)",
+        "color": "rgb(32, 33, 36)",
+        "radius": "0px",
+        "scrollWidth": 1280,
+        "width": 1280
+      },
+      "nonRgbControlColors": [],
+      "paper": [],
+      "path": "/",
+      "primary": [
+        {
+          "background": "rgb(32, 33, 36)",
+          "border": "rgba(0, 0, 0, 0)",
+          "color": "rgb(255, 255, 255)",
+          "radius": "10px",
+          "text": "Soạn Đề Thi Mới"
+        },
+        {
+          "background": "rgb(32, 33, 36)",
+          "border": "rgba(0, 0, 0, 0)",
+          "color": "rgb(255, 255, 255)",
+          "radius": "10px",
+          "text": "Soạn đề trống"
+        }
+      ],
+      "scrollY": 0,
+      "secondary": [
+        {
+          "background": "rgb(255, 255, 255)",
+          "border": "rgb(218, 220, 224)",
+          "color": "rgb(32, 33, 36)",
+          "radius": "10px",
+          "text": "Đóng"
+        }
+      ],
+      "viewport": [
+        1280,
+        720
+      ]
+    }
+  ]
+}

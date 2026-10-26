@@ -98,14 +98,14 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
 
 
   return (
-    <div className="a4-preview-container flex flex-col h-full bg-[#f1f3f4] dark:bg-[#181818] rounded-3xl border border-[#dadce0] dark:border-[#3c4043] overflow-hidden shadow-xs">
+    <div className="a4-preview-container flex flex-col h-full bg-[#f1f3f4] dark:bg-[#17181a] rounded-2xl border border-[#dadce0] dark:border-[#3c4043] overflow-hidden shadow-xs">
       {/* Top Preview Toolbar */}
-      <div className="no-print bg-white dark:bg-[#1e1e1e] px-4 py-3 border-b border-[#dadce0] dark:border-[#3c4043] flex flex-wrap items-center justify-between gap-3">
+      <div className="no-print bg-white dark:bg-[#202124] px-4 py-3 border-b border-[#dadce0] dark:border-[#3c4043] flex flex-wrap items-center justify-between gap-3">
         {/* Chế độ xem Google Segmented Pill */}
-        <div className="flex items-center gap-1 bg-[#f1f3f4] dark:bg-[#282828] p-1 rounded-full">
+        <div className="flex items-center gap-1 bg-[#f1f3f4] dark:bg-[#292a2d] p-1 rounded-full">
           <button
             onClick={() => setViewMode('exam')}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
               viewMode === 'exam'
                 ? 'bg-white dark:bg-[#383a3d] text-[#202124] dark:text-[#e3e3e3] shadow-xs font-semibold'
                 : 'text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3]'
@@ -117,7 +117,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
 
           <button
             onClick={() => setViewMode('parallel')}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
               viewMode === 'parallel'
                 ? 'bg-white dark:bg-[#383a3d] text-[#202124] dark:text-[#e3e3e3] shadow-xs font-semibold'
                 : 'text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3]'
@@ -129,7 +129,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
 
           <button
             onClick={() => setViewMode('answers')}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
               viewMode === 'answers'
                 ? 'bg-white dark:bg-[#383a3d] text-[#202124] dark:text-[#e3e3e3] shadow-xs font-semibold'
                 : 'text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3]'
@@ -141,7 +141,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
 
           <button
             onClick={() => setViewMode('solutions')}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
               viewMode === 'solutions'
                 ? 'bg-white dark:bg-[#383a3d] text-[#202124] dark:text-[#e3e3e3] shadow-xs font-semibold'
                 : 'text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3]'
@@ -153,7 +153,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
 
           <button
             onClick={() => setViewMode('matrix')}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
               viewMode === 'matrix'
                 ? 'bg-white dark:bg-[#383a3d] text-[#202124] dark:text-[#e3e3e3] shadow-xs font-semibold'
                 : 'text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3]'
@@ -167,7 +167,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
         {/* Nút hành động */}
         <div className="flex items-center gap-2">
           {/* Zoom controls */}
-          <div className="hidden sm:flex items-center gap-1 text-[#5f6368] dark:text-[#9aa0a6] bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] px-2.5 py-1 rounded-full text-xs shadow-2xs">
+          <div className="hidden sm:flex items-center gap-1 text-[#5f6368] dark:text-[#9aa0a6] bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] px-2.5 py-1 rounded-full text-xs shadow-2xs">
             <button
               onClick={() => setZoom(Math.max(60, zoom - 10))}
               title="Thu nhỏ"
@@ -194,7 +194,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
 
           <button
             onClick={handlePrint}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] transition-colors shadow-2xs"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] transition-colors shadow-2xs"
           >
             <Printer className="w-3.5 h-3.5 text-[#5f6368] dark:text-[#9aa0a6]" />
             <span>In / PDF</span>
@@ -203,7 +203,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
           <button
             onClick={handleExportDocx}
             disabled={isExporting}
-            className="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium text-white bg-[#202124] hover:bg-[#303134] dark:bg-[#282828] dark:text-[#e3e3e3] dark:hover:bg-[#303134] dark:border dark:border-[#3c4043] shadow-2xs hover:shadow-xs transition-all disabled:opacity-50"
+            className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-medium text-white bg-[#202124] hover:bg-[#303134] dark:bg-[#292a2d] dark:text-[#e3e3e3] dark:hover:bg-[#303134] dark:border dark:border-[#3c4043] shadow-2xs hover:shadow-xs transition-all disabled:opacity-50"
           >
             <Download className="w-3.5 h-3.5" />
             <span>{isExporting ? 'Đang tạo .docx...' : 'Tải file Word (.docx)'}</span>
@@ -215,7 +215,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
       <div ref={scrollArea} className="a4-scroll-area grow overflow-auto p-4 sm:p-8 flex justify-center items-start">
         <div
           style={{ zoom: fitScale * zoom / 100 }}
-          className="a4-paper shrink-0 w-[210mm] min-h-[297mm] bg-white text-black p-[18mm] shadow-xl border border-[#dadce0] font-serif leading-normal"
+          className="a4-paper shrink-0 w-[210mm] min-h-[297mm] bg-white text-black p-[18mm] shadow-xs border border-[#dadce0] font-serif leading-normal"
         >
           {/* VIEW: ĐỀ THI */}
           {viewMode === 'exam' && (

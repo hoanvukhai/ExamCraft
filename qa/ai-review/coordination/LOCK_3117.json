@@ -1,6 +1,6 @@
 {
   "port": 3117,
-  "holder": "FREE",
-  "note": "Codex UI Google verification complete; isolated server stopped. Report qa/rebuild-2026-10-26/ui-google/BAO_CAO.md",
-  "since_utc": "2026-10-26T15:12:25.278Z"
+  "holder": "USER",
+  "note": "Neutral UI build z51xd6hU6BLvkhFZ0RCaL verified; isolated server3117 remains running for owner preview. Do not build over .next until server use is handed back. Report qa/rebuild-2026-10-27/ui-neutral/BAO_CAO.md",
+  "since_utc": "2026-10-26T17:44:34.3845940Z"
 }

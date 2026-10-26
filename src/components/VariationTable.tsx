@@ -42,13 +42,13 @@ export const VariationTable: React.FC<VariationTableProps> = ({
   const tableData = data;
 
   const containerClasses = isDark
-    ? 'border-[#3c4043] bg-[#1e1e1e] text-[#e3e3e3] shadow-xs'
+    ? 'border-[#3c4043] bg-[#202124] text-[#e3e3e3] shadow-xs'
     : 'border-[#dadce0] bg-white text-[#202124] shadow-xs';
 
   const borderClass = isDark ? 'border-[#3c4043]' : 'border-[#dadce0]';
-  const headerBgClass = isDark ? 'bg-[#282828] text-[#e3e3e3]' : 'bg-[#f8f9fa] text-[#202124]';
+  const headerBgClass = isDark ? 'bg-[#292a2d] text-[#e3e3e3]' : 'bg-[#f8f9fa] text-[#202124]';
   const valueTextClass = isDark ? 'text-[#e3e3e3] font-medium' : 'text-[#202124] font-medium';
-  const arrowClass = isDark ? 'text-[#8ab4f8] font-bold text-base select-none' : 'text-[#1a73e8] font-bold text-base select-none';
+  const arrowClass = isDark ? 'text-[#e3e3e3] font-bold text-base select-none' : 'text-[#3c4043] font-bold text-base select-none';
 
   return (
     <div className={`my-3 overflow-x-auto inline-block border rounded-xl font-serif text-sm transition-colors ${containerClasses} ${className}`}>

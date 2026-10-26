@@ -34,7 +34,7 @@ function PlanEditorContent({ exam, onChange }: Props) {
   let comparison: ReturnType<typeof compareExamPlan> | null = null, formError = '';
   try { comparison = compareExamPlan(exam, fromForm(form)); } catch (cause) { formError = cause instanceof Error && cause.name !== 'ZodError' ? cause.message : 'Kiểm tra các ô: tối đa 100 ô/1.000 câu, không trùng dạng–mức–yêu cầu; ô 0 câu không có điểm dương.'; }
   const update = (id: string, change: Partial<FormRow>) => { setDraft({ ...form, rows: form.rows.map(row => row.id === id ? { ...row, ...change } : row) }); setError(''); };
-  return <details className="border rounded-xl p-3 bg-white dark:bg-[#1e1e1e]"><summary className="cursor-pointer text-sm font-semibold">Kế hoạch đề · mục tiêu và thực tế</summary>
+  return <details className="border rounded-xl p-3 bg-white dark:bg-[#202124]"><summary className="cursor-pointer text-sm font-semibold">Kế hoạch đề · mục tiêu và thực tế</summary>
     <p className="text-xs my-2">Tự đặt số câu và tổng điểm từng ô. Kế hoạch chỉ đối chiếu các nhãn đã gắn, không tự chia điểm hoặc chuyển câu vào ô. Để trống yêu cầu nghĩa là không ràng buộc yêu cầu; ô này có thể chồng với ô có yêu cầu cụ thể.</p>
     <p className="text-xs my-2">Điểm tối đa hai chữ số thập phân; chưa đặt điểm khác điểm 0.</p>
     {!numeric && <p className="text-xs my-2">Bài nhận xét/rubric/khảo sát không đối chiếu điểm. Giữ các ô số câu; mục tiêu điểm cũ (nếu có) được báo để bạn chủ động rà soát.</p>}

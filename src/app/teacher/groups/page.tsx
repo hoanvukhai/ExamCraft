@@ -202,7 +202,7 @@ export default function TeacherGroupsPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#181818] text-[#202124] dark:text-[#e3e3e3] py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] text-[#202124] dark:text-[#e3e3e3] py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto space-y-6">
         {accountMessage && <p role="alert" className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">{accountMessage}</p>}
         {/* Navigation & Header */}
@@ -216,10 +216,10 @@ export default function TeacherGroupsPage() {
                 <ArrowLeft className="w-3.5 h-3.5" /> Soạn đề thi
               </Link>
               <span className="text-[#dadce0] dark:text-[#3c4043]">/</span>
-              <span className="text-xs text-[#1a73e8] dark:text-[#8ab4f8] font-semibold">Quản lý lớp học</span>
+              <span className="text-xs text-[#3c4043] dark:text-[#e3e3e3] font-semibold">Quản lý lớp học</span>
             </div>
             <h1 className="text-2xl font-bold text-[#202124] dark:text-[#e3e3e3] flex items-center gap-2.5">
-              <GraduationCap className="w-7 h-7 text-[#1a73e8] dark:text-[#8ab4f8]" />
+              <GraduationCap className="w-7 h-7 text-[#3c4043] dark:text-[#e3e3e3]" />
               Lớp Học & Danh Sách Học Sinh
             </h1>
             <p className="text-xs sm:text-sm text-[#5f6368] dark:text-[#9aa0a6] mt-1">
@@ -229,7 +229,7 @@ export default function TeacherGroupsPage() {
 
           <button
             onClick={() => setShowCreateModal(true)}
-            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 app-button-primary dark:bg-[#8ab4f8] dark:text-[#181818] dark:hover:bg-[#a8c7fa] text-white text-sm font-semibold rounded-full shadow-xs transition-all cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 app-button-primary dark:bg-[#e3e3e3] dark:text-[#17181a] dark:hover:bg-[#f1f3f4] text-white text-sm font-semibold rounded-lg shadow-xs transition-all cursor-pointer"
           >
             <Plus className="w-4 h-4" /> Tạo Lớp Mới
           </button>
@@ -244,7 +244,7 @@ export default function TeacherGroupsPage() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Tìm kiếm theo tên lớp hoặc mã lớp..."
-              className="w-full bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-full pl-10 pr-4 py-2.5 text-xs sm:text-sm text-[#202124] dark:text-[#e3e3e3] placeholder-[#5f6368] dark:placeholder-[#9aa0a6] focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] outline-hidden"
+              className="w-full bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-full pl-10 pr-4 py-2.5 text-xs sm:text-sm text-[#202124] dark:text-[#e3e3e3] placeholder-[#5f6368] dark:placeholder-[#9aa0a6] focus:border-[#3c4043] dark:focus:border-[#e3e3e3] outline-hidden"
             />
           </div>
           <span className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">
@@ -255,11 +255,11 @@ export default function TeacherGroupsPage() {
         {/* Danh sách các Lớp */}
         {loading ? (
           <div className="py-20 flex flex-col items-center justify-center text-[#5f6368] dark:text-[#9aa0a6]">
-            <div className="w-8 h-8 border-4 border-[#1a73e8] dark:border-[#8ab4f8] border-t-transparent rounded-full animate-spin mb-3" />
+            <div className="w-8 h-8 border-4 border-[#3c4043] dark:border-[#e3e3e3] border-t-transparent rounded-full animate-spin mb-3" />
             <p className="text-xs">Đang tải danh sách lớp học...</p>
           </div>
         ) : filteredGroups.length === 0 ? (
-          <div className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl p-12 text-center">
+          <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-12 text-center">
             <Users className="w-12 h-12 text-[#5f6368] dark:text-[#9aa0a6] mx-auto mb-3" />
             <h3 className="text-base font-bold text-[#202124] dark:text-[#e3e3e3]">Chưa có lớp học nào</h3>
             <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] mt-1 mb-5 max-w-md mx-auto">
@@ -267,7 +267,7 @@ export default function TeacherGroupsPage() {
             </p>
             <button
               onClick={() => setShowCreateModal(true)}
-              className="px-5 py-2.5 app-button-primary dark:bg-[#8ab4f8] dark:text-[#181818] text-white text-xs font-semibold rounded-full shadow-xs transition-all cursor-pointer"
+              className="px-5 py-2.5 app-button-primary dark:bg-[#e3e3e3] dark:text-[#17181a] text-white text-xs font-semibold rounded-lg shadow-xs transition-all cursor-pointer"
             >
               Tạo Lớp Đầu Tiên
             </button>
@@ -277,17 +277,17 @@ export default function TeacherGroupsPage() {
             {filteredGroups.map((group) => (
               <div
                 key={group.id}
-                className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] hover:border-[#1a73e8] dark:hover:border-[#8ab4f8] rounded-2xl p-5 shadow-xs hover:shadow-md flex flex-col justify-between transition-all"
+                className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] hover:border-[#3c4043] dark:hover:border-[#e3e3e3] rounded-xl p-5 shadow-xs hover:shadow-xs flex flex-col justify-between transition-all"
               >
                 <div>
                   <div className="flex items-start justify-between gap-3 mb-3">
-                    <span className="px-2.5 py-1 rounded-full text-[11px] font-mono font-bold bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] border border-[#d2e3fc] dark:border-[#2a3f58]">
+                    <span className="px-2.5 py-1 rounded-full text-[11px] font-mono font-bold bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043]">
                       MÃ: {group.publicCode}
                     </span>
                     <button
                       onClick={() => copyClassLink(group.publicCode)}
                       title="Sao chép link lớp học"
-                      className="text-xs text-[#5f6368] hover:text-[#1a73e8] dark:text-[#9aa0a6] dark:hover:text-[#8ab4f8] flex items-center gap-1 p-1 rounded-full hover:bg-[#f1f3f4] dark:hover:bg-[#282828] transition-colors cursor-pointer"
+                      className="text-xs text-[#5f6368] hover:text-[#3c4043] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] flex items-center gap-1 p-1 rounded-lg hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
                     >
                       {copiedCode === group.publicCode ? (
                         <>
@@ -307,11 +307,11 @@ export default function TeacherGroupsPage() {
                   {group.note && <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] mb-4 line-clamp-2">{group.note}</p>}
 
                   <div className="grid grid-cols-2 gap-2 my-4">
-                    <div className="bg-[#f8f9fa] dark:bg-[#282828] p-2.5 rounded-xl border border-[#dadce0] dark:border-[#3c4043] text-center">
+                    <div className="bg-[#f8f9fa] dark:bg-[#292a2d] p-2.5 rounded-xl border border-[#dadce0] dark:border-[#3c4043] text-center">
                       <span className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] block">Học sinh</span>
-                      <span className="text-lg font-black text-[#1a73e8] dark:text-[#8ab4f8]">{group._count.students}</span>
+                      <span className="text-lg font-black text-[#3c4043] dark:text-[#e3e3e3]">{group._count.students}</span>
                     </div>
-                    <div className="bg-[#f8f9fa] dark:bg-[#282828] p-2.5 rounded-xl border border-[#dadce0] dark:border-[#3c4043] text-center">
+                    <div className="bg-[#f8f9fa] dark:bg-[#292a2d] p-2.5 rounded-xl border border-[#dadce0] dark:border-[#3c4043] text-center">
                       <span className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] block">Bài đã giao</span>
                       <span className="text-lg font-black text-emerald-600 dark:text-emerald-400">{group._count.assignments}</span>
                     </div>
@@ -321,7 +321,7 @@ export default function TeacherGroupsPage() {
                 <div className="pt-3 border-t border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between gap-2">
                   <button
                     onClick={() => handleOpenGroupDetails(group)}
-                    className="flex-1 py-2 bg-[#f1f3f4] hover:bg-[#e8eaed] dark:bg-[#282828] dark:hover:bg-[#303134] text-[#202124] dark:text-[#e3e3e3] text-xs font-semibold rounded-full border border-[#dadce0] dark:border-[#3c4043] transition-all cursor-pointer"
+                    className="flex-1 py-2 bg-[#f1f3f4] hover:bg-[#e8eaed] dark:bg-[#292a2d] dark:hover:bg-[#303134] text-[#202124] dark:text-[#e3e3e3] text-xs font-semibold rounded-lg border border-[#dadce0] dark:border-[#3c4043] transition-all cursor-pointer"
                   >
                     Xem Danh Sách
                   </button>
@@ -329,7 +329,7 @@ export default function TeacherGroupsPage() {
                     href={`/c/${group.publicCode}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="p-2 bg-[#f1f3f4] hover:bg-[#e8eaed] dark:bg-[#282828] dark:hover:bg-[#303134] text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] rounded-full border border-[#dadce0] dark:border-[#3c4043] transition-all"
+                    className="p-2 bg-[#f1f3f4] hover:bg-[#e8eaed] dark:bg-[#292a2d] dark:hover:bg-[#303134] text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] rounded-lg border border-[#dadce0] dark:border-[#3c4043] transition-all"
                     title="Mở cổng lớp học"
                   >
                     <ExternalLink className="w-4 h-4" />
@@ -343,17 +343,17 @@ export default function TeacherGroupsPage() {
         {/* Modal Tạo Lớp Học Mới */}
         {showCreateModal && (
           <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="max-w-lg w-full bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl p-6 shadow-2xl relative">
+            <div className="max-w-lg w-full bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-6 shadow-xs relative">
               <div className="flex items-center justify-between pb-4 border-b border-[#dadce0] dark:border-[#3c4043]">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] flex items-center justify-center font-bold">
+                  <div className="w-8 h-8 rounded-full bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] flex items-center justify-center font-bold">
                     <Plus className="w-4 h-4" />
                   </div>
                   <h3 className="text-base font-bold text-[#202124] dark:text-[#e3e3e3]">Tạo Lớp Học Mới</h3>
                 </div>
                 <button
                   onClick={() => setShowCreateModal(false)}
-                  className="p-1.5 rounded-full text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] transition-colors cursor-pointer"
+                  className="p-1.5 rounded-lg text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -369,7 +369,7 @@ export default function TeacherGroupsPage() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Ví dụ: 12A1 Toán - Luyện Thi ĐGNL"
-                    className="w-full bg-white dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3.5 py-2.5 text-sm text-[#202124] dark:text-[#e3e3e3] placeholder-[#5f6368] dark:placeholder-[#9aa0a6] focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] outline-hidden"
+                    className="w-full bg-white dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3.5 py-2.5 text-sm text-[#202124] dark:text-[#e3e3e3] placeholder-[#5f6368] dark:placeholder-[#9aa0a6] focus:border-[#3c4043] dark:focus:border-[#e3e3e3] outline-hidden"
                     required
                   />
                 </div>
@@ -383,7 +383,7 @@ export default function TeacherGroupsPage() {
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
                     placeholder="Ví dụ: Lịch học tối T3, T5 hàng tuần..."
-                    className="w-full bg-white dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3.5 py-2.5 text-sm text-[#202124] dark:text-[#e3e3e3] placeholder-[#5f6368] dark:placeholder-[#9aa0a6] focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] outline-hidden"
+                    className="w-full bg-white dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3.5 py-2.5 text-sm text-[#202124] dark:text-[#e3e3e3] placeholder-[#5f6368] dark:placeholder-[#9aa0a6] focus:border-[#3c4043] dark:focus:border-[#e3e3e3] outline-hidden"
                   />
                 </div>
 
@@ -392,14 +392,14 @@ export default function TeacherGroupsPage() {
                     <label className="block text-xs font-semibold text-[#202124] dark:text-[#e3e3e3] uppercase tracking-wider">
                       Danh sách tên học sinh (Dán nhiều dòng)
                     </label>
-                    <span className="text-[11px] text-[#1a73e8] dark:text-[#8ab4f8] font-medium">Hỗ trợ dán từ Excel</span>
+                    <span className="text-[11px] text-[#3c4043] dark:text-[#e3e3e3] font-medium">Hỗ trợ dán từ Excel</span>
                   </div>
                   <textarea
                     rows={6}
                     value={studentNamesText}
                     onChange={(e) => setStudentNamesText(e.target.value)}
                     placeholder="Nguyễn Văn An&#10;Trần Thị Bình&#10;Lê Hoàng Cúc..."
-                    className="w-full bg-white dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-xl p-3 text-xs sm:text-sm text-[#202124] dark:text-[#e3e3e3] placeholder-[#5f6368] dark:placeholder-[#9aa0a6] font-mono focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] outline-hidden"
+                    className="w-full bg-white dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-xl p-3 text-xs sm:text-sm text-[#202124] dark:text-[#e3e3e3] placeholder-[#5f6368] dark:placeholder-[#9aa0a6] font-mono focus:border-[#3c4043] dark:focus:border-[#e3e3e3] outline-hidden"
                   />
                   <p className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] mt-1">
                     Mỗi học sinh 1 dòng. Hệ thống tự động lọc trùng lặp và loại bỏ dòng trống.
@@ -410,14 +410,14 @@ export default function TeacherGroupsPage() {
                   <button
                     type="button"
                     onClick={() => setShowCreateModal(false)}
-                    className="px-5 py-2 bg-[#f1f3f4] hover:bg-[#e8eaed] dark:bg-[#282828] dark:hover:bg-[#303134] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043] text-xs font-semibold rounded-full cursor-pointer"
+                    className="px-5 py-2 bg-[#f1f3f4] hover:bg-[#e8eaed] dark:bg-[#292a2d] dark:hover:bg-[#303134] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043] text-xs font-semibold rounded-lg cursor-pointer"
                   >
                     Hủy
                   </button>
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="px-5 py-2 app-button-primary dark:bg-[#8ab4f8] dark:text-[#181818] disabled:opacity-50 text-white text-xs font-semibold rounded-full shadow-xs flex items-center gap-1.5 cursor-pointer"
+                    className="px-5 py-2 app-button-primary dark:bg-[#e3e3e3] dark:text-[#17181a] disabled:opacity-50 text-white text-xs font-semibold rounded-lg shadow-xs flex items-center gap-1.5 cursor-pointer"
                   >
                     {submitting ? 'Đang tạo...' : 'Xác Nhận Tạo Lớp'}
                   </button>
@@ -430,18 +430,18 @@ export default function TeacherGroupsPage() {
         {/* Modal Chi Tiết Danh Sách Học Sinh */}
         {selectedGroup && (
           <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="max-w-xl w-full bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl p-6 shadow-2xl">
+            <div className="max-w-xl w-full bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-6 shadow-xs">
               <div className="flex items-center justify-between pb-4 border-b border-[#dadce0] dark:border-[#3c4043]">
                 <div>
                   <h3 className="text-base font-bold text-[#202124] dark:text-[#e3e3e3]">{selectedGroup.name}</h3>
                   <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">
-                    Mã lớp: <span className="font-mono text-[#1a73e8] dark:text-[#8ab4f8] font-bold">{selectedGroup.publicCode}</span> •{' '}
+                    Mã lớp: <span className="font-mono text-[#3c4043] dark:text-[#e3e3e3] font-bold">{selectedGroup.publicCode}</span> •{' '}
                     {groupStudents.length} học sinh
                   </p>
                 </div>
                 <button
                   onClick={() => { setSelectedGroup(null); setIssuedPins(null); }}
-                  className="p-1.5 rounded-full text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] transition-colors cursor-pointer"
+                  className="p-1.5 rounded-lg text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -454,18 +454,18 @@ export default function TeacherGroupsPage() {
                   value={newStudentName}
                   onChange={(e) => setNewStudentName(e.target.value)}
                   placeholder="Thêm tên học sinh mới..."
-                  className="flex-1 bg-white dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2 text-xs sm:text-sm text-[#202124] dark:text-[#e3e3e3] placeholder-[#5f6368] dark:placeholder-[#9aa0a6] focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] outline-hidden"
+                  className="flex-1 bg-white dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2 text-xs sm:text-sm text-[#202124] dark:text-[#e3e3e3] placeholder-[#5f6368] dark:placeholder-[#9aa0a6] focus:border-[#3c4043] dark:focus:border-[#e3e3e3] outline-hidden"
                 />
                 <button
                   type="submit"
-                  className="px-5 py-2 app-button-primary dark:bg-[#8ab4f8] dark:text-[#181818] text-white text-xs font-semibold rounded-full shrink-0 shadow-xs cursor-pointer"
+                  className="px-5 py-2 app-button-primary dark:bg-[#e3e3e3] dark:text-[#17181a] text-white text-xs font-semibold rounded-lg shrink-0 shadow-xs cursor-pointer"
                 >
                   Thêm
                 </button>
               </form>
 
               <div className="flex flex-wrap items-center gap-2 mb-3 text-xs">
-                <button type="button" disabled={pinBusy || groupStudents.length === 0} onClick={() => void issuePins()} className="px-4 py-2 rounded-full border border-[#dadce0] dark:border-[#3c4043] font-semibold disabled:opacity-50">Cấp PIN cho cả lớp</button>
+                <button type="button" disabled={pinBusy || groupStudents.length === 0} onClick={() => void issuePins()} className="px-4 py-2 rounded-lg border border-[#dadce0] dark:border-[#3c4043] font-semibold disabled:opacity-50">Cấp PIN cho cả lớp</button>
                 <span className="text-[#5f6368] dark:text-[#9aa0a6]">Dùng khi giao bài có bật yêu cầu PIN. PIN chỉ hiện một lần ngay sau khi cấp.</span>
               </div>
               {issuedPins && issuedPins.length > 0 && (
@@ -473,9 +473,9 @@ export default function TeacherGroupsPage() {
                   <p className="font-semibold">PIN vừa cấp (chỉ hiện một lần, hãy ghi lại hoặc tải về ngay)</p>
                   <ul className="mt-2 max-h-32 overflow-y-auto space-y-1 font-mono">{issuedPins.map(item => <li key={item.id}>{item.displayName}: <strong>{item.pin}</strong></li>)}</ul>
                   <div className="mt-2 flex gap-2">
-                    <button type="button" onClick={() => void navigator.clipboard.writeText(issuedPins.map(item => `${item.displayName}: ${item.pin}`).join(String.fromCharCode(10)))} className="px-3 py-1.5 rounded-full border border-amber-400 font-semibold">Chép danh sách PIN</button>
-                    <button type="button" onClick={downloadPins} className="px-3 py-1.5 rounded-full border border-amber-400 font-semibold">Tải PIN (CSV)</button>
-                    <button type="button" onClick={() => setIssuedPins(null)} className="px-3 py-1.5 rounded-full border border-amber-400 font-semibold">Đã ghi lại, ẩn PIN</button>
+                    <button type="button" onClick={() => void navigator.clipboard.writeText(issuedPins.map(item => `${item.displayName}: ${item.pin}`).join(String.fromCharCode(10)))} className="px-3 py-1.5 rounded-lg border border-amber-400 font-semibold">Chép danh sách PIN</button>
+                    <button type="button" onClick={downloadPins} className="px-3 py-1.5 rounded-lg border border-amber-400 font-semibold">Tải PIN (CSV)</button>
+                    <button type="button" onClick={() => setIssuedPins(null)} className="px-3 py-1.5 rounded-lg border border-amber-400 font-semibold">Đã ghi lại, ẩn PIN</button>
                   </div>
                 </div>
               )}
@@ -500,7 +500,7 @@ export default function TeacherGroupsPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6]">{st.hasPin ? 'Đã có PIN' : 'Chưa có PIN'}</span>
-                        <button type="button" disabled={pinBusy} onClick={() => void issuePins([st.id])} className="text-[11px] text-[#1a73e8] dark:text-[#8ab4f8] font-semibold disabled:opacity-50">{st.hasPin ? 'Cấp lại PIN' : 'Cấp PIN'}</button>
+                        <button type="button" disabled={pinBusy} onClick={() => void issuePins([st.id])} className="text-[11px] text-[#3c4043] dark:text-[#e3e3e3] font-semibold disabled:opacity-50">{st.hasPin ? 'Cấp lại PIN' : 'Cấp PIN'}</button>
                       </div>
                     </div>
                   ))
@@ -510,7 +510,7 @@ export default function TeacherGroupsPage() {
               <div className="mt-5 pt-3 border-t border-[#dadce0] dark:border-[#3c4043] flex justify-end">
                 <button
                   onClick={() => { setSelectedGroup(null); setIssuedPins(null); }}
-                  className="px-5 py-2 bg-[#f1f3f4] hover:bg-[#e8eaed] dark:bg-[#282828] dark:hover:bg-[#303134] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043] text-xs font-semibold rounded-full cursor-pointer"
+                  className="px-5 py-2 bg-[#f1f3f4] hover:bg-[#e8eaed] dark:bg-[#292a2d] dark:hover:bg-[#303134] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043] text-xs font-semibold rounded-lg cursor-pointer"
                 >
                   Đóng
                 </button>

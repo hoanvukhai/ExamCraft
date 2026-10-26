@@ -110,21 +110,21 @@ export const Header: React.FC<HeaderProps> = ({
     : 0;
 
   return (
-    <header className="app-bar no-print h-14 bg-white dark:bg-[#181818] border-b border-[#dadce0] dark:border-[#3c4043] shrink-0 z-30 px-3 sm:px-5 flex items-center justify-between gap-3 shadow-xs transition-colors duration-200">
+    <header className="app-bar no-print h-14 bg-white dark:bg-[#17181a] border-b border-[#dadce0] dark:border-[#3c4043] shrink-0 z-30 px-3 sm:px-5 flex items-center justify-between gap-3 shadow-xs transition-colors duration-200">
       {/* KHU VỰC TRÁI: Toggle menu, Logo ExamCraft, Tiêu đề đề thi & Trạng thái lưu Google Docs style */}
       <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
         {/* Nút toggle Sidebar */}
         <button
           onClick={onToggleSidebar}
           title={isSidebarCollapsed ? 'Mở rộng bảng công cụ' : 'Thu gọn bảng công cụ'}
-          className="p-2 rounded-full text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] transition-colors cursor-pointer"
+          className="p-2 rounded-lg text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
         >
           <Menu className="w-5 h-5" />
         </button>
 
         {/* Logo ExamCraft Google Style */}
         <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
-          <div className="w-8 h-8 rounded-full bg-[#202124] dark:bg-[#282828] text-white dark:text-[#8ab4f8] border border-transparent dark:border-[#3c4043] flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
+          <div className="w-8 h-8 rounded-full bg-[#202124] dark:bg-[#292a2d] text-white dark:text-[#e3e3e3] border border-transparent dark:border-[#3c4043] flex items-center justify-center shadow-xs  transition-transform">
             <GraduationCap className="w-4 h-4" />
           </div>
           <span className="font-bold text-[#202124] dark:text-[#e3e3e3] text-base sm:text-lg tracking-tight hidden sm:inline">
@@ -136,7 +136,7 @@ export const Header: React.FC<HeaderProps> = ({
         <Link
           href="/"
           title="Quay về Kho đề của tôi (Lưu tự động)"
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-[#5f6368] hover:text-[#1a73e8] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] transition-colors cursor-pointer shrink-0"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-[#5f6368] hover:text-[#3c4043] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] transition-colors cursor-pointer shrink-0"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span className="hidden sm:inline">Kho đề</span>
@@ -161,7 +161,7 @@ export const Header: React.FC<HeaderProps> = ({
                   setIsEditingTitle(false);
                 }
               }}
-              className="text-sm font-semibold text-[#202124] dark:text-[#e3e3e3] bg-white dark:bg-[#282828] border border-[#1a73e8] dark:border-[#8ab4f8] rounded-md px-2 py-0.5 outline-hidden w-full shadow-xs"
+              className="text-sm font-semibold text-[#202124] dark:text-[#e3e3e3] bg-white dark:bg-[#292a2d] border border-[#3c4043] dark:border-[#e3e3e3] rounded-md px-2 py-0.5 outline-hidden w-full shadow-xs"
             />
           ) : (
             <button
@@ -171,7 +171,7 @@ export const Header: React.FC<HeaderProps> = ({
                 setIsEditingTitle(true);
               }}
               title="Nhấn để đổi tên đề thi (như Google Docs)"
-              className="group flex items-center gap-1.5 text-sm font-semibold text-[#202124] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] px-2 py-1 rounded-md transition-colors truncate text-left cursor-pointer"
+              className="group flex items-center gap-1.5 text-sm font-semibold text-[#202124] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] px-2 py-1 rounded-md transition-colors truncate text-left cursor-pointer"
             >
               <span className="truncate">{examTitle || 'Đề kiểm tra không tên'}</span>
               <Edit3 className="w-3.5 h-3.5 text-[#5f6368] opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
@@ -181,7 +181,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Trạng thái Auto-save giống Google Docs ("Đã lưu vào Drive") */}
           <div className="hidden md:flex items-center gap-1 text-[11px] text-[#5f6368] dark:text-[#9aa0a6] shrink-0">
             {isCloudSaving ? (
-              <span className="flex items-center gap-1 text-[#1a73e8] dark:text-[#8ab4f8]">
+              <span className="flex items-center gap-1 text-[#3c4043] dark:text-[#e3e3e3]">
                 <CloudUpload className="w-3.5 h-3.5 animate-bounce" />
                 <span>Đang lưu...</span>
               </span>
@@ -208,7 +208,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={onExportWord}
               title="Tải file Word (.docx) chuẩn công thức OMML"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold app-button-primary text-white shadow-2xs transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold app-button-secondary text-white shadow-2xs transition-colors cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
               <span className="hidden md:inline">Tải Word (.docx)</span>
@@ -218,7 +218,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={onPrintPdf}
               title="In đề thi hoặc xuất ra PDF"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f8f9fa] shadow-2xs transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f8f9fa] shadow-2xs transition-colors cursor-pointer"
             >
               <Printer className="w-3.5 h-3.5" />
               <span className="hidden md:inline">In / PDF</span>
@@ -231,13 +231,13 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onToggleCopilot}
             title={isCopilotOpen ? "Đóng thanh trợ lý AI Gemini (Cột phải)" : "Mở thanh trợ lý AI Gemini (Cột phải)"}
-            className={`p-2 rounded-full transition-colors cursor-pointer flex items-center gap-1.5 text-xs font-medium ${
+            className={`p-2 rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 text-xs font-medium ${
               isCopilotOpen
-                ? 'bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8] border border-blue-200 dark:border-[#3c4043]'
-                : 'text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828]'
+                ? 'bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border border-[var(--ui-border)] dark:border-[#3c4043]'
+                : 'text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d]'
             }`}
           >
-            <Sparkles className="w-4 h-4 text-amber-500 shrink-0" />
+            <Sparkles className="w-4 h-4 text-[var(--ui-text-secondary)] shrink-0" />
             <span className="hidden md:inline">Gemini AI</span>
           </button>
         )}
@@ -246,9 +246,9 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           onClick={toggleTheme}
           title={theme === 'dark' ? 'Chuyển sang chế độ Sáng (Màu trắng Google)' : 'Chuyển sang chế độ Tối (Dark Mode)'}
-          className="p-2 rounded-full text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] transition-colors cursor-pointer"
+          className="p-2 rounded-lg text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
         >
-          {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-[#5f6368]" />}
+          {theme === 'dark' ? <Sun className="w-4 h-4 text-[var(--ui-text-secondary)]" /> : <Moon className="w-4 h-4 text-[#5f6368]" />}
         </button>
 
         {/* Nút Trạng thái Khóa AI cá nhân (Badge Google Minimalist) */}
@@ -261,12 +261,12 @@ export const Header: React.FC<HeaderProps> = ({
               ? `Có ${keyErrorCount} khóa bị lỗi hoặc hết lượt (429)!`
               : `Khóa AI Google Gemini: ${keyCount} khóa đang hoạt động tốt`
           }
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all border cursor-pointer shadow-2xs ${
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border cursor-pointer shadow-2xs ${
             !hasActiveKey
-              ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800 hover:bg-amber-100'
+              ? 'bg-transparent text-[#5f6368] dark:text-[#9aa0a6] border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d]'
               : keyErrorCount > 0
               ? 'bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border-rose-200 dark:border-rose-800 hover:bg-rose-100'
-              : 'bg-white dark:bg-[#282828] text-[#3c4043] dark:text-[#e3e3e3] border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f8f9fa] dark:hover:bg-[#303134]'
+              : 'bg-white dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f8f9fa] dark:hover:bg-[#303134]'
           }`}
         >
           <Key className="w-3.5 h-3.5 text-[#5f6368] dark:text-[#9aa0a6]" />
@@ -275,9 +275,9 @@ export const Header: React.FC<HeaderProps> = ({
           <span
             className={`w-2 h-2 rounded-full ${
               !hasActiveKey
-                ? 'bg-amber-500 animate-pulse'
+                ? 'bg-[#9aa0a6]'
                 : keyErrorCount > 0
-                ? 'bg-rose-500 animate-pulse'
+                ? 'bg-rose-500 '
                 : 'bg-emerald-500'
             }`}
           />
@@ -288,9 +288,9 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="relative">
             <button
               onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-              className="flex items-center gap-2 py-1 px-1.5 sm:px-2 rounded-full hover:bg-[#f1f3f4] dark:hover:bg-[#282828] transition-colors cursor-pointer"
+              className="flex items-center gap-2 py-1 px-1.5 sm:px-2 rounded-lg hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
             >
-              <div className="w-7 h-7 rounded-full bg-[#202124] dark:bg-[#282828] text-white dark:text-[#8ab4f8] border border-transparent dark:border-[#3c4043] flex items-center justify-center text-xs font-bold shadow-xs">
+              <div className="w-7 h-7 rounded-full bg-[#202124] dark:bg-[#292a2d] text-white dark:text-[#e3e3e3] border border-transparent dark:border-[#3c4043] flex items-center justify-center text-xs font-bold shadow-xs">
                 {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U'}
               </div>
               <ChevronDown className="w-3.5 h-3.5 text-[#5f6368] dark:text-[#9aa0a6] hidden sm:block" />
@@ -302,22 +302,22 @@ export const Header: React.FC<HeaderProps> = ({
                   className="fixed inset-0 z-40" 
                   onClick={() => setIsUserMenuOpen(false)} 
                 />
-                <div className="absolute right-0 mt-2 w-72 bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-3xl shadow-2xl z-50 p-2.5 text-xs divide-y divide-[#f1f3f4] dark:divide-[#3c4043] animate-in fade-in zoom-in-95 duration-100">
+                <div className="absolute right-0 mt-2 w-72 bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl shadow-xs z-50 p-2.5 text-xs divide-y divide-[#f1f3f4] dark:divide-[#3c4043] animate-in fade-in zoom-in-95 duration-100">
                   {/* THÔNG TIN NGƯỜI DÙNG */}
                   <div className="p-2">
                     <p className="font-bold text-[#202124] dark:text-[#e3e3e3] text-sm truncate">{currentUser.name}</p>
                     <p className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] truncate">{currentUser.email}</p>
-                    <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#e8f0fe] dark:bg-[#1e2a38] text-[#1a73e8] dark:text-[#8ab4f8]">
+                    <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3]">
                       {currentUser.role === 'SUPER_ADMIN' ? 'Quản trị viên' : 'Giáo viên'}
                     </span>
                   </div>
 
                   {/* KHỐI THEO DÕI TRẠNG THÁI KHÓA AI & HẠN MỨC */}
                   <div className="py-2.5">
-                    <div className="p-3 bg-[#f8f9fa] dark:bg-[#282828]/60 rounded-2xl border border-[#dadce0] dark:border-[#3c4043] space-y-2">
+                    <div className="p-3 bg-[#f8f9fa] dark:bg-[#292a2d]/60 rounded-xl border border-[#dadce0] dark:border-[#3c4043] space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="text-[11px] font-bold text-[#3c4043] dark:text-[#e3e3e3] flex items-center gap-1.5">
-                          <Activity className="w-3.5 h-3.5 text-[#1a73e8] dark:text-[#8ab4f8]" />
+                          <Activity className="w-3.5 h-3.5 text-[#3c4043] dark:text-[#e3e3e3]" />
                           <span>Kho Khóa AI Của Bạn</span>
                         </span>
                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
@@ -344,7 +344,7 @@ export const Header: React.FC<HeaderProps> = ({
                         <div className="w-full bg-[#dadce0] dark:bg-[#3c4043] h-1.5 rounded-full overflow-hidden">
                           <div 
                             className={`h-full rounded-full transition-all duration-300 ${
-                              usagePercent > 80 ? 'bg-rose-500' : 'bg-[#1a73e8] dark:bg-[#8ab4f8]'
+                              usagePercent > 80 ? 'bg-rose-500' : 'bg-[#3c4043] dark:bg-[#e3e3e3]'
                             }`}
                             style={{ width: `${usagePercent}%` }}
                           />
@@ -379,7 +379,7 @@ export const Header: React.FC<HeaderProps> = ({
                           setIsUserMenuOpen(false);
                           onOpenApiKeyModal();
                         }}
-                        className="w-full mt-1 py-2 px-3 bg-[#202124] hover:bg-[#303134] text-white dark:bg-[#282828] dark:text-[#e3e3e3] dark:hover:bg-[#303134] dark:border dark:border-[#3c4043] rounded-full font-medium text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
+                        className="w-full mt-1 py-2 px-3 bg-[#202124] hover:bg-[#303134] text-white dark:bg-[#292a2d] dark:text-[#e3e3e3] dark:hover:bg-[#303134] dark:border dark:border-[#3c4043] rounded-lg font-medium text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
                       >
                         <Key className="w-3.5 h-3.5" />
                         <span>Quản lý & Kiểm tra Khóa AI</span>
@@ -392,9 +392,9 @@ export const Header: React.FC<HeaderProps> = ({
                       <Link
                         href="/admin/users"
                         onClick={() => setIsUserMenuOpen(false)}
-                        className="flex items-center gap-2 px-2.5 py-1.5 rounded-full text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] transition-colors"
+                        className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors"
                       >
-                        <ShieldCheck className="w-4 h-4 text-[#1a73e8] dark:text-[#8ab4f8]" />
+                        <ShieldCheck className="w-4 h-4 text-[#3c4043] dark:text-[#e3e3e3]" />
                         <span>Quản trị người dùng</span>
                       </Link>
                     </div>
@@ -404,7 +404,7 @@ export const Header: React.FC<HeaderProps> = ({
                     <button
                       onClick={handleLogout}
                         disabled={loggingOut}
-                      className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-full text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
+                      className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
                     >
                       <LogOut className="w-4 h-4" />
                       <span>Đăng xuất tài khoản</span>

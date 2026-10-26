@@ -295,7 +295,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   };
 
   return (
-    <div className="print-flow h-dvh w-full overflow-hidden flex flex-col bg-[#F8F9FA] dark:bg-[#121212] font-sans text-[#202124] dark:text-[#e3e3e3] transition-colors duration-200">
+    <div className="print-flow h-dvh w-full overflow-hidden flex flex-col bg-[#F8F9FA] dark:bg-[#17181a] font-sans text-[#202124] dark:text-[#e3e3e3] transition-colors duration-200">
       {/* HEADER GOOGLE MINIMALIST */}
       <Header
         canEdit={canEdit}
@@ -371,16 +371,16 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
           {manualDraftMessage && <p role="alert" className="no-print border rounded p-3 mb-3 text-sm text-amber-700">{manualDraftMessage}</p>}
           {/* Cảnh báo nhẹ nhàng nếu chưa cấu hình API Key */}
           {!hasActiveKey && (
-            <div className="no-print mb-4 bg-white dark:bg-[#1e1e1e] border border-amber-200 dark:border-amber-900/60 rounded-2xl p-3 flex items-center justify-between text-xs text-[#3c4043] dark:text-[#e3e3e3] shadow-2xs">
+            <div className="no-print mb-4 bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-xl p-3 flex items-center justify-between text-xs text-[#3c4043] dark:text-[#e3e3e3] shadow-2xs">
               <div className="flex items-center gap-2">
-                <Info className="w-4 h-4 text-amber-500 shrink-0" />
+              <Info className="w-4 h-4 text-[#5f6368] dark:text-[#9aa0a6] shrink-0" />
                 <span>
                   Thầy cô vẫn có thể <strong>soạn, lưu và xuất đề thủ công</strong>. Thêm khóa Gemini cá nhân khi muốn dùng trợ lý AI.
                 </span>
               </div>
               <button
                 onClick={() => setIsApiKeyModalOpen(true)}
-                className="ml-3 px-3.5 py-1 text-[#3c4043] dark:text-[#e3e3e3] bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] font-semibold rounded-full shadow-2xs shrink-0 transition-colors cursor-pointer"
+                className="ml-3 px-3.5 py-1 text-[#3c4043] dark:text-[#e3e3e3] bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] font-semibold rounded-lg shadow-2xs shrink-0 transition-colors cursor-pointer"
               >
                 Thêm khóa AI
               </button>
@@ -388,13 +388,13 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
           )}
 
           {/* Thanh chuyển tab trên mobile */}
-          <div className="no-print lg:hidden bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-full p-1 mb-4 flex items-center justify-center gap-1 shadow-2xs">
+          <div className="no-print lg:hidden bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-full p-1 mb-4 flex items-center justify-center gap-1 shadow-2xs">
             <button
               onClick={() => setMobileTab('editor')}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-full text-xs font-semibold transition-all ${
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all ${
                 mobileTab === 'editor'
-                  ? 'bg-[#202124] text-white dark:bg-[#282828] dark:text-[#e3e3e3] shadow-xs'
-                  : 'text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#282828]'
+                  ? 'bg-[#202124] text-white dark:bg-[#292a2d] dark:text-[#e3e3e3] shadow-xs'
+                  : 'text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d]'
               }`}
             >
               <FileEdit className="w-3.5 h-3.5" />
@@ -403,10 +403,10 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
 
             <button
               onClick={() => setMobileTab('preview')}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-full text-xs font-semibold transition-all ${
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all ${
                 mobileTab === 'preview'
-                  ? 'bg-[#202124] text-white dark:bg-[#282828] dark:text-[#e3e3e3] shadow-xs'
-                  : 'text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#282828]'
+                  ? 'bg-[#202124] text-white dark:bg-[#292a2d] dark:text-[#e3e3e3] shadow-xs'
+                  : 'text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d]'
               }`}
             >
               <Eye className="w-3.5 h-3.5" />
@@ -423,11 +423,11 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
               }`}
             >
               {/* Thanh tiêu đề & Tác vụ danh sách câu hỏi */}
-              <div className="bg-white dark:bg-[#1e1e1e] p-4 rounded-3xl border border-[#dadce0] dark:border-[#3c4043] shadow-xs flex flex-wrap items-center justify-between gap-3">
+              <div className="bg-white dark:bg-[#202124] p-4 rounded-2xl border border-[#dadce0] dark:border-[#3c4043] shadow-xs flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <h2 className="font-bold text-[#202124] dark:text-[#e3e3e3] text-sm sm:text-base flex items-center gap-2">
                     <span>Ngân Hàng Câu Hỏi Trong Đề</span>
-                    <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#f1f3f4] dark:bg-[#282828] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043]">
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043]">
                       {exam.questions.length} câu
                     </span>
                   </h2>
@@ -441,7 +441,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                     <button
                       onClick={handleSelectAll}
                       title={selectedQuestionIds.length === exam.questions.length ? "Bỏ chọn tất cả" : "Chọn tất cả câu hỏi"}
-                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] rounded-full transition-colors cursor-pointer shadow-2xs"
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] rounded-lg transition-colors cursor-pointer shadow-2xs"
                     >
                       {selectedQuestionIds.length === exam.questions.length && exam.questions.length > 0 ? (
                         <CheckSquare className="w-3.5 h-3.5 text-[#202124] dark:text-[#e3e3e3]" />
@@ -457,7 +457,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                   <button
                     onClick={handleSaveCurrentExam}
                     title="Lưu các thay đổi lên máy chủ"
-                    className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] rounded-full transition-colors cursor-pointer shadow-2xs"
+                    className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] rounded-lg transition-colors cursor-pointer shadow-2xs"
                   >
                     {isCloudSaved ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Save className="w-3.5 h-3.5 text-[#5f6368] dark:text-[#9aa0a6]" />}
                     <span>{isCloudSaving ? 'Đang lưu…' : 'Lưu đề'}</span>
@@ -465,7 +465,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
 
                   <button
                     onClick={handleAddQuestion}
-                    className="flex items-center gap-1.5 px-4 py-1.5 text-xs font-medium text-white bg-[#202124] hover:bg-[#303134] dark:bg-[#282828] dark:text-[#e3e3e3] dark:hover:bg-[#303134] dark:border dark:border-[#3c4043] rounded-full transition-all shadow-xs cursor-pointer"
+                    className="flex items-center gap-1.5 px-4 py-1.5 text-xs font-medium text-white bg-[#202124] hover:bg-[#303134] dark:bg-[#292a2d] dark:text-[#e3e3e3] dark:hover:bg-[#303134] dark:border dark:border-[#3c4043] rounded-lg transition-all shadow-xs cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Thêm câu hỏi</span>
@@ -507,8 +507,8 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                 ))}
 
                 {exam.questions.length === 0 && (
-                  <div className="p-12 text-center bg-white dark:bg-[#1e1e1e] rounded-3xl border border-dashed border-[#dadce0] dark:border-[#3c4043]">
-                    <div className="w-12 h-12 rounded-2xl bg-[#f1f3f4] dark:bg-[#282828] flex items-center justify-center mx-auto mb-3 text-[#5f6368] dark:text-[#9aa0a6]">
+                  <div className="p-12 text-center bg-white dark:bg-[#202124] rounded-2xl border border-dashed border-[#dadce0] dark:border-[#3c4043]">
+                    <div className="w-12 h-12 rounded-xl bg-[#f1f3f4] dark:bg-[#292a2d] flex items-center justify-center mx-auto mb-3 text-[#5f6368] dark:text-[#9aa0a6]">
                       <BookMarked className="w-6 h-6" />
                     </div>
                     <h3 className="font-bold text-[#202124] dark:text-[#e3e3e3] text-sm mb-1">Đề thi đang trống (Chưa có câu hỏi nào)</h3>
@@ -518,14 +518,14 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                     <div className="flex items-center justify-center gap-3">
                       <button
                         onClick={() => setIsGenerateModalOpen(true)}
-                        className="px-4 py-2 app-button-primary text-white rounded-full text-xs font-semibold shadow-xs cursor-pointer flex items-center gap-1.5 transition-colors"
+                        className="px-4 py-2 app-button-primary text-white rounded-lg text-xs font-semibold shadow-xs cursor-pointer flex items-center gap-1.5 transition-colors"
                       >
                         <Sparkles className="w-3.5 h-3.5" />
                         <span>Sinh đề bằng AI</span>
                       </button>
                       <button
                         onClick={handleAddQuestion}
-                        className="px-4 py-2 bg-white dark:bg-[#282828] border border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] text-[#3c4043] dark:text-[#e3e3e3] rounded-full text-xs font-semibold shadow-2xs cursor-pointer flex items-center gap-1.5 transition-colors"
+                        className="px-4 py-2 bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] text-[#3c4043] dark:text-[#e3e3e3] rounded-lg text-xs font-semibold shadow-2xs cursor-pointer flex items-center gap-1.5 transition-colors"
                       >
                         <Plus className="w-3.5 h-3.5" />
                         <span>Thêm câu hỏi mới</span>
@@ -537,8 +537,8 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
 
               {/* Thanh tác vụ hàng loạt nổi cố định ở dưới (Floating Batch Action Bar) */}
               {selectedQuestionIds.length > 0 && (
-                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-[#202124]/95 dark:bg-[#1e1e1e]/95 backdrop-blur-md text-white px-5 py-3 rounded-full shadow-2xl border border-[#dadce0]/30 dark:border-[#3c4043] flex items-center gap-3 animate-in fade-in slide-in-from-bottom-5">
-                  <span className="text-xs font-bold text-[#8ab4f8] bg-[#1e2a38] px-2.5 py-1 rounded-full border border-[#2a3f58]">
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-[#202124]/95 dark:bg-[#202124]/95 backdrop-blur-md text-white px-5 py-3 rounded-full shadow-xs border border-[#dadce0]/30 dark:border-[#3c4043] flex items-center gap-3 animate-in fade-in slide-in-from-bottom-5">
+                  <span className="text-xs font-bold text-[#e3e3e3] bg-[#292a2d] px-2.5 py-1 rounded-full border border-[#3c4043]">
                     Đã chọn {selectedQuestionIds.length} câu
                   </span>
 
@@ -549,7 +549,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                     onClick={handleMergeSelected}
                     disabled={selectedQuestionIds.length < 2}
                     title={selectedQuestionIds.length < 2 ? "Chọn ít nhất 2 câu để gộp thành 1 câu tự luận" : "Gộp các câu đã chọn thành 1 câu tự luận tổng hợp có nhiều ý a, b, c..."}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full app-button-primary disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-xs cursor-pointer"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg app-button-primary disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-xs cursor-pointer"
                   >
                     <Link2 className="w-3.5 h-3.5" />
                     <span>Gộp thành 1 câu tự luận</span>
@@ -559,7 +559,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                   <button
                     onClick={handleBatchDelete}
                     title="Xóa các câu hỏi đã chọn"
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full bg-rose-600 hover:bg-rose-500 text-white transition-all shadow-xs cursor-pointer"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-rose-600 hover:bg-rose-500 text-white transition-all shadow-xs cursor-pointer"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                     <span>Xóa ({selectedQuestionIds.length})</span>
@@ -571,7 +571,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                   <button
                     onClick={() => setSelectedQuestionIds([])}
                     title="Hủy chọn tất cả"
-                    className="p-1.5 text-[#9aa0a6] hover:text-[#e3e3e3] rounded-full hover:bg-[#303134] transition-colors cursor-pointer"
+                    className="p-1.5 text-[#9aa0a6] hover:text-[#e3e3e3] rounded-lg hover:bg-[#303134] transition-colors cursor-pointer"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -608,7 +608,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
 
       {/* CÁC MODALS NGHIỆP VỤ */}
       {presentationOpen && <ExamPresentation exam={exam} onClose={() => setPresentationOpen(false)} />}
-      {collaborationOpen && exam.serverId && <div role="dialog" aria-modal="true" aria-label="Cộng tác và lịch sử" className="fixed inset-0 z-50 bg-black/50 p-4 flex items-center justify-center"><div className="w-full max-w-3xl max-h-[90vh] overflow-auto bg-white dark:bg-[#202124] rounded-2xl p-5"><button type="button" className="float-right px-3 py-2" onClick={() => setCollaborationOpen(false)}>Đóng</button><ExamCollaboratorsPanel key={`${exam.serverId}-${currentUser.id}`} examId={exam.serverId} expectedUserId={currentUser.id} questions={exam.questions.map((q, i) => ({ id: q.id, label: `Câu ${i + 1}: ${(q.content || '').replace(/\s+/g, ' ').slice(0, 40)}` }))} onRestored={document => { acceptServerDocument(document); }} beforeRestore={() => { if (saveState !== 'saved') { alert('Hãy lưu xong hoặc giữ bản nháp thành đề mới trước khi khôi phục lịch sử.'); return false; } return true; }} /></div></div>}
+      {collaborationOpen && exam.serverId && <div role="dialog" aria-modal="true" aria-label="Cộng tác và lịch sử" className="fixed inset-0 z-50 bg-black/50 p-4 flex items-center justify-center"><div className="w-full max-w-3xl max-h-[90vh] overflow-auto bg-white dark:bg-[#202124] rounded-xl p-5"><button type="button" className="float-right px-3 py-2" onClick={() => setCollaborationOpen(false)}>Đóng</button><ExamCollaboratorsPanel key={`${exam.serverId}-${currentUser.id}`} examId={exam.serverId} expectedUserId={currentUser.id} questions={exam.questions.map((q, i) => ({ id: q.id, label: `Câu ${i + 1}: ${(q.content || '').replace(/\s+/g, ' ').slice(0, 40)}` }))} onRestored={document => { acceptServerDocument(document); }} beforeRestore={() => { if (saveState !== 'saved') { alert('Hãy lưu xong hoặc giữ bản nháp thành đề mới trước khi khôi phục lịch sử.'); return false; } return true; }} /></div></div>}
       <ApiKeyModal ownerId={currentUser.id} key={`keys:${currentUser.id}`}
         isOpen={isApiKeyModalOpen}
         onClose={() => setIsApiKeyModalOpen(false)}

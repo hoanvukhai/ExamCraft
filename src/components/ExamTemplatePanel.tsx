@@ -106,7 +106,7 @@ function TemplatePanelContent({ ownerId, exam, onChange }: Props) {
       setError('');
     } catch (cause) { resetAttempt(); setError(errorMessage(cause)); }
   };
-  return <details className="border rounded-xl p-3 bg-white dark:bg-[#1e1e1e]"><summary className="cursor-pointer text-sm font-semibold">Mẫu cá nhân và nguồn tham khảo</summary>
+  return <details className="border rounded-xl p-3 bg-white dark:bg-[#202124]"><summary className="cursor-pointer text-sm font-semibold">Mẫu cá nhân và nguồn tham khảo</summary>
     <p className="text-xs my-2">Mỗi lần lưu là bản riêng, không sửa mẫu nguồn. Mẫu cũ/hệ thống và nguồn tự khai đều cần rà soát; tên mẫu không chứng nhận phù hợp chính thức.</p>
     {exam.metadata.templateApplication && <div className="text-xs border rounded p-2 my-2"><p>Đã sao chép từ {exam.metadata.templateApplication.source.name} · phiên bản {exam.metadata.templateApplication.source.revision}. Đây là bản nội dung đã sao chép, không cấp quyền mở mẫu nguồn.</p>{deviations.length ? deviations.map(item => <p key={item}>{item}</p>) : <p>Chưa thấy lệch ở các trường đã áp dụng; vẫn cần kiểm nội dung và nguồn.</p>}</div>}
     <button type="button" className="underline text-sm" disabled={busy || accountLocked} onClick={() => void loadList(1)}>Tải danh sách mẫu trong quyền của tôi</button>

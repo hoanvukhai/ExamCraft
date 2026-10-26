@@ -1,0 +1,15 @@
+{
+  "declared": [
+    "--ui-surface",
+    "--ui-surface-variant",
+    "--ui-border",
+    "--ui-text-primary",
+    "--ui-text-secondary",
+    "--ui-accent",
+    "--ui-on-primary",
+    "--ui-primary-hover",
+    "--ui-primary-container",
+    "--ui-on-primary-container"
+  ],
+  "missing": []
+}

@@ -74,7 +74,7 @@ function KnowledgeScopeEditorContent({ exam, ownerId, hasActiveKey = false, onCh
   };
   let diff: ReturnType<typeof proposeKnowledgeScope> | undefined;
   try { if (pkg && current) diff = proposeKnowledgeScope(pkg, exam.metadata.knowledgeScope?.packageId === pkg.id && exam.metadata.knowledgeScope.packageRevision === pkg.revision ? exam.metadata.knowledgeScope : emptyKnowledgeScope(pkg), current); } catch { /* Selection errors are shown when applying. */ }
-  return <details className="border rounded-xl p-3 bg-white dark:bg-[#1e1e1e]"><summary className="cursor-pointer font-semibold text-sm">Kiến thức và phạm vi ra đề {pkg ? `· ${pkg.title}` : '(tùy chọn)'}</summary>
+  return <details className="border rounded-xl p-3 bg-white dark:bg-[#202124]"><summary className="cursor-pointer font-semibold text-sm">Kiến thức và phạm vi ra đề {pkg ? `· ${pkg.title}` : '(tùy chọn)'}</summary>
     <p className="text-xs my-2">Chọn kiến thức theo chương trình hoặc mục lục đã liên kết. Chưa có gói thì vẫn tự soạn và mô tả phạm vi bằng chữ. Gói nhập luôn chờ duyệt; hệ thống không tự xác nhận tài liệu chính thức.</p>
     <label className="text-sm block">Nhập gói kiến thức (.json)<input type="file" accept=".json,application/json" onChange={async event => {
       const file = event.target.files?.[0], generation = ++request.current; event.target.value = ''; if (!file) return;

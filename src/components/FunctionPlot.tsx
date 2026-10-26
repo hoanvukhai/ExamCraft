@@ -54,9 +54,9 @@ export const FunctionPlot: React.FC<FunctionPlotProps> = ({
   };
 
   return (
-    <div className={`inline-block border rounded-2xl p-2.5 shadow-xs transition-colors ${
-      isDark 
-        ? 'border-[#3c4043] bg-[#1e1e1e] text-[#e3e3e3]' 
+    <div className={`inline-block border rounded-xl p-2.5 shadow-xs transition-colors ${
+      isDark
+        ? 'border-[#3c4043] bg-[#202124] text-[#e3e3e3]'
         : 'border-[#dadce0] bg-white text-[#202124]'
     } ${className}`}>
       {data?.title && (
@@ -80,7 +80,7 @@ export const FunctionPlot: React.FC<FunctionPlotProps> = ({
         <span className="font-mono">f(x) = {data?.expression}</span>
         <button
           onClick={handleExportPng}
-          className="text-[#1a73e8] hover:text-[#1557b0] dark:text-[#8ab4f8] dark:hover:text-[#a8c7fa] font-semibold cursor-pointer"
+          className="text-[#3c4043] hover:text-[#303134] dark:text-[#e3e3e3] dark:hover:text-[#f1f3f4] font-semibold cursor-pointer"
         >
           Lưu ảnh PNG
         </button>

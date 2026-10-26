@@ -107,10 +107,10 @@ export default function AdminAiPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#181818] text-[#202124] dark:text-[#e3e3e3] flex flex-col transition-colors duration-200">
+    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] text-[#202124] dark:text-[#e3e3e3] flex flex-col transition-colors duration-200">
       {/* Toast Notification */}
       {toastMsg && (
-        <div className="fixed top-5 right-5 z-50 bg-[#137333] text-white px-4 py-3 rounded-full shadow-2xl flex items-center gap-2.5 animate-in slide-in-from-top-3 duration-200 text-sm font-medium">
+        <div className="fixed top-5 right-5 z-50 bg-[#137333] text-white px-4 py-3 rounded-full shadow-xs flex items-center gap-2.5 animate-in slide-in-from-top-3 duration-200 text-sm font-medium">
           <CheckCircle2 className="w-5 h-5 shrink-0" />
           <span>{toastMsg}</span>
         </div>
@@ -119,7 +119,7 @@ export default function AdminAiPage() {
       {/* Top Navbar */}
       <header className="app-bar app-admin-bar border-b sticky top-0 z-30 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-2xl bg-[#1a73e8] dark:bg-[#8ab4f8] text-white dark:text-[#181818] flex items-center justify-center shadow-md">
+          <div className="w-9 h-9 rounded-xl bg-[#3c4043] dark:bg-[#e3e3e3] text-white dark:text-[#17181a] flex items-center justify-center shadow-xs">
             <Bot className="w-5 h-5" />
           </div>
           <div>
@@ -136,21 +136,21 @@ export default function AdminAiPage() {
         <div className="flex items-center gap-3">
           <Link
             href="/admin/users"
-            className="text-xs text-[#3c4043] dark:text-[#e3e3e3] hover:text-black dark:hover:text-white px-3.5 py-1.5 rounded-full border border-[#dadce0] dark:border-[#3c4043] hover:border-[#bdc1c6] dark:hover:border-[#5f6368] bg-white dark:bg-[#242424] transition-colors"
+            className="text-xs text-[#3c4043] dark:text-[#e3e3e3] hover:text-black dark:hover:text-white px-3.5 py-1.5 rounded-lg border border-[#dadce0] dark:border-[#3c4043] hover:border-[#bdc1c6] dark:hover:border-[#5f6368] bg-white dark:bg-[#242424] transition-colors"
           >
             Quản lý Giáo viên
           </Link>
 
           <Link
             href="/admin/keys"
-            className="text-xs text-[#3c4043] dark:text-[#e3e3e3] hover:text-black dark:hover:text-white px-3.5 py-1.5 rounded-full border border-[#dadce0] dark:border-[#3c4043]"
+            className="text-xs text-[#3c4043] dark:text-[#e3e3e3] hover:text-black dark:hover:text-white px-3.5 py-1.5 rounded-lg border border-[#dadce0] dark:border-[#3c4043]"
           >
             Cấp khóa AI
           </Link>
 
           <Link
             href="/"
-            className="text-xs text-[#1a73e8] hover:text-[#1557b0] dark:text-[#8ab4f8] dark:hover:text-[#aecbfa] px-3.5 py-1.5 rounded-full border border-[#1a73e8]/30 dark:border-[#8ab4f8]/30 bg-[#e8f0fe] dark:bg-[#1e2a38] transition-colors flex items-center gap-1"
+            className="text-xs text-[#3c4043] hover:text-[#303134] dark:text-[#e3e3e3] dark:hover:text-[#f1f3f4] px-3.5 py-1.5 rounded-lg border border-[#3c4043]/30 dark:border-[#e3e3e3]/30 bg-[#f1f3f4] dark:bg-[#292a2d] transition-colors flex items-center gap-1"
           >
             <span>Trang Soạn Đề</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -161,7 +161,7 @@ export default function AdminAiPage() {
             type="button"
             onClick={toggleTheme}
             title={theme === 'dark' ? 'Chuyển sang giao diện Sáng' : 'Chuyển sang giao diện Tối'}
-            className="p-2 rounded-full border border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#242424] text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] transition-colors cursor-pointer"
+            className="p-2 rounded-lg border border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#242424] text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
           >
             {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-[#5f6368]" />}
           </button>
@@ -172,16 +172,16 @@ export default function AdminAiPage() {
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-8 space-y-8">
         {/* Stat Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-          <div className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-5 shadow-xs">
+          <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-xl p-5 shadow-xs">
             <div className="flex items-center justify-between text-[#5f6368] dark:text-[#9aa0a6] mb-2">
               <span className="text-xs font-medium">Tổng lệnh AI hôm nay</span>
-              <Activity className="w-4 h-4 text-[#1a73e8] dark:text-[#8ab4f8]" />
+              <Activity className="w-4 h-4 text-[#3c4043] dark:text-[#e3e3e3]" />
             </div>
             <div className="text-2xl font-bold text-[#202124] dark:text-[#e3e3e3]">{stats.totalToday}</div>
             <div className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] mt-1">Từ 00:00 hôm nay</div>
           </div>
 
-          <div className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-5 shadow-xs">
+          <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-xl p-5 shadow-xs">
             <div className="flex items-center justify-between text-[#5f6368] dark:text-[#9aa0a6] mb-2">
               <span className="text-xs font-medium">Tỷ lệ thành công</span>
               <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-[#5bb98c]" />
@@ -190,7 +190,7 @@ export default function AdminAiPage() {
             <div className="text-[11px] text-emerald-700 dark:text-[#5bb98c]/80 mt-1">{stats.successToday} lệnh thành công</div>
           </div>
 
-          <div className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-5 shadow-xs">
+          <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-xl p-5 shadow-xs">
             <div className="flex items-center justify-between text-[#5f6368] dark:text-[#9aa0a6] mb-2">
               <span className="text-xs font-medium">Lệnh bị lỗi / nghẽn</span>
               <AlertTriangle className="w-4 h-4 text-rose-500 dark:text-[#f28b82]" />
@@ -199,14 +199,14 @@ export default function AdminAiPage() {
             <div className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] mt-1">Đã tự động xoay key dự phòng</div>
           </div>
 
-          <div className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-5 shadow-xs flex flex-col justify-between">
+          <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-xl p-5 shadow-xs flex flex-col justify-between">
             <div className="flex items-center justify-between text-[#5f6368] dark:text-[#9aa0a6]">
               <span className="text-xs font-medium">Cơ chế bảo vệ</span>
-              <ShieldCheck className="w-4 h-4 text-[#1a73e8] dark:text-[#8ab4f8]" />
+              <ShieldCheck className="w-4 h-4 text-[#3c4043] dark:text-[#e3e3e3]" />
             </div>
             <button
               onClick={handleResetAll}
-              className="mt-2 w-full py-2 px-3 rounded-full app-button-primary text-white dark:bg-[#8ab4f8] dark:hover:bg-[#aecbfa] dark:text-[#181818] text-xs font-semibold transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
+              className="mt-2 w-full py-2 px-3 rounded-lg app-button-primary text-white dark:bg-[#e3e3e3] dark:hover:bg-[#f1f3f4] dark:text-[#17181a] text-xs font-semibold transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               <span>Kích hoạt lại 7 Keys</span>
@@ -232,7 +232,7 @@ export default function AdminAiPage() {
             <button
               onClick={fetchAiData}
               title="Làm mới"
-              className="p-2.5 rounded-full bg-white dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-white transition-colors cursor-pointer"
+              className="p-2.5 rounded-lg bg-white dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-white transition-colors cursor-pointer"
             >
               <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
             </button>
@@ -247,9 +247,9 @@ export default function AdminAiPage() {
               return (
                 <div
                   key={key.alias}
-                  className={`border rounded-2xl p-4.5 flex flex-col justify-between transition-all ${
+                  className={`border rounded-xl p-4.5 flex flex-col justify-between transition-all ${
                     isActive
-                      ? 'bg-white dark:bg-[#1e1e1e] border-[#dadce0] dark:border-[#3c4043] hover:border-emerald-500/40'
+                      ? 'bg-white dark:bg-[#202124] border-[#dadce0] dark:border-[#3c4043] hover:border-emerald-500/40'
                       : isCooldown
                       ? 'bg-amber-50/50 dark:bg-[#33250b]/20 border-amber-200 dark:border-[#4d380e]'
                       : 'bg-rose-50/50 dark:bg-[#371918]/20 border-rose-200 dark:border-[#5c2523]'
@@ -258,13 +258,13 @@ export default function AdminAiPage() {
                   <div>
                     <div className="flex items-center justify-between mb-3">
                       <span className="font-mono text-sm font-bold text-[#202124] dark:text-[#e3e3e3] uppercase tracking-wider flex items-center gap-1.5">
-                        <Key className="w-4 h-4 text-[#1a73e8] dark:text-[#8ab4f8]" />
+                        <Key className="w-4 h-4 text-[#3c4043] dark:text-[#e3e3e3]" />
                         {key.alias}
                       </span>
 
                       {isActive && (
                         <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 dark:bg-[#0f291e] text-emerald-700 dark:text-[#5bb98c] border border-emerald-200 dark:border-[#1e4d38]">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-[#5bb98c] animate-pulse" />
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-[#5bb98c] " />
                           ACTIVE
                         </span>
                       )}
@@ -309,7 +309,7 @@ export default function AdminAiPage() {
                     <span className="text-[10px] text-[#5f6368] dark:text-[#9aa0a6]">Quản trị viên</span>
                     <button
                       onClick={() => handleResetKey(key.alias)}
-                      className="text-xs text-[#1a73e8] hover:text-[#1557b0] dark:text-[#8ab4f8] dark:hover:text-[#aecbfa] flex items-center gap-1 cursor-pointer font-medium"
+                      className="text-xs text-[#3c4043] hover:text-[#303134] dark:text-[#e3e3e3] dark:hover:text-[#f1f3f4] flex items-center gap-1 cursor-pointer font-medium"
                     >
                       <RefreshCw className="w-3 h-3" />
                       <span>Kích hoạt lại</span>
@@ -322,7 +322,7 @@ export default function AdminAiPage() {
         </div>
 
         {/* Recent AI Activity Log */}
-        <div className="bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl overflow-hidden shadow-xs">
+        <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-xl overflow-hidden shadow-xs">
           <div className="px-5 py-4 border-b border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between">
             <h3 className="text-sm font-bold text-[#202124] dark:text-[#e3e3e3] flex items-center gap-2">
               <Zap className="w-4 h-4 text-amber-500 dark:text-[#fdd663]" />
@@ -352,12 +352,12 @@ export default function AdminAiPage() {
                   </tr>
                 ) : (
                   logs.map((log) => (
-                    <tr key={log.id} className="hover:bg-[#f8f9fa] dark:hover:bg-[#282828] transition-colors">
+                    <tr key={log.id} className="hover:bg-[#f8f9fa] dark:hover:bg-[#292a2d] transition-colors">
                       <td className="px-5 py-3 text-[#5f6368] dark:text-[#9aa0a6]">
                         {new Date(log.createdAt).toLocaleTimeString('vi-VN')}
                       </td>
                       <td className="px-4 py-3 font-mono text-[#202124] dark:text-[#e3e3e3]">{log.endpoint}</td>
-                      <td className="px-4 py-3 font-mono text-[#1a73e8] dark:text-[#8ab4f8] font-semibold">{log.keyAlias || 'BYOK'}</td>
+                      <td className="px-4 py-3 font-mono text-[#3c4043] dark:text-[#e3e3e3] font-semibold">{log.keyAlias || 'BYOK'}</td>
                       <td className="px-4 py-3 text-[#202124] dark:text-[#e3e3e3]">{log.user?.name || 'Khách/Ẩn danh'}</td>
                       <td className="px-4 py-3 text-[#5f6368] dark:text-[#9aa0a6]">{log.latencyMs ? `${log.latencyMs} ms` : '-'}</td>
                       <td className="px-5 py-3">

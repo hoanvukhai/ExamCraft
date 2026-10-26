@@ -40,7 +40,7 @@ export default function RootLayout({
         />
       </head>
       <body 
-        className="min-h-dvh w-full bg-[#f8f9fa] dark:bg-[#121212] text-[#202124] dark:text-[#e3e3e3] selection:bg-[#c2e7ff] selection:text-[#001d35] dark:selection:bg-[#004a77] dark:selection:text-[#c2e7ff] transition-colors duration-200"
+        className="min-h-dvh w-full bg-[#f8f9fa] dark:bg-[#17181a] text-[#202124] dark:text-[#e3e3e3] selection:bg-[#e8eaed] selection:text-[#202124] dark:selection:bg-[#3c4043] dark:selection:text-[#e8eaed] transition-colors duration-200"
         suppressHydrationWarning
       >
         <ThemeProvider>

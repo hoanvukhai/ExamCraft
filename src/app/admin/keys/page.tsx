@@ -53,7 +53,7 @@ export default function AdminKeyGrantsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#181818] text-[#202124] dark:text-[#e3e3e3] py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] text-[#202124] dark:text-[#e3e3e3] py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#dadce0] dark:border-[#3c4043]">
           <div>
@@ -69,7 +69,7 @@ export default function AdminKeyGrantsPage() {
 
         {message && <p role="status" className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">{message}</p>}
 
-        <form onSubmit={grant} className="rounded-2xl border border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#1e1e1e] p-5 space-y-4" aria-label="Cấp khóa mới">
+        <form onSubmit={grant} className="rounded-xl border border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#202124] p-5 space-y-4" aria-label="Cấp khóa mới">
           <h2 className="font-semibold">Cấp một khóa mới</h2>
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="block text-sm">Tên khóa (để nhớ)<input required maxLength={120} value={label} onChange={e => setLabel(e.target.value)} className={field} placeholder="Ví dụ: Khóa chung tổ Toán" /></label>
@@ -92,7 +92,7 @@ export default function AdminKeyGrantsPage() {
               {!visible.length && <li className="px-3 py-4 text-sm text-[#5f6368] dark:text-[#9aa0a6]">Không có giáo viên phù hợp.</li>}
             </ul>
           </div>
-          <button type="submit" disabled={busy} className="px-5 py-2 rounded-full app-button-primary text-white text-sm font-semibold disabled:opacity-50">Cấp khóa cho người đã chọn</button>
+          <button type="submit" disabled={busy} className="px-5 py-2 rounded-lg app-button-primary text-white text-sm font-semibold disabled:opacity-50">Cấp khóa cho người đã chọn</button>
         </form>
 
         <section className="space-y-3" aria-label="Các khóa đã cấp">
@@ -101,7 +101,7 @@ export default function AdminKeyGrantsPage() {
           {grants.map(g => {
             const missing = teachers.filter(t => t.isActive && !g.recipients.some(r => r.userId === t.id));
             return (
-              <div key={g.grantId} className="rounded-2xl border border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#1e1e1e] p-4 space-y-3">
+              <div key={g.grantId} className="rounded-xl border border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#202124] p-4 space-y-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div><p className="font-semibold">{g.label}</p><p className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">Khóa {g.keyMasked} · cấp {new Date(g.createdAt).toLocaleString('vi-VN')} · {g.recipients.length} người nhận</p></div>
                   <div className="flex flex-wrap gap-2">

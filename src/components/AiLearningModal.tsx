@@ -248,20 +248,20 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
       : memories.filter((m) => m.category === activeCategoryFilter);
 
   const categoryLabels: Record<string, { label: string; color: string }> = {
-    PEDAGOGICAL_STYLE: { label: 'Phong cách giảng dạy', color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-200' },
-    TRICK_OR_TRAP: { label: 'Cài bẫy & Sai lầm học sinh', color: 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200' },
-    REAL_WORLD_CONTEXT: { label: 'Bối cảnh thực tế', color: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200' },
-    DIFFICULTY_BALANCE: { label: 'Phân bổ độ khó', color: 'bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-200' },
-    EXPLANATION_RULE: { label: 'Quy tắc lời giải', color: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/50 dark:text-cyan-200' },
+    PEDAGOGICAL_STYLE: { label: 'Phong cách giảng dạy', color: 'bg-neutral-100 text-[var(--ui-accent)] dark:bg-neutral-900/50 dark:text-[var(--ui-accent)]' },
+    TRICK_OR_TRAP: { label: 'Cài bẫy & Sai lầm học sinh', color: 'bg-[var(--ui-surface-variant)] text-[var(--ui-text-primary)]' },
+    REAL_WORLD_CONTEXT: { label: 'Bối cảnh thực tế', color: 'bg-[var(--ui-surface-variant)] text-[var(--ui-text-primary)]' },
+    DIFFICULTY_BALANCE: { label: 'Phân bổ độ khó', color: 'bg-neutral-100 text-[var(--ui-accent)] dark:bg-neutral-900/50 dark:text-[var(--ui-accent)]' },
+    EXPLANATION_RULE: { label: 'Quy tắc lời giải', color: 'bg-neutral-100 text-[var(--ui-accent)] dark:bg-neutral-900/50 dark:text-[var(--ui-accent)]' },
   };
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-[#1e1e1e] rounded-3xl max-w-3xl w-full p-6 shadow-2xl border border-[#dadce0] dark:border-[#3c4043] relative max-h-[90vh] flex flex-col text-[#202124] dark:text-[#e3e3e3] animate-in fade-in zoom-in-95">
+      <div className="bg-white dark:bg-[#202124] rounded-2xl max-w-3xl w-full p-6 shadow-xs border border-[#dadce0] dark:border-[#3c4043] relative max-h-[90vh] flex flex-col text-[#202124] dark:text-[#e3e3e3] animate-in fade-in zoom-in-95">
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-[#dadce0] dark:border-[#3c4043] shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white flex items-center justify-center shadow-md">
+            <div className="w-10 h-10 rounded-xl app-neutral-icon text-white flex items-center justify-center shadow-xs">
               <Brain className="w-5 h-5" />
             </div>
             <div>
@@ -269,7 +269,7 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
                 <h3 className="font-bold text-base text-[#202124] dark:text-white">
                   Ghi chú riêng cho AI
                 </h3>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-neutral-100 text-[var(--ui-accent)] dark:bg-neutral-900/40 dark:text-[var(--ui-accent)]">
                   Kho riêng
                 </span>
               </div>
@@ -281,7 +281,7 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
 
           <button
             onClick={requestClose}
-            className="p-1.5 text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-white rounded-full hover:bg-black/5 cursor-pointer"
+            className="p-1.5 text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-white rounded-lg hover:bg-black/5 cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -293,7 +293,7 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
             <button
               onClick={handleRunAutoAnalysis}
               disabled={!idle}
-              className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold shadow-xs transition-all cursor-pointer disabled:opacity-50"
+              className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-neutral-600 hover:bg-neutral-700 text-white text-xs font-semibold shadow-xs transition-all cursor-pointer disabled:opacity-50"
             >
               {isAnalyzing ? (
                 <RefreshCw className="w-3.5 h-3.5 animate-spin" />
@@ -306,7 +306,7 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
             <button
               disabled={!ready}
               onClick={() => setIsAddingNew(true)}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] text-xs font-medium cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] text-xs font-medium cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Dạy AI quy tắc mới</span>
@@ -315,7 +315,7 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
 
           <div className="flex items-center gap-1.5 text-xs text-[#5f6368] dark:text-[#9aa0a6]">
             <span>Đã lưu: </span>
-            <strong className="text-purple-600 dark:text-purple-400 font-bold">{memories.length}</strong>
+            <strong className="text-[var(--ui-accent)] dark:text-[var(--ui-accent)] font-bold">{memories.length}</strong>
             <span>quy tắc (</span>
             <strong className="text-emerald-600 dark:text-emerald-400 font-bold">
               {memories.filter((m) => m.isActive).length}
@@ -340,8 +340,8 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
         {problem && <p role="alert" className="my-2 p-2.5 rounded-xl bg-red-50 text-red-800 border border-red-200 text-xs">{problem}</p>}
         {/* Thông báo trạng thái */}
         {statusMessage && (
-          <div className="my-2 p-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 text-purple-800 dark:text-purple-200 text-xs flex items-center gap-2 animate-in fade-in">
-            <CheckCircle2 className="w-4 h-4 shrink-0 text-purple-600" />
+          <div className="my-2 p-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-900/40 border border-[var(--ui-border)] dark:border-[var(--ui-border)] text-[var(--ui-accent)] dark:text-[var(--ui-accent)] text-xs flex items-center gap-2 animate-in fade-in">
+            <CheckCircle2 className="w-4 h-4 shrink-0 text-[var(--ui-accent)]" />
             <span>{statusMessage}</span>
           </div>
         )}
@@ -353,17 +353,17 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
         {isAddingNew && (
           <form
             onSubmit={handleCreateManualRule}
-            className="my-3 p-4 rounded-2xl bg-[#f8f9fa] dark:bg-[#282828] border border-purple-300 dark:border-purple-700 space-y-3 shrink-0 animate-in fade-in"
+            className="my-3 p-4 rounded-xl bg-[#f8f9fa] dark:bg-[#292a2d] border border-[var(--ui-border)] dark:border-[var(--ui-border)] space-y-3 shrink-0 animate-in fade-in"
           >
             <div className="flex items-center justify-between">
-              <h4 className="font-bold text-xs text-purple-700 dark:text-purple-300 flex items-center gap-1.5">
+              <h4 className="font-bold text-xs text-[var(--ui-accent)] dark:text-[var(--ui-accent)] flex items-center gap-1.5">
                 <Lightbulb className="w-4 h-4" />
                 <span>Thêm ghi chú hướng dẫn AI</span>
               </h4>
               <button
                 type="button"
                 onClick={() => setIsAddingNew(false)}
-                className="p-1 rounded-full text-[#5f6368] hover:bg-black/5 cursor-pointer"
+                className="p-1 rounded-lg text-[#5f6368] hover:bg-black/5 cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -380,7 +380,7 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
                   placeholder="Ví dụ: Không cho thử ngược nghiệm Casio"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  className="w-full text-xs px-3 py-1.5 bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-lg outline-hidden focus:border-purple-600"
+                  className="w-full text-xs px-3 py-1.5 bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-lg outline-hidden focus:border-[var(--ui-border)]"
                 />
               </div>
 
@@ -391,7 +391,7 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
                 <select
                   value={newCategory}
                   onChange={(e) => setNewCategory(e.target.value)}
-                  className="w-full text-xs px-3 py-1.5 bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-lg outline-hidden focus:border-purple-600"
+                  className="w-full text-xs px-3 py-1.5 bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-lg outline-hidden focus:border-[var(--ui-border)]"
                 >
                   <option value="PEDAGOGICAL_STYLE">Phong cách giảng dạy</option>
                   <option value="TRICK_OR_TRAP">Cài bẫy & Sai lầm học sinh</option>
@@ -412,7 +412,7 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
                 placeholder="Ví dụ: Khi ra câu hỏi phương trình hoặc hàm số, các hệ số phải được tính toán sao cho không thể bấm CALC Casio ra ngay kết quả, bắt buộc học sinh phải biến đổi toán học."
                 value={newInsight}
                 onChange={(e) => setNewInsight(e.target.value)}
-                className="w-full text-xs p-2 bg-white dark:bg-[#1e1e1e] border border-[#dadce0] dark:border-[#3c4043] rounded-lg outline-hidden focus:border-purple-600"
+                className="w-full text-xs p-2 bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-lg outline-hidden focus:border-[var(--ui-border)]"
               />
             </div>
 
@@ -433,7 +433,7 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
               <button
                 type="submit"
                 disabled={!idle}
-                className="px-4 py-1.5 text-xs bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold shadow-xs cursor-pointer"
+                className="px-4 py-1.5 text-xs bg-neutral-600 hover:bg-neutral-700 text-white rounded-lg font-semibold shadow-xs cursor-pointer"
               >
                 Lưu ghi chú
               </button>
@@ -445,12 +445,12 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
         <div className="grow overflow-y-auto py-3 space-y-2 pr-1">
           {isLoading ? (
             <div className="py-12 text-center text-xs text-[#5f6368] dark:text-[#9aa0a6] flex items-center justify-center gap-2">
-              <RefreshCw className="w-4 h-4 animate-spin text-purple-600" />
+              <RefreshCw className="w-4 h-4 animate-spin text-[var(--ui-accent)]" />
               <span>Đang tải các tri thức sư phạm của AI...</span>
             </div>
           ) : memories.length === 0 ? (
             <div className="py-12 text-center space-y-3">
-              <div className="w-12 h-12 rounded-full bg-purple-50 dark:bg-purple-950/40 text-purple-600 flex items-center justify-center mx-auto">
+              <div className="w-12 h-12 rounded-full bg-neutral-50 dark:bg-neutral-900/40 text-[var(--ui-accent)] flex items-center justify-center mx-auto">
                 <Brain className="w-6 h-6" />
               </div>
               <div className="text-xs font-semibold text-[#202124] dark:text-[#e3e3e3]">
@@ -470,9 +470,9 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
               return (
                 <div
                   key={m.id}
-                  className={`p-3.5 rounded-2xl border transition-all ${
+                  className={`p-3.5 rounded-xl border transition-all ${
                     m.isActive
-                      ? 'bg-white dark:bg-[#252525] border-purple-200 dark:border-purple-900/60 shadow-2xs'
+                      ? 'bg-white dark:bg-[#252525] border-[var(--ui-border)] dark:border-[var(--ui-border)]/60 shadow-2xs'
                       : 'bg-[#f8f9fa] dark:bg-[#1a1a1a] border-[#dadce0] dark:border-[#3c4043] opacity-60'
                   }`}
                 >
@@ -505,7 +505,7 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
                         disabled={!idle}
                         onClick={() => handleToggleActive(m)}
                         title={m.isActive ? 'Tạm tắt quy tắc này' : 'Bật quy tắc này'}
-                        className={`text-xs px-2.5 py-1 rounded-full font-semibold transition-colors cursor-pointer ${
+                        className={`text-xs px-2.5 py-1 rounded-lg font-semibold transition-colors cursor-pointer ${
                           m.isActive
                             ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300'
                             : 'bg-gray-200 text-gray-700 dark:bg-gray-800 dark:text-gray-400'
@@ -518,7 +518,7 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
                         disabled={!idle}
                         onClick={() => handleDelete(m.id)}
                         title="Xóa quy tắc này"
-                        className="p-1 rounded-full text-[#5f6368] hover:text-red-500 hover:bg-black/5 cursor-pointer"
+                        className="p-1 rounded-lg text-[#5f6368] hover:text-red-500 hover:bg-black/5 cursor-pointer"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -537,7 +537,7 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
           </p>
           <button
             onClick={requestClose}
-            className="px-4 py-2 text-xs app-button-primary text-white rounded-full font-semibold shadow-xs cursor-pointer"
+            className="px-4 py-2 text-xs app-button-secondary text-white rounded-lg font-semibold shadow-xs cursor-pointer"
           >
             Đóng
           </button>

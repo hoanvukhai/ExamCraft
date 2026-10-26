@@ -44,7 +44,7 @@ export default function RegradePanel({ assignmentId, request, onChanged }: { ass
 
   if (!items.length) return null;
   return (
-    <details data-testid="regrade-panel" className="border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-4 bg-white dark:bg-[#1e1e1e]">
+    <details data-testid="regrade-panel" className="border border-[#dadce0] dark:border-[#3c4043] rounded-xl p-4 bg-white dark:bg-[#202124]">
       <summary className="cursor-pointer text-sm font-medium">Sửa đáp án và chấm lại</summary>
       <div className="mt-3 space-y-3 text-xs">
         <p className="text-[#5f6368] dark:text-[#9aa0a6]">Chỉ áp dụng cho câu trắc nghiệm một đáp án, trả lời ngắn và điền khuyết. Câu bạn đã tự chấm tay được giữ nguyên; mỗi bài đổi điểm có ghi vào lịch sử chấm.</p>
@@ -70,10 +70,10 @@ export default function RegradePanel({ assignmentId, request, onChanged }: { ass
             <input aria-label="Lý do sửa đáp án" value={reason} onChange={event => setReason(event.target.value)} maxLength={500} className="mt-1 w-full border rounded-lg p-2 bg-transparent" />
           </label>
           <div className="flex gap-2">
-            <button type="button" disabled={busy || reason.trim().length < 3} onClick={() => void send(true)} className="min-h-10 sm:min-h-0 px-3 py-1.5 rounded-full border disabled:opacity-50">Xem trước ảnh hưởng</button>
-            <button type="button" disabled={busy || reason.trim().length < 3 || !effect?.preview} onClick={() => void send(false)} className="min-h-10 sm:min-h-0 px-3 py-1.5 rounded-full app-button-primary text-white disabled:opacity-50">Sửa đáp án và chấm lại</button>
+            <button type="button" disabled={busy || reason.trim().length < 3} onClick={() => void send(true)} className="min-h-10 sm:min-h-0 px-3 py-1.5 rounded-lg border disabled:opacity-50">Xem trước ảnh hưởng</button>
+            <button type="button" disabled={busy || reason.trim().length < 3 || !effect?.preview} onClick={() => void send(false)} className="min-h-10 sm:min-h-0 px-3 py-1.5 rounded-lg app-button-primary text-white disabled:opacity-50">Sửa đáp án và chấm lại</button>
           </div>
-          {effect && <div data-testid="regrade-effect" className="rounded-lg bg-[#f1f3f4] dark:bg-[#282828] p-2">
+          {effect && <div data-testid="regrade-effect" className="rounded-lg bg-[#f1f3f4] dark:bg-[#292a2d] p-2">
             {effect.preview ? 'Xem trước: ' : 'Đã ghi: '}{effect.changed.length} bài đổi điểm, {effect.keptManual} bài đã chấm tay được giữ nguyên, {effect.unchanged} bài không đổi (tổng {effect.submitted} bài đã nộp).
             {effect.changed.length > 0 && <ul className="mt-1 list-disc pl-4">{effect.changed.map(change => <li key={change.attemptId}>{change.student}: {change.scoreBefore ?? '—'} → {change.scoreAfter ?? '—'}</li>)}</ul>}
           </div>}
