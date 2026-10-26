@@ -13,7 +13,7 @@ const keys = fs.readFileSync(process.env.EVAL_KEYS_FILE ?? '', 'utf8').split(/\r
 if (!keys.length) throw new Error('EVAL_KEYS_FILE is required');
 const db = new PrismaClient({ datasources: { db: { url: requireTestDatabase() } }, log: [] });
 type Json = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any -- loose provider JSON in an evaluation script
-let cookie = '', keyIndex = 0, calls = 0, refusals = 0;
+let cookie = '', keyIndex = 0, calls = 0, refusals = 0, streak429 = 0, quotaStop = false;
 
 async function post(path: string, body: unknown) {
   const response = await fetch(origin + path, { method: 'POST', headers: { Origin: origin, Cookie: cookie, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
@@ -24,7 +24,9 @@ async function ai(path: string, body: Json) {
   for (let attempt = 0; attempt < keys.length * 2; attempt++) {
     calls++; last = await post(path, { ...body, customApiKey: keys[keyIndex++ % keys.length] });
     if (last.status === 200) return last;
-    refusals++; if (![429, 500, 502, 503, 504].includes(last.status)) return last;
+    refusals++; streak429 = last.status === 429 ? streak429 + 1 : 0;
+    if (streak429 >= keys.length) { quotaStop = true; return last; } // every key refused in a row: stop spending calls
+    if (![429, 500, 502, 503, 504].includes(last.status)) return last;
     await new Promise(resolve => setTimeout(resolve, 1500));
   }
   return last;

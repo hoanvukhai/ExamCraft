@@ -12,7 +12,7 @@ const keys = fs.readFileSync(process.env.EVAL_KEYS_FILE ?? '', 'utf8').split(/\r
 if (!keys.length) throw new Error('EVAL_KEYS_FILE is required');
 const db = new PrismaClient({ datasources: { db: { url: requireTestDatabase() } }, log: [] });
 type Json = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any -- loose provider JSON in an evaluation script
-let cookie = '', keyIndex = 0, calls = 0, refusals = 0;
+let cookie = '', keyIndex = 0, calls = 0, refusals = 0, streak429 = 0, quotaStop = false;
 const refusalStatuses: Record<string, number> = {};
 
 async function post(path: string, body: unknown) {
@@ -25,6 +25,8 @@ async function ai(path: string, body: Json) {
     calls++; last = await post(path, { ...body, customApiKey: keys[keyIndex++ % keys.length] });
     if (last.status === 200) return last;
     refusals++; refusalStatuses[String(last.status)] = (refusalStatuses[String(last.status)] ?? 0) + 1;
+    streak429 = last.status === 429 ? streak429 + 1 : 0;
+    if (streak429 >= keys.length) { quotaStop = true; return last; } // every key refused in a row: stop spending calls
     if (![429, 500, 502, 503, 504].includes(last.status)) return last;
     await new Promise(resolve => setTimeout(resolve, 1500));
   }
@@ -66,6 +68,7 @@ const only = process.env.EVAL_ONLY?.split(',').filter(Boolean);
     const login = await fetch(origin + '/api/auth/login', { method: 'POST', headers: { Origin: origin, 'Content-Type': 'application/json' }, body: JSON.stringify({ email: uid + '@example.invalid', password }) });
     cookie = login.headers.getSetCookie().map(value => value.split(';')[0]).join('; ');
     for (const item of cases.filter(c => !only || only.includes(c.subject))) {
+      if (quotaStop) { console.log('stopped: every key reports its quota is used up'); break; }
       const plan = { subject: item.subject, grade: item.grade, topic: item.topic, durationMinutes: 20, numMultipleChoice: item.mc ?? 0, numTrueFalse: item.tf ?? 0, numShortAnswer: item.sa ?? 0, numEssay: item.essay ?? 0, ...item.extra };
       const r = await ai('/api/generate-exam', { params: plan });
       const questions: Json[] = r.data.exam?.questions ?? [];
