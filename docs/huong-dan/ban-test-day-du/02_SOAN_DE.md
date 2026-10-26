@@ -53,7 +53,7 @@ Với mỗi dạng: bấm **Thêm câu hỏi** (hiện một thẻ trắc nghi�
 | T03-42 | 🟡 | Công thức hóa học `$\ce{2H2 + O2 -> 2H2O}$` | Hiện đúng chỉ số dưới và mũi tên | | |
 | T03-43 | 🟡 | Công thức sai cú pháp (thiếu ngoặc) | Hiện chữ đỏ hoặc nguyên văn, không làm treo trang | | |
 | T03-44 | 🟡 | Dán nội dung `mau-test/bang-markdown.txt` vào nội dung câu | Hiện **bảng thật** có viền, hàng tiêu đề đậm, căn giữa; công thức `$A$` trong ô vẫn đúng | | |
-| T03-45 | 🟡 | Câu có chữ `|x| = 3` hoặc `$|x|$` (dấu gạch đứng trong công thức) | Không bị hiểu nhầm thành bảng | | |
+| T03-45 | 🟡 | Câu có chữ `&#124;x&#124; = 3` hoặc `$&#124;x&#124;$` (dấu gạch đứng trong công thức) | Không bị hiểu nhầm thành bảng | | |
 | T03-46 | 🔴 | Bấm **Thêm ảnh** trong câu, chọn một ảnh PNG/JPG, đặt **Chú thích** | Ảnh hiện trong câu, có chú thích; lưu đề, tải lại vẫn còn | | |
 | T03-47 | 🟡 | Bấm **Thêm bảng biến thiên**: nhập các mốc x, dấu đạo hàm, giá trị y | Bảng biến thiên hiện đúng; mũi tên ↑ ↓ đúng chiều | | |
 | T03-48 | 🟡 | Bấm **Thêm đồ thị**, nhập hàm `x^2 - 2*x` | Hiện đồ thị parabol; hàm không hợp lệ thì báo, không hiện đồ thị sai | | |

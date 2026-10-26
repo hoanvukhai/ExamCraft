@@ -46,7 +46,7 @@ Mỗi dòng 🔴: nếu **không** đúng kết quả thì dừng và báo ngay.
 | T09-35 | 🔴 | Link chia sẻ **không** kèm đáp án: tìm đáp án trong nguồn trang | Không có | | |
 | T09-36 | 🔴 | Sau khi thu hồi link chia sẻ | Không mở được; không còn tải Word | | |
 | T09-37 | 🔴 | Dán thẻ `<script>alert(1)</script>` vào nội dung câu và tên học sinh; xem ở mọi chế độ | Hiện thành **chữ**; không chạy | | |
-| T09-38 | 🔴 | Nhập tên học sinh `=cmd|' /C calc'!A0` và xuất CSV, mở Excel | Excel không chạy công thức | | |
+| T09-38 | 🔴 | Nhập tên học sinh `=cmd&#124;' /C calc'!A0` và xuất CSV, mở Excel | Excel không chạy công thức | | |
 | T09-39 | 🔴 | Gửi hai lần cùng một thao tác nhanh (bấm đúp Lưu, Nộp, Cấp quyền) | Chỉ một kết quả, không nhân đôi | | |
 | T09-40 | 🔴 | Tài khoản bị khóa/đổi mật khẩu: phiên cũ trên thẻ khác thao tác | Bị từ chối | | |
 | T09-41 | 🟡 | Đăng nhập sai nhiều lần | Giới hạn thử (T01-04) | | |

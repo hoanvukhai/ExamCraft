@@ -35,7 +35,7 @@ Bấm **Tải Word (.docx)** trên thanh trên cùng. Mở từng tệp bằng *
 | T06-25 | 🔴 | Đề có ngữ liệu dùng chung | Đoạn ngữ liệu in **một lần** phía trên nhóm câu | | |
 | T06-26 | 🟡 | Bài thơ nhiều dòng trong ngữ liệu | Mỗi dòng thơ một dòng (không gộp một đoạn) | | |
 | T06-27 | 🟡 | Câu hỏi có nhiều dòng (đoạn mã Python) | Giữ xuống dòng | | |
-| T06-28 | 🟡 | Câu có bảng viết bằng dấu `|` | Thành **bảng Word thật** có viền, hàng tiêu đề lặp lại ở trang mới | | |
+| T06-28 | 🟡 | Câu có bảng viết bằng dấu `&#124;` | Thành **bảng Word thật** có viền, hàng tiêu đề lặp lại ở trang mới | | |
 | T06-29 | 🟡 | Ghép nối và sắp xếp | Ghép nối thành bảng hai cột; sắp xếp có đánh số `[1] [2]...` | | |
 | T06-30 | 🟡 | Mở chế độ **Song song** rồi tải Word | Hai cột câu/đáp án, ngữ liệu một lần, ảnh không tràn cột | | |
 | T06-31 | 🟡 | Đề có bảng biến thiên | Có bảng; dấu và mũi tên hiện (đã biết: tóm gọn, chưa dóng từng cột) | | |

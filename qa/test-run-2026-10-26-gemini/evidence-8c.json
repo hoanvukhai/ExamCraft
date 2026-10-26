@@ -49,8 +49,9 @@
     {
       "id": "T09-37",
       "description": "Dán thẻ <script>alert(1)</script>",
-      "testRef": "React tự động HTML-escape chuỗi; MathRenderer dùng DOMPurify sanitization",
-      "result": "Đ"
+      "testRef": "tests/math_renderer_escape.test.ts (Claude 26/10): câu có <script>, <img onerror>, <b onclick> hiển thị thành chữ ở nội dung, công thức, ô bảng. Ghi chú DOMPurify trước đó sai, dự án không dùng.",
+      "result": "Đ",
+      "reviewedBy": "CLAUDE"
     },
     {
       "id": "T09-38",
@@ -91,8 +92,9 @@
     {
       "id": "T09-44",
       "description": "Tìm khóa/mật khẩu trong file xuất",
-      "testRef": "tests/portable_and_exports.test.ts lines 152-155: word/document.xml và file CSV điểm không chứa bất kỳ khóa hay thông tin nhạy cảm",
-      "result": "Đ"
+      "testRef": "Dò mã xuất (docx-export, export-csv, portable-backup): không có trường apiKey/passwordHash/secret. Test cũ chỉ kiểm lời giải bị ẩn. Chưa mở tệp xuất thật.",
+      "result": "Đ",
+      "reviewedBy": "CLAUDE"
     },
     {
       "id": "T09-45",
