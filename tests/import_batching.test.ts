@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { importInBatches, planImportBatches, type ParsedImport } from '../src/lib/import-batching';
+import { countHint, importInBatches, planImportBatches, type ParsedImport } from '../src/lib/import-batching';
 import type { Question } from '../src/types/exam';
 import { DocumentValidationError } from '../src/lib/exam-document';
 
@@ -67,4 +67,12 @@ test('one part returned in an unusable shape is reported while the other parts a
   assert.ok(partial.warnings.some(w => /AI trả về chưa dùng được/.test(w)) && partial.warnings.some(w => /Chỉ nhận được/.test(w)));
   await assert.rejects(() => importInBatches(source(60), async () => { throw new DocumentValidationError('hỏng'); }), /hỏng/);
   await assert.rejects(() => importInBatches(source(5), async () => { throw new DocumentValidationError('một phần duy nhất'); }), /một phần duy nhất/);
+});
+
+test('each part is sent with the number of questions the source says it holds, so the model is told not to stop early', async () => {
+  const seenHints: string[] = [];
+  await importInBatches(source(40), async (text, info) => { seenHints.push(`${info.expected}:${info.first}-${info.last}`); return fakeModel()(text); });
+  assert.deepEqual(seenHints, ['15:1-15', '15:16-30', '10:31-40']);
+  const hint = countHint({ expected: 15, first: 16, last: 30 }); assert.ok(hint.includes('đúng 15 câu') && hint.includes('từ Câu 16 đến Câu 30') && hint.includes('đủ 15 phần tử'));
+  assert.equal(countHint({ expected: 0, first: 0, last: 0 }), '', 'no hint when the numbering cannot be read');
 });

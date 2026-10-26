@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { importInBatches } from '@/lib/import-batching';
+import { countHint, importInBatches } from '@/lib/import-batching';
 import { importResponseSchema, parseImportedDocument, IMPORT_SOURCE_RULES } from '@/lib/import-document';
 import { GoogleGenAI } from '@google/genai';
 import { requireRequestAuth } from '@/lib/request-auth';
@@ -44,14 +44,14 @@ export async function POST(req: NextRequest) {
     const systemPrompt = IMPORT_SOURCE_RULES;
 
 
-    const imported = await importInBatches(rawText, async part => {
+    const imported = await importInBatches(rawText, async (part, info) => {
       const responseText = await executeWithKeyRotation(
         customApiKey,
         async (apiKey, modelName) => {
           const ai = new GoogleGenAI({ apiKey });
           const response = await ai.models.generateContent({
             model: modelName,
-            contents: part,
+            contents: countHint(info) + part,
             config: { abortSignal: req.signal,
               systemInstruction: systemPrompt,
               responseMimeType: 'application/json',

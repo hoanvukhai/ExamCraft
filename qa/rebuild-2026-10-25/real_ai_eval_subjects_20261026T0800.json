@@ -1,0 +1,752 @@
+{
+  "startedAt": "2026-10-26T07:49:13.044Z",
+  "environment": "isolated test server, test database, real provider with temporary keys",
+  "subjects": [
+    {
+      "subject": "tieng_viet",
+      "grade": 3,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "B",
+          "solved": "B",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        },
+        {
+          "type": "short_answer",
+          "keyed": "học sinh, trường",
+          "solved": "Học sinh, trường (hoặc cây)",
+          "isMatch": false,
+          "recommendation": "match",
+          "status": 200
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Từ nào dưới đây là từ chỉ sự vật?",
+          "key": "B",
+          "choices": [
+            "A. chạy nhảy",
+            "B. ngôi trường",
+            "C. vui vẻ",
+            "D. nhanh nhẹn"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Câu nào dưới đây sử dụng dấu phẩy đúng vị trí?",
+          "key": "A",
+          "choices": [
+            "A. Vào mùa xuân, cây cối đâm chồi, nẻ lộc.",
+            "B. Vào mùa, xuân cây cối đâm chồi nẻ lộc.",
+            "C. Vào mùa xuân cây, cối đâm chồi nẻ lộc.",
+            "D. Vào mùa xuân cây cối, đâm, chồi nẻ lộc."
+          ]
+        },
+        {
+          "type": "short_answer",
+          "content": "Em hãy ghi lại 2 từ chỉ sự vật có trong câu văn sau: \"Học sinh hăng hái đến trường dưới hàng cây xanh mát.\"",
+          "key": "học sinh, trường"
+        }
+      ]
+    },
+    {
+      "subject": "toan",
+      "grade": 9,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "A",
+          "solved": "A",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        },
+        {
+          "type": "short_answer",
+          "keyed": "45°",
+          "solved": "45°",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Căn bậc hai số học của 9 là:",
+          "key": "A",
+          "choices": [
+            "A. 3",
+            "B. -3",
+            "C. ±3",
+            "D. 81"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Hàm số nào sau đây là hàm số bậc nhất đồng biến trên R?",
+          "key": "A",
+          "choices": [
+            "A. y = 2x + 1",
+            "B. y = -3x + 5",
+            "C. y = x² + 1",
+            "D. y = 3"
+          ]
+        },
+        {
+          "type": "true_false_group",
+          "content": "Cho biểu thức A = √(x - 2). Xét tính đúng/sai của các khẳng định sau:",
+          "tf": [
+            "a:true",
+            "b:true",
+            "c:true",
+            "d:false"
+          ]
+        },
+        {
+          "type": "short_answer",
+          "content": "Tính góc (theo đơn vị độ) tạo bởi đường thẳng y = x + 3 và trục Ox.",
+          "key": "45°"
+        }
+      ]
+    },
+    {
+      "subject": "tieng_anh",
+      "grade": 8,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "B",
+          "solved": "B",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        },
+        {
+          "type": "short_answer",
+          "keyed": "haven't seen",
+          "solved": "have not seen",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Choose the correct answer to complete the sentence: 'I _______ to London three times so far.'",
+          "key": "B",
+          "choices": [
+            "A. went",
+            "B. have been",
+            "C. go",
+            "D. was going"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Choose the correct answer to complete the sentence: 'They _______ a new house last month.'",
+          "key": "A",
+          "choices": [
+            "A. bought",
+            "B. have bought",
+            "C. buy",
+            "D. are buying"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Choose the correct answer to complete the sentence: 'She _______ her homework yet.'",
+          "key": "B",
+          "choices": [
+            "A. didn't finish",
+            "B. hasn't finished",
+            "C. doesn't finish",
+            "D. finished"
+          ]
+        },
+        {
+          "type": "short_answer",
+          "content": "Supply the correct form of the verb in brackets: 'We (not see) _______ each other since last Tuesday.'",
+          "key": "haven't seen"
+        }
+      ]
+    },
+    {
+      "subject": "tin_hoc",
+      "grade": 8,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "B",
+          "solved": "B",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        },
+        {
+          "type": "short_answer",
+          "keyed": "30",
+          "solved": "30",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Trong ngôn ngữ lập trình Python, tên biến nào sau đây là hợp lệ?",
+          "key": "B",
+          "choices": [
+            "A. 1variable",
+            "B. bien_1",
+            "C. if",
+            "D. bien 1"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Cho đoạn chương trình Python sau:\n\nx = 10\nif x % 2 == 0:\n    print(\"Chan\")\nelse:\n    print(\"Le\")\n\nKết quả xuất ra màn hình khi chạy đoạn chương trình trên là gì?",
+          "key": "A",
+          "choices": [
+            "A. Chan",
+            "B. Le",
+            "C. 10",
+            "D. Báo lỗi"
+          ]
+        },
+        {
+          "type": "true_false_group",
+          "content": "Cho các phát biểu về biến và biểu thức điều kiện trong Python:",
+          "tf": [
+            "a:true",
+            "b:false",
+            "c:true",
+            "d:false"
+          ]
+        },
+        {
+          "type": "short_answer",
+          "content": "Cho đoạn mã Python sau:\n\na = 15\nif a > 10:\n    b = a * 2\nelse:\n    b = a + 5\nprint(b)\n\nGiá trị của biến b được in ra màn hình là bao nhiêu?",
+          "key": "30"
+        }
+      ]
+    },
+    {
+      "subject": "cong_nghe",
+      "grade": 7,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "A",
+          "solved": "A",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Một trong những vai trò quan trọng nhất của giống cây trồng trong sản xuất nông nghiệp là gì?",
+          "key": "A",
+          "choices": [
+            "A. Quyết định năng suất và chất lượng của nông sản.",
+            "B. Thay đổi điều kiện thời tiết và khí hậu vùng trồng.",
+            "C. Thay đổi hoàn toàn cấu trúc của đất trồng.",
+            "D. Tăng tối đa lượng phân bón hóa học cần sử dụng."
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Mục đích chính của việc xử lý hạt giống trước khi gieo là gì?",
+          "key": "B",
+          "choices": [
+            "A. Làm cho hạt giống to lên gấp nhiều lần.",
+            "B. Kích thích hạt nảy mầm nhanh, đều và diệt trừ mầm bệnh.",
+            "C. Thay đổi màu sắc của vỏ hạt để thu hút côn trùng.",
+            "D. Giúp hạt không bị trôi khi gặp mưa rào."
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Phương pháp gieo hạt theo hốc thường được áp dụng cho loại cây trồng nào sau đây?",
+          "key": "B",
+          "choices": [
+            "A. Cây lúa gieo thẳng.",
+            "B. Cây ngô (bắp), cây đỗ (đậu).",
+            "C. Cây rau dền.",
+            "D. Cây cỏ làm thức ăn chăn nuôi."
+          ]
+        }
+      ]
+    },
+    {
+      "subject": "khoa_hoc",
+      "grade": 5,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "A",
+          "solved": "A",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        },
+        {
+          "type": "short_answer",
+          "keyed": "Biến đổi lí học",
+          "solved": "Biến đổi lí học",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Trường hợp nào sau đây xảy ra sự biến đổi lí học?",
+          "key": "A",
+          "choices": [
+            "A. Xé nhỏ một tờ giấy thành nhiều mảnh",
+            "B. Đốt cháy một tờ giấy thành tro",
+            "C. Đinh sắt để ngoài không khí bị gỉ",
+            "D. Đường bị đun cháy tạo thành chất màu đen có vị đắng"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Hiện tượng nào dưới đây thể hiện sự biến đổi hóa học?",
+          "key": "C",
+          "choices": [
+            "A. Nước đá tan chảy thành nước lỏng",
+            "B. Hòa tan đường vào nước ấm tạo thành nước đường",
+            "C. Trộn xi măng với nước tạo thành hồ xi măng, sau đó kết cứng lại",
+            "D. Đun nóng chảy thủy tinh để thổi thành lọ hoa"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Để ngăn chặn hiện tượng gỉ sét (sự biến đổi hóa học) ở các đồ dùng bằng sắt trong gia đình, biện pháp nào sau đây KHÔNG đúng?",
+          "key": "C",
+          "choices": [
+            "A. Rửa sạch và lau khô dao, kéo sau khi sử dụng",
+            "B. Sơn hoặc bôi dầu mỡ lên bề mặt xích xe đạp, khung cửa sắt",
+            "C. Để các dụng cụ bằng sắt ở nơi ẩm ướt ngoài trời",
+            "D. Bảo quản dụng cụ bằng sắt ở nơi khô ráo, thoáng mát"
+          ]
+        },
+        {
+          "type": "short_answer",
+          "content": "Khi đun sôi nước lỏng trong ấm, nước chuyển thành hơi nước bay lên. Quá trình này thuộc loại biến đổi nào (biến đổi lí học hay biến đổi hóa học)?",
+          "key": "Biến đổi lí học"
+        }
+      ]
+    },
+    {
+      "subject": "khtn",
+      "grade": 7,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "B",
+          "solved": "B",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        },
+        {
+          "type": "short_answer",
+          "keyed": "11",
+          "solved": "11",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Trong cấu tạo nguyên tử, loại hạt nào sau đây mang điện tích âm?",
+          "key": "B",
+          "choices": [
+            "A. Proton",
+            "B. Electron",
+            "C. Neutron",
+            "D. Hạt nhân"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Công thức nào sau đây đúng để tính tốc độ chuyển động v của một vật khi biết quãng đường s và thời gian t?",
+          "key": "B",
+          "choices": [
+            "A. v = s . t",
+            "B. v = s / t",
+            "C. v = t / s",
+            "D. v = s + t"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Một học sinh đi xe đạp từ nhà đến trường trên quãng đường dài 3 km hết thời gian 15 phút. Tốc độ chuyển động của học sinh đó là:",
+          "key": "A",
+          "choices": [
+            "A. 12 km/h",
+            "B. 0,2 km/h",
+            "C. 45 km/h",
+            "D. 5 km/h"
+          ]
+        },
+        {
+          "type": "short_answer",
+          "content": "Một nguyên tử có 11 proton trong hạt nhân. Vì nguyên tử trung hòa về điện, số hạt electron ở vỏ nguyên tử này là bao nhiêu?",
+          "key": "11"
+        }
+      ]
+    },
+    {
+      "subject": "lich_su_dia_ly",
+      "grade": 7,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "B",
+          "solved": "B",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Trong lịch sử dân tộc Việt Nam, nhà Trần đã lãnh đạo nhân dân ta ba lần đánh bại quân xâm lược nào?",
+          "key": "B",
+          "choices": [
+            "A. Quân Tống",
+            "B. Quân Mông - Nguyên",
+            "C. Quân Minh",
+            "D. Quân Thanh"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Nguyên nhân chủ yếu làm cho khí hậu châu Á phân hóa thành nhiều đới khí hậu khác nhau từ bắc xuống nam là gì?",
+          "key": "A",
+          "choices": [
+            "A. Lãnh thổ trải dài từ vùng cực Bắc đến vùng Xích đạo.",
+            "B. Châu Á có nhiều dãy núi cao và sơn nguyên đồ sộ.",
+            "C. Châu Á tiếp giáp với ba đại dương lớn.",
+            "D. Lãnh thổ châu Á có dạng hình khối rõ rệt."
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Trận đánh quyết định đập tan hoàn toàn ý chí xâm lược Đại Việt của quân Nguyên - Mông lần thứ ba (năm 1288) diễn ra trên dòng sông nào?",
+          "key": "C",
+          "choices": [
+            "A. Sông Như Nguyệt",
+            "B. Sông Gianh",
+            "C. Sông Bạch Đằng",
+            "D. Sông Mã"
+          ]
+        },
+        {
+          "type": "true_false_group",
+          "content": "Khi tìm hiểu về đặc điểm khí hậu châu Á, các nhận định sau đây là đúng hay sai?",
+          "tf": [
+            "a:true",
+            "b:false",
+            "c:true",
+            "d:true"
+          ]
+        }
+      ]
+    },
+    {
+      "subject": "ngu_van",
+      "grade": 8,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "A",
+          "solved": "A",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Đọc đoạn văn sau và trả lời câu hỏi:\n\"Thuyền chúng tôi chèo thoát qua kênh Bọ Mắt, đổ ra con sông Cửa Lớn, dòng sông rộng lớn, nước ào ào đổ ra biển ngày đêm như thác, cá nước tông đen hàng đàn đen quạch nhô lên xụp xuống như người bơi ếch giữa những làn sóng trắng. Thuyền xuôi giữa dòng con sông rộng hơn ngàn thước, trông hai bên bờ, rừng đước dựng lên cao vút như hai dãy trường thành vô tận.\"\n(Theo Đoàn Giỏi, Đất rừng phương Nam)\n\nTrong đoạn văn trên, hình ảnh rừng đước ở hai bên bờ sông được so sánh với hình ảnh nào?",
+          "key": "A",
+          "choices": [
+            "A. Hai dãy trường thành vô tận",
+            "B. Những làn sóng trắng",
+            "C. Người bơi ếch",
+            "D. Con sông rộng hơn ngàn thước"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Biện pháp tu từ so sánh trong câu \"cá nước tông đen hàng đàn đen quạch nhô lên xụp xuống như người bơi ếch giữa những làn sóng trắng\" có tác dụng chính là gì?",
+          "key": "A",
+          "choices": [
+            "A. Tăng sức gợi hình, làm nổi bật sự phong phú, sinh động và sức sống trù phú của thiên nhiên sông nước phương Nam.",
+            "B. Nhấn mạnh sự nguy hiểm và dữ dội của dòng nước khi đổ ra biển ngày đêm.",
+            "C. Thể hiện niềm tiếc nuối của tác giả trước vẻ đẹp hoang sơ của rừng đước.",
+            "D. Miêu tả hoạt động đánh bắt cá vất vả của người dân vùng sông nước."
+          ]
+        },
+        {
+          "type": "essay",
+          "content": "Viết một đoạn văn ngắn (từ 5 đến 7 dòng) bộc lộ cảm xúc của em về vẻ đẹp thiên nhiên vùng đất phương Nam được gợi ra từ đoạn văn trên."
+        }
+      ]
+    },
+    {
+      "subject": "giao_duc_cong_dan",
+      "grade": 7,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "A",
+          "status": 429
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Tôn trọng sự thật là gì?",
+          "key": "A",
+          "choices": [
+            "A. Công nhận, ủng hộ, bảo vệ những điều có thật, đúng đắn.",
+            "B. Che giấu những hành vi vi phạm kỷ luật của bạn bè.",
+            "C. Nói theo ý thích cá nhân không cần đúng thực tế.",
+            "D. Xuyên tạc thông tin nhằm thu lợi cho bản thân."
+          ],
+          "tf": []
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Hành vi nào sau đây thể hiện việc bảo vệ di sản văn hóa?",
+          "key": "A",
+          "choices": [
+            "A. Tham gia dọn dẹp vệ sinh xung quanh di tích lịch sử tại địa phương.",
+            "B. Khắc tên, vẽ bẩn lên bia đá ở đền, chùa để làm kỷ niệm.",
+            "C. Tự ý đào xới, tìm kiếm cổ vật quý hiếm tại di tích lịch sử.",
+            "D. Đăng tải thông tin sai lệch về giá trị của di sản lên mạng xã hội."
+          ],
+          "tf": []
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Khi thấy bạn thân của mình quay kop bài trong giờ kiểm tra, em chọn cách ứng xử nào sau đây để thể hiện sự tôn trọng sự thật?",
+          "key": "B",
+          "choices": [
+            "A. Im lặng coi như không thấy gì để bảo vệ tình bạn.",
+            "B. Khuyên bạn không nên làm vậy và nhắc bạn tự giác nhận lỗi.",
+            "C. Xin chép bài cùng bạn để cả hai đạt điểm cao.",
+            "D. Loan tin cho các bạn khác trong lớp biết để giễu cợt."
+          ],
+          "tf": []
+        },
+        {
+          "type": "true_false_group",
+          "content": "Đọc các câu sau và xác định Đúng hay Sai về tôn trọng sự thật và bảo vệ di sản văn hóa:",
+          "choices": [],
+          "tf": [
+            "a:true",
+            "b:false",
+            "c:true",
+            "d:false"
+          ]
+        }
+      ]
+    },
+    {
+      "subject": "lich_su",
+      "grade": 11,
+      "status": 429,
+      "error": "Nhà cung cấp đang giới hạn yêu cầu. Kiểm tra quota, tốc độ gửi và billing của project trong AI Studio; chưa thể kết luận gói miễn phí hay trả phí.",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "dia_ly",
+      "grade": 10,
+      "status": 429,
+      "error": "Nhà cung cấp đang giới hạn yêu cầu. Kiểm tra quota, tốc độ gửi và billing của project trong AI Studio; chưa thể kết luận gói miễn phí hay trả phí.",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "sinh_hoc",
+      "grade": 11,
+      "status": 429,
+      "error": "Nhà cung cấp đang giới hạn yêu cầu. Kiểm tra quota, tốc độ gửi và billing của project trong AI Studio; chưa thể kết luận gói miễn phí hay trả phí.",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "gdkt_pl",
+      "grade": 10,
+      "status": 429,
+      "error": "Nhà cung cấp đang giới hạn yêu cầu. Kiểm tra quota, tốc độ gửi và billing của project trong AI Studio; chưa thể kết luận gói miễn phí hay trả phí.",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "giao_duc_quoc_phong_an_ninh",
+      "grade": 10,
+      "status": 429,
+      "error": "Nhà cung cấp đang giới hạn yêu cầu. Kiểm tra quota, tốc độ gửi và billing của project trong AI Studio; chưa thể kết luận gói miễn phí hay trả phí.",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "am_nhac",
+      "grade": 6,
+      "status": 429,
+      "error": "Nhà cung cấp đang giới hạn yêu cầu. Kiểm tra quota, tốc độ gửi và billing của project trong AI Studio; chưa thể kết luận gói miễn phí hay trả phí.",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "mi_thuat",
+      "grade": 6,
+      "status": 429,
+      "error": "Nhà cung cấp đang giới hạn yêu cầu. Kiểm tra quota, tốc độ gửi và billing của project trong AI Studio; chưa thể kết luận gói miễn phí hay trả phí.",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "giao_duc_the_chat",
+      "grade": 7,
+      "status": 429,
+      "error": "Nhà cung cấp đang giới hạn yêu cầu. Kiểm tra quota, tốc độ gửi và billing của project trong AI Studio; chưa thể kết luận gói miễn phí hay trả phí.",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "hoat_dong_trai_nghiem",
+      "grade": 4,
+      "status": 429,
+      "error": "Nhà cung cấp đang giới hạn yêu cầu. Kiểm tra quota, tốc độ gửi và billing của project trong AI Studio; chưa thể kết luận gói miễn phí hay trả phí.",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "ngoai_ngu_khac",
+      "grade": 10,
+      "status": 429,
+      "error": "Nhà cung cấp đang giới hạn yêu cầu. Kiểm tra quota, tốc độ gửi và billing của project trong AI Studio; chưa thể kết luận gói miễn phí hay trả phí.",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "tieng_dan_toc",
+      "grade": 3,
+      "status": 429,
+      "error": "Nhà cung cấp đang giới hạn yêu cầu. Kiểm tra quota, tốc độ gửi và billing của project trong AI Studio; chưa thể kết luận gói miễn phí hay trả phí.",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    }
+  ],
+  "finishedAt": "2026-10-26T08:00:08.436Z",
+  "providerCalls": 208,
+  "providerRefusals": 183,
+  "refusalStatuses": {
+    "429": 180,
+    "503": 3
+  }
+}

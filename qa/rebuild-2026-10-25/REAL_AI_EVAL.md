@@ -48,3 +48,19 @@ Chạy trên máy chủ thử riêng ở cổng 3120 (không chạm cổng 3117 
 3. Đối chiếu đáp án: AI liệt kê hai cách viết cách nhau " / " thì khớp nếu một cách là đáp án chấp nhận.
 
 Cần: dựng lại bản build, chạy lại `real-ai-eval-import.ts` (đề 60 câu) và `real-ai-eval-subjects.ts` với `EVAL_ONLY=mi_thuat,giao_duc_the_chat,hoat_dong_trai_nghiem`.
+
+## Lượt chạy lại trên bản build đã sửa (26/10, 14:49 giờ Việt Nam)
+
+Báo cáo thô: `real_ai_eval_import_20261026T0749.json`, `real_ai_eval_subjects_20261026T0800.json`.
+
+| Phần | Kết quả |
+|---|---|
+| Word 20 câu | 20/20, giữ công thức; đọc thành 2 phần |
+| **Word 60 câu** | **47/60** (trước sửa 38/60), đọc thành 4 phần theo thứ tự. Phần 4 (câu 46–60) AI chỉ trả 2/15 dù đã thử lại; hệ thống báo đúng "nhận 47/60... phần 4 chỉ nhận 2/15" và không bịa câu. Hai câu thiếu ngữ liệu được **giữ** kèm cảnh báo (sửa trước đó có tác dụng). Một phần còn lại bị loại vì AI trả đúng/sai sai cấu trúc |
+| Ảnh đề in | 3/3 |
+| Quét môn | Làm được 10/21 môn trước khi 7 khóa lại hết hạn mức (429): Tiếng Việt, Toán, Tiếng Anh, Tin học, Công nghệ, Khoa học, KHTN, Lịch sử và Địa lí, Ngữ văn, GDCD đều nhận đúng kế hoạch (200); 8/10 giải mù trùng toàn bộ; Tiếng Việt và GDCD có một câu lệch, đã ghi nhưng chưa xem tay. **11 môn chưa chạy lại** trên bản sửa, trong đó 3 môn nhận xét (Mĩ thuật, GDTC, HĐ trải nghiệm) là môn cần xác nhận lỗi `null` đã hết |
+| Lý do hết hạn mức | Mỗi lần thử lại sau 429 cũng tốn lượt; lượt chạy này gọi khoảng 200 lần |
+
+Đã sửa thêm sau lượt này (có test, **chưa dựng build, chưa thử bằng AI thật**): mỗi phần khi gửi AI kèm câu "Tài liệu này có đúng N câu đánh số (từ Câu a đến Câu b). Mảng questions phải có đủ N phần tử...", vì phần cuối bị bỏ sót nhiều nhất dù văn bản gửi đi chỉ 1,5 nghìn ký tự và sạch (đã kiểm bằng cách in đúng văn bản phần 4).
+
+**Cần làm khi hạn mức hồi (khoảng 14:00 giờ Việt Nam ngày kế):** dựng lại bản build (khi không ai dùng cổng 3117), chạy lại `real-ai-eval-import.ts` (đề 60 câu) và `real-ai-eval-subjects.ts` cho các môn chưa chạy; chỉ khi 60 câu về gần đủ thì mới đóng CV040.

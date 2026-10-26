@@ -31,14 +31,20 @@ export function planImportBatches(text: string, options: { maxChars?: number; ma
   return { batches, expected: starts.length };
 }
 
-export async function importInBatches(rawText: string, run: (text: string) => Promise<ParsedImport>, label = 'tài liệu'): Promise<ParsedImport> {
+/** What the source says it holds, so the model can be told how many questions to return. Empty when the numbering cannot be read. */
+export const countHint = (info: { expected: number; first: number; last: number }) => info.expected > 0
+  ? `Tài liệu này có đúng ${info.expected} câu đánh số (từ Câu ${info.first} đến Câu ${info.last}). Mảng questions phải có đủ ${info.expected} phần tử, mỗi câu đánh số một phần tử, không bỏ sót, không gộp, không dừng sớm.
+
+` : '';
+
+export async function importInBatches(rawText: string, run: (text: string, info: { expected: number; first: number; last: number }) => Promise<ParsedImport>, label = 'tài liệu'): Promise<ParsedImport> {
   const plan = planImportBatches(rawText);
   if (plan.batches.length > MAX_BATCHES) throw new Error(`Nguồn có quá nhiều phần (${plan.batches.length}); hãy chia nhỏ ${label}.`);
   const questions: Question[] = [], passages: Passage[] = [], warnings: string[] = [], passageByContent = new Map<string, string>();
   const short: string[] = [], failures: string[] = [];
   for (const [index, batch] of plan.batches.entries()) {
     // A part the model returned in an unusable shape is asked once more, then reported while the other parts are kept.
-    const attempt = async () => { try { return await run(batch.text); } catch (error) { if (plan.batches.length > 1 && error instanceof DocumentValidationError) { failures.push(error.message); return null; } throw error; } };
+    const attempt = async () => { try { return await run(batch.text, batch); } catch (error) { if (plan.batches.length > 1 && error instanceof DocumentValidationError) { failures.push(error.message); return null; } throw error; } };
     let result = await attempt() ?? { questions: [], passages: [], warnings: [] };
     for (let again = 0; again < 2 && batch.expected > 1 && result.questions.length < batch.expected; again++) {
       const retry = await attempt();

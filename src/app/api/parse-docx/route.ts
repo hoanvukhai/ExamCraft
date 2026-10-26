@@ -7,7 +7,7 @@ import { isSameOriginMutation } from '@/lib/attempt-access';
 
 import mammoth from 'mammoth';
 import { docxWithEquationsAsText } from '@/lib/docx-math';
-import { importInBatches } from '@/lib/import-batching';
+import { countHint, importInBatches } from '@/lib/import-batching';
 import { attachWordImages, docxWithImagesAsMarkers } from '@/lib/docx-images';
 import { GoogleGenAI } from '@google/genai';
 import { executeWithKeyRotation, parseProviderJson } from '@/lib/gemini-keys';
@@ -76,9 +76,9 @@ export async function POST(req: NextRequest) {
     if (rawText.length > 45000) throw new ApiError(413, 'Văn bản Word vượt 45.000 ký tự. Hãy chia nhỏ tài liệu; hệ thống không tự cắt bỏ phần cuối.');
 
     // 2. Dùng Gemini AI để phân rã cấu trúc câu hỏi; tài liệu dài được đọc theo từng phần và đối chiếu với số "Câu N" của nguồn
-    const parsed = await importInBatches(rawText, async part => {
+    const parsed = await importInBatches(rawText, async (part, info) => {
       const prompt = `Số hóa văn bản Word sau.
-${IMPORT_SOURCE_RULES}
+${countHint(info)}${IMPORT_SOURCE_RULES}
 <source_document>
 ${part}
 </source_document>`;
