@@ -62,7 +62,7 @@ const mcq = (n: number, extra = '') => ({ id: randomUUID(), type: 'multiple_choi
     report.finishedAt = new Date().toISOString(); report.providerCalls = calls; report.providerRefusals = refusals;
     const raw = JSON.stringify(report, null, 2);
     if (keys.some(key => raw.includes(key))) throw new Error('A key appeared in the report; refusing to write it.');
-    fs.writeFileSync('qa/rebuild-2026-10-25/real_ai_eval_import.json', raw);
+    fs.writeFileSync('qa/rebuild-2026-10-25/real_ai_eval_import_' + new Date().toISOString().replace(/[-:]/g, '').slice(0, 13) + '.json', raw); // one file per run, so a blocked run never overwrites a good report
     await db.aiUsageLog.deleteMany({ where: { userId: uid } }); await db.auditLog.deleteMany({ where: { actorId: uid } }); await db.user.deleteMany({ where: { id: uid } }); await db.$disconnect();
     console.log(`done: ${calls} provider calls, ${refusals} refusals; report written`);
   }
