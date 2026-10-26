@@ -1,0 +1,465 @@
+[
+  {
+    "id": "lop1-toan",
+    "examType": "Kiểm tra thường kỳ",
+    "plan": {
+      "subject": "toan",
+      "grade": 1,
+      "topic": "Phép cộng, phép trừ trong phạm vi 10",
+      "durationMinutes": 20,
+      "numMultipleChoice": 3,
+      "numTrueFalse": 0,
+      "numShortAnswer": 1,
+      "numEssay": 0,
+      "numFillBlank": 0,
+      "numMatching": 0,
+      "numOrdering": 0,
+      "assessmentMode": "scored"
+    }
+  },
+  {
+    "id": "lop2-tieng_viet",
+    "examType": "Kiểm tra thường kỳ",
+    "plan": {
+      "subject": "tieng_viet",
+      "grade": 2,
+      "topic": "Từ chỉ sự vật và câu giới thiệu",
+      "durationMinutes": 20,
+      "numMultipleChoice": 3,
+      "numTrueFalse": 0,
+      "numShortAnswer": 1,
+      "numEssay": 0,
+      "numFillBlank": 0,
+      "numMatching": 0,
+      "numOrdering": 0,
+      "assessmentMode": "scored"
+    }
+  },
+  {
+    "id": "lop3-toan",
+    "examType": "Kiểm tra thường kỳ",
+    "plan": {
+      "subject": "toan",
+      "grade": 3,
+      "topic": "Bảng nhân, bảng chia 6, 7",
+      "durationMinutes": 20,
+      "numMultipleChoice": 3,
+      "numTrueFalse": 0,
+      "numShortAnswer": 1,
+      "numEssay": 0,
+      "numFillBlank": 0,
+      "numMatching": 0,
+      "numOrdering": 0,
+      "assessmentMode": "scored"
+    }
+  },
+  {
+    "id": "lop4-tieng_viet",
+    "examType": "Kiểm tra thường kỳ",
+    "plan": {
+      "subject": "tieng_viet",
+      "grade": 4,
+      "topic": "Danh từ, động từ và đọc hiểu đoạn văn ngắn",
+      "durationMinutes": 20,
+      "numMultipleChoice": 3,
+      "numTrueFalse": 0,
+      "numShortAnswer": 1,
+      "numEssay": 1,
+      "numFillBlank": 0,
+      "numMatching": 0,
+      "numOrdering": 0,
+      "assessmentMode": "scored"
+    }
+  },
+  {
+    "id": "lop5-toan",
+    "examType": "Kiểm tra thường kỳ",
+    "plan": {
+      "subject": "toan",
+      "grade": 5,
+      "topic": "Phân số và số thập phân",
+      "durationMinutes": 20,
+      "numMultipleChoice": 3,
+      "numTrueFalse": 0,
+      "numShortAnswer": 1,
+      "numEssay": 0,
+      "numFillBlank": 0,
+      "numMatching": 0,
+      "numOrdering": 0,
+      "assessmentMode": "scored"
+    }
+  },
+  {
+    "id": "lop6-toan",
+    "examType": "Kiểm tra thường kỳ",
+    "plan": {
+      "subject": "toan",
+      "grade": 6,
+      "topic": "Phân số và các phép tính",
+      "durationMinutes": 20,
+      "numMultipleChoice": 3,
+      "numTrueFalse": 0,
+      "numShortAnswer": 1,
+      "numEssay": 0,
+      "numFillBlank": 0,
+      "numMatching": 0,
+      "numOrdering": 0,
+      "assessmentMode": "scored"
+    }
+  },
+  {
+    "id": "lop7-khtn",
+    "examType": "Kiểm tra thường kỳ",
+    "plan": {
+      "subject": "khtn",
+      "grade": 7,
+      "topic": "Nguyên tử, phân tử và tốc độ chuyển động",
+      "durationMinutes": 20,
+      "numMultipleChoice": 3,
+      "numTrueFalse": 0,
+      "numShortAnswer": 1,
+      "numEssay": 0,
+      "numFillBlank": 0,
+      "numMatching": 0,
+      "numOrdering": 0,
+      "assessmentMode": "scored"
+    }
+  },
+  {
+    "id": "lop8-ngu_van",
+    "examType": "Kiểm tra thường kỳ",
+    "plan": {
+      "subject": "ngu_van",
+      "grade": 8,
+      "topic": "Đọc hiểu đoạn văn tả cảnh và biện pháp tu từ",
+      "durationMinutes": 20,
+      "numMultipleChoice": 3,
+      "numTrueFalse": 0,
+      "numShortAnswer": 0,
+      "numEssay": 1,
+      "numFillBlank": 0,
+      "numMatching": 0,
+      "numOrdering": 0,
+      "assessmentMode": "scored"
+    }
+  },
+  {
+    "id": "lop9-toan",
+    "examType": "Kiểm tra thường kỳ",
+    "plan": {
+      "subject": "toan",
+      "grade": 9,
+      "topic": "Căn bậc hai và hàm số bậc nhất",
+      "durationMinutes": 20,
+      "numMultipleChoice": 3,
+      "numTrueFalse": 1,
+      "numShortAnswer": 1,
+      "numEssay": 0,
+      "numFillBlank": 0,
+      "numMatching": 0,
+      "numOrdering": 0,
+      "assessmentMode": "scored"
+    }
+  },
+  {
+    "id": "lop10-hoa_hoc",
+    "examType": "Kiểm tra thường kỳ",
+    "plan": {
+      "subject": "hoa_hoc",
+      "grade": 10,
+      "topic": "Cấu tạo nguyên tử và bảng tuần hoàn",
+      "durationMinutes": 20,
+      "numMultipleChoice": 3,
+      "numTrueFalse": 1,
+      "numShortAnswer": 1,
+      "numEssay": 0,
+      "numFillBlank": 0,
+      "numMatching": 0,
+      "numOrdering": 0,
+      "assessmentMode": "scored"
+    }
+  },
+  {
+    "id": "lop11-vat_ly",
+    "examType": "Kiểm tra thường kỳ",
+    "plan": {
+      "subject": "vat_ly",
+      "grade": 11,
+      "topic": "Dao động điều hòa",
+      "durationMinutes": 20,
+      "numMultipleChoice": 3,
+      "numTrueFalse": 1,
+      "numShortAnswer": 1,
+      "numEssay": 0,
+      "numFillBlank": 0,
+      "numMatching": 0,
+      "numOrdering": 0,
+      "assessmentMode": "scored"
+    }
+  },
+  {
+    "id": "lop12-toan",
+    "examType": "Kiểm tra thường kỳ",
+    "plan": {
+      "subject": "toan",
+      "grade": 12,
+      "topic": "Nguyên hàm và tích phân",
+      "durationMinutes": 20,
+      "numMultipleChoice": 3,
+      "numTrueFalse": 1,
+      "numShortAnswer": 2,
+      "numEssay": 0,
+      "numFillBlank": 0,
+      "numMatching": 0,
+      "numOrdering": 0,
+      "assessmentMode": "scored"
+    }
+  },
+  {
+    "id": "chuyencap-vao6-toan",
+    "examType": "Khảo sát chuyển cấp vào lớp 6",
+    "plan": {
+      "subject": "toan",
+      "grade": 5,
+      "topic": "Số thập phân, phân số, hình học và bài toán có lời văn",
+      "durationMinutes": 40,
+      "numMultipleChoice": 4,
+      "numTrueFalse": 0,
+      "numShortAnswer": 2,
+      "numEssay": 1,
+      "numFillBlank": 0,
+      "numMatching": 0,
+      "numOrdering": 0,
+      "assessmentMode": "scored",
+      "customInstructions": "Đề khảo sát đầu vào lớp 6, phù hợp học sinh cuối tiểu học, có phân hóa nhẹ."
+    }
+  },
+  {
+    "id": "chuyencap-vao6-tiengviet",
+    "examType": "Khảo sát chuyển cấp vào lớp 6",
+    "plan": {
+      "subject": "tieng_viet",
+      "grade": 5,
+      "topic": "Đọc hiểu, từ loại, câu và viết đoạn văn ngắn",
+      "durationMinutes": 40,
+      "numMultipleChoice": 4,
+      "numTrueFalse": 0,
+      "numShortAnswer": 1,
+      "numEssay": 1,
+      "numFillBlank": 0,
+      "numMatching": 0,
+      "numOrdering": 0,
+      "assessmentMode": "scored",
+      "customInstructions": "Đề khảo sát đầu vào lớp 6, có một bài đọc hiểu."
+    }
+  },
+  {
+    "id": "vao10-toan",
+    "examType": "Tuyển sinh vào lớp 10",
+    "plan": {
+      "subject": "toan",
+      "grade": 9,
+      "topic": "Đại số và hình học lớp 9: phương trình, hệ phương trình, hàm số, đường tròn",
+      "durationMinutes": 90,
+      "numMultipleChoice": 4,
+      "numTrueFalse": 0,
+      "numShortAnswer": 3,
+      "numEssay": 2,
+      "numFillBlank": 0,
+      "numMatching": 0,
+      "numOrdering": 0,
+      "assessmentMode": "scored",
+      "customInstructions": "Đề tuyển sinh vào lớp 10 có phân hóa, câu cuối khó nhất."
+    }
+  },
+  {
+    "id": "vao10-nguvan",
+    "examType": "Tuyển sinh vào lớp 10",
+    "plan": {
+      "subject": "ngu_van",
+      "grade": 9,
+      "topic": "Đọc hiểu văn bản và nghị luận xã hội",
+      "durationMinutes": 120,
+      "numMultipleChoice": 4,
+      "numTrueFalse": 0,
+      "numShortAnswer": 0,
+      "numEssay": 2,
+      "numFillBlank": 0,
+      "numMatching": 0,
+      "numOrdering": 0,
+      "assessmentMode": "scored",
+      "customInstructions": "Đề tuyển sinh vào lớp 10: một phần đọc hiểu, một phần viết."
+    }
+  },
+  {
+    "id": "vao10-tienganh",
+    "examType": "Tuyển sinh vào lớp 10",
+    "plan": {
+      "subject": "tieng_anh",
+      "grade": 9,
+      "topic": "Ngữ pháp, từ vựng, đọc hiểu",
+      "durationMinutes": 60,
+      "numMultipleChoice": 8,
+      "numTrueFalse": 0,
+      "numShortAnswer": 2,
+      "numEssay": 0,
+      "numFillBlank": 0,
+      "numMatching": 0,
+      "numOrdering": 0,
+      "assessmentMode": "scored",
+      "customInstructions": "Đề tuyển sinh vào lớp 10 môn Tiếng Anh."
+    }
+  },
+  {
+    "id": "tnthpt-toan",
+    "examType": "Thi thử tốt nghiệp THPT",
+    "plan": {
+      "subject": "toan",
+      "grade": 12,
+      "topic": "Ứng dụng đạo hàm, nguyên hàm - tích phân, hình học không gian Oxyz",
+      "durationMinutes": 90,
+      "numMultipleChoice": 6,
+      "numTrueFalse": 2,
+      "numShortAnswer": 3,
+      "numEssay": 0,
+      "numFillBlank": 0,
+      "numMatching": 0,
+      "numOrdering": 0,
+      "assessmentMode": "scored",
+      "customInstructions": "Đề thi thử tốt nghiệp THPT: trắc nghiệm nhiều lựa chọn, đúng/sai và trả lời ngắn như cấu trúc đề từ 2025."
+    }
+  },
+  {
+    "id": "tnthpt-vatly",
+    "examType": "Thi thử tốt nghiệp THPT",
+    "plan": {
+      "subject": "vat_ly",
+      "grade": 12,
+      "topic": "Dao động, sóng, điện xoay chiều",
+      "durationMinutes": 50,
+      "numMultipleChoice": 6,
+      "numTrueFalse": 2,
+      "numShortAnswer": 3,
+      "numEssay": 0,
+      "numFillBlank": 0,
+      "numMatching": 0,
+      "numOrdering": 0,
+      "assessmentMode": "scored",
+      "customInstructions": "Đề thi thử tốt nghiệp THPT: trắc nghiệm nhiều lựa chọn, đúng/sai và trả lời ngắn."
+    }
+  },
+  {
+    "id": "tnthpt-tienganh",
+    "examType": "Thi thử tốt nghiệp THPT",
+    "plan": {
+      "subject": "tieng_anh",
+      "grade": 12,
+      "topic": "Ngữ pháp, từ vựng, đọc hiểu, giao tiếp",
+      "durationMinutes": 50,
+      "numMultipleChoice": 10,
+      "numTrueFalse": 0,
+      "numShortAnswer": 0,
+      "numEssay": 0,
+      "numFillBlank": 0,
+      "numMatching": 0,
+      "numOrdering": 0,
+      "assessmentMode": "scored",
+      "customInstructions": "Đề thi thử tốt nghiệp THPT môn Tiếng Anh, toàn trắc nghiệm."
+    }
+  },
+  {
+    "id": "dai-hoc-nangluc-toan",
+    "examType": "Luyện thi đánh giá năng lực vào đại học",
+    "plan": {
+      "subject": "toan",
+      "grade": 12,
+      "topic": "Giải tích, đại số và hình học tổng hợp",
+      "durationMinutes": 60,
+      "numMultipleChoice": 8,
+      "numTrueFalse": 0,
+      "numShortAnswer": 2,
+      "numEssay": 0,
+      "numFillBlank": 0,
+      "numMatching": 0,
+      "numOrdering": 0,
+      "assessmentMode": "scored",
+      "customInstructions": "Đề luyện thi đánh giá năng lực vào đại học, câu hỏi tư duy, không lặp đề tốt nghiệp."
+    }
+  },
+  {
+    "id": "hsg-toan9",
+    "examType": "Học sinh giỏi",
+    "plan": {
+      "subject": "toan",
+      "grade": 9,
+      "topic": "Số học, bất đẳng thức, hình học nâng cao",
+      "durationMinutes": 150,
+      "numMultipleChoice": 0,
+      "numTrueFalse": 0,
+      "numShortAnswer": 2,
+      "numEssay": 3,
+      "numFillBlank": 0,
+      "numMatching": 0,
+      "numOrdering": 0,
+      "assessmentMode": "scored",
+      "customInstructions": "Đề học sinh giỏi cấp huyện, câu khó và câu chứng minh."
+    }
+  },
+  {
+    "id": "hsg-hoahoc12",
+    "examType": "Học sinh giỏi",
+    "plan": {
+      "subject": "hoa_hoc",
+      "grade": 12,
+      "topic": "Cân bằng hóa học, điện phân, hóa hữu cơ",
+      "durationMinutes": 180,
+      "numMultipleChoice": 0,
+      "numTrueFalse": 0,
+      "numShortAnswer": 3,
+      "numEssay": 2,
+      "numFillBlank": 0,
+      "numMatching": 0,
+      "numOrdering": 0,
+      "assessmentMode": "scored",
+      "customInstructions": "Đề học sinh giỏi cấp tỉnh, câu tính toán nhiều bước."
+    }
+  },
+  {
+    "id": "giuaky1-khtn6",
+    "examType": "Giữa kì I",
+    "plan": {
+      "subject": "khtn",
+      "grade": 6,
+      "topic": "Các phép đo, chất và sự biến đổi của chất",
+      "durationMinutes": 45,
+      "numMultipleChoice": 6,
+      "numTrueFalse": 0,
+      "numShortAnswer": 1,
+      "numEssay": 1,
+      "numFillBlank": 0,
+      "numMatching": 0,
+      "numOrdering": 0,
+      "assessmentMode": "scored",
+      "customInstructions": "Đề giữa học kì I, theo ma trận nhận biết - thông hiểu - vận dụng."
+    }
+  },
+  {
+    "id": "cuoiky2-tienviet4",
+    "examType": "Cuối kì II",
+    "plan": {
+      "subject": "tieng_viet",
+      "grade": 4,
+      "topic": "Đọc hiểu, luyện từ và câu, tập làm văn",
+      "durationMinutes": 40,
+      "numMultipleChoice": 5,
+      "numTrueFalse": 0,
+      "numShortAnswer": 2,
+      "numEssay": 1,
+      "numFillBlank": 0,
+      "numMatching": 0,
+      "numOrdering": 0,
+      "assessmentMode": "scored",
+      "customInstructions": "Đề cuối học kì II có bài đọc hiểu ngắn."
+    }
+  }
+]
