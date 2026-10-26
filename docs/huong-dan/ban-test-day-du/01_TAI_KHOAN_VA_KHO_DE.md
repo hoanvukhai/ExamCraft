@@ -75,7 +75,7 @@ Cần khóa Gemini thật cho các dòng có "dùng AI"; không có khóa thì g
 
 | Mã | Mức | Làm gì | Kết quả đúng | Kq | Ghi chú |
 |---|---|---|---|---|---|
-| T02-01 | 🟢 | `[A]` Mở trang chủ sau khi đăng nhập | Thấy **Kho Đề Cá Nhân**, ô tìm, các mục **Tất cả đề thi**, **Đề quan trọng (Gắn sao)**, **Đã sửa gần đây**, **Thư mục của tôi**, **Thùng rác**, nhóm **Khảo thí & Lớp** | | |
+| T02-01 | 🟢 | `[A]` Mở trang chủ sau khi đăng nhập | Thấy **Kho Đề Cá Nhân**, ô tìm, các bộ lọc **Tất cả**, **Quan trọng**, **Gần đây** và ô chọn thư mục (ở bố cục rộng tên đầy đủ là **Tất cả đề thi**, **Đề quan trọng (Gắn sao)**, **Đã sửa gần đây**, **Thư mục của tôi**), mục **Thùng rác**, nhóm **Khảo thí & Lớp** | | |
 | T02-02 | 🟡 | Bấm **Soạn đề trống mới** | Mở trang soạn với một trang A4 trắng | | |
 | T02-03 | 🟡 | Đổi tên đề thành `TEST-Kho-De-01` (bấm vào tên trên thanh trên), Enter, rồi bấm **Lưu đề** | Thanh trạng thái **Đang lưu...** rồi **Đã lưu trên máy chủ** | | |
 | T02-04 | 🔴 | Bấm **Kho đề** để về trang chủ | Đề `TEST-Kho-De-01` có trong danh sách với đúng tên | | |

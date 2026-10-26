@@ -10,12 +10,12 @@ Mọi dòng trong phần này làm trong một đề `TEST-Soan-De` mới của 
 | T03-01 | 🟡 | Từ Kho đề bấm **Soạn đề trống mới**, đổi tên thành `TEST-Soan-De` | Tên mới hiện trên thanh trên cùng | | |
 | T03-02 | 🔴 | Bấm **Lưu đề** | Thanh trạng thái **Đang lưu…** rồi **Đã lưu trên máy chủ** | | |
 | T03-03 | 🔴 | Tải lại trang (F5) | Đề mở lại đúng nội dung, không mất gì | | |
-| T03-04 | 🟡 | Bấm **Thêm câu hỏi** (nút trên thanh trên) | Mở trình soạn một câu mới; câu chưa vào đề cho tới khi bấm **Áp dụng câu vào đề** | | |
-| T03-05 | 🟡 | Mở trình soạn câu, gõ vài chữ rồi bấm **Đóng, giữ nháp**; mở lại | Nháp còn nguyên; bảng **Nháp câu hỏi** (Tải nháp câu, Cất riêng...) liệt kê được | | |
+| T03-04 | 🟡 | Bấm **Thêm câu hỏi** (nút trên thanh trên) | Một thẻ câu **trắc nghiệm 4 phương án trống** hiện ngay trong đề với chữ mẫu "Nhập nội dung câu hỏi tại đây." (câu vào đề ngay, chưa có đáp án) | | |
+| T03-05 | 🟡 | Bấm biểu tượng bút (sửa nội dung thủ công) trên một thẻ câu để mở trình soạn; gõ vài chữ rồi bấm **Đóng, giữ nháp**; mở lại | Nháp còn nguyên; bảng **Nháp câu hỏi** (Tải nháp câu, Cất riêng...) liệt kê được; câu trong đề chỉ đổi khi bấm **Áp dụng câu vào đề** | | |
 
 ## 2B. Bảy dạng câu hỏi
 
-Với mỗi dạng, mở **Thêm câu hỏi**, chọn **Dạng câu**, điền, bấm **Áp dụng câu vào đề**, rồi **Lưu đề**, tải lại trang và kiểm câu còn đúng.
+Với mỗi dạng: bấm **Thêm câu hỏi** (hiện một thẻ trắc nghiệm trống), bấm biểu tượng bút trên thẻ đó để mở trình soạn, chọn **Dạng câu**, điền, bấm **Áp dụng câu vào đề**, rồi **Lưu đề**, tải lại trang và kiểm câu còn đúng.
 
 | Mã | Mức | Dạng | Làm gì | Kết quả đúng | Kq | Ghi chú |
 |---|---|---|---|---|---|---|
