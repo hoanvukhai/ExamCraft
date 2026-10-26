@@ -1,6 +1,6 @@
 {
   "port": 3117,
   "holder": "TESTERS",
-  "note": "Codex ran out of budget and stopped. Its isolated server on 3117 (current build) stays up for the manual test run by Gemini and the owner. Nobody runs npm run build / npm run ci or restarts 3117 while this says TESTERS; message Claude first. Claude's real-provider evaluation uses port 3120 and does not touch 3117.",
-  "since_utc": "2026-10-26T07:09:17Z"
+  "note": "Rebuilt at 07:50Z with the import/generation fixes; fresh isolated test server on 3117 is running. Testers (Gemini, owner) use it. Nobody runs npm run build / npm run ci or restarts 3117 while this says TESTERS; message Claude first. Claude's real-provider evaluation uses port 3120 only.",
+  "since_utc": "2026-10-26T07:50:30Z"
 }
