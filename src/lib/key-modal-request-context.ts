@@ -2,7 +2,7 @@
 import { MemoryGate as KeyGate, type MemoryToken as KeyToken } from './ai-memory-request-context';
 export { KeyGate, type KeyToken };
 
-export interface UserKeyRow { id: string; label: string; keyMasked: string; isActive: boolean; usedToday: number; errorCount: number }
+export interface UserKeyRow { id: string; label: string; keyMasked: string; isActive: boolean; usedToday: number; errorCount: number; granted?: boolean }
 export interface AppQuotaRow { limit: number; usedToday: number; remaining: number; resetsAt?: string }
 export interface ModelOptionRow { id: string; name: string }
 
@@ -18,7 +18,7 @@ export function parseKeyList(data: unknown) {
     const value = row && typeof row === 'object' ? row as Record<string, unknown> : {};
     if (!text(value.id, 200) || !value.id || seen.has(value.id) || !text(value.label, 500) || !text(value.keyMasked, 200) || typeof value.isActive !== 'boolean') continue;
     seen.add(value.id);
-    keys.push({ id: value.id, label: value.label, keyMasked: value.keyMasked, isActive: value.isActive, usedToday: count(value.usedToday), errorCount: count(value.errorCount) });
+    keys.push({ id: value.id, label: value.label, keyMasked: value.keyMasked, isActive: value.isActive, usedToday: count(value.usedToday), errorCount: count(value.errorCount), ...(value.granted === true ? { granted: true } : {}) });
   }
   const quota = body.poolQuota && typeof body.poolQuota === 'object' ? body.poolQuota as Record<string, unknown> : null;
   const models = Array.isArray(body.availableModels) ? body.availableModels.flatMap(option => {

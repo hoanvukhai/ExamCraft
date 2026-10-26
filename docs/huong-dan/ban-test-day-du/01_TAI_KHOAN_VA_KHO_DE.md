@@ -46,6 +46,31 @@ Cột **Kq**: Đ / K / B. Mức: 🔴 phải đạt · 🟡 quan trọng · 🟢
 | T01-28 | 🟡 | Mở `/admin/ai` | Thấy **Điều phối & Giám sát tải Google Gemini**, số lệnh AI hôm nay, tỷ lệ thành công, **Nhật ký gọi AI gần nhất** (30 dòng) | | |
 | T01-29 | 🔴 | Đọc nhật ký ở `/admin/ai` | Không dòng nào hiện giá trị khóa API; chỉ thấy tên chức năng, giáo viên, độ trễ, trạng thái | | |
 
+### 1C2. Quản trị cấp khóa AI cho giáo viên (`/admin/keys`)
+
+Cần khóa Gemini thật cho các dòng có "dùng AI"; không có khóa thì ghi **B** cho các dòng đó.
+
+| Mã | Mức | Làm gì | Kết quả đúng | Kq | Ghi chú |
+|---|---|---|---|---|---|
+| T01-30 | 🟡 | `[A]` (quản trị) ở `/admin/users` bấm **Cấp khóa AI** | Mở trang **Cấp khóa AI cho giáo viên**; có liên kết sang **Quản lý giáo viên**, **Giám sát AI Keys**, **Trang soạn đề** | | |
+| T01-31 | 🔴 | Giáo viên thường (`gv1`) mở thẳng `/admin/keys` | Không xem được danh sách; không cấp được | | |
+| T01-32 | 🔴 | Điền **Tên khóa (để nhớ)** `TEST-Khoa-to-Toan`, **Khóa API Gemini** (ô ẩn như mật khẩu), chọn **chỉ** `gv2` ở danh sách (tích ô "Cấp cho ..."), bấm **Cấp khóa cho người đã chọn** | Báo "Đã cấp khóa cho 1 giáo viên. Khóa không hiện lại ở bất kỳ đâu."; ô khóa và danh sách chọn được xóa sạch | | |
+| T01-33 | 🔴 | Không chọn giáo viên nào mà bấm cấp | Báo "Hãy chọn ít nhất một giáo viên nhận khóa."; không cấp | | |
+| T01-34 | 🔴 | Nhìn trang **Các khóa đã cấp** và tải lại trang | Thấy tên khóa, phần đuôi che của khóa, ngày cấp, danh sách người nhận (gv2, Đang bật); **không** thấy khóa đầy đủ | | |
+| T01-35 | 🔴 | `[B]` (gv2) mở **Kho Khóa AI** | Thấy một khóa ghi "Do quản trị cấp · bạn không xem hay xóa được"; **không** có nút Tắt khóa, Xóa; không thấy chữ nào của khóa | | |
+| T01-36 | 🔴 | `[B]` dùng AI (ví dụ Sinh đề AI nhỏ) mà **không** tự thêm khóa nào | Chạy được bằng khóa được cấp; hộp khóa hiện số thao tác đã dùng hôm nay tăng | | |
+| T01-37 | 🔴 | `[A]` (gv1, chưa được cấp) dùng AI | Báo cần thêm hoặc bật khóa; **không** dùng được khóa của gv2 | | |
+| T01-38 | 🔴 | Đặt hạn mức AI của gv2 là 2 (T01-26) rồi dùng AI lần 3 | Lần 3 bị từ chối vì giới hạn thao tác AI do ứng dụng đặt (mỗi người một giới hạn riêng, dù dùng chung một khóa) | | |
+| T01-39 | 🟡 | `[B]` thêm khóa **của riêng mình** trong hộp khóa | Thêm được và xóa được khóa của mình; khóa được cấp vẫn còn | | |
+| T01-40 | 🟡 | `[A]` (quản trị) bấm **Tắt** ở dòng gv2 | Trạng thái "Đang tắt"; gv2 dùng AI báo hết khóa | | |
+| T01-41 | 🟡 | Bấm **Bật** ở dòng gv2 | "Đang bật"; gv2 dùng AI được lại | | |
+| T01-42 | 🟡 | Ở khóa đã cấp, chọn gv1 ở ô "Thêm người nhận" và bấm **Thêm** | gv1 nhận khóa mà **không phải gõ lại** khóa; gv1 dùng AI được | | |
+| T01-43 | 🔴 | Bấm **Thu hồi** ở dòng gv1 (xác nhận) | gv1 mất khóa ngay; gv2 vẫn còn | | |
+| T01-44 | 🔴 | Bấm **Thu hồi của tất cả** (xác nhận) | Khóa biến khỏi danh sách đã cấp; gv2 không còn khóa; dùng AI báo cần khóa | | |
+| T01-45 | 🟡 | Tìm khóa gv2 đã nhận ở mọi nơi gv2 vào được (hộp khóa, tải xuống, nhật ký) | Không đâu có giá trị khóa | | |
+| T01-46 | 🟡 | Xem `/admin/ai` sau khi gv2 dùng khóa được cấp | Nhật ký có dòng của gv2 với tên khóa tương ứng, không có giá trị khóa | | |
+
+
 ## 1D. Kho đề cá nhân (trang chủ)
 
 | Mã | Mức | Làm gì | Kết quả đúng | Kq | Ghi chú |

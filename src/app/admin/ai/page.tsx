@@ -142,6 +142,13 @@ export default function AdminAiPage() {
           </Link>
 
           <Link
+            href="/admin/keys"
+            className="text-xs text-[#3c4043] dark:text-[#e3e3e3] hover:text-black dark:hover:text-white px-3.5 py-1.5 rounded-full border border-[#dadce0] dark:border-[#3c4043]"
+          >
+            Cấp khóa AI
+          </Link>
+
+          <Link
             href="/"
             className="text-xs text-[#1a73e8] hover:text-[#1557b0] dark:text-[#8ab4f8] dark:hover:text-[#aecbfa] px-3.5 py-1.5 rounded-full border border-[#1a73e8]/30 dark:border-[#8ab4f8]/30 bg-[#e8f0fe] dark:bg-[#1e2a38] transition-colors flex items-center gap-1"
           >

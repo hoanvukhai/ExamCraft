@@ -12,6 +12,7 @@ import { Prisma } from '@prisma/client';
 import { decryptApiKey } from '@/lib/crypto';
 
 const selection = { id: true, label: true, keyMasked: true, isActive: true, createdAt: true, lastUsedAt: true, errorCount: true } as const;
+const grantedMessage = 'Khóa này do quản trị cấp. Chỉ quản trị viên tắt hoặc thu hồi được; bạn vẫn có thể thêm khóa của riêng mình.';
 const CreateSchema = z.object({ apiKey: z.string().trim().min(10).max(500), label: z.string().trim().min(1).max(120).optional(), clientRequestId: z.uuid().optional() });
 function failure(error: unknown) {
   if (error instanceof ApiError) return apiErrorResponse(error, 'Yêu cầu quản lý khóa bị từ chối');
@@ -25,13 +26,13 @@ export async function GET(req: NextRequest) {
   try {
     const user = await requireRequestAuth(req);
     const [keys, quota, usage, settings] = await Promise.all([
-      prisma.userApiKey.findMany({ where: { userId: user.id }, orderBy: { createdAt: 'desc' }, select: selection }),
+      prisma.userApiKey.findMany({ where: { userId: user.id }, orderBy: { createdAt: 'desc' }, select: { ...selection, grantId: true } }),
       checkUserAiQuota(user.id),
       prisma.aiUsageLog.groupBy({ by: ['keyAlias'], where: { userId: user.id, createdAt: { gte: applicationDayStart() }, httpStatus: 200 }, _count: { id: true } }),
       prisma.user.findUnique({ where: { id: user.id }, select: { selectedAiModel: true } }),
     ]);
     const used = new Map(usage.map(row => [row.keyAlias, row._count.id]));
-    return NextResponse.json({ keys: keys.map(key => ({ ...key, usedToday: used.get('user_key:' + key.id) ?? 0 })),
+    return NextResponse.json({ keys: keys.map(({ grantId, ...key }) => ({ ...key, keyMasked: grantId !== null ? '' : key.keyMasked, granted: grantId !== null, usedToday: used.get('user_key:' + key.id) ?? 0 })),
       poolQuota: { activeKeyCount: quota.activeKeyCount, limit: quota.limit, usedToday: quota.used, remaining: quota.remaining, percentageUsed: quota.percentageUsed, source: 'application', resetsAt: quota.resetsAt },
       providerQuota: null, selectedAiModel: resolveModelId(settings?.selectedAiModel), availableModels: AVAILABLE_GEMINI_MODELS,
       hasActiveKey: keys.some(key => key.isActive), providerQuotaMessage: 'Quota và billing của Google phụ thuộc project/model; kiểm tra trong AI Studio. Nhiều khóa cùng project không nhân hạn mức.',
@@ -68,6 +69,7 @@ export async function DELETE(req: NextRequest) {
   try {
     const user = await requireRequestAuth(req); const id = new URL(req.url).searchParams.get('id');
     if (!id) return NextResponse.json({ error: 'Thiếu mã khóa' }, { status: 400 });
+    if (await prisma.userApiKey.count({ where: { id, userId: user.id, grantId: { not: null } } })) throw new ApiError(403, grantedMessage);
     const result = await prisma.userApiKey.deleteMany({ where: { id, userId: user.id } });
     return NextResponse.json(result.count ? { success: true } : { error: 'Không tìm thấy khóa của bạn' }, { status: result.count ? 200 : 404 });
   } catch (error) { return failure(error); }
@@ -84,6 +86,7 @@ export async function PATCH(req: NextRequest) {
     }
     const parsed = z.object({ id: z.string().min(1), isActive: z.boolean().optional(), label: z.string().trim().min(1).max(120).optional() }).strict().safeParse(body);
     if (!parsed.success) return NextResponse.json({ error: 'Dữ liệu cập nhật không hợp lệ' }, { status: 400 });
+    if (await prisma.userApiKey.count({ where: { id: parsed.data.id, userId: user.id, grantId: { not: null } } })) throw new ApiError(403, grantedMessage);
     const result = await prisma.userApiKey.updateMany({ where: { id: parsed.data.id, userId: user.id }, data: { isActive: parsed.data.isActive, label: parsed.data.label } });
     if (!result.count) return NextResponse.json({ error: 'Không tìm thấy khóa của bạn' }, { status: 404 });
     return NextResponse.json({ success: true });

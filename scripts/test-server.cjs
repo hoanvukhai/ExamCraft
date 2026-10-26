@@ -18,8 +18,10 @@ else delete env.GOOGLE_GEMINI_BASE_URL;
 env.SESSION_SECRET = crypto.randomBytes(48).toString('base64url');
 env.ATTEMPT_SESSION_SECRET = crypto.randomBytes(48).toString('base64url');
 const production = process.argv.includes('--production');
-console.log(`Starting isolated ExamCraft test server (${production ? 'production build' : 'development'}) at http://127.0.0.1:3117; only examcraft_test_20261022 is used.`);
-const child = spawn(process.execPath, ['node_modules/next/dist/bin/next', ...(production ? ['start'] : ['dev', '--webpack']), '--hostname', '127.0.0.1', '--port', '3117'], { env, stdio: 'inherit' });
+// The port is normally 3117. A second isolated server for a different job (for example a real-provider evaluation) can use another port.
+const port = process.env.EXAMCRAFT_TEST_PORT ?? '3117';
+console.log(`Starting isolated ExamCraft test server (${production ? 'production build' : 'development'}) at http://127.0.0.1:${port}; only examcraft_test_20261022 is used.`);
+const child = spawn(process.execPath, ['node_modules/next/dist/bin/next', ...(production ? ['start'] : ['dev', '--webpack']), '--hostname', '127.0.0.1', '--port', port], { env, stdio: 'inherit' });
 child.on('exit', code => { process.exitCode = code ?? 1; });
 process.on('SIGINT', () => child.kill('SIGINT'));
 process.on('SIGTERM', () => child.kill('SIGTERM'));

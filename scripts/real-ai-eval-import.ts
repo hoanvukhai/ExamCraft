@@ -8,7 +8,7 @@ import { requireTestDatabase } from '../tests/helpers/test-database';
 import { normalizeExamDocument } from '../src/lib/exam-document';
 import { exportExamToDocx } from '../src/lib/docx-export';
 
-const origin = 'http://127.0.0.1:3117';
+const origin = process.env.EVAL_ORIGIN ?? 'http://127.0.0.1:3117';
 const keys = fs.readFileSync(process.env.EVAL_KEYS_FILE ?? '', 'utf8').split(/\r?\n/).map(line => line.trim()).filter(Boolean);
 if (!keys.length) throw new Error('EVAL_KEYS_FILE is required');
 const db = new PrismaClient({ datasources: { db: { url: requireTestDatabase() } }, log: [] });

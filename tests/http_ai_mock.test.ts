@@ -39,7 +39,7 @@ test('AI routes use only the caller key, count usage per key id, fail honestly a
   assert.equal((await request('/api/health')).data.isolatedTest, true, 'Refusing writes without proof of isolated server.');
   await new Promise<void>((resolve, reject) => { provider.once('error', reject); provider.listen(3118, '127.0.0.1', resolve); });
   const run = randomUUID(), password = 'fixture-' + run, hash = await bcrypt.hash(password, 10), checks: string[] = [];
-  const ids = { a: 'aimock_a_' + run, b: 'aimock_b_' + run, q: 'aimock_q_' + run };
+  const ids = { a: 'aimock_a_' + run, b: 'aimock_b_' + run, q: 'aimock_q_' + run, g: 'aimock_g_' + run, admin: 'aimock_admin_' + run };
   t.after(async () => {
     try {
       provider.close();
@@ -51,7 +51,7 @@ test('AI routes use only the caller key, count usage per key id, fail honestly a
       await db.user.deleteMany({ where: { id: { in: all } } });
       const directory = `qa/rebuild-${new Date().toISOString().slice(0, 10)}`;
       fs.mkdirSync(directory, { recursive: true });
-      writeQaReport(`${directory}/http_ai_mock.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 15 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117 with a local provider imitation on 3118', realAiCalls: false }, null, 2));
+      writeQaReport(`${directory}/http_ai_mock.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 16 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117 with a local provider imitation on 3118', realAiCalls: false }, null, 2));
     } finally { await db.$disconnect(); }
   });
   const cookies: Record<string, string> = {};
@@ -251,6 +251,30 @@ test('AI routes use only the caller key, count usage per key id, fail honestly a
     assert.equal(r.data.questions[0].content, 'Tính $7+8$ theo hình'); assert.equal(r.data.questions[0].figures?.length, 1); assert.equal(r.data.questions[0].figures[0].kind, 'image');
     assert.ok(r.data.warnings.some((w: string) => /Đã gắn 1 hình/.test(w)) && r.data.warnings.some((w: string) => /1 công thức Word/.test(w)));
     checks.push('word-formulas-and-pictures');
+  });
+
+  await t.test('a key granted by an administrator is used for the chosen teacher only, and that teacher keeps their own daily limit', async () => {
+    const granted = 'granted-mock-key-0123456789abcdef';
+    await db.user.create({ data: { id: ids.g, email: ids.g + '@example.invalid', name: 'AI mock granted', passwordHash: hash, mustChangePassword: false, aiDailyLimit: 2 } });
+    await db.user.create({ data: { id: ids.admin, email: ids.admin + '@example.invalid', name: 'AI mock admin', passwordHash: hash, role: 'SUPER_ADMIN', mustChangePassword: false, aiDailyLimit: 20 } });
+    for (const [name, id] of [['g', ids.g], ['admin', ids.admin]] as const) { const login = await request('/api/auth/login', 'POST', { email: id + '@example.invalid', password }); assert.equal(login.status, 200); cookies[name] = login.cookie; }
+    const made = await request('/api/admin/keys', 'POST', { label: 'Khóa tổ', apiKey: granted, userIds: [ids.g] }, cookies.admin);
+    assert.equal(made.status, 200, String(made.data.error));
+    reset(ok); const sentCount = () => seen.length;
+    const noKey = await request('/api/parse-exam-text', 'POST', { rawText: 'Câu 1: Một cộng một? A. 1 B. 2' }, cookies.b);
+    assert.ok([400, 401].includes(noKey.status), 'a teacher who was not given the key still has no key to use');
+    assert.equal(sentCount(), 0, 'and nothing reached the provider for them');
+    assert.equal((await request('/api/parse-exam-text', 'POST', { rawText: 'Câu 1: Một cộng một? A. 1 B. 2' }, cookies.g)).status, 200, 'the chosen teacher can use AI without adding any key');
+    assert.equal((await request('/api/parse-exam-text', 'POST', { rawText: 'Câu 2: Hai cộng hai? A. 3 B. 4' }, cookies.g)).status, 200);
+    assert.ok(sentCount() === 2 && seen.every(call => call.key === granted), 'the provider received the granted key and only that');
+    const third = await request('/api/parse-exam-text', 'POST', { rawText: 'Câu 3: Ba cộng ba? A. 5 B. 6' }, cookies.g);
+    assert.ok(third.status >= 400 && /giới hạn thao tác AI do ứng dụng đặt/.test(String(third.data.error)), 'their own daily limit stops the third call, not the key');
+    assert.equal(sentCount(), 2, 'the refused call never reached the provider');
+    assert.equal((await request(`/api/admin/keys?grantId=${made.data.grantId}`, 'DELETE', undefined, cookies.admin)).status, 200);
+    await db.user.update({ where: { id: ids.g }, data: { aiDailyLimit: 20 } });
+    const after = await request('/api/parse-exam-text', 'POST', { rawText: 'Câu 4: Bốn cộng bốn? A. 7 B. 8' }, cookies.g);
+    assert.ok([400, 401].includes(after.status) && sentCount() === 2, 'once the grant is taken back the key stops working');
+    checks.push('granted-key-used');
   });
 
   await t.test('provider errors are reported without retry storms; testing a key reads only the model list; keys of others cannot be tested', async () => {

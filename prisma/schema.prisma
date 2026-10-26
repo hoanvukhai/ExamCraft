@@ -490,8 +490,11 @@ model UserApiKey {
   createdAt    DateTime  @default(now())
   lastUsedAt   DateTime?
   errorCount   Int       @default(0)
+  grantId      String? // khóa do quản trị cấp: mọi người nhận cùng một mã cấp
+  grantedById  String? // quản trị viên đã cấp
 
   @@index([userId])
+  @@index([grantId])
 }
 
 // ───────────── HỌC TẬP & PHÂN TÍCH PHONG CÁCH GIÁO VIÊN ─────────────

@@ -288,6 +288,13 @@ export default function AdminUsersPage() {
             <Bot className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Giám sát AI Keys</span>
           </Link>
+          <Link
+            href="/admin/keys"
+            className="text-xs text-[#1a73e8] hover:text-[#1557b0] dark:text-[#8ab4f8] dark:hover:text-[#aecbfa] px-3.5 py-1.5 rounded-full border border-[#1a73e8]/30 dark:border-[#8ab4f8]/30 flex items-center gap-1.5"
+          >
+            <KeyRound className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Cấp khóa AI</span>
+          </Link>
 
           <button
             onClick={() => router.push('/')}
