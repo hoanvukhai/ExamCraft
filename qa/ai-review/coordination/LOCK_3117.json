@@ -1,0 +1,8 @@
+{
+  "port": 3117,
+  "holder": "CLAUDE",
+  "purpose": "rerun browser flow F21 on the finished build (about 6 minutes), then release",
+  "since_utc": "2026-10-26T06:59:11Z",
+  "release_by_utc": "2026-10-26T07:07:11Z",
+  "rule": "Before starting a server on 3117 or running npm run build / npm run ci, read this file. If holder is not FREE, do not start. The holder sets holder to FREE when done."
+}
