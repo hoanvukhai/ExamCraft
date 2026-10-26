@@ -1,0 +1,30 @@
+
+> exam-craft@0.1.0 test:pilot
+> node --import tsx scripts/pilot-run.cjs
+
+Pilot guard: installed browser; isolatedTest confirmed; exact test database selected.
+TAP version 13
+# Starting F21
+# Subtest: F21 collaborator Copilot uses its own key and preserves the owner concurrent edit
+not ok 1 - F21 collaborator Copilot uses its own key and preserves the owner concurrent edit
+  ---
+  duration_ms: 25563.9855
+  type: 'test'
+  location: 'F:\\Workspace\\Zazz\\ExamCraft\\tests_pilot\\pilot.test.ts:20:21644'
+  failureType: 'testCodeFailure'
+  error: 'F21: page.waitForResponse: Timeout 20000ms exceeded while waiting for event "response"'
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    flow (F:\Workspace\Zazz\ExamCraft\tests_pilot\pilot.test.ts:147:20)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 26320.404

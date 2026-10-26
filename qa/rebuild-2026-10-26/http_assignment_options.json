@@ -1,0 +1,13 @@
+{
+  "checkedAt": "2026-10-26T06:51:10.890Z",
+  "checks": [
+    "times",
+    "attempts",
+    "entry-code",
+    "pin"
+  ],
+  "cleanupComplete": true,
+  "status": "PASS",
+  "environment": "isolated localhost:3117",
+  "realAiCalls": false
+}

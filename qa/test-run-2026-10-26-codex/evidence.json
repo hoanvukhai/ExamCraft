@@ -1,0 +1,205 @@
+[
+  {
+    "ids": [
+      "T01-03"
+    ],
+    "state": "Browser tab: 1, Title: \"ExamCraft - Trợ Lý Soạn Đề AI Cho Giáo Viên\", URL: \"http://127.0.0.1:3117/login\".\n0 AXWebArea ExamCraft - Trợ Lý Soạn Đề AI Cho Giáo Viên, URL: 127.0.0.1:3117/login\n\t1 container\n\t\t2 button Chuyển sang giao diện Sáng\n\t\t3 heading ExamCraft v3.1, Value: 1\n\t\t\t4 text ExamCraft v3.1\n\t\t5 text Trợ lý Soạn Đề AI & Quản Lý Thi Chuẩn GDPT 2018\n\t\t6 heading Đăng nhập tài khoản, Value: 2\n\t\t\t7 text Đăng nhập tài khoản\n\t\t8 text Dành cho Giáo viên và Quản trị viên hệ thống\n\t\t18 text Email hoặc mật khẩu không chính xác\n\t\t9 container\n\t\t\t10 text EMAIL GIÁO VIÊN / QUẢN TRỊ\n\t\t\t11 text field (settable) <redacted>\n\t\t\t12 text MẬT KHẨU\n\t\t\t13 text field (settable) <redacted>\n\t\t\t14 checkbox Description: Hiện mật khẩu, Value: 0\n\t\t\t15 button Đăng nhập hệ thống\n\t\t16 text Tài khoản giáo viên do Quản trị viên trường cấp. Học sinh vào làm bài theo link đề thi mà không cần đăng nhập tài khoản.\n\t\t17 text Bảo mật dữ liệu trên máy chủ PostgreSQL & mã hóa phiên an toàn\n\nThe focused UI element is 0 AXWebArea ExamCraft - Trợ Lý Soạn Đề AI Cho Giáo Viên, URL: 127.0.0.1:3117/login"
+  },
+  {
+    "ids": [
+      "T01-01",
+      "T01-02"
+    ],
+    "state": "Browser tab: 1, Title: \"ExamCraft - Trợ Lý Soạn Đề AI Cho Giáo Viên\", URL: \"http://127.0.0.1:3117/login\".\n0 AXWebArea ExamCraft - Trợ Lý Soạn Đề AI Cho Giáo Viên, URL: 127.0.0.1:3117/login\n\t1 container\n\t\t2 button Chuyển sang giao diện Sáng\n\t\t3 heading ExamCraft v3.1, Value: 1\n\t\t\t4 text ExamCraft v3.1\n\t\t5 text Trợ lý Soạn Đề AI & Quản Lý Thi Chuẩn GDPT 2018\n\t\t6 heading Đăng nhập tài khoản, Value: 2\n\t\t\t7 text Đăng nhập tài khoản\n\t\t8 text Dành cho Giáo viên và Quản trị viên hệ thống\n\t\t18 text Email hoặc mật khẩu không chính xác\n\t\t9 container\n\t\t\t10 text EMAIL GIÁO VIÊN / QUẢN TRỊ\n\t\t\t11 text field (settable) <redacted>\n\t\t\t12 text MẬT KHẨU\n\t\t\t13 text field (settable) <redacted>\n\t\t\t14 checkbox Description: Hiện mật khẩu, Value: 0\n\t\t\t15 button Đăng nhập hệ thống\n\t\t16 text Tài khoản giáo viên do Quản trị viên trường cấp. Học sinh vào làm bài theo link đề thi mà không cần đăng nhập tài khoản.\n\t\t17 text Bảo mật dữ liệu trên máy chủ PostgreSQL & mã hóa phiên an toàn\n\nThe focused UI element is 14 checkbox Description: Hiện mật khẩu, Value: 0"
+  },
+  {
+    "ids": [
+      "T01-10"
+    ],
+    "status": "Đ",
+    "note": "Có logo ExamCraft, Khóa AI: 0 và avatar G.",
+    "url": "http://127.0.0.1:3117/",
+    "state": "Browser tab: 1, Title: \"ExamCraft - Kho Đề & Quản Lý Đề Thi Giáo Viên\", URL: \"http://127.0.0.1:3117/\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 1 AXWebArea ExamCraft - Kho Đề & Quản Lý Đề Thi Giáo Viên, URL: 127.0.0.1:3117/",
+    "at": "2026-10-26T07:00:22.361Z"
+  },
+  {
+    "ids": [
+      "T02-01"
+    ],
+    "status": "K",
+    "note": "Danh sách mục đã đổi thành Tất cả, Quan trọng, Gần đây, Chọn thư mục; không còn các nhãn đầy đủ theo thẻ kiểm. Cần Claude phân loại lỗi tài liệu.",
+    "url": "http://127.0.0.1:3117/",
+    "state": "Browser tab: 1, Title: \"ExamCraft - Kho Đề & Quản Lý Đề Thi Giáo Viên\", URL: \"http://127.0.0.1:3117/\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 1 AXWebArea ExamCraft - Kho Đề & Quản Lý Đề Thi Giáo Viên, URL: 127.0.0.1:3117/",
+    "at": "2026-10-26T07:00:22.464Z"
+  },
+  {
+    "ids": [
+      "T02-24"
+    ],
+    "status": "Đ",
+    "note": "Có BETA / ĐANG HUẤN LUYỆN, CÁC QUYỀN NĂNG SẮP RA MẮT; Đã hiểu đóng hộp thông báo.",
+    "url": "http://127.0.0.1:3117/",
+    "state": "Browser tab: 1, Title: \"ExamCraft - Kho Đề & Quản Lý Đề Thi Giáo Viên\", URL: \"http://127.0.0.1:3117/\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 6 button Thư ký AI, Help: Mở Thư ký AI trợ lý riêng của Thầy/Cô",
+    "at": "2026-10-26T07:00:34.390Z"
+  },
+  {
+    "ids": [
+      "T03-01"
+    ],
+    "status": "Đ",
+    "note": "Tên trên thanh là TEST-CODEX-Soan-De.",
+    "url": "http://127.0.0.1:3117/editor/ex_4b66ae66bd521d9857d6ada895ba29d0e0e8e089",
+    "state": "Browser tab: 1, Title: \"ExamCraft - Bàn Biên Soạn Đề Thi\", URL: \"http://127.0.0.1:3117/editor/ex_4b66ae66bd521d9857d6ada895ba29d0e0e8e089\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 34 button Lưu đề, Help: Lưu các thay đổi lên máy chủ",
+    "at": "2026-10-26T07:01:23.730Z"
+  },
+  {
+    "ids": [
+      "T03-03"
+    ],
+    "status": "Đ",
+    "note": "Tải lại vẫn TEST-CODEX-Soan-De, đề trống đã lưu.",
+    "url": "http://127.0.0.1:3117/editor/ex_4b66ae66bd521d9857d6ada895ba29d0e0e8e089",
+    "state": "Browser tab: 1, Title: \"ExamCraft - Bàn Biên Soạn Đề Thi\", URL: \"http://127.0.0.1:3117/editor/ex_4b66ae66bd521d9857d6ada895ba29d0e0e8e089\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 51-52\n~\t\t3 button Mở rộng bảng công cụ\n~\t\t4 link Description: ExamCraft, Value: 127.0.0.1:3117/\n~\t\t5 link Description: Kho đề, Help: Quay về Kho đề của tôi (Lưu tự động), Value: 127.0.0.1:3117/\n~\t\t6 button TEST-CODEX-Soan-De, Help: Nhấn để đổi tên đề thi (như Google Docs)\n+\t\t7 button Tải file Word (.docx) chuẩn công thức OMML\n~\t\t8 button In đề thi hoặc xuất ra PDF\n~\t\t9 button Mở thanh trợ lý AI Gemini (Cột phải)\n~\t\t10 button Chuyển sang chế độ Sáng (Màu trắng Google)\n~\t\t11 button Khóa AI, Help: Tài khoản chưa có API Key: Nhấn để thêm khóa cá nhân\n~\t\t12 button G\n~\t\t13 link Description: Về kho đề, Value: 127.0.0.1:3117/\n~\t\t14 button (disabled) Trình chiếu\n~\t\t15 button Cùng soạn · Góp ý · Lịch sử\n~\t\t16 text Đề của bạn\nThe focused UI element is 1 AXWebArea ExamCraft - Bàn Biên Soạn Đề Thi, URL: 127.0.0.1:3117/editor/ex_4b66ae66bd521d9857d6ada895ba29d0e0e8e089",
+    "at": "2026-10-26T07:01:24.514Z"
+  },
+  {
+    "ids": [
+      "T03-04"
+    ],
+    "status": "K",
+    "note": "Bấm Thêm câu hỏi: câu trống được chèn ngay (Danh sách câu hỏi 1; Nhập nội dung câu hỏi tại đây), không mở form chờ Áp dụng như thẻ kiểm. Cần phân loại tài liệu/ứng dụng.",
+    "url": "http://127.0.0.1:3117/editor/ex_4b66ae66bd521d9857d6ada895ba29d0e0e8e089",
+    "state": "Browser tab: 1, Title: \"ExamCraft - Bàn Biên Soạn Đề Thi\", URL: \"http://127.0.0.1:3117/editor/ex_4b66ae66bd521d9857d6ada895ba29d0e0e8e089\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 45-47\nThe focused UI element is 35 button Thêm câu hỏi",
+    "at": "2026-10-26T07:01:34.710Z"
+  },
+  {
+    "ids": [
+      "T03-05"
+    ],
+    "status": "Đ",
+    "note": "Đóng giữ nháp rồi mở: nội dung Thủ đô..., phương án Hà Nội/Huế/Đà Nẵng/Cần Thơ và đáp án A còn; có Nháp câu hỏi trên máy.",
+    "url": "http://127.0.0.1:3117/editor/ex_4b66ae66bd521d9857d6ada895ba29d0e0e8e089",
+    "state": "Browser tab: 1, Title: \"ExamCraft - Bàn Biên Soạn Đề Thi\", URL: \"http://127.0.0.1:3117/editor/ex_4b66ae66bd521d9857d6ada895ba29d0e0e8e089\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 74-75\n~\t\t\t\t55 button (disabled) Description: Lưu bản sao vào ngân hàng, Help: Áp dụng hoặc đóng bản đang sửa trước khi lưu vào ngân hàng\n~\t\t\t\t71 text Nháp từng câu được giữ riêng trên máy. Bấm Áp dụng câu rồi lưu đề để lưu nội dung này trên máy chủ; đóng bảng sửa vẫn giữ nháp.\n~\t\t\t\t72 text Đã mở lại nháp câu chưa áp dụng. Các bản nháp khác vẫn có trong bảng Nháp câu hỏi.\n~\t\t\t\t73 container\n+\t\t\t\t\t74 text Dạng câu\n+\t\t\t\t\t75 pop up button (collapsed, settable) Description: Dạng câu, Value: Lựa chọn, Secondary Actions: Expand\n+\t\t\t\t\t\t76 menu\n+\t\t\t\t\t\t\t77 (selected) Lựa chọn\n+\t\t\t\t\t\t\t78 Đúng / Sai\n+\t\t\t\t\t\t\t79 Trả lời ngắn\n+\t\t\t\t\t\t\t80 Tự luận / thực hành\n+\t\t\t\t\t\t\t81 Điền khuyết\n+\t\t\t\t\t\t\t82 Ghép nối\n+\t\t\t\t\t\t\t83 Sắp xếp\n+\t\t\t\t84 container\n+\t\t\t\t\t85 text Điểm (có thể để trống)\n+\t\t\t\t\t86 stepper (settable) Điểm câu\n+\t\t\t\t87 container\n+\t\t\t\t\t88 text Nội dung câu hỏi\n+\t\t\t\t\t89 text entry area (settable) Description: Nội dung câu hỏi, Value: Thủ đô của Việt Nam là gì?\n+\t\t\t\t90 container Các phương án\n+\t\t\t\t\t91 text Các phương án\n+\t\t\t\t\t92 container\n+\t\t\t\t\t\t93 text Phương án  A\n+\t\t\t\t\t94 text A\n+\t\t\t\t\t95 text field (settable) Phương án A, Value: Hà Nội, ID: choice-q_manual_1792998085304-A\n+\t\t\t\t\t96 button Bỏ\n+\t\t\t\t\t97 checkbox (settable, integer) Description: Giữ vị trí, Value: 0\n+\t\t\t\t\t98 container\n+\t\t\t\t\t\t99 text Phương án  B\n+\t\t\t\t\t100 text B\n+\t\t\t\t\t101 text field (settable) Phương án B, Value: Huế, ID: choice-q_manual_1792998085304-B\n+\t\t\t\t\t102 button Bỏ\n+\t\t\t\t\t103 checkbox (settable, integer) Description: Giữ vị trí, Value: 0\n+\t\t\t\t\t104 container\n+\t\t\t\t\t\t105 text Phương án  C\n+\t\t\t\t\t106 text C\n+\t\t\t\t\t107 text field (settable) Phương án C, Value: Đà Nẵng, ID: choice-q_manual_1792998085304-C\n+\t\t\t\t\t108 button Bỏ\n+\t\t\t\t\t109 checkbox (settable, integer) Description: Giữ vị trí, Value: 0\n+\t\t\t\t\t110 container\n+\t\t\t\t\t\t111 text Phương án  D\n+\t\t\t\t\t112 text D\n+\t\t\t\t\t113 text field (settable) Phương án D, Value: Cần Thơ, ID: choice-q_manual_1792998085304-D\n+\t\t\t\t\t114 button Bỏ\n+\t\t\t\t\t115 checkbox (settable, integer) Description: Giữ vị trí, Value: 0\n+\t\t\t\t\t116 button Thêm phương án\n+\t\t\t\t\t117 container\n+\t\t\t\t\t\t118 text Đáp án\n+\t\t\t\t\t\t119 pop up button (collapsed, settable) Description: Đáp án lựa chọn, Value: A, Secondary Actions: Expand\n+\t\t\t\t\t\t\t120 menu\n+\t\t\t\t\t\t\t\t121 Chưa đặt đáp án\n+\t\t\t\t\t\t\t\t122 (selected) A\n+\t\t\t\t\t\t\t\t123 B\n+\t\t\t\t\t\t\t\t124 C\n+\t\t\t\t\t\t\t\t125 D\n+\t\t\t\t126 container\n+\t\t\t\t\t127 text Lời giải / hướng dẫn thực hiện\n+\t\t\t\t\t128 text entry area (settable) Lời giải\n+\t\t\t\t129 button (collapsed) Hình và đồ thị (0), Secondary Actions: Expand\n+\t\t\t\t\t130 text Hình và đồ thị (\n+\t\t\t\t\t131 text 0\n+\t\t\t\t\t132 text )\n+\t\t\t\t133 button (collapsed) Tiêu chí chấm và kiến thức, Secondary Actions: Expand\n+\t\t\t\t\t134 text Tiêu chí chấm và kiến thức\n+\t\t\t\t135 button Đóng, giữ nháp\n+\t\t\t\t136 button Áp dụng câu vào đề\nThe focused UI element is 59 button Sửa nội dung câu hỏi thủ công",
+    "at": "2026-10-26T07:01:56.959Z"
+  },
+  {
+    "ids": [
+      "T03-10"
+    ],
+    "status": "Đ",
+    "note": "Sau lưu/tải lại: Thủ đô Việt Nam, 4 phương án đúng và Đáp án lựa chọn A; đã đổi B sang A trước lưu.",
+    "url": "http://127.0.0.1:3117/editor/ex_4b66ae66bd521d9857d6ada895ba29d0e0e8e089",
+    "state": "Browser tab: 1, Title: \"ExamCraft - Bàn Biên Soạn Đề Thi\", URL: \"http://127.0.0.1:3117/editor/ex_4b66ae66bd521d9857d6ada895ba29d0e0e8e089\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 59 button Sửa nội dung câu hỏi thủ công",
+    "at": "2026-10-26T07:02:18.144Z"
+  },
+  {
+    "ids": [
+      "T03-11"
+    ],
+    "status": "Đ",
+    "note": "Có phương án E Hải Phòng, checkbox Giữ vị trí của E được chọn.",
+    "url": "http://127.0.0.1:3117/editor/ex_4b66ae66bd521d9857d6ada895ba29d0e0e8e089",
+    "state": "Browser tab: 1, Title: \"ExamCraft - Bàn Biên Soạn Đề Thi\", URL: \"http://127.0.0.1:3117/editor/ex_4b66ae66bd521d9857d6ada895ba29d0e0e8e089\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t\t\t\t143 text field (settable) Phương án E, Value: Hải Phòng, ID: choice-q_manual_1792998085304-E\n~\t\t\t\t\t145 checkbox (settable, integer) Description: Giữ vị trí, Value: 1\nThe focused UI element is 145 checkbox (settable, integer) Description: Giữ vị trí, Value: 1",
+    "at": "2026-10-26T07:02:26.678Z"
+  },
+  {
+    "ids": [
+      "T03-12"
+    ],
+    "status": "Đ",
+    "note": "Bỏ đáp án rồi áp dụng: rà soát ghi Chưa chọn đáp án nằm trong các lựa chọn; không tự gán A.",
+    "url": "http://127.0.0.1:3117/editor/ex_4b66ae66bd521d9857d6ada895ba29d0e0e8e089",
+    "state": "Browser tab: 1, Title: \"ExamCraft - Bàn Biên Soạn Đề Thi\", URL: \"http://127.0.0.1:3117/editor/ex_4b66ae66bd521d9857d6ada895ba29d0e0e8e089\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 17 button (expanded) Rà soát đề · 2 mục cần xem, Secondary Actions: Collapse",
+    "at": "2026-10-26T07:02:47.474Z"
+  },
+  {
+    "ids": [
+      "T03-15"
+    ],
+    "status": "Đ",
+    "note": "Tải lại: Tính 12 + 30.; Đáp án chính 42; hai cách bổ sung còn trong form. Chưa xác nhận chấm các biến thể T03-16.",
+    "url": "http://127.0.0.1:3117/editor/ex_4b66ae66bd521d9857d6ada895ba29d0e0e8e089",
+    "state": "Browser tab: 1, Title: \"ExamCraft - Bàn Biên Soạn Đề Thi\", URL: \"http://127.0.0.1:3117/editor/ex_4b66ae66bd521d9857d6ada895ba29d0e0e8e089\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 82-85, 98-132\n~\t\t17 button (collapsed) Rà soát đề · 3 mục cần xem, Secondary Actions: Expand\n~\t\t\t19 text 3 mục cần xem\n~\t\t\t\t87 text 2 Trả lời ngắn Chưa đặt điểm\n+\t\t\t\t134 button Hoàn tác (1), Help: Hoàn tác về phiên bản trước (còn 1 bản lưu)\n+\t\t\t\t\t135 text Hoàn tác (\n+\t\t\t\t\t136 text 1\n+\t\t\t\t\t137 text )\n+\t\t\t\t138 text Nháp từng câu được giữ riêng trên máy. Bấm Áp dụng câu rồi lưu đề để lưu nội dung này trên máy chủ; đóng bảng sửa vẫn giữ nháp.\n+\t\t\t\t139 container\n+\t\t\t\t\t140 text Dạng câu\n+\t\t\t\t\t141 pop up button (collapsed, settable) Description: Dạng câu, Value: Trả lời ngắn, Secondary Actions: Expand\n+\t\t\t\t\t\t142 menu\n+\t\t\t\t\t\t\t143 Lựa chọn\n+\t\t\t\t\t\t\t144 Đúng / Sai\n+\t\t\t\t\t\t\t145 (selected) Trả lời ngắn\n+\t\t\t\t\t\t\t146 Tự luận / thực hành\n+\t\t\t\t\t\t\t147 Điền khuyết\n+\t\t\t\t\t\t\t148 Ghép nối\n+\t\t\t\t\t\t\t149 Sắp xếp\n+\t\t\t\t150 container\n+\t\t\t\t\t151 text Điểm (có thể để trống)\n+\t\t\t\t\t152 stepper (settable) Điểm câu\n+\t\t\t\t153 container\n+\t\t\t\t\t154 text Nội dung câu hỏi\n+\t\t\t\t\t155 text entry area (settable) Description: Nội dung câu hỏi, Value: Tính 12 + 30.\n+\t\t\t\t156 container\n+\t\t\t\t\t157 text Đáp án chính\n+\t\t\t\t\t158 text field (settable) Description: Đáp án chính, Value: 42\n+\t\t\t\t159 container\n+\t\t\t\t\t160 text Các cách trả lời được chấp nhận (mỗi dòng một cách)\n+\t\t\t\t\t161 text entry area (settable) Description: Đáp án được chấp nhận, Value: 42,0\nbốn mươi hai\n+\t\t\t\t162 container\n+\t\t\t\t\t163 text Lời giải / hướng dẫn thực hiện\n+\t\t\t\t\t164 text entry area (settable) Lời giải\n+\t\t\t\t165 button (collapsed) Hình và đồ thị (0), Secondary Actions: Expand\n+\t\t\t\t\t166 text Hình và đồ thị (\n+\t\t\t\t\t167 text 0\n+\t\t\t\t\t168 text )\n+\t\t\t\t169 button (collapsed) Tiêu chí chấm và kiến thức, Secondary Actions: Expand\n+\t\t\t\t\t170 text Tiêu chí chấm và kiến thức\n+\t\t\t\t171 button Đóng, giữ nháp\n+\t\t\t\t172 button Áp dụng câu vào đề\nThe focused UI element is 96 button Sửa nội dung câu hỏi thủ công",
+    "at": "2026-10-26T07:03:14.836Z"
+  },
+  {
+    "ids": [
+      "T06-01"
+    ],
+    "status": "Đ",
+    "note": "Trang đề có Lớp/SBD, HẾT, 2 câu; không hiển thị 42 hay lời giải/đáp án đúng.",
+    "url": "http://127.0.0.1:3117/editor/ex_4b66ae66bd521d9857d6ada895ba29d0e0e8e089",
+    "state": "Browser tab: 1, Title: \"ExamCraft - Bàn Biên Soạn Đề Thi\", URL: \"http://127.0.0.1:3117/editor/ex_4b66ae66bd521d9857d6ada895ba29d0e0e8e089\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\n~\t\t\t\t42 text TEST-CODEX-Soan-De\n+\t\t\t\t43 text Năm học: 2026 - 2027\n+\t\t\t\t44 text Môn: Toán · Lớp 6\n+\t\t\t\t45 text Thời gian làm bài: 45 phút · Chưa cấu hình đủ điểm\n+\t\t\t\t46 text Họ và tên thí sinh: ........................................................................ Lớp: ......... SBD: ..........\n+\t\t\t\t47 container\n+\t\t\t\t\t48 text Câu  1 : Thủ đô của Việt Nam là gì?\n+\t\t\t\t49 container\n+\t\t\t\t\t50 text A . Hà Nội\n+\t\t\t\t51 container\n+\t\t\t\t\t52 text B . Huế\n+\t\t\t\t53 container\n+\t\t\t\t\t54 text C . Đà Nẵng\n+\t\t\t\t55 container\n+\t\t\t\t\t56 text D . Cần Thơ\n+\t\t\t\t57 container\n+\t\t\t\t\t58 text E . Hải Phòng\n+\t\t\t\t59 container\n+\t\t\t\t\t60 text Câu  2 : Tính 12 + 30.\n+\t\t\t\t61 text Trả lời: ................................................................................\n+\t\t\t\t62 text ---------- HẾT ----------\nThe focused UI element is 29 button Xem trang in A4",
+    "at": "2026-10-26T07:03:25.319Z"
+  },
+  {
+    "ids": [
+      "T06-04"
+    ],
+    "status": "Đ",
+    "note": "Bảng đáp án: Câu 1 Chưa đặt đáp án; Câu 2 42, Chấp nhận 42,0; bốn mươi hai.",
+    "url": "http://127.0.0.1:3117/editor/ex_4b66ae66bd521d9857d6ada895ba29d0e0e8e089",
+    "state": "Browser tab: 1, Title: \"ExamCraft - Bàn Biên Soạn Đề Thi\", URL: \"http://127.0.0.1:3117/editor/ex_4b66ae66bd521d9857d6ada895ba29d0e0e8e089\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 33 button Bảng đáp án & Barem",
+    "at": "2026-10-26T07:03:33.949Z"
+  },
+  {
+    "ids": [
+      "T02-04"
+    ],
+    "status": "Đ",
+    "note": "Về kho có TEST-CODEX-Soan-De, 2 câu, 45 phút. Dùng tên TEST riêng thay tên mẫu.",
+    "url": "http://127.0.0.1:3117/",
+    "state": "Browser tab: 1, Title: \"ExamCraft - Kho Đề & Quản Lý Đề Thi Giáo Viên\", URL: \"http://127.0.0.1:3117/\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 1 AXWebArea ExamCraft - Kho Đề & Quản Lý Đề Thi Giáo Viên, URL: 127.0.0.1:3117/",
+    "at": "2026-10-26T07:04:03.324Z"
+  },
+  {
+    "ids": [
+      "T02-08"
+    ],
+    "status": "Đ",
+    "note": "Gắn sao thấy đề ở Quan trọng; bỏ sao thì mục báo Chưa có đề thi nào trong mục này.",
+    "url": "http://127.0.0.1:3117/",
+    "state": "Browser tab: 1, Title: \"ExamCraft - Kho Đề & Quản Lý Đề Thi Giáo Viên\", URL: \"http://127.0.0.1:3117/\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 85, 87, 89-93\n~\t\t\t36 text Đề quan trọng ( 0  đề thi)\n~\t\t\t84 heading Chưa có đề thi nào trong mục này, Value: 3\n+\t\t\t\t85 text Chưa có đề thi nào trong mục này\n~\t\t\t86 text Hãy bấm Soạn đề mới hoặc nhờ AI hỗ trợ soạn bản nháp để bắt đầu.\n+\t\t\t87 button Soạn đề trống\n~\t\t\t88 button Sinh đề AI\nThe focused UI element is 1 AXWebArea ExamCraft - Kho Đề & Quản Lý Đề Thi Giáo Viên, URL: 127.0.0.1:3117/",
+    "at": "2026-10-26T07:04:18.307Z"
+  },
+  {
+    "ids": [
+      "T02-10"
+    ],
+    "status": "Đ",
+    "note": "Chuyển từ thẻ sang danh sách: cùng đề 2 câu; các cột Tên đề thi/Môn & Khối/Thư mục/Số câu/Cập nhật/Thao tác.",
+    "url": "http://127.0.0.1:3117/",
+    "state": "Browser tab: 1, Title: \"ExamCraft - Kho Đề & Quản Lý Đề Thi Giáo Viên\", URL: \"http://127.0.0.1:3117/\".\nThere has been no change in the accessibility tree.\nThe focused UI element is 83 button Chế độ xem danh sách",
+    "at": "2026-10-26T07:04:26.342Z"
+  },
+  {
+    "ids": [
+      "T02-12"
+    ],
+    "status": "Đ",
+    "note": "Tạo TEST-CODEX-ThuMuc, chọn màu; báo Đã tạo thư mục mới thành công!, có trong Chọn thư mục.",
+    "url": "http://127.0.0.1:3117/",
+    "state": "Browser tab: 1, Title: \"ExamCraft - Kho Đề & Quản Lý Đề Thi Giáo Viên\", URL: \"http://127.0.0.1:3117/\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 95\nThe focused UI element is 1 AXWebArea ExamCraft - Kho Đề & Quản Lý Đề Thi Giáo Viên, URL: 127.0.0.1:3117/",
+    "at": "2026-10-26T07:04:43.056Z"
+  },
+  {
+    "ids": [
+      "T02-13"
+    ],
+    "status": "Đ",
+    "note": "Di chuyển rồi lọc TEST-CODEX-ThuMuc: đề TEST-CODEX-Soan-De hiện.",
+    "url": "http://127.0.0.1:3117/",
+    "state": "Browser tab: 1, Title: \"ExamCraft - Kho Đề & Quản Lý Đề Thi Giáo Viên\", URL: \"http://127.0.0.1:3117/\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 84-93, 95-102\n~\t\t\t\t21 pop up button (collapsed, settable) Description: Chọn thư mục, Value: TEST-CODEX-ThuMuc, Secondary Actions: Expand\n~\t\t\t\t\t\t23 Mọi thư mục\n~\t\t\t\t\t\t94 (selected) TEST-CODEX-ThuMuc\n~\t\t\t36 text Kho đề của tôi TEST-CODEX-ThuMuc ( 1  đề thi)\n+\t\t\t95 text TOAN KHỐI 6 TEST-CODEX-ThuMuc\n+\t\t\t96 button Gắn sao đề quan trọng\n+\t\t\t97 heading TEST-CODEX-Soan-De, Value: 4\n+\t\t\t\t98 text TEST-CODEX-Soan-De\n+\t\t\t99 text 2  câu • 45  phút\n+\t\t\t100 button Tải file Word (.docx)\n+\t\t\t101 button Nhân bản đề này\n+\t\t\t102 button Di chuyển vào thư mục\n+\t\t\t103 button Đổi tên đề\n+\t\t\t104 button Chuyển vào thùng rác\n+\t\t105 text Đã di chuyển đề thi vào thư mục mới!\nThe focused UI element is 1 AXWebArea ExamCraft - Kho Đề & Quản Lý Đề Thi Giáo Viên, URL: 127.0.0.1:3117/",
+    "at": "2026-10-26T07:04:52.710Z"
+  },
+  {
+    "ids": [
+      "T02-14"
+    ],
+    "status": "Đ",
+    "note": "Chuyển về Thư viện gốc: lọc TEST-CODEX-ThuMuc không còn đề.",
+    "url": "http://127.0.0.1:3117/",
+    "state": "Browser tab: 1, Title: \"ExamCraft - Kho Đề & Quản Lý Đề Thi Giáo Viên\", URL: \"http://127.0.0.1:3117/\".\nThe following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 96, 98, 100-112\n~\t\t\t36 text Kho đề của tôi TEST-CODEX-ThuMuc ( 0  đề thi)\n~\t\t\t95 heading Chưa có đề thi nào trong mục này, Value: 3\n+\t\t\t\t96 text Chưa có đề thi nào trong mục này\n~\t\t\t97 text Hãy bấm Soạn đề mới hoặc nhờ AI hỗ trợ soạn bản nháp để bắt đầu.\n+\t\t\t98 button Soạn đề trống\n~\t\t\t99 button Sinh đề AI\n+\t\t100 text Đã di chuyển đề thi vào thư mục mới!\nThe focused UI element is 1 AXWebArea ExamCraft - Kho Đề & Quản Lý Đề Thi Giáo Viên, URL: 127.0.0.1:3117/",
+    "at": "2026-10-26T07:05:20.879Z"
+  }
+]

@@ -1,0 +1,91 @@
+{
+  "section": "09A",
+  "name": "Môn nào xuất hiện ở khối nào (kiểm danh sách chọn)",
+  "testedAt": "2026-10-26T13:59:00Z",
+  "tester": "GEMINI",
+  "evidence": [
+    {
+      "id": "T10-01",
+      "grade": 1,
+      "expected": "Có: Tiếng Việt, Toán, Đạo đức, Âm nhạc, Mĩ thuật, Giáo dục thể chất, Hoạt động trải nghiệm, Tự nhiên và Xã hội, Tiếng Anh (Tự chọn), Giáo dục địa phương, Ngoại ngữ khác, Tiếng dân tộc. Không có: Tin học, Công nghệ, Vật lí.",
+      "actualCatalog": [
+        "tieng_viet", "toan", "dao_duc", "am_nhac", "mi_thuat", "giao_duc_the_chat", "hoat_dong_trai_nghiem", "tu_nhien_xa_hoi", "tieng_anh", "giao_duc_dia_phuong", "ngoai_ngu_khac", "tieng_dan_toc"
+      ],
+      "tiengAnhCategory": "Tự chọn",
+      "forbiddenCheck": { "tin_hoc": false, "cong_nghe": false, "vat_ly": false },
+      "result": "Đ"
+    },
+    {
+      "id": "T10-02",
+      "grade": 4,
+      "expected": "Có Khoa học, Lịch sử và Địa lí, Công nghệ, Tin học; Không có Tự nhiên và Xã hội",
+      "hasKhoaHoc": true,
+      "hasLichSuDiaLi": true,
+      "hasCongNghe": true,
+      "hasTinHoc": true,
+      "hasTuNhienXaHoi": false,
+      "result": "Đ"
+    },
+    {
+      "id": "T10-03",
+      "grade": 7,
+      "expected": "Có Ngữ văn, GDCD, KHTN, LS&ĐL, Công nghệ, Tin học, HĐTN-HN; Không có Vật lí, Hóa học, Sinh học riêng",
+      "hasNgữVăn": true,
+      "hasGDCD": true,
+      "hasKHTN": true,
+      "hasVatLy": false,
+      "hasHoaHoc": false,
+      "hasSinhHoc": false,
+      "result": "Đ"
+    },
+    {
+      "id": "T10-04",
+      "grade": 10,
+      "expected": "Có Lịch sử, Địa lí, GDKT&PL, Vật lí, Hóa học, Sinh học, GDQP&AN; Không có GDCD, KHTN",
+      "hasLichSu": true,
+      "hasDiaLi": true,
+      "hasGDKTPL": true,
+      "hasVatLi": true,
+      "hasHoaHoc": true,
+      "hasSinhHoc": true,
+      "hasGDQPAN": true,
+      "hasGDCD": false,
+      "hasKHTN": false,
+      "result": "Đ"
+    },
+    {
+      "id": "T10-05",
+      "description": "Đổi lớp từ 7 sang 10 khi môn đang chọn là Khoa học tự nhiên",
+      "codeTrace": {
+        "HeaderSettingsModal": "src/components/HeaderSettingsModal.tsx lines 49, 53: validSubject false -> cảnh báo 'Môn hoặc khung cũ không phù hợp lớp đang chọn', hiện option 'Môn cũ cần chọn lại: khoa_hoc_tu_nhien'",
+        "ImportModal": "src/components/ImportModal.tsx line 102: setImportSubject('') khi đổi lớp"
+      },
+      "result": "Đ"
+    },
+    {
+      "id": "T10-06",
+      "description": "Chọn môn không thuộc khối",
+      "codeTrace": {
+        "generationPlanValidation": "src/lib/generation-plan.ts:30: ctx.addIssue({ code: 'custom', message: 'Môn không thuộc danh mục lớp đã chọn' })",
+        "importModalValidation": "src/components/ImportModal.tsx:44: setErrorMessage('Hãy chọn môn và lớp của tài liệu trước khi đưa câu hỏi vào đề.')"
+      },
+      "result": "Đ"
+    },
+    {
+      "id": "T10-07",
+      "description": "Trạng thái môn - lớp",
+      "statusLabel": "Có đầu mối tài liệu; nội dung và mẫu đánh giá đang chờ duyệt (src/lib/education-catalog.ts:34)",
+      "totalApproved": 0,
+      "totalNeedsReview": 161,
+      "result": "Đ"
+    },
+    {
+      "id": "T10-08",
+      "description": "DANH_MUC_GOI_THEO_MON.md",
+      "totalCells": 161,
+      "reviewerStatus": "Người duyệt: chưa có cho mọi ô",
+      "verificationTest": "tests/catalog_table.test.ts",
+      "result": "Đ"
+    }
+  ]
+}

@@ -1,9 +1,10 @@
 {
-  "checkedAt": "2026-10-25T12:26:09.718Z",
+  "checkedAt": "2026-10-25T19:40:55.708Z",
   "checks": [
     "private-by-default",
     "view",
     "comment-and-edit",
+    "comment-resolution",
     "manage-and-publish",
     "public-link-limits"
   ],

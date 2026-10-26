@@ -48,13 +48,15 @@ export function parseImportedDocument(value: unknown, source: string, fileName?:
     return { id, content: p.content, title: typeof p.title === 'string' ? p.title : undefined, source: typeof p.source === 'string' ? p.source : undefined };
   });
   const warnings = Array.isArray(raw.warnings) ? raw.warnings.filter((v): v is string => typeof v === 'string').slice(0, 100) : [];
+  const unlinked: number[] = [];
   const questions = raw.questions.map((value, index) => {
     const q = object(value); let oldPassageId = typeof q.passageId === 'string' ? q.passageId : undefined;
     if (oldPassageId && !passageIds.has(oldPassageId)) {
       if (!options.keepUnlinked) throw new DocumentValidationError(`Câu ${index + 1}: thiếu ngữ liệu liên kết; cần nhập lại đầy đủ phần văn bản dùng chung.`);
-      warnings.push(`Câu ${index + 1} thuộc một ngữ liệu mà AI không trả về; câu được giữ nhưng chưa gắn ngữ liệu, hãy gắn lại bằng tay.`); oldPassageId = undefined;
+      unlinked.push(index + 1); oldPassageId = undefined;
     }
     return normalizeQuestion({ ...q, id: crypto.randomUUID(), passageId: oldPassageId ? passageIds.get(oldPassageId) : undefined, source: typeof q.source === 'string' && q.source.trim() ? q.source : importSourceLabel(source, index, fileName), importedFromFile: true, status: 'draft', verifiedBy: 'none', version: 1, aiGenerated: true, step_by_step_solution: q.step_by_step_solution ?? '' }, index);
   });
+  if (unlinked.length) warnings.push(`${unlinked.length} câu (câu ${unlinked.length > 12 ? `${unlinked.slice(0, 12).join(', ')}...` : unlinked.join(', ')}) thuộc một ngữ liệu mà AI không trả về; các câu được giữ nhưng chưa gắn ngữ liệu, hãy gắn lại bằng tay.`);
   return { questions, passages, warnings };
 }

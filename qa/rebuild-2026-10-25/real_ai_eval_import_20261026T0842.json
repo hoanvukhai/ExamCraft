@@ -1,0 +1,46 @@
+{
+  "startedAt": "2026-10-26T08:41:01.601Z",
+  "environment": "isolated test server, test database, real provider with temporary keys",
+  "cases": [
+    {
+      "label": "60 câu có ngữ liệu",
+      "sent": 60,
+      "status": 200,
+      "received": 60,
+      "passagesReceived": 1,
+      "warnings": [
+        "Đã đọc 60 công thức Word thành LaTeX; hình ảnh và bảng phức tạp cần đối chiếu với tệp gốc.",
+        "Tài liệu Word dài nên được đọc thành 4 phần theo thứ tự câu.",
+        "Câu 1 thuộc một ngữ liệu mà AI không trả về; câu được giữ nhưng chưa gắn ngữ liệu, hãy gắn lại bằng tay.",
+        "Câu 2 thuộc một ngữ liệu mà AI không trả về; câu được giữ nhưng chưa gắn ngữ liệu, hãy gắn lại bằng tay.",
+        "Câu 3 thuộc một ngữ liệu mà AI không trả về; câu được giữ nhưng chưa gắn ngữ liệu, hãy gắn lại bằng tay.",
+        "Câu 4 thuộc một ngữ liệu mà AI không trả về; câu được giữ nhưng chưa gắn ngữ liệu, hãy gắn lại bằng tay.",
+        "Câu 5 thuộc một ngữ liệu mà AI không trả về; câu được giữ nhưng chưa gắn ngữ liệu, hãy gắn lại bằng tay.",
+        "Câu 6 thuộc một ngữ liệu mà AI không trả về; câu được giữ nhưng chưa gắn ngữ liệu, hãy gắn lại bằng tay.",
+        "Câu 7 thuộc một ngữ liệu mà AI không trả về; câu được giữ nhưng chưa gắn ngữ liệu, hãy gắn lại bằng tay.",
+        "Câu 8 thuộc một ngữ liệu mà AI không trả về; câu được giữ nhưng chưa gắn ngữ liệu, hãy gắn lại bằng tay.",
+        "Câu 9 thuộc một ngữ liệu mà AI không trả về; câu được giữ nhưng chưa gắn ngữ liệu, hãy gắn lại bằng tay.",
+        "Câu 10 thuộc một ngữ liệu mà AI không trả về; câu được giữ nhưng chưa gắn ngữ liệu, hãy gắn lại bằng tay.",
+        "Câu 11 thuộc một ngữ liệu mà AI không trả về; câu được giữ nhưng chưa gắn ngữ liệu, hãy gắn lại bằng tay.",
+        "Câu 12 thuộc một ngữ liệu mà AI không trả về; câu được giữ nhưng chưa gắn ngữ liệu, hãy gắn lại bằng tay.",
+        "Câu 13 thuộc một ngữ liệu mà AI không trả về; câu được giữ nhưng chưa gắn ngữ liệu, hãy gắn lại bằng tay.",
+        "Câu 14 thuộc một ngữ liệu mà AI không trả về; câu được giữ nhưng chưa gắn ngữ liệu, hãy gắn lại bằng tay.",
+        "Câu 15 thuộc một ngữ liệu mà AI không trả về; câu được giữ nhưng chưa gắn ngữ liệu, hãy gắn lại bằng tay."
+      ],
+      "anyHuman": false,
+      "allDraft": true,
+      "allImported": true,
+      "withSource": 60,
+      "formulasKept": 60,
+      "contentSample": [
+        "Câu mẫu số 1: Tính $1+2$.",
+        "Câu mẫu số 2: Tính $2+4$."
+      ],
+      "duplicateContents": 0,
+      "missingNumbers": []
+    }
+  ],
+  "finishedAt": "2026-10-26T08:42:51.944Z",
+  "providerCalls": 2,
+  "providerRefusals": 1
+}

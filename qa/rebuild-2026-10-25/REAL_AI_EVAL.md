@@ -64,3 +64,13 @@ Báo cáo thô: `real_ai_eval_import_20261026T0749.json`, `real_ai_eval_subjects
 Đã sửa thêm sau lượt này (có test, **chưa dựng build, chưa thử bằng AI thật**): mỗi phần khi gửi AI kèm câu "Tài liệu này có đúng N câu đánh số (từ Câu a đến Câu b). Mảng questions phải có đủ N phần tử...", vì phần cuối bị bỏ sót nhiều nhất dù văn bản gửi đi chỉ 1,5 nghìn ký tự và sạch (đã kiểm bằng cách in đúng văn bản phần 4).
 
 **Cần làm khi hạn mức hồi (khoảng 14:00 giờ Việt Nam ngày kế):** dựng lại bản build (khi không ai dùng cổng 3117), chạy lại `real-ai-eval-import.ts` (đề 60 câu) và `real-ai-eval-subjects.ts` cho các môn chưa chạy; chỉ khi 60 câu về gần đủ thì mới đóng CV040.
+
+## Lượt cuối 26/10 (5 khóa mới, bản build đã có câu "đúng N câu")
+
+Chạy trên một **bản sao build riêng** (git worktree, cổng 3120), không đụng bản build đang dùng cho người test. Báo cáo thô: các tệp `real_ai_eval_import_20261026T08*.json` và `real_ai_eval_subjects_20261026T08*.json`.
+
+- **Word 60 câu: 60/60 câu, 0 trùng, 60/60 giữ công thức**, đọc thành 4 phần theo thứ tự (trước khi nhắc số câu: 38/60, rồi 47/60). Mười lăm câu đầu mất liên kết ngữ liệu vì AI không trả đoạn dùng chung; nay chỉ có **một** dòng cảnh báo nêu các câu đó và câu được giữ.
+- Word 20 câu: 20/20. Ảnh đề in: 3/3.
+- Quét thêm 5 môn: Lịch sử, Địa lí, Sinh học, GDKT&PL, GDQP&AN đều nhận đúng kế hoạch. Sinh học lần này giải mù trùng khóa (lần trước AI sinh sai khóa "Lá cây" cho câu hỏi về cơ quan hút nước).
+- **Sáu môn còn chưa chạy lại** trên bản sửa: Âm nhạc, Mĩ thuật, Giáo dục thể chất, Hoạt động trải nghiệm (cần xác nhận lỗi `null` ở môn nhận xét đã hết), Ngoại ngữ khác, Tiếng dân tộc.
+- **Về khóa:** trong 5 khóa mới, 2 khóa dùng được với mô hình hiện tại, **3 khóa trả 403** ("chưa có quyền") dù xem được danh sách mô hình; mỗi khóa dùng được chịu khoảng 15–20 lần gọi mỗi ngày, hết thì trả 429.

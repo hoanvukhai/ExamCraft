@@ -1,0 +1,38 @@
+
+> exam-craft@0.1.0 test:pilot
+> node --import tsx scripts/pilot-run.cjs
+
+Pilot guard: installed browser; isolatedTest confirmed; exact test database selected.
+TAP version 13
+# Starting F16
+# Subtest: F16 main pages have named controls and a student can answer, move and submit with the keyboard alone
+not ok 1 - F16 main pages have named controls and a student can answer, move and submit with the keyboard alone
+  ---
+  duration_ms: 3442.9495
+  type: 'test'
+  location: 'F:\\Workspace\\Zazz\\ExamCraft\\tests_pilot\\pilot.test.ts:20:80'
+  failureType: 'testCodeFailure'
+  error: |-
+    F16: login: controls without a name
+    + actual - expected
+    
+    + [
+    +   'button.absolute.right-3.5'
+    + ]
+    - []
+    
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    flow (F:\Workspace\Zazz\ExamCraft\tests_pilot\pilot.test.ts:144:20)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4406.47

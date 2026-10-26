@@ -1,0 +1,138 @@
+{
+  "startedAt": "2026-10-26T08:36:03.519Z",
+  "environment": "isolated test server, test database, real provider with temporary keys",
+  "cases": [
+    {
+      "label": "20 câu",
+      "sent": 20,
+      "status": 200,
+      "received": 20,
+      "passagesReceived": 0,
+      "warnings": [
+        "Đã đọc 20 công thức Word thành LaTeX; hình ảnh và bảng phức tạp cần đối chiếu với tệp gốc.",
+        "Tài liệu Word dài nên được đọc thành 2 phần theo thứ tự câu."
+      ],
+      "anyHuman": false,
+      "allDraft": true,
+      "allImported": true,
+      "withSource": 20,
+      "formulasKept": 20,
+      "contentSample": [
+        "Câu mẫu số 1: Tính $1+2$.",
+        "Câu mẫu số 2: Tính $2+4$."
+      ],
+      "duplicateContents": 0,
+      "missingNumbers": []
+    },
+    {
+      "label": "60 câu có ngữ liệu",
+      "sent": 60,
+      "status": 503,
+      "error": "Dịch vụ AI đang bận hoặc gặp lỗi. Vui lòng thử lại sau.",
+      "received": 0,
+      "passagesReceived": 0,
+      "anyHuman": false,
+      "allDraft": true,
+      "allImported": true,
+      "withSource": 0,
+      "formulasKept": 0,
+      "contentSample": [],
+      "duplicateContents": 0,
+      "missingNumbers": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60
+      ]
+    },
+    {
+      "label": "ảnh đề in 3 câu",
+      "status": 200,
+      "received": 3,
+      "types": [
+        "multiple_choice",
+        "short_answer",
+        "multiple_choice"
+      ],
+      "answers": [
+        null,
+        null,
+        null
+      ],
+      "anyHuman": false,
+      "allDraft": true,
+      "contents": [
+        "Kết quả của phép tính $15 + 27$ là:",
+        "Hình vuông có cạnh $5\\text{ cm}$. Chu vi hình vuông là bao nhiêu xăn-ti-mét?",
+        "Phát biểu nào sau đây đúng?"
+      ],
+      "choicesCounts": [
+        4,
+        0,
+        4
+      ],
+      "warnings": [
+        "Cần đối chiếu chữ, công thức và hình với ảnh gốc trước khi sử dụng."
+      ]
+    }
+  ],
+  "finishedAt": "2026-10-26T08:40:25.250Z",
+  "providerCalls": 6,
+  "providerRefusals": 4
+}

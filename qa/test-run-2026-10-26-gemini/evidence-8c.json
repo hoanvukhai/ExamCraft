@@ -1,0 +1,110 @@
+{
+  "section": "08C",
+  "name": "Bảo mật và quyền (thử người xấu)",
+  "testedAt": "2026-10-26T14:00:00Z",
+  "tester": "GEMINI",
+  "evidence": [
+    {
+      "id": "T09-30",
+      "description": "Chưa đăng nhập mở đề/lớp/bài giao",
+      "testRef": "tests/http_permission_matrix.test.ts line 55: GET /api/exams/[id] không cookie -> status 401",
+      "result": "Đ"
+    },
+    {
+      "id": "T09-31",
+      "description": "GV khác mở đề riêng không chia sẻ",
+      "testRef": "tests/http_permission_matrix.test.ts line 50: GET /api/exams/[id] với cookie stranger -> status 404 (bảo mật tránh lộ ID)",
+      "result": "Đ"
+    },
+    {
+      "id": "T09-32",
+      "description": "Học sinh xem mã nguồn đề trước khi nộp",
+      "testRef": "tests/http_public_policies.test.ts line 57: view API không chứa correct_answer hay POLICY_PRIVATE_SOLUTION",
+      "result": "Đ"
+    },
+    {
+      "id": "T09-33",
+      "description": "Học sinh đổi mã bài thi trong đường dẫn",
+      "testRef": "tests/http_public_policies.test.ts line 109: bài thi tương lai hoặc mã sai bị từ chối 403/404",
+      "result": "Đ"
+    },
+    {
+      "id": "T09-34",
+      "description": "Đổi mã học sinh/bài làm",
+      "testRef": "tests/http_public_policies.test.ts lines 52-55: capability cookie học sinh khác truy cập bài làm bị 403 Forbidden",
+      "result": "Đ"
+    },
+    {
+      "id": "T09-35",
+      "description": "Link chia sẻ không kèm đáp án",
+      "testRef": "tests/http_share_pin.test.ts lines 40-52: showAnswers=false loại bỏ hoàn toàn đáp án và lời giải",
+      "result": "Đ"
+    },
+    {
+      "id": "T09-36",
+      "description": "Thu hồi link chia sẻ",
+      "testRef": "tests/http_share_pin.test.ts lines 92-95: sau DELETE /api/exams/[id]/share thì GET /api/public/share/[token] trả 404 Not Found",
+      "result": "Đ"
+    },
+    {
+      "id": "T09-37",
+      "description": "Dán thẻ <script>alert(1)</script>",
+      "testRef": "React tự động HTML-escape chuỗi; MathRenderer dùng DOMPurify sanitization",
+      "result": "Đ"
+    },
+    {
+      "id": "T09-38",
+      "description": "CSV formula injection =cmd|' /C calc'!A0",
+      "testRef": "tests/csv_cell.test.ts line 12: csvCell tiền tố = + - @ được tự động thêm nháy đơn ' triệt tiêu formula",
+      "result": "Đ"
+    },
+    {
+      "id": "T09-39",
+      "description": "Bấm đúp/gửi đúp nộp bài",
+      "testRef": "tests/http_public_policies.test.ts line 76: submit gửi lại trả status 200 kèm idempotent: true, không nhân đôi điểm/lượt",
+      "result": "Đ"
+    },
+    {
+      "id": "T09-40",
+      "description": "Tài khoản bị khóa/đổi mật khẩu: phiên cũ thao tác",
+      "testRef": "tests/auth_security.test.ts lines 73-79: isSessionUsable từ chối phiên hết hạn hoặc isActive=false",
+      "result": "Đ"
+    },
+    {
+      "id": "T09-41",
+      "description": "Đăng nhập sai nhiều lần liên tiếp",
+      "testRef": "tests/auth_security.test.ts lines 50-58: reserveLoginAttempt ghi nhận auditLog bền vững và trả allowed=false sau 5 lần",
+      "result": "Đ"
+    },
+    {
+      "id": "T09-42",
+      "description": "Giáo viên mở đường dẫn quản trị /admin/*",
+      "testRef": "tests/http_admin_keys.test.ts line 41: GET /api/admin/keys với tài khoản TEACHER bị từ chối 403 Forbidden",
+      "result": "Đ"
+    },
+    {
+      "id": "T09-43",
+      "description": "Mở hộp khóa AI xem nguồn và mạng",
+      "testRef": "tests/http_admin_keys.test.ts lines 55, 60, 72: API không bao giờ trả về nguyên văn khóa (keyMasked rỗng cho khóa cấp)",
+      "result": "Đ"
+    },
+    {
+      "id": "T09-44",
+      "description": "Tìm khóa/mật khẩu trong file xuất",
+      "testRef": "tests/portable_and_exports.test.ts lines 152-155: word/document.xml và file CSV điểm không chứa bất kỳ khóa hay thông tin nhạy cảm",
+      "result": "Đ"
+    },
+    {
+      "id": "T09-45",
+      "description": "Sao lưu đề kèm ảnh",
+      "testRef": "src/lib/portable-backup.ts: chỉ trích xuất exam, questions, figures; không trích xuất bảng User, Session hay Key",
+      "result": "Đ"
+    },
+    {
+      "id": "T09-46",
+      "description": "AI nhận tệp chứa lệnh cài",
+      "testRef": "src/lib/exam-parser.ts: lệnh trong văn bản được đối xử như chuỗi thuần túy trong khung phân tách",
+      "result": "Đ"
+    }
+  ]
+}

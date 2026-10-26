@@ -1,0 +1,165 @@
+{
+  "startedAt": "2026-10-26T05:06:30.680Z",
+  "environment": "isolated test server, test database, real provider with temporary keys",
+  "subjects": [
+    {
+      "subject": "toan",
+      "grade": 9,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "A",
+          "solved": "A",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        },
+        {
+          "type": "multiple_choice",
+          "keyed": "B",
+          "solved": "B",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        },
+        {
+          "type": "short_answer",
+          "keyed": "x >= 3",
+          "solved": "x ≥ 3",
+          "isMatch": false,
+          "recommendation": "match",
+          "status": 200
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Căn bậc hai số học của 9 là:",
+          "key": "A",
+          "choices": [
+            "A. 3",
+            "B. -3",
+            "C. ±3",
+            "D. 81"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Trong các hàm số sau, hàm số nào là hàm số bậc nhất?",
+          "key": "B",
+          "choices": [
+            "A. y = 0x + 5",
+            "B. y = 2x - 3",
+            "C. y = x^2 + 1",
+            "D. y = 1/x"
+          ]
+        },
+        {
+          "type": "true_false_group",
+          "content": "Cho hàm số y = (m - 1)x + 3. Xét tính đúng/sai của các phát biểu sau:",
+          "tf": [
+            "a:true",
+            "b:true",
+            "c:false",
+            "d:true"
+          ]
+        },
+        {
+          "type": "short_answer",
+          "content": "Tìm điều kiện xác định của biểu thức \\(\\sqrt{2x - 6}\\).",
+          "key": "x >= 3"
+        }
+      ]
+    },
+    {
+      "subject": "tieng_anh",
+      "grade": 8,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "A",
+          "solved": "A",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        },
+        {
+          "type": "multiple_choice",
+          "keyed": "B",
+          "solved": "B",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        },
+        {
+          "type": "multiple_choice",
+          "keyed": "B",
+          "status": 429
+        },
+        {
+          "type": "short_answer",
+          "keyed": "have not seen",
+          "status": 429
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Choose the correct option to complete the sentence: 'They ________ to Da Nang for their holiday last week.'",
+          "key": "A",
+          "choices": [
+            "A. went",
+            "B. have gone",
+            "C. go",
+            "D. have been going"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Choose the correct option to complete the sentence: 'She ________ her homework yet, so she cannot go out with us.'",
+          "key": "B",
+          "choices": [
+            "A. didn't finish",
+            "B. hasn't finished",
+            "C. doesn't finish",
+            "D. isn't finishing"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Choose the correct option to complete the sentence: 'Mr. Nam ________ in this school for over ten years, and he still works here now.'",
+          "key": "B",
+          "choices": [
+            "A. taught",
+            "B. has taught",
+            "C. is teaching",
+            "D. teaches"
+          ]
+        },
+        {
+          "type": "short_answer",
+          "content": "Give the correct form of the verb in brackets to complete the sentence: 'I (not see) ________ Minh since we graduated from secondary school.'",
+          "key": "have not seen"
+        }
+      ]
+    }
+  ],
+  "finishedAt": "2026-10-26T05:08:11.969Z",
+  "providerCalls": 35,
+  "providerRefusals": 28,
+  "refusalStatuses": {
+    "429": 28
+  }
+}

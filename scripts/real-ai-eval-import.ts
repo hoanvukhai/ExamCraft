@@ -52,10 +52,11 @@ const mcq = (n: number, extra = '') => ({ id: randomUUID(), type: 'multiple_choi
         allImported: got.every(q => q.importedFromFile === true), withSource: got.filter(q => q.source).length, formulasKept: got.filter(q => /\$/.test(q.content)).length, contentSample: got.slice(0, 2).map(q => String(q.content).slice(0, 80)), duplicateContents: got.length - new Set(got.map(q => q.content)).size,
         missingNumbers: Array.from({ length: questions.length }, (_, i) => i + 1).filter(n => !got.some(q => String(q.content).includes(`số ${n}:`))) });
     };
-    await word('20 câu', Array.from({ length: 20 }, (_, i) => mcq(i + 1)));
+    const skip = (name: string) => (process.env.EVAL_SKIP ?? '').split(',').includes(name); // for example EVAL_SKIP=20,image to repeat only the 60-question case
+    if (!skip('20')) await word('20 câu', Array.from({ length: 20 }, (_, i) => mcq(i + 1)));
     await word('60 câu có ngữ liệu', Array.from({ length: 60 }, (_, i) => mcq(i + 1)), [{ id: 'p1', title: 'Đoạn dùng chung', content: 'Một cửa hàng bán 12 cái bút giá 5 000 đồng mỗi cái.' }]);
     const image = process.env.EVAL_IMAGE ? fs.readFileSync(process.env.EVAL_IMAGE).toString('base64') : '';
-    if (image) {
+    if (image && !skip('image')) {
       const r = await ai('/api/ocr-exam-image', { imageBase64: image, mimeType: 'image/png' });
       const got: Json[] = r.data.questions ?? [];
       report.cases.push({ label: 'ảnh đề in 3 câu', status: r.status, error: r.data.error, received: got.length, types: got.map(q => q.type), answers: got.map(q => q.correct_answer ?? null), anyHuman: got.some(q => q.verifiedBy === 'human'), allDraft: got.every(q => q.status === 'draft'), contents: got.map(q => String(q.content).slice(0, 90)), choicesCounts: got.map(q => q.choices?.length ?? 0), warnings: r.data.warnings });

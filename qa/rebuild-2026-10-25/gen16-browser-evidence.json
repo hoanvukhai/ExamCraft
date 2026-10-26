@@ -1,0 +1,132 @@
+{
+  "createdAt": "2026-10-25T16:00:52.156Z",
+  "realProviderCalls": false,
+  "entries": [
+    {
+      "id": "F20",
+      "run": "00226cfa-82ac-47eb-bd43-0ad65a48f41e",
+      "checkedAt": "2026-10-25T15:46:17.810Z",
+      "sourceSha256": "90374ba97a8a0b5c50daf7615470ef5a348f567b4b22be28bb0e328530938e27",
+      "buildId": "3YocQhemRMlMzEqq9_V84",
+      "browserVersion": "155.0.8059.85",
+      "results": [
+        {
+          "id": "F20",
+          "status": "PASS",
+          "durationMs": 9447,
+          "cleanupComplete": true
+        }
+      ],
+      "rawLocalPath": "qa/rebuild-2026-10-25/pilot-run-00226cfa-82ac-47eb-bd43-0ad65a48f41e.json",
+      "rawSha256": "4471543bd22e2ec3f8ebb97d45189d1ccd5b5006ad9205dfe8e4d1e56868382c"
+    },
+    {
+      "id": "F20",
+      "run": "90c97468-82e9-4de6-a0d7-2a61a44adde3",
+      "checkedAt": "2026-10-25T15:46:06.408Z",
+      "sourceSha256": "90374ba97a8a0b5c50daf7615470ef5a348f567b4b22be28bb0e328530938e27",
+      "buildId": "3YocQhemRMlMzEqq9_V84",
+      "browserVersion": "155.0.8059.85",
+      "results": [
+        {
+          "id": "F20",
+          "status": "PASS",
+          "durationMs": 8254,
+          "cleanupComplete": true
+        }
+      ],
+      "rawLocalPath": "qa/rebuild-2026-10-25/pilot-run-90c97468-82e9-4de6-a0d7-2a61a44adde3.json",
+      "rawSha256": "0b27ff729a3c1c7248c0f929d4b8b0d06bfe603948979862e913dcf01f0f520d"
+    },
+    {
+      "id": "F20",
+      "run": "1762bf6c-e1eb-4f6b-abd0-baab8c76b4b9",
+      "checkedAt": "2026-10-25T15:45:56.485Z",
+      "sourceSha256": "90374ba97a8a0b5c50daf7615470ef5a348f567b4b22be28bb0e328530938e27",
+      "buildId": "3YocQhemRMlMzEqq9_V84",
+      "browserVersion": "155.0.8059.85",
+      "results": [
+        {
+          "id": "F20",
+          "status": "PASS",
+          "durationMs": 8562,
+          "cleanupComplete": true
+        }
+      ],
+      "rawLocalPath": "qa/rebuild-2026-10-25/pilot-run-1762bf6c-e1eb-4f6b-abd0-baab8c76b4b9.json",
+      "rawSha256": "309b54d253c898c48fd24af2e4efba569e280dad221753f7a38c19eaf002cf8b"
+    },
+    {
+      "id": "F19",
+      "run": "7b997d75-8114-48b4-bdbc-52fa719a7ea3",
+      "checkedAt": "2026-10-25T15:46:36.586Z",
+      "sourceSha256": "90374ba97a8a0b5c50daf7615470ef5a348f567b4b22be28bb0e328530938e27",
+      "buildId": "3YocQhemRMlMzEqq9_V84",
+      "browserVersion": "155.0.8059.85",
+      "results": [
+        {
+          "id": "F19",
+          "status": "PASS",
+          "durationMs": 17009,
+          "cleanupComplete": true
+        }
+      ],
+      "rawLocalPath": "qa/rebuild-2026-10-25/pilot-run-7b997d75-8114-48b4-bdbc-52fa719a7ea3.json",
+      "rawSha256": "19ead055354f2b6dde8aac844e23d3005dcbc537e97d5d0b0e8cc2f81bffe645"
+    },
+    {
+      "id": "F21",
+      "run": "99ce4a6e-a16f-4a08-93fd-832965413b3b",
+      "checkedAt": "2026-10-25T15:38:35.608Z",
+      "sourceSha256": "8d468f148e0781a247c2429ea05c305d2a7c3ebbe56705fad5b35fdcd421ef73",
+      "buildId": "3YocQhemRMlMzEqq9_V84",
+      "browserVersion": "155.0.8059.85",
+      "results": [
+        {
+          "id": "F21",
+          "status": "PASS",
+          "durationMs": 15143,
+          "cleanupComplete": true
+        }
+      ],
+      "rawLocalPath": "qa/rebuild-2026-10-25/pilot-run-99ce4a6e-a16f-4a08-93fd-832965413b3b.json",
+      "rawSha256": "49089f1df13b63b62fe76dcb1fc239a0f2f23ede63a2b255edf34d2f4c7587f7"
+    },
+    {
+      "id": "F22",
+      "run": "f58da13c-b735-4b28-9f9b-64434b138c8c",
+      "checkedAt": "2026-10-25T15:42:02.384Z",
+      "sourceSha256": "77a06ee8445938c8e2b7366da522b0a8cef86a00991c400905608d43625ad37c",
+      "buildId": "3YocQhemRMlMzEqq9_V84",
+      "browserVersion": "155.0.8059.85",
+      "results": [
+        {
+          "id": "F22",
+          "status": "PASS",
+          "durationMs": 7434,
+          "cleanupComplete": true
+        }
+      ],
+      "rawLocalPath": "qa/rebuild-2026-10-25/pilot-run-f58da13c-b735-4b28-9f9b-64434b138c8c.json",
+      "rawSha256": "a6a5baa1d4418c1bcdf874693af60c1cff54cb64863ac1ef96535b3932b9b8a0"
+    },
+    {
+      "id": "F23",
+      "run": "a1c84845-ed64-4e9a-8502-ee319a59196a",
+      "checkedAt": "2026-10-25T15:45:20.809Z",
+      "sourceSha256": "90374ba97a8a0b5c50daf7615470ef5a348f567b4b22be28bb0e328530938e27",
+      "buildId": "3YocQhemRMlMzEqq9_V84",
+      "browserVersion": "155.0.8059.85",
+      "results": [
+        {
+          "id": "F23",
+          "status": "PASS",
+          "durationMs": 12217,
+          "cleanupComplete": true
+        }
+      ],
+      "rawLocalPath": "qa/rebuild-2026-10-25/pilot-run-a1c84845-ed64-4e9a-8502-ee319a59196a.json",
+      "rawSha256": "c22929e1a2d64c54f82de07aa4aa7b6efc4ed18f6fdd93f8a844614db4a0a6ed"
+    }
+  ]
+}

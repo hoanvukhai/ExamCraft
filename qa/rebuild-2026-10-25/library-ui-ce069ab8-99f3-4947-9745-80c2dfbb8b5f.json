@@ -1,0 +1,271 @@
+{
+  "run": "ce069ab8-99f3-4947-9745-80c2dfbb8b5f",
+  "buildId": "8U2D5DK_9APr6XD4-EYPB",
+  "checkedAt": "2026-10-25T18:04:07.232Z",
+  "inventory": [
+    {
+      "text": "Bộ não AI",
+      "title": "Bộ não AI Sư Phạm: Xem và dạy các phong cách ra đề cho AI",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "Thư ký AI",
+      "title": "Mở Thư ký AI trợ lý riêng của Thầy/Cô",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "Khóa AI: 0",
+      "title": "Quản lý Google Gemini API Key",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "",
+      "title": "Đổi giao diện Sáng / Tối",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "Soạn Đề Thi Mới",
+      "title": null,
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "Tất cả đề thi4",
+      "title": null,
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "Đề quan trọng (Gắn sao)",
+      "title": null,
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "Đã sửa gần đây",
+      "title": null,
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "",
+      "title": "Tạo thư mục mới (Cấp 1)",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "Ngân hàng câu hỏi",
+      "title": null,
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "Thùng rác",
+      "title": null,
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "",
+      "title": "Chế độ xem thẻ",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "",
+      "title": "Chế độ xem danh sách",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "",
+      "title": "Gắn sao đề quan trọng",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "",
+      "title": "Tải file Word (.docx)",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "",
+      "title": "Nhân bản đề này",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "",
+      "title": "Di chuyển vào thư mục",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "",
+      "title": "Đổi tên đề",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "",
+      "title": "Chuyển vào thùng rác",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "",
+      "title": "Gắn sao đề quan trọng",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "",
+      "title": "Tải file Word (.docx)",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "",
+      "title": "Nhân bản đề này",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "",
+      "title": "Di chuyển vào thư mục",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "",
+      "title": "Đổi tên đề",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "",
+      "title": "Chuyển vào thùng rác",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "",
+      "title": "Gắn sao đề quan trọng",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "",
+      "title": "Tải file Word (.docx)",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "",
+      "title": "Nhân bản đề này",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "",
+      "title": "Di chuyển vào thư mục",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "",
+      "title": "Đổi tên đề",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "",
+      "title": "Chuyển vào thùng rác",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "",
+      "title": "Gắn sao đề quan trọng",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "",
+      "title": "Tải file Word (.docx)",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "",
+      "title": "Nhân bản đề này",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "",
+      "title": "Di chuyển vào thư mục",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "",
+      "title": "Đổi tên đề",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "",
+      "title": "Chuyển vào thùng rác",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "",
+      "title": "Trợ lý Thư ký AI Cá Nhân (Bấm để xem)",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "",
+      "title": "Kho Khóa AI",
+      "label": null,
+      "disabled": false
+    },
+    {
+      "text": "",
+      "title": "Ngân hàng câu hỏi",
+      "label": null,
+      "disabled": false
+    }
+  ],
+  "checked": [
+    "search",
+    "starred",
+    "recent",
+    "trash-and-restore",
+    "open-and-return",
+    "grid-and-list",
+    "theme",
+    "download-word",
+    "rename",
+    "clone",
+    "create-folder-and-move",
+    "key-management",
+    "key-management-rail",
+    "memory",
+    "bank-no-false-insert-success",
+    "bank-0",
+    "generate-open-only",
+    "import-open-only",
+    "secretary-explicit-development-notice",
+    "secretary-rail-development-notice",
+    "new-exam-and-return-keeps-originals"
+  ],
+  "limitation": "Inventory includes safe controls covered by other pilot flows; this flow does not send AI prompts, submit keys, delete folders or log out."
+}

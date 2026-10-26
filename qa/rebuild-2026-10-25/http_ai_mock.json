@@ -1,6 +1,7 @@
 {
-  "checkedAt": "2026-10-25T12:26:09.352Z",
+  "checkedAt": "2026-10-25T19:40:42.877Z",
   "checks": [
+    "cancelled-no-save-no-retry",
     "no-key-no-call",
     "temporary-key",
     "stored-key-and-usage",
@@ -10,6 +11,9 @@
     "choose-and-model",
     "bad-output",
     "generation-matches-plan",
+    "private-notes-in-prompts",
+    "analysis-provenance",
+    "imported-instructions-are-data",
     "outage-test-delete"
   ],
   "cleanupComplete": true,

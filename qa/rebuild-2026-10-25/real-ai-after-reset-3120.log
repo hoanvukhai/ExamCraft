@@ -1,0 +1,33 @@
+start 07:08:09
+{"status":"ok","isolatedTest":true}done: 7 provider calls, 4 refusals; report written
+tieng_viet 200 match 2/2
+toan 200 match 2/2
+tieng_anh 200 match 1/2
+tin_hoc 200 match 2/2
+cong_nghe 200 match 1/1
+khoa_hoc 200 match 2/2
+khtn 200 match 2/2
+lich_su_dia_ly 200 match 1/1
+ngu_van 200 match 1/1
+giao_duc_cong_dan 200 match 1/1
+lich_su 200 match 1/1
+dia_ly 200 match 2/2
+sinh_hoc 200 match 0/1
+gdkt_pl 200 match 1/1
+giao_duc_quoc_phong_an_ninh 200 match 1/1
+am_nhac 200 match 0/0
+mi_thuat 422 NO-MATCH 0/0
+giao_duc_the_chat 422 NO-MATCH 0/0
+hoat_dong_trai_nghiem 422 NO-MATCH 0/0
+ngoai_ngu_khac 200 match 1/1
+tieng_dan_toc 200 match 1/1
+done: 52 provider calls, 10 refusals; report written
+ForEach-Object : Cannot bind parameter 'Id'. Cannot convert value "\.OwningProcess" to type "System.Int32". Error: 
+"Input string was not in a correct format."
+At line:1 char:84
++ ... yContinue | ForEach-Object { Stop-Process -Id \.OwningProcess -Force  ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (:) [ForEach-Object], ParameterBindingException
+    + FullyQualifiedErrorId : CannotConvertArgumentNoMessage,Microsoft.PowerShell.Commands.ForEachObjectCommand
+ 
+end 07:22:57

@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-10-26T06:51:24.286Z",
+  "checks": [
+    "private-by-default",
+    "view",
+    "comment-and-edit",
+    "comment-resolution",
+    "manage-and-publish",
+    "public-link-limits"
+  ],
+  "cleanupComplete": true,
+  "status": "PASS",
+  "environment": "isolated localhost:3117",
+  "realAiCalls": false
+}

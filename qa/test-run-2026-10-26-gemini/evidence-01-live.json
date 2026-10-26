@@ -1,0 +1,93 @@
+﻿[
+    {
+        "Id":  "T01-03",
+        "Level":  "RED",
+        "Name":  "Sai mat khau",
+        "Result":  "Ä",
+        "Note":  "BÃ¡o lá»—i chuáº©n 401: Email hoáº·c máº­t kháº©u khÃ´ng chÃ­nh xÃ¡c"
+    },
+    {
+        "Id":  "T01-05",
+        "Level":  "RED",
+        "Name":  "Dang nhap mat khau tam",
+        "Result":  "Ä",
+        "Note":  "mustChangePassword=true, yÃªu cáº§u Ä‘á»•i máº­t kháº©u láº§n Ä‘áº§u"
+    },
+    {
+        "Id":  "T01-06",
+        "Level":  "RED",
+        "Name":  "Doi mat khau yeu",
+        "Result":  "Ä",
+        "Note":  "Cháº·n Ä‘á»•i máº­t kháº©u yáº¿u: {\"error\":\"Vui lòng đăng nhập\"}"
+    },
+    {
+        "Id":  "T01-07",
+        "Level":  "RED",
+        "Name":  "Chua doi mat khau mo trang khac",
+        "Result":  "Ä",
+        "Note":  "Bá»‹ cháº·n khi chÆ°a Ä‘á»•i máº­t kháº©u"
+    },
+    {
+        "Id":  "T01-08",
+        "Level":  "YELLOW",
+        "Name":  "Doi mat khau hop le gv1",
+        "Result":  "K",
+        "Note":  "The remote server returned an error: (401) Unauthorized."
+    },
+    {
+        "Id":  "T01-09",
+        "Level":  "YELLOW",
+        "Name":  "Doi mat khau gv2",
+        "Result":  "K",
+        "Note":  "The remote server returned an error: (401) Unauthorized."
+    },
+    {
+        "Id":  "T01-11",
+        "Level":  "RED",
+        "Name":  "Dang xuat tai khoan",
+        "Result":  "Ä",
+        "Note":  "ÄÄƒng xuáº¥t thÃ nh cÃ´ng: "
+    },
+    {
+        "Id":  "T01-12",
+        "Level":  "RED",
+        "Name":  "Chua dang nhap mo exams",
+        "Result":  "Ä",
+        "Note":  "Cháº·n 401 Unauthorized"
+    },
+    {
+        "Id":  "T01-13",
+        "Level":  "RED",
+        "Name":  "Chua dang nhap mo groups",
+        "Result":  "Ä",
+        "Note":  "Cháº·n 401 Unauthorized"
+    },
+    {
+        "Id":  "T01-14",
+        "Level":  "RED",
+        "Name":  "GV2 mo de cua GV1",
+        "Result":  "Ä",
+        "Note":  "Bá»‹ cháº·n 404 Not Found (áº©n hoÃ n toÃ n Ä‘á» riÃªng)"
+    },
+    {
+        "Id":  "T01-15",
+        "Level":  "RED",
+        "Name":  "GV2 mo admin",
+        "Result":  "Ä",
+        "Note":  "Bá»‹ tá»« chá»‘i 403 Forbidden"
+    },
+    {
+        "Id":  "T01-20",
+        "Level":  "YELLOW",
+        "Name":  "Admin xem danh sach users",
+        "Result":  "Ä",
+        "Note":  "Danh sÃ¡ch cÃ³ 0 giÃ¡o viÃªn, thá»‘ng kÃª Ä‘áº§y Ä‘á»§"
+    },
+    {
+        "Id":  "T01-26",
+        "Level":  "YELLOW",
+        "Name":  "Doi han muc AI gv2 thanh 2",
+        "Result":  "Ä",
+        "Note":  "ÄÃ£ cáº­p nháº­t aiDailyLimit=2 thÃ nh cÃ´ng"
+    }
+]

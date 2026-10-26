@@ -1,0 +1,318 @@
+{
+  "startedAt": "2026-10-26T08:43:09.784Z",
+  "environment": "isolated test server, test database, real provider with temporary keys",
+  "subjects": [
+    {
+      "subject": "lich_su",
+      "grade": 11,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "B",
+          "solved": "B",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Nguyên nhân sâu xa dẫn đến sự bùng nổ của Chiến tranh thế giới thứ nhất (1914 - 1918) là gì?",
+          "key": "B",
+          "choices": [
+            "A. Sự hình thành hai khối quân sự đối đầu nhau ở châu Âu.",
+            "B. Mâu thuẫn giữa các nước đế quốc về vấn đề thị trường và thuộc địa.",
+            "C. Thái tử Áo - Hùng bị một người Xéc-bi ám sát tại Bô-xni-a.",
+            "D. Sự phát triển không đều về kinh tế và chính trị của các nước tư bản."
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Sự kiện nào được coi là Duyên cớ trực tiếp dẫn đến Chiến tranh thế giới thứ nhất bùng nổ?",
+          "key": "B",
+          "choices": [
+            "A. Đức tuyên chiến với Nga và Pháp tháng 8 năm 1914.",
+            "B. Thái tử Áo - Hùng bị ám sát tại Sa-ra-je-vo (Bô-xni-a) tháng 6 năm 1914.",
+            "C. Anh tuyên chiến với Đức tháng 8 năm 1914.",
+            "D. Mĩ chính thức tuyên chiến và tham gia chiến tranh năm 1917."
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Sự kiện nào trong năm 1917 đã tạo nên bước ngoặt lớn làm thay đổi cục diện Chiến tranh thế giới thứ nhất?",
+          "key": "B",
+          "choices": [
+            "A. Chiến dịch Véc-đăng kết thúc với sự thất bại của quân Đức.",
+            "B. Mĩ tham chiến nghiêng về phe Hiệp ước và Cách mạng tháng Mười Nga thành công.",
+            "C. Đức kí hiệp định đình chiến, thừa nhận thất bại hoàn toàn.",
+            "D. Chiến tranh đế quốc chuyển thành chiến tranh vệ quốc sinh tồn."
+          ]
+        },
+        {
+          "type": "true_false_group",
+          "content": "Xác định tính đúng/sai của các nhận định sau đây về tính chất và hậu quả của Chiến tranh thế giới thứ nhất (1914 - 1918):",
+          "tf": [
+            "a:true",
+            "b:true",
+            "c:false",
+            "d:false"
+          ]
+        }
+      ]
+    },
+    {
+      "subject": "dia_ly",
+      "grade": 10,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "A",
+          "solved": "A",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        },
+        {
+          "type": "short_answer",
+          "keyed": "giảm đi",
+          "solved": "Giảm đi",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Tầng nào của khí quyển nằm sát bề mặt Trái Đất, tập trung khoảng 80% khối lượng không khí toàn bộ khí quyển và chứa hầu hết hơi nước?",
+          "key": "A",
+          "choices": [
+            "A. Tầng đối lưu",
+            "B. Tầng bình lưu",
+            "C. Tầng giữa",
+            "D. Tầng nhiệt"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Nguyên nhân chính khiến nhiệt độ không khí ở tầng đối lưu giảm dần theo độ cao là gì?",
+          "key": "A",
+          "choices": [
+            "A. Càng lên cao không khí càng loãng, khả năng hấp thụ nhiệt từ bức xạ mặt đất càng giảm",
+            "B. Càng lên cao khoảng cách tới Mặt Trời càng xa hơn",
+            "C. Càng lên cao góc chiếu sáng của Mặt Trời càng nhỏ",
+            "D. Càng lên cao mật độ mây càng dày che khuất ánh sáng"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Mỗi bán cầu trên Trái Đất có bao nhiêu đới khí hậu chính?",
+          "key": "B",
+          "choices": [
+            "A. 5 đới",
+            "B. 7 đới",
+            "C. 3 đới",
+            "D. 4 đới"
+          ]
+        },
+        {
+          "type": "short_answer",
+          "content": "Khi độ cao địa hình tăng lên thì giá trị khí áp sẽ thay đổi như thế nào (tăng lên hay giảm đi)?",
+          "key": "giảm đi"
+        }
+      ]
+    },
+    {
+      "subject": "sinh_hoc",
+      "grade": 11,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "C",
+          "solved": "C",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Cơ quan chính thực hiện chức năng quang hợp ở thực vật là",
+          "key": "C",
+          "choices": [
+            "A. Rễ",
+            "B. Thân",
+            "C. Lá",
+            "D. Hoa"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Sắc tố nào sau đây trực tiếp tham gia chuyển hóa năng lượng ánh sáng thành năng lượng hóa học trong các trung tâm phản ứng quang hợp?",
+          "key": "A",
+          "choices": [
+            "A. Diệp lục a ở trung tâm phản ứng",
+            "B. Diệp lục b",
+            "C. Carotene",
+            "D. Xanthophyll"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Khi cây bị ngập úng lâu ngày, rễ cây có thể bị hỏng và cây bị héo. Nguyên nhân chính gây ra hiện tượng này là gì?",
+          "key": "A",
+          "choices": [
+            "A. Đất thiếu ôxi làm rễ không hô hấp hiếu khí được, gây thiếu ATP để hấp thụ khoáng và nước chủ động.",
+            "B. Lượng nước quá nhiều tràn vào tế bào rễ làm vỡ các tế bào lông hút.",
+            "C. Ánh sáng không chiếu được xuống rễ nên rễ không thể quang hợp để tạo chất dinh dưỡng.",
+            "D. Nước thừa hòa tan toàn bộ chất khoáng trong đất khiến rễ bị thiếu dinh dưỡng."
+          ]
+        },
+        {
+          "type": "true_false_group",
+          "content": "Khi nói về quá trình thoát hơi nước ở lá cây, mỗi phát biểu sau đây là Đúng hay Sai?",
+          "tf": [
+            "a:true",
+            "b:false",
+            "c:true",
+            "d:false"
+          ]
+        }
+      ]
+    },
+    {
+      "subject": "gdkt_pl",
+      "grade": 10,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "B",
+          "solved": "B",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Khối lượng hàng hóa, dịch vụ mà người tiêu dùng sẵn sàng mua và có khả năng mua ở các mức giá khác nhau trong một thời hạn nhất định được gọi là gì?",
+          "key": "B",
+          "choices": [
+            "A. Cung.",
+            "B. Cầu.",
+            "C. Thị trường.",
+            "D. Giá cả."
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Trong nền kinh tế thị trường, khi giá của một mặt hàng tăng lên (các yếu tố khác không đổi), lượng cung của mặt hàng đó trên thị trường thường có xu hướng thay đổi như thế nào?",
+          "key": "A",
+          "choices": [
+            "A. Tăng lên.",
+            "B. Giảm đi.",
+            "C. Không đổi.",
+            "D. Bằng không."
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Khi giá thịt lợn trên thị trường tăng cao đột biến, chị H đã quyết định chuyển sang mua thịt gà và cá để phục vụ bữa ăn gia đình. Việc làm của chị H chịu ảnh hưởng trực tiếp bởi yếu tố nào đến cầu đối với thịt lợn?",
+          "key": "B",
+          "choices": [
+            "A. Thu nhập của người tiêu dùng.",
+            "B. Giá cả của hàng hóa thay thế.",
+            "C. Số lượng người sản xuất trên thị trường.",
+            "D. Chính sách thuế của nhà nước."
+          ]
+        }
+      ]
+    },
+    {
+      "subject": "giao_duc_quoc_phong_an_ninh",
+      "grade": 10,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "A",
+          "status": 429
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Chiến thắng nào sau đây của dân tộc ta đã chấm dứt hơn 1000 năm đô hộ của phong kiến phương Bắc, mở ra thời kỳ độc lập lâu dài cho Tổ quốc?",
+          "key": "A",
+          "choices": [
+            "A. Chiến thắng Bạch Đằng năm 938 của Ngô Quyền.",
+            "B. Chiến thắng Như Nguyệt năm 1077 của Lý Thường Kiệt.",
+            "C. Chiến thắng Ngọc Hồi - Đống Đa năm 1789 của Quang Trung.",
+            "D. Chiến dịch Điện Biên Phủ năm 1954."
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Nghệ thuật quân sự \"Lấy nhỏ thắng lớn, lấy ít địch nhiều\" trong lịch sử chống ngoại xâm của dân tộc ta xuất phát từ lý do chủ yếu nào?",
+          "key": "B",
+          "choices": [
+            "A. Do vũ khí của quân đội ta luôn hiện đại hơn lực lượng xâm lược.",
+            "B. Do tương quan lực lượng ban đầu kẻ thù thường đông và mạnh hơn ta gấp nhiều lần.",
+            "C. Do quân đội ta không có sự hỗ trợ của nhân dân.",
+            "D. Do kẻ thù luôn không am hiểu về địa hình chiến trường."
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Học sinh lớp 10 cần thực hiện trách nhiệm nào sau đây để góp phần phát huy truyền thống chống ngoại xâm của dân tộc trong thời đại ngày nay?",
+          "key": "B",
+          "choices": [
+            "A. Chỉ tập trung học văn hóa, không cần quan tâm đến các nhiệm vụ quốc phòng, an ninh.",
+            "B. Tích cực học tập, rèn luyện thân thể, nâng cao nhận thức về quốc phòng, an ninh và lòng yêu nước.",
+            "C. Tìm cách tham gia vào các cuộc xung đột quân sự ở nước ngoài.",
+            "D. Không cần tham gia các buổi học môn Giáo dục quốc phòng và an ninh tại trường."
+          ]
+        }
+      ]
+    }
+  ],
+  "finishedAt": "2026-10-26T08:45:40.022Z",
+  "providerCalls": 14,
+  "providerRefusals": 4,
+  "refusalStatuses": {
+    "429": 2,
+    "503": 2
+  }
+}

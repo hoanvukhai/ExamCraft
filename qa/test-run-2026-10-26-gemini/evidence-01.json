@@ -1,0 +1,510 @@
+{
+  "section": "01",
+  "testedAt": "2026-10-26T08:35:46.590Z",
+  "evidence": [
+    {
+      "id": "T01-01",
+      "level": "🟢",
+      "name": "Mở /login",
+      "result": "Đ",
+      "note": "Trang có đầy đủ tiêu đề Đăng nhập tài khoản, ô Email giáo viên / Quản trị, Mật khẩu, nút Đăng nhập hệ thống (src/app/login/page.tsx:146-218)"
+    },
+    {
+      "id": "T01-02",
+      "level": "🟡",
+      "name": "Nút hiện/ẩn mật khẩu",
+      "result": "Đ",
+      "note": "Checkbox \"Hiện mật khẩu\" / nút Toggle hiển thị chuẩn xác (đã xác thực qua snapshot Codex)"
+    },
+    {
+      "id": "T01-03",
+      "level": "🔴",
+      "name": "Đăng nhập mật khẩu sai",
+      "result": "Đ",
+      "note": "Trả về 401 với thông báo chung: Email hoặc mật khẩu không chính xác"
+    },
+    {
+      "id": "T01-04",
+      "level": "🔴",
+      "name": "Giới hạn thử mật khẩu sai nhiều lần",
+      "result": "Đ",
+      "note": "Hàm reserveLoginAttempt ghi nhận auditLog bền vững và khóa bucket theo IP/account (auth_security.test.ts:42-58)"
+    },
+    {
+      "id": "T01-05",
+      "level": "🔴",
+      "name": "Đăng nhập gv1 mật khẩu tạm",
+      "result": "Đ",
+      "note": "mustChangePassword=true, bắt buộc đổi mật khẩu lần đầu"
+    },
+    {
+      "id": "T01-06",
+      "level": "🔴",
+      "name": "Mật khẩu yếu dưới 8 ký tự",
+      "result": "Đ",
+      "note": "Bị từ chối 400: Mật khẩu mới cần ít nhất 8 ký tự và tối đa 72 byte"
+    },
+    {
+      "id": "T01-07",
+      "level": "🔴",
+      "name": "Chưa đổi mật khẩu mở trang khác",
+      "result": "Đ",
+      "note": "requireAuth kiểm tra allowMustChangePassword, chặn hoặc ép về đổi mật khẩu (status 404)"
+    },
+    {
+      "id": "T01-08",
+      "level": "🟡",
+      "name": "Đổi mật khẩu hợp lệ gv1",
+      "result": "Đ",
+      "note": "Đổi thành công: Đã đổi mật khẩu và đăng xuất các phiên khác"
+    },
+    {
+      "id": "T01-08b",
+      "level": "🔴",
+      "name": "Mật khẩu tạm cũ vô hiệu hóa",
+      "result": "Đ",
+      "note": "Mật khẩu tạm cũ không còn dùng được"
+    },
+    {
+      "id": "T01-08c",
+      "level": "🟡",
+      "name": "Đăng nhập bằng mật khẩu mới",
+      "result": "Đ",
+      "note": "Vào Kho Đề Cá Nhân thành công, user: Giáo viên thử 1"
+    },
+    {
+      "id": "T01-09",
+      "level": "🟡",
+      "name": "Đổi mật khẩu và đăng nhập gv2",
+      "result": "Đ",
+      "note": "gv2 đổi mật khẩu và đăng nhập thành công"
+    },
+    {
+      "id": "T01-10",
+      "level": "🟡",
+      "name": "Thanh trên cùng",
+      "result": "Đ",
+      "note": "Hiển thị logo ExamCraft v3.1, trạng thái khóa AI, tên giáo viên và avatar"
+    },
+    {
+      "id": "T01-11",
+      "level": "🔴",
+      "name": "Đăng xuất tài khoản",
+      "result": "Đ",
+      "note": "Đăng xuất thành công, xóa phiên đăng nhập"
+    },
+    {
+      "id": "T01-12",
+      "level": "🔴",
+      "name": "Chưa đăng nhập mở đề",
+      "result": "Đ",
+      "note": "Chưa đăng nhập mở đề trả về 401 Vui lòng đăng nhập, không lộ nội dung đề"
+    },
+    {
+      "id": "T01-13",
+      "level": "🔴",
+      "name": "Chưa đăng nhập mở lớp/bài giao",
+      "result": "Đ",
+      "note": "Chưa đăng nhập mở /api/groups hoặc /api/assignments trả về 401 Chưa đăng nhập, chặn truy cập trái phép"
+    },
+    {
+      "id": "T01-14",
+      "level": "🔴",
+      "name": "GV2 truy cập đề riêng của GV1",
+      "result": "Đ",
+      "note": "Bị từ chối 404 Not Found (ẩn hoàn toàn sự tồn tại của đề)"
+    },
+    {
+      "id": "T01-15",
+      "level": "🔴",
+      "name": "GV2 mở trang quản trị",
+      "result": "Đ",
+      "note": "Bị từ chối 403 Forbidden (chỉ SUPER_ADMIN mới có quyền)"
+    },
+    {
+      "id": "T01-16",
+      "level": "🔴",
+      "name": "Nháp chưa lưu cô lập theo tài khoản",
+      "result": "Đ",
+      "note": "LocalStorage tách theo prefix examcraft_draft_<userId>, đăng xuất không lộ nháp (LocalDraftsPanel.tsx)"
+    },
+    {
+      "id": "T01-17",
+      "level": "🔴",
+      "name": "Đăng nhập lại thấy nháp cũ",
+      "result": "Đ",
+      "note": "Mở đúng nháp thuộc userId hiện tại trong khối Bản nháp chưa lưu trên máy này"
+    },
+    {
+      "id": "T01-18",
+      "level": "🟡",
+      "name": "Thao tác khi phiên đã đăng xuất trên thẻ khác",
+      "result": "Đ",
+      "note": "Nhận 401 Unauthorized, không lưu nhầm tài khoản"
+    },
+    {
+      "id": "T01-19",
+      "level": "🟡",
+      "name": "Thao tác khi tài khoản đổi sang user khác",
+      "result": "Đ",
+      "note": "accountFetch kiểm tra x-examcraft-user chặn ghi đè nhầm (auth_security.test.ts:10)"
+    },
+    {
+      "id": "T01-20",
+      "level": "🟡",
+      "name": "Quản trị mở /admin/users",
+      "result": "Đ",
+      "note": "Thấy 8 tài khoản, đủ các cột trạng thái, vai trò, hạn mức AI"
+    },
+    {
+      "id": "T01-21",
+      "level": "🟡",
+      "name": "Tìm kiếm giáo viên",
+      "result": "Đ",
+      "note": "Client search lọc theo name/email, báo \"Không tìm thấy giáo viên nào phù hợp\" khi từ khóa không khớp"
+    },
+    {
+      "id": "T01-22",
+      "level": "🔴",
+      "name": "Khóa tài khoản gv2",
+      "result": "Đ",
+      "note": "Khóa thành công, đăng nhập mới bị từ chối 401"
+    },
+    {
+      "id": "T01-24",
+      "level": "🟡",
+      "name": "Mở khóa tài khoản gv2",
+      "result": "Đ",
+      "note": "Mở khóa thành công, đăng nhập lại bình thường"
+    },
+    {
+      "id": "T01-23",
+      "level": "🔴",
+      "name": "Lưu đề khi tài khoản bị khóa",
+      "result": "Đ",
+      "note": "Phiên bị từ chối 401 khi isActive=false (auth_security.test.ts:77)"
+    },
+    {
+      "id": "T01-25",
+      "level": "🔴",
+      "name": "Cấp lại mật khẩu tạm",
+      "result": "Đ",
+      "note": "Admin reset cấp mật khẩu tạm mới, mustChangePassword đặt lại true (http_auth.test.ts)"
+    },
+    {
+      "id": "T01-26",
+      "level": "🟡",
+      "name": "Đổi hạn mức AI gv2 thành 2",
+      "result": "Đ",
+      "note": "Đổi hạn mức AI thành 2 thành công"
+    },
+    {
+      "id": "T01-27",
+      "level": "🟡",
+      "name": "Cấp tài khoản email trùng",
+      "result": "Đ",
+      "note": "Bị từ chối 400: nêu rõ email đã tồn tại"
+    },
+    {
+      "id": "T01-28",
+      "level": "🟡",
+      "name": "Mở /admin/ai",
+      "result": "Đ",
+      "note": "Thấy Điều phối & Giám sát tải Google Gemini, số lệnh hôm nay và bảng nhật ký"
+    },
+    {
+      "id": "T01-29",
+      "level": "🔴",
+      "name": "Đọc nhật ký /admin/ai không lộ khóa",
+      "result": "Đ",
+      "note": "Không dòng nào chứa giá trị khóa API (tests/http_admin_keys.test.ts:60)"
+    },
+    {
+      "id": "T01-30",
+      "level": "🟡",
+      "name": "Cấp khóa AI cho giáo viên",
+      "result": "Đ",
+      "note": "Mở modal cấp khóa tại /admin/keys"
+    },
+    {
+      "id": "T01-31",
+      "level": "🔴",
+      "name": "Giáo viên mở thẳng /admin/keys",
+      "result": "Đ",
+      "note": "Bị từ chối 403 Forbidden (http_admin_keys.test.ts:40)"
+    },
+    {
+      "id": "T01-32",
+      "level": "🔴",
+      "name": "Cấp khóa cho gv2",
+      "result": "Đ",
+      "note": "Cấp khóa thành công, khóa không hiển thị lại ở bất kỳ đâu (http_admin_keys.test.ts:55)"
+    },
+    {
+      "id": "T01-33",
+      "level": "🔴",
+      "name": "Không chọn giáo viên mà bấm cấp",
+      "result": "Đ",
+      "note": "Bị từ chối 400: yêu cầu chọn ít nhất 1 người nhận (http_admin_keys.test.ts:45)"
+    },
+    {
+      "id": "T01-34",
+      "level": "🔴",
+      "name": "Xem danh sách khóa đã cấp",
+      "result": "Đ",
+      "note": "Chỉ thấy tên khóa, đuôi che, ngày cấp; không thấy khóa đầy đủ (http_admin_keys.test.ts:60)"
+    },
+    {
+      "id": "T01-35",
+      "level": "🔴",
+      "name": "gv2 mở kho khóa AI",
+      "result": "Đ",
+      "note": "Thấy khóa do quản trị cấp, keyMasked rỗng, không thể xóa hay tắt (http_admin_keys.test.ts:72)"
+    },
+    {
+      "id": "T01-36",
+      "level": "🔴",
+      "name": "gv2 dùng AI bằng khóa được cấp",
+      "result": "B",
+      "note": "Bỏ qua kiểm thử AI thật: cần khóa Gemini thật theo quy định tài liệu 11"
+    },
+    {
+      "id": "T01-37",
+      "level": "🔴",
+      "name": "gv1 chưa được cấp dùng AI",
+      "result": "B",
+      "note": "Bỏ qua theo T01-36"
+    },
+    {
+      "id": "T01-38",
+      "level": "🔴",
+      "name": "Hạn mức AI tối đa 2 thao tác",
+      "result": "B",
+      "note": "Bỏ qua theo T01-36"
+    },
+    {
+      "id": "T01-39",
+      "level": "🟡",
+      "name": "gv2 thêm khóa riêng",
+      "result": "Đ",
+      "note": "Thêm và xóa được khóa cá nhân của mình độc lập (http_admin_keys.test.ts:77)"
+    },
+    {
+      "id": "T01-40",
+      "level": "🟡",
+      "name": "Quản trị tắt khóa gv2",
+      "result": "Đ",
+      "note": "PATCH isActive=false tắt khóa thành công (http_admin_keys.test.ts:86)"
+    },
+    {
+      "id": "T01-41",
+      "level": "🟡",
+      "name": "Quản trị bật lại khóa gv2",
+      "result": "Đ",
+      "note": "PATCH isActive=true bật lại khóa thành công (http_admin_keys.test.ts:89)"
+    },
+    {
+      "id": "T01-42",
+      "level": "🟡",
+      "name": "Thêm gv1 vào khóa đã cấp",
+      "result": "Đ",
+      "note": "Thêm gv1 không cần gõ lại khóa API (http_admin_keys.test.ts:63)"
+    },
+    {
+      "id": "T01-43",
+      "level": "🔴",
+      "name": "Thu hồi khóa gv1",
+      "result": "Đ",
+      "note": "Thu hồi của 1 người thành công (http_admin_keys.test.ts:91)"
+    },
+    {
+      "id": "T01-44",
+      "level": "🔴",
+      "name": "Thu hồi của tất cả",
+      "result": "Đ",
+      "note": "Thu hồi toàn bộ grant thành công, xóa bản ghi (http_admin_keys.test.ts:93)"
+    },
+    {
+      "id": "T01-45",
+      "level": "🟡",
+      "name": "Tìm khóa trong hộp khóa, tải xuống, nhật ký",
+      "result": "Đ",
+      "note": "Không nơi nào xuất hiện nguyên văn khóa API (http_admin_keys.test.ts:72)"
+    },
+    {
+      "id": "T01-46",
+      "level": "🟡",
+      "name": "Nhật ký gọi AI của gv2",
+      "result": "Đ",
+      "note": "Nhật ký chỉ ghi actorId, timestamp, model, không lộ apiKey"
+    },
+    {
+      "id": "T02-01",
+      "level": "🟢",
+      "name": "Kho Đề Cá Nhân giao diện chính",
+      "result": "Đ",
+      "note": "Hiển thị Kho Đề Cá Nhân, ô tìm kiếm, bộ lọc Tất cả / Quan trọng / Gần đây, Thư mục"
+    },
+    {
+      "id": "T02-02",
+      "level": "🟡",
+      "name": "Bấm Soạn đề trống mới",
+      "result": "Đ",
+      "note": "Khởi tạo đề trống mới với ID ngẫu nhiên và mở giao diện A4"
+    },
+    {
+      "id": "T02-03",
+      "level": "🟡",
+      "name": "Đổi tên đề thành TEST-Kho-De-01 và Lưu đề",
+      "result": "Đ",
+      "note": "Cập nhật metadata.title và lưu máy chủ thành công"
+    },
+    {
+      "id": "T02-04",
+      "level": "🔴",
+      "name": "Kho đề hiện TEST-Kho-De-01",
+      "result": "Đ",
+      "note": "Đề hiện trong danh sách đề của GV1 với đúng tên TEST-Kho-De-01"
+    },
+    {
+      "id": "T02-05",
+      "level": "🟡",
+      "name": "Tạo thêm 2 đề TEST-Kho-De-02 và 03",
+      "result": "Đ",
+      "note": "Cả 3 đề hiển thị đầy đủ trong kho"
+    },
+    {
+      "id": "T02-06",
+      "level": "🟡",
+      "name": "Tìm kiếm Kho-De và De-02",
+      "result": "Đ",
+      "note": "Ô tìm kiếm lọc danh sách theo từ khóa tên đề"
+    },
+    {
+      "id": "T02-07",
+      "level": "🟡",
+      "name": "Lọc theo môn và khối",
+      "result": "Đ",
+      "note": "Lọc chính xác theo môn và khối lớp của đề"
+    },
+    {
+      "id": "T02-08",
+      "level": "🟡",
+      "name": "Gắn sao đề quan trọng",
+      "result": "Đ",
+      "note": "Gắn sao đưa vào tab Quan trọng; bỏ sao thì đề biến mất khỏi tab này"
+    },
+    {
+      "id": "T02-09",
+      "level": "🟡",
+      "name": "Tab Đã sửa gần đây",
+      "result": "Đ",
+      "note": "Sắp xếp theo updatedAt giảm dần"
+    },
+    {
+      "id": "T02-10",
+      "level": "🟡",
+      "name": "Chuyển đổi dạng lưới và danh sách",
+      "result": "Đ",
+      "note": "Cả hai dạng hiển thị đủ thông tin Tên, Môn, Khối, Thư mục, Số câu, Cập nhật"
+    },
+    {
+      "id": "T02-11",
+      "level": "🟡",
+      "name": "Đổi tên đề thi",
+      "result": "Đ",
+      "note": "PATCH metadata.title cập nhật tên đề tức thời"
+    },
+    {
+      "id": "T02-12",
+      "level": "🟡",
+      "name": "Tạo thư mục TEST-ThuMuc-1",
+      "result": "Đ",
+      "note": "Tạo thư mục mới thành công"
+    },
+    {
+      "id": "T02-13",
+      "level": "🟡",
+      "name": "Di chuyển đề vào thư mục",
+      "result": "Đ",
+      "note": "Đề chuyển vào thư mục đích thành công"
+    },
+    {
+      "id": "T02-14",
+      "level": "🟡",
+      "name": "Chuyển đề về Thư viện gốc",
+      "result": "Đ",
+      "note": "Đề trở về thư viện gốc, folderId = null"
+    },
+    {
+      "id": "T02-15",
+      "level": "🟡",
+      "name": "Tạo thư mục con",
+      "result": "Đ",
+      "note": "Hỗ trợ parentId lồng thư mục"
+    },
+    {
+      "id": "T02-16",
+      "level": "🟡",
+      "name": "Xóa thư mục có đề bên trong",
+      "result": "Đ",
+      "note": "Xóa thư mục chuyển các đề con về thư viện gốc an toàn"
+    },
+    {
+      "id": "T02-17",
+      "level": "🔴",
+      "name": "Chuyển đề vào thùng rác",
+      "result": "Đ",
+      "note": "Đề biến khỏi Tất cả đề thi, chuyển sang tab Thùng rác (isTrashed: true)"
+    },
+    {
+      "id": "T02-18",
+      "level": "🔴",
+      "name": "Khôi phục đề từ thùng rác",
+      "result": "Đ",
+      "note": "Khôi phục đề về danh sách chính nguyên vẹn nội dung"
+    },
+    {
+      "id": "T02-19",
+      "level": "🟡",
+      "name": "Phân trang danh sách đề",
+      "result": "Đ",
+      "note": "Phân trang Trang trước / Trang sau không lặp sót đề"
+    },
+    {
+      "id": "T02-20",
+      "level": "🔴",
+      "name": "GV2 không thấy đề của GV1",
+      "result": "Đ",
+      "note": "Kho đề hoàn toàn cô lập theo tài khoản người dùng"
+    },
+    {
+      "id": "T02-21",
+      "level": "🟢",
+      "name": "Đổi giao diện Sáng / Tối",
+      "result": "Đ",
+      "note": "Lưu theme vào localStorage/html class dark, chuyển đổi mượt mà"
+    },
+    {
+      "id": "T02-22",
+      "level": "🟡",
+      "name": "Nhân bản đề",
+      "result": "Đ",
+      "note": "Tạo bản sao mới với title \"Bản sao của ...\", giữ nguyên câu hỏi"
+    },
+    {
+      "id": "T02-23",
+      "level": "🟡",
+      "name": "Xóa thùng rác từ Kho trên máy chủ",
+      "result": "Đ",
+      "note": "Xóa vĩnh viễn hoặc khôi phục an toàn"
+    },
+    {
+      "id": "T02-24",
+      "level": "🟢",
+      "name": "Thư ký AI",
+      "result": "Đ",
+      "note": "Hiện modal thông báo tính năng đang thử nghiệm, đóng an toàn"
+    }
+  ]
+}

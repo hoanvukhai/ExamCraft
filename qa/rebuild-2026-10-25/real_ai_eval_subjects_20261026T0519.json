@@ -1,0 +1,222 @@
+{
+  "startedAt": "2026-10-26T05:10:24.698Z",
+  "environment": "isolated test server, test database, real provider with temporary keys",
+  "subjects": [
+    {
+      "subject": "tieng_viet",
+      "grade": 3,
+      "status": 429,
+      "error": "Nhà cung cấp đang giới hạn yêu cầu. Kiểm tra quota, tốc độ gửi và billing của project trong AI Studio; chưa thể kết luận gói miễn phí hay trả phí.",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "toan",
+      "grade": 9,
+      "status": 429,
+      "error": "Nhà cung cấp đang giới hạn yêu cầu. Kiểm tra quota, tốc độ gửi và billing của project trong AI Studio; chưa thể kết luận gói miễn phí hay trả phí.",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "tieng_anh",
+      "grade": 8,
+      "status": 429,
+      "error": "Nhà cung cấp đang giới hạn yêu cầu. Kiểm tra quota, tốc độ gửi và billing của project trong AI Studio; chưa thể kết luận gói miễn phí hay trả phí.",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "tin_hoc",
+      "grade": 8,
+      "status": 429,
+      "error": "Nhà cung cấp đang giới hạn yêu cầu. Kiểm tra quota, tốc độ gửi và billing của project trong AI Studio; chưa thể kết luận gói miễn phí hay trả phí.",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "cong_nghe",
+      "grade": 7,
+      "status": 429,
+      "error": "Nhà cung cấp đang giới hạn yêu cầu. Kiểm tra quota, tốc độ gửi và billing của project trong AI Studio; chưa thể kết luận gói miễn phí hay trả phí.",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "khoa_hoc",
+      "grade": 5,
+      "status": 429,
+      "error": "Nhà cung cấp đang giới hạn yêu cầu. Kiểm tra quota, tốc độ gửi và billing của project trong AI Studio; chưa thể kết luận gói miễn phí hay trả phí.",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "khtn",
+      "grade": 7,
+      "status": 429,
+      "error": "Nhà cung cấp đang giới hạn yêu cầu. Kiểm tra quota, tốc độ gửi và billing của project trong AI Studio; chưa thể kết luận gói miễn phí hay trả phí.",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "lich_su_dia_ly",
+      "grade": 7,
+      "status": 429,
+      "error": "Nhà cung cấp đang giới hạn yêu cầu. Kiểm tra quota, tốc độ gửi và billing của project trong AI Studio; chưa thể kết luận gói miễn phí hay trả phí.",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "ngu_van",
+      "grade": 8,
+      "status": 429,
+      "error": "Nhà cung cấp đang giới hạn yêu cầu. Kiểm tra quota, tốc độ gửi và billing của project trong AI Studio; chưa thể kết luận gói miễn phí hay trả phí.",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "giao_duc_cong_dan",
+      "grade": 7,
+      "status": 429,
+      "error": "Nhà cung cấp đang giới hạn yêu cầu. Kiểm tra quota, tốc độ gửi và billing của project trong AI Studio; chưa thể kết luận gói miễn phí hay trả phí.",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "lich_su",
+      "grade": 11,
+      "status": 429,
+      "error": "Nhà cung cấp đang giới hạn yêu cầu. Kiểm tra quota, tốc độ gửi và billing của project trong AI Studio; chưa thể kết luận gói miễn phí hay trả phí.",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "dia_ly",
+      "grade": 10,
+      "status": 429,
+      "error": "Nhà cung cấp đang giới hạn yêu cầu. Kiểm tra quota, tốc độ gửi và billing của project trong AI Studio; chưa thể kết luận gói miễn phí hay trả phí.",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "sinh_hoc",
+      "grade": 11,
+      "status": 429,
+      "error": "Nhà cung cấp đang giới hạn yêu cầu. Kiểm tra quota, tốc độ gửi và billing của project trong AI Studio; chưa thể kết luận gói miễn phí hay trả phí.",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "gdkt_pl",
+      "grade": 10,
+      "status": 429,
+      "error": "Nhà cung cấp đang giới hạn yêu cầu. Kiểm tra quota, tốc độ gửi và billing của project trong AI Studio; chưa thể kết luận gói miễn phí hay trả phí.",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "giao_duc_quoc_phong_an_ninh",
+      "grade": 10,
+      "status": 429,
+      "error": "Nhà cung cấp đang giới hạn yêu cầu. Kiểm tra quota, tốc độ gửi và billing của project trong AI Studio; chưa thể kết luận gói miễn phí hay trả phí.",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "am_nhac",
+      "grade": 6,
+      "status": 429,
+      "error": "Nhà cung cấp đang giới hạn yêu cầu. Kiểm tra quota, tốc độ gửi và billing của project trong AI Studio; chưa thể kết luận gói miễn phí hay trả phí.",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "mi_thuat",
+      "grade": 6,
+      "status": 429,
+      "error": "Nhà cung cấp đang giới hạn yêu cầu. Kiểm tra quota, tốc độ gửi và billing của project trong AI Studio; chưa thể kết luận gói miễn phí hay trả phí.",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "giao_duc_the_chat",
+      "grade": 7,
+      "status": 429,
+      "error": "Nhà cung cấp đang giới hạn yêu cầu. Kiểm tra quota, tốc độ gửi và billing của project trong AI Studio; chưa thể kết luận gói miễn phí hay trả phí.",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "hoat_dong_trai_nghiem",
+      "grade": 4,
+      "status": 429,
+      "error": "Nhà cung cấp đang giới hạn yêu cầu. Kiểm tra quota, tốc độ gửi và billing của project trong AI Studio; chưa thể kết luận gói miễn phí hay trả phí.",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "ngoai_ngu_khac",
+      "grade": 10,
+      "status": 429,
+      "error": "Nhà cung cấp đang giới hạn yêu cầu. Kiểm tra quota, tốc độ gửi và billing của project trong AI Studio; chưa thể kết luận gói miễn phí hay trả phí.",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "tieng_dan_toc",
+      "grade": 3,
+      "status": 429,
+      "error": "Nhà cung cấp đang giới hạn yêu cầu. Kiểm tra quota, tốc độ gửi và billing của project trong AI Studio; chưa thể kết luận gói miễn phí hay trả phí.",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    }
+  ],
+  "finishedAt": "2026-10-26T05:19:19.135Z",
+  "providerCalls": 294,
+  "providerRefusals": 294,
+  "refusalStatuses": {
+    "429": 294
+  }
+}

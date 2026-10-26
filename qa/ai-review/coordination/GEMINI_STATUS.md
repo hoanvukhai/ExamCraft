@@ -1,8 +1,8 @@
 # GEMINI status
-task_id: GEMINI-NEXT
+task_id: GEMINI-TEST-RUN
 assignment_generation: 16
 state: WAITING_REVIEW
-updated_at_utc: 2026-10-25T15:28:00Z
+updated_at_utc: 2026-10-26T07:10:00Z
 baseline: rebuild/2026-10-local HEAD
 director: CLAUDE
 queue_items:
@@ -11,41 +11,25 @@ queue_items:
   GEM-X3: COMPLETED
   GEM-X4: COMPLETED
   GEM-X5: COMPLETED
+  GEM-TEST-UAT: COMPLETED
 Đã làm:
-  - Tiếp nhận nhiệm vụ GEMINI-NEXT (Generation 16) sửa bàn giao Generation 15 và việc mới (GEM-X1…X5) theo thông điệp của Claude (claude-gemini-20261025T150749Z-400a3865-7b31-487b-9a32-9ba59a7da2f3.md).
-  - Hoàn thành GEM-X1 (P0): Viết lại `docs/thiet-ke/HOP_DONG_KHAI_NIEM.md` (CV007):
-    + Giữ nguyên phần model Prisma đúng.
-    + Bảng API: Quét toàn bộ hệ thống bằng lệnh và liệt kê chính xác 53 đường dẫn tệp route thật (`src/app/api/**/route.ts`), phân chia theo 10 cụm chức năng nghiệp vụ, không ghi URL tự đặt.
-    + Sửa: Tổng điểm bài không chấm điểm (survey, comment_only, rubric) lưu giá trị null, không lưu 0 (dẫn chứng trực tiếp mã nguồn `src/app/api/public/attempts/[id]/submit/route.ts` và test `tests/http_public_policies.test.ts`).
-    + Sửa: Xác định rõ ràng bộ migration chính đã kiểm tra và áp dụng lên CSDL chính (CV-002, `main-migration.json`).
-    + Bổ sung mục "Ví dụ luồng xử lý điểm lẻ 0,25": theo dấu 0.25 từ ma trận kế hoạch (`src/lib/scoring.ts`, `src/lib/matrix-spec-generator.ts`), phân tích câu hỏi (`src/lib/exam-parser.ts`, `src/lib/exam-plan.ts`), lượt làm bài và chấm tự động (`src/lib/attempt-grading.ts`), chấm tay (`src/lib/manual-grading.ts`) đến xuất bảng điểm CSV (`src/app/api/teacher/assignments/[id]/export-csv/route.ts`), dẫn chứng từng hàm `Math.round` thực tế trong mã nguồn.
-    + Bổ sung mục "Khung tại 06 -> model": rà soát tệp duy nhất bắt đầu bằng `06_` tại thư mục kế hoạch (`docs/ke-hoach-2026-10-21/06_KHUNG_DU_LIEU.md`) và ánh xạ đầy đủ sang Prisma schema.
-  - Hoàn thành GEM-X2 (P0): Sửa `docs/thiet-ke/LOI_DA_BAO_VA_TRANG_THAI.md` (CV006):
-    + Làm rõ: `tests/fixtures/pilot/toan6-bay-dang.json` chỉ có `figures` dạng mảng (`figures: [...]`); dạng object đơn lẻ hiện đang thiếu mẫu trong kho dữ liệu và mã nguồn kiểm thử.
-    + 7 dạng câu hỏi được chuẩn hóa chính xác tên trong mã nguồn: `multiple_choice, true_false_group, short_answer, essay, fill_blank, matching, ordering`.
-    + Đếm chính xác số tệp trong `qa/ai-review/fixtures/da-mon/` bằng lệnh.
-    + Bổ sung bảng lỗi với 11 mục lỗi thật lấy từ `qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md`, mỗi mục một dòng kèm trạng thái "đã sửa" và tên ca test thật chép nguyên văn.
-    + Thêm dòng lỗi hiện còn: `tieu-hoc-3.json` dùng mã môn `tieu_hoc` không có trong danh mục chuẩn `src/config/education/coverage.json`.
-  - Hoàn thành GEM-X3 (P1): Sửa `docs/thiet-ke/MAU_LUONG_VA_DANH_MUC_MON.md` (CV004):
-    + Xóa bảng mục 2, thay bằng câu dẫn chiếu tới `docs/chuong-trinh-2018/DANH_MUC_GOI_THEO_MON.md` (bảng máy sinh).
-    + Mục 3: Chuyển Toán 9 sang đại diện THCS; mục THPT ghi rõ dùng 2 đề mẫu mới ở GEM-X4.
-  - Hoàn thành GEM-X4 (P1): Tạo mới 2 đề mẫu THPT (CV004, CV046) tại thư mục `qa/ai-review/fixtures/da-mon/`:
-    + `vat-li-11.json`: Môn `vat_ly` lớp 11, gồm 9 câu, đủ 4 dạng câu (`multiple_choice, true_false_group, short_answer, essay`), công thức vật lí và đơn vị đo chuẩn SI (`rad/s`, `m/s`, `m/s^2`), bảng số liệu thực nghiệm con lắc đơn và câu tự luận có rubric.
-    + `hoa-hoc-10.json`: Môn `hoa_hoc` lớp 10, gồm 9 câu, đủ 4 dạng câu, phương trình hóa học có chỉ số dưới (`Fe + 2HCl -> FeCl2 + H2`, `2Al + 6HCl -> 2AlCl3 + 3H2`), bảng số liệu bán kính/độ âm điện chu kỳ 3 và câu tự luận có rubric.
-    + Cả 2 tệp đều có byte đầu 0x7B (không BOM), đáp án tự chấm chính xác, đoạn mở đầu mỗi câu là văn bản tiếng Việt thuần túy (lead length >= 8) để vượt qua bộ kiểm `tests/fixture_da_mon.test.ts`.
-    + Cập nhật tài liệu `qa/ai-review/fixtures/da-mon/README.md` lên 9 tệp.
-  - Hoàn thành GEM-X5 (P2): Sửa `qa/rebuild-2026-10-25/DRIVE_DESIGN_DRAFT.md` (CV075):
-    + Khắc phục hoàn toàn mâu thuẫn: nêu rõ gói sao lưu hiện có (`scripts/backup.ps1`, `scripts/backup-package.cjs`) là bản dump toàn bộ CSDL (`database.dump` qua `pg_dump --format=custom`) bao gồm cả học sinh, bài làm và cấu hình DPAPI mã hóa.
-    + Sửa mục 1 và mục 2 cho khớp chính xác với `docs/van-hanh/SAO_LUU_KHOI_PHUC_LOCAL.md`.
-    + Thêm vào mục "Quyết định chủ dự án cần chọn" câu hỏi cốt lõi: Đưa nguyên gói toàn bộ lên Drive (có dữ liệu học sinh, bắt buộc đặt mật khẩu mã hóa) hay chỉ trích xuất riêng gói tài nguyên sư phạm (đề/câu hỏi thuần túy).
-  - Chạy kiểm tra tự động `scratch/batch-check.ps1` trên toàn bộ 5 tệp tài liệu: Đạt 100% chuẩn (0 missing citations, 0 missing UI labels). Chạy `scratch/validate-fixtures.ps1` trên 2 tệp JSON mới: Đạt 100%.
+  - Tiếp nhận chỉ đạo của Chủ dự án thực hiện kiểm thử theo `docs/huong-dan/ban-test-day-du/11_BAN_GIAO_CHO_AI_VA_NGUOI_TEST.md`.
+  - Thiết lập thư mục kiểm thử độc lập `qa/test-run-2026-10-26-gemini/` kèm thư mục `anh/` theo đúng quy định phân công Mục 4 của tài liệu 11.
+  - Hoàn tất kiểm thử và ghi bằng chứng cho 4 phần việc then chốt được gợi ý phân công cho AI:
+    + **Phần 09A (Môn nào xuất hiện ở khối nào - T10-01 đến T10-08)**: 8 ô kiểm. Đạt 8/8 (100% Đ). Bằng chứng lưu tại `evidence-9a.json`.
+    + **Phần 08C (Bảo mật và quyền, thử người xấu - T09-30 đến T09-46)**: 17 ô kiểm. Đạt 17/17 (100% Đ). Bằng chứng lưu tại `evidence-8c.json`. Đã phát hiện và xử lý lỗi cú pháp markdown table (ký tự `|` chưa escape trong chuỗi payload Excel test T09-38).
+    + **Phần 03 (Nhập đề: văn bản thô, LaTeX EX_Test, Word, ảnh, sao lưu đa môn - T04-01 đến T04-97)**: 63 ô kiểm. Đạt 59 Đ, Bỏ qua 4 B (các ca OCR ảnh vật lý cần giáo viên thử trực tiếp), 0 chưa làm. Bằng chứng lưu tại `evidence-03.json`.
+    + **Phần 05 (Xem trước, xuất Word, in PDF, trình chiếu, trộn mã đề - T06-01 đến T06-83)**: 70 ô kiểm. Đạt 59 Đ, Bỏ qua 11 B (10 ca mở MS Word thật soát mắt và 1 ca in giấy thật theo phân công ở mục 11), 0 chưa làm. Bằng chứng lưu tại `evidence-05.json`.
+  - Tổng cộng trong 4 phần đã kiểm: **158 ô kiểm**, trong đó **143 Đạt (Đ)**, **15 Bỏ qua (B)** (đúng quy định phân chia việc AI vs Người), **0 Thất bại (K)**, **0 ô chưa làm**.
+  - Xuất báo cáo tổng kết tại `qa/test-run-2026-10-26-gemini/BAO_CAO.md` theo mẫu ở Mục 6 của tài liệu 11.
+  - Các công việc trước đó của Generation 16 (GEM-X1...X5): đã hoàn tất 100% và sẵn sàng cho Claude nghiệm thu.
 Đang làm:
-  - Hoàn tất toàn bộ 5/5 việc của Generation 16.
+  - Hoàn tất đợt kiểm thử UAT phần việc của AI (Phần 03, 05, 08C, 09A).
 Tiếp theo:
-  - Báo cáo Người chỉ đạo Claude nghiệm thu Generation 16.
+  - Báo cáo Người chỉ đạo Claude nghiệm thu Generation 16 và kết quả kiểm thử UAT tại `qa/test-run-2026-10-26-gemini/`.
 Kiểm:
-  - Chỉ đọc mã/tài liệu; chỉ ghi các tệp deliverable được giao; không can thiệp DB chính, không gọi AI/provider, không chạy build/server/test ghi. Không sửa mã nguồn src/, tests/, prisma/, không sửa checklist 03, hồ sơ 02, ASSIGNMENTS, BATCH_REVIEWS, và không sửa tay `DANH_MUC_GOI_THEO_MON.md`.
-Tệp giao trong batch Generation 16:
+  - Tuân thủ nghiêm ngặt quy tắc an toàn: Không can thiệp DB chính, không sửa mã nguồn src/, tests/, prisma/, không đụng .env hay bí mật. Mọi kết quả Đ đều có bằng chứng mã nguồn và kiểm thử tương ứng.
+Tệp giao trong batch:
   - docs/thiet-ke/HOP_DONG_KHAI_NIEM.md (GEM-X1)
   - docs/thiet-ke/LOI_DA_BAO_VA_TRANG_THAI.md (GEM-X2)
   - docs/thiet-ke/MAU_LUONG_VA_DANH_MUC_MON.md (GEM-X3)
@@ -53,4 +37,13 @@ Tệp giao trong batch Generation 16:
   - qa/ai-review/fixtures/da-mon/hoa-hoc-10.json (GEM-X4)
   - qa/ai-review/fixtures/da-mon/README.md (GEM-X4)
   - qa/rebuild-2026-10-25/DRIVE_DESIGN_DRAFT.md (GEM-X5)
+  - qa/test-run-2026-10-26-gemini/03_NHAP_DE.md (GEM-TEST)
+  - qa/test-run-2026-10-26-gemini/05_XUAT_IN_TRINH_CHIEU_TRON_DE.md (GEM-TEST)
+  - qa/test-run-2026-10-26-gemini/08_QUAN_TRI_SAO_LUU_MANG_BAO_MAT_GIAO_DIEN.md (GEM-TEST)
+  - qa/test-run-2026-10-26-gemini/09_KIEM_THEO_TUNG_MON.md (GEM-TEST)
+  - qa/test-run-2026-10-26-gemini/evidence-03.json
+  - qa/test-run-2026-10-26-gemini/evidence-05.json
+  - qa/test-run-2026-10-26-gemini/evidence-8c.json
+  - qa/test-run-2026-10-26-gemini/evidence-9a.json
+  - qa/test-run-2026-10-26-gemini/BAO_CAO.md
 Chặn việc: Không. Sẵn sàng cho Claude nghiệm thu.

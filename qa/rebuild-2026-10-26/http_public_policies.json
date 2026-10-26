@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-10-26T06:51:26.829Z",
+  "checks": [
+    "start-race-max-attempts-and-capability-isolation",
+    "reveal-never-after-close-immediate-and-idempotent-redaction",
+    "strict-draft-deadline-and-late-saved-only-finalization",
+    "archive-revokes-public-capability-without-deleting-data",
+    "nonnumeric-null-storage-monitor-and-csv"
+  ],
+  "cleanupComplete": true,
+  "status": "PASS",
+  "realAiCalls": false,
+  "environment": "isolated localhost:3117"
+}
