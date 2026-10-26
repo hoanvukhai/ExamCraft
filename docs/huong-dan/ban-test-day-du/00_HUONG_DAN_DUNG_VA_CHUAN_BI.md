@@ -106,3 +106,4 @@ Khi chỉ có một người, làm được phần 01, 02, 03, 05, 08 (trừ và
 | [08](08_QUAN_TRI_SAO_LUU_MANG_BAO_MAT_GIAO_DIEN.md) | Quản trị, sao lưu/khôi phục, mất mạng, bảo mật, giao diện |
 | [09](09_KIEM_THEO_TUNG_MON.md) | Kiểm riêng từng môn học và khối lớp |
 | [10](10_BANG_TONG_HOP_VA_BAO_LOI.md) | Bảng tổng hợp kết quả và mẫu báo lỗi |
+| [11](11_BAN_GIAO_CHO_AI_VA_NGUOI_TEST.md) | Chia việc cho người và các AI, môi trường an toàn, bằng chứng, báo cáo |

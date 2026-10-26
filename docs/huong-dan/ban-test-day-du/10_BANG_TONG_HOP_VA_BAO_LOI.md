@@ -17,6 +17,8 @@
 | 09 | Từng môn | | | | | | | |
 | | **Cộng** | | | | | | | |
 
+Có thể để máy đếm thay: `node scripts/tally-test-results.cjs <thư mục đã điền>` in số Đ, K, B và liệt kê các dòng không đạt (🔴 trước).
+
 ## 10B. Cách đọc kết quả
 
 - **Có bất kỳ dòng 🔴 K** → có lỗi chặn (quyền, mất dữ liệu, đáp án, điểm): sửa xong mới dùng cho lớp thật.
