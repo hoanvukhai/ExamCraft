@@ -14,7 +14,7 @@ const MAX_BATCHES = 10;
 export const markerPositions = (text: string) => [...text.matchAll(MARKER)].map(match => match.index ?? 0);
 
 export function planImportBatches(text: string, options: { maxChars?: number; maxQuestions?: number } = {}): ImportBatchPlan {
-  const maxChars = options.maxChars ?? 14000, maxQuestions = options.maxQuestions ?? 25;
+  const maxChars = options.maxChars ?? 9000, maxQuestions = options.maxQuestions ?? 15;
   const starts = markerPositions(text);
   if (starts.length < 2 || (starts.length <= maxQuestions && text.length <= maxChars)) return { batches: [{ text, expected: starts.length, first: starts.length ? 1 : 0, last: starts.length }], expected: starts.length };
   const preamble = text.slice(0, starts[0]).trim();
@@ -40,7 +40,7 @@ export async function importInBatches(rawText: string, run: (text: string) => Pr
     // A part the model returned in an unusable shape is asked once more, then reported while the other parts are kept.
     const attempt = async () => { try { return await run(batch.text); } catch (error) { if (plan.batches.length > 1 && error instanceof DocumentValidationError) { failures.push(error.message); return null; } throw error; } };
     let result = await attempt() ?? { questions: [], passages: [], warnings: [] };
-    if (batch.expected > 1 && result.questions.length < batch.expected) {
+    for (let again = 0; again < 2 && batch.expected > 1 && result.questions.length < batch.expected; again++) {
       const retry = await attempt();
       if (retry && retry.questions.length > result.questions.length) result = retry;
     }

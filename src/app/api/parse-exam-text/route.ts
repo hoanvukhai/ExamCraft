@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
           userId: currentUser.id,
           endpoint: 'exam.parse', signal: req.signal }
       );
-      return parseImportedDocument(parseProviderJson(responseText), 'Văn bản nhập', typeof body.fileName === 'string' ? body.fileName : undefined);
+      return parseImportedDocument(parseProviderJson(responseText), 'Văn bản nhập', typeof body.fileName === 'string' ? body.fileName : undefined, { keepUnlinked: true });
     }, 'văn bản');
     return NextResponse.json({ success: true, ...imported, totalCount: imported.questions.length });
   } catch (error: unknown) {

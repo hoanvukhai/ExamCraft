@@ -28,3 +28,23 @@ Chạy bằng `scripts/real-ai-eval.ts` và `scripts/real-ai-eval-import.ts` tr�
 - Chưa có tỷ lệ giáo viên sửa (cần dùng thật một thời gian); do đó chưa đủ để so sánh hai phiên bản AI.
 - Tệp nhập Word chưa giữ hình ảnh trong Word (cảnh báo nhắc đối chiếu).
 - Báo cáo thô: `real_ai_eval_run3.json`, `real_ai_eval_run4.json` (hai lượt sau khi sửa đọc JSON). Báo cáo các lượt nhập Word/ảnh thành công không được giữ lại do bị ghi đè bởi lượt hết hạn mức; cần chạy lại khi hạn mức hồi.
+
+## Bổ sung 26/10 (sau khi hạn mức hồi): nhập đề dài và quét 21 môn
+
+Chạy trên máy chủ thử riêng ở cổng 3120 (không chạm cổng 3117 của người test). Báo cáo thô: `real_ai_eval_import_20261026T0712.json`, `real_ai_eval_subjects_20261026T0722.json`.
+
+| Phần | Kết quả |
+|---|---|
+| Word 20 câu có công thức | 20/20 câu, 20/20 giữ công thức, không trùng, không "human" |
+| Ảnh đề in 3 câu | 3/3 câu, không tự điền đáp án |
+| **Word 60 câu có ngữ liệu** | **Chỉ 38/60 câu.** Chia 3 phần đúng thứ tự; phần 2 (câu 26–50) AI chỉ trả 2/25; hệ thống **báo đúng** "nhận 38/60... phần 2 (câu 26–50) chỉ nhận 2/25" và báo 2 câu trùng; không bịa câu. Một phần còn bị loại cả khối vì AI nhắc ngữ liệu không trả về |
+| Sinh đề 21 môn | 18/21 môn nhận đúng kế hoạch (200 và đủ số câu từng dạng). 3/21 bị từ chối 422 (Mĩ thuật, Giáo dục thể chất, Hoạt động trải nghiệm: chế độ nhận xét, AI viết `null` cho điểm/đáp án) |
+| Giải mù (1 câu mỗi dạng) | 20/22 trùng. Hai lệch: Sinh học 11 (**AI sinh sai đáp án: "cơ quan hấp thụ nước và khoáng" khóa A = Lá cây, đúng là Rễ**; giải mù bắt được) và Tiếng Anh ("did not visit / didn't visit" so với "didn't visit") |
+| "Đã kiểm" | Không câu nào của 21 môn bị gắn "đã kiểm bởi giáo viên" |
+
+Đã sửa trong mã (có test, **chưa dựng lại bản build** vì máy chủ thử đang giữ cho người test):
+1. Nhập đề dài: phần nhỏ hơn (tối đa 15 câu hoặc 9.000 ký tự), thử lại phần ngắn tối đa hai lần; câu nhắc ngữ liệu mà AI không trả về được **giữ** (bỏ liên kết, có cảnh báo) thay vì loại cả phần.
+2. Sinh đề: `null` do AI viết được coi là không có trường đó (sửa lỗi 422 ở môn nhận xét).
+3. Đối chiếu đáp án: AI liệt kê hai cách viết cách nhau " / " thì khớp nếu một cách là đáp án chấp nhận.
+
+Cần: dựng lại bản build, chạy lại `real-ai-eval-import.ts` (đề 60 câu) và `real-ai-eval-subjects.ts` với `EVAL_ONLY=mi_thuat,giao_duc_the_chat,hoat_dong_trai_nghiem`.

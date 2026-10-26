@@ -96,7 +96,7 @@ ${part}
         return response.text || '{}';
       }, { userId: currentUser.id, endpoint: 'parse.docx', signal: req.signal });
       if (!aiResult || aiResult === '{}') throw new ApiError(502, 'AI không thể phân tích văn bản từ file Word.', 'AI_BAD_OUTPUT');
-      return parseImportedDocument(parseProviderJson(aiResult), 'Word (.docx)', fileName);
+      return parseImportedDocument(parseProviderJson(aiResult), 'Word (.docx)', fileName, { keepUnlinked: true });
     }, 'tài liệu Word');
     const imported = attachWordImages(parsed, withImages.images, withImages.skipped);
     imported.warnings.unshift(withMath.equations ? `Đã đọc ${withMath.equations} công thức Word thành LaTeX; hình ảnh và bảng phức tạp cần đối chiếu với tệp gốc.` : 'Luồng Word hiện đọc văn bản; ảnh và bảng phức tạp cần đối chiếu với tệp gốc và bổ sung thủ công.');

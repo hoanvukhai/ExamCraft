@@ -1,0 +1,1113 @@
+{
+  "startedAt": "2026-10-26T07:12:53.182Z",
+  "environment": "isolated test server, test database, real provider with temporary keys",
+  "subjects": [
+    {
+      "subject": "tieng_viet",
+      "grade": 3,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "A",
+          "solved": "A",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        },
+        {
+          "type": "short_answer",
+          "keyed": "học sinh, cô giáo",
+          "solved": "học sinh, cô giáo",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Trong các từ sau, từ nào là từ chỉ sự vật?",
+          "key": "A",
+          "choices": [
+            "A. Con mèo",
+            "B. Chạy nhảy",
+            "C. Vui vẻ",
+            "D. Nhanh nhẹn"
+          ],
+          "tf": []
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Câu nào dưới đây đặt đúng vị trí dấu phẩy dùng để liệt kê?",
+          "key": "A",
+          "choices": [
+            "A. Hoa, lê, táo là những loại quả em thích.",
+            "B. Hoa lê, táo là, những loại quả em thích.",
+            "C. Hoa lê táo, là những loại quả em thích.",
+            "D. Hoa, lê táo là những, loại quả em thích."
+          ],
+          "tf": []
+        },
+        {
+          "type": "short_answer",
+          "content": "Em hãy tìm và ghi lại 2 từ chỉ sự vật có trong câu sau: 'Học sinh đang nghe cô giáo giảng bài.'",
+          "key": "học sinh, cô giáo",
+          "choices": [],
+          "tf": []
+        }
+      ]
+    },
+    {
+      "subject": "toan",
+      "grade": 9,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "A",
+          "solved": "A",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        },
+        {
+          "type": "short_answer",
+          "keyed": "2",
+          "solved": "2",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Điều kiện xác định của biểu thức $\\sqrt{x - 3}$ là:",
+          "key": "A",
+          "choices": [
+            "A. $x \\ge 3$",
+            "B. $x > 3$",
+            "C. $x \\le 3$",
+            "D. $x < 3$"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Cho hàm số bậc nhất $y = (m - 2)x + 1$. Hàm số này đồng biến trên $\\mathbb{R}$ khi và chỉ khi:",
+          "key": "A",
+          "choices": [
+            "A. $m > 2$",
+            "B. $m < 2$",
+            "C. $m \\ne 2$",
+            "D. $m \\ge 2$"
+          ]
+        },
+        {
+          "type": "true_false_group",
+          "content": "Xét tính đúng hay sai của các phát biểu sau về căn bậc hai và hàm số bậc nhất:",
+          "tf": [
+            "a:false",
+            "b:true",
+            "c:true",
+            "d:true"
+          ]
+        },
+        {
+          "type": "short_answer",
+          "content": "Tính giá trị của biểu thức $A = (\\sqrt{18} - \\sqrt{8}) \\cdot \\sqrt{2}$.",
+          "key": "2"
+        }
+      ]
+    },
+    {
+      "subject": "tieng_anh",
+      "grade": 8,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "B",
+          "solved": "B",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        },
+        {
+          "type": "short_answer",
+          "keyed": "didn't visit",
+          "solved": "did not visit / didn't visit",
+          "isMatch": false,
+          "recommendation": "match",
+          "status": 200
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Choose the correct answer to complete the sentence:\nI ________ to Ha Noi three times.",
+          "key": "B",
+          "choices": [
+            "A. went",
+            "B. have been",
+            "C. go",
+            "D. has been"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Choose the correct answer to complete the sentence:\nYesterday, my mother ________ a delicious cake for my birthday.",
+          "key": "C",
+          "choices": [
+            "A. makes",
+            "B. has made",
+            "C. made",
+            "D. is making"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Choose the correct answer to complete the sentence:\nThey ________ in this city since 2015.",
+          "key": "B",
+          "choices": [
+            "A. lived",
+            "B. have lived",
+            "C. are living",
+            "D. live"
+          ]
+        },
+        {
+          "type": "short_answer",
+          "content": "Give the correct form of the verb in brackets:\nShe (not visit) ________ her old teacher last Sunday.",
+          "key": "didn't visit"
+        }
+      ]
+    },
+    {
+      "subject": "tin_hoc",
+      "grade": 8,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "B",
+          "solved": "B",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        },
+        {
+          "type": "short_answer",
+          "keyed": "10",
+          "solved": "10",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Trong ngôn ngữ lập trình Python, đâu là tên biến hợp lệ?",
+          "key": "B",
+          "choices": [
+            "A. 1abc",
+            "B. my_var",
+            "C. my-var",
+            "D. class"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Cho đoạn chương trình Python sau:\n\nx = 10\nif x > 5:\n    print(\"A\")\nelse:\n    print(\"B\")\n\nKết quả in ra màn hình là gì?",
+          "key": "A",
+          "choices": [
+            "A. A",
+            "B. B",
+            "C. AB",
+            "D. Không in ra gì cả"
+          ]
+        },
+        {
+          "type": "true_false_group",
+          "content": "Xét các phát biểu sau về biến và câu lệnh điều kiện trong Python:",
+          "tf": [
+            "a:false",
+            "b:true",
+            "c:true",
+            "d:false"
+          ]
+        },
+        {
+          "type": "short_answer",
+          "content": "Cho đoạn chương trình Python sau:\n\nx = 7\nif x % 2 == 0:\n    y = x * 2\nelse:\n    y = x + 3\n\nHãy cho biết giá trị của biến y sau khi thực hiện đoạn lệnh trên.",
+          "key": "10"
+        }
+      ]
+    },
+    {
+      "subject": "cong_nghe",
+      "grade": 7,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "A",
+          "solved": "A",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Giống cây trồng có vai trò quan trọng như thế nào trong trồng trọt?",
+          "key": "A",
+          "choices": [
+            "A. Quyết định đến năng suất và chất lượng nông sản",
+            "B. Thay thế hoàn toàn phân bón và nước tưới",
+            "C. Làm gia tăng sự phát triển của cỏ dại",
+            "D. Không ảnh hưởng đến thời gian thu hoạch"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Mục đích chính của việc ngâm ủ hạt giống trước khi gieo là gì?",
+          "key": "A",
+          "choices": [
+            "A. Giúp hạt hút đủ nước, kích thích hạt nảy mầm nhanh và đều",
+            "B. Làm tăng kích thước của hạt giống lên gấp nhiều lần",
+            "C. Làm cho vỏ hạt giống đổi màu sắc",
+            "D. Thay thế cho việc làm đất trước khi gieo"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Khi gieo hạt giống, vì sao không nên lấp một lớp đất quá dày lên trên hạt?",
+          "key": "A",
+          "choices": [
+            "A. Vì hạt sẽ thiếu không khí để hô hấp và mầm khó vươn lên khỏi mặt đất",
+            "B. Vì hạt sẽ hút quá nhiều dinh dưỡng từ đất sâu",
+            "C. Vì hạt sẽ bị côn trùng trong lòng đất ăn mất",
+            "D. Vì lấp đất dày sẽ làm tốn nhiều công sức lao động"
+          ]
+        }
+      ]
+    },
+    {
+      "subject": "khoa_hoc",
+      "grade": 5,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "A",
+          "solved": "A",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        },
+        {
+          "type": "short_answer",
+          "keyed": "Sự biến đổi hóa học",
+          "solved": "Sự biến đổi hóa học",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Hiện tượng nào sau đây là ví dụ về sự biến đổi lý học?",
+          "key": "A",
+          "choices": [
+            "A. Nước đá tan chảy thành nước lỏng",
+            "B. Đốt cháy một que diêm",
+            "C. Đun đường trên bếp đến khi khét đen",
+            "D. Đinh sắt để ngoài không khí bị gỉ"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Sự biến đổi hóa học khác với sự biến đổi lý học ở điểm quan trọng nào sau đây?",
+          "key": "B",
+          "choices": [
+            "A. Có sự thay đổi về hình dạng của chất",
+            "B. Có sự tạo thành chất mới có tính chất khác chất ban đầu",
+            "C. Có sự chuyển thể từ thể rắn sang thể lỏng",
+            "D. Không làm thay đổi màu sắc của chất"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Trong các trường hợp dưới đây, trường hợp nào thể hiện sự biến đổi hóa học?",
+          "key": "C",
+          "choices": [
+            "A. Xé nhỏ một tờ giấy trắng",
+            "B. Hòa tan muối ăn vào nước thu được nước muối",
+            "C. Đốt cháy một tờ giấy thành tro bụi",
+            "D. Dây đồng bị uốn cong"
+          ]
+        },
+        {
+          "type": "short_answer",
+          "content": "Khi xi-rô đường được đun nóng quá nhiệt độ sôi cho đến khi bị cháy đen và có mùi khét, đây là sự biến đổi lý học hay sự biến đổi hóa học?",
+          "key": "Sự biến đổi hóa học"
+        }
+      ]
+    },
+    {
+      "subject": "khtn",
+      "grade": 7,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "B",
+          "solved": "B",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        },
+        {
+          "type": "short_answer",
+          "keyed": "4",
+          "solved": "4 km",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Trong hạt nhân nguyên tử, loại hạt nào sau đây không mang điện tích?",
+          "key": "B",
+          "choices": [
+            "A. Proton",
+            "B. Neutron",
+            "C. Electron",
+            "D. Vỏ nguyên tử"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Khối lượng phân tử của nước (H₂O) là bao nhiêu? Biết khối lượng nguyên tử của H = 1 amu, O = 16 amu.",
+          "key": "B",
+          "choices": [
+            "A. 17 amu",
+            "B. 18 amu",
+            "C. 33 amu",
+            "D. 34 amu"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Một ô tô chuyển động quãng đường 60 km trong thời gian 1,5 giờ. Tốc độ chuyển động của ô tô là:",
+          "key": "A",
+          "choices": [
+            "A. 40 km/h",
+            "B. 90 km/h",
+            "C. 45 km/h",
+            "D. 50 km/h"
+          ]
+        },
+        {
+          "type": "short_answer",
+          "content": "Một học sinh đi xe đạp từ nhà đến trường với tốc độ không đổi 12 km/h, thời gian đi hết 20 phút. Quãng đường từ nhà bạn đó đến trường dài bao nhiêu kilômét?",
+          "key": "4"
+        }
+      ]
+    },
+    {
+      "subject": "lich_su_dia_ly",
+      "grade": 7,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "A",
+          "solved": "A",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Trong cuộc kháng chiến chống quân xâm lược Mông Cổ lần thứ nhất (năm 1258), quân dân nhà Trần đã thực hiện kế sách đánh giặc nào?",
+          "key": "A",
+          "choices": [
+            "A. Thực hiện kế sách \"Vườn không nhà trống\"",
+            "B. Chủ động tiến công sang đất địch để tự vệ",
+            "C. Thực hiện kế sách \"Chờ giặc mệt mỏi rồi mới đánh\" trên sông Như Nguyệt",
+            "D. Xây dựng hệ thống đồn lũy kiên cố quanh kinh thành Thăng Long"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Nguyên nhân chủ yếu khiến châu Á có đầy đủ các đới khí hậu trên Trái Đất là do:",
+          "key": "A",
+          "choices": [
+            "A. Lãnh thổ trải dài từ vùng cực Bắc đến vùng Xích đạo",
+            "B. Châu Á có địa hình chủ yếu là đồng bằng thấp",
+            "C. Châu Á bị bao bọc bởi bốn đại dương lớn",
+            "D. Châu Á nằm hoàn toàn ở bán cầu Nam"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Kiểu khí hậu gió mùa ở châu Á phân bố chủ yếu ở những khu vực nào?",
+          "key": "A",
+          "choices": [
+            "A. Đông Á, Nam Á và Đông Nam Á",
+            "B. Bắc Á, Trung Á và Tây Nam Á",
+            "C. Tây Á, Nam Á và Bắc Á",
+            "D. Trung Á, Đông Á và Bắc Á"
+          ]
+        },
+        {
+          "type": "true_false_group",
+          "content": "Xét tính đúng/sai của các nhận định sau về thời Trần và khí hậu châu Á:",
+          "tf": [
+            "a:true",
+            "b:false",
+            "c:true",
+            "d:false"
+          ]
+        }
+      ]
+    },
+    {
+      "subject": "ngu_van",
+      "grade": 8,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "B",
+          "solved": "B",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Đọc đoạn văn sau và trả lời câu hỏi:\n\"Mặt trời nhô lên từ phía đông như một quả cầu lửa khổng lồ, tỏa những tia nắng vàng ươm xuống mặt biển bao la. Những làn sóng nhấp nhô, thì thầm vỗ vào bờ cát trắng tinh. Cảnh biển buổi sáng thật trong lành và bình yên.\"\n\nĐoạn văn trên tả cảnh gì?",
+          "key": "B",
+          "choices": [
+            "A. Cảnh biển buổi hoàng hôn",
+            "B. Cảnh biển buổi sáng sớm",
+            "C. Cảnh núi rừng ban mai",
+            "D. Cảnh cánh đồng quê mùa thu"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Trong câu văn: \"Mặt trời nhô lên từ phía đông như một quả cầu lửa khổng lồ\", tác giả đã sử dụng biện pháp tu từ nào?",
+          "key": "B",
+          "choices": [
+            "A. Nhân hóa",
+            "B. So sánh",
+            "C. Ẩn dụ",
+            "D. Liệt kê"
+          ]
+        },
+        {
+          "type": "essay",
+          "content": "Chỉ ra câu văn có sử dụng biện pháp tu từ nhân hóa trong đoạn văn trên và phân tích ngắn gọn tác dụng của biện pháp tu từ đó (viết đoạn văn khoảng 3 - 5 câu)."
+        }
+      ]
+    },
+    {
+      "subject": "giao_duc_cong_dan",
+      "grade": 7,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "A",
+          "solved": "A",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Tôn trọng sự thật được hiểu là gì?",
+          "key": "A",
+          "choices": [
+            "A. Coi trọng sự thật, lên tiếng bảo vệ sự thật, trung thực, khách quan",
+            "B. Luôn nói theo ý muốn của số đông để giữ hòa khí",
+            "C. Che giấu khuyết điểm của bản thân và người thân",
+            "D. Chỉ nói sự thật khi cảm thấy có lợi cho bản thân"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Đối tượng nào sau đây thuộc nhóm di sản văn hóa phi vật thể?",
+          "key": "B",
+          "choices": [
+            "A. Quần thể di tích Cố đô Huế",
+            "B. Dân ca Quan họ Bắc Ninh",
+            "C. Thánh địa Mỹ Sơn",
+            "D. Vịnh Hạ Long"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Hành vi nào dưới đây thể hiện đúng trách nhiệm của học sinh trong việc bảo vệ di sản văn hóa?",
+          "key": "B",
+          "choices": [
+            "A. Khắc tên, viết bẩn lên tường các khu di tích lịch sử",
+            "B. Tham gia quét dọn, giữ gìn vệ sinh tại khu di tích địa phương",
+            "C. Mua bán, cất giấu các cổ vật nhặt được tại khu di tích",
+            "D. Tự ý thay đổi kết cấu của di tích lịch sử khi tham quan"
+          ]
+        },
+        {
+          "type": "true_false_group",
+          "content": "Đánh giá tính đúng/sai của các nhận định sau về việc tôn trọng sự thật và bảo vệ di sản văn hóa:",
+          "tf": [
+            "a:true",
+            "b:false",
+            "c:true",
+            "d:false"
+          ]
+        }
+      ]
+    },
+    {
+      "subject": "lich_su",
+      "grade": 11,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "A",
+          "solved": "A",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Nguyên nhân sâu xa dẫn đến sự bùng nổ của Chiến tranh thế giới thứ nhất (1914 - 1918) là gì?",
+          "key": "A",
+          "choices": [
+            "A. Sự phát triển không đều về kinh tế, chính trị giữa các nước tư bản làm thay đổi sâu sắc tương quan lực lượng và mâu thuẫn về thuộc địa.",
+            "B. Thái tử Áo - Hùng bị một người Xéc-bi ám sát tại Xa-ra-je-vo.",
+            "C. Đức tuyên chiến với Nga và Pháp nhằm chiếm toàn bộ châu Âu.",
+            "D. Mỹ tham gia chiến tranh mở rộng phạm vi xung đột ra toàn thế giới."
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Sự kiện nào được coi là duyên cớ trực tiếp dẫn đến sự bùng nổ của Chiến tranh thế giới thứ nhất?",
+          "key": "B",
+          "choices": [
+            "A. Đức tuyên chiến với Nga ngày 1-8-1914.",
+            "B. Thái tử Áo - Hùng bị ám sát tại Xa-ra-je-vo (Bô-xni-a).",
+            "C. Anh tuyên chiến với Đức ngày 4-8-1914.",
+            "D. Áo - Hùng tuyên chiến với Xéc-bi ngày 28-7-1914."
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Tính chất của Chiến tranh thế giới thứ nhất (1914 - 1918) là gì?",
+          "key": "B",
+          "choices": [
+            "A. Chiến tranh chính nghĩa thuộc về khối Liên minh.",
+            "B. Chiến tranh phi nghĩa từ cả hai phía phe Liên minh và Hiệp ước.",
+            "C. Chiến tranh giải phóng dân tộc của các nước thuộc địa.",
+            "D. Chiến tranh chính nghĩa bảo vệ tổ quốc của khối Hiệp ước."
+          ]
+        },
+        {
+          "type": "true_false_group",
+          "content": "Khi nghiên cứu về tác động và hậu quả của Chiến tranh thế giới thứ nhất (1914 - 1918), xác định tính đúng/sai của các nhận định sau:",
+          "tf": [
+            "a:true",
+            "b:true",
+            "c:true",
+            "d:false"
+          ]
+        }
+      ]
+    },
+    {
+      "subject": "dia_ly",
+      "grade": 10,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "A",
+          "solved": "A",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        },
+        {
+          "type": "short_answer",
+          "keyed": "5",
+          "solved": "5",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Tầng khí quyển nào nằm sát bề mặt Trái Đất, tập trung khoảng 80% khối lượng không khí và hầu như toàn bộ hơi nước?",
+          "key": "A",
+          "choices": [
+            "A. Tầng đối lưu",
+            "B. Tầng bình lưu",
+            "C. Tầng giữa",
+            "D. Tầng nhiệt"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Nguyên nhân chủ yếu dẫn đến sự hình thành các đới khí hậu khác nhau trên Trái Đất là gì?",
+          "key": "B",
+          "choices": [
+            "A. Sự phân bố xen kẽ giữa lục địa và đại dương.",
+            "B. Sự phân bố bức xạ mặt trời giảm dần từ Xích đạo về hai cực.",
+            "C. Ảnh hưởng của các dãy núi cao và hướng địa hình.",
+            "D. Hoạt động của các dòng hải lưu nóng và lạnh."
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Đới khí hậu nào trên Trái Đất có đặc điểm quanh năm nóng, góc chiếu của mặt trời lớn và chịu ảnh hưởng chủ yếu của gió Tín phong?",
+          "key": "C",
+          "choices": [
+            "A. Đới lạnh (Hàn đới)",
+            "B. Đới ôn hòa (Ôn đới)",
+            "C. Đới nóng (Nhiệt đới)",
+            "D. Đới khí hậu Cực"
+          ]
+        },
+        {
+          "type": "short_answer",
+          "content": "Tính cả hai bán cầu, trên Trái Đất có tổng cộng bao nhiêu đới khí hậu chính (bao gồm đới nóng, đới ôn hòa và đới lạnh)?",
+          "key": "5"
+        }
+      ]
+    },
+    {
+      "subject": "sinh_hoc",
+      "grade": 11,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "A",
+          "solved": "C",
+          "isMatch": false,
+          "recommendation": "match",
+          "status": 200
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Ở các loài thực vật trên cạn, cơ quan nào sau đây đảm nhận chức năng chủ yếu là hấp thụ nước và khoáng từ đất?",
+          "key": "A",
+          "choices": [
+            "A. Lá cây",
+            "B. Thân cây",
+            "C. Rễ cây",
+            "D. Hoa"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Quá trình quang hợp ở tế bào thực vật diễn ra chủ yếu tại bào quan nào sau đây?",
+          "key": "B",
+          "choices": [
+            "A. Ty thể",
+            "B. Lục lạp",
+            "C. Bộ máy Golgi",
+            "D. Không bào"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Phát biểu nào sau đây phản ánh đúng về vai trò sinh lý của quá trình hô hấp ở thực vật?",
+          "key": "A",
+          "choices": [
+            "A. Tạo ra năng lượng dưới dạng ATP để cung cấp cho các hoạt động sống của tế bào và cơ thể.",
+            "B. Tổng hợp các chất hữu cơ phức tạp từ các chất vô cơ đơn giản nhờ năng lượng ánh sáng.",
+            "C. Hấp thụ khí CO2 và giải phóng khí O2 giúp cân bằng khí quyển.",
+            "D. Tăng lượng nước tích lũy trong tế bào giúp cây chống chịu hạn hán."
+          ]
+        },
+        {
+          "type": "true_false_group",
+          "content": "Khi nghiên cứu về quá trình thoát hơi nước ở lá cây, mỗi phát biểu sau đây là Đúng hay Sai?",
+          "tf": [
+            "a:true",
+            "b:false",
+            "c:true",
+            "d:false"
+          ]
+        }
+      ]
+    },
+    {
+      "subject": "gdkt_pl",
+      "grade": 10,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "A",
+          "solved": "A",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Trong nền kinh tế hàng hóa, thị trường là tổng hòa các mối quan hệ nào sau đây?",
+          "key": "A",
+          "choices": [
+            "A. Mua - bán, cung - cầu, giá cả, cạnh tranh",
+            "B. Sản xuất, phân phối, trao đổi, tiêu dùng nội bộ gia đình",
+            "C. Quản lý, điều hành, kiểm tra và giám sát của nhà nước",
+            "D. Tích lũy, tiết kiệm, đầu tư và cho vay thương mại"
+          ],
+          "tf": []
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Khi lượng cầu về một mặt hàng tăng cao vượt quá lượng cung trên thị trường (cầu lớn hơn cung), giá cả mặt hàng đó thường có xu hướng biến động như thế nào?",
+          "key": "B",
+          "choices": [
+            "A. Giảm xuống",
+            "B. Tăng lên",
+            "C. Không thay đổi",
+            "D. Bằng 0"
+          ],
+          "tf": []
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Đến mùa thu hoạch rộ, lượng cung nông sản X trên thị trường tăng mạnh làm giá bán bị giảm sâu. Để giảm thiểu rủi ro và thích ứng với tình hình thị trường, người sản xuất nên ưu tiên thực hiện giải pháp nào sau đây?",
+          "key": "B",
+          "choices": [
+            "A. Tiêu hủy bớt sản phẩm nhằm mục đích ép giá thị trường tăng trở lại",
+            "B. Đẩy mạnh chế biến sâu, bảo quản nông sản và đa dạng hóa kênh tiêu thụ",
+            "C. Đề nghị cơ quan nhà nước cấm kinh doanh các loại nông sản nhập khẩu",
+            "D. Chờ đợi người tiêu dùng tự nguyện mua sản phẩm với giá cao hơn"
+          ],
+          "tf": []
+        }
+      ]
+    },
+    {
+      "subject": "giao_duc_quoc_phong_an_ninh",
+      "grade": 10,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "A",
+          "solved": "A",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Trong cuộc kháng chiến chống quân Tống xâm lược lần thứ hai (1075 - 1077), Lý Thường Kiệt đã thực hiện tư tưởng quân sự nổi tiếng nào?",
+          "key": "A",
+          "choices": [
+            "A. Tiên phát chế nhân (chủ động tiến công trước để tự vệ).",
+            "B. Thực hiện chiến lược 'vườn không nhà trống'.",
+            "C. Tập trung lực lượng đánh nhanh, giải quyết nhanh.",
+            "D. Chờ địch suy yếu rồi mới tiến hành phản công."
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Nội dung nào sau đây là nét đặc sắc nhất trong nghệ thuật quân sự dựng nước và giữ nước của dân tộc ta?",
+          "key": "B",
+          "choices": [
+            "A. Chỉ dựa vào sức mạnh của quân đội chính quy.",
+            "B. Nghệ thuật chiến tranh nhân dân, thực hiện toàn dân đánh giặc.",
+            "C. Chủ yếu mua sắm, nhập khẩu vũ khí hiện đại từ bên ngoài.",
+            "D. Chờ đợi sự hỗ trợ, giúp đỡ của các nước đồng minh."
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Cuộc kháng chiến chống quân Minh của nhà Hồ thất bại đã để lại bài học kinh nghiệm quan trọng nào cho sự nghiệp bảo vệ Tổ quốc ngày nay?",
+          "key": "B",
+          "choices": [
+            "A. Phải coi trọng việc xây dựng thành cao, hào sâu hơn việc khoan thư sức dân.",
+            "B. Phải đoàn kết toàn dân, quy tụ sức mạnh nhân dân trong sự nghiệp bảo vệ Tổ quốc.",
+            "C. Chỉ cần nâng cao trình độ tác chiến của quân đội regular.",
+            "D. Chủ động hòa hoãn bằng mọi giá khi bị ngoại xâm đe dọa."
+          ]
+        }
+      ]
+    },
+    {
+      "subject": "am_nhac",
+      "grade": 6,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Nhạc cụ nào sau đây là nhạc cụ gõ dùng để giữ nhịp tiết tấu phổ biến trong chương trình Âm nhạc lớp 6?",
+          "key": "A",
+          "choices": [
+            "A. Thanh phách",
+            "B. Đàn Piano",
+            "C. Đàn Guitar",
+            "D. Sáo trúc"
+          ]
+        },
+        {
+          "type": "essay",
+          "content": "Em hãy nêu cách cầm và thực hiện gõ thanh phách (hoặc trống nhỏ) để thể hiện một hình tiết tấu nhịp 2/4 cơ bản. Giải thích ngắn gọn vì sao việc giữ đúng nhịp điệu lại quan trọng khi trình diễn âm nhạc tập thể."
+        }
+      ]
+    },
+    {
+      "subject": "mi_thuat",
+      "grade": 6,
+      "status": 422,
+      "error": "[\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"questions\",\n      1,\n      \"correct_answer\"\n    ],\n    \"message\": \"Invalid input: expected string, received null\"\n  },\n  {\n    \"expected\": \"number\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"questions\",\n      1,\n      \"rubric\",\n      0,\n      \"maxPoints\"\n    ],\n    \"message\": \"Invalid input: expected number, received null\"\n  },\n  {\n    \"expected\": \"number\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"questions\",\n      1,\n      \"rubric\",\n      1,\n      \"maxPoints\"\n    ],\n    \"message\": \"Invalid input: expected number, received null\"\n  },\n  {\n    \"expected\": \"number\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"questions\",\n      1,\n      \"rubric\",\n      2,\n      \"maxPoints\"\n    ],\n    \"message\": \"Invalid input: expected number, received null\"\n  }\n]",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "giao_duc_the_chat",
+      "grade": 7,
+      "status": 422,
+      "error": "[\n  {\n    \"expected\": \"number\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"questions\",\n      0,\n      \"points\"\n    ],\n    \"message\": \"Invalid input: expected number, received null\"\n  },\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"questions\",\n      1,\n      \"correct_answer\"\n    ],\n    \"message\": \"Invalid input: expected string, received null\"\n  },\n  {\n    \"expected\": \"number\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"questions\",\n      1,\n      \"points\"\n    ],\n    \"message\": \"Invalid input: expected number, received null\"\n  }\n]",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "hoat_dong_trai_nghiem",
+      "grade": 4,
+      "status": 422,
+      "error": "[\n  {\n    \"expected\": \"number\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"questions\",\n      0,\n      \"points\"\n    ],\n    \"message\": \"Invalid input: expected number, received null\"\n  },\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"questions\",\n      1,\n      \"correct_answer\"\n    ],\n    \"message\": \"Invalid input: expected string, received null\"\n  },\n  {\n    \"expected\": \"number\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"questions\",\n      1,\n      \"rubric\",\n      0,\n      \"maxPoints\"\n    ],\n    \"message\": \"Invalid input: expected number, received null\"\n  },\n  {\n    \"expected\": \"number\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"questions\",\n      1,\n      \"rubric\",\n      1,\n      \"maxPoints\"\n    ],\n    \"message\": \"Invalid input: expected number, received null\"\n  },\n  {\n    \"expected\": \"number\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"questions\",\n      1,\n      \"rubric\",\n      2,\n      \"maxPoints\"\n    ],\n    \"message\": \"Invalid input: expected number, received null\"\n  },\n  {\n    \"expected\": \"number\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"questions\",\n      1,\n      \"points\"\n    ],\n    \"message\": \"Invalid input: expected number, received null\"\n  }\n]",
+      "matchesPlan": false,
+      "anyHuman": false,
+      "verification": [],
+      "questions": []
+    },
+    {
+      "subject": "ngoai_ngu_khac",
+      "grade": 10,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "A",
+          "solved": "A",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Chọn động từ phù hợp để hoàn thành câu giới thiệu tên sau:\n\"Bonjour ! Je ______ Thomas, j'ai 15 ans.\"",
+          "key": "A",
+          "choices": [
+            "A. m'appelle",
+            "B. t'appelles",
+            "C. s'appelle",
+            "D. nous appelons"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Chọn từ chỉ quan hệ gia đình thích hợp để hoàn thành câu sau:\n\"Le frère de mon père est mon ______.\"",
+          "key": "B",
+          "choices": [
+            "A. grand-père",
+            "B. oncle",
+            "C. cousin",
+            "D. père"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Chọn cặp động từ thích hợp để hoàn thành câu mô tả về thành viên trong gia đình:\n\"Ma sœur ______ très gentille et elle ______ deux chats.\"",
+          "key": "A",
+          "choices": [
+            "A. est / a",
+            "B. a / est",
+            "C. est / est",
+            "D. a / a"
+          ]
+        }
+      ]
+    },
+    {
+      "subject": "tieng_dan_toc",
+      "grade": 3,
+      "status": 200,
+      "matchesPlan": true,
+      "anyHuman": false,
+      "warnings": [
+        "Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng."
+      ],
+      "verification": [
+        {
+          "type": "multiple_choice",
+          "keyed": "A",
+          "solved": "A",
+          "isMatch": true,
+          "recommendation": "match",
+          "status": 200
+        }
+      ],
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "content": "Trong tiếng Raglai, khi gặp người lớn tuổi hoặc thầy cô giáo để chào hỏi một cách lễ phép, kính trọng, em thường dùng từ/cụm từ nào mở đầu?",
+          "key": "A",
+          "choices": [
+            "A. Ya ơ",
+            "B. Ama",
+            "C. Amư",
+            "D. Adei"
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "content": "Khi làm quen với bạn mới, câu nào sau đây dùng để giới thiệu tên của bản thân bằng tiếng Raglai?",
+          "key": "A",
+          "choices": [
+            "A. Kao nani...",
+            "B. Kao hu...",
+            "C. Kao chơ...",
+            "D. Kao mư-in..."
+          ]
+        }
+      ]
+    }
+  ],
+  "finishedAt": "2026-10-26T07:22:54.828Z",
+  "providerCalls": 52,
+  "providerRefusals": 10,
+  "refusalStatuses": {
+    "422": 3,
+    "503": 7
+  }
+}

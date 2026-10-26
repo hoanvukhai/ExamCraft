@@ -35,7 +35,8 @@ Không tự suy đoán mức nhận thức hoặc gắn nhãn đã kiểm địn
 `;
 
 const object = (value: unknown): Record<string, unknown> => value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
-export function parseImportedDocument(value: unknown, source: string, fileName?: string) {
+/** With `keepUnlinked`, a question that names a passage the model did not return is kept without the link and the loss is reported, instead of the whole import failing. */
+export function parseImportedDocument(value: unknown, source: string, fileName?: string, options: { keepUnlinked?: boolean } = {}) {
   const raw = object(value);
   if (!Array.isArray(raw.questions) || raw.questions.length < 1 || raw.questions.length > 500) throw new DocumentValidationError('Kết quả nhập cần từ 1 đến 500 câu; hãy chia nhỏ tài liệu nếu quá dài.');
   if (raw.passages != null && (!Array.isArray(raw.passages) || raw.passages.length > 100)) throw new DocumentValidationError('Danh sách ngữ liệu nhập không hợp lệ.');
@@ -48,8 +49,11 @@ export function parseImportedDocument(value: unknown, source: string, fileName?:
   });
   const warnings = Array.isArray(raw.warnings) ? raw.warnings.filter((v): v is string => typeof v === 'string').slice(0, 100) : [];
   const questions = raw.questions.map((value, index) => {
-    const q = object(value), oldPassageId = typeof q.passageId === 'string' ? q.passageId : undefined;
-    if (oldPassageId && !passageIds.has(oldPassageId)) throw new DocumentValidationError(`Câu ${index + 1}: thiếu ngữ liệu liên kết; cần nhập lại đầy đủ phần văn bản dùng chung.`);
+    const q = object(value); let oldPassageId = typeof q.passageId === 'string' ? q.passageId : undefined;
+    if (oldPassageId && !passageIds.has(oldPassageId)) {
+      if (!options.keepUnlinked) throw new DocumentValidationError(`Câu ${index + 1}: thiếu ngữ liệu liên kết; cần nhập lại đầy đủ phần văn bản dùng chung.`);
+      warnings.push(`Câu ${index + 1} thuộc một ngữ liệu mà AI không trả về; câu được giữ nhưng chưa gắn ngữ liệu, hãy gắn lại bằng tay.`); oldPassageId = undefined;
+    }
     return normalizeQuestion({ ...q, id: crypto.randomUUID(), passageId: oldPassageId ? passageIds.get(oldPassageId) : undefined, source: typeof q.source === 'string' && q.source.trim() ? q.source : importSourceLabel(source, index, fileName), importedFromFile: true, status: 'draft', verifiedBy: 'none', version: 1, aiGenerated: true, step_by_step_solution: q.step_by_step_solution ?? '' }, index);
   });
   return { questions, passages, warnings };

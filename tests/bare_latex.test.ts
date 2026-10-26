@@ -32,3 +32,13 @@ test('formulas written between backslash-parentheses or backslash-brackets are r
   const exam = validateGeneratedExam({ questions: [{ type: 'short_answer', content: 'Điều kiện của \\(\\sqrt{x}\\)', correct_answer: 'x >= 0', step_by_step_solution: 'Cần \\(x \\ge 0\\)' }] }, plan);
   assert.equal(exam.questions[0].content, 'Điều kiện của $\\sqrt{x}$'); assert.equal(exam.questions[0].step_by_step_solution, 'Cần $x \\ge 0$');
 });
+
+test('a field the model wrote as null is the same as a missing field, so comment-only questions are not refused for their empty score and answer', () => {
+  const plan = generationPlanSchema.parse({ subject: 'mi_thuat', grade: 6, topic: 'Màu sắc', durationMinutes: 15, assessmentMode: 'comment_only', numMultipleChoice: 1, numEssay: 1 });
+  const exam = validateGeneratedExam({ questions: [
+    { type: 'multiple_choice', content: 'Màu nào là màu nóng?', choices: [{ key: 'A', text: 'Đỏ' }, { key: 'B', text: 'Xanh' }], correct_answer: null, points: null, step_by_step_solution: null },
+    { type: 'essay', content: 'Em nhận xét bức tranh.', correct_answer: null, points: null, accepted_answers: [null, 'x'] },
+  ] }, plan);
+  assert.equal(exam.questions.length, 2); assert.equal(exam.questions[0].points, undefined); assert.equal(exam.questions[0].correct_answer, undefined);
+  assert.deepEqual(exam.questions[1].accepted_answers, ['x']);
+});

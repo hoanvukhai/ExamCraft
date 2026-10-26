@@ -22,5 +22,8 @@ test('import remaps shared passage IDs and refuses missing or duplicate passage 
   assert.equal(result.passages[0].source, 'Nguồn');
   assert.deepEqual(result.warnings, input.warnings);
   assert.throws(() => parseImportedDocument({ questions: [q] }, 'fixture'), /thiếu ngữ liệu/);
+  const kept = parseImportedDocument({ questions: [q, { type: 'essay', content: 'Câu thứ hai' }] }, 'fixture', undefined, { keepUnlinked: true });
+  assert.equal(kept.questions.length, 2); assert.equal(kept.questions[0].passageId, undefined, 'the broken link is dropped, the question is kept');
+  assert.ok(kept.warnings.some(w => /Câu 1 thuộc một ngữ liệu mà AI không trả về/.test(w)), 'and the loss is reported');
   assert.throws(() => parseImportedDocument({ ...input, passages: [...input.passages, ...input.passages] }, 'fixture'), /trùng mã/);
 });

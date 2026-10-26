@@ -54,8 +54,15 @@ const responseQuestion = z.object({
 });
 const responseSchema = z.object({ title: z.string().optional(), questions: z.array(responseQuestion).max(100) });
 
+/** Models write `null` for a field that does not apply (a score on a comment-only question). A missing field and a null field mean the same here. */
+export function dropNulls(value: unknown): unknown {
+  if (Array.isArray(value)) return value.filter(item => item !== null).map(dropNulls);
+  if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).filter(([, item]) => item !== null).map(([key, item]) => [key, dropNulls(item)]));
+  return value;
+}
+
 export function validateGeneratedExam(value: unknown, plan: GenerationPlan) {
-  const parsed = responseSchema.parse(value);
+  const parsed = responseSchema.parse(dropNulls(value));
   const expected = { multiple_choice: plan.numMultipleChoice, true_false_group: plan.numTrueFalse, short_answer: plan.numShortAnswer, essay: plan.numEssay, fill_blank: plan.numFillBlank, matching: plan.numMatching, ordering: plan.numOrdering };
   for (const type of Object.keys(expected) as (keyof typeof expected)[]) if (parsed.questions.filter(q => q.type === type).length !== expected[type]) throw new Error(`AI chưa tạo đúng số câu ${type}; chưa áp dụng kết quả`);
   const framework = getCognitiveFramework(plan.cognitiveFrameworkId);

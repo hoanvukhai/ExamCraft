@@ -39,7 +39,7 @@ test('a model that stops early is reported with the missing part, and nothing is
   assert.match(result.warnings[0], /Chỉ nhận được \d+\/60 câu/); assert.match(result.warnings[0], /phần \d+ \(câu \d+–\d+\) chỉ nhận/);
 });
 
-test('a batch that comes back short is asked again once and the better answer is kept', async () => {
+test('a batch that comes back short is asked again, up to twice, and the better answer is kept', async () => {
   let calls = 0;
   const result = await importInBatches(source(30), async text => { calls++; return fakeModel(given => calls === 1 ? 2 : given)(text); });
   assert.equal(result.questions.length, 30); assert.ok(calls >= 3, 'the short first batch was retried');
@@ -62,7 +62,7 @@ test('identical question texts are flagged but never deleted', async () => {
 
 test('one part returned in an unusable shape is reported while the other parts are kept; if every part fails the error is raised', async () => {
   let call = 0;
-  const partial = await importInBatches(source(60), async text => { call++; if (call <= 2) throw new DocumentValidationError('Câu 1: thiếu ngữ liệu liên kết'); return fakeModel()(text); });
+  const partial = await importInBatches(source(60), async text => { call++; if (call <= 3) throw new DocumentValidationError('Câu 1: thiếu ngữ liệu liên kết'); return fakeModel()(text); });
   assert.ok(partial.questions.length > 0 && partial.questions.length < 60);
   assert.ok(partial.warnings.some(w => /AI trả về chưa dùng được/.test(w)) && partial.warnings.some(w => /Chỉ nhận được/.test(w)));
   await assert.rejects(() => importInBatches(source(60), async () => { throw new DocumentValidationError('hỏng'); }), /hỏng/);

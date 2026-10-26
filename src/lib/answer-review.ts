@@ -36,7 +36,9 @@ export function compareAnswerReview(question: Question, review: AnswerReview) {
     const accepted = [question.correct_answer, ...(question.accepted_answers ?? [])]
       .filter((value): value is string => typeof value === 'string' && normalize(value) !== '');
     complete = solved !== '' && accepted.length > 0;
-    isMatch = complete && accepted.some(answer => normalize(answer) === solved);
+    // A solver may list its answer in two spellings ("did not visit / didn't visit"); the answer matches when any listed form is an accepted one.
+    const forms = [solved, ...review.solvedAnswer.split(' / ').map(normalize).filter(form => form !== '')];
+    isMatch = complete && accepted.some(answer => forms.includes(normalize(answer)));
   }
   if (!complete) discrepancies.push('Chưa đủ dữ liệu để đối chiếu tự động; giáo viên cần kiểm tra đáp án và lời giải.');
   else if (!isMatch) discrepancies.push('Kết quả AI khác đáp án hiện tại; giáo viên cần xem lại trước khi áp dụng.');

@@ -13,3 +13,10 @@ test('the same relation or operator written with different symbols is one answer
 test('different answers are still different', () => {
   for (const [key, answer] of [['x >= 3', 'x > 3'], ['x <= 2', 'x >= 2'], ['x != 0', 'x = 0'], ['5', '-5']]) assert.equal(compareAnswerReview(question(key), solved(answer)).isMatch, false, `${key} vs ${answer}`);
 });
+
+test('an answer the solver lists in two spellings matches when one of them is accepted, but a different spelling alone does not', () => {
+  assert.equal(compareAnswerReview(question("didn't visit"), solved("did not visit / didn't visit")).isMatch, true);
+  assert.equal(compareAnswerReview(question('3/4'), solved('3/4')).isMatch, true, 'a fraction without spaces is not split');
+  assert.equal(compareAnswerReview(question('3/4'), solved('3 / 5')).isMatch, false);
+  assert.equal(compareAnswerReview(question("didn't visit"), solved('did not visit')).isMatch, false, 'only the listed spellings count');
+});
