@@ -8,6 +8,7 @@ import { isSameOriginMutation } from '@/lib/attempt-access';
 import mammoth from 'mammoth';
 import { docxWithEquationsAsText } from '@/lib/docx-math';
 import { importInBatches } from '@/lib/import-batching';
+import { attachWordImages, docxWithImagesAsMarkers } from '@/lib/docx-images';
 import { GoogleGenAI } from '@google/genai';
 import { executeWithKeyRotation, parseProviderJson } from '@/lib/gemini-keys';
 
@@ -61,7 +62,8 @@ export async function POST(req: NextRequest) {
     // 1. Dùng mammoth để trích xuất văn bản thô từ file docx
     // Equations are Word objects that plain extraction drops, so they are turned into $...$ text first.
     const withMath = await docxWithEquationsAsText(fileBuffer);
-    const mammothResult = await mammoth.extractRawText({ buffer: withMath.buffer });
+    const withImages = await docxWithImagesAsMarkers(withMath.buffer);
+    const mammothResult = await mammoth.extractRawText({ buffer: withImages.buffer });
     const rawText = mammothResult.value;
 
     if (!rawText || rawText.trim().length === 0) {
@@ -74,7 +76,7 @@ export async function POST(req: NextRequest) {
     if (rawText.length > 45000) throw new ApiError(413, 'Văn bản Word vượt 45.000 ký tự. Hãy chia nhỏ tài liệu; hệ thống không tự cắt bỏ phần cuối.');
 
     // 2. Dùng Gemini AI để phân rã cấu trúc câu hỏi; tài liệu dài được đọc theo từng phần và đối chiếu với số "Câu N" của nguồn
-    const imported = await importInBatches(rawText, async part => {
+    const parsed = await importInBatches(rawText, async part => {
       const prompt = `Số hóa văn bản Word sau.
 ${IMPORT_SOURCE_RULES}
 <source_document>
@@ -96,6 +98,7 @@ ${part}
       if (!aiResult || aiResult === '{}') throw new ApiError(502, 'AI không thể phân tích văn bản từ file Word.', 'AI_BAD_OUTPUT');
       return parseImportedDocument(parseProviderJson(aiResult), 'Word (.docx)', fileName);
     }, 'tài liệu Word');
+    const imported = attachWordImages(parsed, withImages.images, withImages.skipped);
     imported.warnings.unshift(withMath.equations ? `Đã đọc ${withMath.equations} công thức Word thành LaTeX; hình ảnh và bảng phức tạp cần đối chiếu với tệp gốc.` : 'Luồng Word hiện đọc văn bản; ảnh và bảng phức tạp cần đối chiếu với tệp gốc và bổ sung thủ công.');
     return NextResponse.json({ success: true, ...imported, totalCount: imported.questions.length });
   } catch (error: unknown) {

@@ -7,6 +7,8 @@ import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import fs from 'node:fs';
 import { requireTestDatabase } from './helpers/test-database';
+import { exportExamToDocx } from '../src/lib/docx-export';
+import { normalizeExamDocument } from '../src/lib/exam-document';
 
 // AI routes talk to a local imitation of the provider (the isolated test server is started with GOOGLE_GEMINI_BASE_URL pointing here).
 // Nothing in this file reaches the real service.
@@ -49,7 +51,7 @@ test('AI routes use only the caller key, count usage per key id, fail honestly a
       await db.user.deleteMany({ where: { id: { in: all } } });
       const directory = `qa/rebuild-${new Date().toISOString().slice(0, 10)}`;
       fs.mkdirSync(directory, { recursive: true });
-      writeQaReport(`${directory}/http_ai_mock.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 14 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117 with a local provider imitation on 3118', realAiCalls: false }, null, 2));
+      writeQaReport(`${directory}/http_ai_mock.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 15 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117 with a local provider imitation on 3118', realAiCalls: false }, null, 2));
     } finally { await db.$disconnect(); }
   });
   const cookies: Record<string, string> = {};
@@ -210,6 +212,10 @@ test('AI routes use only the caller key, count usage per key id, fail honestly a
     const text = await md.text();
     assert.ok(text.includes('Có căn cứ ' + mark) && text.includes('Bằng chứng: ' + mark) && text.includes('Nguồn: một câu hỏi; câu: src-q1'), 'the copy names the note, its evidence and its source');
     assert.equal((await fetch(origin + '/api/teacher/ai-memory/archive?format=markdown', { headers: { Origin: origin, Cookie: cookies.b } }).then(r => r.text())).includes(mark), false, 'another teacher never receives these notes');
+    await addKey('a', 'saved-key-0123456789abcdef', 'Khóa lưu để thử xuất');
+    const exported = await fetch(origin + '/api/teacher/ai-memory/archive', { headers: { Origin: origin, Cookie: cookies.a } }).then(r => r.text());
+    assert.ok(exported.includes(mark) && exported.includes('"sourceRef"') && exported.includes('"evidence"'), 'the JSON copy keeps notes, source and evidence');
+    assert.ok(!/saved-key-0123456789abcdef|memo-key-0123456789abcdef|keyEncrypted|keyIv|keyTag|passwordHash/.test(exported + text), 'neither personal copy holds a key or a password hash');
     const log = await db.aiUsageLog.findFirstOrThrow({ where: { userId: ids.a, endpoint: 'teacher.ai_memory.analyze' }, orderBy: { createdAt: 'desc' } });
     assert.equal(log.promptVersion, 'memory-analysis-2026-10-26.2', 'the log names the prompt wording that produced the result'); assert.equal(log.model, 'gemini-3.5-flash'); assert.equal(log.httpStatus, 200);
     assert.ok(!JSON.stringify(log).includes('memo-key-0123456789abcdef'), 'the log never holds the key');
@@ -229,6 +235,22 @@ test('AI routes use only the caller key, count usage per key id, fail honestly a
     assert.notEqual(q.verifiedBy, 'human', 'a provider claim of human verification never survives import'); assert.equal(q.status, 'draft');
     assert.equal(q.importedFromFile, true);
     checks.push('imported-instructions-are-data');
+  });
+
+  await t.test('a Word file keeps its formulas and pictures through import: formulas reach the provider as text and the picture is attached to the question', async () => {
+    const png = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=';
+    const exam = normalizeExamDocument({ id: 'w', metadata: { title: 't', subject: 'toan', grade: 6, durationMinutes: 1, schoolName: '', departmentName: '' }, createdAt: '2026', updatedAt: '2026',
+      questions: [{ id: 'q1', type: 'short_answer', difficulty: 'thong_hieu', content: 'Tính $7+8$ theo hình', correct_answer: '15', accepted_answers: ['15'], points: 1, step_by_step_solution: '', figures: [{ id: 'f1', kind: 'image', data: { url: png }, renderedBase64: png }] }] });
+    const docx = Buffer.from(await (await exportExamToDocx(exam, false, false)).arrayBuffer()).toString('base64');
+    const answer = { questions: [{ type: 'short_answer', difficulty: 'thong_hieu', content: 'Tính $7+8$ theo hình [HÌNH 1]', points: 1 }], passages: [], warnings: [] };
+    reset(() => ({ status: 200, body: reply(JSON.stringify(answer)) }));
+    const r = await request('/api/parse-docx', 'POST', { docxBase64: docx, customApiKey: 'docx-key-0123456789abcdef' }, cookies.a);
+    assert.equal(r.status, 200, String(r.data.error));
+    const sent = seen.map(x => x.body).join(' | ');
+    assert.ok(sent.includes('$7+8$') && sent.includes('[HÌNH 1]'), 'the provider receives the formula as text and the picture as a marker');
+    assert.equal(r.data.questions[0].content, 'Tính $7+8$ theo hình'); assert.equal(r.data.questions[0].figures?.length, 1); assert.equal(r.data.questions[0].figures[0].kind, 'image');
+    assert.ok(r.data.warnings.some((w: string) => /Đã gắn 1 hình/.test(w)) && r.data.warnings.some((w: string) => /1 công thức Word/.test(w)));
+    checks.push('word-formulas-and-pictures');
   });
 
   await t.test('provider errors are reported without retry storms; testing a key reads only the model list; keys of others cannot be tested', async () => {
