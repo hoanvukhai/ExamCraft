@@ -18,6 +18,8 @@ interface CopilotRequest {
   customApiKey?: string;
 }
 
+export const maxDuration = 60;
+
 export async function POST(req: NextRequest) {
   try {
     if (!isSameOriginMutation(req)) throw new ApiError(403, 'Yêu cầu không hợp lệ');

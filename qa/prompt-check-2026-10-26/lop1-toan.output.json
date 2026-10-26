@@ -1,0 +1,94 @@
+{
+  "title": "Đề kiểm tra thường kỳ Toán lớp 1 - Phép cộng, trừ trong phạm vi 10",
+  "questions": [
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Kết quả của phép tính $3 + 4$ là:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "7"
+        },
+        {
+          "key": "B",
+          "text": "6"
+        },
+        {
+          "key": "C",
+          "text": "8"
+        },
+        {
+          "key": "D",
+          "text": "5"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 2.5,
+      "step_by_step_solution": "Ta đếm tiếp: 3 thêm 4 bằng 7. Vậy $3 + 4 = 7$."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Kết quả của phép tính $9 - 5$ là:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "3"
+        },
+        {
+          "key": "B",
+          "text": "4"
+        },
+        {
+          "key": "C",
+          "text": "5"
+        },
+        {
+          "key": "D",
+          "text": "2"
+        }
+      ],
+      "correct_answer": "B",
+      "points": 2.5,
+      "step_by_step_solution": "Ta bớt: 9 bớt 5 còn 4. Vậy $9 - 5 = 4$."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Trên cành cây có 6 con chim, sau đó có 2 con bay đi. Hỏi trên cành cây còn lại bao nhiêu con chim?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "4 con chim"
+        },
+        {
+          "key": "B",
+          "text": "8 con chim"
+        },
+        {
+          "key": "C",
+          "text": "3 con chim"
+        },
+        {
+          "key": "D",
+          "text": "5 con chim"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 2.5,
+      "step_by_step_solution": "Số chim còn lại trên cành cây là: $6 - 2 = 4$ (con chim)."
+    },
+    {
+      "type": "short_answer",
+      "difficulty": "van_dung",
+      "content": "Điền số thích hợp vào chỗ chấm: $10 - 3 + 2 = ...$",
+      "correct_answer": "9",
+      "accepted_answers": [
+        "9"
+      ],
+      "points": 2.5,
+      "step_by_step_solution": "Thực hiện phép tính từ trái sang phải: $10 - 3 = 7$, sau đó lấy $7 + 2 = 9$."
+    }
+  ]
+}

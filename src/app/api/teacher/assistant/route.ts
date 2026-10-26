@@ -13,6 +13,8 @@ interface AssistantChatMessage {
   content: string;
 }
 
+export const maxDuration = 60;
+
 export async function POST(req: NextRequest) {
   try {
     if (!isSameOriginMutation(req)) return NextResponse.json({ error: 'Yêu cầu không hợp lệ' }, { status: 403 });

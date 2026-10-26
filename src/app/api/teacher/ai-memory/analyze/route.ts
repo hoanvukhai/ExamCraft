@@ -43,6 +43,8 @@ const responseSchema = {
   required: ['insights'],
 };
 
+export const maxDuration = 60;
+
 export async function POST(req: NextRequest) {
   try {
     // Account and origin are settled before the body, the database, the key or the provider.

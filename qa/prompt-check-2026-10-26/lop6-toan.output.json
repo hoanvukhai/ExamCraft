@@ -1,0 +1,95 @@
+{
+  "title": "Đề kiểm tra thường kỳ Toán lớp 6 - Phân số và các phép tính",
+  "questions": [
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Số đối của phân số $\\frac{-4}{9}$ là:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "$\\frac{4}{9}$"
+        },
+        {
+          "key": "B",
+          "text": "$\\frac{-9}{4}$"
+        },
+        {
+          "key": "C",
+          "text": "$\\frac{9}{4}$"
+        },
+        {
+          "key": "D",
+          "text": "$\\frac{-4}{-9}$"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 2.5,
+      "step_by_step_solution": "Số đối của $\\frac{-a}{b}$ là $\\frac{a}{b}$. Do đó số đối của $\\frac{-4}{9}$ là $\\frac{4}{9}$."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Kết quả của phép nhân $\\frac{-3}{5} \\cdot \\frac{10}{9}$ rút gọn đến tối giản là:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "$\\frac{-2}{3}$"
+        },
+        {
+          "key": "B",
+          "text": "$\\frac{-1}{3}$"
+        },
+        {
+          "key": "C",
+          "text": "$\\frac{2}{3}$"
+        },
+        {
+          "key": "D",
+          "text": "$\\frac{-6}{9}$"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 2.5,
+      "step_by_step_solution": "Ta có $\\frac{-3}{5} \\cdot \\frac{10}{9} = \\frac{-3 \\cdot 10}{5 \\cdot 9} = \\frac{-30}{45} = \\frac{-2}{3}$."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Tìm $x$, biết: $x + \\frac{1}{3} = \\frac{5}{6}$. Giá trị của $x$ là:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "$\\frac{1}{2}$"
+        },
+        {
+          "key": "B",
+          "text": "$\\frac{7}{6}$"
+        },
+        {
+          "key": "C",
+          "text": "$\\frac{4}{3}$"
+        },
+        {
+          "key": "D",
+          "text": "$\\frac{1}{6}$"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 2.5,
+      "step_by_step_solution": "$x = \\frac{5}{6} - \\frac{1}{3} = \\frac{5}{6} - \\frac{2}{6} = \\frac{3}{6} = \\frac{1}{2}$."
+    },
+    {
+      "type": "short_answer",
+      "difficulty": "van_dung",
+      "content": "Tính giá trị biểu thức sau một cách hợp lý: $A = \\frac{4}{7} \\cdot \\frac{3}{11} + \\frac{4}{7} \\cdot \\frac{8}{11}$.",
+      "correct_answer": "4/7",
+      "accepted_answers": [
+        "4/7",
+        "$\\frac{4}{7}$"
+      ],
+      "points": 2.5,
+      "step_by_step_solution": "Áp dụng tính chất phân phối: $A = \\frac{4}{7} \\cdot \\left(\\frac{3}{11} + \\frac{8}{11}\\right) = \\frac{4}{7} \\cdot 1 = \\frac{4}{7}$."
+    }
+  ]
+}

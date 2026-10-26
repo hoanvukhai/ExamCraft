@@ -1,0 +1,237 @@
+{
+  "title": "Đề luyện thi đánh giá năng lực đại học môn Toán - Tư duy Giải tích, Đại số và Hình học",
+  "questions": [
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Một doanh nghiệp sản xuất một loại sản phẩm với hàm tổng chi phí $C(x) = x^2 + 40x + 1600$ (triệu đồng), trong đó $x$ là số lượng sản phẩm sản xuất ($x > 0$). Chi phí sản xuất trung bình cho mỗi đơn vị sản phẩm $\\bar{C}(x) = \\frac{C(x)}{x}$ đạt giá trị nhỏ nhất khi $x$ bằng:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "40"
+        },
+        {
+          "key": "B",
+          "text": "20"
+        },
+        {
+          "key": "C",
+          "text": "50"
+        },
+        {
+          "key": "D",
+          "text": "80"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "$\\bar{C}(x) = x + 40 + \\frac{1600}{x} \\ge 40 + 2\\sqrt{x \\cdot \\frac{1600}{x}} = 40 + 80 = 120$. Dấu bằng xảy ra khi $x = \\frac{1600}{x} \\Leftrightarrow x^2 = 1600 \\Leftrightarrow x = 40$."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Một lớp học có 20 học sinh nam và 15 học sinh nữ. Chọn ngẫu nhiên một ban đại diện gồm 3 học sinh. Xác suất để ban đại diện có cả nam và nữ bằng:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "$\\frac{90}{119}$"
+        },
+        {
+          "key": "B",
+          "text": "$\\frac{29}{119}$"
+        },
+        {
+          "key": "C",
+          "text": "$\\frac{60}{119}$"
+        },
+        {
+          "key": "D",
+          "text": "$\\frac{45}{119}$"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "Số phần tử không gian mẫu: $n(\\Omega) = C_{35}^3 = 6545$. Số cách chọn toàn nam: $C_{20}^3 = 1140$. Số cách chọn toàn nữ: $C_{15}^3 = 455$. Số cách chọn có cả nam và nữ: $6545 - (1140 + 455) = 4950$. Xác suất: $P = \\frac{4950}{6545} = \\frac{90}{119}$."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Một hình nón có thiết diện qua trục là một tam giác đều cạnh $a = 6\\text{ cm}$. Thể tích của khối nón tương ứng bằng:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "$9\\pi\\sqrt{3}\\text{ cm}^3$"
+        },
+        {
+          "key": "B",
+          "text": "$27\\pi\\sqrt{3}\\text{ cm}^3$"
+        },
+        {
+          "key": "C",
+          "text": "$18\\pi\\sqrt{3}\\text{ cm}^3$"
+        },
+        {
+          "key": "D",
+          "text": "$3\\pi\\sqrt{3}\\text{ cm}^3$"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "Bán kính đáy $r = \\frac{a}{2} = 3\\text{ cm}$. Chiều cao $h = \\frac{a\\sqrt{3}}{2} = 3\\sqrt{3}\\text{ cm}$. Thể tích: $V = \\frac{1}{3} \\pi r^2 h = \\frac{1}{3} \\pi \\cdot 9 \\cdot 3\\sqrt{3} = 9\\pi\\sqrt{3}\\text{ cm}^3$."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Số lượng vi khuẩn của một mẻ nuôi cấy tuân theo quy luật tăng trưởng $N(t) = N_0 \\cdot e^{0,05t}$, trong đó $t$ tính bằng giờ. Biết sau 10 giờ số lượng vi khuẩn là 5000 con. Hỏi ban đầu mẻ cấy có xấp xỉ bao nhiêu con vi khuẩn (lấy $e^{0,5} \\approx 1,6487$)?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "3033 con"
+        },
+        {
+          "key": "B",
+          "text": "2500 con"
+        },
+        {
+          "key": "C",
+          "text": "4120 con"
+        },
+        {
+          "key": "D",
+          "text": "3500 con"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "$N(10) = N_0 \\cdot e^{0,5} = 5000 \\Rightarrow N_0 = \\frac{5000}{e^{0,5}} \\approx \\frac{5000}{1,6487} \\approx 3033$ con."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Trong không gian $Oxyz$, cho mặt phẳng $(\\alpha): x + 2y - 2z + 5 = 0$ và điểm $M(1; -1; 2)$. Khoảng cách từ điểm $M$ đến mặt phẳng $(\\alpha)$ là:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "0"
+        },
+        {
+          "key": "B",
+          "text": "2"
+        },
+        {
+          "key": "C",
+          "text": "3"
+        },
+        {
+          "key": "D",
+          "text": "$\\frac{4}{3}$"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "Thay tọa độ $M$: $1 + 2(-1) - 2(2) + 5 = 1 - 2 - 4 + 5 = 0$. Điểm $M$ thuộc $(\\alpha)$ nên khoảng cách bằng 0."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "van_dung",
+      "content": "Cho cấp số cộng $(u_n)$ có số hạng đầu $u_1 = 3$ và công sai $d = 4$. Biết tổng của $n$ số hạng đầu tiên là $S_n = 253$. Giá trị của $n$ là:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "11"
+        },
+        {
+          "key": "B",
+          "text": "12"
+        },
+        {
+          "key": "C",
+          "text": "10"
+        },
+        {
+          "key": "D",
+          "text": "13"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "$S_n = \\frac{n[2u_1 + (n - 1)d]}{2} = \\frac{n[6 + 4(n - 1)]}{2} = n(2n + 1) = 2n^2 + n$. Ta có $2n^2 + n = 253 \\Leftrightarrow 2n^2 + n - 253 = 0$. Nghiệm nguyên dương là $n = 11$."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "van_dung",
+      "content": "Cho hình chóp $S.ABCD$ có đáy $ABCD$ là hình vuông cạnh $a$, cạnh bên $SA$ vuông góc với mặt phẳng đáy và $SA = a\\sqrt{3}$. Góc giữa đường thẳng $SC$ và mặt phẳng đáy $(ABCD)$ bằng:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "$\\approx 50,77^\\circ$"
+        },
+        {
+          "key": "B",
+          "text": "$60^\\circ$"
+        },
+        {
+          "key": "C",
+          "text": "$45^\\circ$"
+        },
+        {
+          "key": "D",
+          "text": "$30^\\circ$"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "Hình chiếu của $SC$ lên $(ABCD)$ là $AC$. Đáy hình vuông cạnh $a$ nên $AC = a\\sqrt{2}$. Góc $\\alpha = \\widehat{SCA}$. Ta có $\\tan\\alpha = \\frac{SA}{AC} = \\frac{a\\sqrt{3}}{a\\sqrt{2}} = \\sqrt{\\frac{3}{2}} \\approx 1,2247 \\Rightarrow \\alpha \\approx 50,77^\\circ$."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "van_dung",
+      "content": "Một mảnh vườn hình phẳng được giới hạn bởi parabol $y = -x^2 + 4$ và trục hoành $y = 0$ (đơn vị trên các trục là mét). Diện tích của mảnh vườn đó là:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "$\\frac{32}{3}\\text{ m}^2$"
+        },
+        {
+          "key": "B",
+          "text": "$16\\text{ m}^2$"
+        },
+        {
+          "key": "C",
+          "text": "$\\frac{16}{3}\\text{ m}^2$"
+        },
+        {
+          "key": "D",
+          "text": "$8\\text{ m}^2$"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "Phương trình hoành độ giao điểm: $-x^2 + 4 = 0 \\Leftrightarrow x = \\pm 2$. Diện tích: $S = \\int_{-2}^2 (4 - x^2) dx = [4x - \\frac{x^3}{3}]_{-2}^2 = (8 - \\frac{8}{3}) - (-8 + \\frac{8}{3}) = \\frac{32}{3}\\text{ m}^2$."
+    },
+    {
+      "type": "short_answer",
+      "difficulty": "van_dung",
+      "content": "Một người gửi ngân hàng $100\\text{ triệu đồng}$ với lãi suất $6\\%/\\text{năm}$ theo thể thức lãi kép hàng năm. Hỏi sau ít nhất bao nhiêu năm người đó nhận được số tiền cả gốc lẫn lãi vượt quá $150\\text{ triệu đồng}$ (biết lãi suất không đổi trong suốt thời gian gửi)?",
+      "correct_answer": "7",
+      "accepted_answers": [
+        "7",
+        "7 năm"
+      ],
+      "points": 1,
+      "step_by_step_solution": "Số tiền sau $n$ năm là $A = 100(1 + 0,06)^n$. Để $A > 150 \\Leftrightarrow 1,06^n > 1,5 \\Leftrightarrow n > \\frac{\\ln 1,5}{\\ln 1,06} \\approx 6,958$. Vậy sau ít nhất 7 năm."
+    },
+    {
+      "type": "short_answer",
+      "difficulty": "van_dung_cao",
+      "content": "Một hộp đựng 6 quả cầu đỏ và 4 quả cầu xanh có kích thước giống nhau. Chọn ngẫu nhiên 3 quả cầu từ hộp. Tính xác suất để trong 3 quả cầu lấy ra có ít nhất một quả cầu màu đỏ. (Viết kết quả dưới dạng phân số tối giản $a/b$).",
+      "correct_answer": "29/30",
+      "accepted_answers": [
+        "29/30",
+        "$\\frac{29}{30}$"
+      ],
+      "points": 1,
+      "step_by_step_solution": "Số cách chọn 3 quả từ 10 quả: $n(\\Omega) = C_{10}^3 = 120$. Biến cố đối $A$: cả 3 quả đều màu xanh, số cách: $C_4^3 = 4$. Số cách có ít nhất 1 quả đỏ: $120 - 4 = 116$. Xác suất: $P = \\frac{116}{120} = \\frac{29}{30}$."
+    }
+  ]
+}

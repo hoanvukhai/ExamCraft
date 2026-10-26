@@ -1,0 +1,636 @@
+{
+  "section": "07",
+  "testedAt": "2026-10-26T09:32:20.221Z",
+  "evidence": [
+    {
+      "id": "T08-01",
+      "level": "🟡",
+      "name": "Tạo Lớp Mới loại bỏ trùng và dòng trống",
+      "result": "Đ",
+      "note": "Lớp tạo thành công với đúng 4 học sinh (loại 1 trùng, 1 trống)"
+    },
+    {
+      "id": "T08-02",
+      "level": "🟡",
+      "name": "Dán danh sách từ cột Excel",
+      "result": "Đ",
+      "note": "Phân tách danh sách theo ký tự xuống dòng mượt mà"
+    },
+    {
+      "id": "T08-03",
+      "level": "🟡",
+      "name": "Xem thông tin thẻ lớp",
+      "result": "Đ",
+      "note": "Thấy Mã lớp TESTLO5159, số học sinh, nút chép link và xem danh sách"
+    },
+    {
+      "id": "T08-04",
+      "level": "🟡",
+      "name": "Thêm học sinh mới và chặn trùng tên",
+      "result": "Đ",
+      "note": "Đã xác thực qua API học sinh"
+    },
+    {
+      "id": "T08-05",
+      "level": "🟡",
+      "name": "Tìm kiếm lớp học",
+      "result": "Đ",
+      "note": "Tìm kiếm lớp theo tên hoặc mã lớp chính xác"
+    },
+    {
+      "id": "T08-06",
+      "level": "🔴",
+      "name": "Cô lập danh sách lớp giữa giáo viên",
+      "result": "Đ",
+      "note": "gv2 không thấy bất kỳ lớp nào của gv1 (tests/http_student_identity.test.ts:96)"
+    },
+    {
+      "id": "T08-07",
+      "level": "🔴",
+      "name": "Cấp PIN 6 chữ số cho cả lớp",
+      "result": "Đ",
+      "note": "Cấp thành công 4 PIN 6 chữ số phân biệt, chỉ hiện 1 lần (tests/student_pin.test.ts:6)"
+    },
+    {
+      "id": "T08-08",
+      "level": "🔴",
+      "name": "Xuất PIN ra CSV và Excel",
+      "result": "Đ",
+      "note": "Hàm pinsToCsv giữ nguyên định dạng tiếng Việt UTF-8 BOM và đệm =\"004821\" chống mất số 0 (tests/student_pin.test.ts:13)"
+    },
+    {
+      "id": "T08-09",
+      "level": "🔴",
+      "name": "Chi tiết lớp không lộ mã PIN hay pinHash",
+      "result": "Đ",
+      "note": "API chỉ trả hasPin: true, giấu hoàn toàn pinHash và plaintext PIN (tests/http_student_identity.test.ts:86)"
+    },
+    {
+      "id": "T08-10",
+      "level": "🔴",
+      "name": "Cấp lại PIN cho từng học sinh",
+      "result": "Đ",
+      "note": "Học sinh nhận mã PIN mới, PIN cũ bị vô hiệu hóa (tests/http_student_identity.test.ts:94)"
+    },
+    {
+      "id": "T08-11",
+      "level": "🟡",
+      "name": "Thêm học sinh mới sau khi cấp PIN",
+      "result": "Đ",
+      "note": "Học sinh mới thêm hiển thị trạng thái Chưa có PIN"
+    },
+    {
+      "id": "T08-20",
+      "level": "🟡",
+      "name": "Mở thẻ giao bài",
+      "result": "Đ",
+      "note": "Giao diện đầy đủ tiêu đề, chọn lớp, kiểu bài, thời lượng, bảng xếp hạng"
+    },
+    {
+      "id": "T08-21",
+      "level": "🔴",
+      "name": "Giao bài làm tự do",
+      "result": "Đ",
+      "note": "Giao bài tự do thành công, phòng thi trực tuyến sẵn sàng với link /a/5762da1cac81783fdb243d3ffee19725"
+    },
+    {
+      "id": "T08-22",
+      "level": "🔴",
+      "name": "Giao bài cho lớp học chọn tên",
+      "result": "Đ",
+      "note": "Giao cho lớp TEST-Lop-7A ở chế độ chọn tên từ danh sách"
+    },
+    {
+      "id": "T08-23",
+      "level": "🔴",
+      "name": "Yêu cầu PIN của học sinh",
+      "result": "Đ",
+      "note": "Bật requirePin=true, học sinh bắt buộc nhập đúng PIN để làm bài (tests/http_student_identity.test.ts:54)"
+    },
+    {
+      "id": "T08-24",
+      "level": "🟡",
+      "name": "Làm tự do không dùng PIN",
+      "result": "Đ",
+      "note": "Tùy chọn PIN bị vô hiệu hóa khi giao chế độ tự do"
+    },
+    {
+      "id": "T08-25",
+      "level": "🔴",
+      "name": "Mã vào bài EXAM2026",
+      "result": "Đ",
+      "note": "Cấu hình mã vào bài thành công, học sinh phải nhập đúng joinCode (tests/assignment_options.test.ts)"
+    },
+    {
+      "id": "T08-26",
+      "level": "🟡",
+      "name": "Kiểm tra độ dài mã vào bài",
+      "result": "Đ",
+      "note": "Mã dưới 4 ký tự bị từ chối hợp lệ"
+    },
+    {
+      "id": "T08-27",
+      "level": "🟡",
+      "name": "Giờ mở ở tương lai",
+      "result": "Đ",
+      "note": "Học sinh vào sớm nhận thông báo phòng thi chưa đến giờ mở (tests/public_access.test.ts)"
+    },
+    {
+      "id": "T08-28",
+      "level": "🟡",
+      "name": "Giờ đóng đã qua",
+      "result": "Đ",
+      "note": "Học sinh không thể bắt đầu lượt mới khi bài thi đã hết hạn đóng"
+    },
+    {
+      "id": "T08-29",
+      "level": "🟡",
+      "name": "Giới hạn số lượt làm 1-10",
+      "result": "Đ",
+      "note": "Số lượt 0 hoặc trên 10 bị từ chối"
+    },
+    {
+      "id": "T08-30",
+      "level": "🟡",
+      "name": "Trộn câu hỏi và trộn đáp án",
+      "result": "Đ",
+      "note": "Tùy chọn shuffleQuestions và shuffleChoices phân bố thứ tự riêng cho từng thí sinh"
+    },
+    {
+      "id": "T08-31",
+      "level": "🔴",
+      "name": "Đề gốc sửa không làm đổi bài giao",
+      "result": "Đ",
+      "note": "Assignment đóng gói bản snapshot bất biến tại thời điểm giao bài (tests/http_student_identity.test.ts:37)"
+    },
+    {
+      "id": "T08-32",
+      "level": "🟡",
+      "name": "Danh sách bài đã giao",
+      "result": "Đ",
+      "note": "Liệt kê đầy đủ bài thi, lớp, thời gian, số lượt và mã vào bài"
+    },
+    {
+      "id": "T08-33",
+      "level": "🟡",
+      "name": "Điều hướng quay lại soạn đề",
+      "result": "Đ",
+      "note": "Nút điều hướng mượt mà"
+    },
+    {
+      "id": "T08-40",
+      "level": "🔴",
+      "name": "Học sinh vào làm bài tự do",
+      "result": "Đ",
+      "note": "Tạo bài làm thành công, đồng hồ đếm ngược kích hoạt"
+    },
+    {
+      "id": "T08-41",
+      "level": "🔴",
+      "name": "Để trống tên bị từ chối",
+      "result": "Đ",
+      "note": "Báo lỗi Vui lòng nhập họ tên, không tạo bài thi rác"
+    },
+    {
+      "id": "T08-42",
+      "level": "🔴",
+      "name": "Học sinh chọn tên trong danh sách lớp",
+      "result": "Đ",
+      "note": "Chọn đúng danh sách học sinh của lớp"
+    },
+    {
+      "id": "T08-43",
+      "level": "🔴",
+      "name": "Nhập đúng PIN do giáo viên cấp",
+      "result": "Đ",
+      "note": "PIN chính xác kích hoạt bài thi hợp lệ (tests/http_student_identity.test.ts:60)"
+    },
+    {
+      "id": "T08-44",
+      "level": "🔴",
+      "name": "Nhập sai PIN hoặc chưa có PIN",
+      "result": "Đ",
+      "note": "Bị từ chối 403 Forbidden, không cho vào phòng thi (tests/http_student_identity.test.ts:56)"
+    },
+    {
+      "id": "T08-45",
+      "level": "🟡",
+      "name": "Trộn thứ tự đề thi giữa các thí sinh",
+      "result": "Đ",
+      "note": "Các lượt làm khác nhau nhận thứ tự câu và phương án đảo ngẫu nhiên"
+    },
+    {
+      "id": "T08-46",
+      "level": "🔴",
+      "name": "Làm bài trên điện thoại 375px",
+      "result": "B",
+      "note": "Bỏ qua kiểm thử thiết bị vật lý: điện thoại 375px (dành cho người kiểm)"
+    },
+    {
+      "id": "T08-47",
+      "level": "🔴",
+      "name": "Chọn đáp án câu lựa chọn",
+      "result": "Đ",
+      "note": "Lựa chọn phương án cập nhật tức thời trên giao diện"
+    },
+    {
+      "id": "T08-48",
+      "level": "🔴",
+      "name": "Trả lời câu Đúng/Sai",
+      "result": "Đ",
+      "note": "Lưu từng ý đúng sai riêng biệt"
+    },
+    {
+      "id": "T08-49",
+      "level": "🔴",
+      "name": "Trả lời ngắn gõ 42,0",
+      "result": "Đ",
+      "note": "Chấp nhận cả 42 và 42,0 theo cấu hình accepted_answers"
+    },
+    {
+      "id": "T08-50",
+      "level": "🔴",
+      "name": "Nhập bài tự luận",
+      "result": "Đ",
+      "note": "Ghi nhận đoạn văn bản tự luận của thí sinh, đưa vào hàng đợi chấm tay"
+    },
+    {
+      "id": "T08-51",
+      "level": "🔴",
+      "name": "Trả lời câu ghép nối",
+      "result": "Đ",
+      "note": "Lưu các cặp ghép nối trái-phải của học sinh"
+    },
+    {
+      "id": "T08-52",
+      "level": "🔴",
+      "name": "Trả lời câu sắp xếp",
+      "result": "Đ",
+      "note": "Lưu chuỗi thứ tự sắp xếp các mục"
+    },
+    {
+      "id": "T08-53",
+      "level": "🟡",
+      "name": "Bảng câu hỏi nhảy câu",
+      "result": "Đ",
+      "note": "Điều hướng câu hỏi nhanh và đánh dấu câu đã làm"
+    },
+    {
+      "id": "T08-54",
+      "level": "🔴",
+      "name": "Tự động lưu nháp câu trả lời",
+      "result": "Đ",
+      "note": "Lưu nháp câu trả lời lên máy chủ định kỳ, F5 giữ nguyên"
+    },
+    {
+      "id": "T08-55",
+      "level": "🔴",
+      "name": "Mở lại link tiếp tục làm bài",
+      "result": "Đ",
+      "note": "Khôi phục trạng thái làm dở mượt mà"
+    },
+    {
+      "id": "T08-56",
+      "level": "🔴",
+      "name": "Mất mạng Wi-Fi khi làm bài",
+      "result": "B",
+      "note": "Bỏ qua: cần thao tác phần cứng ngắt Wi-Fi thiết bị thật (dành cho người kiểm)"
+    },
+    {
+      "id": "T08-57",
+      "level": "🔴",
+      "name": "Nộp bài thi thành công",
+      "result": "Đ",
+      "note": "Xác nhận nộp bài, chuyển trạng thái SUBMITTED thành công"
+    },
+    {
+      "id": "T08-58",
+      "level": "🔴",
+      "name": "Cảnh báo khi nộp còn câu chưa làm",
+      "result": "Đ",
+      "note": "Hiển thị modal cảnh báo số câu chưa hoàn thành trước khi chốt nộp"
+    },
+    {
+      "id": "T08-59",
+      "level": "🔴",
+      "name": "Bấm nộp nhiều lần idempotent",
+      "result": "Đ",
+      "note": "Cơ chế requestGate và trạng thái SUBMITTED chống ghi đè nộp trùng"
+    },
+    {
+      "id": "T08-60",
+      "level": "🔴",
+      "name": "Tự động nộp khi hết giờ",
+      "result": "Đ",
+      "note": "Đồng hồ đếm ngược hết giờ tự động kích hoạt nộp bài thi"
+    },
+    {
+      "id": "T08-61",
+      "level": "🔴",
+      "name": "Hết số lượt làm bài",
+      "result": "Đ",
+      "note": "Số lượt đã nộp = maxAttempts chặn bắt đầu lượt mới"
+    },
+    {
+      "id": "T08-62",
+      "level": "🟡",
+      "name": "Làm lượt tiếp theo khi còn lượt",
+      "result": "Đ",
+      "note": "Cho phép làm lượt 2 độc lập"
+    },
+    {
+      "id": "T08-63",
+      "level": "🔴",
+      "name": "Giấu đáp án khi đang làm bài",
+      "result": "Đ",
+      "note": "Loại bỏ hoàn toàn correct_answer và solution khỏi gói dữ liệu thí sinh nhận"
+    },
+    {
+      "id": "T08-64",
+      "level": "🔴",
+      "name": "Xem kết quả sau khi nộp",
+      "result": "Đ",
+      "note": "Hiển thị điểm tự động tính, câu tự luận hiện Chờ chấm"
+    },
+    {
+      "id": "T08-65",
+      "level": "🔴",
+      "name": "Cấu hình ẩn lời giải",
+      "result": "Đ",
+      "note": "Giấu hướng dẫn giải chi tiết khi giáo viên chưa cho phép"
+    },
+    {
+      "id": "T08-66",
+      "level": "🟡",
+      "name": "Bảng xếp hạng lớp",
+      "result": "Đ",
+      "note": "Bảng xếp hạng cập nhật điểm số và thứ hạng"
+    },
+    {
+      "id": "T08-67",
+      "level": "🟡",
+      "name": "Khóa bài thi khi học sinh đang làm",
+      "result": "Đ",
+      "note": "Khóa bài thi chặn thí sinh mới, thí sinh đang làm vẫn nộp được an toàn"
+    },
+    {
+      "id": "T08-68",
+      "level": "🔴",
+      "name": "Link bài thi không tồn tại",
+      "result": "Đ",
+      "note": "Báo Không thể truy cập bài thi"
+    },
+    {
+      "id": "T08-70",
+      "level": "🟡",
+      "name": "Mở cổng lớp học trực tuyến",
+      "result": "Đ",
+      "note": "Mở link /c/TESTLO5159 hiển thị danh sách bài thi và bài tập"
+    },
+    {
+      "id": "T08-71",
+      "level": "🟡",
+      "name": "Học sinh xem điểm theo tên",
+      "result": "Đ",
+      "note": "Xem trạng thái và điểm các bài đã nộp"
+    },
+    {
+      "id": "T08-72",
+      "level": "🔴",
+      "name": "Bảo mật điểm giữa các học sinh",
+      "result": "Đ",
+      "note": "Yêu cầu xác thực bảo mật trước khi mở bài thi của cá nhân"
+    },
+    {
+      "id": "T08-73",
+      "level": "🔴",
+      "name": "Link lớp sai mã",
+      "result": "Đ",
+      "note": "Mã lớp không hợp lệ trả về Không tìm thấy lớp học (404)"
+    },
+    {
+      "id": "T08-80",
+      "level": "🟡",
+      "name": "Danh sách bài đã giao",
+      "result": "Đ",
+      "note": "Hiển thị danh sách các bài thi đã giao"
+    },
+    {
+      "id": "T08-81",
+      "level": "🟡",
+      "name": "Thống kê kết quả thi",
+      "result": "Đ",
+      "note": "Hiển thị tổng số bài, đã nộp, điểm trung bình và phân bố điểm"
+    },
+    {
+      "id": "T08-82",
+      "level": "🔴",
+      "name": "Điểm chấm tự động",
+      "result": "Đ",
+      "note": "Điểm trắc nghiệm và trả lời ngắn khớp 100% barem điểm, tự luận ghi Tạm tính · chờ chấm"
+    },
+    {
+      "id": "T08-83",
+      "level": "🔴",
+      "name": "Điểm câu Đúng / Sai",
+      "result": "Đ",
+      "note": "Chấm điểm từng ý theo thang điểm phân định"
+    },
+    {
+      "id": "T08-84",
+      "level": "🔴",
+      "name": "Xem bài làm chi tiết của học sinh",
+      "result": "Đ",
+      "note": "Xác thực xem chi tiết bài làm"
+    },
+    {
+      "id": "T08-85",
+      "level": "🔴",
+      "name": "Chấm điểm và nhận xét câu tự luận",
+      "result": "Đ",
+      "note": "Chấm tự luận thành công (tests/manual_grading.test.ts)"
+    },
+    {
+      "id": "T08-86",
+      "level": "🔴",
+      "name": "Lịch sử sửa điểm bài thi",
+      "result": "Đ",
+      "note": "Ghi nhận lịch sử chỉnh sửa điểm số bảo đảm tính minh bạch (tests/manual_grade_revision.test.ts)"
+    },
+    {
+      "id": "T08-87",
+      "level": "🟡",
+      "name": "Phát hiện xung đột khi hai giáo viên cùng chấm",
+      "result": "Đ",
+      "note": "Chặn ghi đè điểm khi có xung đột phiên bản"
+    },
+    {
+      "id": "T08-88",
+      "level": "🟡",
+      "name": "Khóa bài thi",
+      "result": "Đ",
+      "note": "Khóa phòng thi thành công, nút chuyển thành Mở lại bài thi"
+    },
+    {
+      "id": "T08-89",
+      "level": "🟡",
+      "name": "Mở lại bài thi",
+      "result": "Đ",
+      "note": "Mở lại bài thi thành công"
+    },
+    {
+      "id": "T08-90",
+      "level": "🟡",
+      "name": "Sao chép liên kết thi",
+      "result": "Đ",
+      "note": "Sao chép đúng URL phòng thi trực tuyến"
+    },
+    {
+      "id": "T08-91",
+      "level": "🔴",
+      "name": "Xuất bảng điểm ra file CSV Excel",
+      "result": "Đ",
+      "note": "Xuất file CSV thành công, hiển thị đầy đủ danh sách học sinh và điểm từng câu"
+    },
+    {
+      "id": "T08-92",
+      "level": "🔴",
+      "name": "Chống chèn công thức Excel CSV Injection",
+      "result": "Đ",
+      "note": "Ký tự bắt đầu bằng = + - @ được tự động đệm an toàn triệt tiêu thực thi mã (tests/csv_cell.test.ts)"
+    },
+    {
+      "id": "T08-93",
+      "level": "🟡",
+      "name": "Báo cáo bài thi khảo sát / nhận xét",
+      "result": "Đ",
+      "note": "Hiển thị nhận xét không tính điểm số"
+    },
+    {
+      "id": "T08-94",
+      "level": "🟡",
+      "name": "Phân tích các câu hỏi học sinh hay làm sai",
+      "result": "Đ",
+      "note": "Mục mẹo sư phạm thống kê câu có tỷ lệ trả lời sai cao"
+    },
+    {
+      "id": "T08-95",
+      "level": "🔴",
+      "name": "Cô lập quản lý bài thi giữa các giáo viên",
+      "result": "Đ",
+      "note": "gv2 không thể xem hay quản lý bài giao của gv1 (404 Not Found)"
+    },
+    {
+      "id": "T08-100",
+      "level": "🔴",
+      "name": "Giao diện Sửa đáp án và chấm lại",
+      "result": "Đ",
+      "note": "Thấy danh sách câu trắc nghiệm, ô chọn đáp án mới, lý do và nút Xem trước"
+    },
+    {
+      "id": "T08-101",
+      "level": "🔴",
+      "name": "Bỏ trống lý do sửa đáp án bị từ chối",
+      "result": "Đ",
+      "note": "Từ chối 400: Cần lý do từ 3 ký tự (tests/answer_correction.test.ts)"
+    },
+    {
+      "id": "T08-102",
+      "level": "🔴",
+      "name": "Xem trước ảnh hưởng điểm số của học sinh",
+      "result": "Đ",
+      "note": "Hiển thị danh sách học sinh bị đổi điểm (scoreBefore -> scoreAfter), chưa ghi đè dữ liệu thật (tests/answer_correction.test.ts:21)"
+    },
+    {
+      "id": "T08-103",
+      "level": "🔴",
+      "name": "Đối chiếu xem trước thay đổi điểm",
+      "result": "Đ",
+      "note": "Điểm tự động được tính lại chính xác theo đáp án mới, bài chấm tay giữ nguyên"
+    },
+    {
+      "id": "T08-104",
+      "level": "🔴",
+      "name": "Khóa nút áp dụng khi chưa xem trước",
+      "result": "Đ",
+      "note": "Bắt buộc xác nhận xem trước và lý do trước khi kích hoạt chấm lại"
+    },
+    {
+      "id": "T08-105",
+      "level": "🔴",
+      "name": "Áp dụng Sửa đáp án và chấm lại",
+      "result": "Đ",
+      "note": "Cập nhật điểm thi chính thức trên toàn hệ thống và bảng điểm CSV"
+    },
+    {
+      "id": "T08-106",
+      "level": "🔴",
+      "name": "Điểm tự luận chấm tay không bị đổi",
+      "result": "Đ",
+      "note": "manualGradeState bảo vệ nguyên vẹn điểm giáo viên đã chấm tay (tests/answer_correction.test.ts)"
+    },
+    {
+      "id": "T08-107",
+      "level": "🔴",
+      "name": "Xem lịch sử sửa đáp án",
+      "result": "Đ",
+      "note": "Ghi nhận sự kiện sửa đáp án vào correctionHistory kèm người thực hiện, thời gian và lý do (tests/answer_correction.test.ts:50)"
+    },
+    {
+      "id": "T08-108",
+      "level": "🔴",
+      "name": "Lịch sử chấm điểm của từng học sinh",
+      "result": "Đ",
+      "note": "Thêm sự kiện regrade vào nhật ký điểm của học sinh bị ảnh hưởng"
+    },
+    {
+      "id": "T08-109",
+      "level": "🟡",
+      "name": "Áp dụng lại cùng đáp án",
+      "result": "Đ",
+      "note": "Áp dụng trùng lặp an toàn (idempotent), không làm thay đổi điểm"
+    },
+    {
+      "id": "T08-110",
+      "level": "🟡",
+      "name": "Thêm cách viết được chấp nhận cho câu trả lời ngắn",
+      "result": "Đ",
+      "note": "Bổ sung đáp án chấp nhận vào acceptedAnswers và cộng điểm cho học sinh viết đúng cách đó (tests/answer_correction.test.ts:33)"
+    },
+    {
+      "id": "T08-111",
+      "level": "🟡",
+      "name": "Từ chối sửa đáp án câu tự luận/ghép nối/sắp xếp",
+      "result": "Đ",
+      "note": "Từ chối rõ ràng với mã REGRADE_TYPE_UNSUPPORTED cho các dạng chưa hỗ trợ tự động chấm lại (tests/answer_correction.test.ts:43)"
+    },
+    {
+      "id": "T08-112",
+      "level": "🔴",
+      "name": "Học sinh đang làm dở không bị đổi",
+      "result": "Đ",
+      "note": "Chỉ các bài nộp trạng thái SUBMITTED được tính lại điểm, bài IN_PROGRESS giữ nguyên"
+    },
+    {
+      "id": "T08-113",
+      "level": "🔴",
+      "name": "Lượt làm mới áp dụng đáp án mới",
+      "result": "Đ",
+      "note": "Thí sinh nộp sau khi sửa đáp án được chấm theo barem đáp án mới"
+    },
+    {
+      "id": "T08-114",
+      "level": "🔴",
+      "name": "Bảo mật lý do và lịch sử sửa đáp án với học sinh",
+      "result": "Đ",
+      "note": "Giao diện và API học sinh không chứa dữ liệu lý do hay lịch sử sửa đáp án của giáo viên"
+    },
+    {
+      "id": "T08-115",
+      "level": "🔴",
+      "name": "Giáo viên khác không có quyền sửa đáp án",
+      "result": "Đ",
+      "note": "gv2 thử sửa đáp án bài của gv1 bị từ chối 404/403"
+    }
+  ]
+}

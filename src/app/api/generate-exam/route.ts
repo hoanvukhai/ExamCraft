@@ -9,9 +9,13 @@ import { executeWithKeyRotation, readProviderJson } from '@/lib/gemini-keys';
 import { apiErrorResponse } from '@/lib/api-error';
 import { generationPlanSchema, validateGeneratedExam } from '@/lib/generation-plan';
 import { buildGenerationPrompt } from '@/lib/generation-prompt';
+import { balanceChoiceOrder } from '@/lib/choice-balance';
 import type { Exam, Subject } from '@/types/exam';
 import { parseKnowledgePackage, knowledgeScopeContext } from '@/lib/knowledge-package';
 import { assertRequestAccount } from '@/lib/request-account';
+
+// Several AI calls in a row (long Word imports, full exams) need more than a serverless default.
+export const maxDuration = 300;
 
 export async function POST(req: NextRequest) {
   try {
@@ -34,6 +38,7 @@ export async function POST(req: NextRequest) {
     let result;
     try { result = validateGeneratedExam(readProviderJson(text), plan); }
     catch (error) { return NextResponse.json({ success: false, error: error instanceof Error ? error.message : 'AI chưa trả đúng cấu trúc; chưa áp dụng kết quả' }, { status: 422 }); }
+    result.questions = balanceChoiceOrder(result.questions);
     const now = new Date(), year = now.getMonth() >= 7 ? now.getFullYear() : now.getFullYear() - 1;
     const exam: Exam = { id: `draft_${randomUUID()}`, metadata: {
       title: result.title || 'Bản nháp mới', schoolName: '', departmentName: '', subject: plan.subject as Subject, grade: plan.grade, durationMinutes: plan.durationMinutes,

@@ -1,0 +1,85 @@
+{
+  "title": "Đề thi chọn học sinh giỏi cấp huyện môn Toán lớp 9 - Số học, Bất đẳng thức và Hình học nâng cao",
+  "questions": [
+    {
+      "type": "short_answer",
+      "difficulty": "van_dung_cao",
+      "content": "Tìm số nguyên tố $p$ duy nhất sao cho $p + 2$ và $p + 4$ cũng là các số nguyên tố.",
+      "correct_answer": "3",
+      "accepted_answers": [
+        "3",
+        "p=3"
+      ],
+      "points": 1.5,
+      "step_by_step_solution": "Nếu $p = 2$ thì $p + 2 = 4$ là hợp số (loại). Nếu $p = 3$ thì $p + 2 = 5$ và $p + 4 = 7$ đều là số nguyên tố (thỏa mãn). Nếu $p > 3$ thì $p$ có dạng $3k + 1$ hoặc $3k + 2$ ($k \\in \\mathbb{N}^*$). Với $p = 3k + 1 \\Rightarrow p + 2 = 3k + 3 = 3(k+1) \\,\\vdots\\, 3$ và $> 3$ nên là hợp số. Với $p = 3k + 2 \\Rightarrow p + 4 = 3k + 6 = 3(k+2) \\,\\vdots\\, 3$ và $> 3$ nên là hợp số. Vậy duy nhất $p = 3$."
+    },
+    {
+      "type": "short_answer",
+      "difficulty": "van_dung",
+      "content": "Rút gọn biểu thức $P = \\sqrt{x + 2\\sqrt{x - 1}} + \\sqrt{x - 2\\sqrt{x - 1}}$ khi biết $x = 5$.",
+      "correct_answer": "4",
+      "accepted_answers": [
+        "4",
+        "4.0",
+        "P=4"
+      ],
+      "points": 1.5,
+      "step_by_step_solution": "Ta có $x \\pm 2\\sqrt{x - 1} = (x - 1) \\pm 2\\sqrt{x - 1} + 1 = (\\sqrt{x - 1} \\pm 1)^2$. Do đó $P = |\\sqrt{x - 1} + 1| + |\\sqrt{x - 1} - 1|$. Với $x = 5 \\Rightarrow \\sqrt{x - 1} = \\sqrt{4} = 2$. Khi đó $P = (2 + 1) + |2 - 1| = 3 + 1 = 4$."
+    },
+    {
+      "type": "essay",
+      "difficulty": "van_dung_cao",
+      "content": "Cho ba số thực dương $x, y, z$ thỏa mãn điều kiện $xy + yz + zx = 3$. Chứng minh rằng:\n$$\\frac{x^3}{y + z} + \\frac{y^3}{z + x} + \\frac{z^3}{x + y} \\ge \\frac{3}{2}$$",
+      "rubric": [
+        {
+          "criterion": "Áp dụng bất đẳng thức Cauchy-Schwarz dạng Engel (hoặc kỹ thuật Cô-si ngược dấu)",
+          "maxPoints": 1
+        },
+        {
+          "criterion": "Đánh giá x^2 + y^2 + z^2 >= xy + yz + zx = 3 để suy ra điều phải chứng minh",
+          "maxPoints": 1
+        },
+        {
+          "criterion": "Chỉ rõ dấu đẳng thức xảy ra khi và chỉ khi x = y = z = 1",
+          "maxPoints": 0.5
+        }
+      ],
+      "points": 2.5,
+      "step_by_step_solution": "Áp dụng bất đẳng thức Cauchy-Schwarz dạng Engel:\n$$\\frac{x^3}{y + z} + \\frac{y^3}{z + x} + \\frac{z^3}{x + y} = \\frac{x^4}{xy + xz} + \\frac{y^4}{yz + yx} + \\frac{z^4}{zx + zy} \\ge \\frac{(x^2 + y^2 + z^2)^2}{2(xy + yz + zx)}$$\nLại có $x^2 + y^2 + z^2 \\ge xy + yz + zx = 3$.\nSuy ra:\n$$\\frac{(x^2 + y^2 + z^2)^2}{2(xy + yz + zx)} \\ge \\frac{3^2}{2 \\cdot 3} = \\frac{3}{2}$$\nDấu bằng xảy ra khi và chỉ khi $x = y = z = 1$."
+    },
+    {
+      "type": "essay",
+      "difficulty": "van_dung_cao",
+      "content": "Cho tam giác $ABC$ có ba góc nhọn nội tiếp đường tròn $(O; R)$. Các đường cao $AD, BE, CF$ cắt nhau tại trực tâm $H$.\na) Chứng minh rằng $H$ là tâm đường tròn nội tiếp của tam giác $DEF$.\nb) Chứng minh bán kính đường tròn ngoại tiếp tam giác $HBC$ bằng bán kính $R$ của đường tròn $(O)$.",
+      "rubric": [
+        {
+          "criterion": "Chứng minh tứ giác nội tiếp và suy ra DA, EB, FC lần lượt là các đường phân giác trong của tam giác DEF",
+          "maxPoints": 1.5
+        },
+        {
+          "criterion": "Vẽ điểm đối xứng của H qua BC hoặc sử dụng góc BAC + BHC = 180 độ cùng định lý sin để chứng minh R_{HBC} = R",
+          "maxPoints": 1
+        }
+      ],
+      "points": 2.5,
+      "step_by_step_solution": "a) Tứ giác $BFHD$ và $DHEC$ nội tiếp nên $\\widehat{FDH} = \\widehat{FBH}$ và $\\widehat{EDH} = \\widehat{ECH}$. Mà $\\widehat{ABD} = \\widehat{ACD}$ (cùng phụ $\\widehat{BAC}$) nên $\\widehat{FDH} = \\widehat{EDH}$, do đó $DH$ là phân giác góc $\\widehat{FDE}$. Tương tự $EH, FH$ là phân giác của các góc $\\widehat{DEF}, \\widehat{DFE}$. Vậy $H$ là tâm đường tròn nội tiếp $\\Delta DEF$.\nb) Ta có $\\widehat{BHC} = 180^\\circ - \\widehat{BAC}$. Theo định lý $\\sin$ trong $\\Delta HBC$:\n$$2R_{HBC} = \\frac{BC}{\\sin \\widehat{BHC}} = \\frac{BC}{\\sin(180^\\circ - \\widehat{BAC})} = \\frac{BC}{\\sin \\widehat{BAC}} = 2R \\Rightarrow R_{HBC} = R$$."
+    },
+    {
+      "type": "essay",
+      "difficulty": "van_dung_cao",
+      "content": "Tìm tất cả các cặp số nguyên $(x; y)$ thỏa mãn phương trình:\n$$x^2 - xy - 5x + 5y + 2 = 0$$",
+      "rubric": [
+        {
+          "criterion": "Biến đổi phân tích đa thức thành nhân tử đưa về dạng (x - 5)(x - y) = -2",
+          "maxPoints": 1
+        },
+        {
+          "criterion": "Xét đủ 4 trường hợp ước số của -2 và giải tìm đúng 4 nghiệm (6; 8), (4; 2), (7; 8), (3; 2)",
+          "maxPoints": 1
+        }
+      ],
+      "points": 2,
+      "step_by_step_solution": "Phương trình tương đương:\n$$x(x - y) - 5(x - y) = -2 \\Leftrightarrow (x - 5)(x - y) = -2$$\nVì $x, y \\in \\mathbb{Z}$ nên $x - 5$ và $x - y$ là các ước của $-2 \\in \\{1; -1; 2; -2\\}$.\n- TH1: $x - 5 = 1 \\Rightarrow x = 6$. Khi đó $6 - y = -2 \\Rightarrow y = 8$.\n- TH2: $x - 5 = -1 \\Rightarrow x = 4$. Khi đó $4 - y = 2 \\Rightarrow y = 2$.\n- TH3: $x - 5 = 2 \\Rightarrow x = 7$. Khi đó $7 - y = -1 \\Rightarrow y = 8$.\n- TH4: $x - 5 = -2 \\Rightarrow x = 3$. Khi đó $3 - y = 1 \\Rightarrow y = 2$.\nVậy các cặp nghiệm nguyên $(x; y)$ là: $(6; 8), (4; 2), (7; 8), (3; 2)$."
+    }
+  ]
+}

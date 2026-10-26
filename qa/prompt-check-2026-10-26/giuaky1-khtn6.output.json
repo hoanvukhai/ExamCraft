@@ -1,0 +1,191 @@
+{
+  "title": "Đề kiểm tra giữa học kì I môn KHTN lớp 6 - Các phép đo, chất và sự biến đổi của chất",
+  "questions": [
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Đơn vị đo độ dài chuẩn trong hệ đơn vị đo lường hợp pháp của nước ta là:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "Mét (m)"
+        },
+        {
+          "key": "B",
+          "text": "Centimét (cm)"
+        },
+        {
+          "key": "C",
+          "text": "Milimét (mm)"
+        },
+        {
+          "key": "D",
+          "text": "Kilômét (km)"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "Trong hệ đo lường SI và quy định hợp pháp của Việt Nam, đơn vị đo độ dài cơ bản là mét (m)."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Để đo khối lượng của một vật, người ta dùng dụng cụ nào sau đây?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "Cân"
+        },
+        {
+          "key": "B",
+          "text": "Thước dây"
+        },
+        {
+          "key": "C",
+          "text": "Nhiệt kế"
+        },
+        {
+          "key": "D",
+          "text": "Đồng hồ bấm giây"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "Cân là dụng cụ chuyên dùng để đo khối lượng."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Để đo thể tích của một lượng chất lỏng khoảng $50\\text{ ml}$, dụng cụ đo thích hợp nhất là:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "Ống đong (bình chia độ) có GHĐ $100\\text{ ml}$ và ĐCNN $1\\text{ ml}$"
+        },
+        {
+          "key": "B",
+          "text": "Bình tràn dung tích $500\\text{ ml}$"
+        },
+        {
+          "key": "C",
+          "text": "Cốc thủy tinh không có vạch chia"
+        },
+        {
+          "key": "D",
+          "text": "Ống nhỏ giọt"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "Bình chia độ có GHĐ $100\\text{ ml}$ và ĐCNN $1\\text{ ml}$ đảm bảo vừa đo được $50\\text{ ml}$ vừa cho độ chính xác cao."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Quá trình nào sau đây thể hiện tính chất hóa học của chất?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "Thanh sắt để ngoài không khí ẩm bị gỉ sét thành chất màu nâu đỏ."
+        },
+        {
+          "key": "B",
+          "text": "Nước đá tan chảy thành nước lỏng ở nhiệt độ phòng."
+        },
+        {
+          "key": "C",
+          "text": "Hòa tan muối ăn vào nước thu được dung dịch nước muối."
+        },
+        {
+          "key": "D",
+          "text": "Cồn bay hơi khi mở nắp lọ."
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "Thanh sắt bị gỉ tạo ra chất mới (oxit sắt) nên thể hiện tính chất hóa học; các trường hợp còn lại chỉ là biến đổi trạng thái vật lý."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Hiện tượng nào sau đây là hiện tượng vật lý?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "Nến cháy sinh ra khí cacbonic và hơi nước"
+        },
+        {
+          "key": "B",
+          "text": "Sữa tươi để lâu ngoài không khí bị chua"
+        },
+        {
+          "key": "C",
+          "text": "Thủy tinh nóng chảy được thổi thành lọ hoa"
+        },
+        {
+          "key": "D",
+          "text": "Thịt để lâu ngày bị ôi thiu"
+        }
+      ],
+      "correct_answer": "C",
+      "points": 1,
+      "step_by_step_solution": "Thủy tinh nóng chảy chỉ thay đổi thể trạng từ rắn sang lỏng rồi tạo hình, không sinh ra chất mới nên là hiện tượng vật lý."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Khi đo nhiệt độ cơ thể bằng nhiệt kế y tế thủy ngân, thao tác nào sau đây là đúng?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "Vẩy mạnh nhiệt kế trước khi đo để thủy ngân tụt xuống dưới vạch $35^\\circ\\text{C}$."
+        },
+        {
+          "key": "B",
+          "text": "Nhúng nhiệt kế vào nước sôi $100^\\circ\\text{C}$ để khử trùng ngay trước khi cặp."
+        },
+        {
+          "key": "C",
+          "text": "Rút nhiệt kế ra khỏi nách và chờ 10 phút sau mới đọc kết quả."
+        },
+        {
+          "key": "D",
+          "text": "Cầm tay vào bầu thủy ngân khi đọc số chỉ trên nhiệt kế."
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "Trước khi đo nhiệt độ bằng nhiệt kế y tế, cần vẩy nhẹ để cột thủy ngân tụt xuống dưới mức đo nhỏ nhất."
+    },
+    {
+      "type": "short_answer",
+      "difficulty": "van_dung",
+      "content": "Một bình chia độ đang chứa $50\\text{ ml}$ nước. Người ta thả chìm hoàn toàn một hòn sỏi vào bình thì thấy mực nước dâng lên vạch $68\\text{ ml}$. Tính thể tích của hòn sỏi theo đơn vị xăngtimét khối ($\\text{cm}^3$, biết $1\\text{ ml} = 1\\text{ cm}^3$).",
+      "correct_answer": "18",
+      "accepted_answers": [
+        "18",
+        "18 cm3",
+        "18cm3"
+      ],
+      "points": 2,
+      "step_by_step_solution": "Thể tích hòn sỏi bằng thể tích nước dâng lên: $V = 68 - 50 = 18\\text{ ml} = 18\\text{ cm}^3$."
+    },
+    {
+      "type": "essay",
+      "difficulty": "van_dung",
+      "content": "Trình bày các bước thực hiện để đo chiều dài của một cuốn sách Khoa học tự nhiên 6 bằng thước kẻ có giới hạn đo $30\\text{ cm}$ và độ chia nhỏ nhất $1\\text{ mm}$. Nêu rõ cách đặt thước và cách đặt mắt đọc kết quả để tránh sai số.",
+      "rubric": [
+        {
+          "criterion": "Nêu đủ các bước: ước lượng, chọn thước, đặt thước dọc theo chiều dài với vạch số 0 trùng 1 đầu sách",
+          "maxPoints": 1
+        },
+        {
+          "criterion": "Nêu quy tắc đặt mắt nhìn vuông góc với cạnh thước và đọc/ghi kết quả theo vạch chia gần nhất",
+          "maxPoints": 1
+        }
+      ],
+      "points": 2,
+      "step_by_step_solution": "Các bước đo:\n1. Ước lượng chiều dài cuốn sách khoảng $25\\text{ cm}$.\n2. Chọn thước kẻ có GHĐ $30\\text{ cm}$ và ĐCNN $1\\text{ mm}$ là phù hợp.\n3. Đặt thước dọc theo chiều dài mép sách, sao cho vạch số 0 của thước trùng với một đầu cuốn sách.\n4. Đặt mắt nhìn vuông góc với cạnh thước tại đầu kia của cuốn sách.\n5. Đọc và ghi kết quả đo theo vạch chia gần nhất với đầu kia của cuốn sách kèm theo đơn vị đo (ví dụ: $26,5\\text{ cm}$)."
+    }
+  ]
+}

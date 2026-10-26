@@ -5,7 +5,7 @@ Cập nhật **26/10/2026**. Viết đè mỗi đợt; bản cũ giữ trong Git
 ## 1. Mốc hiện tại
 
 - **Tiến độ CV: 70/78 đạt đủ tiêu chí; 3 ngoại lệ chấp nhận có phạm vi (CV017, 065, 066), không tính đạt** (thêm CV014, 015, 028, 077, CV025, 033, 039, 041, 053 ngày 25-26/10). Mức "đạt trong phạm vi pilot" vẫn tính riêng, không cộng. Mỗi lần đóng có dòng "Nghiệm thu" nêu test và giới hạn; nhật ký ở [CV_CLOSURE_REVIEW](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md).
-- **Phân công:** Claude chỉ đạo và duyệt (giữ checklist, hồ sơ 02, ASSIGNMENTS.json, BATCH_REVIEWS.json); Codex làm mã/build/DB thử/trình duyệt, không tự tick; Gemini chỉ đọc mã và viết tài liệu, **phải kiểm lại bằng cách tự mở mã** (gen 15 có 5/8 tệp bị từ chối dù công cụ kiểm đều đạt). Việc đang giao: `qa/ai-review/coordination/messages/claude-codex-20261025T150749Z-*.md` (Codex gen 16) và `claude-gemini-20261025T150749Z-*.md` (Gemini gen 16).
+- **Phân công:** Claude chỉ đạo và duyệt (giữ checklist, hồ sơ 02, ASSIGNMENTS.json, BATCH_REVIEWS.json); Codex làm mã/build/DB thử/trình duyệt, không tự tick; Gemini chỉ đọc mã và viết tài liệu, **phải kiểm lại bằng cách tự mở mã** (gen 15 có 5/8 tệp bị từ chối dù công cụ kiểm đều đạt). Gemini đã nộp báo cáo test 26/10 (nghiệm thu một phần, mục 3).
 - **Đợt 26/10:** Codex gen 15: lint sạch và vào CI, F19 kho đề (sửa hai lỗi thật), migration từ checkout sạch, gom log thô vào `chay-tho/`, kiểm nguồn nhập (sửa lộ khóa số). Claude chạy lại kiểm nhanh: kiểu, lint, SAFE đạt. Bảng môn–lớp nay sinh bằng máy (`scripts/catalog-table.cjs`) có test chống mất môn.
 - Không ghi DB chính, không gọi AI thật, không đổi schema, không push. `main` vẫn mốc cũ.
 
@@ -20,11 +20,11 @@ Cập nhật **26/10/2026**. Viết đè mỗi đợt; bản cũ giữ trong Git
 
 ## 3. Hàng đợi tiếp nối
 
-1. **Chờ Codex gen 16:** sửa trong xem trước nhập + F20 (CV039), nguồn từng câu và `shareable=false` khi nhập (CV041), hủy yêu cầu AI (CV033), rà CV025, F21 AI trong phiên cộng tác (CV053), `npm run ci` đầy đủ.
-2. **Chờ Gemini gen 16:** viết lại HOP_DONG_KHAI_NIEM (CV007), sửa LOI_DA_BAO (CV006) và MAU_LUONG (CV004), hai đề mẫu THPT (CV004/046), sửa mâu thuẫn dữ liệu học sinh trong thiết kế Drive (CV075).
-3. **CV051 — chủ dự án đồng ý làm (26/10):** thêm cột phiên bản/giải quyết cho `ExamComment`. Làm **sau khi Codex gen 16 xong** (tránh đổi Prisma client giữa lượt build): sao lưu DB chính bằng `backup.ps1` → áp DB thử, chạy test → áp DB chính → tính năng + test.
-4. **Claude tự làm:** rà từng CV còn mở theo đúng "Đạt khi", CV078 cuối cùng. CV077 đã đóng.
-5. **Chủ dự án xem bằng mắt khi test toàn bộ:** CV026, 043, 044, 046, 076 (Word thật, in thật) theo [kịch bản kiểm tay](../huong-dan/KICH_BAN_KIEM_TAY_TOAN_DU_AN.md).
+1. **Chủ dự án đưa lên Vercel** theo [TRIEN_KHAI_VERCEL](../huong-dan/TRIEN_KHAI_VERCEL.md), cho giáo viên và mình test thử; lỗi ghi vào [PHIEU_GHI_LOI](../huong-dan/PHIEU_GHI_LOI.md). Bản test đầy đủ ở [ban-test-day-du](../huong-dan/ban-test-day-du/00_HUONG_DAN_DUNG_VA_CHUAN_BI.md).
+2. **Claude còn nợ:** `npm run ci` đầy đủ sau các thay đổi 26/10 (xáo đáp án sinh đề, `maxDuration`, lời nhắc sinh đề tách riêng). Cần dừng máy chủ thử cũ trên cổng 3117, việc này chờ chủ dự án đồng ý. Đã đạt riêng: kiểm kiểu, lint (0 lỗi), test mới của các tệp vừa đổi.
+3. **Chạy AI thật khi hạn mức hồi (khoảng 14:00 giờ VN):** 6 môn chưa chạy (Âm nhạc, Mĩ thuật, GDTC, HĐ trải nghiệm, Ngoại ngữ khác, Tiếng dân tộc) để xác nhận lỗi trường `null`; đo xu hướng đáp án A của Gemini thật; nhập Word có ảnh thật. Sau đó xóa tệp khóa ở thư mục tạm.
+4. **Việc của người:** CV044, 068, 071, 076, 078; ngoại lệ chấp nhận CV017, 065, 066. Soát mắt các dòng 🔴 dạng nhìn thấy, Word thật, in giấy, 375px, ngắt mạng; thẩm định chuyên môn 9B–9P và độ khó theo kỳ thi.
+5. **Kết quả Gemini 26/10:** test bản đầy đủ 425 Đ, 0 K, 94 B, 171 chưa làm (nghiệm thu một phần: nhiều dòng Đ chỉ dựa trên đọc mã, xem [BAO_CAO](../../qa/test-run-2026-10-26-gemini/BAO_CAO.md)); kiểm lời nhắc theo lớp và kỳ thi 25/25 nhận, xem [DANH_GIA_CUA_CLAUDE](../../qa/prompt-check-2026-10-26/DANH_GIA_CUA_CLAUDE.md).
 
 ## 4. Môi trường
 

@@ -1,0 +1,241 @@
+{
+  "title": "Đề thi tuyển sinh vào lớp 10 môn Tiếng Anh - Ngữ pháp, từ vựng và đọc hiểu",
+  "questions": [
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Choose the word whose underlined part is pronounced differently from that of the others:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "visited"
+        },
+        {
+          "key": "B",
+          "text": "played"
+        },
+        {
+          "key": "C",
+          "text": "cleaned"
+        },
+        {
+          "key": "D",
+          "text": "stayed"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "\"visited\" has \"-ed\" pronounced as /ɪd/, while \"played\", \"cleaned\", \"stayed\" have \"-ed\" pronounced as /d/."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Choose the word that has a different stress pattern from the others:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "beautiful"
+        },
+        {
+          "key": "B",
+          "text": "important"
+        },
+        {
+          "key": "C",
+          "text": "delicious"
+        },
+        {
+          "key": "D",
+          "text": "convenient"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "\"beautiful\" is stressed on the first syllable ('beautiful), while the others are stressed on the second syllable (im'portant, de'licious, con'venient)."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "We have lived in this city ______ 2015.",
+      "choices": [
+        {
+          "key": "A",
+          "text": "since"
+        },
+        {
+          "key": "B",
+          "text": "for"
+        },
+        {
+          "key": "C",
+          "text": "in"
+        },
+        {
+          "key": "D",
+          "text": "at"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "We use \"since\" with a specific point in time (2015) in present perfect tense."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "If it ______ sunny tomorrow, we will go for a picnic in the park.",
+      "choices": [
+        {
+          "key": "A",
+          "text": "is"
+        },
+        {
+          "key": "B",
+          "text": "will be"
+        },
+        {
+          "key": "C",
+          "text": "was"
+        },
+        {
+          "key": "D",
+          "text": "were"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "First conditional structure: If + S + V(present simple), S + will + V(bare)."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "The woman ______ lives next door to my house is a famous doctor.",
+      "choices": [
+        {
+          "key": "A",
+          "text": "who"
+        },
+        {
+          "key": "B",
+          "text": "which"
+        },
+        {
+          "key": "C",
+          "text": "whom"
+        },
+        {
+          "key": "D",
+          "text": "whose"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "We use \"who\" as a relative pronoun referring to a person (\"The woman\") acting as the subject of the clause."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Could you please ______ after my cat while I am on vacation?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "look"
+        },
+        {
+          "key": "B",
+          "text": "take"
+        },
+        {
+          "key": "C",
+          "text": "give"
+        },
+        {
+          "key": "D",
+          "text": "put"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "Phrasal verb \"look after\" means to take care of someone or something."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Read the passage and answer the question:\n\"Renewable energy comes from natural sources that are constantly replenished. Solar power captures energy from the sun, while wind turbines generate electricity from wind currents. Unlike fossil fuels, these green sources do not produce greenhouse gas emissions, helping combat climate change.\"\nAccording to the passage, why is renewable energy beneficial?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "It does not produce greenhouse gas emissions and helps combat climate change."
+        },
+        {
+          "key": "B",
+          "text": "It relies heavily on fossil fuel reserves."
+        },
+        {
+          "key": "C",
+          "text": "It can only be generated during the daytime."
+        },
+        {
+          "key": "D",
+          "text": "It increases harmful carbon emissions."
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "The passage states: \"these green sources do not produce greenhouse gas emissions, helping combat climate change.\""
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "What does the word \"replenished\" in the passage closest in meaning to?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "renewed"
+        },
+        {
+          "key": "B",
+          "text": "exhausted"
+        },
+        {
+          "key": "C",
+          "text": "wasted"
+        },
+        {
+          "key": "D",
+          "text": "damaged"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "\"Replenished\" means filled up again, closest in meaning to \"renewed\"."
+    },
+    {
+      "type": "short_answer",
+      "difficulty": "van_dung",
+      "content": "Rewrite the following sentence in passive voice:\n\"They built this bridge in 2020.\" -> \"This bridge ..............................\"",
+      "correct_answer": "was built in 2020",
+      "accepted_answers": [
+        "was built in 2020",
+        "was built in 2020.",
+        "This bridge was built in 2020.",
+        "This bridge was built in 2020"
+      ],
+      "points": 1,
+      "step_by_step_solution": "Past simple passive: S + was/were + V3/ed + (by O) + time. Answer: \"was built in 2020\"."
+    },
+    {
+      "type": "short_answer",
+      "difficulty": "van_dung",
+      "content": "Rewrite the following sentence using a wish clause:\n\"I do not have enough money to buy that laptop.\" -> \"I wish I ..............................\"",
+      "correct_answer": "had enough money to buy that laptop",
+      "accepted_answers": [
+        "had enough money to buy that laptop",
+        "had enough money to buy that laptop.",
+        "I wish I had enough money to buy that laptop.",
+        "I wish I had enough money to buy that laptop"
+      ],
+      "points": 1,
+      "step_by_step_solution": "Present wish structure: S + wish + S + V(past simple). Answer: \"had enough money to buy that laptop\"."
+    }
+  ]
+}

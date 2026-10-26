@@ -1,0 +1,128 @@
+{
+  "title": "Đề kiểm tra thường kỳ Vật lý lớp 11 - Dao động điều hòa",
+  "questions": [
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Trong phương trình dao động điều hòa $x = A \\cos(\\omega t + \\varphi)$, đại lượng $\\omega$ được gọi là:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "Tần số góc của dao động"
+        },
+        {
+          "key": "B",
+          "text": "Biên độ dao động"
+        },
+        {
+          "key": "C",
+          "text": "Chu kì dao động"
+        },
+        {
+          "key": "D",
+          "text": "Pha ban đầu của dao động"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 2,
+      "step_by_step_solution": "Trong dao động điều hòa, $\\omega$ là tần số góc (đơn vị rad/s)."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Một vật dao động điều hòa với phương trình $x = 6 \\cos(4\\pi t + \\frac{\\pi}{3})\\text{ cm}$. Biên độ dao động của vật là:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "$6\\text{ cm}$"
+        },
+        {
+          "key": "B",
+          "text": "$4\\text{ cm}$"
+        },
+        {
+          "key": "C",
+          "text": "$12\\text{ cm}$"
+        },
+        {
+          "key": "D",
+          "text": "$3\\text{ cm}$"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 2,
+      "step_by_step_solution": "Biên độ dao động là $A = 6\\text{ cm}$."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Vận tốc của một vật dao động điều hòa có độ lớn cực đại khi vật đi qua vị trí nào?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "Vị trí cân bằng"
+        },
+        {
+          "key": "B",
+          "text": "Vị trí biên dương"
+        },
+        {
+          "key": "C",
+          "text": "Vị trí biên âm"
+        },
+        {
+          "key": "D",
+          "text": "Vị trí có li độ $x = \\frac{A}{2}$"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 2,
+      "step_by_step_solution": "Tại vị trí cân bằng ($x = 0$), thế năng bằng 0 và động năng cực đại nên vận tốc có độ lớn cực đại $v_{\\max} = \\omega A$."
+    },
+    {
+      "type": "true_false_group",
+      "difficulty": "thong_hieu",
+      "content": "Một chất điểm dao động điều hòa với phương trình $x = 5 \\cos(10\\pi t - \\frac{\\pi}{4})\\text{ cm}$ ($t$ tính bằng giây). Các phát biểu sau đúng hay sai?",
+      "sub_questions": [
+        {
+          "key": "a",
+          "content": "Biên độ dao động của chất điểm là $5\\text{ cm}$.",
+          "isCorrect": true,
+          "explanation": "Biên độ $A = 5\\text{ cm}$."
+        },
+        {
+          "key": "b",
+          "content": "Chu kì dao động của chất điểm là $0,2\\text{ s}$.",
+          "isCorrect": true,
+          "explanation": "$T = \\frac{2\\pi}{\\omega} = \\frac{2\\pi}{10\\pi} = 0,2\\text{ s}$."
+        },
+        {
+          "key": "c",
+          "content": "Pha ban đầu của dao động là $\\frac{\\pi}{4}\\text{ rad}$.",
+          "isCorrect": false,
+          "explanation": "Pha ban đầu là $-\\frac{\\pi}{4}\\text{ rad}$."
+        },
+        {
+          "key": "d",
+          "content": "Tốc độ cực đại của chất điểm là $50\\pi\\text{ cm/s}$.",
+          "isCorrect": true,
+          "explanation": "$v_{\\max} = \\omega A = 10\\pi \\cdot 5 = 50\\pi\\text{ cm/s}$."
+        }
+      ],
+      "points": 2,
+      "step_by_step_solution": "a: Đúng ($A=5$). b: Đúng ($T=0,2s$). c: Sai (pha ban đầu $-\\pi/4$). d: Đúng ($v_{\\max} = 50\\pi$)."
+    },
+    {
+      "type": "short_answer",
+      "difficulty": "van_dung",
+      "content": "Một con lắc lò xo gồm lò xo có độ cứng $k = 100\\text{ N/m}$ và vật nhỏ có khối lượng $m = 250\\text{ g}$. Tính tần số góc dao động riêng của con lắc (đơn vị rad/s).",
+      "correct_answer": "20",
+      "accepted_answers": [
+        "20",
+        "20 rad/s"
+      ],
+      "points": 2,
+      "step_by_step_solution": "Đổi $m = 250\\text{ g} = 0,25\\text{ kg}$. Tần số góc: $\\omega = \\sqrt{\\frac{k}{m}} = \\sqrt{\\frac{100}{0,25}} = \\sqrt{400} = 20\\text{ rad/s}$."
+    }
+  ]
+}

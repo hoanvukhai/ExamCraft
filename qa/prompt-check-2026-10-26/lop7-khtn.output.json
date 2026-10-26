@@ -1,0 +1,96 @@
+{
+  "title": "Đề kiểm tra thường kỳ KHTN lớp 7 - Nguyên tử, phân tử và tốc độ chuyển động",
+  "questions": [
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Hạt nhân nguyên tử được cấu tạo bởi các loại hạt nào sau đây?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "Proton và neutron"
+        },
+        {
+          "key": "B",
+          "text": "Proton và electron"
+        },
+        {
+          "key": "C",
+          "text": "Neutron và electron"
+        },
+        {
+          "key": "D",
+          "text": "Chỉ có proton"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 2.5,
+      "step_by_step_solution": "Hạt nhân nguyên tử nằm ở tâm nguyên tử, gồm các hạt proton mang điện tích dương và neutron không mang điện."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Công thức tính tốc độ chuyển động của một vật là:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "$v = \\frac{s}{t}$"
+        },
+        {
+          "key": "B",
+          "text": "$v = s \\cdot t$"
+        },
+        {
+          "key": "C",
+          "text": "$v = \\frac{t}{s}$"
+        },
+        {
+          "key": "D",
+          "text": "$s = \\frac{v}{t}$"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 2.5,
+      "step_by_step_solution": "Tốc độ chuyển động bằng quãng đường đi được chia cho thời gian đi quãng đường đó: $v = \\frac{s}{t}$."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Một người đi xe máy đi được quãng đường $60\\text{ km}$ trong thời gian $1,5\\text{ giờ}$. Tốc độ của xe máy là:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "$40\\text{ km/h}$"
+        },
+        {
+          "key": "B",
+          "text": "$45\\text{ km/h}$"
+        },
+        {
+          "key": "C",
+          "text": "$90\\text{ km/h}$"
+        },
+        {
+          "key": "D",
+          "text": "$30\\text{ km/h}$"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 2.5,
+      "step_by_step_solution": "Tốc độ của xe máy: $v = \\frac{s}{t} = \\frac{60}{1,5} = 40\\text{ km/h}$."
+    },
+    {
+      "type": "short_answer",
+      "difficulty": "van_dung",
+      "content": "Một bạn học sinh đi bộ từ nhà đến trường với tốc độ không đổi $5\\text{ km/h}$. Biết thời gian đi là $0,4\\text{ giờ}$. Tính quãng đường từ nhà bạn học sinh đến trường (theo đơn vị kilômét).",
+      "correct_answer": "2",
+      "accepted_answers": [
+        "2",
+        "2 km",
+        "2,0"
+      ],
+      "points": 2.5,
+      "step_by_step_solution": "Quãng đường đi được là: $s = v \\cdot t = 5 \\cdot 0,4 = 2\\text{ km}$."
+    }
+  ]
+}

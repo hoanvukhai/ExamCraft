@@ -1,0 +1,155 @@
+{
+  "title": "Đề khảo sát năng lực đầu vào lớp 6 môn Toán - Phân số, số thập phân, hình học và toán có lời văn",
+  "questions": [
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Viết số thích hợp vào chỗ chấm: $2\\text{ m}^2\\; 5\\text{ dm}^2 = ...\\text{ m}^2$.",
+      "choices": [
+        {
+          "key": "A",
+          "text": "$2,05\\text{ m}^2$"
+        },
+        {
+          "key": "B",
+          "text": "$2,5\\text{ m}^2$"
+        },
+        {
+          "key": "C",
+          "text": "$2,005\\text{ m}^2$"
+        },
+        {
+          "key": "D",
+          "text": "$25\\text{ m}^2$"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "Vì $1\\text{ m}^2 = 100\\text{ dm}^2$ nên $5\\text{ dm}^2 = \\frac{5}{100}\\text{ m}^2 = 0,05\\text{ m}^2$. Do đó $2\\text{ m}^2\\; 5\\text{ dm}^2 = 2,05\\text{ m}^2$."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Tìm $15\\%$ của $240\\text{ kg}$. Kết quả là:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "$36\\text{ kg}$"
+        },
+        {
+          "key": "B",
+          "text": "$32\\text{ kg}$"
+        },
+        {
+          "key": "C",
+          "text": "$40\\text{ kg}$"
+        },
+        {
+          "key": "D",
+          "text": "$24\\text{ kg}$"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "$15\\%$ của $240\\text{ kg}$ là: $240 \\times 15 : 100 = 36\\text{ kg}$."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Một hình tròn có bán kính $r = 4\\text{ cm}$. Diện tích của hình tròn đó là:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "$50,24\\text{ cm}^2$"
+        },
+        {
+          "key": "B",
+          "text": "$25,12\\text{ cm}^2$"
+        },
+        {
+          "key": "C",
+          "text": "$12,56\\text{ cm}^2$"
+        },
+        {
+          "key": "D",
+          "text": "$100,48\\text{ cm}^2$"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "Diện tích hình tròn: $S = r \\times r \\times 3,14 = 4 \\times 4 \\times 3,14 = 50,24\\text{ cm}^2$."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "van_dung",
+      "content": "Một ô tô đi quãng đường dài $105\\text{ km}$ với vận tốc không đổi $42\\text{ km/h}$. Thời gian ô tô đi hết quãng đường đó là:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "2 giờ 30 phút"
+        },
+        {
+          "key": "B",
+          "text": "2 giờ 15 phút"
+        },
+        {
+          "key": "C",
+          "text": "2 giờ 45 phút"
+        },
+        {
+          "key": "D",
+          "text": "2,3 giờ"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "Thời gian đi là: $t = s : v = 105 : 42 = 2,5\\text{ giờ} = 2\\text{ giờ } 30\\text{ phút}$."
+    },
+    {
+      "type": "short_answer",
+      "difficulty": "thong_hieu",
+      "content": "Tính giá trị biểu thức: $A = \\left(\\frac{3}{5} + \\frac{1}{2}\\right) \\times \\frac{10}{11}$.",
+      "correct_answer": "1",
+      "accepted_answers": [
+        "1",
+        "1.0"
+      ],
+      "points": 1.5,
+      "step_by_step_solution": "Ta có $\\frac{3}{5} + \\frac{1}{2} = \\frac{6 + 5}{10} = \\frac{11}{10}$. Khi đó $A = \\frac{11}{10} \\times \\frac{10}{11} = 1$."
+    },
+    {
+      "type": "short_answer",
+      "difficulty": "van_dung",
+      "content": "Một mảnh đất hình chữ nhật có chu vi là $160\\text{ m}$. Chiều rộng bằng $\\frac{3}{5}$ chiều dài. Tính diện tích của mảnh đất đó theo đơn vị mét vuông.",
+      "correct_answer": "1500",
+      "accepted_answers": [
+        "1500",
+        "1500 m2",
+        "1500m2"
+      ],
+      "points": 1.5,
+      "step_by_step_solution": "Nửa chu vi: $160 : 2 = 80\\text{ m}$. Chiều dài: $80 : (3 + 5) \\times 5 = 50\\text{ m}$. Chiều rộng: $80 - 50 = 30\\text{ m}$. Diện tích: $50 \\times 30 = 1500\\text{ m}^2$."
+    },
+    {
+      "type": "essay",
+      "difficulty": "van_dung_cao",
+      "content": "Hai thùng chứa tất cả $120\\text{ lít}$ dầu. Nếu chuyển $15\\text{ lít}$ dầu từ thùng thứ nhất sang thùng thứ hai thì số dầu ở thùng thứ hai gấp đôi số dầu ở thùng thứ nhất. Hỏi ban đầu mỗi thùng có bao nhiêu lít dầu?",
+      "rubric": [
+        {
+          "criterion": "Vẽ sơ đồ hoặc lập luận tổng số dầu không đổi và tìm số phần bằng nhau sau khi chuyển",
+          "maxPoints": 1
+        },
+        {
+          "criterion": "Tính đúng số dầu ở mỗi thùng sau khi chuyển",
+          "maxPoints": 1
+        },
+        {
+          "criterion": "Tính đúng số dầu ban đầu của thùng 1 (55 lít) và thùng 2 (65 lít), có đáp số rõ ràng",
+          "maxPoints": 1
+        }
+      ],
+      "points": 3,
+      "step_by_step_solution": "Tổng số dầu sau khi chuyển không đổi và bằng 120 lít. Khi đó coi thùng 1 là 1 phần thì thùng 2 là 2 phần. Tổng số phần bằng nhau: $1 + 2 = 3$ (phần). Số dầu thùng 1 lúc sau: $120 : 3 = 40$ (lít). Số dầu thùng 1 ban đầu: $40 + 15 = 55$ (lít). Số dầu thùng 2 ban đầu: $120 - 55 = 65$ (lít). Đáp số: Thùng một: 55 lít; Thùng hai: 65 lít."
+    }
+  ]
+}

@@ -76,6 +76,8 @@ const verifyZodSchema = z.object({
   recommendation: z.enum(['match', 'discrepancy', 'error_in_question', 'ambiguous']),
 });
 
+export const maxDuration = 60;
+
 export async function POST(req: NextRequest) {
   try {
     if (!isSameOriginMutation(req)) return NextResponse.json({ error: 'Yêu cầu không hợp lệ' }, { status: 403 });

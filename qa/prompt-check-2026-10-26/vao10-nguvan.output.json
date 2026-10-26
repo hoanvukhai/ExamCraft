@@ -1,0 +1,155 @@
+{
+  "title": "Đề thi tuyển sinh vào lớp 10 môn Ngữ văn - Đọc hiểu và Nghị luận",
+  "questions": [
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Đọc đoạn trích sau và trả lời câu hỏi:\n\"Thất bại không phải là điểm dừng, mà là một cơ hội để bắt đầu lại một cách thông minh hơn. Người có bản lĩnh không sợ vấp ngã, bởi sau mỗi lần đứng dậy, họ lại tích lũy thêm một bài học vô giá về sự kiên cường và lòng dũng cảm. Đừng bao giờ từ bỏ ước mơ chỉ vì một vài lần trắc trở trên đường đời.\"\nPhương thức biểu đạt chính của đoạn văn trên là:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "Nghị luận"
+        },
+        {
+          "key": "B",
+          "text": "Tự sự"
+        },
+        {
+          "key": "C",
+          "text": "Miêu tả"
+        },
+        {
+          "key": "D",
+          "text": "Thuyết minh"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "Đoạn trích bàn luận, thuyết phục người đọc về giá trị của sự kiên cường khi đối mặt với thất bại nên phương thức biểu đạt chính là nghị luận."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Theo tác giả, \"thất bại\" thực chất mang lại điều gì cho mỗi con người?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "Cơ hội để bắt đầu lại một cách thông minh hơn và tích lũy bài học kiên cường."
+        },
+        {
+          "key": "B",
+          "text": "Sự chán nản và kết thúc của mọi ước mơ."
+        },
+        {
+          "key": "C",
+          "text": "Sự an phận và từ bỏ mục tiêu ban đầu."
+        },
+        {
+          "key": "D",
+          "text": "Mất mát không thể cứu vãn trong cuộc sống."
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "Câu đầu tiên khẳng định: \"Thất bại không phải là điểm dừng, mà là một cơ hội để bắt đầu lại một cách thông minh hơn\"."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Trong câu: \"Người có bản lĩnh không sợ vấp ngã, bởi sau mỗi lần đứng dậy, họ lại tích lũy thêm một bài học vô giá...\", từ \"bởi\" là phương tiện liên kết câu gì?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "Phép nối"
+        },
+        {
+          "key": "B",
+          "text": "Phép lặp"
+        },
+        {
+          "key": "C",
+          "text": "Phép thế"
+        },
+        {
+          "key": "D",
+          "text": "Phép đồng nghĩa"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "Từ \"bởi\" là quan hệ từ chỉ nguyên nhân, đóng vai trò liên kết logic giữa các vế câu theo phép nối."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Thông điệp ý nghĩa nhất mà đoạn trích gửi gắm đến người đọc là gì?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "Phải luôn giữ vững ý chí, không chùn bước trước khó khăn để vươn tới ước mơ."
+        },
+        {
+          "key": "B",
+          "text": "Nên tránh xa những thử thách khó khăn để bảo đảm an toàn."
+        },
+        {
+          "key": "C",
+          "text": "Thành công chỉ đến với những người may mắn."
+        },
+        {
+          "key": "D",
+          "text": "Không nên đặt ra mục tiêu quá cao trong cuộc sống."
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "Đoạn văn khuyên nhủ con người biết đứng dậy sau vấp ngã và kiên định với ước mơ."
+    },
+    {
+      "type": "essay",
+      "difficulty": "van_dung",
+      "content": "Từ nội dung đoạn trích phần Đọc hiểu, em hãy viết một đoạn văn (khoảng 200 chữ) bàn về ý nghĩa của sự kiên trì trong cuộc sống đối với thế hệ trẻ ngày nay.",
+      "rubric": [
+        {
+          "criterion": "Giải thích được khái niệm kiên trì và vai trò của nó đối với thành công của con người",
+          "maxPoints": 1
+        },
+        {
+          "criterion": "Dẫn chứng cụ thể, lập luận thuyết phục, có phản đề (lên án thói dễ nản lòng, ỷ lại)",
+          "maxPoints": 0.5
+        },
+        {
+          "criterion": "Liên hệ bản thân, rút ra bài học nhận thức và hành động thiết thực",
+          "maxPoints": 0.5
+        }
+      ],
+      "points": 2,
+      "step_by_step_solution": "Đoạn văn khoảng 200 chữ cần có: (1) Nêu vấn đề: Sự kiên trì là chìa khóa mở cánh cửa thành công; (2) Phân tích: Giúp vượt qua thử thách, hoàn thiện bản lĩnh, đạt được mục tiêu; (3) Dẫn chứng người thật việc thật; (4) Phản đề: phê phán sự lười biếng, nản chí; (5) Bài học: rèn luyện tính kiên nhẫn từ những việc nhỏ mỗi ngày."
+    },
+    {
+      "type": "essay",
+      "difficulty": "van_dung_cao",
+      "content": "Cảm nhận của em về khát vọng cống hiến chân thành, tha thiết của nhà thơ Thanh Hải qua đoạn thơ sau trong bài \"Mùa xuân nho nhỏ\":\n\"Ta làm con chim hót\nTa làm một cành hoa\nTa nhập vào hòa ca\nMột nốt trầm xao xuyến.\n\nMột mùa xuân nho nhỏ\nLặng lẽ dâng cho đời\nDù là tuổi hai mươi\nDù là khi tóc bạc.\"",
+      "rubric": [
+        {
+          "criterion": "Giới thiệu tác giả Thanh Hải, hoàn cảnh sáng tác bài thơ và chủ đề khát vọng cống hiến",
+          "maxPoints": 0.5
+        },
+        {
+          "criterion": "Phân tích khổ 1: Ước nguyện hóa thân dung dị, khiêm nhường (con chim, cành hoa, nốt trầm)",
+          "maxPoints": 1.5
+        },
+        {
+          "criterion": "Phân tích khổ 2: Quan niệm sống cống hiến âm thầm bền bỉ (mùa xuân nho nhỏ, lặng lẽ dâng, điệp từ dù là)",
+          "maxPoints": 1.5
+        },
+        {
+          "criterion": "Đánh giá nghệ thuật (thể thơ 5 chữ, hình ảnh giản dị, nhạc điệu trong sáng) và liên hệ trách nhiệm thanh niên",
+          "maxPoints": 0.5
+        }
+      ],
+      "points": 4,
+      "step_by_step_solution": "Bài làm cần đảm bảo: (1) Mở bài: Giới thiệu tác giả, hoàn cảnh ra đời đặc biệt trên giường bệnh và ước nguyện cống hiến; (2) Thân bài: Phân tích ước nguyện hóa thân qua điệp từ \"Ta làm\", hình ảnh biểu tượng con chim, cành hoa, nốt trầm mang vẻ đẹp khiêm nhường; Triết lý về \"mùa xuân nho nhỏ\" dâng hiến thầm lặng suốt cuộc đời (từ tuổi hai mươi đến khi tóc bạc); Đánh giá nghệ thuật thể thơ 5 chữ, nhịp điệu tha thiết; (3) Kết bài: Khái quát ý nghĩa tư tưởng, bài học sống cao đẹp cho tuổi trẻ."
+    }
+  ]
+}

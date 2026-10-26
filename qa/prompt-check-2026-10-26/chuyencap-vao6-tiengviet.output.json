@@ -1,0 +1,142 @@
+{
+  "title": "Đề khảo sát năng lực đầu vào lớp 6 môn Tiếng Việt - Đọc hiểu, từ loại, câu và viết đoạn văn",
+  "questions": [
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Đọc đoạn trích sau và trả lời câu hỏi:\n\"Hạt gạo làng ta có vị phù sa của sông Kinh Thầy, có hương sen thơm trong hồ nước đầy, có lời mẹ hát ngọt bùi đắng cay... Hạt gạo nuôi sống con người, mang theo bao giọt mồ hôi vất vả của người nông dân một nắng hai sương trên đồng ruộng.\"\nTrong đoạn trích trên, tác giả đã nhắc đến những hương vị nào kết tinh trong hạt gạo?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "Vị phù sa, hương sen thơm và lời mẹ hát."
+        },
+        {
+          "key": "B",
+          "text": "Vị mặn mòi của biển cả và hương lúa non."
+        },
+        {
+          "key": "C",
+          "text": "Hương cốm mới và vị ngọt của ngô khoai."
+        },
+        {
+          "key": "D",
+          "text": "Vị đắng cay của bão lũ và gió rét."
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1.5,
+      "step_by_step_solution": "Trong đoạn trích nêu rõ: \"có vị phù sa của sông Kinh Thầy, có hương sen thơm trong hồ nước đầy, có lời mẹ hát ngọt bùi đắng cay\"."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Thành ngữ \"một nắng hai sương\" trong đoạn trích trên dùng để chỉ điều gì?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "Sự lao động cần cù, vất vả, dãi dầu của người nông dân."
+        },
+        {
+          "key": "B",
+          "text": "Sự thay đổi thất thường của thời tiết trên cánh đồng."
+        },
+        {
+          "key": "C",
+          "text": "Thời gian một ngày làm việc từ sáng sớm đến chiều muộn."
+        },
+        {
+          "key": "D",
+          "text": "Vẻ đẹp của thiên nhiên qua các mùa trong năm."
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1.5,
+      "step_by_step_solution": "Thành ngữ \"một nắng hai sương\" nói lên nỗi nhọc nhằn, dãi dầu mưa nắng của người lao động để làm ra hạt gạo."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Cặp từ trái nghĩa nào xuất hiện trong câu: \"Có lời mẹ hát ngọt bùi đắng cay\"?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "ngọt bùi - đắng cay"
+        },
+        {
+          "key": "B",
+          "text": "lời hát - ngọt bùi"
+        },
+        {
+          "key": "C",
+          "text": "mẹ hát - đắng cay"
+        },
+        {
+          "key": "D",
+          "text": "ngọt - bùi"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1.5,
+      "step_by_step_solution": "\"Ngọt bùi\" và \"đắng cay\" là cặp từ trái nghĩa mang ý nghĩa ẩn dụ về niềm vui và nỗi vất vả, gian nan."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Câu: \"Tuy công việc đồng áng rất vất vả nhưng các bác nông dân vẫn luôn lạc quan yêu đời.\" là kiểu câu gì?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "Câu ghép biểu thị quan hệ tương phản"
+        },
+        {
+          "key": "B",
+          "text": "Câu đơn có nhiều vị ngữ"
+        },
+        {
+          "key": "C",
+          "text": "Câu ghép biểu thị quan hệ nguyên nhân - kết quả"
+        },
+        {
+          "key": "D",
+          "text": "Câu ghép biểu thị quan hệ giả thiết - kết quả"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1.5,
+      "step_by_step_solution": "Cặp quan hệ từ \"Tuy... nhưng...\" nối hai vế câu ghép có ý nghĩa tương phản."
+    },
+    {
+      "type": "short_answer",
+      "difficulty": "thong_hieu",
+      "content": "Ghi lại một danh từ riêng chỉ tên sông có trong đoạn trích trên.",
+      "correct_answer": "Kinh Thầy",
+      "accepted_answers": [
+        "Kinh Thầy",
+        "sông Kinh Thầy"
+      ],
+      "points": 1.5,
+      "step_by_step_solution": "Danh từ riêng trong đoạn văn là \"Kinh Thầy\" (tên con sông)."
+    },
+    {
+      "type": "essay",
+      "difficulty": "van_dung",
+      "content": "Từ đoạn trích trên, em hãy viết một đoạn văn ngắn (từ 5 đến 7 câu) bày tỏ lòng biết ơn của mình đối với những người nông dân đã làm ra hạt gạo nuôi sống con người.",
+      "rubric": [
+        {
+          "criterion": "Nội dung: Thể hiện lòng biết ơn sâu sắc và ý thức trân trọng, tiết kiệm hạt gạo",
+          "maxPoints": 1.5
+        },
+        {
+          "criterion": "Hình thức: Đảm bảo dung lượng (5 - 7 câu), kết cấu mạch lạc, câu văn đúng ngữ pháp",
+          "maxPoints": 0.5
+        },
+        {
+          "criterion": "Chính tả, diễn đạt lưu loát và chân thành",
+          "maxPoints": 0.5
+        }
+      ],
+      "points": 2.5,
+      "step_by_step_solution": "Học sinh viết đoạn văn từ 5-7 câu: khẳng định giá trị của hạt gạo, ghi nhận sự hy sinh dãi dầu một nắng hai sương của người nông dân, và liên hệ bản thân không lãng phí thức ăn, trân trọng sức lao động."
+    }
+  ]
+}

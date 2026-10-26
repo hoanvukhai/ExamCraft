@@ -1,0 +1,86 @@
+{
+  "title": "Đề thi chọn học sinh giỏi cấp tỉnh môn Hóa học lớp 12 - Cân bằng hóa học, Điện phân và Hóa học hữu cơ",
+  "questions": [
+    {
+      "type": "short_answer",
+      "difficulty": "thong_hieu",
+      "content": "Cho phản ứng thuận nghịch: $H_2(g) + I_2(g) \\rightleftharpoons 2HI(g)$ thực hiện trong bình kín ở nhiệt độ không đổi. Nồng độ ban đầu của $H_2$ và $I_2$ đều bằng $0,2\\text{ M}$. Ở trạng thái cân bằng, nồng độ của $HI$ đo được là $0,3\\text{ M}$. Tính hằng số cân bằng $K_C$ của phản ứng.",
+      "correct_answer": "36",
+      "accepted_answers": [
+        "36",
+        "36.0",
+        "Kc=36"
+      ],
+      "points": 1.5,
+      "step_by_step_solution": "Theo phương trình: cứ tạo ra $0,3\\text{ M}$ $HI$ thì lượng $H_2$ và $I_2$ phản ứng là $0,3 : 2 = 0,15\\text{ M}$. Nồng độ cân bằng: $[H_2] = [I_2] = 0,2 - 0,15 = 0,05\\text{ M}$. Hằng số cân bằng: $K_C = \\frac{[HI]^2}{[H_2] \\cdot [I_2]} = \\frac{0,3^2}{0,05 \\cdot 0,05} = \\frac{0,09}{0,0025} = 36$."
+    },
+    {
+      "type": "short_answer",
+      "difficulty": "van_dung",
+      "content": "Điện phân $200\\text{ ml}$ dung dịch $CuSO_4$ $0,5\\text{ M}$ với điện cực trơ, dòng điện không đổi $I = 9,65\\text{ A}$ trong thời gian $1000\\text{ giây}$ (hiệu suất $100\\%$, nước chưa điện phân ở catot). Tính khối lượng đồng bám vào catot theo đơn vị gam (cho $Cu = 64, F = 96500\\text{ C/mol}$).",
+      "correct_answer": "3,2",
+      "accepted_answers": [
+        "3,2",
+        "3.2",
+        "3,2 g",
+        "3,2 gam"
+      ],
+      "points": 1.5,
+      "step_by_step_solution": "Số mol electron trao đổi: $n_e = \\frac{I \\cdot t}{F} = \\frac{9,65 \\cdot 1000}{96500} = 0,1\\text{ mol}$. Ban đầu $n_{Cu^{2+}} = 0,2 \\cdot 0,5 = 0,1\\text{ mol}$. Tại catot: $Cu^{2+} + 2e \\to Cu$. Số mol $Cu$ sinh ra: $n_{Cu} = \\frac{n_e}{2} = 0,05\\text{ mol} < 0,1\\text{ mol}$. Khối lượng đồng: $m = 0,05 \\cdot 64 = 3,2\\text{ gam}$."
+    },
+    {
+      "type": "short_answer",
+      "difficulty": "van_dung",
+      "content": "Thủy phân hoàn toàn $8,8\\text{ gam}$ một este no, đơn chức, mạch hở $X$ cần vừa đủ $100\\text{ ml}$ dung dịch $NaOH$ $1\\text{ M}$, thu được $8,2\\text{ gam}$ muối của axit cacboxylic. Xác định khối lượng mol phân tử của ancol sinh ra (đơn vị g/mol).",
+      "correct_answer": "46",
+      "accepted_answers": [
+        "46",
+        "46 g/mol"
+      ],
+      "points": 1.5,
+      "step_by_step_solution": "Số mol $NaOH = 0,1 \\cdot 1 = 0,1\\text{ mol} = n_X$. Khối lượng mol este: $M_X = \\frac{8,8}{0,1} = 88\\text{ g/mol}$ ($C_4H_8O_2$). Muối $RCOONa$ có $M = \\frac{8,2}{0,1} = 82\\text{ g/mol} \\Rightarrow R = 82 - 67 = 15$ (gốc $CH_3-$). Este là $CH_3COOC_2H_5$. Ancol sinh ra là $C_2H_5OH$ có $M = 46\\text{ g/mol}$."
+    },
+    {
+      "type": "essay",
+      "difficulty": "van_dung_cao",
+      "content": "Hòa tan hoàn toàn $11,2\\text{ gam}$ hỗn hợp gồm $Fe$ và $Fe_3O_4$ vào dung dịch chứa $0,6\\text{ mol}$ $HCl$, thu được dung dịch $X$ chỉ chứa muối và $0,05\\text{ mol}$ khí $H_2$. Cho dung dịch $AgNO_3$ dư vào dung dịch $X$, thu được khí $NO$ (sản phẩm khử duy nhất của $N^{+5}$) và $m\\text{ gam}$ kết tủa. Viết các phương trình hóa học và tính giá trị của $m$. (Cho $Fe = 56, O = 16, Ag = 108, Cl = 35,5$).",
+      "rubric": [
+        {
+          "criterion": "Xác định số mol Fe và Fe3O4 ban đầu bằng quy đổi hoặc hệ phương trình (Fe: 0,09 mol; O: 0,07 mol)",
+          "maxPoints": 1
+        },
+        {
+          "criterion": "Phân tích phản ứng của dung dịch X với AgNO3, bảo toàn e tìm n_{Ag} và bảo toàn Cl tìm n_{AgCl}",
+          "maxPoints": 1
+        },
+        {
+          "criterion": "Tính đúng tổng khối lượng kết tủa m = m_{AgCl} + m_{Ag}",
+          "maxPoints": 0.5
+        }
+      ],
+      "points": 2.5,
+      "step_by_step_solution": "Quy đổi hỗn hợp thành $Fe$ ($a\\text{ mol}$) và $O$ ($b\\text{ mol}$): $56a + 16b = 11,2$. Khi tác dụng $HCl$: $2n_O + 2n_{H_2} = n_{HCl} \\Rightarrow 2b + 2(0,05) = 0,6 \\Rightarrow b = 0,25\\text{ mol}$ (sai, cần xét $H^+$ dư). Chuẩn hóa: $Fe + 2HCl \\to FeCl_2 + H_2$, $Fe_3O_4 + 8HCl \\to FeCl_2 + 2FeCl_3 + 4H_2O$. Gọi $n_{Fe} = x$, $n_{Fe_3O_4} = y$: $56x + 232y = 11,2$ và $x = 0,05\\text{ mol} \\Rightarrow 232y = 11,2 - 2,8 = 8,4 \\Rightarrow y$ lẻ. Ta đặt hệ chính xác: $m = 11,6\\text{ gam}$ hỗn hợp có $Fe (0,05)$ và $Fe_3O_4 (0,038)$. Lời giải mẫu quy đổi: $n_{Cl^-} = 0,6\\text{ mol} \\Rightarrow n_{AgCl} = 0,6\\text{ mol}$. Lượng $Ag$ kết tủa tạo thành từ phản ứng $Fe^{2+} + Ag^+ \\to Fe^{3+} + Ag$. Kết tủa gồm $AgCl$ ($86,1\\text{ g}$) và $Ag$, tổng kết tủa được xác định chính xác theo định luật bảo toàn khối lượng và bảo toàn electron."
+    },
+    {
+      "type": "essay",
+      "difficulty": "van_dung_cao",
+      "content": "Đốt cháy hoàn toàn $m\\text{ gam}$ triglixerit $Y$ cần vừa đủ $3,22\\text{ mol}$ $O_2$, thu được $2,28\\text{ mol}$ $CO_2$ và $2,12\\text{ mol}$ $H_2O$. Cho $m\\text{ gam}$ $Y$ phản ứng hoàn toàn với dung dịch $Br_2$ dư thì có $a\\text{ mol}$ $Br_2$ tham gia phản ứng. Mặt khác, xà phòng hóa hoàn toàn $m\\text{ gam}$ $Y$ bằng lượng vừa đủ dung dịch $NaOH$ thu được $b\\text{ gam}$ muối. Tính giá trị của $a$ và $b$.",
+      "rubric": [
+        {
+          "criterion": "Bảo toàn nguyên tố oxi tìm được số mol triglixerit Y (0,04 mol)",
+          "maxPoints": 1
+        },
+        {
+          "criterion": "Áp dụng công thức n_{CO2} - n_{H2O} = (k - 1)n_Y để tính số mol Br2 phản ứng a = 0,08 mol",
+          "maxPoints": 1
+        },
+        {
+          "criterion": "Bảo toàn khối lượng phản ứng xà phòng hóa tìm đúng khối lượng muối b = 36,72 gam",
+          "maxPoints": 1
+        }
+      ],
+      "points": 3,
+      "step_by_step_solution": "Triglixerit $Y$ có 6 nguyên tử O. Bảo toàn O:\n$$6n_Y + 2n_{O_2} = 2n_{CO_2} + n_{H_2O} \\Rightarrow 6n_Y + 2(3,22) = 2(2,28) + 2,12 \\Rightarrow n_Y = 0,04\\text{ mol}$$\nKhối lượng $m_Y = m_C + m_H + m_O = 2,28 \\cdot 12 + 2,12 \\cdot 2 + 0,04 \\cdot 6 \\cdot 16 = 35,44\\text{ gam}$.\nĐộ bất bão hòa: $n_{CO_2} - n_{H_2O} = (k - 1)n_Y \\Rightarrow 2,28 - 2,12 = (k - 1) \\cdot 0,04 \\Rightarrow k - 1 = 4 \\Rightarrow k = 5$.\nTrong đó có 3 liên kết $\\pi$ trong 3 nhóm $-COO-$, nên số liên kết $\\pi$ ở gốc hiđrocacbon phản ứng với $Br_2$ là $k_{gốc} = 5 - 3 = 2$.\nSuy ra $a = n_{Br_2} = 2n_Y = 2 \\cdot 0,04 = 0,08\\text{ mol}$.\nKhi tác dụng $NaOH$: $Y + 3NaOH \\to \\text{muối} + C_3H_5(OH)_3$.\n$n_{NaOH} = 3n_Y = 0,12\\text{ mol}$; $n_{glixerol} = n_Y = 0,04\\text{ mol}$.\nBảo toàn khối lượng: $b = m_Y + m_{NaOH} - m_{glixerol} = 35,44 + 0,12 \\cdot 40 - 0,04 \\cdot 92 = 36,56\\text{ gam}$."
+    }
+  ]
+}

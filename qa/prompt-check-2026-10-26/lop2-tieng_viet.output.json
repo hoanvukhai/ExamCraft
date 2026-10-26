@@ -1,0 +1,96 @@
+{
+  "title": "Đề kiểm tra thường kỳ Tiếng Việt lớp 2 - Từ chỉ sự vật và câu giới thiệu",
+  "questions": [
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Từ nào dưới đây là từ chỉ sự vật (người, đồ vật, con vật, cây cối)?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "Ngôi trường"
+        },
+        {
+          "key": "B",
+          "text": "Chăm chỉ"
+        },
+        {
+          "key": "C",
+          "text": "Chạy nhảy"
+        },
+        {
+          "key": "D",
+          "text": "Nhanh nhẹn"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 2.5,
+      "step_by_step_solution": "\"Ngôi trường\" là từ chỉ đồ vật/địa điểm (sự vật). \"Chăm chỉ\", \"nhanh nhẹn\" là từ chỉ đặc điểm; \"chạy nhảy\" là từ chỉ hoạt động."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Câu nào dưới đây được viết theo mẫu câu giới thiệu (Ai là gì?)?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "Bạn Mai là lớp trưởng lớp em."
+        },
+        {
+          "key": "B",
+          "text": "Bạn Mai đang đọc sách trong thư viện."
+        },
+        {
+          "key": "C",
+          "text": "Bạn Mai rất hiền lành và tốt bụng."
+        },
+        {
+          "key": "D",
+          "text": "Bạn Mai viết chữ rất đẹp."
+        }
+      ],
+      "correct_answer": "A",
+      "points": 2.5,
+      "step_by_step_solution": "Câu \"Bạn Mai là lớp trưởng lớp em\" trả lời cho câu hỏi \"Bạn Mai là gì?\" dùng để giới thiệu chức vụ của bạn Mai."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Trong câu: \"Bác nông dân đang cày ruộng trên cánh đồng.\", từ nào là từ chỉ người?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "Bác nông dân"
+        },
+        {
+          "key": "B",
+          "text": "Cánh đồng"
+        },
+        {
+          "key": "C",
+          "text": "Ruộng"
+        },
+        {
+          "key": "D",
+          "text": "Cày"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 2.5,
+      "step_by_step_solution": "\"Bác nông dân\" là từ chỉ người."
+    },
+    {
+      "type": "short_answer",
+      "difficulty": "van_dung",
+      "content": "Đặt một câu giới thiệu về trường học của em theo mẫu \"Ai (cái gì) là gì?\".",
+      "correct_answer": "Trường em là trường tiểu học Kim Đồng.",
+      "accepted_answers": [
+        "Trường em là trường tiểu học Kim Đồng.",
+        "Trường của em là trường tiểu học Kim Đồng.",
+        "Trường em là ngôi nhà thứ hai của em."
+      ],
+      "points": 2.5,
+      "step_by_step_solution": "Học sinh viết câu có từ \"là\" nối giữa chủ ngữ và bộ phận giới thiệu (Ví dụ: \"Trường em là trường tiểu học Kim Đồng.\")."
+    }
+  ]
+}

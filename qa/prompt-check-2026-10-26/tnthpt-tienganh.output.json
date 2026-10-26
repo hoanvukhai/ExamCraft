@@ -1,0 +1,265 @@
+{
+  "title": "Đề thi thử tốt nghiệp THPT môn Tiếng Anh - Ngữ pháp, từ vựng và đọc hiểu",
+  "questions": [
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Mark the letter A, B, C, or D to indicate the word whose underlined part differs from the other three in pronunciation:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "hopes"
+        },
+        {
+          "key": "B",
+          "text": "gives"
+        },
+        {
+          "key": "C",
+          "text": "cleans"
+        },
+        {
+          "key": "D",
+          "text": "plays"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "\"hopes\" ends with /s/ because \"p\" is a voiceless consonant; the others end with /z/."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Mark the letter A, B, C, or D to indicate the word that differs from the other three in the position of primary stress:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "solution"
+        },
+        {
+          "key": "B",
+          "text": "president"
+        },
+        {
+          "key": "C",
+          "text": "passenger"
+        },
+        {
+          "key": "D",
+          "text": "chemistry"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "\"solution\" is stressed on the second syllable (so'lution), while the others are stressed on the first syllable ('president, 'passenger, 'chemistry)."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "He has already submitted the final report, ______?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "hasn't he"
+        },
+        {
+          "key": "B",
+          "text": "has he"
+        },
+        {
+          "key": "C",
+          "text": "didn't he"
+        },
+        {
+          "key": "D",
+          "text": "doesn't he"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "Tag question for affirmative present perfect with \"He has\" is \"hasn't he\"."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "If she ______ more carefully, she wouldn't have made that silly mistake in the test yesterday.",
+      "choices": [
+        {
+          "key": "A",
+          "text": "had checked"
+        },
+        {
+          "key": "B",
+          "text": "checks"
+        },
+        {
+          "key": "C",
+          "text": "checked"
+        },
+        {
+          "key": "D",
+          "text": "would check"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "Third conditional expressing an unreal condition in the past: If + S + had + V3/ed, S + would have + V3/ed."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "The government is making every effort to ______ an end to illegal wildlife trafficking.",
+      "choices": [
+        {
+          "key": "A",
+          "text": "put"
+        },
+        {
+          "key": "B",
+          "text": "take"
+        },
+        {
+          "key": "C",
+          "text": "make"
+        },
+        {
+          "key": "D",
+          "text": "set"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "Collocation \"put an end to something\" means to stop something from happening."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Mark the letter A, B, C, or D to indicate the word(s) CLOSEST in meaning to the underlined word:\n\"Regular exercise plays a **vital** role in maintaining cardiovascular health.\"",
+      "choices": [
+        {
+          "key": "A",
+          "text": "essential"
+        },
+        {
+          "key": "B",
+          "text": "minor"
+        },
+        {
+          "key": "C",
+          "text": "optional"
+        },
+        {
+          "key": "D",
+          "text": "useless"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "\"vital\" means extremely important, closest in meaning to \"essential\"."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Mark the letter A, B, C, or D to indicate the word(s) OPPOSITE in meaning to the underlined word:\n\"Despite facing economic hardships, the young entrepreneur remained **optimistic** about the company's future.\"",
+      "choices": [
+        {
+          "key": "A",
+          "text": "pessimistic"
+        },
+        {
+          "key": "B",
+          "text": "confident"
+        },
+        {
+          "key": "C",
+          "text": "cheerful"
+        },
+        {
+          "key": "D",
+          "text": "positive"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "\"optimistic\" (lạc quan) is opposite in meaning to \"pessimistic\" (bi quan)."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Tom and Mary are talking about social etiquette.\nTom: \"Would you mind closing the window? It is getting quite chilly.\"\nMary: \"______\"",
+      "choices": [
+        {
+          "key": "A",
+          "text": "Not at all. I will do it right away."
+        },
+        {
+          "key": "B",
+          "text": "Yes, please do."
+        },
+        {
+          "key": "C",
+          "text": "No, I don't like it."
+        },
+        {
+          "key": "D",
+          "text": "You are welcome."
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "Response to \"Would you mind...?\" showing agreement is \"Not at all\" (Tôi không phiền đâu)."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "van_dung",
+      "content": "Read the text and choose the correct answer:\n\"Artificial Intelligence (AI) is transforming modern education by personalizing learning experiences. Intelligent tutoring systems analyze individual student performance, allowing educators to identify learning gaps promptly and tailor pedagogical strategies effectively.\"\nWhat is the primary benefit of AI in education mentioned in the passage?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "Customizing learning experiences to individual student needs."
+        },
+        {
+          "key": "B",
+          "text": "Replacing human classroom teachers entirely."
+        },
+        {
+          "key": "C",
+          "text": "Eliminating the need for standardized assessments."
+        },
+        {
+          "key": "D",
+          "text": "Reducing the duration of primary and secondary schooling."
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "The passage highlights: \"personalizing learning experiences... tailor pedagogical strategies effectively.\""
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "van_dung",
+      "content": "What does the word \"promptly\" in the text closest in meaning to?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "immediately"
+        },
+        {
+          "key": "B",
+          "text": "gradually"
+        },
+        {
+          "key": "C",
+          "text": "carelessly"
+        },
+        {
+          "key": "D",
+          "text": "rarely"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "\"promptly\" means quickly or without delay, closest to \"immediately\"."
+    }
+  ]
+}

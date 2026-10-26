@@ -1,0 +1,128 @@
+{
+  "title": "Đề kiểm tra thường kỳ Hóa học lớp 10 - Cấu tạo nguyên tử và bảng tuần hoàn",
+  "questions": [
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Hạt mang điện trong nguyên tử gồm:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "Proton và electron"
+        },
+        {
+          "key": "B",
+          "text": "Proton và neutron"
+        },
+        {
+          "key": "C",
+          "text": "Neutron và electron"
+        },
+        {
+          "key": "D",
+          "text": "Chỉ có electron"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 2,
+      "step_by_step_solution": "Proton mang điện tích dương và electron mang điện tích âm; neutron không mang điện."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Cấu hình electron nguyên tử của nguyên tố chlorine ($Z = 17$) ở trạng thái cơ bản là:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "$1s^2 2s^2 2p^6 3s^2 3p^5$"
+        },
+        {
+          "key": "B",
+          "text": "$1s^2 2s^2 2p^6 3s^2 3p^6$"
+        },
+        {
+          "key": "C",
+          "text": "$1s^2 2s^2 2p^6 3s^1 3p^6$"
+        },
+        {
+          "key": "D",
+          "text": "$1s^2 2s^2 2p^5 3s^2 3p^6$"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 2,
+      "step_by_step_solution": "Với $Z = 17$, phân bố electron theo thứ tự mức năng lượng: $1s^2 2s^2 2p^6 3s^2 3p^5$."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Trong một chu kì của bảng tuần hoàn, theo chiều tăng dần của điện tích hạt nhân, bán kính nguyên tử của các nguyên tố có xu hướng:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "Giảm dần"
+        },
+        {
+          "key": "B",
+          "text": "Tăng dần"
+        },
+        {
+          "key": "C",
+          "text": "Không đổi"
+        },
+        {
+          "key": "D",
+          "text": "Biến đổi không có quy luật"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 2,
+      "step_by_step_solution": "Trong một chu kì, số lớp electron không đổi nhưng điện tích hạt nhân tăng làm lực hút giữa hạt nhân và electron ngoài cùng tăng, dẫn đến bán kính nguyên tử giảm dần."
+    },
+    {
+      "type": "true_false_group",
+      "difficulty": "thong_hieu",
+      "content": "Cho nguyên tố Magnesium ($Mg$) có số hiệu nguyên tử $Z = 12$. Các phát biểu sau đúng hay sai?",
+      "sub_questions": [
+        {
+          "key": "a",
+          "content": "Lớp vỏ nguyên tử $Mg$ có 12 electron.",
+          "isCorrect": true,
+          "explanation": "Nguyên tử trung hòa về điện nên số e = Z = 12."
+        },
+        {
+          "key": "b",
+          "content": "Nguyên tử $Mg$ có 3 lớp electron và có 2 electron ở lớp ngoài cùng.",
+          "isCorrect": true,
+          "explanation": "Cấu hình $1s^2 2s^2 2p^6 3s^2$ có 3 lớp e, lớp 3 có 2 e."
+        },
+        {
+          "key": "c",
+          "content": "$Mg$ thuộc chu kì 3, nhóm IIA trong bảng tuần hoàn.",
+          "isCorrect": true,
+          "explanation": "Có 3 lớp e nên chu kì 3, nguyên tố s có 2 e hóa trị nên nhóm IIA."
+        },
+        {
+          "key": "d",
+          "content": "$Mg$ là một nguyên tố phi kim điển hình.",
+          "isCorrect": false,
+          "explanation": "Mg là kim loại nhóm IIA (kim loại kiềm thổ)."
+        }
+      ],
+      "points": 2,
+      "step_by_step_solution": "a: Đúng. b: Đúng ($1s^2 2s^2 2p^6 3s^2$). c: Đúng (chu kì 3, nhóm IIA). d: Sai vì Mg là kim loại hoạt động."
+    },
+    {
+      "type": "short_answer",
+      "difficulty": "van_dung",
+      "content": "Một nguyên tử $X$ có tổng số hạt cơ bản ($p, n, e$) là 40. Trong đó số hạt mang điện nhiều hơn số hạt không mang điện là 12. Xác định số hiệu nguyên tử $Z$ của nguyên tố $X$.",
+      "correct_answer": "13",
+      "accepted_answers": [
+        "13",
+        "Z=13"
+      ],
+      "points": 2,
+      "step_by_step_solution": "Ta có hệ phương trình: $2p + n = 40$ và $2p - n = 12$. Cộng hai phương trình được $4p = 52 \\Rightarrow p = Z = 13$ (Nguyên tố nhôm Al)."
+    }
+  ]
+}

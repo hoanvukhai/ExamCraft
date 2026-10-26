@@ -1,0 +1,117 @@
+{
+  "title": "Đề kiểm tra thường kỳ Tiếng Việt lớp 4 - Danh từ, động từ và đọc hiểu đoạn văn ngắn",
+  "questions": [
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Đọc đoạn văn sau và trả lời câu hỏi:\n\"Mùa xuân đã về. Muôn hoa đua nhau khoe sắc thắm dưới ánh nắng chan hòa. Những chú chim hót líu lo trên cành cây xanh mướt.\"\nTrong câu thứ hai, từ nào là động từ chỉ hoạt động?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "khoe sắc"
+        },
+        {
+          "key": "B",
+          "text": "muôn hoa"
+        },
+        {
+          "key": "C",
+          "text": "ánh nắng"
+        },
+        {
+          "key": "D",
+          "text": "sắc thắm"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 2,
+      "step_by_step_solution": "\"khoe sắc\" là động từ chỉ hoạt động của hoa. \"muôn hoa\", \"ánh nắng\" là danh từ; \"sắc thắm\" là cụm từ chỉ đặc điểm."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Dãy từ nào sau đây toàn là danh từ?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "Sách vở, dòng sông, học sinh"
+        },
+        {
+          "key": "B",
+          "text": "Học tập, dòng sông, chăm chỉ"
+        },
+        {
+          "key": "C",
+          "text": "Cây bàng, xanh tươi, tỏa bóng"
+        },
+        {
+          "key": "D",
+          "text": "Ngôi nhà, yêu mến, ấm áp"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 2,
+      "step_by_step_solution": "Dãy A gồm \"sách vở\" (đồ vật), \"dòng sông\" (hiện tượng/sự vật tự nhiên), \"học sinh\" (người) đều là danh từ."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Nội dung chính của đoạn văn trên là gì?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "Bức tranh thiên nhiên tràn đầy sức sống khi mùa xuân về."
+        },
+        {
+          "key": "B",
+          "text": "Tiếng hót của các loài chim trong rừng sâu."
+        },
+        {
+          "key": "C",
+          "text": "Ánh nắng gay gắt của một ngày mùa hè."
+        },
+        {
+          "key": "D",
+          "text": "Sự vất vả của người làm vườn vào mùa xuân."
+        }
+      ],
+      "correct_answer": "A",
+      "points": 2,
+      "step_by_step_solution": "Đoạn văn miêu tả mùa xuân về với hoa khoe sắc, nắng ấm chan hòa và chim hót líu lo, thể hiện sức sống mùa xuân."
+    },
+    {
+      "type": "short_answer",
+      "difficulty": "thong_hieu",
+      "content": "Tìm một danh từ chỉ con vật và một động từ chỉ hoạt động của con vật đó trong câu: \"Những chú chim hót líu lo trên cành cây xanh mướt.\"",
+      "correct_answer": "chim, hót",
+      "accepted_answers": [
+        "chim, hót",
+        "chú chim, hót",
+        "chim - hót"
+      ],
+      "points": 2,
+      "step_by_step_solution": "Danh từ chỉ con vật là \"chim\" (hoặc \"chú chim\"), động từ chỉ hoạt động là \"hót\"."
+    },
+    {
+      "type": "essay",
+      "difficulty": "van_dung",
+      "content": "Viết một đoạn văn ngắn (từ 3 đến 5 câu) tả cảnh một buổi sáng đẹp trời ở quê hương em, trong đó có sử dụng ít nhất một danh từ và một động từ.",
+      "rubric": [
+        {
+          "criterion": "Nội dung: Miêu tả được cảnh buổi sáng đúng yêu cầu (3 - 5 câu)",
+          "maxPoints": 1
+        },
+        {
+          "criterion": "Ngữ pháp: Sử dụng đúng danh từ và động từ, gạch chân hoặc chỉ rõ",
+          "maxPoints": 0.5
+        },
+        {
+          "criterion": "Chính tả, diễn đạt mạch lạc, giàu cảm xúc",
+          "maxPoints": 0.5
+        }
+      ],
+      "points": 2,
+      "step_by_step_solution": "Học sinh viết đoạn văn từ 3-5 câu tả cảnh sáng sớm (ông mặt trời thức dậy, sương tan, chim hót). Xác định rõ danh từ (ông mặt trời, hạt sương) và động từ (thức dậy, chiếu sáng)."
+    }
+  ]
+}

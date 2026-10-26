@@ -1,0 +1,384 @@
+{
+  "section": "06",
+  "testedAt": "2026-10-26T09:17:10.238Z",
+  "evidence": [
+    {
+      "id": "T07-01",
+      "level": "🟡",
+      "name": "Tạo link chia sẻ khóa phiên bản",
+      "result": "Đ",
+      "note": "Tạo link thành công, token khóa phiên bản svbMHj3lXEP6SYH-sdQU598XKoMDvDqblVExolZw9MA.v1 (tests/http_share_pin.test.ts:47)"
+    },
+    {
+      "id": "T07-02",
+      "level": "🟡",
+      "name": "Sao chép đường dẫn",
+      "result": "Đ",
+      "note": "Nút sao chép dán ra chính xác URL chia sẻ"
+    },
+    {
+      "id": "T07-03",
+      "level": "🔴",
+      "name": "Mở link chia sẻ không kèm đáp án",
+      "result": "Đ",
+      "note": "Trang mở ở Chế độ Chỉ Xem & Tải về, giấu hoàn toàn đáp án và lời giải (tests/share_copy.test.ts:36)"
+    },
+    {
+      "id": "T07-04",
+      "level": "🔴",
+      "name": "Không có nút tạo bản sao khi chưa cho phép",
+      "result": "Đ",
+      "note": "allowCopy=false nên nút Tạo bản sao bị vô hiệu hóa/ẩn"
+    },
+    {
+      "id": "T07-05",
+      "level": "🟡",
+      "name": "Tải file Word (.docx) ở trang chia sẻ",
+      "result": "Đ",
+      "note": "Tải được Word phiên bản chia sẻ khóa (tests/http_share_pin.test.ts:60)"
+    },
+    {
+      "id": "T07-06",
+      "level": "🔴",
+      "name": "Khóa phiên bản: sửa đề không làm đổi link cũ",
+      "result": "Đ",
+      "note": "Link cũ giữ nguyên phiên bản lúc tạo (tiêu đề TEST-Chia-Se không bị đổi thành Da-Sua) (tests/http_share_pin.test.ts:17)"
+    },
+    {
+      "id": "T07-07",
+      "level": "🟡",
+      "name": "Link mới giữ phiên bản mới",
+      "result": "Đ",
+      "note": "Link mới giữ phiên bản cập nhật TEST-Chia-Se-Da-Sua (tests/http_share_pin.test.ts:63)"
+    },
+    {
+      "id": "T07-08",
+      "level": "🟡",
+      "name": "Link chia sẻ kèm đáp án và lời giải",
+      "result": "Đ",
+      "note": "Người xem link kèm đáp án thấy đầy đủ đáp án chuẩn và lời giải chi tiết"
+    },
+    {
+      "id": "T07-09",
+      "level": "🔴",
+      "name": "Tạo bản sao vào kho của giáo viên khác",
+      "result": "Đ",
+      "note": "GV2 tạo bản sao thành công thành đề mới độc lập trong kho B (tests/share_copy.test.ts:20)"
+    },
+    {
+      "id": "T07-10",
+      "level": "🔴",
+      "name": "Tạo bản sao lần hai xử lý idempotent",
+      "result": "Đ",
+      "note": "Hệ thống báo đã sao chép trước đó (409 ALREADY_COPIED), không nhân bản rác"
+    },
+    {
+      "id": "T07-11",
+      "level": "🔴",
+      "name": "Thu hồi link chia sẻ ngừng hoạt động ngay",
+      "result": "Đ",
+      "note": "Link bị thu hồi trả về 404 Not Found ngay lập tức (tests/http_share_pin.test.ts:80)"
+    },
+    {
+      "id": "T07-12",
+      "level": "🔴",
+      "name": "Bản sao của B vẫn nguyên vẹn sau thu hồi link",
+      "result": "Đ",
+      "note": "Bản sao của GV2 độc lập hoàn toàn, không bị xóa theo link nguồn (tests/share_copy.test.ts:49)"
+    },
+    {
+      "id": "T07-13",
+      "level": "🔴",
+      "name": "Link sai ký tự bị từ chối 404",
+      "result": "Đ",
+      "note": "Không tìm thấy link, không để lộ nội dung đề khác"
+    },
+    {
+      "id": "T07-14",
+      "level": "🔴",
+      "name": "Chưa đăng nhập tạo bản sao bị yêu cầu đăng nhập",
+      "result": "Đ",
+      "note": "Trả về 401 Unauthorized, bắt buộc đăng nhập để lưu vào kho cá nhân"
+    },
+    {
+      "id": "T07-15",
+      "level": "🟡",
+      "name": "Mở link chia sẻ ở điện thoại 375px",
+      "result": "B",
+      "note": "Bỏ qua kiểm thử thiết bị vật lý: điện thoại 375px (dành cho người kiểm)"
+    },
+    {
+      "id": "T07-16",
+      "level": "🟡",
+      "name": "Đợi quá 7 ngày link hết hạn",
+      "result": "B",
+      "note": "Bỏ qua: cần chờ 7 ngày theo thời gian thực (đã kiểm tra logic hết hạn trong unit test)"
+    },
+    {
+      "id": "T07-20",
+      "level": "🔴",
+      "name": "Cấp quyền Chỉ xem cho gv2",
+      "result": "Đ",
+      "note": "Cấp quyền VIEWER thành công, gv2 có trong danh sách cộng tác viên"
+    },
+    {
+      "id": "T07-21",
+      "level": "🔴",
+      "name": "Quyền Chỉ xem xem được nhưng không có quyền sửa",
+      "result": "Đ",
+      "note": "gv2 xem được đề nhưng canEdit=false, canManage=false"
+    },
+    {
+      "id": "T07-22",
+      "level": "🔴",
+      "name": "gv2 thử gửi sửa khi chỉ có quyền xem bị từ chối 403",
+      "result": "Đ",
+      "note": "Máy chủ chặn 403 Forbidden: không có quyền chỉnh sửa đề"
+    },
+    {
+      "id": "T07-23",
+      "level": "🔴",
+      "name": "Đổi quyền thành Xem và góp ý",
+      "result": "Đ",
+      "note": "canComment=true nhưng canEdit=false"
+    },
+    {
+      "id": "T07-24",
+      "level": "🔴",
+      "name": "Đổi quyền thành Cùng sửa nội dung",
+      "result": "Đ",
+      "note": "canEdit=true, gv2 có thể sửa câu và lưu đề"
+    },
+    {
+      "id": "T07-25",
+      "level": "🔴",
+      "name": "Cộng tác viên không có quyền xóa đề hoặc quản lý",
+      "result": "Đ",
+      "note": "DELETE bị từ chối 404/403, chỉ OWNER mới có quyền xóa hoặc đổi quyền"
+    },
+    {
+      "id": "T07-26",
+      "level": "🔴",
+      "name": "Phát hiện xung đột phiên bản khi hai người cùng sửa",
+      "result": "Đ",
+      "note": "Bị từ chối 409 VERSION_CONFLICT, dữ liệu của A được bảo vệ nguyên vẹn"
+    },
+    {
+      "id": "T07-27",
+      "level": "🔴",
+      "name": "Lưu bản nháp thành đề mới khi xung đột",
+      "result": "Đ",
+      "note": "Tạo đề mới riêng biệt trong kho của B chứa trọn vẹn bản sửa của B"
+    },
+    {
+      "id": "T07-28",
+      "level": "🟡",
+      "name": "Mở bản máy chủ, giữ riêng nháp",
+      "result": "Đ",
+      "note": "Mở bản cập nhật của máy chủ, bản nháp giữ an toàn trong LocalDraftsPanel"
+    },
+    {
+      "id": "T07-29",
+      "level": "🔴",
+      "name": "Thu hồi quyền cộng tác viên",
+      "result": "Đ",
+      "note": "gv2 không còn quyền truy cập đề thi của gv1 (trả về 404 Not Found)"
+    },
+    {
+      "id": "T07-30",
+      "level": "🟡",
+      "name": "Gửi góp ý cho câu hỏi cụ thể",
+      "result": "Đ",
+      "note": "Góp ý hiển thị tên gv2, gắn đúng câu 1 và phiên bản đề"
+    },
+    {
+      "id": "T07-31",
+      "level": "🟡",
+      "name": "Gửi góp ý chung cho cả đề",
+      "result": "Đ",
+      "note": "Góp ý chung hiển thị độc lập không gắn câu"
+    },
+    {
+      "id": "T07-32",
+      "level": "🟡",
+      "name": "Danh sách góp ý của đề",
+      "result": "Đ",
+      "note": "gv1 thấy đầy đủ 2 góp ý ở trạng thái Chưa giải quyết"
+    },
+    {
+      "id": "T07-33",
+      "level": "🟡",
+      "name": "Đánh dấu đã giải quyết góp ý",
+      "result": "Đ",
+      "note": "Góp ý chuyển sang trạng thái đã giải quyết bởi gv1"
+    },
+    {
+      "id": "T07-34",
+      "level": "🟡",
+      "name": "Mở lại góp ý đã giải quyết",
+      "result": "Đ",
+      "note": "Góp ý quay về trạng thái Chưa giải quyết"
+    },
+    {
+      "id": "T07-35",
+      "level": "🔴",
+      "name": "Phân quyền giải quyết góp ý",
+      "result": "Đ",
+      "note": "Người bình luận chỉ có thể thao tác trên góp ý của chính mình, chủ đề có toàn quyền"
+    },
+    {
+      "id": "T07-36",
+      "level": "🔴",
+      "name": "Hạ quyền xuống Chỉ xem",
+      "result": "Đ",
+      "note": "Người chỉ xem không thể gửi góp ý hay giải quyết"
+    },
+    {
+      "id": "T07-37",
+      "level": "🟡",
+      "name": "Mục Lịch sử lưu",
+      "result": "Đ",
+      "note": "Liệt kê các phiên bản lưu kèm người thực hiện, thời gian và ghi chú"
+    },
+    {
+      "id": "T07-38",
+      "level": "🟡",
+      "name": "Xem bản lưu cũ",
+      "result": "Đ",
+      "note": "Xem lại nội dung snapshot lịch sử mà không làm thay đổi đề hiện tại"
+    },
+    {
+      "id": "T07-39",
+      "level": "🔴",
+      "name": "Khôi phục phiên bản cũ",
+      "result": "Đ",
+      "note": "Đề trở về nội dung cũ tạo thành phiên bản mới tăng dần, lịch sử cũ không bị xóa"
+    },
+    {
+      "id": "T07-40",
+      "level": "🔴",
+      "name": "Cộng tác viên không có quyền khôi phục",
+      "result": "Đ",
+      "note": "Chỉ OWNER mới có nút và quyền khôi phục phiên bản"
+    },
+    {
+      "id": "T07-41",
+      "level": "🔴",
+      "name": "Chặn lưu trên phiên bản cũ sau khôi phục",
+      "result": "Đ",
+      "note": "Phát hiện xung đột version nếu cộng tác viên lưu sau khi chủ đề khôi phục"
+    },
+    {
+      "id": "T07-42",
+      "level": "🟡",
+      "name": "Cảnh báo khi khôi phục lúc có nháp chưa lưu",
+      "result": "Đ",
+      "note": "Hiển thị cảnh báo yêu cầu lưu bản nháp hiện tại trước khi khôi phục"
+    },
+    {
+      "id": "T07-43",
+      "level": "🟡",
+      "name": "Lịch sử ghi nhận thay đổi AI",
+      "result": "Đ",
+      "note": "Phiên bản ghi nhận tên người bấm áp dụng đề xuất"
+    },
+    {
+      "id": "T07-50",
+      "level": "🟡",
+      "name": "Mở ngân hàng câu hỏi",
+      "result": "Đ",
+      "note": "Hiển thị kho ngân hàng câu hỏi nguyên tử"
+    },
+    {
+      "id": "T07-51",
+      "level": "🟡",
+      "name": "Nạp câu hỏi mẫu chuẩn",
+      "result": "Đ",
+      "note": "Nạp các câu hỏi mẫu chuẩn định dạng vào ngân hàng"
+    },
+    {
+      "id": "T07-52",
+      "level": "🟡",
+      "name": "Lọc ngân hàng câu hỏi",
+      "result": "Đ",
+      "note": "Bộ lọc môn học, khối lớp, dạng câu và mức độ nhận thức lọc chính xác"
+    },
+    {
+      "id": "T07-53",
+      "level": "🟡",
+      "name": "Tìm kiếm từ khóa và công thức trong ngân hàng",
+      "result": "Đ",
+      "note": "Ô tìm kiếm lọc đúng nội dung câu hỏi"
+    },
+    {
+      "id": "T07-54",
+      "level": "🔴",
+      "name": "Chèn câu từ ngân hàng vào đề đang mở",
+      "result": "Đ",
+      "note": "Chèn câu vào đề đúng nội dung, đáp án, điểm số"
+    },
+    {
+      "id": "T07-55",
+      "level": "🔴",
+      "name": "Chèn khi chưa mở đề",
+      "result": "Đ",
+      "note": "Nút chèn bị khóa kèm thông báo yêu cầu mở đề trước khi chọn chèn"
+    },
+    {
+      "id": "T07-56",
+      "level": "🔴",
+      "name": "Chèn câu có ngữ liệu chưa cấp phép",
+      "result": "Đ",
+      "note": "Cảnh báo yêu cầu bổ sung ngữ liệu được phép dùng trước khi chèn"
+    },
+    {
+      "id": "T07-57",
+      "level": "🟡",
+      "name": "Nhân bản câu hỏi trong ngân hàng",
+      "result": "Đ",
+      "note": "Tạo bản sao độc lập trong ngân hàng cá nhân (/api/questions/[id]/fork)"
+    },
+    {
+      "id": "T07-58",
+      "level": "🟡",
+      "name": "Đổi quyền nhân bản câu hỏi",
+      "result": "Đ",
+      "note": "Cập nhật cờ cho phép nhân bản an toàn"
+    },
+    {
+      "id": "T07-59",
+      "level": "🟡",
+      "name": "Xóa khỏi ngân hàng",
+      "result": "Đ",
+      "note": "Xóa câu khỏi ngân hàng cá nhân nhưng câu đã chèn vào các đề thi vẫn giữ nguyên"
+    },
+    {
+      "id": "T07-60",
+      "level": "🔴",
+      "name": "Cô lập ngân hàng câu hỏi giữa các giáo viên",
+      "result": "Đ",
+      "note": "gv2 chỉ thấy câu hỏi của riêng mình và câu hỏi hệ thống được phép dùng"
+    },
+    {
+      "id": "T07-61",
+      "level": "🔴",
+      "name": "Câu nhập Word/ảnh là riêng tư",
+      "result": "Đ",
+      "note": "Câu nhập khẩu mặc định là riêng tư, không tự ý công khai"
+    },
+    {
+      "id": "T07-62",
+      "level": "🟡",
+      "name": "Lưu câu vào ngân hàng hai lần",
+      "result": "Đ",
+      "note": "Cơ chế kiểm tra trùng lặp chống nhân đôi bản ghi rác"
+    },
+    {
+      "id": "T07-63",
+      "level": "🟡",
+      "name": "Nhãn Đã kiểm định chỉ khi giáo viên đã kiểm",
+      "result": "Đ",
+      "note": "Câu lưu từ AI hoặc nhập khẩu không tự động gắn nhãn đã kiểm định (tests/share_copy.test.ts:29)"
+    }
+  ]
+}

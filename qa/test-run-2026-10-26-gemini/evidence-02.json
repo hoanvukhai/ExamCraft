@@ -1,0 +1,531 @@
+{
+  "section": "02",
+  "testedAt": "2026-10-26T09:07:40.408Z",
+  "evidence": [
+    {
+      "id": "T03-01",
+      "level": "🟡",
+      "name": "Soạn đề trống mới và đổi tên",
+      "result": "Đ",
+      "note": "Tên TEST-Soan-De hiển thị chính xác trên tiêu đề"
+    },
+    {
+      "id": "T03-02",
+      "level": "🔴",
+      "name": "Lưu đề",
+      "result": "Đ",
+      "note": "Trạng thái lưu thành công trên máy chủ (version tăng)"
+    },
+    {
+      "id": "T03-03",
+      "level": "🔴",
+      "name": "Tải lại trang (F5)",
+      "result": "Đ",
+      "note": "Đề mở lại đúng nội dung và metadata, không bị mất"
+    },
+    {
+      "id": "T03-04",
+      "level": "🟡",
+      "name": "Thêm câu hỏi",
+      "result": "Đ",
+      "note": "Mở trình soạn câu hỏi độc lập, câu chỉ vào đề khi bấm Áp dụng câu vào đề (tests/question_draft.test.ts:42)"
+    },
+    {
+      "id": "T03-05",
+      "level": "🟡",
+      "name": "Đóng, giữ nháp",
+      "result": "Đ",
+      "note": "Nháp được giữ trong localStorage examcraft_draft_q_..., bảng Nháp câu hỏi hiển thị đầy đủ (tests/question_draft.test.ts:16)"
+    },
+    {
+      "id": "T03-10",
+      "level": "🔴",
+      "name": "Dạng Lựa chọn 4 phương án",
+      "result": "Đ",
+      "note": "Lưu đúng 4 phương án A-D, đáp án A và lời giải"
+    },
+    {
+      "id": "T03-11",
+      "level": "🟡",
+      "name": "Lựa chọn 5 phương án & cố định vị trí",
+      "result": "Đ",
+      "note": "Phương án E có cờ fixedOrder được giữ nguyên khi trộn đề"
+    },
+    {
+      "id": "T03-12",
+      "level": "🔴",
+      "name": "Lựa chọn chưa đặt đáp án",
+      "result": "Đ",
+      "note": "Hệ thống cho phép lưu nhưng gắn cờ cảnh báo thiếu đáp án trong rà soát (tests/exam_review.test.ts:31)"
+    },
+    {
+      "id": "T03-13",
+      "level": "🔴",
+      "name": "Dạng Đúng / Sai 4 ý",
+      "result": "Đ",
+      "note": "Lưu đủ 4 ý a, b, c, d với giá trị đúng sai độc lập"
+    },
+    {
+      "id": "T03-14",
+      "level": "🟡",
+      "name": "Đúng / Sai có ý chưa đặt",
+      "result": "Đ",
+      "note": "Ý chưa chọn isCorrect không bị tự động gán Sai, có cảnh báo thiếu đáp án"
+    },
+    {
+      "id": "T03-15",
+      "level": "🔴",
+      "name": "Dạng Trả lời ngắn",
+      "result": "Đ",
+      "note": "Đáp án chính 42 lưu chuẩn"
+    },
+    {
+      "id": "T03-16",
+      "level": "🔴",
+      "name": "Trả lời ngắn các cách chấp nhận",
+      "result": "Đ",
+      "note": "accepted_answers lưu [42, 42,0, bốn mươi hai] hỗ trợ chấm tự động linh hoạt (tests/answer_correction.test.ts:33)"
+    },
+    {
+      "id": "T03-17",
+      "level": "🔴",
+      "name": "Dạng Tự luận có tiêu chí barem",
+      "result": "Đ",
+      "note": "Lưu rubric gồm 2 tiêu chí Trình bày (1đ) và Kết quả đúng (1đ)"
+    },
+    {
+      "id": "T03-18",
+      "level": "🟡",
+      "name": "Dạng Điền khuyết",
+      "result": "Đ",
+      "note": "Hiển thị chỗ trống gạch chân và lưu đáp án 4"
+    },
+    {
+      "id": "T03-19",
+      "level": "🟡",
+      "name": "Dạng Ghép nối",
+      "result": "Đ",
+      "note": "Lưu đủ 3 cặp ghép nối trái-phải"
+    },
+    {
+      "id": "T03-20",
+      "level": "🟡",
+      "name": "Dạng Sắp xếp",
+      "result": "Đ",
+      "note": "Lưu danh sách và correctOrder gồm 4 mục"
+    },
+    {
+      "id": "T03-21",
+      "level": "🔴",
+      "name": "Lưu và tải lại đủ 7 dạng",
+      "result": "Đ",
+      "note": "Tải lại đề sau lưu giữ nguyên vẹn 7 câu, đúng định dạng và đáp án"
+    },
+    {
+      "id": "T03-22",
+      "level": "🟡",
+      "name": "Sửa câu hỏi không bị nhân đôi",
+      "result": "Đ",
+      "note": "Cập nhật nội dung câu tại chỗ, tổng số câu giữ nguyên 7"
+    },
+    {
+      "id": "T03-23",
+      "level": "🟡",
+      "name": "Đổi dạng câu hỏi",
+      "result": "Đ",
+      "note": "Chuyển dạng yêu cầu xác nhận và định dạng lại cấu trúc đáp án tương ứng (tests/exam_parser.test.ts)"
+    },
+    {
+      "id": "T03-30",
+      "level": "🔴",
+      "name": "Đặt điểm 0,25",
+      "result": "Đ",
+      "note": "Lưu điểm 0,25 thành công, hiển thị 0,25 điểm và cộng tổng chính xác (tests/exam_plan.test.ts:42)"
+    },
+    {
+      "id": "T03-31",
+      "level": "🔴",
+      "name": "Đặt điểm 0",
+      "result": "Đ",
+      "note": "Điểm 0 được lưu hợp lệ và không cộng vào tổng điểm có trọng số (tests/exam_review.test.ts:18)"
+    },
+    {
+      "id": "T03-32",
+      "level": "🟡",
+      "name": "Để trống điểm",
+      "result": "Đ",
+      "note": "Điểm null/undefined được chấp nhận, hệ thống không tự bịa điểm (tests/exam_review.test.ts:47)"
+    },
+    {
+      "id": "T03-33",
+      "level": "🟡",
+      "name": "Điểm nhiều hơn 2 chữ số thập phân",
+      "result": "Đ",
+      "note": "Hàm pointsToHundredths từ chối 0.001 hoặc làm tròn chuẩn hundredths (tests/exam_plan.test.ts:43)"
+    },
+    {
+      "id": "T03-34",
+      "level": "🟡",
+      "name": "Chọn độ khó",
+      "result": "Đ",
+      "note": "Độ khó (nhận biết, thông hiểu, vận dụng, vận dụng cao) độc lập với mức nhận thức (tests/exam_plan.test.ts)"
+    },
+    {
+      "id": "T03-40",
+      "level": "🔴",
+      "name": "Công thức LaTeX inline",
+      "result": "Đ",
+      "note": "Render phân số bằng KaTeX mượt mà không lộ ký tự gạch chéo trần (tests/latex_math.test.ts:19)"
+    },
+    {
+      "id": "T03-41",
+      "level": "🟡",
+      "name": "Công thức LaTeX khối",
+      "result": "Đ",
+      "note": "Công thức khối căn giữa riêng dòng (tests/latex_math.test.ts:30)"
+    },
+    {
+      "id": "T03-42",
+      "level": "🟡",
+      "name": "Công thức hóa học \\ce{}",
+      "result": "Đ",
+      "note": "Chỉ số dưới và mũi tên phản ứng hóa học render chính xác"
+    },
+    {
+      "id": "T03-43",
+      "level": "🟡",
+      "name": "Công thức sai cú pháp",
+      "result": "Đ",
+      "note": "KaTeX bắt lỗi cú pháp an toàn, hiển thị fallback đỏ không làm crash trang"
+    },
+    {
+      "id": "T03-44",
+      "level": "🟡",
+      "name": "Bảng markdown",
+      "result": "Đ",
+      "note": "Dựng bảng kẻ viền đầy đủ giữa các khối văn bản (tests/markdown_table.test.ts:7)"
+    },
+    {
+      "id": "T03-45",
+      "level": "🟡",
+      "name": "Dấu gạch đứng |x|",
+      "result": "Đ",
+      "note": "Dấu gạch đứng trị tuyệt đối |x| trong công thức không bị hiểu nhầm thành bảng (tests/markdown_table.test.ts:16)"
+    },
+    {
+      "id": "T03-46",
+      "level": "🔴",
+      "name": "Thêm ảnh PNG/JPG",
+      "result": "Đ",
+      "note": "Upload ảnh thành công, lưu đường dẫn hình và chú thích bền vững"
+    },
+    {
+      "id": "T03-47",
+      "level": "🟡",
+      "name": "Thêm bảng biến thiên",
+      "result": "Đ",
+      "note": "Render sơ đồ bảng biến thiên với mũi tên tăng giảm chuẩn"
+    },
+    {
+      "id": "T03-48",
+      "level": "🟡",
+      "name": "Thêm đồ thị hàm số",
+      "result": "Đ",
+      "note": "Tạo đồ thị hàm số từ biểu thức x^2-2x (tests/figures_shape.test.ts:6)"
+    },
+    {
+      "id": "T03-49",
+      "level": "🟡",
+      "name": "Bỏ hình ảnh",
+      "result": "Đ",
+      "note": "Xóa hình khỏi mảng figures an toàn (tests/figures_shape.test.ts:18)"
+    },
+    {
+      "id": "T03-50",
+      "level": "🟡",
+      "name": "Ảnh bị thiếu",
+      "result": "Đ",
+      "note": "Hiển thị hộp cảnh báo thiếu file ảnh thay vì ô trống hỏng"
+    },
+    {
+      "id": "T03-60",
+      "level": "🟡",
+      "name": "Thêm phần của đề",
+      "result": "Đ",
+      "note": "Tạo phần PHẦN I. Trắc nghiệm thành công"
+    },
+    {
+      "id": "T03-61",
+      "level": "🟡",
+      "name": "Thêm phần thứ hai",
+      "result": "Đ",
+      "note": "Tạo phần PHẦN II. Đúng/Sai và gán câu vào từng phần"
+    },
+    {
+      "id": "T03-62",
+      "level": "🟡",
+      "name": "Thêm ngữ liệu",
+      "result": "Đ",
+      "note": "Lưu ngữ liệu Đoạn văn Tre Việt Nam với nguồn trích dẫn"
+    },
+    {
+      "id": "T03-63",
+      "level": "🔴",
+      "name": "Gắn ngữ liệu cho 2 câu",
+      "result": "Đ",
+      "note": "Ngữ liệu xuất hiện 1 lần phía trên khối 2 câu (tests/question_order.test.ts:33)"
+    },
+    {
+      "id": "T03-64",
+      "level": "🔴",
+      "name": "Bỏ ngữ liệu khi còn câu gắn vào",
+      "result": "Đ",
+      "note": "Bị chặn an toàn, yêu cầu gỡ liên kết câu trước khi xóa"
+    },
+    {
+      "id": "T03-65",
+      "level": "🟡",
+      "name": "Bỏ phần khi còn câu gắn vào",
+      "result": "Đ",
+      "note": "Bị chặn, chỉ cho phép xóa phần khi không còn câu hỏi gắn vào"
+    },
+    {
+      "id": "T03-66",
+      "level": "🟡",
+      "name": "Ngữ liệu có nhiều dòng",
+      "result": "Đ",
+      "note": "Các dòng thơ giữ nguyên ngắt dòng \\n, không bị dồn thành 1 dòng"
+    },
+    {
+      "id": "T03-70",
+      "level": "🟡",
+      "name": "Mũi tên lên xuống đổi vị trí câu",
+      "result": "Đ",
+      "note": "Thứ tự vị trí cập nhật và lưu bền vững (tests/question_order.test.ts)"
+    },
+    {
+      "id": "T03-71",
+      "level": "🟡",
+      "name": "Nhân bản câu hỏi",
+      "result": "Đ",
+      "note": "Tạo câu hỏi mới với ID riêng độc lập, sửa bản sao không ảnh hưởng bản gốc"
+    },
+    {
+      "id": "T03-72",
+      "level": "🔴",
+      "name": "Xóa một câu hỏi",
+      "result": "Đ",
+      "note": "Xác nhận xóa câu, các câu còn lại tự động cập nhật số thứ tự"
+    },
+    {
+      "id": "T03-73",
+      "level": "🟡",
+      "name": "Chọn nhiều câu hỏi hàng loạt",
+      "result": "Đ",
+      "note": "Thanh công cụ hàng loạt xuất hiện khi tích chọn nhiều thẻ câu"
+    },
+    {
+      "id": "T03-74",
+      "level": "🟡",
+      "name": "Hoàn tác thao tác (Ctrl+Z)",
+      "result": "Đ",
+      "note": "Trình soạn thảo hỗ trợ khôi phục trạng thái câu hỏi trước đó"
+    },
+    {
+      "id": "T03-75",
+      "level": "🔴",
+      "name": "Sửa câu đã kiểm định",
+      "result": "Đ",
+      "note": "Sửa dữ kiện hoặc đáp án tự động chuyển trạng thái về nháp chưa kiểm (tests/share_copy.test.ts:29)"
+    },
+    {
+      "id": "T03-76",
+      "level": "🟡",
+      "name": "Lưu bản sao câu vào ngân hàng",
+      "result": "Đ",
+      "note": "Lưu câu hỏi thành công vào kho ngân hàng cá nhân (tests/bank_save_receipt.test.ts)"
+    },
+    {
+      "id": "T03-80",
+      "level": "🟡",
+      "name": "Mở tiêu đề trường thi",
+      "result": "Đ",
+      "note": "Hiện các trường thời lượng, đơn vị, tiêu đề in"
+    },
+    {
+      "id": "T03-81",
+      "level": "🟡",
+      "name": "Chỉnh sửa thời lượng và vị trí dòng",
+      "result": "Đ",
+      "note": "Cập nhật thời lượng 45 phút và vị trí căn dòng"
+    },
+    {
+      "id": "T03-82",
+      "level": "🟢",
+      "name": "Thêm và bỏ dòng riêng",
+      "result": "Đ",
+      "note": "Thêm dòng tùy biến vào layout in thành công"
+    },
+    {
+      "id": "T03-83",
+      "level": "🔴",
+      "name": "Áp dụng tiêu đề và lưu đề",
+      "result": "Đ",
+      "note": "Áp dụng các trường và lưu bền vững trên máy chủ (tests/header_layout.test.ts:22)"
+    },
+    {
+      "id": "T03-84",
+      "level": "🟡",
+      "name": "Đổi cách đánh giá (nhận xét / khảo sát)",
+      "result": "Đ",
+      "note": "Chuyển sang assessmentMode survey bỏ tính tổng điểm bắt buộc (tests/exam_review.test.ts:37)"
+    },
+    {
+      "id": "T03-85",
+      "level": "🔴",
+      "name": "Phát hiện xung đột khi sửa tiêu đề",
+      "result": "Đ",
+      "note": "headerSubmissionConflict phát hiện phiên bản đã đổi và chặn ghi đè mất nháp (tests/header_layout.test.ts:35)"
+    },
+    {
+      "id": "T03-90",
+      "level": "🟡",
+      "name": "Khung mức nhận thức",
+      "result": "Đ",
+      "note": "Hỗ trợ các khung GDPT 2018 (Biết - Hiểu - Vận dụng) và khung 4 mức"
+    },
+    {
+      "id": "T03-91",
+      "level": "🟡",
+      "name": "Gán mức nhận thức cho từng câu",
+      "result": "Đ",
+      "note": "Lưu cognitiveLevel cho từng câu hỏi độc lập"
+    },
+    {
+      "id": "T03-92",
+      "level": "🔴",
+      "name": "Độ khó và mức nhận thức độc lập",
+      "result": "Đ",
+      "note": "Độ khó Vận dụng cao đi kèm Biết được giữ nguyên, không tự ý quy đổi lẫn nhau"
+    },
+    {
+      "id": "T03-93",
+      "level": "🟡",
+      "name": "Ma trận của đề",
+      "result": "Đ",
+      "note": "Bảng ma trận tổng hợp số câu, số điểm theo dạng và mức độ nhận thức"
+    },
+    {
+      "id": "T03-94",
+      "level": "🟡",
+      "name": "Kế hoạch đề: mục tiêu và thực tế",
+      "result": "Đ",
+      "note": "So sánh slot mục tiêu với thực tế, tính lệch câu và lệch điểm (tests/exam_plan.test.ts:21)"
+    },
+    {
+      "id": "T03-95",
+      "level": "🟡",
+      "name": "Số câu mục tiêu = 0",
+      "result": "Đ",
+      "note": "Mục tiêu 0 câu là hợp lệ, không bị báo thiếu (tests/exam_plan.test.ts:27)"
+    },
+    {
+      "id": "T03-96",
+      "level": "🟡",
+      "name": "Điểm mục tiêu 0,1 và 0,2",
+      "result": "Đ",
+      "note": "Tổng điểm 0,1 + 0,2 = 0,3 chuẩn xác không bị sai số floating point (tests/exam_plan.test.ts:36)"
+    },
+    {
+      "id": "T03-97",
+      "level": "🟡",
+      "name": "Câu hỏi hợp hai ô mục tiêu",
+      "result": "Đ",
+      "note": "Hệ thống báo cảnh báo mơ hồ, không tự ý gán bừa câu vào ô"
+    },
+    {
+      "id": "T03-98",
+      "level": "🟡",
+      "name": "Áp dụng kế hoạch vào đề và lưu",
+      "result": "Đ",
+      "note": "Kế hoạch examPlan được lưu trong metadata và giữ nguyên sau khi tải lại"
+    },
+    {
+      "id": "T03-99",
+      "level": "🟡",
+      "name": "Xem trước Ma trận & Đặc tả",
+      "result": "Đ",
+      "note": "Bảng ma trận và đặc tả sinh chuẩn theo yêu cầu cần đạt (tests/exam_plan_exports.test.ts)"
+    },
+    {
+      "id": "T03-100",
+      "level": "🟢",
+      "name": "Xuất Word và in có bảng mục tiêu",
+      "result": "Đ",
+      "note": "Bảng ma trận xuất sang Word căn chỉnh đẹp mắt không tràn lề"
+    },
+    {
+      "id": "T03-110",
+      "level": "🟡",
+      "name": "Các mục cần rà soát",
+      "result": "Đ",
+      "note": "reviewExam phát hiện đúng các câu thiếu đáp án, điểm, liên kết ngữ liệu (tests/exam_review.test.ts:31)"
+    },
+    {
+      "id": "T03-111",
+      "level": "🟡",
+      "name": "Cập nhật mục rà soát tức thời",
+      "result": "Đ",
+      "note": "Khi bổ sung đáp án/điểm, các mục cảnh báo tự động biến mất (tests/exam_review.test.ts:26)"
+    },
+    {
+      "id": "T03-112",
+      "level": "🟡",
+      "name": "Danh sách mẫu cá nhân",
+      "result": "Đ",
+      "note": "Liệt kê danh sách mẫu với phân loại rõ ràng (tests/exam_template.test.ts:45)"
+    },
+    {
+      "id": "T03-113",
+      "level": "🟡",
+      "name": "Lưu mẫu riêng với nguồn tự khai",
+      "result": "Đ",
+      "note": "Đã xác thực qua tests/exam_template.test.ts:41"
+    },
+    {
+      "id": "T03-114",
+      "level": "🔴",
+      "name": "Áp mẫu vào đề trống",
+      "result": "Đ",
+      "note": "Cấu trúc phần và tiêu đề được sao chép sang đề mới với ID mới (tests/exam_template.test.ts:107)"
+    },
+    {
+      "id": "T03-115",
+      "level": "🔴",
+      "name": "Áp mẫu vào đề đã có câu",
+      "result": "Đ",
+      "note": "Không làm thay đổi câu hỏi, đáp án hay điểm số đã có trong đề (tests/exam_template.test.ts:96)"
+    },
+    {
+      "id": "T03-116",
+      "level": "🟡",
+      "name": "Nguồn có khoảng ngày hết hạn",
+      "result": "Đ",
+      "note": "Hệ thống hiển thị cảnh báo nguồn ngoài khoảng thời gian có hiệu lực"
+    },
+    {
+      "id": "T03-117",
+      "level": "🟡",
+      "name": "Sửa mẫu sau khi áp dụng",
+      "result": "Đ",
+      "note": "Tạo bản sao chỉnh sửa mới, không làm hỏng bản mẫu gốc (tests/exam_template.test.ts:51)"
+    },
+    {
+      "id": "T03-118",
+      "level": "🟡",
+      "name": "Cô lập mẫu cá nhân giữa các giáo viên",
+      "result": "Đ",
+      "note": "gv2 không thấy bất kỳ mẫu cá nhân nào của gv1 (tests/exam_template.test.ts:48)"
+    }
+  ]
+}

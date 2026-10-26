@@ -1,0 +1,104 @@
+{
+  "title": "Đề kiểm tra thường kỳ Ngữ văn lớp 8 - Đọc hiểu đoạn văn tả cảnh và biện pháp tu từ",
+  "questions": [
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Đọc đoạn trích sau và trả lời câu hỏi:\n\"Dưới ánh nắng vàng rực rỡ của buổi sớm mai, dòng sông quê hương uốn lượn như một dải lụa mềm vắt qua cánh đồng lúa chín vàng. Những ngọn gió mát lành khẽ thì thầm khúc ca bình yên, đánh thức muôn loài cây cỏ đón chào ngày mới.\"\nPhương thức biểu đạt chính của đoạn văn trên là:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "Miêu tả"
+        },
+        {
+          "key": "B",
+          "text": "Tự sự"
+        },
+        {
+          "key": "C",
+          "text": "Biểu cảm"
+        },
+        {
+          "key": "D",
+          "text": "Nghị luận"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 2,
+      "step_by_step_solution": "Đoạn văn tập trung tái hiện hình ảnh thiên nhiên buổi sớm (dòng sông, cánh đồng, ngọn gió) nên phương thức biểu đạt chính là miêu tả."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Trong câu văn: \"Dòng sông quê hương uốn lượn như một dải lụa mềm vắt qua cánh đồng lúa chín vàng\", tác giả đã sử dụng biện pháp tu từ nào?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "So sánh"
+        },
+        {
+          "key": "B",
+          "text": "Ẩn dụ"
+        },
+        {
+          "key": "C",
+          "text": "Hoán dụ"
+        },
+        {
+          "key": "D",
+          "text": "Điệp từ"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 2,
+      "step_by_step_solution": "Tác giả dùng từ so sánh \"như\" để ví \"dòng sông\" với \"dải lụa mềm\"."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Biện pháp nhân hóa trong câu: \"Những ngọn gió mát lành khẽ thì thầm khúc ca bình yên, đánh thức muôn loài cây cỏ...\" có tác dụng gì?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "Làm cho ngọn gió và thiên nhiên trở nên sinh động, có tâm hồn và gần gũi với con người."
+        },
+        {
+          "key": "B",
+          "text": "Làm nổi bật sự dữ dội, hung bạo của thời tiết buổi sớm."
+        },
+        {
+          "key": "C",
+          "text": "Thể hiện sự tiếc nuối của tác giả trước cảnh sắc mùa thu."
+        },
+        {
+          "key": "D",
+          "text": "Khẳng định sự vất vả, nhọc nhằn của người lao động."
+        }
+      ],
+      "correct_answer": "A",
+      "points": 2,
+      "step_by_step_solution": "Biện pháp nhân hóa gán cho gió hành động \"thì thầm\", \"đánh thức\" như con người, tạo cảm giác gần gũi và đầy sức sống."
+    },
+    {
+      "type": "essay",
+      "difficulty": "van_dung",
+      "content": "Viết một đoạn văn ngắn (từ 5 đến 7 câu) trình bày cảm nghĩ của em về tình yêu quê hương đất nước được gợi lên từ cảnh sắc thiên nhiên trong đoạn trích trên.",
+      "rubric": [
+        {
+          "criterion": "Nội dung: Thể hiện rõ cảm xúc về tình yêu quê hương đất nước qua bức tranh thiên nhiên thanh bình",
+          "maxPoints": 2
+        },
+        {
+          "criterion": "Hình thức: Đảm bảo dung lượng (5 - 7 câu), kết cấu mạch lạc, đúng thể thức đoạn văn",
+          "maxPoints": 1
+        },
+        {
+          "criterion": "Chính tả, diễn đạt trong sáng, có cảm xúc",
+          "maxPoints": 1
+        }
+      ],
+      "points": 4,
+      "step_by_step_solution": "Đoạn văn cần đảm bảo: (1) Giới thiệu vẻ đẹp bình dị, tươi sáng của quê hương; (2) Cảm xúc tự hào, yêu mến và gắn bó với quê hương; (3) Trách nhiệm giữ gìn và xây dựng cảnh quan quê hương ngày một tươi đẹp."
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "title": "Đề kiểm tra thường kỳ Toán lớp 3 - Bảng nhân, bảng chia 6, 7",
+  "questions": [
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Kết quả của phép nhân $6 \\times 7$ là:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "42"
+        },
+        {
+          "key": "B",
+          "text": "36"
+        },
+        {
+          "key": "C",
+          "text": "48"
+        },
+        {
+          "key": "D",
+          "text": "49"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 2.5,
+      "step_by_step_solution": "Theo bảng nhân 6: $6 \\times 7 = 42$."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Tìm $x$, biết: $x : 7 = 8$. Giá trị của $x$ là:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "56"
+        },
+        {
+          "key": "B",
+          "text": "48"
+        },
+        {
+          "key": "C",
+          "text": "63"
+        },
+        {
+          "key": "D",
+          "text": "54"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 2.5,
+      "step_by_step_solution": "Muốn tìm số bị chia, ta lấy thương nhân với số chia: $x = 8 \\times 7 = 56$."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Mỗi tuần lễ có 7 ngày. Hỏi 6 tuần lễ có tất cả bao nhiêu ngày?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "42 ngày"
+        },
+        {
+          "key": "B",
+          "text": "35 ngày"
+        },
+        {
+          "key": "C",
+          "text": "48 ngày"
+        },
+        {
+          "key": "D",
+          "text": "40 ngày"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 2.5,
+      "step_by_step_solution": "6 tuần lễ có số ngày là: $7 \\times 6 = 42$ (ngày)."
+    },
+    {
+      "type": "short_answer",
+      "difficulty": "van_dung",
+      "content": "Một hộp có 6 cái bánh. Hỏi 9 hộp bánh như thế có tất cả bao nhiêu cái bánh? (Ghi kết quả là số)",
+      "correct_answer": "54",
+      "accepted_answers": [
+        "54",
+        "54 cái bánh",
+        "54 cái"
+      ],
+      "points": 2.5,
+      "step_by_step_solution": "9 hộp bánh có tất cả số cái bánh là: $6 \\times 9 = 54$ (cái bánh)."
+    }
+  ]
+}

@@ -6,6 +6,8 @@ import { executeWithKeyRotation } from '@/lib/gemini-keys';
 import { ApiError, apiErrorResponse } from '@/lib/api-error';
 import { parseScopeChatRequest, requestScopeChat, scopeChatSystemInstruction } from '@/lib/scope-chat';
 
+export const maxDuration = 60;
+
 export async function POST(req: NextRequest) {
   try {
     const user = await requireRequestAuth(req);

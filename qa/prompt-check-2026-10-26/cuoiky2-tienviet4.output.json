@@ -1,0 +1,185 @@
+{
+  "title": "Đề kiểm tra cuối học kì II môn Tiếng Việt lớp 4 - Đọc hiểu, Luyện từ và câu, Tập làm văn",
+  "questions": [
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Đọc đoạn trích sau và trả lời câu hỏi:\n\"Cây gạo sừng sững như một tháp đèn khổng lồ. Hàng ngàn bông hoa là hàng ngàn ngọn lửa hồng tươi, hàng ngàn búp nõn là hàng ngàn ánh nến trong xanh. Tất cả đều lóng lánh, lung linh trong nắng sớm. Mùa hoa gạo về mang theo bao niềm vui và sức sống bừng dậy khắp bến sông quê hương.\"\nĐoạn văn miêu tả vẻ đẹp của cây gạo vào thời điểm nào?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "Mùa hoa gạo nở trong buổi nắng sớm."
+        },
+        {
+          "key": "B",
+          "text": "Một đêm trăng sáng mùa thu."
+        },
+        {
+          "key": "C",
+          "text": "Một buổi trưa hè oi ả."
+        },
+        {
+          "key": "D",
+          "text": "Mùa đông lạnh giá lá rụng hết."
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "Đoạn văn nêu rõ: \"Mùa hoa gạo về... lung linh trong nắng sớm\"."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Trong câu: \"Cây gạo sừng sững như một tháp đèn khổng lồ\", bộ phận chủ ngữ là:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "Cây gạo"
+        },
+        {
+          "key": "B",
+          "text": "Cây gạo sừng sững"
+        },
+        {
+          "key": "C",
+          "text": "Một tháp đèn khổng lồ"
+        },
+        {
+          "key": "D",
+          "text": "Tháp đèn"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "\"Cây gạo\" là sự vật được miêu tả, đóng vai trò chủ ngữ."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Hình ảnh \"hàng ngàn ngọn lửa hồng tươi\" trong câu thứ hai dùng để ví với cái gì?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "Hàng ngàn bông hoa gạo"
+        },
+        {
+          "key": "B",
+          "text": "Hàng ngàn búp nõn"
+        },
+        {
+          "key": "C",
+          "text": "Ánh nắng ban mai"
+        },
+        {
+          "key": "D",
+          "text": "Tháp đèn khổng lồ"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "Tác giả viết: \"Hàng ngàn bông hoa là hàng ngàn ngọn lửa hồng tươi\"."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Dòng nào dưới đây gồm các từ láy có trong đoạn văn trên?",
+      "choices": [
+        {
+          "key": "A",
+          "text": "sừng sững, lóng lánh, lung linh"
+        },
+        {
+          "key": "B",
+          "text": "khổng lồ, búp nõn, mùa hoa"
+        },
+        {
+          "key": "C",
+          "text": "ánh nến, tháp đèn, quê hương"
+        },
+        {
+          "key": "D",
+          "text": "hồng tươi, trong xanh, nắng sớm"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "\"sừng sững\", \"lóng lánh\", \"lung linh\" là các từ láy âm đầu và vần."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Nội dung chính của đoạn văn trên là:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "Tả vẻ đẹp rực rỡ, tràn đầy sức sống của cây gạo mùa trổ hoa."
+        },
+        {
+          "key": "B",
+          "text": "Kể về sự tích cây gạo đầu làng."
+        },
+        {
+          "key": "C",
+          "text": "Kêu gọi mọi người bảo vệ cây xanh."
+        },
+        {
+          "key": "D",
+          "text": "Tả cảnh sinh hoạt của người dân bên bến sông."
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "Đoạn văn tập trung khắc họa vẻ đẹp rực rỡ như tháp đèn tỏa sáng của cây gạo mùa hoa nở."
+    },
+    {
+      "type": "short_answer",
+      "difficulty": "thong_hieu",
+      "content": "Ghi lại trạng ngữ trong câu sau: \"Dưới ánh nắng sớm mai, những bông hoa gạo nở rực rỡ cả một góc trời.\"",
+      "correct_answer": "Dưới ánh nắng sớm mai",
+      "accepted_answers": [
+        "Dưới ánh nắng sớm mai",
+        "Dưới ánh nắng sớm mai,"
+      ],
+      "points": 1,
+      "step_by_step_solution": "Trạng ngữ chỉ nơi chốn/điều kiện: \"Dưới ánh nắng sớm mai\"."
+    },
+    {
+      "type": "short_answer",
+      "difficulty": "van_dung",
+      "content": "Tìm trong đoạn văn một từ ngữ so sánh cây gạo với sự vật khác.",
+      "correct_answer": "như một tháp đèn khổng lồ",
+      "accepted_answers": [
+        "như một tháp đèn khổng lồ",
+        "tháp đèn khổng lồ",
+        "như một tháp đèn"
+      ],
+      "points": 1,
+      "step_by_step_solution": "Hình ảnh so sánh: cây gạo được so sánh \"như một tháp đèn khổng lồ\"."
+    },
+    {
+      "type": "essay",
+      "difficulty": "van_dung",
+      "content": "Viết một bài văn ngắn (khoảng 10 đến 12 câu) tả một cây bóng mát hoặc một cây hoa mà em yêu thích gắn liền với sân trường hoặc quê hương em.",
+      "rubric": [
+        {
+          "criterion": "Mở bài: Giới thiệu được cây định tả (tên cây, trồng ở đâu, do ai trồng hoặc thấy khi nào)",
+          "maxPoints": 0.5
+        },
+        {
+          "criterion": "Thân bài: Tả bao quát hình dáng và tả chi tiết từng bộ phận nổi bật (gốc, thân, tán lá, hoa hoặc quả) theo trình tự hợp lý",
+          "maxPoints": 1.5
+        },
+        {
+          "criterion": "Kết bài: Nêu được ích lợi của cây và tình cảm gắn bó, chăm sóc cây của bản thân",
+          "maxPoints": 0.5
+        },
+        {
+          "criterion": "Hình thức: Đảm bảo dung lượng 10-12 câu, sử dụng biện pháp so sánh hoặc nhân hóa, chữ viết rõ ràng, ít lỗi chính tả",
+          "maxPoints": 0.5
+        }
+      ],
+      "points": 3,
+      "step_by_step_solution": "Dàn ý bài văn tả cây bàng (hoặc cây phượng/cây hoa hồng):\n- Mở bài: Giới thiệu cây bàng sừng sững giữa sân trường em.\n- Thân bài:\n  + Bao quát: Từ xa nhìn lại cây như chiếc ô xanh khổng lồ.\n  + Chi tiết: Gốc cây to hai bạn ôm không xuể, rễ nổi gồ ghề; thân cây phủ lớp vỏ nâu mốc; cành xòe từng tầng từng lớp; lá bàng xanh bóng mỡ màng, che bóng mát cho chúng em vui chơi trong giờ ra chơi.\n- Kết bài: Cây bàng như người bạn thân thiết chứng kiến bao kỉ niệm tuổi thơ dưới mái trường. Em luôn yêu quý và chăm sóc cây."
+    }
+  ]
+}

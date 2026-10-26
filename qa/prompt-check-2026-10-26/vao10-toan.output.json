@@ -1,0 +1,180 @@
+{
+  "title": "Đề thi tuyển sinh vào lớp 10 môn Toán - Đại số và Hình học lớp 9",
+  "questions": [
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Biểu thức $P = \\sqrt{x - 2} + \\frac{1}{x - 3}$ xác định khi và chỉ khi:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "$x \\ge 2$ và $x \\ne 3$"
+        },
+        {
+          "key": "B",
+          "text": "$x > 2$ và $x \\ne 3$"
+        },
+        {
+          "key": "C",
+          "text": "$x \\ge 2$"
+        },
+        {
+          "key": "D",
+          "text": "$x > 3$"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "Điều kiện: biểu thức trong căn không âm ($x - 2 \\ge 0 \\Leftrightarrow x \\ge 2$) và mẫu khác 0 ($x - 3 \\ne 0 \\Leftrightarrow x \\ne 3$)."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Tọa độ giao điểm của đồ thị parabol $(P): y = x^2$ và đường thẳng $(d): y = 2x + 3$ là:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "$(-1; 1)$ và $(3; 9)$"
+        },
+        {
+          "key": "B",
+          "text": "$(1; 1)$ và $(-3; 9)$"
+        },
+        {
+          "key": "C",
+          "text": "$(-1; -1)$ và $(3; 9)$"
+        },
+        {
+          "key": "D",
+          "text": "$(1; 5)$ và $(3; 9)$"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "Phương trình hoành độ giao điểm: $x^2 = 2x + 3 \\Leftrightarrow x^2 - 2x - 3 = 0 \\Leftrightarrow (x + 1)(x - 3) = 0$. Với $x = -1 \\Rightarrow y = 1$; với $x = 3 \\Rightarrow y = 9$."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Gọi $x_1, x_2$ là hai nghiệm của phương trình $x^2 - 5x + 3 = 0$. Giá trị của biểu thức $T = x_1^2 + x_2^2$ bằng:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "19"
+        },
+        {
+          "key": "B",
+          "text": "25"
+        },
+        {
+          "key": "C",
+          "text": "31"
+        },
+        {
+          "key": "D",
+          "text": "16"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "Theo định lý Viète: $x_1 + x_2 = 5$ và $x_1 x_2 = 3$. Do đó $T = (x_1 + x_2)^2 - 2x_1 x_2 = 5^2 - 2 \\cdot 3 = 25 - 6 = 19$."
+    },
+    {
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Cho đường tròn $(O)$ có bán kính $R = 5\\text{ cm}$. Dây cung $AB$ có độ dài $6\\text{ cm}$. Khoảng cách từ tâm $O$ đến dây $AB$ bằng:",
+      "choices": [
+        {
+          "key": "A",
+          "text": "$4\\text{ cm}$"
+        },
+        {
+          "key": "B",
+          "text": "$3\\text{ cm}$"
+        },
+        {
+          "key": "C",
+          "text": "$\\sqrt{11}\\text{ cm}$"
+        },
+        {
+          "key": "D",
+          "text": "$8\\text{ cm}$"
+        }
+      ],
+      "correct_answer": "A",
+      "points": 1,
+      "step_by_step_solution": "Kẻ $OH \\perp AB$ tại $H$ thì $H$ là trung điểm của $AB$, nên $AH = 3\\text{ cm}$. Áp dụng định lý Pythagoras: $OH = \\sqrt{OA^2 - AH^2} = \\sqrt{5^2 - 3^2} = 4\\text{ cm}$."
+    },
+    {
+      "type": "short_answer",
+      "difficulty": "thong_hieu",
+      "content": "Giải hệ phương trình $\\begin{cases} 2x + y = 7 \\\\ x - y = 2 \\end{cases}$. Tính giá trị của biểu thức $P = x \\cdot y$.",
+      "correct_answer": "3",
+      "accepted_answers": [
+        "3",
+        "3.0"
+      ],
+      "points": 1,
+      "step_by_step_solution": "Cộng hai phương trình vế theo vế: $3x = 9 \\Rightarrow x = 3$. Thay vào phương trình thứ hai: $3 - y = 2 \\Rightarrow y = 1$. Vậy $P = 3 \\cdot 1 = 3$."
+    },
+    {
+      "type": "short_answer",
+      "difficulty": "van_dung",
+      "content": "Tìm giá trị của tham số $m$ để phương trình bậc hai $x^2 - 4x + m = 0$ có hai nghiệm phân biệt $x_1, x_2$ thỏa mãn $x_1^2 + x_2^2 = 10$.",
+      "correct_answer": "3",
+      "accepted_answers": [
+        "3",
+        "m=3"
+      ],
+      "points": 1,
+      "step_by_step_solution": "Phương trình có $\\Delta' = 4 - m > 0 \\Leftrightarrow m < 4$. Theo Viète: $x_1 + x_2 = 4, x_1 x_2 = m$. Ta có $x_1^2 + x_2^2 = (x_1+x_2)^2 - 2x_1 x_2 = 16 - 2m = 10 \\Leftrightarrow 2m = 6 \\Leftrightarrow m = 3$ (thỏa mãn $m < 4$)."
+    },
+    {
+      "type": "short_answer",
+      "difficulty": "van_dung",
+      "content": "Một hình nón có bán kính đáy $r = 3\\text{ cm}$ và chiều cao $h = 4\\text{ cm}$. Tính diện tích xung quanh của hình nón đó theo $\\pi$ (nhập hệ số trước $\\pi$, ví dụ $15\\pi$ thì nhập 15).",
+      "correct_answer": "15",
+      "accepted_answers": [
+        "15",
+        "15pi",
+        "15\\pi"
+      ],
+      "points": 1,
+      "step_by_step_solution": "Độ dài đường sinh: $l = \\sqrt{r^2 + h^2} = \\sqrt{3^2 + 4^2} = 5\\text{ cm}$. Diện tích xung quanh: $S_{xq} = \\pi r l = \\pi \\cdot 3 \\cdot 5 = 15\\pi\\text{ cm}^2$. Hệ số là 15."
+    },
+    {
+      "type": "essay",
+      "difficulty": "van_dung",
+      "content": "Cho tam giác $ABC$ nhọn ($AB < AC$) nội tiếp đường tròn $(O)$. Hai đường cao $BD$ và $CE$ cắt nhau tại trực tâm $H$. Chứng minh rằng:\na) Tứ giác $BEDC$ là tứ giác nội tiếp.\nb) Đường thẳng $OA$ vuông góc với đoạn thẳng $DE$.",
+      "rubric": [
+        {
+          "criterion": "Vẽ hình đúng và chứng minh tứ giác BEDC nội tiếp dựa vào góc cùng nhìn cạnh BC dưới góc vuông",
+          "maxPoints": 1
+        },
+        {
+          "criterion": "Kẻ tiếp tuyến Ax của (O) tại A hoặc dùng góc tạo bởi tiếp tuyến và dây cung chứng minh Ax // DE suy ra OA vuông góc DE",
+          "maxPoints": 1
+        }
+      ],
+      "points": 2,
+      "step_by_step_solution": "a) $\\widehat{BEC} = \\widehat{BDC} = 90^\\circ$ cùng nhìn $BC$ nên $BEDC$ nội tiếp đường tròn đường kính $BC$.\nb) Kẻ tiếp tuyến $Ax$ với $(O)$ tại $A$ ($Ax$ thuộc nửa mặt phẳng bờ $AB$ chứa $C$). Ta có $\\widehat{xAB} = \\widehat{ACB}$ (góc tạo bởi tiếp tuyến và dây cung bằng góc nội tiếp cùng chắn cung $AB$). Do $BEDC$ nội tiếp nên $\\widehat{ADE} = \\widehat{ACB}$. Suy ra $\\widehat{xAB} = \\widehat{ADE} \\Rightarrow Ax \\parallel DE$. Mà $OA \\perp Ax$ nên $OA \\perp DE$."
+    },
+    {
+      "type": "essay",
+      "difficulty": "van_dung_cao",
+      "content": "Cho ba số thực dương $a, b, c$ thỏa mãn $a + b + c = 3$. Tìm giá trị nhỏ nhất của biểu thức:\n$$P = \\frac{a}{1 + b^2} + \\frac{b}{1 + c^2} + \\frac{c}{1 + a^2}$$",
+      "rubric": [
+        {
+          "criterion": "Áp dụng bất đẳng thức Cauchy ngược dấu cho từng hạng tử biến đổi về dạng a - ab^2/(1+b^2)",
+          "maxPoints": 0.5
+        },
+        {
+          "criterion": "Đánh giá bất đẳng thức ab/(2) và chứng minh P >= 3/2, chỉ ra dấu bằng khi a = b = c = 1",
+          "maxPoints": 0.5
+        }
+      ],
+      "points": 1,
+      "step_by_step_solution": "Áp dụng kỹ thuật Cauchy ngược dấu:\n$$\\frac{a}{1 + b^2} = a - \\frac{ab^2}{1 + b^2} \\ge a - \\frac{ab^2}{2b} = a - \\frac{ab}{2}$$\nTương tự: $\\frac{b}{1 + c^2} \\ge b - \\frac{bc}{2}$ và $\\frac{c}{1 + a^2} \\ge c - \\frac{ca}{2}$.\nCộng ba bất đẳng thức vế theo vế:\n$$P \\ge (a + b + c) - \\frac{ab + bc + ca}{2}$$\nTa có $ab + bc + ca \\le \\frac{(a + b + c)^2}{3} = \\frac{3^2}{3} = 3$.\nSuy ra $P \\ge 3 - \\frac{3}{2} = \\frac{3}{2}$.\nDấu bằng xảy ra khi và chỉ khi $a = b = c = 1$. Vậy $\\min P = \\frac{3}{2}$."
+    }
+  ]
+}

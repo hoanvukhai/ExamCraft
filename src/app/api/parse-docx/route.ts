@@ -12,6 +12,9 @@ import { attachWordImages, docxWithImagesAsMarkers } from '@/lib/docx-images';
 import { GoogleGenAI } from '@google/genai';
 import { executeWithKeyRotation, parseProviderJson } from '@/lib/gemini-keys';
 
+// Several AI calls in a row (long Word imports, full exams) need more than a serverless default.
+export const maxDuration = 300;
+
 export async function POST(req: NextRequest) {
   try {
     const currentUser = await requireRequestAuth(req);
