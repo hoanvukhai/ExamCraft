@@ -1,6 +1,6 @@
 {
   "port": 3117,
   "holder": "FREE",
-  "note": "Claude finished the by-eye checks. A test server on 3117 is running the latest build (after the mobile header fix); anyone may use it. Rebuild before changing code.",
-  "since_utc": "2026-10-26T10:44:36.372Z"
+  "note": "No server is running on 3117. The owner starts their own for the by-hand test; see docs/huong-dan/HUONG_DAN_CHAY_VA_TEST_LOCAL.md.",
+  "since_utc": "2026-10-26T15:12:25.278Z"
 }

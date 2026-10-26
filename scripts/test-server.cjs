@@ -20,8 +20,10 @@ env.ATTEMPT_SESSION_SECRET = crypto.randomBytes(48).toString('base64url');
 const production = process.argv.includes('--production');
 // The port is normally 3117. A second isolated server for a different job (for example a real-provider evaluation) can use another port.
 const port = process.env.EXAMCRAFT_TEST_PORT ?? '3117';
-console.log(`Starting isolated ExamCraft test server (${production ? 'production build' : 'development'}) at http://127.0.0.1:${port}; only examcraft_test_20261022 is used.`);
-const child = spawn(process.execPath, ['node_modules/next/dist/bin/next', ...(production ? ['start'] : ['dev', '--webpack']), '--hostname', '127.0.0.1', '--port', port], { env, stdio: 'inherit' });
+// 127.0.0.1 keeps the server reachable from this computer only. EXAMCRAFT_TEST_HOST=0.0.0.0 lets a phone on the same Wi-Fi open it (anyone on that network can then reach the test data).
+const host = process.env.EXAMCRAFT_TEST_HOST ?? '127.0.0.1';
+console.log(`Starting isolated ExamCraft test server (${production ? 'production build' : 'development'}) at http://${host}:${port}; only examcraft_test_20261022 is used.`);
+const child = spawn(process.execPath, ['node_modules/next/dist/bin/next', ...(production ? ['start'] : ['dev', '--webpack']), '--hostname', host, '--port', port], { env, stdio: 'inherit' });
 child.on('exit', code => { process.exitCode = code ?? 1; });
 process.on('SIGINT', () => child.kill('SIGINT'));
 process.on('SIGTERM', () => child.kill('SIGTERM'));

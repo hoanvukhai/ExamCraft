@@ -1,5 +1,7 @@
 # BẢN TEST ĐẦY ĐỦ EXAMCRAFT — 00. Cách dùng và chuẩn bị
 
+> **Chưa chạy được máy?** Đọc [HUONG_DAN_CHAY_VA_TEST_LOCAL.md](../HUONG_DAN_CHAY_VA_TEST_LOCAL.md) trước: có các lệnh dựng máy, tài khoản đăng nhập và cách mở cho điện thoại. Tài khoản thử `gv1`, `gv2` dùng trong tệp này được tạo ở đó, không tạo tay ở `/admin/users` như mục 3.4 nữa.
+
 Bản test này dành cho **hai người test cùng nhau**: chủ dự án và một người nữa. Nó đi qua *toàn bộ chức năng* theo từng phần. Mỗi dòng là một việc cụ thể: làm gì, thấy gì thì đúng, rồi bạn ghi **Đ** (đạt), **K** (không đạt) hoặc **B** (bỏ qua, chưa thử được).
 
 Tổng cộng khoảng 560 dòng kiểm trong 10 phần. Không cần làm một lần: mỗi phần độc lập, làm cuối tuần này một phần, tuần sau một phần cũng được. Nên làm theo thứ tự các phần 01 → 08, vì phần sau dùng dữ liệu của phần trước.

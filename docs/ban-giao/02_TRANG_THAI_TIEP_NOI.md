@@ -20,7 +20,7 @@ Cập nhật **26/10/2026**. Viết đè mỗi đợt; bản cũ giữ trong Git
 
 ## 3. Hàng đợi tiếp nối
 
-1. **Chủ dự án đưa lên Vercel** theo [TRIEN_KHAI_VERCEL](../huong-dan/TRIEN_KHAI_VERCEL.md), cho giáo viên và mình test thử; lỗi ghi vào [PHIEU_GHI_LOI](../huong-dan/PHIEU_GHI_LOI.md). Bản test đầy đủ ở [ban-test-day-du](../huong-dan/ban-test-day-du/00_HUONG_DAN_DUNG_VA_CHUAN_BI.md).
+1. **Chủ dự án tự chạy và test toàn bộ trên máy** theo [HUONG_DAN_CHAY_VA_TEST_LOCAL](../huong-dan/HUONG_DAN_CHAY_VA_TEST_LOCAL.md), rồi **đưa lên Vercel** theo [TRIEN_KHAI_VERCEL](../huong-dan/TRIEN_KHAI_VERCEL.md), cho giáo viên và mình test thử; lỗi ghi vào [PHIEU_GHI_LOI](../huong-dan/PHIEU_GHI_LOI.md). Bản test đầy đủ ở [ban-test-day-du](../huong-dan/ban-test-day-du/00_HUONG_DAN_DUNG_VA_CHUAN_BI.md).
 2. **Claude còn nợ:** `npm run ci` đầy đủ sau các thay đổi 26/10 (xáo đáp án sinh đề, `maxDuration`, lời nhắc sinh đề tách riêng). Cần dừng máy chủ thử cũ trên cổng 3117, việc này chờ chủ dự án đồng ý. Đã đạt riêng: kiểm kiểu, lint (0 lỗi), test mới của các tệp vừa đổi.
 3. **Chạy AI thật khi hạn mức hồi (khoảng 14:00 giờ VN):** 6 môn chưa chạy (Âm nhạc, Mĩ thuật, GDTC, HĐ trải nghiệm, Ngoại ngữ khác, Tiếng dân tộc) để xác nhận lỗi trường `null`; đo xu hướng đáp án A của Gemini thật; nhập Word có ảnh thật. Sau đó xóa tệp khóa ở thư mục tạm.
 4. **Việc của người:** CV044, 068, 071, 076, 078; ngoại lệ chấp nhận CV017, 065, 066. Soát mắt các dòng 🔴 dạng nhìn thấy, Word thật, in giấy, 375px, ngắt mạng; thẩm định chuyên môn 9B–9P và độ khó theo kỳ thi.
