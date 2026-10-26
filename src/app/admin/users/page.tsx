@@ -256,7 +256,7 @@ export default function AdminUsersPage() {
     <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] text-[#202124] dark:text-[#e3e3e3] flex flex-col transition-colors duration-200">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-5 right-5 z-50 bg-[#137333] text-white px-4 py-3 rounded-full shadow-xs flex items-center gap-2.5 animate-in slide-in-from-top-3 duration-200 text-sm font-medium">
+        <div className="fixed top-5 right-5 z-50 bg-[var(--ui-surface-variant)] text-white px-4 py-3 rounded-full shadow-xs flex items-center gap-2.5 animate-in slide-in-from-top-3 duration-200 text-sm font-medium">
           <CheckCircle2 className="w-5 h-5 shrink-0" />
           <span>{toastMessage}</span>
         </div>
@@ -310,7 +310,7 @@ export default function AdminUsersPage() {
             title={theme === 'dark' ? 'Chuyển sang giao diện Sáng' : 'Chuyển sang giao diện Tối'}
             className="p-2 rounded-lg border border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#242424] text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
           >
-            {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-[#5f6368]" />}
+            {theme === 'dark' ? <Sun className="w-4 h-4 text-[var(--ui-text-secondary)]" /> : <Moon className="w-4 h-4 text-[#5f6368]" />}
           </button>
 
           {currentUser && (
@@ -341,7 +341,7 @@ export default function AdminUsersPage() {
               <Users className="w-4 h-4 text-[#3c4043] dark:text-[#e3e3e3]" />
             </div>
             <div className="text-2xl font-bold text-[#202124] dark:text-[#e3e3e3]">{totalTeachers}</div>
-            <div className="text-[11px] text-emerald-600 dark:text-[#5bb98c] mt-1 flex items-center gap-1">
+            <div className="text-[11px] text-[var(--ui-text-primary)] dark:text-[var(--ui-text-primary)] mt-1 flex items-center gap-1">
               <span>{activeTeachers} đang hoạt động</span>
             </div>
           </div>
@@ -361,10 +361,10 @@ export default function AdminUsersPage() {
           >
             <div className="flex items-center justify-between text-[#5f6368] dark:text-[#9aa0a6] mb-2">
               <span className="text-xs font-medium">Hạ tầng AI</span>
-              <Bot className="w-4 h-4 text-amber-500 dark:text-[#fdd663]  transition-transform" />
+              <Bot className="w-4 h-4 text-[var(--ui-text-secondary)] dark:text-[#fdd663]  transition-transform" />
             </div>
             <div className="text-2xl font-bold text-[#202124] dark:text-[#e3e3e3]">7 Gemini Keys</div>
-            <div className="text-[11px] text-emerald-600 dark:text-[#5bb98c] mt-1">Hệ thống xoay tua chống nghẽn 429 →</div>
+            <div className="text-[11px] text-[var(--ui-text-primary)] dark:text-[var(--ui-text-primary)] mt-1">Hệ thống xoay tua chống nghẽn 429 →</div>
           </Link>
         </div>
 
@@ -455,7 +455,7 @@ export default function AdminUsersPage() {
                             SUPER ADMIN
                           </span>
                         ) : (
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 dark:bg-[#0f291e] text-emerald-700 dark:text-[#5bb98c] border border-emerald-200 dark:border-[#1e4d38]">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[var(--ui-surface-variant)] dark:bg-[var(--ui-surface-variant)] text-[var(--ui-text-primary)] dark:text-[var(--ui-text-primary)] border border-[var(--ui-border)] dark:border-[var(--ui-border)]">
                             GIÁO VIÊN
                           </span>
                         )}
@@ -464,8 +464,8 @@ export default function AdminUsersPage() {
                       {/* Status Column */}
                       <td className="px-4 py-4">
                         {u.isActive ? (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 dark:bg-[#0f291e] text-emerald-700 dark:text-[#5bb98c] border border-emerald-200 dark:border-[#1e4d38]">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-[#5bb98c] " />
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-[var(--ui-surface-variant)] dark:bg-[var(--ui-surface-variant)] text-[var(--ui-text-primary)] dark:text-[var(--ui-text-primary)] border border-[var(--ui-border)] dark:border-[var(--ui-border)]">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[var(--ui-surface-variant)] dark:bg-[var(--ui-surface-variant)] " />
                             Đang hoạt động
                           </span>
                         ) : (
@@ -511,7 +511,7 @@ export default function AdminUsersPage() {
                               className={`p-2 rounded-lg transition-colors cursor-pointer ${
                                 u.isActive
                                   ? 'text-[#5f6368] dark:text-[#9aa0a6] hover:text-rose-600 dark:hover:text-[#f28b82] hover:bg-rose-50 dark:hover:bg-[#371918]'
-                                  : 'text-emerald-600 dark:text-[#5bb98c] hover:bg-emerald-50 dark:hover:bg-[#0f291e]'
+                                  : 'text-[var(--ui-text-primary)] dark:text-[var(--ui-text-primary)] hover:bg-[var(--ui-surface-variant)] dark:hover:bg-[var(--ui-surface-variant)]'
                               }`}
                             >
                               {u.isActive ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
@@ -556,15 +556,15 @@ export default function AdminUsersPage() {
       {/* Modal: Tạo tài khoản giáo viên mới */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl shadow-xs p-6 sm:p-7 relative">
-            <button
+          <div className="app-dialog w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl shadow-xs p-6 sm:p-7 relative">
+            <button aria-label="Đóng hộp thoại"
               onClick={() => setShowCreateModal(false)}
               className="absolute right-4 top-4 text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-white p-1 rounded-lg cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <div className="flex items-center gap-3 mb-5">
+            <div className="app-dialog-header flex items-center gap-3 mb-5">
               <div className="p-2.5 rounded-xl bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border border-[#3c4043]/20 dark:border-[#e3e3e3]/30">
                 <UserPlus className="w-5 h-5" />
               </div>
@@ -626,7 +626,7 @@ export default function AdminUsersPage() {
                   required
                   value={createPassword}
                   onChange={(e) => setCreatePassword(e.target.value)}
-                  className="w-full bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2 text-xs font-mono text-emerald-600 dark:text-[#5bb98c] placeholder-[#9aa0a6] dark:placeholder-[#5f6368] focus:outline-none focus:border-[#3c4043] dark:focus:border-[#e3e3e3]"
+                  className="w-full bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2 text-xs font-mono text-[var(--ui-text-primary)] dark:text-[var(--ui-text-primary)] placeholder-[#9aa0a6] dark:placeholder-[#5f6368] focus:outline-none focus:border-[#3c4043] dark:focus:border-[#e3e3e3]"
                 />
               </div>
 
@@ -661,15 +661,15 @@ export default function AdminUsersPage() {
       {/* Modal: Đặt lại mật khẩu tạm */}
       {showResetModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl shadow-xs p-6 relative">
-            <button
+          <div className="app-dialog w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl shadow-xs p-6 relative">
+            <button aria-label="Đóng hộp thoại"
               onClick={() => setShowResetModal(null)}
               className="absolute right-4 top-4 text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-white p-1 rounded-lg cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <div className="flex items-center gap-3 mb-4">
+            <div className="app-dialog-header flex items-center gap-3 mb-4">
               <div className="p-2.5 rounded-xl bg-amber-50 dark:bg-[#33250b] text-amber-700 dark:text-[#fdd663] border border-amber-200 dark:border-[#4d380e]">
                 <KeyRound className="w-5 h-5" />
               </div>
@@ -733,15 +733,15 @@ export default function AdminUsersPage() {
       {/* Modal: Chỉnh sửa thông tin & Hạn mức */}
       {showEditModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl shadow-xs p-6 relative">
-            <button
+          <div className="app-dialog w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl shadow-xs p-6 relative">
+            <button aria-label="Đóng hộp thoại"
               onClick={() => setShowEditModal(null)}
               className="absolute right-4 top-4 text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-white p-1 rounded-lg cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <div className="flex items-center gap-3 mb-4">
+            <div className="app-dialog-header flex items-center gap-3 mb-4">
               <div className="p-2.5 rounded-xl bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border border-[#3c4043]/20 dark:border-[#e3e3e3]/30">
                 <Sliders className="w-5 h-5" />
               </div>

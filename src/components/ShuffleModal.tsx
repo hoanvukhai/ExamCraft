@@ -68,9 +68,9 @@ export const ShuffleModal: React.FC<ShuffleModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-[#202124] rounded-2xl max-w-4xl w-full p-6 shadow-xs border border-[#dadce0] dark:border-[#3c4043] relative max-h-[90vh] flex flex-col text-[#202124] dark:text-[#e3e3e3] animate-in fade-in zoom-in-95 duration-150">
+      <div className="app-dialog bg-white dark:bg-[#202124] rounded-2xl max-w-4xl w-full p-6 shadow-xs border border-[#dadce0] dark:border-[#3c4043] relative max-h-[90vh] flex flex-col text-[#202124] dark:text-[#e3e3e3] animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-[#dadce0] dark:border-[#3c4043]">
+        <div className="app-dialog-header flex items-center justify-between pb-4 border-b border-[#dadce0] dark:border-[#3c4043]">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] flex items-center justify-center border border-transparent dark:border-[#3c4043]">
               <Shuffle className="w-5 h-5" />
@@ -81,7 +81,7 @@ export const ShuffleModal: React.FC<ShuffleModalProps> = ({
             </div>
           </div>
 
-          <button
+          <button aria-label="Đóng hộp thoại"
             onClick={onClose}
             className="p-2 text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] rounded-lg hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
           >
@@ -211,7 +211,7 @@ export const ShuffleModal: React.FC<ShuffleModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="pt-4 border-t border-[#dadce0] dark:border-[#3c4043] flex justify-end">
+        <div className="app-dialog-footer pt-4 border-t border-[#dadce0] dark:border-[#3c4043] flex justify-end">
           <button
             onClick={onClose}
             className="px-4 py-2 text-xs font-semibold text-[#3c4043] dark:text-[#e3e3e3] bg-[#f1f3f4] dark:bg-[#292a2d] hover:bg-[#e8eaed] dark:hover:bg-[#303134] border border-[#dadce0] dark:border-[#3c4043] rounded-lg transition-colors cursor-pointer"

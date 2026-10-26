@@ -56,8 +56,8 @@ export function ExamLibraryModal({ isOpen, onClose, onLoadExam, ownerId }: Props
     setCopyConflicts(asCopies); setPending(data); setReport(result); setMessage('Đã xem trước. Chỉ nhập các tài liệu thuộc quyền của bạn. Nguồn cũ được giữ nguyên.');
   }
   return <div role="dialog" aria-modal="true" aria-label="Kho đề và chuyển dữ liệu cũ" className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-    <div className="bg-white dark:bg-[#202124] rounded-xl p-5 max-w-4xl w-full max-h-[90vh] overflow-auto space-y-4">
-      <div className="flex justify-between"><h2 className="text-lg font-bold">Kho đề trên máy chủ</h2><button onClick={onClose} aria-label="Đóng kho đề">Đóng</button></div>
+    <div className="app-dialog bg-white dark:bg-[#202124] rounded-xl p-5 max-w-4xl w-full max-h-[90vh] overflow-auto space-y-4">
+      <div className="app-dialog-header flex justify-between"><h2 className="text-lg font-bold">Kho đề trên máy chủ</h2><button onClick={onClose} aria-label="Đóng kho đề">Đóng</button></div>
       <p className="text-sm">Kho này thuộc tài khoản đang đăng nhập. Bản nháp trên máy được giữ riêng cho từng tài khoản.</p>
       <div className="flex gap-3 flex-wrap text-sm">
         <button disabled={busy} onClick={() => void action(async () => { setPreparedDownloads([]); const all = await list(); const documents = []; for (const item of all) documents.push(await loadExam(item.id, ownerId)); const backup = await portableExamBackup(documents); const parts = prepareDownloads(backup); setMessage(`Đã chuẩn bị ${parts} tệp chứa ${documents.length} đề và ${backup.embeddedImages} ảnh. Tải đủ các phần bên dưới; khi khôi phục, nhập lần lượt từng tệp. Đây không thay bản sao lưu vận hành DB và tệp.`); })}>Chuẩn bị sao lưu kèm ảnh</button>

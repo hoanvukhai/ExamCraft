@@ -265,9 +265,9 @@ const QuestionBankContent: React.FC<QuestionBankModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4">
-      <div className="bg-white dark:bg-[#202124] rounded-2xl shadow-xs border border-[#dadce0] dark:border-[#3c4043] w-full max-w-5xl h-[90vh] flex flex-col overflow-hidden text-[#202124] dark:text-[#e3e3e3] animate-in fade-in zoom-in-95 duration-150">
+      <div className="app-dialog bg-white dark:bg-[#202124] rounded-2xl shadow-xs border border-[#dadce0] dark:border-[#3c4043] w-full max-w-5xl h-[90vh] flex flex-col overflow-hidden text-[#202124] dark:text-[#e3e3e3] animate-in fade-in zoom-in-95 duration-150">
         {/* Header Modal */}
-        <div className="px-6 py-4 bg-white dark:bg-[#202124] border-b border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between shrink-0">
+        <div className="app-dialog-header px-6 py-4 bg-white dark:bg-[#202124] border-b border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043] flex items-center justify-center shadow-xs">
               <BookMarked className="w-5 h-5 text-[#3c4043] dark:text-[#e3e3e3]" />
@@ -495,7 +495,7 @@ const QuestionBankContent: React.FC<QuestionBankModalProps> = ({
                         title={!allowInsert ? 'Hãy mở một đề rồi chọn ngân hàng câu hỏi để chèn.' : 'Thêm câu này vào đề đang mở'}
                         className={`flex items-center gap-1 px-3.5 py-1 text-xs font-medium rounded-lg transition-all shadow-xs cursor-pointer ${
                           isInserted
-                            ? 'bg-[#137333] text-white dark:bg-[#5bb98c] dark:text-[#0f291e]'
+                            ? 'app-button-tonal'
                             : 'app-button-primary text-white dark:bg-[#e3e3e3] dark:hover:bg-[#f1f3f4] dark:text-[#202124]'
                         }`}
                       >

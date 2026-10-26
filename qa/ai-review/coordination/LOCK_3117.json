@@ -1,6 +1,6 @@
 {
   "port": 3117,
   "holder": "USER",
-  "note": "Neutral UI build z51xd6hU6BLvkhFZ0RCaL verified; isolated server3117 remains running for owner preview. Do not build over .next until server use is handed back. Report qa/rebuild-2026-10-27/ui-neutral/BAO_CAO.md",
-  "since_utc": "2026-10-26T17:44:34.3845940Z"
+  "note": "Popup/menu/admin follow-up verified on build vlFYng_nKiWiGs8RrgX5x; isolated3117 running for owner. Do not build over .next. Report qa/rebuild-2026-10-27/ui-popup-review/BAO_CAO.md",
+  "since_utc": "2026-10-26T18:16:51.6253538Z"
 }

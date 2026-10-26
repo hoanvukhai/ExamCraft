@@ -1061,12 +1061,12 @@ function StudentExamContent({
       {/* Modal Xác Nhận Nộp Bài */}
       {showSubmitModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="max-w-md w-full bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-6 shadow-xs">
+          <div className="app-dialog max-w-md w-full bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-6 shadow-xs">
             <div className="w-12 h-12 rounded-full bg-[#fef7e0] dark:bg-[#33250b] text-[#b06000] dark:text-[#fdd663] flex items-center justify-center mb-4 border border-[#feefc3] dark:border-[#4d380e]">
               <AlertCircle className="w-6 h-6" />
             </div>
 
-            <h3 className="text-lg font-bold text-[#202124] dark:text-[#e3e3e3] mb-2">Xác nhận nộp bài thi?</h3>
+            <h3 className="app-dialog-header text-lg font-bold text-[#202124] dark:text-[#e3e3e3] mb-2">Xác nhận nộp bài thi?</h3>
             <p className="text-[#5f6368] dark:text-[#9aa0a6] text-sm mb-4 leading-relaxed">
               Em đã hoàn thành <span className="font-bold text-[#202124] dark:text-[#e3e3e3]">{answeredCount}</span> trên tổng số{' '}
               <span className="font-bold text-[#202124] dark:text-[#e3e3e3]">{questions.length}</span> câu hỏi.

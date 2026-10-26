@@ -236,8 +236,8 @@ export default function LoginPage() {
       {/* Mandatory Change Password Modal */}
       {showChangeModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-          <div className="w-full max-w-md bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl shadow-xs p-6 sm:p-7">
-            <div className="flex items-center gap-3 mb-4">
+          <div className="app-dialog w-full max-w-md bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl shadow-xs p-6 sm:p-7">
+            <div className="app-dialog-header flex items-center gap-3 mb-4">
               <div className="p-2.5 rounded-xl bg-amber-50 dark:bg-[#33250b] text-amber-700 dark:text-[#fdd663] border border-amber-200 dark:border-[#4d380e]">
                 <KeyRound className="w-5 h-5" />
               </div>

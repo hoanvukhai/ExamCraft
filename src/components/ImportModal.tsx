@@ -308,9 +308,9 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5">
-      <div className="bg-white dark:bg-[#202124] rounded-2xl max-w-6xl w-full p-5 sm:p-6 shadow-xs border border-[#dadce0] dark:border-[#3c4043] relative max-h-[92vh] flex flex-col text-[#202124] dark:text-[#e3e3e3] animate-in fade-in zoom-in-95 duration-150">
+      <div className="app-dialog bg-white dark:bg-[#202124] rounded-2xl max-w-6xl w-full p-5 sm:p-6 shadow-xs border border-[#dadce0] dark:border-[#3c4043] relative max-h-[92vh] flex flex-col text-[#202124] dark:text-[#e3e3e3] animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-[#dadce0] dark:border-[#3c4043]">
+        <div className="app-dialog-header flex items-center justify-between pb-3 border-b border-[#dadce0] dark:border-[#3c4043]">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043] flex items-center justify-center shadow-xs">
               <Upload className="w-5 h-5 text-[#3c4043] dark:text-[#e3e3e3]" />
@@ -326,7 +326,7 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
             </div>
           </div>
 
-          <button
+          <button aria-label="Đóng hộp thoại"
             onClick={handleClose}
             className="p-1.5 text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] rounded-lg hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
           >
@@ -344,7 +344,7 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
             disabled={isLoading || accountLocked} onClick={() => setSourceType('image')}
             className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
               sourceType === 'image'
-                ? 'app-button-primary text-white dark:bg-[#e3e3e3] dark:text-[#202124] shadow-xs'
+                ? 'app-button-tonal'
                 : 'bg-[#f1f3f4] dark:bg-[#292a2d] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#e8eaed] dark:hover:bg-[#303134]'
             }`}
           >
@@ -356,7 +356,7 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
             disabled={isLoading || accountLocked} onClick={() => setSourceType('word')}
             className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
               sourceType === 'word'
-                ? 'app-button-primary text-white dark:bg-[#e3e3e3] dark:text-[#202124] shadow-xs'
+                ? 'app-button-tonal'
                 : 'bg-[#f1f3f4] dark:bg-[#292a2d] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#e8eaed] dark:hover:bg-[#303134]'
             }`}
           >
@@ -368,7 +368,7 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
             disabled={isLoading || accountLocked} onClick={() => setSourceType('text')}
             className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
               sourceType === 'text'
-                ? 'app-button-primary text-white dark:bg-[#e3e3e3] dark:text-[#202124] shadow-xs'
+                ? 'app-button-tonal'
                 : 'bg-[#f1f3f4] dark:bg-[#292a2d] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#e8eaed] dark:hover:bg-[#303134]'
             }`}
           >
@@ -380,7 +380,7 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
             disabled={isLoading || accountLocked} onClick={() => setSourceType('latex')}
             className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
               sourceType === 'latex'
-                ? 'app-button-primary text-white dark:bg-[#e3e3e3] dark:text-[#202124] shadow-xs'
+                ? 'app-button-tonal'
                 : 'bg-[#f1f3f4] dark:bg-[#292a2d] text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#e8eaed] dark:hover:bg-[#303134]'
             }`}
           >
@@ -509,7 +509,7 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
             </div>
 
             {/* Nút Kích hoạt phân tích */}
-            <div className="pt-2 border-t border-[#dadce0] dark:border-[#3c4043] flex justify-end">
+            <div className="app-dialog-footer pt-2 border-t border-[#dadce0] dark:border-[#3c4043] flex justify-end">
               <button
                 onClick={handleStartParsing}
                 disabled={isLoading || accountLocked}
@@ -658,7 +658,7 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
 
         {/* Footer */}
         {isLoading && <button type="button" onClick={cancelParsing}>Hủy yêu cầu AI</button>}
-        <div className="pt-3 border-t border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between">
+        <div className="app-dialog-footer pt-3 border-t border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between">
           <button
               onClick={handleClose}
             className="px-4 py-2 text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] rounded-lg transition-colors cursor-pointer"
@@ -670,7 +670,7 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
             <button
               onClick={handleConfirmImport}
               disabled={isLoading || accountLocked}
-              className="flex items-center gap-1.5 px-5 py-2 text-xs font-medium text-white bg-[#137333] hover:bg-[#0d5925] dark:bg-[#5bb98c] dark:hover:bg-[#4ea77d] dark:text-[#0f291e] rounded-lg shadow-xs transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-5 py-2 text-xs font-medium app-button-primary rounded-lg shadow-xs transition-all cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>Thêm {parsedQuestions.length} câu hỏi vào Đề thi hiện tại</span>

@@ -1,0 +1,1105 @@
+[
+  {
+    "label": "BEFORE-import-375",
+    "dark": true,
+    "documentWidth": 375,
+    "panels": [
+      {
+        "background": "rgb(32, 33, 36)",
+        "border": "rgb(60, 64, 67)",
+        "client": [
+          350,
+          612
+        ],
+        "color": "rgb(227, 227, 227)",
+        "overflowX": "visible",
+        "overflowY": "visible",
+        "rect": {
+          "bottom": 640.5,
+          "left": 12,
+          "right": 363.2000122070313,
+          "top": 26.6875
+        },
+        "role": null,
+        "scroll": [
+          365,
+          882
+        ],
+        "title": "Phòng Số Hóa & Bóc Tách Đề Thi (AI Ingestion Studio)"
+      }
+    ],
+    "path": "/",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "BEFORE-generate-375",
+    "dark": true,
+    "documentWidth": 375,
+    "panels": [
+      {
+        "background": "rgb(32, 33, 36)",
+        "border": "rgb(60, 64, 67)",
+        "client": [
+          338,
+          600
+        ],
+        "color": "rgb(227, 227, 227)",
+        "overflowX": "auto",
+        "overflowY": "auto",
+        "rect": {
+          "bottom": 633.8375358581543,
+          "left": 16,
+          "right": 359.20001220703125,
+          "top": 33.36249923706055
+        },
+        "role": "dialog",
+        "scroll": [
+          338,
+          974
+        ],
+        "title": "Soạn bản nháp với AI"
+      }
+    ],
+    "path": "/",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "BEFORE-account-menu-landscape",
+    "client": [
+      286,
+      305
+    ],
+    "overflow": "visible",
+    "rect": {
+      "bottom": 359.950008392334,
+      "left": 359.20001220703125,
+      "right": 647.2000122070312,
+      "top": 53.60000228881836
+    },
+    "scroll": [
+      286,
+      305
+    ],
+    "viewport": [
+      667,
+      375
+    ]
+  },
+  {
+    "label": "BEFORE-account-menu-568x320",
+    "bottom": 359.950008392334,
+    "overflowY": "visible",
+    "top": 53.60000228881836,
+    "viewport": [
+      568,
+      320
+    ]
+  },
+  {
+    "label": "FINAL-account-menu-568x320-dark",
+    "dark": true,
+    "documentWidth": 568,
+    "panels": [
+      {
+        "background": "rgb(32, 33, 36)",
+        "border": "rgb(60, 64, 67)",
+        "client": [
+          281,
+          238
+        ],
+        "color": "rgb(227, 227, 227)",
+        "overflowX": "auto",
+        "overflowY": "auto",
+        "rect": {
+          "bottom": 293.60000228881836,
+          "left": 268,
+          "right": 556,
+          "top": 53.60000228881836
+        },
+        "role": "region",
+        "scroll": [
+          281,
+          305
+        ],
+        "title": "Tài khoản và khóa AI"
+      }
+    ],
+    "path": "/editor/ex_f07f9be62b9bcf18eb5997563157ee3e361c6092",
+    "viewport": [
+      568,
+      320
+    ]
+  },
+  {
+    "label": "FINAL-account-logout-visible",
+    "button": {
+      "bottom": 282.75,
+      "top": 254.75
+    },
+    "hitButton": true,
+    "scrollTop": 66.4000015258789,
+    "viewportHeight": 320
+  },
+  {
+    "label": "FINAL-import-375-dark",
+    "dark": true,
+    "documentWidth": 375,
+    "panels": [
+      {
+        "background": "rgb(32, 33, 36)",
+        "border": "rgb(60, 64, 67)",
+        "client": [
+          336,
+          634
+        ],
+        "color": "rgb(227, 227, 227)",
+        "overflowX": "auto",
+        "overflowY": "auto",
+        "rect": {
+          "bottom": 651.2000122070312,
+          "left": 16,
+          "right": 359.20001220703125,
+          "top": 16
+        },
+        "role": null,
+        "scroll": [
+          336,
+          894
+        ],
+        "title": "Phòng Số Hóa & Bóc Tách Đề Thi (AI Ingestion Studio)"
+      }
+    ],
+    "path": "/",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "FINAL-generate-375-dark",
+    "dark": true,
+    "documentWidth": 375,
+    "panels": [
+      {
+        "background": "rgb(32, 33, 36)",
+        "border": "rgb(60, 64, 67)",
+        "client": [
+          336,
+          634
+        ],
+        "color": "rgb(227, 227, 227)",
+        "overflowX": "auto",
+        "overflowY": "auto",
+        "rect": {
+          "bottom": 651.2000122070312,
+          "left": 16,
+          "right": 359.20001220703125,
+          "top": 16
+        },
+        "role": "dialog",
+        "scroll": [
+          336,
+          958
+        ],
+        "title": "Soạn bản nháp với AI"
+      }
+    ],
+    "path": "/",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "FINAL-folder-375-dark",
+    "dark": true,
+    "documentWidth": 375,
+    "panels": [
+      {
+        "background": "rgb(32, 33, 36)",
+        "border": "rgb(60, 64, 67)",
+        "client": [
+          342,
+          246
+        ],
+        "color": "rgb(227, 227, 227)",
+        "overflowX": "auto",
+        "overflowY": "auto",
+        "rect": {
+          "bottom": 457.5749969482422,
+          "left": 16,
+          "right": 359.20001220703125,
+          "top": 209.625
+        },
+        "role": null,
+        "scroll": [
+          342,
+          246
+        ],
+        "title": "Tạo Thư Mục Mới (Cấp 1)"
+      }
+    ],
+    "path": "/",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "FINAL-rename-375-dark",
+    "dark": true,
+    "documentWidth": 375,
+    "panels": [
+      {
+        "background": "rgb(32, 33, 36)",
+        "border": "rgb(60, 64, 67)",
+        "client": [
+          342,
+          190
+        ],
+        "color": "rgb(227, 227, 227)",
+        "overflowX": "auto",
+        "overflowY": "auto",
+        "rect": {
+          "bottom": 429.5750122070313,
+          "left": 16,
+          "right": 359.20001220703125,
+          "top": 237.6125030517578
+        },
+        "role": null,
+        "scroll": [
+          342,
+          190
+        ],
+        "title": "Đổi tên đề thi"
+      }
+    ],
+    "path": "/",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "FINAL-notes-375-dark",
+    "dark": true,
+    "documentWidth": 375,
+    "panels": [
+      {
+        "background": "rgb(32, 33, 36)",
+        "border": "rgb(60, 64, 67)",
+        "client": [
+          342,
+          607
+        ],
+        "color": "rgb(227, 227, 227)",
+        "overflowX": "auto",
+        "overflowY": "auto",
+        "rect": {
+          "bottom": 638.0249881744385,
+          "left": 16,
+          "right": 359.20001220703125,
+          "top": 29.162500381469727
+        },
+        "role": null,
+        "scroll": [
+          342,
+          607
+        ],
+        "title": "Ghi chú riêng cho AI"
+      }
+    ],
+    "path": "/",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "FINAL-key-dialog-375-dark",
+    "dark": true,
+    "documentWidth": 375,
+    "panels": [
+      {
+        "background": "rgb(32, 33, 36)",
+        "border": "rgb(60, 64, 67)",
+        "client": [
+          336,
+          634
+        ],
+        "color": "rgb(227, 227, 227)",
+        "overflowX": "auto",
+        "overflowY": "auto",
+        "rect": {
+          "bottom": 651.2000122070312,
+          "left": 16,
+          "right": 359.20001220703125,
+          "top": 16
+        },
+        "role": "dialog",
+        "scroll": [
+          336,
+          944
+        ],
+        "title": "Khóa AI của bạn"
+      }
+    ],
+    "path": "/",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "FINAL-import-568x320-dark",
+    "dark": true,
+    "documentWidth": 568,
+    "panels": [
+      {
+        "background": "rgb(32, 33, 36)",
+        "border": "rgb(60, 64, 67)",
+        "client": [
+          529,
+          286
+        ],
+        "color": "rgb(227, 227, 227)",
+        "overflowX": "auto",
+        "overflowY": "auto",
+        "rect": {
+          "bottom": 304,
+          "left": 16,
+          "right": 552,
+          "top": 16
+        },
+        "scroll": [
+          529,
+          746
+        ],
+        "title": "Phòng Số Hóa & Bóc Tách Đề Thi (AI Ingestion Studio)",
+        "withinViewport": true
+      }
+    ],
+    "path": "/",
+    "viewport": [
+      568,
+      320
+    ]
+  },
+  {
+    "label": "FINAL-header-settings-375-dark",
+    "dark": true,
+    "documentWidth": 375,
+    "panels": [
+      {
+        "background": "rgb(32, 33, 36)",
+        "border": "rgb(60, 64, 67)",
+        "client": [
+          336,
+          634
+        ],
+        "color": "rgb(227, 227, 227)",
+        "overflowX": "auto",
+        "overflowY": "auto",
+        "rect": {
+          "bottom": 651.2000122070312,
+          "left": 16,
+          "right": 359.20001220703125,
+          "top": 16
+        },
+        "scroll": [
+          336,
+          818
+        ],
+        "title": "Tùy chỉnh tiêu đề",
+        "withinViewport": true
+      }
+    ],
+    "path": "/editor/ex_f07f9be62b9bcf18eb5997563157ee3e361c6092",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "FINAL-bank-375-dark",
+    "dark": true,
+    "documentWidth": 375,
+    "panels": [
+      {
+        "background": "rgb(32, 33, 36)",
+        "border": "rgb(60, 64, 67)",
+        "client": [
+          342,
+          599
+        ],
+        "color": "rgb(227, 227, 227)",
+        "overflowX": "auto",
+        "overflowY": "auto",
+        "rect": {
+          "bottom": 633.8375358581543,
+          "left": 16,
+          "right": 359.20001220703125,
+          "top": 33.36249923706055
+        },
+        "scroll": [
+          342,
+          599
+        ],
+        "title": "Ngân hàng Câu hỏi Nguyên tử (Atomic Question Bank)",
+        "withinViewport": true
+      }
+    ],
+    "path": "/editor/ex_f07f9be62b9bcf18eb5997563157ee3e361c6092",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "FINAL-library-375-dark",
+    "dark": true,
+    "documentWidth": 375,
+    "panels": [
+      {
+        "background": "rgb(32, 33, 36)",
+        "border": "rgb(60, 64, 67)",
+        "client": [
+          342,
+          351
+        ],
+        "color": "rgb(227, 227, 227)",
+        "overflowX": "auto",
+        "overflowY": "auto",
+        "rect": {
+          "bottom": 510.00001525878906,
+          "left": 16,
+          "right": 359.20001220703125,
+          "top": 157.1999969482422
+        },
+        "scroll": [
+          342,
+          351
+        ],
+        "title": "Kho đề trên máy chủ",
+        "withinViewport": true
+      }
+    ],
+    "path": "/editor/ex_f07f9be62b9bcf18eb5997563157ee3e361c6092",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "FINAL-share-375-dark",
+    "dark": true,
+    "documentWidth": 375,
+    "panels": [
+      {
+        "background": "rgb(32, 33, 36)",
+        "border": "rgb(60, 64, 67)",
+        "client": [
+          336,
+          634
+        ],
+        "color": "rgb(227, 227, 227)",
+        "overflowX": "auto",
+        "overflowY": "auto",
+        "rect": {
+          "bottom": 651.2000122070312,
+          "left": 16,
+          "right": 359.20001220703125,
+          "top": 16
+        },
+        "scroll": [
+          336,
+          773
+        ],
+        "title": "Chia Sẻ & Giao Bài Thi Trực Tuyến",
+        "withinViewport": true
+      }
+    ],
+    "path": "/editor/ex_f07f9be62b9bcf18eb5997563157ee3e361c6092",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "FINAL-shuffle-375-dark",
+    "dark": true,
+    "documentWidth": 375,
+    "panels": [
+      {
+        "background": "rgb(32, 33, 36)",
+        "border": "rgb(60, 64, 67)",
+        "client": [
+          342,
+          634
+        ],
+        "color": "rgb(227, 227, 227)",
+        "overflowX": "auto",
+        "overflowY": "auto",
+        "rect": {
+          "bottom": 651.2000122070312,
+          "left": 16,
+          "right": 359.20001220703125,
+          "top": 16
+        },
+        "scroll": [
+          342,
+          634
+        ],
+        "title": "Trộn Đề Thi & Tạo Ma Trận Đáp Án",
+        "withinViewport": true
+      }
+    ],
+    "path": "/editor/ex_f07f9be62b9bcf18eb5997563157ee3e361c6092",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "FINAL-results-375-dark",
+    "dark": true,
+    "documentWidth": 375,
+    "panels": [
+      {
+        "background": "rgb(32, 33, 36)",
+        "border": "rgb(60, 64, 67)",
+        "client": [
+          342,
+          268
+        ],
+        "color": "rgb(227, 227, 227)",
+        "overflowX": "auto",
+        "overflowY": "auto",
+        "rect": {
+          "bottom": 468.40000915527344,
+          "left": 16,
+          "right": 359.20001220703125,
+          "top": 198.8000030517578
+        },
+        "scroll": [
+          342,
+          268
+        ],
+        "title": "Kết quả học sinh",
+        "withinViewport": true
+      }
+    ],
+    "path": "/editor/ex_f07f9be62b9bcf18eb5997563157ee3e361c6092",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "FINAL-collaboration-375-dark",
+    "dark": true,
+    "documentWidth": 375,
+    "panels": [
+      {
+        "background": "rgb(32, 33, 36)",
+        "border": "rgb(60, 64, 67)",
+        "client": [
+          342,
+          351
+        ],
+        "color": "rgb(227, 227, 227)",
+        "overflowX": "auto",
+        "overflowY": "auto",
+        "rect": {
+          "bottom": 510.00001525878906,
+          "left": 16,
+          "right": 359.20001220703125,
+          "top": 157.1999969482422
+        },
+        "scroll": [
+          342,
+          351
+        ],
+        "title": "Kho đề trên máy chủ",
+        "withinViewport": true
+      }
+    ],
+    "path": "/editor/ex_f07f9be62b9bcf18eb5997563157ee3e361c6092",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "FINAL-collaboration-375-dark",
+    "dark": true,
+    "documentWidth": 375,
+    "panels": [
+      {
+        "background": "rgb(32, 33, 36)",
+        "border": "rgb(60, 64, 67)",
+        "client": [
+          342,
+          562
+        ],
+        "color": "rgb(227, 227, 227)",
+        "overflowX": "auto",
+        "overflowY": "auto",
+        "rect": {
+          "bottom": 615.5625,
+          "left": 16,
+          "right": 359.20001220703125,
+          "top": 51.625
+        },
+        "scroll": [
+          342,
+          562
+        ],
+        "title": "Cùng soạn đề",
+        "withinViewport": true
+      }
+    ],
+    "path": "/editor/ex_f07f9be62b9bcf18eb5997563157ee3e361c6092",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "FINAL-account-menu-568x320-light",
+    "dark": false,
+    "documentWidth": 568,
+    "panels": [
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(218, 220, 224)",
+        "client": [
+          281,
+          238
+        ],
+        "color": "rgb(32, 33, 36)",
+        "overflowX": "auto",
+        "overflowY": "auto",
+        "rect": {
+          "bottom": 293.60000228881836,
+          "left": 268,
+          "right": 556,
+          "top": 53.60000228881836
+        },
+        "scroll": [
+          281,
+          305
+        ],
+        "title": "Tài khoản và khóa AI",
+        "withinViewport": true
+      }
+    ],
+    "path": "/editor/ex_f07f9be62b9bcf18eb5997563157ee3e361c6092",
+    "viewport": [
+      568,
+      320
+    ]
+  },
+  {
+    "label": "FINAL-import-desktop-light",
+    "dark": false,
+    "documentWidth": 1280,
+    "panels": [
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(218, 220, 224)",
+        "client": [
+          1150,
+          632
+        ],
+        "color": "rgb(32, 33, 36)",
+        "overflowX": "auto",
+        "overflowY": "auto",
+        "rect": {
+          "bottom": 676.7750015258789,
+          "left": 64,
+          "right": 1216,
+          "top": 43.212501525878906
+        },
+        "scroll": [
+          1150,
+          632
+        ],
+        "title": "Phòng Số Hóa & Bóc Tách Đề Thi (AI Ingestion Studio)",
+        "withinViewport": true
+      }
+    ],
+    "path": "/",
+    "viewport": [
+      1280,
+      720
+    ]
+  },
+  {
+    "label": "FINAL-folder-375-light",
+    "dark": false,
+    "documentWidth": 375,
+    "panels": [
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(218, 220, 224)",
+        "client": [
+          342,
+          246
+        ],
+        "color": "rgb(32, 33, 36)",
+        "overflowX": "auto",
+        "overflowY": "auto",
+        "rect": {
+          "bottom": 457.5749969482422,
+          "left": 16,
+          "right": 359.20001220703125,
+          "top": 209.625
+        },
+        "scroll": [
+          342,
+          246
+        ],
+        "title": "Tạo Thư Mục Mới (Cấp 1)",
+        "withinViewport": true
+      }
+    ],
+    "path": "/",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "FINAL-import-375-light",
+    "dark": false,
+    "documentWidth": 375,
+    "panels": [
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(218, 220, 224)",
+        "client": [
+          336,
+          634
+        ],
+        "color": "rgb(32, 33, 36)",
+        "overflowX": "auto",
+        "overflowY": "auto",
+        "rect": {
+          "bottom": 651.2000122070312,
+          "left": 16,
+          "right": 359.20001220703125,
+          "top": 16
+        },
+        "scroll": [
+          336,
+          894
+        ],
+        "title": "Phòng Số Hóa & Bóc Tách Đề Thi (AI Ingestion Studio)",
+        "withinViewport": true
+      }
+    ],
+    "path": "/",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "FINAL-admin-create-375-light",
+    "dark": false,
+    "documentWidth": 370,
+    "panels": [
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(218, 220, 224)",
+        "client": [
+          336,
+          431
+        ],
+        "color": "rgb(32, 33, 36)",
+        "overflowX": "auto",
+        "overflowY": "auto",
+        "rect": {
+          "bottom": 549.7874984741211,
+          "left": 16,
+          "right": 353.6000061035156,
+          "top": 117.4124984741211
+        },
+        "scroll": [
+          336,
+          431
+        ],
+        "title": "Cấp tài khoản giáo viên",
+        "withinViewport": true
+      }
+    ],
+    "path": "/admin/users",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "FINAL-admin-edit-375-light",
+    "dark": false,
+    "documentWidth": 370,
+    "panels": [
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(218, 220, 224)",
+        "client": [
+          336,
+          270
+        ],
+        "color": "rgb(32, 33, 36)",
+        "overflowX": "auto",
+        "overflowY": "auto",
+        "rect": {
+          "bottom": 469.5625,
+          "left": 16,
+          "right": 353.6000061035156,
+          "top": 197.625
+        },
+        "scroll": [
+          336,
+          270
+        ],
+        "title": "Chỉnh sửa thông tin",
+        "withinViewport": true
+      }
+    ],
+    "path": "/admin/users",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "FINAL-admin-reset-375-light",
+    "dark": false,
+    "documentWidth": 370,
+    "panels": [
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(218, 220, 224)",
+        "client": [
+          336,
+          240
+        ],
+        "color": "rgb(32, 33, 36)",
+        "overflowX": "auto",
+        "overflowY": "auto",
+        "rect": {
+          "bottom": 454.5375061035156,
+          "left": 16,
+          "right": 353.6000061035156,
+          "top": 212.6625061035156
+        },
+        "scroll": [
+          336,
+          240
+        ],
+        "title": "Cấp lại mật khẩu tạm",
+        "withinViewport": true
+      }
+    ],
+    "path": "/admin/users",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "FINAL-admin-create-568x320-dark",
+    "dark": true,
+    "documentWidth": 562,
+    "panels": [
+      {
+        "background": "rgb(32, 33, 36)",
+        "border": "rgb(60, 64, 67)",
+        "client": [
+          523,
+          286
+        ],
+        "color": "rgb(227, 227, 227)",
+        "overflowX": "auto",
+        "overflowY": "auto",
+        "rect": {
+          "bottom": 304,
+          "left": 16,
+          "right": 546.4000244140625,
+          "top": 16
+        },
+        "scroll": [
+          523,
+          416
+        ],
+        "title": "Cấp tài khoản giáo viên",
+        "withinViewport": true
+      }
+    ],
+    "path": "/admin/users",
+    "viewport": [
+      568,
+      320
+    ]
+  },
+  {
+    "label": "FINAL-admin-edit-568x320-dark",
+    "dark": true,
+    "documentWidth": 562,
+    "panels": [
+      {
+        "background": "rgb(32, 33, 36)",
+        "border": "rgb(60, 64, 67)",
+        "client": [
+          529,
+          270
+        ],
+        "color": "rgb(227, 227, 227)",
+        "overflowX": "auto",
+        "overflowY": "auto",
+        "rect": {
+          "bottom": 295.9624996185303,
+          "left": 16,
+          "right": 546.4000244140625,
+          "top": 24.024999618530273
+        },
+        "scroll": [
+          529,
+          270
+        ],
+        "title": "Chỉnh sửa thông tin",
+        "withinViewport": true
+      }
+    ],
+    "path": "/admin/users",
+    "viewport": [
+      568,
+      320
+    ]
+  },
+  {
+    "label": "FINAL-admin-reset-568x320-dark",
+    "dark": true,
+    "documentWidth": 562,
+    "panels": [
+      {
+        "background": "rgb(32, 33, 36)",
+        "border": "rgb(60, 64, 67)",
+        "client": [
+          529,
+          240
+        ],
+        "color": "rgb(227, 227, 227)",
+        "overflowX": "auto",
+        "overflowY": "auto",
+        "rect": {
+          "bottom": 280.9375,
+          "left": 16,
+          "right": 546.4000244140625,
+          "top": 39.0625
+        },
+        "scroll": [
+          529,
+          240
+        ],
+        "title": "Cấp lại mật khẩu tạm",
+        "withinViewport": true
+      }
+    ],
+    "path": "/admin/users",
+    "viewport": [
+      568,
+      320
+    ]
+  },
+  {
+    "label": "FINAL-native-checkbox-light",
+    "accentColor": "rgb(32, 33, 36)",
+    "background": "rgba(0, 0, 0, 0)",
+    "checked": true
+  },
+  {
+    "label": "FINAL-native-checkbox-dark",
+    "accentColor": "rgb(227, 227, 227)",
+    "checked": true
+  },
+  {
+    "label": "FINAL-move-375-dark",
+    "dark": true,
+    "documentWidth": 375,
+    "panels": [
+      {
+        "background": "rgb(32, 33, 36)",
+        "border": "rgb(60, 64, 67)",
+        "client": [
+          342,
+          246
+        ],
+        "color": "rgb(227, 227, 227)",
+        "overflowX": "auto",
+        "overflowY": "auto",
+        "rect": {
+          "bottom": 457.5625,
+          "left": 16,
+          "right": 359.20001220703125,
+          "top": 209.625
+        },
+        "scroll": [
+          342,
+          246
+        ],
+        "title": "Di chuyển đề thi",
+        "withinViewport": true
+      }
+    ],
+    "path": "/",
+    "viewport": [
+      375,
+      667
+    ]
+  },
+  {
+    "label": "FINAL-secretary-375-dark",
+    "dark": true,
+    "documentWidth": 375,
+    "panels": [
+      {
+        "background": "rgb(32, 33, 36)",
+        "border": "rgb(60, 64, 67)",
+        "client": [
+          342,
+          466
+        ],
+        "color": "rgb(227, 227, 227)",
+        "overflowX": "auto",
+        "overflowY": "auto",
+        "rect": {
+          "bottom": 567.5999984741211,
+          "left": 16,
+          "right": 359.20001220703125,
+          "top": 99.5999984741211
+        },
+        "scroll": [
+          342,
+          466
+        ],
+        "title": "Trợ Lý Thư Ký AI Cá Nhân",
+        "withinViewport": true
+      }
+    ],
+    "path": "/",
+    "viewport": [
+      375,
+      667
+    ]
+  }
+]

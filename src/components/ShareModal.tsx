@@ -215,10 +215,10 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl max-w-xl w-full p-6 shadow-xs text-[#202124] dark:text-[#e3e3e3] max-h-[92vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
+      <div className="app-dialog bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl max-w-xl w-full p-6 shadow-xs text-[#202124] dark:text-[#e3e3e3] max-h-[92vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
         <ExamReviewPanel exam={exam} />
         {/* Header Modal */}
-        <div className="flex items-center justify-between pb-4 border-b border-[#dadce0] dark:border-[#3c4043]">
+        <div className="app-dialog-header flex items-center justify-between pb-4 border-b border-[#dadce0] dark:border-[#3c4043]">
           <div className="flex items-center gap-2.5">
             <div className="w-10 h-10 rounded-xl bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] flex items-center justify-center border border-[#dadce0] dark:border-[#3c4043] shadow-xs">
               <Share2 className="w-5 h-5" />
@@ -228,7 +228,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">Tạo phòng thi có chấm điểm tự động hoặc link tải Word</p>
             </div>
           </div>
-          <button
+          <button aria-label="Đóng hộp thoại"
             onClick={onClose}
             className="p-1.5 rounded-lg text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
           >
@@ -242,7 +242,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
             onClick={() => setActiveTab('assign')}
             className={`flex-1 py-2 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
               activeTab === 'assign'
-                ? 'app-button-primary text-white dark:bg-[#e3e3e3] dark:text-[#202124] shadow-xs'
+                ? 'app-button-tonal'
                 : 'text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3]'
             }`}
           >

@@ -110,7 +110,7 @@ export default function AdminAiPage() {
     <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] text-[#202124] dark:text-[#e3e3e3] flex flex-col transition-colors duration-200">
       {/* Toast Notification */}
       {toastMsg && (
-        <div className="fixed top-5 right-5 z-50 bg-[#137333] text-white px-4 py-3 rounded-full shadow-xs flex items-center gap-2.5 animate-in slide-in-from-top-3 duration-200 text-sm font-medium">
+        <div className="fixed top-5 right-5 z-50 bg-[var(--ui-surface-variant)] text-white px-4 py-3 rounded-full shadow-xs flex items-center gap-2.5 animate-in slide-in-from-top-3 duration-200 text-sm font-medium">
           <CheckCircle2 className="w-5 h-5 shrink-0" />
           <span>{toastMsg}</span>
         </div>
@@ -125,7 +125,7 @@ export default function AdminAiPage() {
           <div>
             <div className="flex items-center gap-2">
               <span className="font-bold text-base tracking-tight text-[#202124] dark:text-[#e3e3e3]">ExamCraft AI Hub</span>
-              <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-amber-50 dark:bg-[#33250b] text-amber-700 dark:text-[#fdd663] font-semibold uppercase tracking-wider border border-amber-200 dark:border-[#4d380e]">
+              <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[var(--ui-surface-variant)] text-[var(--ui-text-secondary)] font-semibold uppercase tracking-wider border border-[var(--ui-border)]">
                 7 Keys Rotation Pool
               </span>
             </div>
@@ -163,7 +163,7 @@ export default function AdminAiPage() {
             title={theme === 'dark' ? 'Chuyển sang giao diện Sáng' : 'Chuyển sang giao diện Tối'}
             className="p-2 rounded-lg border border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#242424] text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
           >
-            {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-[#5f6368]" />}
+            {theme === 'dark' ? <Sun className="w-4 h-4 text-[var(--ui-text-secondary)]" /> : <Moon className="w-4 h-4 text-[#5f6368]" />}
           </button>
         </div>
       </header>
@@ -184,10 +184,10 @@ export default function AdminAiPage() {
           <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-xl p-5 shadow-xs">
             <div className="flex items-center justify-between text-[#5f6368] dark:text-[#9aa0a6] mb-2">
               <span className="text-xs font-medium">Tỷ lệ thành công</span>
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-[#5bb98c]" />
+              <CheckCircle2 className="w-4 h-4 text-[var(--ui-text-primary)] dark:text-[var(--ui-text-primary)]" />
             </div>
-            <div className="text-2xl font-bold text-emerald-600 dark:text-[#5bb98c]">{stats.successRate}%</div>
-            <div className="text-[11px] text-emerald-700 dark:text-[#5bb98c]/80 mt-1">{stats.successToday} lệnh thành công</div>
+            <div className="text-2xl font-bold text-[var(--ui-text-primary)] dark:text-[var(--ui-text-primary)]">{stats.successRate}%</div>
+            <div className="text-[11px] text-[var(--ui-text-primary)] dark:text-[var(--ui-text-primary)]/80 mt-1">{stats.successToday} lệnh thành công</div>
           </div>
 
           <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-xl p-5 shadow-xs">
@@ -220,7 +220,7 @@ export default function AdminAiPage() {
             <div>
               <h2 className="text-base font-bold text-[#202124] dark:text-[#e3e3e3] flex items-center gap-2">
                 <span>Trạng thái 7 Google Gemini API Keys</span>
-                <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-[#0f291e] text-emerald-700 dark:text-[#5bb98c] border border-emerald-200 dark:border-[#1e4d38] font-normal">
+                <span className="text-xs px-2.5 py-0.5 rounded-full bg-[var(--ui-surface-variant)] dark:bg-[var(--ui-surface-variant)] text-[var(--ui-text-primary)] dark:text-[var(--ui-text-primary)] border border-[var(--ui-border)] dark:border-[var(--ui-border)] font-normal">
                   Auto Round-Robin & Cooldown
                 </span>
               </h2>
@@ -249,7 +249,7 @@ export default function AdminAiPage() {
                   key={key.alias}
                   className={`border rounded-xl p-4.5 flex flex-col justify-between transition-all ${
                     isActive
-                      ? 'bg-white dark:bg-[#202124] border-[#dadce0] dark:border-[#3c4043] hover:border-emerald-500/40'
+                      ? 'bg-white dark:bg-[#202124] border-[#dadce0] dark:border-[#3c4043] hover:border-[var(--ui-border)]/40'
                       : isCooldown
                       ? 'bg-amber-50/50 dark:bg-[#33250b]/20 border-amber-200 dark:border-[#4d380e]'
                       : 'bg-rose-50/50 dark:bg-[#371918]/20 border-rose-200 dark:border-[#5c2523]'
@@ -263,8 +263,8 @@ export default function AdminAiPage() {
                       </span>
 
                       {isActive && (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 dark:bg-[#0f291e] text-emerald-700 dark:text-[#5bb98c] border border-emerald-200 dark:border-[#1e4d38]">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-[#5bb98c] " />
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[var(--ui-surface-variant)] dark:bg-[var(--ui-surface-variant)] text-[var(--ui-text-primary)] dark:text-[var(--ui-text-primary)] border border-[var(--ui-border)] dark:border-[var(--ui-border)]">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[var(--ui-surface-variant)] dark:bg-[var(--ui-surface-variant)] " />
                           ACTIVE
                         </span>
                       )}
@@ -305,7 +305,7 @@ export default function AdminAiPage() {
                     </div>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between">
+                  <div className="app-dialog-footer mt-4 pt-3 border-t border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between">
                     <span className="text-[10px] text-[#5f6368] dark:text-[#9aa0a6]">Quản trị viên</span>
                     <button
                       onClick={() => handleResetKey(key.alias)}
@@ -325,7 +325,7 @@ export default function AdminAiPage() {
         <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-xl overflow-hidden shadow-xs">
           <div className="px-5 py-4 border-b border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between">
             <h3 className="text-sm font-bold text-[#202124] dark:text-[#e3e3e3] flex items-center gap-2">
-              <Zap className="w-4 h-4 text-amber-500 dark:text-[#fdd663]" />
+              <Zap className="w-4 h-4 text-[var(--ui-text-secondary)] dark:text-[#fdd663]" />
               <span>Nhật ký gọi AI gần nhất (AiUsageLog)</span>
             </h3>
             <span className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">30 yêu cầu gần nhất</span>
@@ -362,7 +362,7 @@ export default function AdminAiPage() {
                       <td className="px-4 py-3 text-[#5f6368] dark:text-[#9aa0a6]">{log.latencyMs ? `${log.latencyMs} ms` : '-'}</td>
                       <td className="px-5 py-3">
                         {log.httpStatus === 200 ? (
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 dark:bg-[#0f291e] text-emerald-700 dark:text-[#5bb98c] border border-emerald-200 dark:border-[#1e4d38]">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[var(--ui-surface-variant)] dark:bg-[var(--ui-surface-variant)] text-[var(--ui-text-primary)] dark:text-[var(--ui-text-primary)] border border-[var(--ui-border)] dark:border-[var(--ui-border)]">
                             200 OK
                           </span>
                         ) : (

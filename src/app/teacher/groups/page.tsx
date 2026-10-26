@@ -318,7 +318,7 @@ export default function TeacherGroupsPage() {
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between gap-2">
+                <div className="app-dialog-footer pt-3 border-t border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between gap-2">
                   <button
                     onClick={() => handleOpenGroupDetails(group)}
                     className="flex-1 py-2 bg-[#f1f3f4] hover:bg-[#e8eaed] dark:bg-[#292a2d] dark:hover:bg-[#303134] text-[#202124] dark:text-[#e3e3e3] text-xs font-semibold rounded-lg border border-[#dadce0] dark:border-[#3c4043] transition-all cursor-pointer"
@@ -343,15 +343,15 @@ export default function TeacherGroupsPage() {
         {/* Modal Tạo Lớp Học Mới */}
         {showCreateModal && (
           <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="max-w-lg w-full bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-6 shadow-xs relative">
-              <div className="flex items-center justify-between pb-4 border-b border-[#dadce0] dark:border-[#3c4043]">
+            <div className="app-dialog max-w-lg w-full bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-6 shadow-xs relative">
+              <div className="app-dialog-header flex items-center justify-between pb-4 border-b border-[#dadce0] dark:border-[#3c4043]">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-full bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] flex items-center justify-center font-bold">
                     <Plus className="w-4 h-4" />
                   </div>
                   <h3 className="text-base font-bold text-[#202124] dark:text-[#e3e3e3]">Tạo Lớp Học Mới</h3>
                 </div>
-                <button
+                <button aria-label="Đóng hộp thoại"
                   onClick={() => setShowCreateModal(false)}
                   className="p-1.5 rounded-lg text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
                 >
@@ -406,7 +406,7 @@ export default function TeacherGroupsPage() {
                   </p>
                 </div>
 
-                <div className="flex justify-end gap-3 pt-3 border-t border-[#dadce0] dark:border-[#3c4043]">
+                <div className="app-dialog-footer flex justify-end gap-3 pt-3 border-t border-[#dadce0] dark:border-[#3c4043]">
                   <button
                     type="button"
                     onClick={() => setShowCreateModal(false)}
@@ -430,8 +430,8 @@ export default function TeacherGroupsPage() {
         {/* Modal Chi Tiết Danh Sách Học Sinh */}
         {selectedGroup && (
           <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="max-w-xl w-full bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-6 shadow-xs">
-              <div className="flex items-center justify-between pb-4 border-b border-[#dadce0] dark:border-[#3c4043]">
+            <div className="app-dialog max-w-xl w-full bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-6 shadow-xs">
+              <div className="app-dialog-header flex items-center justify-between pb-4 border-b border-[#dadce0] dark:border-[#3c4043]">
                 <div>
                   <h3 className="text-base font-bold text-[#202124] dark:text-[#e3e3e3]">{selectedGroup.name}</h3>
                   <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">
@@ -439,7 +439,7 @@ export default function TeacherGroupsPage() {
                     {groupStudents.length} học sinh
                   </p>
                 </div>
-                <button
+                <button aria-label="Đóng hộp thoại"
                   onClick={() => { setSelectedGroup(null); setIssuedPins(null); }}
                   className="p-1.5 rounded-lg text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
                 >
@@ -507,7 +507,7 @@ export default function TeacherGroupsPage() {
                 )}
               </div>
 
-              <div className="mt-5 pt-3 border-t border-[#dadce0] dark:border-[#3c4043] flex justify-end">
+              <div className="app-dialog-footer mt-5 pt-3 border-t border-[#dadce0] dark:border-[#3c4043] flex justify-end">
                 <button
                   onClick={() => { setSelectedGroup(null); setIssuedPins(null); }}
                   className="px-5 py-2 bg-[#f1f3f4] hover:bg-[#e8eaed] dark:bg-[#292a2d] dark:hover:bg-[#303134] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043] text-xs font-semibold rounded-lg cursor-pointer"

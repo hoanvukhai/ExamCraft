@@ -1,0 +1,70 @@
+[
+  {
+    "file": "src\\components\\AiLearningModal.tsx",
+    "panels": 1
+  },
+  {
+    "file": "src\\components\\ApiKeyModal.tsx",
+    "panels": 1
+  },
+  {
+    "file": "src\\components\\ExamLibraryModal.tsx",
+    "panels": 1
+  },
+  {
+    "file": "src\\components\\ExamWorkspace.tsx",
+    "panels": 1
+  },
+  {
+    "file": "src\\components\\GenerateModal.tsx",
+    "panels": 1
+  },
+  {
+    "file": "src\\components\\HeaderSettingsModal.tsx",
+    "panels": 1
+  },
+  {
+    "file": "src\\components\\ImportModal.tsx",
+    "panels": 1
+  },
+  {
+    "file": "src\\components\\QuestionBankModal.tsx",
+    "panels": 1
+  },
+  {
+    "file": "src\\components\\ShareModal.tsx",
+    "panels": 1
+  },
+  {
+    "file": "src\\components\\ShuffleModal.tsx",
+    "panels": 1
+  },
+  {
+    "file": "src\\components\\StudentResultsModal.tsx",
+    "panels": 1
+  },
+  {
+    "file": "src\\components\\TeacherDashboard.tsx",
+    "panels": 4
+  },
+  {
+    "file": "src\\app\\a\\[publicId]\\page.tsx",
+    "panels": 1
+  },
+  {
+    "file": "src\\app\\admin\\users\\page.tsx",
+    "panels": 3
+  },
+  {
+    "file": "src\\app\\login\\page.tsx",
+    "panels": 1
+  },
+  {
+    "file": "src\\app\\teacher\\assignments\\[id]\\page.tsx",
+    "panels": 1
+  },
+  {
+    "file": "src\\app\\teacher\\groups\\page.tsx",
+    "panels": 2
+  }
+]

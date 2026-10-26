@@ -257,9 +257,9 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-[#202124] rounded-2xl max-w-3xl w-full p-6 shadow-xs border border-[#dadce0] dark:border-[#3c4043] relative max-h-[90vh] flex flex-col text-[#202124] dark:text-[#e3e3e3] animate-in fade-in zoom-in-95">
+      <div className="app-dialog bg-white dark:bg-[#202124] rounded-2xl max-w-3xl w-full p-6 shadow-xs border border-[#dadce0] dark:border-[#3c4043] relative max-h-[90vh] flex flex-col text-[#202124] dark:text-[#e3e3e3] animate-in fade-in zoom-in-95">
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-[#dadce0] dark:border-[#3c4043] shrink-0">
+        <div className="app-dialog-header flex items-center justify-between pb-4 border-b border-[#dadce0] dark:border-[#3c4043] shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl app-neutral-icon text-white flex items-center justify-center shadow-xs">
               <Brain className="w-5 h-5" />
@@ -279,7 +279,7 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
             </div>
           </div>
 
-          <button
+          <button aria-label="Đóng hộp thoại"
             onClick={requestClose}
             className="p-1.5 text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-white rounded-lg hover:bg-black/5 cursor-pointer"
           >
@@ -360,7 +360,7 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
                 <Lightbulb className="w-4 h-4" />
                 <span>Thêm ghi chú hướng dẫn AI</span>
               </h4>
-              <button
+              <button aria-label="Đóng phần thêm ghi chú"
                 type="button"
                 onClick={() => setIsAddingNew(false)}
                 className="p-1 rounded-lg text-[#5f6368] hover:bg-black/5 cursor-pointer"
@@ -531,7 +531,7 @@ function AiLearningDialog({ ownerId, accountError, expectedUserId, onClose }: { 
         </div>
 
         {/* Footer */}
-        <div className="pt-3 border-t border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between shrink-0">
+        <div className="app-dialog-footer pt-3 border-t border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between shrink-0">
           <p className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6]">
             Mục đang bật có thể được dùng làm chỉ dẫn khi soạn đề. Giáo viên vẫn cần kiểm tra kết quả.
           </p>

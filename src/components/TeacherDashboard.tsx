@@ -993,7 +993,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                   </div>
 
                   {/* Bottom card: Thông số câu hỏi & Thao tác */}
-                  <div className="pt-3 border-t border-[#f1f3f4] dark:border-[#3c4043]/60 flex items-center justify-between text-[11px] text-[#5f6368] dark:text-[#9aa0a6]">
+                  <div className="app-dialog-footer pt-3 border-t border-[#f1f3f4] dark:border-[#3c4043]/60 flex items-center justify-between text-[11px] text-[#5f6368] dark:text-[#9aa0a6]">
                     <div className="flex items-center gap-2">
                       <span>{exam._count?.items || 0} câu</span>
                       <span>•</span>
@@ -1191,8 +1191,8 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
       ───────────────────────────────────────────────────────────── */}
       {isAiSecretaryModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#202124] rounded-2xl p-6 max-w-md w-full border border-[#dadce0] dark:border-[#3c4043] shadow-xs animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between pb-3 border-b border-[#dadce0] dark:border-[#3c4043]">
+          <div className="app-dialog bg-white dark:bg-[#202124] rounded-2xl p-6 max-w-md w-full border border-[#dadce0] dark:border-[#3c4043] shadow-xs animate-in fade-in zoom-in-95">
+            <div className="app-dialog-header flex items-center justify-between pb-3 border-b border-[#dadce0] dark:border-[#3c4043]">
               <div className="flex items-center gap-2.5">
                 <div className="w-10 h-10 rounded-xl app-neutral-icon text-white flex items-center justify-center shadow-xs">
                   <Bot className="w-5 h-5" />
@@ -1204,7 +1204,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                   </span>
                 </div>
               </div>
-              <button
+              <button aria-label="Đóng hộp thoại"
                 onClick={() => setIsAiSecretaryModalOpen(false)}
                 className="p-1 rounded-lg text-[#5f6368] hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
               >
@@ -1241,7 +1241,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
               </div>
             </div>
 
-            <div className="pt-3 border-t border-[#dadce0] dark:border-[#3c4043] flex justify-end">
+            <div className="app-dialog-footer pt-3 border-t border-[#dadce0] dark:border-[#3c4043] flex justify-end">
               <button
                 onClick={() => setIsAiSecretaryModalOpen(false)}
                 className="px-5 py-2 app-button-secondary text-white rounded-lg text-xs font-semibold cursor-pointer shadow-xs"
@@ -1260,14 +1260,14 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
           <form
             onSubmit={handleCreateFolder}
-            className="bg-white dark:bg-[#202124] rounded-2xl p-6 max-w-sm w-full border border-[#dadce0] dark:border-[#3c4043] shadow-xs animate-in fade-in zoom-in-95"
+            className="app-dialog bg-white dark:bg-[#202124] rounded-2xl p-6 max-w-sm w-full border border-[#dadce0] dark:border-[#3c4043] shadow-xs animate-in fade-in zoom-in-95"
           >
-            <div className="flex items-center justify-between pb-3 border-b border-[#dadce0] dark:border-[#3c4043] mb-4">
+            <div className="app-dialog-header flex items-center justify-between pb-3 border-b border-[#dadce0] dark:border-[#3c4043] mb-4">
               <h3 className="font-semibold text-sm text-[#202124] dark:text-white flex items-center gap-2">
                 <FolderPlus className="w-4 h-4 text-[#3c4043]" />
                 <span>{targetParentFolderId ? 'Tạo Thư Mục Con (Cấp 2)' : 'Tạo Thư Mục Mới (Cấp 1)'}</span>
               </h3>
-              <button
+              <button aria-label="Đóng hộp thoại"
                 type="button"
                 onClick={() => setIsCreateFolderModalOpen(false)}
                 className="p-1 rounded-lg text-[#5f6368] hover:bg-black/5 cursor-pointer"
@@ -1331,13 +1331,13 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
       ───────────────────────────────────────────────────────────── */}
       {isMoveExamModalOpen && activeExam && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#202124] rounded-2xl p-6 max-w-sm w-full border border-[#dadce0] dark:border-[#3c4043] shadow-xs animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between pb-3 border-b border-[#dadce0] dark:border-[#3c4043] mb-3">
+          <div className="app-dialog bg-white dark:bg-[#202124] rounded-2xl p-6 max-w-sm w-full border border-[#dadce0] dark:border-[#3c4043] shadow-xs animate-in fade-in zoom-in-95">
+            <div className="app-dialog-header flex items-center justify-between pb-3 border-b border-[#dadce0] dark:border-[#3c4043] mb-3">
               <h3 className="font-semibold text-sm text-[#202124] dark:text-white flex items-center gap-2">
                 <Folder className="w-4 h-4 text-[#3c4043]" />
                 <span>Di chuyển đề thi</span>
               </h3>
-              <button
+              <button aria-label="Đóng hộp thoại"
                 onClick={() => setIsMoveExamModalOpen(false)}
                 className="p-1 rounded-lg text-[#5f6368] hover:bg-black/5 cursor-pointer"
               >
@@ -1405,14 +1405,14 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
           <form
             onSubmit={handleRenameExam}
-            className="bg-white dark:bg-[#202124] rounded-2xl p-6 max-w-sm w-full border border-[#dadce0] dark:border-[#3c4043] shadow-xs animate-in fade-in zoom-in-95"
+            className="app-dialog bg-white dark:bg-[#202124] rounded-2xl p-6 max-w-sm w-full border border-[#dadce0] dark:border-[#3c4043] shadow-xs animate-in fade-in zoom-in-95"
           >
-            <div className="flex items-center justify-between pb-3 border-b border-[#dadce0] dark:border-[#3c4043] mb-4">
+            <div className="app-dialog-header flex items-center justify-between pb-3 border-b border-[#dadce0] dark:border-[#3c4043] mb-4">
               <h3 className="font-semibold text-sm text-[#202124] dark:text-white flex items-center gap-2">
                 <Edit3 className="w-4 h-4 text-[#3c4043]" />
                 <span>Đổi tên đề thi</span>
               </h3>
-              <button
+              <button aria-label="Đóng hộp thoại"
                 type="button"
                 onClick={() => setIsRenameExamModalOpen(false)}
                 className="p-1 rounded-lg text-[#5f6368] hover:bg-black/5 cursor-pointer"

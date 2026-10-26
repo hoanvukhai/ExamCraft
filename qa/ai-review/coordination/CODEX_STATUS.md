@@ -1,11 +1,11 @@
 # CODEX status
 
-task_id: OWNER-UI-NEUTRAL-20261027
+task_id: OWNER-POPUP-ADMIN-REVIEW-20261027
 state: WAITING_REVIEW
 updated: 27/10/2026, Asia/Bangkok
 branch/worktree: rebuild/2026-10-local, F:/Workspace/Zazz/ExamCraft
 
-Theo chủ dự án: đã chuyển toàn bộ lớp giao diện dùng chung sang trắng–xám–đen, bỏ nhấn xanh/tím và gradient; phân biệt nút chính/phụ, giảm bo/bóng/animation. Giữ màu cảnh báo/trạng thái có ý nghĩa, ảnh/đồ thị và màu thư mục do người dùng đã chọn. Không đổi API/quyền/schema/logic lưu/chấm.
-Đã kiểm kiểu/lint/build, giao diện sáng/tối, responsive, cuộn admin và các luồng liên quan trên DB thử. Bằng chứng, số liệu và giới hạn: qa/rebuild-2026-10-27/ui-neutral/BAO_CAO.md. Chưa tổng nghiệm thu; không coi bản test11 đã hoàn tất.
-Server thử3117 đã khởi động lại trên bản mới và để chủ dự án xem, như trạng thái đang chạy trước đợt; LOCK_3117=USER (đừng build đè khi người dùng xem). Không AI thật, DB chính, .env/backup/bí mật hoặc push/reset/clean. Giữ QA có sẵn và scratch.
-Không sửa checklist/02/ASSIGNMENTS/BATCH_REVIEWS hoặc tự đóng CV. Đợt trước d973928 được thay hướng màu theo yêu cầu mới; báo cáo cũ qa/rebuild-2026-10-26/ui-google/BAO_CAO.md giữ để truy vết.
+Theo chủ dự án: đã rà/sửa màu còn sót trong popup/menu/admin; dùng khung dialog/menu chung, sửa popup nhập tràn và menu tài khoản bị cắt ở màn hình ngang thấp, đồng bộ accent checkbox. Các form admin chỉ mở và đóng, không lưu hoặc đổi mật khẩu/quyền.
+Đã kiểm kiểu/lint/build, các luồng liên quan và giao diện điện thoại dọc/ngang, sáng/tối. Báo cáo, ảnh/số đo, test và giới hạn: qa/rebuild-2026-10-27/ui-popup-review/BAO_CAO.md. Không tổng nghiệm thu hoặc tự đóng CV.
+Server thử3117 đã dựng lại và để chạy cho chủ dự án, LOCK_3117=USER. Giữ dữ liệu thật, source ngoài phần trình bày, scratch và QA có sẵn. Không DB chính/AI thật/.env/backup/bí mật/push/reset/clean.
+Không sửa checklist/02/ASSIGNMENTS/BATCH_REVIEWS. Đợt trước:3b992de, qa/rebuild-2026-10-27/ui-neutral/BAO_CAO.md.

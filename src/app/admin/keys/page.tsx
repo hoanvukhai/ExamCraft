@@ -67,7 +67,7 @@ export default function AdminKeyGrantsPage() {
           </div>
         </div>
 
-        {message && <p role="status" className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">{message}</p>}
+        {message && <p role="status" className="app-feedback rounded-xl border p-3 text-sm">{message}</p>}
 
         <form onSubmit={grant} className="rounded-xl border border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#202124] p-5 space-y-4" aria-label="Cấp khóa mới">
           <h2 className="font-semibold">Cấp một khóa mới</h2>
@@ -115,7 +115,7 @@ export default function AdminKeyGrantsPage() {
                     <li key={r.userId} className="flex flex-wrap items-center justify-between gap-2 py-2">
                       <span><span className="font-medium">{r.name}</span> <span className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">{r.email}{!r.accountActive ? ' · tài khoản đã khóa' : ''}</span></span>
                       <span className="flex items-center gap-2">
-                        <span className={r.isActive ? 'text-green-700 text-xs' : 'text-amber-700 text-xs'}>{r.isActive ? 'Đang bật' : 'Đang tắt'}{r.errorCount ? ` · lỗi ${r.errorCount}` : ''}{r.lastUsedAt ? ` · dùng ${new Date(r.lastUsedAt).toLocaleDateString('vi-VN')}` : ' · chưa dùng'}</span>
+                        <span className="text-xs text-[var(--ui-text-secondary)]">{r.isActive ? 'Đang bật' : 'Đang tắt'}{r.errorCount ? ` · lỗi ${r.errorCount}` : ''}{r.lastUsedAt ? ` · dùng ${new Date(r.lastUsedAt).toLocaleDateString('vi-VN')}` : ' · chưa dùng'}</span>
                         <button type="button" disabled={busy} className={pill} onClick={() => void call('PATCH', '/api/admin/keys', { grantId: g.grantId, userId: r.userId, isActive: !r.isActive })} aria-label={`${r.isActive ? 'Tắt' : 'Bật'} khóa của ${r.name}`}>{r.isActive ? 'Tắt' : 'Bật'}</button>
                         <button type="button" disabled={busy} className={pill + ' text-red-700'} onClick={() => { if (confirm(`Thu hồi khóa này của ${r.name}?`)) void call('DELETE', `/api/admin/keys?grantId=${encodeURIComponent(g.grantId)}&userId=${encodeURIComponent(r.userId)}`); }} aria-label={`Thu hồi khóa của ${r.name}`}>Thu hồi</button>
                       </span>

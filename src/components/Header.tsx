@@ -287,7 +287,7 @@ export const Header: React.FC<HeaderProps> = ({
         {currentUser ? (
           <div className="relative">
             <button
-              onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+              aria-label="Mở menu tài khoản" aria-expanded={isUserMenuOpen} onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
               className="flex items-center gap-2 py-1 px-1.5 sm:px-2 rounded-lg hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
             >
               <div className="w-7 h-7 rounded-full bg-[#202124] dark:bg-[#292a2d] text-white dark:text-[#e3e3e3] border border-transparent dark:border-[#3c4043] flex items-center justify-center text-xs font-bold shadow-xs">
@@ -302,7 +302,7 @@ export const Header: React.FC<HeaderProps> = ({
                   className="fixed inset-0 z-40" 
                   onClick={() => setIsUserMenuOpen(false)} 
                 />
-                <div className="absolute right-0 mt-2 w-72 bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl shadow-xs z-50 p-2.5 text-xs divide-y divide-[#f1f3f4] dark:divide-[#3c4043] animate-in fade-in zoom-in-95 duration-100">
+                <div role="region" aria-label="Tài khoản và khóa AI" className="app-menu absolute right-0 mt-2 w-72 bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl shadow-xs z-50 p-2.5 text-xs divide-y divide-[#f1f3f4] dark:divide-[#3c4043] animate-in fade-in zoom-in-95 duration-100">
                   {/* THÔNG TIN NGƯỜI DÙNG */}
                   <div className="p-2">
                     <p className="font-bold text-[#202124] dark:text-[#e3e3e3] text-sm truncate">{currentUser.name}</p>
@@ -322,10 +322,10 @@ export const Header: React.FC<HeaderProps> = ({
                         </span>
                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                           !hasActiveKey
-                            ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300'
+                            ? 'bg-[var(--ui-surface-variant)] text-[var(--ui-text-secondary)]'
                             : keyErrorCount > 0
                             ? 'bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300'
-                            : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300'
+                            : 'bg-[var(--ui-surface-variant)] text-[var(--ui-text-primary)]'
                         }`}>
                           {!hasActiveKey 
                             ? 'Chưa có key' 
@@ -349,7 +349,7 @@ export const Header: React.FC<HeaderProps> = ({
                             style={{ width: `${usagePercent}%` }}
                           />
                         </div>
-                        <div className="text-[10px] text-emerald-600 dark:text-emerald-400 flex items-center justify-between">
+                        <div className="text-[10px] text-[var(--ui-text-secondary)] flex items-center justify-between">
                           <span>Còn lại: {quota.remaining} lượt</span>
                           <span className="text-[#5f6368] dark:text-[#9aa0a6] font-sans">({usagePercent}%)</span>
                         </div>
@@ -357,8 +357,8 @@ export const Header: React.FC<HeaderProps> = ({
 
                       {/* Cảnh báo trạng thái */}
                       {!hasActiveKey ? (
-                        <p className="text-[11px] text-amber-700 dark:text-amber-300 flex items-center gap-1.5 pt-0.5">
-                          <AlertCircle className="w-3.5 h-3.5 shrink-0 text-amber-600" />
+                        <p className="text-[11px] text-[var(--ui-text-secondary)] flex items-center gap-1.5 pt-0.5">
+                          <AlertCircle className="w-3.5 h-3.5 shrink-0 text-[var(--ui-text-secondary)]" />
                           <span>Chưa thêm khóa AI cá nhân!</span>
                         </p>
                       ) : keyErrorCount > 0 ? (
@@ -367,7 +367,7 @@ export const Header: React.FC<HeaderProps> = ({
                           <span>Có khóa đang chạm hạn mức 429!</span>
                         </p>
                       ) : (
-                        <p className="text-[11px] text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5 pt-0.5">
+                        <p className="text-[11px] text-[var(--ui-text-secondary)] flex items-center gap-1.5 pt-0.5">
                           <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-emerald-600" />
                           <span>Tự động xoay tua đa khóa sẵn sàng</span>
                         </p>
@@ -379,7 +379,7 @@ export const Header: React.FC<HeaderProps> = ({
                           setIsUserMenuOpen(false);
                           onOpenApiKeyModal();
                         }}
-                        className="w-full mt-1 py-2 px-3 bg-[#202124] hover:bg-[#303134] text-white dark:bg-[#292a2d] dark:text-[#e3e3e3] dark:hover:bg-[#303134] dark:border dark:border-[#3c4043] rounded-lg font-medium text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
+                        className="w-full mt-1 py-2 px-3 app-button-secondary rounded-lg font-medium text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
                       >
                         <Key className="w-3.5 h-3.5" />
                         <span>Quản lý & Kiểm tra Khóa AI</span>

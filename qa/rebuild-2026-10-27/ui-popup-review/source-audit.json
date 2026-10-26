@@ -1,0 +1,89 @@
+{
+  "method": "Omit className and accessibility presentation attributes (including newly added labels), normalize utility style literals, compare remaining TypeScript AST. Does not replace runtime tests.",
+  "files": [
+    {
+      "file": "src/app/a/[publicId]/page.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/app/admin/ai/page.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/app/admin/keys/page.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/app/admin/users/page.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/app/login/page.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/app/teacher/assignments/[id]/page.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/app/teacher/groups/page.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/AiLearningModal.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/ApiKeyModal.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/ExamLibraryModal.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/ExamWorkspace.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/GenerateModal.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/Header.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/HeaderSettingsModal.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/ImportModal.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/QuestionAiReview.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/QuestionBankModal.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/ShareModal.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/ShuffleModal.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/StudentResultsModal.tsx",
+      "nonPresentationAstUnchanged": true
+    },
+    {
+      "file": "src/components/TeacherDashboard.tsx",
+      "nonPresentationAstUnchanged": true
+    }
+  ]
+}

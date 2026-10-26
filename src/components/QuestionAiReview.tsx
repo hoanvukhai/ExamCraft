@@ -43,7 +43,7 @@ export function QuestionAiReview({ base, candidate, ownerId, documentId, sourceS
       <QuestionReviewBody label="Câu hiện tại" question={question} />
       <QuestionReviewBody label="Câu AI đề xuất" question={candidate} />
     </div>
-    <div className="flex flex-wrap gap-3"><button type="button" disabled={stale || acknowledged} onClick={apply} className="px-4 py-2 rounded bg-green-700 text-white disabled:opacity-50">Chấp nhận thay đổi</button><button type="button" onClick={download}>Tải đề xuất</button><button type="button" onClick={onDiscard}>Giữ câu hiện tại, cất đề xuất</button></div>
+    <div className="flex flex-wrap gap-3"><button type="button" disabled={stale || acknowledged} onClick={apply} className="px-4 py-2 rounded app-button-primary disabled:opacity-50">Chấp nhận thay đổi</button><button type="button" onClick={download}>Tải đề xuất</button><button type="button" onClick={onDiscard}>Giữ câu hiện tại, cất đề xuất</button></div>
     <p className="text-xs">Bản đối chiếu có trong mục Đề xuất AI trên máy, kể cả sau khi cất hoặc áp dụng. Có thể tải về để dự phòng; việc áp dụng vào bản soạn chưa phải xác nhận lưu máy chủ.</p>
     <p className="text-xs">Giữ điểm, vị trí và liên kết kiến thức của câu. Nội dung, hình và tiêu chí chấm vẫn cần giáo viên kiểm tra lại sau khi áp dụng.</p>
   </section>;

@@ -207,10 +207,10 @@ function ApiKeyDialog({ ownerId, onClose, onKeyUpdated }: Omit<Props, 'isOpen'>)
     onClose();
   };
 
-  return <div className="fixed inset-0 z-50 bg-black/60 p-4 flex items-center justify-center"><section role="dialog" aria-modal="true" aria-label="Khóa AI của bạn" className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-[#202124] text-[#202124] dark:text-[#e3e3e3] rounded-2xl p-6 space-y-4">
-    <header className="flex justify-between items-center"><h2 className="font-bold text-lg flex gap-2 items-center"><Key size={20} />Khóa AI của bạn</h2><button onClick={requestClose} aria-label="Đóng"><X /></button></header>
+  return <div className="fixed inset-0 z-50 bg-black/60 p-4 flex items-center justify-center"><section role="dialog" aria-modal="true" aria-label="Khóa AI của bạn" className="app-dialog w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-[#202124] text-[#202124] dark:text-[#e3e3e3] rounded-2xl p-6 space-y-4">
+    <header className="app-dialog-header flex justify-between items-center"><h2 className="font-bold text-lg flex gap-2 items-center"><Key size={20} />Khóa AI của bạn</h2><button onClick={requestClose} aria-label="Đóng"><X /></button></header>
     <p className="text-sm">Bạn dùng khóa Gemini của chính mình. Khóa thuộc project miễn phí hay bật thanh toán đều dùng cùng chức năng; quyền model, giá và hạn mức do Google quyết định.</p>
-    {locked && <p role="alert" className="p-3 rounded-xl bg-amber-50 text-amber-900 border border-amber-300 text-sm">{lockedMessage}</p>}
+    {locked && <p role="alert" className="p-3 rounded-xl bg-amber-50 dark:bg-[#33250b] text-amber-900 dark:text-[#fdd663] border border-amber-300 dark:border-[#4d380e] text-sm">{lockedMessage}</p>}
     {quota && <div className="border rounded-xl p-3 text-sm"><strong>Giới hạn trong ứng dụng hôm nay (UTC): {quota.usedToday} / {quota.limit} thao tác</strong><p>Đây là giới hạn nội bộ do quản trị viên đặt. Không phải quota hoặc số tiền còn lại ở Google.</p></div>}
     <p className="text-sm">Quota Google chưa xác định. Nhiều khóa cùng project không làm tăng hạn mức. <a href="https://aistudio.google.com/" target="_blank" rel="noreferrer" className="text-[var(--ui-accent)] underline">Xem project, quota và billing tại AI Studio</a>.</p>
     <label className="block text-sm">Model dùng cho yêu cầu tiếp theo<input className={field} value={model} onChange={event => editModel(event.target.value)} list="gemini-model-options" placeholder="Nhập mã model hoặc chọn từ danh mục" /><datalist id="gemini-model-options">{models.map(option => <option key={option.id} value={option.id}>{option.name}</option>)}</datalist></label>

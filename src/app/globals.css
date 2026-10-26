@@ -67,6 +67,10 @@ body {
     outline: 2px solid var(--ui-accent);
     outline-offset: 3px;
   }
+
+  :where(input[type="checkbox"], input[type="radio"], input[type="range"], progress) {
+    accent-color: var(--ui-accent);
+  }
 }
 
 /* Neutral UI roles; exam content and semantic error/warning colours stay local. */
@@ -119,7 +123,44 @@ body {
   margin-bottom: 1rem;
 }
 
+/* Dialogs keep their local desktop width, but always fit the usable viewport. */
+.app-dialog {
+  min-width: 0;
+  max-height: calc(100dvh - 2rem);
+  overflow: auto;
+  background-color: var(--ui-surface);
+  color: var(--ui-text-primary);
+  border: 1px solid var(--ui-border);
+  border-radius: 16px;
+}
+.app-dialog :where(input, select, textarea, label) {
+  min-width: 0;
+  max-width: 100%;
+}
+.app-dialog :where(h2, h3, h4, label) { overflow-wrap: anywhere; }
+.app-dialog > footer,
+.app-dialog-footer { flex-wrap: wrap; gap: 0.75rem; flex-shrink: 0; }
+.app-dialog-header { flex-shrink: 0; min-width: 0; }
+.app-dialog-header > div { min-width: 0; }
+.app-menu {
+  max-width: calc(100vw - 2rem);
+  max-height: calc(100dvh - 5rem);
+  overflow: auto;
+  background-color: var(--ui-surface);
+  color: var(--ui-text-primary);
+  border-color: var(--ui-border);
+  overflow-wrap: anywhere;
+}
+.app-feedback {
+  background-color: var(--ui-surface-variant);
+  color: var(--ui-text-primary);
+  border-color: var(--ui-border);
+}
+
 @media (max-width: 639px) {
+  .app-dialog { max-width: calc(100vw - 2rem); padding: 1rem; }
+  .app-dialog :where(button) { max-width: 100%; white-space: normal; }
+  .app-dialog > :first-child { min-width: 0; }
   .app-dashboard-bar > div:first-child { gap: 0.5rem; flex-shrink: 0; }
   .app-dashboard-bar > div:last-child { gap: 0.25rem; flex-shrink: 0; }
   .app-dashboard-bar > div:last-child > button { padding-inline: 0.5rem; }

@@ -823,8 +823,8 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
         {/* Modal Xem Chi Tiết Bài Làm & Chấm Điểm Thủ Công */}
         {selectedAttemptId && (
           <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="max-w-3xl w-full bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-6 shadow-xs max-h-[92vh] overflow-y-auto">
-              <div className="flex items-center justify-between pb-4 border-b border-[#dadce0] dark:border-[#3c4043]">
+            <div className="app-dialog max-w-3xl w-full bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-6 shadow-xs max-h-[92vh] overflow-y-auto">
+              <div className="app-dialog-header flex items-center justify-between pb-4 border-b border-[#dadce0] dark:border-[#3c4043]">
                 <div>
                   <h3 className="text-base font-bold text-[#202124] dark:text-[#e3e3e3]">
                     Bài làm của: {attemptDetail?.attempt.studentName || 'Đang tải...'}
@@ -836,7 +836,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                     </>}
                   </p>
                 </div>
-                <button
+                <button aria-label="Đóng hộp thoại"
                   onClick={requestClose}
                   className="p-1.5 rounded-lg text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] hover:text-[#202124] dark:hover:text-[#e3e3e3] transition-colors cursor-pointer"
                 >
@@ -982,7 +982,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                   </div>
                 </div>
               )}
-              <div className="pt-4 border-t border-[#dadce0] dark:border-[#3c4043] flex justify-end">
+              <div className="app-dialog-footer pt-4 border-t border-[#dadce0] dark:border-[#3c4043] flex justify-end">
                 <button
                   onClick={requestClose}
                   className="px-5 py-2 bg-[#f1f3f4] hover:bg-[#e8eaed] dark:bg-[#292a2d] dark:hover:bg-[#333538] text-[#202124] dark:text-[#e3e3e3] text-xs font-semibold rounded-lg cursor-pointer transition-colors"
