@@ -1,0 +1,222 @@
+{
+  "id": "exam_fixture_ngu_van_7",
+  "metadata": {
+    "title": "Đề kiểm tra giữa học kỳ I - Môn Ngữ văn 7 (Bộ fixture kiểm thử)",
+    "schoolName": "Trường THCS Thực nghiệm GDPT 2018",
+    "departmentName": "Tổ Khoa học Xã hội",
+    "subject": "ngu_van",
+    "grade": 7,
+    "durationMinutes": 90,
+    "academicYear": "2026-2027",
+    "semester": "Học kỳ 1",
+    "notes": "Học sinh đọc kỹ văn bản và làm bài tự luận theo đúng barem yêu cầu."
+  },
+  "passages": [
+    {
+      "id": "pas_nv7_01",
+      "title": "Ngữ liệu 1: Khúc sông tuổi thơ",
+      "content": "Buổi sớm mai mùa thu trên dòng sông quê hương mang một vẻ đẹp êm đềm và thanh khiết lạ thường mà những đứa trẻ lớn lên nơi phố thị khó lòng hình dung được. Dòng sông Đáy chảy qua làng tôi không ồn ào cuộn sóng như sông Hồng mùa lũ, cũng không trầm mặc u buồn như những con sông miền núi non heo hút. Nước sông những ngày tháng chín xanh biếc một màu ngọc bích, phẳng lặng như một tấm gương khổng lồ soi bóng những rặng tre xanh rì rào trong gió sớm. Trên bờ đê, những bông lau trắng bắt đầu trổ cờ xao xác, khẽ nghiêng mình đón lấy từng tia nắng ấm áp đầu tiên của ngày mới. Tiếng chim chiền chiện từ đồng bãi bên kia sông vút lên lảnh lót giữa không gian khoáng đạt, gợi lên trong lòng người một nỗi xao xuyến bồi hồi không nguôi. Thuở ấy, lũ trẻ chúng tôi sau mỗi buổi học ở trường làng thường tụ tập dưới gốc đa cổ thụ đầu bến nước. Chúng tôi cùng nhau buộc những chiếc thuyền gấp bằng lá dong, thả nhẹ xuống dòng trôi để xem chiếc thuyền của ai sẽ bơi đi xa nhất. Những cánh buồm lá dong mộc mạc mang theo biết bao ước mơ trẻ thơ về những chân trời mới lạ, nơi có những lâu đài nguy nga và những hải trình xa xôi ngoài biển lớn. Dòng sông nuôi dưỡng tâm hồn chúng tôi không chỉ bằng dòng nước mát lành tưới tắm cho mùa màng tốt tươi, mà còn bằng những câu chuyện cổ tích mẹ kể bên thềm nhà mỗi đêm trăng rằm sáng vằng vặc. Dưới ánh trăng dịu mát, mặt nước lấp lánh như được dát hàng ngàn mảnh bạc lung linh huyền ảo, tiếng mái chèo khua nước nhịp nhàng của các bác ngư phủ đi đánh cá đêm vọng lại từ phía xa xa tạo nên một khúc hòa âm bình dị mà thiêng liêng vô cùng. Cứ mỗi độ hè về, khúc sông ấy lại rộn rã tiếng reo hò bơi lội của đám thiếu niên trong xóm, tiếng cười trong trẻo xua tan đi cái oi ả gay gắt của những buổi trưa hè. Những vạt hoa muống biển màu tím biếc nở rộ ven bờ cát bồi như dệt nên một dải lụa mềm mại viền quanh khúc lượn của dòng chảy. Dù mai này lớn lên, có đi khắp bốn phương trời, được ngắm nhìn bao dòng sông tráng lệ của năm châu bốn biển, hình bóng dòng sông quê hương êm đềm với chiếc cầu tre nhỏ và tiếng cười giòn tan của bạn bè thời niên thiếu vẫn mãi mãi là bến đỗ bình yên nhất, là điểm tựa tinh thần vững chắc nâng bước tôi vượt qua muôn vàn giông bão của cuộc đời. Tình yêu quê hương, khởi nguồn từ những điều giản dị như dòng sông tuổi thơ, chính là cội nguồn sâu thẳm nuôi dưỡng nhân cách và lòng nhân ái của mỗi con người trong suốt hành trình khôn lớn.",
+      "source": "Trích văn bản tập đọc mở rộng, tư liệu kiểm thử ExamCraft 2026"
+    },
+    {
+      "id": "pas_nv7_02",
+      "title": "Ngữ liệu 2: Trưa hè quê nội",
+      "content": "Tiếng ve ran trong vòm lá biếc\nNắng trưa vàng trải mượt đường quê\nGió nồm thổi mát bờ đê\nCánh diều no gió bay về trời xanh.\n\nBóng tre rợp mát sân đình\nBà ru cháu ngủ ân tình thiết tha\nĐung đưa nhịp võng ngân nga\nCâu ca dao ngọt đậm đà phù sa.",
+      "source": "Trích thơ thiếu nhi kiểm thử GDPT 2018"
+    }
+  ],
+  "sections": [
+    {
+      "id": "sec_nv7_doc_hieu",
+      "name": "I. ĐỌC HIỂU (6.0 điểm)",
+      "title": "Phần Đọc hiểu văn bản"
+    },
+    {
+      "id": "sec_nv7_tieng_viet",
+      "name": "II. THỰC HÀNH TIẾNG VIỆT (2.0 điểm)",
+      "title": "Phần Tiếng Việt và Ngữ pháp"
+    },
+    {
+      "id": "sec_nv7_viet",
+      "name": "III. LÀM VĂN (2.0 điểm)",
+      "title": "Phần Tạo lập văn bản"
+    }
+  ],
+  "questions": [
+    {
+      "id": "q_nv7_01",
+      "sectionId": "sec_nv7_doc_hieu",
+      "passageId": "pas_nv7_01",
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Phương thức biểu đạt chính được sử dụng trong Ngữ liệu 1 là gì?",
+      "choices": [
+        { "key": "A", "text": "Tự sự kết hợp miêu tả và biểu cảm" },
+        { "key": "B", "text": "Nghị luận xã hội" },
+        { "key": "C", "text": "Thuyết minh khoa học" },
+        { "key": "D", "text": "Hành chính công vụ" }
+      ],
+      "correct_answer": "A",
+      "points": 0.5,
+      "step_by_step_solution": "Văn bản kể về ký ức tuổi thơ gắn bó với dòng sông quê hương kết hợp miêu tả khung cảnh thiên nhiên và bộc lộ cảm xúc sâu lắng của tác giả, do đó phương thức chính là tự sự kết hợp miêu tả và biểu cảm."
+    },
+    {
+      "id": "q_nv7_02",
+      "sectionId": "sec_nv7_doc_hieu",
+      "passageId": "pas_nv7_01",
+      "type": "short_answer",
+      "difficulty": "thong_hieu",
+      "content": "Chỉ ra 01 hình ảnh so sánh được tác giả sử dụng để miêu tả dòng sông trong đoạn văn đầu của Ngữ liệu 1.",
+      "accepted_answers": [
+        "như một tấm gương khổng lồ",
+        "phẳng lặng như một tấm gương khổng lồ",
+        "như được dát hàng ngàn mảnh bạc"
+      ],
+      "correct_answer": "như một tấm gương khổng lồ",
+      "points": 0.5,
+      "step_by_step_solution": "Trong đoạn văn, tác giả so sánh mặt nước sông Đáy 'phẳng lặng như một tấm gương khổng lồ soi bóng những rặng tre'."
+    },
+    {
+      "id": "q_nv7_03",
+      "sectionId": "sec_nv7_doc_hieu",
+      "passageId": "pas_nv7_02",
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Bài thơ trong Ngữ liệu 2 được sáng tác theo thể thơ nào?",
+      "choices": [
+        { "key": "A", "text": "Lục bát" },
+        { "key": "B", "text": "Năm chữ" },
+        { "key": "C", "text": "Bốn chữ" },
+        { "key": "D", "text": "Tự do" }
+      ],
+      "correct_answer": "A",
+      "points": 0.5,
+      "step_by_step_solution": "Bài thơ gieo vần xen kẽ câu 6 tiếng và câu 8 tiếng theo thể thơ lục bát truyền thống."
+    },
+    {
+      "id": "q_nv7_04",
+      "sectionId": "sec_nv7_doc_hieu",
+      "passageId": "pas_nv7_01",
+      "type": "true_false_group",
+      "difficulty": "thong_hieu",
+      "content": "Dựa vào nội dung Ngữ liệu 1, hãy xác định tính Đúng hoặc Sai của mỗi nhận định sau:",
+      "sub_questions": [
+        {
+          "key": "a",
+          "content": "Dòng sông Đáy trong ký ức tác giả chảy ồn ào và cuộn sóng như sông Hồng mùa lũ.",
+          "isCorrect": false,
+          "explanation": "Tác giả khẳng định sông Đáy không ồn ào cuộn sóng như sông Hồng mùa lũ."
+        },
+        {
+          "key": "b",
+          "content": "Những chiếc thuyền gấp bằng lá dong thể hiện ước mơ khám phá chân trời mới của tuổi thơ.",
+          "isCorrect": true,
+          "explanation": "Đoạn văn nêu rõ những cánh buồm lá dong mộc mạc mang theo ước mơ trẻ thơ về chân trời mới lạ."
+        },
+        {
+          "key": "c",
+          "content": "Tác giả cho rằng dòng sông chỉ tưới tắm mùa màng chứ không có ý nghĩa gì đối với tâm hồn.",
+          "isCorrect": false,
+          "explanation": "Dòng sông nuôi dưỡng cả tâm hồn bằng những câu chuyện cổ tích và kỷ niệm êm đềm."
+        },
+        {
+          "key": "d",
+          "content": "Tình yêu quê hương được khẳng định khởi nguồn từ những điều bình dị, thân thương.",
+          "isCorrect": true,
+          "explanation": "Câu kết khẳng định tình yêu quê hương khởi nguồn từ những điều giản dị như dòng sông tuổi thơ."
+        }
+      ],
+      "points": 1.5,
+      "step_by_step_solution": "Đối chiếu từng ý với nội dung chi tiết trong văn bản Ngữ liệu 1 để xác định tính đúng sai."
+    },
+    {
+      "id": "q_nv7_05",
+      "sectionId": "sec_nv7_doc_hieu",
+      "passageId": "pas_nv7_01",
+      "type": "multiple_choice",
+      "difficulty": "thong_hieu",
+      "content": "Từ láy nào sau đây trong Ngữ liệu 1 được dùng để gợi tả âm thanh tiếng chim?",
+      "choices": [
+        { "key": "A", "text": "lảnh lót" },
+        { "key": "B", "text": "xao xác" },
+        { "key": "C", "text": "nhịp nhàng" },
+        { "key": "D", "text": "êm đềm" }
+      ],
+      "correct_answer": "A",
+      "points": 0.5,
+      "step_by_step_solution": "Cụm từ 'tiếng chim chiền chiện từ đồng bãi bên kia sông vút lên lảnh lót' sử dụng từ láy tượng thanh 'lảnh lót'."
+    },
+    {
+      "id": "q_nv7_06",
+      "sectionId": "sec_nv7_tieng_viet",
+      "type": "short_answer",
+      "difficulty": "nhan_biet",
+      "content": "Xác định chủ ngữ trong câu sau: 'Tiếng chim chiền chiện từ đồng bãi bên kia sông vút lên lảnh lót giữa không gian khoáng đạt.'",
+      "accepted_answers": [
+        "Tiếng chim chiền chiện từ đồng bãi bên kia sông",
+        "tiếng chim chiền chiện từ đồng bãi bên kia sông"
+      ],
+      "correct_answer": "Tiếng chim chiền chiện từ đồng bãi bên kia sông",
+      "points": 0.5,
+      "step_by_step_solution": "Bộ phận trả lời cho câu hỏi 'Cái gì vút lên lảnh lót...' là 'Tiếng chim chiền chiện từ đồng bãi bên kia sông'."
+    },
+    {
+      "id": "q_nv7_07",
+      "sectionId": "sec_nv7_tieng_viet",
+      "type": "fill_blank",
+      "difficulty": "nhan_biet",
+      "content": "Điền một từ thích hợp vào chỗ trống để hoàn thành câu thành ngữ nói về tình cảm gắn bó với cội nguồn: 'Uống nước nhớ ________.'",
+      "accepted_answers": ["nguồn", "Nguồn"],
+      "correct_answer": "nguồn",
+      "points": 0.5,
+      "step_by_step_solution": "Thành ngữ dân gian trọn vẹn là 'Uống nước nhớ nguồn'."
+    },
+    {
+      "id": "q_nv7_08",
+      "sectionId": "sec_nv7_tieng_viet",
+      "type": "matching",
+      "difficulty": "thong_hieu",
+      "content": "Hãy ghép mỗi câu tục ngữ, ca dao ở Cột A với ý nghĩa bài học tương ứng ở Cột B:",
+      "matchingPairs": [
+        { "id": "m_nv1", "left": "Lá rụng về cội", "right": "Con người luôn hướng về quê hương nguồn cội của mình" },
+        { "id": "m_nv2", "left": "Bầu ơi thương lấy bí cùng", "right": "Khuyên nhủ tình yêu thương đùm bọc giữa đồng bào" },
+        { "id": "m_nv3", "left": "Ăn quả nhớ kẻ trồng cây", "right": "Lòng biết ơn sâu sắc đối với người đã tạo ra thành quả" }
+      ],
+      "points": 1.0,
+      "step_by_step_solution": "Ghép nối đúng ý nghĩa giáo dục truyền thống đạo lý dân tộc của từng câu tục ngữ ca dao."
+    },
+    {
+      "id": "q_nv7_09",
+      "sectionId": "sec_nv7_tieng_viet",
+      "type": "ordering",
+      "difficulty": "thong_hieu",
+      "content": "Sắp xếp các câu văn sau theo đúng trình tự thời gian diễn biến trong một ngày miêu tả cảnh làng quê:",
+      "correctOrder": [
+        "Sương sớm còn đọng long lanh trên những ngọn cỏ ven đường làng.",
+        "Mặt trời lên cao tỏa ánh nắng rực rỡ xua tan làn sương mỏng.",
+        "Tiếng ve râm ran khi mặt trời đã đứng bóng giữa trưa oi ả.",
+        "Hoàng hôn buông xuống nhuộm đỏ ráng chiều trên dòng sông quê."
+      ],
+      "points": 1.0,
+      "step_by_step_solution": "Trình tự tự nhiên trong ngày: Sương sớm -> Mặt trời lên -> Buổi trưa -> Hoàng hôn chiều muộn."
+    },
+    {
+      "id": "q_nv7_10",
+      "sectionId": "sec_nv7_viet",
+      "type": "essay",
+      "difficulty": "van_dung_cao",
+      "content": "Từ nội dung của Ngữ liệu 1, hãy viết một đoạn văn (khoảng 8 đến 10 câu) trình bày cảm nghĩ của em về ý nghĩa của tình yêu quê hương đối với sự trưởng thành của mỗi con người.",
+      "points": 3.5,
+      "rubric": [
+        { "criterion": "Đúng hình thức đoạn văn (khoảng 8-10 câu), diễn đạt trôi chảy, không sai chính tả", "maxPoints": 0.5 },
+        { "criterion": "Xác định đúng vấn đề nghị luận: Ý nghĩa của tình yêu quê hương đối với sự trưởng thành", "maxPoints": 1.0 },
+        { "criterion": "Nêu được bài học nhận thức và hành động thiết thực, liên hệ bản thân chân thành", "maxPoints": 1.5 },
+        { "criterion": "Sáng tạo, có cách nhìn nhận sâu sắc, giàu cảm xúc", "maxPoints": 0.5 }
+      ],
+      "step_by_step_solution": "Học sinh cần làm rõ: Quê hương là chiếc nôi bồi đắp tâm hồn, là điểm tựa tinh thần khi vấp ngã; tình yêu quê hương giúp con người sống có trách nhiệm, hướng thiện và biết cống hiến cho cộng đồng."
+    }
+  ],
+  "createdAt": "2026-10-25T07:45:00.000Z",
+  "updatedAt": "2026-10-25T10:00:00.000Z",
+  "version": 2
+}

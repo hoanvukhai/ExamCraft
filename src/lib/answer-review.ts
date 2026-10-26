@@ -10,7 +10,10 @@ export interface AnswerReview {
 /** A comparison is assistance for teacher review, never a certification. */
 export function compareAnswerReview(question: Question, review: AnswerReview) {
   const discrepancies = [...review.discrepancies];
-  const normalize = (value: string) => value.trim().toLowerCase().replace(/\s+/g, '');
+  // The same relation is written "x ≥ 3", "x >= 3" or "x \ge 3"; they are one answer, so a model's symbol choice is not a discrepancy.
+  const normalize = (value: string) => value.trim().toLowerCase()
+    .replace(/\\(?:geq?|geqslant)\b|≥/g, '>=').replace(/\\(?:leq?|leqslant)\b|≤/g, '<=').replace(/\\neq?\b|≠/g, '!=')
+    .replace(/\\times\b|\\cdot\b|×|·/g, '*').replace(/\\div\b|÷/g, '/').replace(/−/g, '-').replace(/\$/g, '').replace(/\s+/g, '');
   let complete = false;
   let isMatch = false;
   if (question.type === 'multiple_choice') {

@@ -49,7 +49,7 @@ export async function GET(
       return NextResponse.json({ error: 'Không tìm thấy lớp học' }, { status: 404 });
     }
 
-    return NextResponse.json({ group });
+    return NextResponse.json({ group: { ...group, students: group.students.map(({ pinHash, personalToken, ...student }) => ({ ...student, hasPin: Boolean(pinHash), hasPersonalLink: Boolean(personalToken) })) } });
   } catch (error: unknown) {
     if (error instanceof ApiError) return apiErrorResponse(error, 'Yêu cầu bị từ chối');
     const err = error as Error;

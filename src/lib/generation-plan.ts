@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { wrapBareLatex } from './bare-latex';
+import { normalizeMathDelimiters } from './math-delimiters';
 import { getCatalogSubjects, getCognitiveFramework } from './education-catalog';
 import { knowledgePackageSchema, knowledgeScopeSchema, parseKnowledgePackage, knowledgeScopeContext } from './knowledge-package';
 import type { Exam } from '@/types/exam';
@@ -61,8 +62,9 @@ export function validateGeneratedExam(value: unknown, plan: GenerationPlan) {
   const scope = plan.knowledgePackage && plan.knowledgeScope ? knowledgeScopeContext(parseKnowledgePackage(plan.knowledgePackage, plan), plan.knowledgeScope) : undefined;
   const allowedKnowledge = new Set(scope?.knowledge.map(item => item.id)), allowedOutcomes = new Set(scope?.outcomes.map(item => item.id));
   for (const q of parsed.questions) {
-    if (q.choices) q.choices = q.choices.map(choice => ({ ...choice, text: wrapBareLatex(choice.text) }));
-    if (q.sub_questions) q.sub_questions = q.sub_questions.map(sub => ({ ...sub, content: wrapBareLatex(sub.content) }));
+    q.content = normalizeMathDelimiters(q.content); q.step_by_step_solution = normalizeMathDelimiters(q.step_by_step_solution);
+    if (q.choices) q.choices = q.choices.map(choice => ({ ...choice, text: wrapBareLatex(normalizeMathDelimiters(choice.text)) }));
+    if (q.sub_questions) q.sub_questions = q.sub_questions.map(sub => ({ ...sub, content: wrapBareLatex(normalizeMathDelimiters(sub.content)), ...(sub.explanation ? { explanation: normalizeMathDelimiters(sub.explanation) } : {}) }));
     if (q.knowledgeIds?.some(id => !allowedKnowledge.has(id)) || q.outcomeIds?.some(id => !allowedOutcomes.has(id))) throw new Error('AI gắn mã kiến thức hoặc yêu cầu ngoài phạm vi được chọn');
     if (scope && plan.assessmentMode !== 'survey' && !q.knowledgeIds?.length && !q.outcomeIds?.length) throw new Error('AI chưa gắn câu hỏi với kiến thức trong phạm vi đã chọn');
     if (q.type === 'multiple_choice' && (!q.choices || q.choices.length < 2 || new Set(q.choices.map(c => c.key)).size !== q.choices.length)) throw new Error('Phương án lựa chọn thiếu hoặc trùng mã');

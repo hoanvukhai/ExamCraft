@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { wrapBareLatex } from '../src/lib/bare-latex';
+import { normalizeMathDelimiters } from '../src/lib/math-delimiters';
 import { validateGeneratedExam, generationPlanSchema } from '../src/lib/generation-plan';
 
 test('a choice written with LaTeX commands but no dollar signs becomes a formula, with units as plain text', () => {
@@ -22,4 +23,12 @@ test('generated choices and true/false statements are normalised before they rea
   assert.equal(exam.questions[0].choices?.[0].text, '$-\\pi/6 \\text{rad}$'); assert.equal(exam.questions[0].choices?.[1].text, '5 cm');
   assert.equal(exam.questions[1].sub_questions?.[0].content, 'Tần số góc là $2\\pi$ f');
   assert.equal(exam.questions[1].sub_questions?.[1].content, 'Không có công thức');
+});
+
+test('formulas written between backslash-parentheses or backslash-brackets are rewritten to dollar signs everywhere in a generated question', () => {
+  assert.equal(normalizeMathDelimiters('Tìm \\(\\sqrt{2x-6}\\) và \\[x^2\\]'), 'Tìm $\\sqrt{2x-6}$ và $$x^2$$');
+  assert.equal(normalizeMathDelimiters('Không có công thức, $a$ giữ nguyên'), 'Không có công thức, $a$ giữ nguyên');
+  const plan = generationPlanSchema.parse({ subject: 'toan', grade: 9, topic: 'Căn', durationMinutes: 15, numShortAnswer: 1 });
+  const exam = validateGeneratedExam({ questions: [{ type: 'short_answer', content: 'Điều kiện của \\(\\sqrt{x}\\)', correct_answer: 'x >= 0', step_by_step_solution: 'Cần \\(x \\ge 0\\)' }] }, plan);
+  assert.equal(exam.questions[0].content, 'Điều kiện của $\\sqrt{x}$'); assert.equal(exam.questions[0].step_by_step_solution, 'Cần $x \\ge 0$');
 });

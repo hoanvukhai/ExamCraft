@@ -1,0 +1,15 @@
+Câu 1: Bảng chân trị của phép AND và OR:
+
+| $A$ | $B$ | $A$ AND $B$ | $A$ OR $B$ |
+|:---:|:---:|:---:|:---:|
+| True | True | True | True |
+| True | False | False | True |
+| False | True | False | True |
+| False | False | False | False |
+
+Phát biểu nào đúng?
+A. Bảng có 4 hàng dữ liệu
+B. Bảng có 3 hàng dữ liệu
+C. Bảng có 5 cột
+D. Bảng không có tiêu đề
+Đáp án: A

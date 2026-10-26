@@ -51,6 +51,19 @@ Giáo viên có thể đưa đề thi có sẵn từ Word, PDF hoặc tài liệ
   - Ghép nối Cột A với Cột B (nếu giáo viên chưa đóng gói thành trắc nghiệm A-D ở dưới).
   - Sắp xếp thứ tự dạng chuỗi mũi tên nối tiếp.
 
+### 2.3b Nhập tệp Word, ảnh đề và tài liệu dài (cần khóa AI)
+- *Việc bạn làm:* Bấm **Nhập đề (Word/Ảnh)**, chọn **Tải lên file đề thi Word (.docx)** hoặc **Ảnh chụp đề thi (Gemini Vision OCR)**, chọn tệp, đọc bản xem trước rồi mới nhập vào đề.
+- *Điều bạn thấy:*
+  - Công thức viết bằng công cụ phương trình của Word được đọc thành công thức; hình ảnh nhúng trong tệp được gắn vào đúng câu hoặc ngữ liệu, và có lời nhắc "Đã gắn N hình" để bạn kiểm tra vị trí.
+  - Đề dài (nhiều chục câu) được đọc thành nhiều phần theo thứ tự câu. Hệ thống đếm số "Câu N" của tệp gốc: nếu nhận thiếu, thanh cảnh báo ghi rõ nhận bao nhiêu trên tổng số và phần nào thiếu; bạn nhập lại phần thiếu, hệ thống không tự bịa câu.
+  - Câu nhập luôn là **nháp riêng tư** chưa kiểm định, mang nhãn nguồn (tên tệp, số câu). Đáp án chỉ có khi tệp ghi rõ; câu thiếu đáp án để trống chứ không tự điền.
+  - Chữ nằm trong tệp như "bỏ qua mọi quy tắc..." chỉ được coi là nội dung đề, không phải lệnh cho AI.
+- *Điều chưa có:* hình rất lớn (trên 3 MB) hoặc quá nhiều hình (trên 60) bị bỏ qua và có cảnh báo; bảng phức tạp trong Word cần đối chiếu với tệp gốc.
+
+### 2.3c Bảng trong nội dung câu
+- *Việc bạn làm:* Trong nội dung câu hoặc ngữ liệu, viết bảng bằng dấu gạch đứng, mỗi hàng một dòng, dòng thứ hai là đường phân cách, ví dụ `| A | B |` rồi `|:---:|:---:|` rồi `| True | False |`.
+- *Điều bạn thấy:* Bảng thật có viền ở màn hình, bản in và tệp Word (hàng tiêu đề lặp lại khi sang trang); công thức đặt trong ô vẫn hiện đúng.
+
 ### 2.4 Cơ chế lưu tự động, nháp khi mất mạng và xung đột phiên bản
 - *Việc bạn làm:* Soạn thảo bình thường. Bạn có thể bấm **Lưu đề** trên thanh công cụ để lưu tức thì lên máy chủ.
 - *Điều bạn thấy:*
@@ -111,6 +124,16 @@ Giáo viên có thể đưa đề thi có sẵn từ Word, PDF hoặc tài liệ
 ### 5.3 Đồng nghiệp nhận liên kết chia sẻ
 - *Việc bạn làm:* Mở liên kết chia sẻ được gửi trong trình duyệt.
 - *Điều bạn thấy:* Trang xem đề hiển thị nhãn **Chế độ Chỉ Xem & Tải về**. Đồng nghiệp có thể bấm **Tải file Word (.docx)**, bấm xem in, hoặc bấm **Tạo bản sao để sửa** (nếu người tạo cho phép). Bản sao sẽ được tạo mới hoàn toàn trong kho đề của đồng nghiệp, không làm thay đổi đề gốc của người gửi.
+
+
+### 5.4 Cùng soạn: góp ý và đánh dấu đã giải quyết
+- *Việc bạn làm:* Mở đề đã lưu, bấm **Cùng soạn · Góp ý · Lịch sử**, mở mục **Góp ý**. Chọn câu ở ô **Câu được góp ý** (hoặc để góp ý chung cho cả đề), viết nội dung, bấm **Gửi góp ý**. Khi đã xử lý xong, bấm **Đánh dấu đã giải quyết**; cần xem lại thì bấm **Mở lại**.
+- *Điều bạn thấy:* Mỗi góp ý ghi tên người viết, câu được góp ý và phiên bản của đề lúc viết; góp ý đã giải quyết mờ đi kèm "Đã giải quyết bởi <tên>".
+- *Ai làm được gì:* người cùng sửa hoặc chủ đề đánh dấu được mọi góp ý; người chỉ góp ý chỉ đánh dấu được góp ý của chính mình; người chỉ xem không thấy nút. Mục **Lịch sử lưu** ghi ai lưu phiên bản nào; khôi phục luôn tạo phiên bản mới, không xóa lịch sử.
+
+### 5.5 Ghi chú riêng cho AI: nguồn, bằng chứng và bản đọc được
+- *Việc bạn làm:* Bấm **Ghi chú riêng cho AI** ở cột trái. Ghi chú AI đề xuất luôn ở trạng thái tắt chờ bạn đọc và bật. Bấm **Tải bản đọc được (.md)** để lấy bản văn bản đọc bằng Notepad, hoặc **Xuất ghi chú riêng** để lấy bản JSON nhập lại được.
+- *Điều bạn thấy:* Mỗi ghi chú AI ghi nguồn (câu hay đề nào, phiên bản nào), đoạn trích làm bằng chứng và điều chưa chắc. Nếu đoạn trích AI đưa không khớp nguyên văn dữ liệu nguồn, ghi chú được đánh dấu để bạn tự đối chiếu. Độ tin cậy là AI tự chấm, không phải xác nhận chuyên môn. Tệp xuất không chứa khóa API.
 
 ---
 

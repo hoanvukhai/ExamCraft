@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { accountFetch } from '@/lib/account-fetch';
+import { pinsToCsv } from '@/lib/pin-csv';
 import {
   Users,
   Plus,
@@ -22,6 +23,7 @@ interface Student {
   id: string;
   displayName: string;
   createdAt: string;
+  hasPin?: boolean;
 }
 
 interface Group {
@@ -56,6 +58,8 @@ export default function TeacherGroupsPage() {
   const [groupStudents, setGroupStudents] = useState<Student[]>([]);
   const [loadingStudents, setLoadingStudents] = useState(false);
   const [newStudentName, setNewStudentName] = useState('');
+  const [issuedPins, setIssuedPins] = useState<{ id: string; displayName: string; pin: string }[] | null>(null);
+  const [pinBusy, setPinBusy] = useState(false);
 
   // Trạng thái copy
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
@@ -163,6 +167,26 @@ export default function TeacherGroupsPage() {
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const issuePins = async (studentIds?: string[]) => {
+    if (!selectedGroup || pinBusy) return;
+    const message = studentIds ? 'Cấp PIN mới cho học sinh này? PIN cũ sẽ không dùng được nữa.' : 'Cấp PIN mới cho cả lớp? PIN cũ của mọi học sinh sẽ không dùng được nữa.';
+    if (!confirm(message)) return;
+    setPinBusy(true); setAccountMessage('');
+    try {
+      const res = await scopedFetch(`/api/groups/${selectedGroup.id}/pins`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(studentIds ? { studentIds } : {}) });
+      const data = await res.json();
+      if (!res.ok) { setAccountMessage(data.error || 'Chưa cấp được PIN.'); return; }
+      setIssuedPins(previous => { const merged = new Map((previous ?? []).map(item => [item.id, item])); for (const item of data.pins) merged.set(item.id, item); return [...merged.values()].sort((a, b) => a.displayName.localeCompare(b.displayName, 'vi')); });
+      await handleOpenGroupDetails(selectedGroup);
+    } catch { setAccountMessage('Không thể kết nối đến máy chủ'); } finally { setPinBusy(false); }
+  };
+  const downloadPins = () => {
+    if (!issuedPins || !selectedGroup) return;
+    const url = URL.createObjectURL(new Blob([pinsToCsv(issuedPins)], { type: 'text/csv;charset=utf-8' }));
+    const anchor = document.createElement('a'); anchor.href = url; anchor.download = `pin-${selectedGroup.publicCode}.csv`; anchor.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
   const copyClassLink = (code: string) => {
@@ -416,7 +440,7 @@ export default function TeacherGroupsPage() {
                   </p>
                 </div>
                 <button
-                  onClick={() => setSelectedGroup(null)}
+                  onClick={() => { setSelectedGroup(null); setIssuedPins(null); }}
                   className="p-1.5 rounded-full text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#282828] transition-colors cursor-pointer"
                 >
                   <X className="w-5 h-5" />
@@ -440,6 +464,22 @@ export default function TeacherGroupsPage() {
                 </button>
               </form>
 
+              <div className="flex flex-wrap items-center gap-2 mb-3 text-xs">
+                <button type="button" disabled={pinBusy || groupStudents.length === 0} onClick={() => void issuePins()} className="px-4 py-2 rounded-full border border-[#dadce0] dark:border-[#3c4043] font-semibold disabled:opacity-50">Cấp PIN cho cả lớp</button>
+                <span className="text-[#5f6368] dark:text-[#9aa0a6]">Dùng khi giao bài có bật yêu cầu PIN. PIN chỉ hiện một lần ngay sau khi cấp.</span>
+              </div>
+              {issuedPins && issuedPins.length > 0 && (
+                <div role="status" aria-label="PIN vừa cấp" className="mb-3 rounded-xl border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900">
+                  <p className="font-semibold">PIN vừa cấp (chỉ hiện một lần, hãy ghi lại hoặc tải về ngay)</p>
+                  <ul className="mt-2 max-h-32 overflow-y-auto space-y-1 font-mono">{issuedPins.map(item => <li key={item.id}>{item.displayName}: <strong>{item.pin}</strong></li>)}</ul>
+                  <div className="mt-2 flex gap-2">
+                    <button type="button" onClick={() => void navigator.clipboard.writeText(issuedPins.map(item => `${item.displayName}: ${item.pin}`).join(String.fromCharCode(10)))} className="px-3 py-1.5 rounded-full border border-amber-400 font-semibold">Chép danh sách PIN</button>
+                    <button type="button" onClick={downloadPins} className="px-3 py-1.5 rounded-full border border-amber-400 font-semibold">Tải PIN (CSV)</button>
+                    <button type="button" onClick={() => setIssuedPins(null)} className="px-3 py-1.5 rounded-full border border-amber-400 font-semibold">Đã ghi lại, ẩn PIN</button>
+                  </div>
+                </div>
+              )}
+
               {/* Danh sách học sinh */}
               <div className="max-h-72 overflow-y-auto space-y-2 pr-1">
                 {loadingStudents ? (
@@ -458,6 +498,10 @@ export default function TeacherGroupsPage() {
                         </span>
                         <span className="font-medium text-[#202124] dark:text-[#e3e3e3]">{st.displayName}</span>
                       </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6]">{st.hasPin ? 'Đã có PIN' : 'Chưa có PIN'}</span>
+                        <button type="button" disabled={pinBusy} onClick={() => void issuePins([st.id])} className="text-[11px] text-[#1a73e8] dark:text-[#8ab4f8] font-semibold disabled:opacity-50">{st.hasPin ? 'Cấp lại PIN' : 'Cấp PIN'}</button>
+                      </div>
                     </div>
                   ))
                 )}
@@ -465,7 +509,7 @@ export default function TeacherGroupsPage() {
 
               <div className="mt-5 pt-3 border-t border-[#dadce0] dark:border-[#3c4043] flex justify-end">
                 <button
-                  onClick={() => setSelectedGroup(null)}
+                  onClick={() => { setSelectedGroup(null); setIssuedPins(null); }}
                   className="px-5 py-2 bg-[#f1f3f4] hover:bg-[#e8eaed] dark:bg-[#282828] dark:hover:bg-[#303134] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043] text-xs font-semibold rounded-full cursor-pointer"
                 >
                   Đóng

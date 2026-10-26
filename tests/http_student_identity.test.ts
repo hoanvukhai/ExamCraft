@@ -27,7 +27,7 @@ test('student identity (PIN, class membership, personal link) and concurrent sub
       await db.user.deleteMany({ where: { id: uid } });
       const directory = `qa/rebuild-${new Date().toISOString().slice(0, 10)}`;
       fs.mkdirSync(directory, { recursive: true });
-      writeQaReport(`${directory}/http_student_identity.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 4 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117', realAiCalls: false }, null, 2));
+      writeQaReport(`${directory}/http_student_identity.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 5 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117', realAiCalls: false }, null, 2));
     } finally { await db.$disconnect(); }
   });
   const password = 'fixture-' + randomUUID(), email = uid + '@example.invalid';
@@ -73,6 +73,36 @@ test('student identity (PIN, class membership, personal link) and concurrent sub
     const ok = await start(a.publicId, { personalToken: mine.personalToken! });
     assert.equal(ok.status, 200, ok.data.error);
     checks.push('personal-link');
+  });
+  await t.test('the teacher issues PINs from the class: shown once, stored hashed, usable by the student, and only for the teacher own class', async () => {
+    const issued = await request(`/api/groups/${groupA}/pins`, 'POST', {}, owner);
+    assert.equal(issued.status, 200, issued.data.error);
+    const rows = issued.data.pins as { id: string; displayName: string; pin: string }[];
+    assert.equal(rows.length, 2, 'both active students of the class get a PIN');
+    assert.ok(rows.every(row => /^\d{6}$/.test(row.pin)), 'six digits'); assert.equal(new Set(rows.map(row => row.pin)).size, rows.length, 'no repeats in a batch');
+    const stored = await db.student.findMany({ where: { groupId: groupA } });
+    assert.ok(stored.every(student => student.pinHash && !JSON.stringify(student).includes(rows.find(row => row.id === student.id)!.pin)), 'only a hash is stored');
+    const detail = await request(`/api/groups/${groupA}`, 'GET', undefined, owner);
+    assert.ok(!JSON.stringify(detail.data).includes('pinHash') && !JSON.stringify(detail.data).includes('personalToken'), 'the class detail never returns hashes or personal tokens');
+    assert.ok(detail.data.group.students.every((student: { hasPin: boolean }) => student.hasPin === true), 'the list says who has a PIN');
+    const a = await assign({ groupId: groupA, identityMode: 'PICK_FROM_LIST', requirePin: true, maxAttempts: 5 });
+    const mine = rows.find(row => row.id === noPin.id)!;
+    assert.equal((await start(a.publicId, { studentId: noPin.id, pin: pin })).status, 403, 'the old shared test PIN no longer opens it');
+    assert.equal((await start(a.publicId, { studentId: noPin.id, pin: mine.pin })).status, 200, 'the issued PIN opens it');
+    const again = await request(`/api/groups/${groupA}/pins`, 'POST', { studentIds: [noPin.id] }, owner);
+    assert.equal(again.status, 200); assert.equal(again.data.pins.length, 1);
+    assert.notEqual(again.data.pins[0].pin, mine.pin, 'a reissued PIN is a new one');
+    assert.equal((await start(a.publicId, { studentId: noPin.id, pin: mine.pin })).status, 403, 'the replaced PIN stops working');
+    assert.equal((await request(`/api/groups/${groupB}/pins`, 'POST', { studentIds: [noPin.id] }, owner)).status, 404, 'a student of another class cannot be named');
+    const stranger = 'identity_stranger_' + randomUUID();
+    await db.user.create({ data: { id: stranger, email: stranger + '@example.invalid', name: 'Stranger', passwordHash: await bcrypt.hash(password, 10), mustChangePassword: false, aiDailyLimit: 0 } });
+    try {
+      const other = await request('/api/auth/login', 'POST', { email: stranger + '@example.invalid', password }); assert.equal(other.status, 200);
+      assert.equal((await request(`/api/groups/${groupA}/pins`, 'POST', {}, other.cookie)).status, 404, 'another teacher cannot issue PINs for this class');
+      assert.equal((await request(`/api/groups/${groupA}/pins`, 'POST', {})).status, 401, 'nobody signed in cannot either');
+    } finally { await db.auditLog.deleteMany({ where: { actorId: stranger } }); await db.user.deleteMany({ where: { id: stranger } }); }
+    assert.ok(await db.auditLog.count({ where: { actorId: uid, action: 'group.pins.issue' } }) >= 2, 'issuing is recorded without the PINs');
+    checks.push('issue-pins');
   });
   await t.test('old links: a revoked or expired share link stops serving content and a refused revoke changes nothing', async () => {
     const share = await request(`/api/exams/${examId}/share`, 'POST', { showAnswers: false, allowCopy: false }, owner);

@@ -1,0 +1,189 @@
+{
+  "id": "exam_fixture_tin_hoc_8",
+  "metadata": {
+    "title": "Đề kiểm tra Tin học 8 (Bộ fixture kiểm thử)",
+    "schoolName": "Trường THCS Thực nghiệm Công nghệ",
+    "departmentName": "Tổ Toán - Tin học",
+    "subject": "tin_hoc",
+    "grade": 8,
+    "durationMinutes": 45,
+    "academicYear": "2026-2027",
+    "semester": "Học kỳ 1",
+    "notes": "Học sinh kiểm tra cẩn thận cấu trúc cú pháp mã nguồn và bảng logic."
+  },
+  "sections": [
+    {
+      "id": "sec_cs8_logic",
+      "name": "PHẦN I. BIỂU THỨC LOGIC VÀ LÝ THUYẾT (5.0 điểm)",
+      "title": "Các phép toán logic AND, OR, NOT và cú pháp cơ bản"
+    },
+    {
+      "id": "sec_cs8_code",
+      "name": "PHẦN II. THUẬT TOÁN VÀ ĐOẠN MÃ PYTHON (5.0 điểm)",
+      "title": "Cấu trúc lặp, rẽ nhánh và lập trình giải quyết vấn đề"
+    }
+  ],
+  "questions": [
+    {
+      "id": "q_cs8_01",
+      "sectionId": "sec_cs8_logic",
+      "type": "true_false_group",
+      "difficulty": "thong_hieu",
+      "content": "Cho hai biến mệnh đề logic $A$ và $B$. Bảng chân trị của các phép toán logic cơ bản được mô tả như sau:\n\n| $A$ | $B$ | NOT $A$ | $A$ AND $B$ | $A$ OR $B$ |\n|:---:|:---:|:---:|:---:|:---:|\n| True | True | False | True | True |\n| True | False | False | False | True |\n| False | True | True | False | True |\n| False | False | True | False | False |\n\nHãy xác định tính Đúng hoặc Sai của mỗi khẳng định sau:",
+      "sub_questions": [
+        {
+          "key": "a",
+          "content": "Phép toán (A AND B) chỉ cho kết quả True khi cả hai mệnh đề A và B đều mang giá trị True.",
+          "isCorrect": true,
+          "explanation": "Theo định nghĩa phép hội AND, cả hai toán hạng đều phải True."
+        },
+        {
+          "key": "b",
+          "content": "Phép toán (A OR B) cho kết quả False khi có ít nhất một trong hai mệnh đề A hoặc B mang giá trị True.",
+          "isCorrect": false,
+          "explanation": "Phép tuyển OR chỉ cho kết quả False khi cả hai toán hạng đều False."
+        },
+        {
+          "key": "c",
+          "content": "Nếu A = True và B = False thì biểu thức: (NOT A) OR B có giá trị là True.",
+          "isCorrect": false,
+          "explanation": "NOT A = False; False OR False = False."
+        },
+        {
+          "key": "d",
+          "content": "Biểu thức NOT (A AND B) tương đương logic với biểu thức (NOT A) OR (NOT B) theo định luật De Morgan.",
+          "isCorrect": true,
+          "explanation": "Đây là định luật De Morgan trong đại số Boole."
+        }
+      ],
+      "points": 1.0,
+      "step_by_step_solution": "Áp dụng bảng chân trị đại số Boole để đánh giá đúng sai cho từng nhận định."
+    },
+    {
+      "id": "q_cs8_02",
+      "sectionId": "sec_cs8_logic",
+      "type": "multiple_choice",
+      "difficulty": "nhan_biet",
+      "content": "Trong ngôn ngữ lập trình Python, kiểu dữ liệu nào sau đây dùng để biểu diễn các số nguyên (như -5, 0, 100)?",
+      "choices": [
+        { "key": "A", "text": "int" },
+        { "key": "B", "text": "float" },
+        { "key": "C", "text": "str" },
+        { "key": "D", "text": "bool" }
+      ],
+      "correct_answer": "A",
+      "points": 1.0,
+      "step_by_step_solution": "Kiểu int (integer) trong Python đại diện cho tập hợp các số nguyên."
+    },
+    {
+      "id": "q_cs8_03",
+      "sectionId": "sec_cs8_logic",
+      "type": "fill_blank",
+      "difficulty": "nhan_biet",
+      "content": "Trong Python, tên hàm chuẩn dùng để xuất dữ liệu ra màn hình là hàm: ________().",
+      "accepted_answers": ["print", "PRINT"],
+      "correct_answer": "print",
+      "points": 1.0,
+      "step_by_step_solution": "Hàm print() dùng để in giá trị ra màn hình console."
+    },
+    {
+      "id": "q_cs8_04",
+      "sectionId": "sec_cs8_logic",
+      "type": "matching",
+      "difficulty": "thong_hieu",
+      "content": "Ghép mỗi toán tử so sánh trong Python ở Cột A với ý nghĩa tương ứng ở Cột B:",
+      "matchingPairs": [
+        { "id": "m_cs1", "left": "==", "right": "So sánh bằng nhau" },
+        { "id": "m_cs2", "left": "!=", "right": "So sánh khác nhau (không bằng)" },
+        { "id": "m_cs3", "left": ">=", "right": "So sánh lớn hơn hoặc bằng" }
+      ],
+      "points": 1.0,
+      "step_by_step_solution": "== là so sánh bằng, != là khác nhau, >= là lớn hơn hoặc bằng."
+    },
+    {
+      "id": "q_cs8_05",
+      "sectionId": "sec_cs8_logic",
+      "type": "ordering",
+      "difficulty": "thong_hieu",
+      "content": "Sắp xếp các bước giải quyết một bài toán tin học bằng máy tính theo đúng trình tự khoa học:",
+      "correctOrder": [
+        "Xác định bài toán (Input và Output)",
+        "Mô tả thuật toán",
+        "Viết chương trình bằng ngôn ngữ lập trình",
+        "Chạy thử và hiệu chỉnh chương trình"
+      ],
+      "points": 1.0,
+      "step_by_step_solution": "Trình tự: Xác định bài toán -> Xây dựng thuật toán -> Viết mã -> Kiểm thử gỡ lỗi."
+    },
+    {
+      "id": "q_cs8_06",
+      "sectionId": "sec_cs8_code",
+      "type": "multiple_choice",
+      "difficulty": "van_dung",
+      "content": "Cho đoạn mã nguồn Python sau đây thực hiện tính tổng các số chẵn nhỏ hơn 10:\n\n```python\ntong = 0\nfor i in range(1, 10):\n    if i % 2 == 0:\n        tong += i\nprint(tong)\n```\n\nSau khi thực thi đoạn mã trên, giá trị in ra màn hình là bao nhiêu?",
+      "choices": [
+        { "key": "A", "text": "20" },
+        { "key": "B", "text": "30" },
+        { "key": "C", "text": "25" },
+        { "key": "D", "text": "18" }
+      ],
+      "correct_answer": "A",
+      "points": 1.0,
+      "step_by_step_solution": "range(1, 10) sinh ra 1 đến 9. Các số chẵn là 2, 4, 6, 8. Tổng = 2 + 4 + 6 + 8 = 20."
+    },
+    {
+      "id": "q_cs8_07",
+      "sectionId": "sec_cs8_code",
+      "type": "short_answer",
+      "difficulty": "van_dung_cao",
+      "content": "Xem đoạn mã Python sau:\n\n```python\nn = 5\nkq = 1\nwhile n > 1:\n    kq = kq * n\n    n -= 1\n```\n\nNhập giá trị cuối cùng của biến `kq` sau khi vòng lặp `while` kết thúc hoàn toàn.",
+      "accepted_answers": ["120"],
+      "correct_answer": "120",
+      "points": 1.0,
+      "step_by_step_solution": "Vòng lặp tính giai thừa 5! = 5 * 4 * 3 * 2 * 1 = 120."
+    },
+    {
+      "id": "q_cs8_08",
+      "sectionId": "sec_cs8_code",
+      "type": "short_answer",
+      "difficulty": "thong_hieu",
+      "content": "Trong Python, phép toán lấy phần dư của phép chia `17 % 5` cho kết quả bằng bao nhiêu?",
+      "accepted_answers": ["2"],
+      "correct_answer": "2",
+      "points": 1.0,
+      "step_by_step_solution": "17 chia 5 được 3 dư 2, phép toán % trả về phần dư 2."
+    },
+    {
+      "id": "q_cs8_09",
+      "sectionId": "sec_cs8_code",
+      "type": "multiple_choice",
+      "difficulty": "van_dung",
+      "content": "Đoạn mã sau in ra kết quả gì?\n\n```python\nx = 10\nif x > 15:\n    print('A')\nelif x >= 10:\n    print('B')\nelse:\n    print('C')\n```",
+      "choices": [
+        { "key": "A", "text": "B" },
+        { "key": "B", "text": "A" },
+        { "key": "C", "text": "C" },
+        { "key": "D", "text": "Không in gì cả" }
+      ],
+      "correct_answer": "A",
+      "points": 1.0,
+      "step_by_step_solution": "x = 10 không thỏa mãn x > 15, nhưng thỏa mãn elif x >= 10, do đó in ra 'B'."
+    },
+    {
+      "id": "q_cs8_10",
+      "sectionId": "sec_cs8_code",
+      "type": "essay",
+      "difficulty": "van_dung_cao",
+      "content": "Phân biệt sự khác nhau giữa lỗi cú pháp (SyntaxError) và lỗi ngữ nghĩa/logic (LogicError) trong lập trình. Cho một ví dụ minh họa ngắn cho mỗi loại lỗi.",
+      "points": 1.0,
+      "rubric": [
+        { "criterion": "Nêu đúng khái niệm lỗi cú pháp (vi phạm quy tắc ngôn ngữ, trình thông dịch phát hiện ngay trước khi chạy) và ví dụ", "maxPoints": 0.5 },
+        { "criterion": "Nêu đúng khái niệm lỗi logic (chương trình vẫn chạy nhưng cho kết quả sai) và ví dụ", "maxPoints": 0.5 }
+      ],
+      "step_by_step_solution": "Lỗi cú pháp: vi phạm ngữ pháp (ví dụ thiếu dấu hai chấm sau lệnh if). Lỗi logic: sai thuật toán tính toán (ví dụ tính chu vi hình chữ nhật viết (a + b) * 3 thay vì nhân 2)."
+    }
+  ],
+  "createdAt": "2026-10-25T07:45:00.000Z",
+  "updatedAt": "2026-10-25T10:00:00.000Z",
+  "version": 2
+}

@@ -4,6 +4,8 @@ Lập 26/10/2026. Còn **18 CV mở** trên 78. Máy đã kiểm mọi thứ má
 
 Đặt tên mọi thứ thử có tiền tố `TEST-` như kịch bản. Làm xong ghi ĐẠT / KHÔNG ĐẠT / ghi chú vào bảng cuối rồi gửi lại cho tôi; tôi đóng CV theo kết quả.
 
+> **Bản test đầy đủ (khoảng 560 dòng, theo từng chức năng và từng môn) nằm ở [ban-test-day-du/00_HUONG_DAN_DUNG_VA_CHUAN_BI.md](ban-test-day-du/00_HUONG_DAN_DUNG_VA_CHUAN_BI.md).** Danh sách ngắn dưới đây chỉ là các việc còn lại của những mục công việc chưa đóng.
+
 ## A. Việc đã có trong kịch bản, chỉ cần làm kỹ hơn ở các điểm sau
 
 | CV | Mục kịch bản | Điều cần nhìn bằng mắt |
