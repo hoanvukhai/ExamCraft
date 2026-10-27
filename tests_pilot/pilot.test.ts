@@ -46,6 +46,8 @@ async function waitUntil(check: () => Promise<boolean>, message: string, timeout
   throw Error(message);
 }
 async function openDetails(page: Page, summary: string) { await page.locator('summary', { hasText: summary }).first().evaluate(el => { (el.parentElement as HTMLDetailsElement).open = true; }); }
+async function openTool(page: Page, label: 'Xuất' | 'Đề thi') { await page.getByRole('button', { name: label, exact: true }).click(); }
+async function menuLink(page: Page, name: string) { await page.getByRole('navigation', { name: 'Không gian giáo viên' }).getByRole('link', { name, exact: true }).filter({ visible: true }).click(); }
 async function click(page: Page, name: string | RegExp) { await page.getByRole('button', { name, exact: typeof name === 'string' }).click(); }
 async function login(page: Page, email: string, password: string) {
   // The effect's session lookup proves hydration; SSR form controls alone do not.
@@ -255,13 +257,13 @@ test('F3 answer views, shuffle, Word and print', { timeout: 120000 }, () => flow
   await presentation.waitFor({ state: 'detached' });
   await click(f.page,'Bảng đáp án & Barem'); await f.page.getByText('Chấp nhận: 2', { exact: true }).first().waitFor();
   await click(f.page,'Hướng dẫn giải'); await f.page.getByText(solution, { exact: true }).first().waitFor(); await click(f.page,'Đề thi in ấn');
-  const [downloaded] = await Promise.all([f.page.waitForEvent('download',{timeout:60000}),f.page.getByTitle('Tải file Word (.docx) chuẩn công thức OMML').click()]); const file = await downloaded.path(); assert.ok(file); const bytes=fs.readFileSync(file); assert.equal(bytes.subarray(0,2).toString(),'PK'); assert.ok(bytes.length>2000);
+  await openTool(f.page,'Xuất'); const [downloaded] = await Promise.all([f.page.waitForEvent('download',{timeout:60000}),f.page.getByTitle('Tải file Word (.docx) chuẩn công thức OMML').click()]); const file = await downloaded.path(); assert.ok(file); const bytes=fs.readFileSync(file); assert.equal(bytes.subarray(0,2).toString(),'PK'); assert.ok(bytes.length>2000);
   const zip = await JSZip.loadAsync(bytes); const xml = await zip.file('word/document.xml')!.async('string');
   for (let i=1;i<=7;i++) assert.ok(xml.includes('PILOT Q'+i), 'Word missing question '+i);
   assert.ok(Object.keys(zip.files).some(n=>n.startsWith('word/media/')), 'Word missing image');
   await f.page.evaluate(()=>{(window as unknown as {pilotPrinted:number}).pilotPrinted=0;window.print=()=>{(window as unknown as {pilotPrinted:number}).pilotPrinted++;};});
-  await f.page.getByTitle('In đề thi hoặc xuất ra PDF').click(); assert.equal(await f.page.evaluate(()=>(window as unknown as {pilotPrinted:number}).pilotPrinted),1);
-  await f.page.getByTitle('Trộn đề thành 4 mã đề kèm ma trận đáp án').click(); await f.page.getByRole('heading',{name:/Trộn Đề Thi/}).waitFor(); assert.ok((await f.page.locator('body').innerText()).includes('101'));
+  await openTool(f.page,'Xuất'); await f.page.getByTitle('In đề thi hoặc xuất ra PDF').click(); assert.equal(await f.page.evaluate(()=>(window as unknown as {pilotPrinted:number}).pilotPrinted),1);
+  await openTool(f.page,'Đề thi'); await f.page.getByTitle('Trộn đề thành 4 mã đề kèm ma trận đáp án').click(); await f.page.getByRole('heading',{name:/Trộn Đề Thi/}).waitFor(); assert.ok((await f.page.locator('body').innerText()).includes('101'));
   const buttons=f.page.getByTitle('Tải file Word của mã này'); assert.equal(await buttons.count(),4);
   for(let i=0;i<4;i++){ console.log('F3 variant '+i+' download requested'); const [d]=await Promise.all([f.page.waitForEvent('download',{timeout:20000}),buttons.nth(i).click()]); console.log('F3 variant '+i+' downloaded'); const filepath=await d.path(); assert.ok(filepath);const z=await JSZip.loadAsync(fs.readFileSync(filepath));const x=await z.file('word/document.xml')!.async('string'); for(let q=1;q<=7;q++)assert.ok(x.includes('PILOT Q'+q));assert.ok(Object.keys(z.files).some(n=>n.startsWith('word/media/'))); }
   await click(f.page,'Đóng cửa sổ');
@@ -685,9 +687,9 @@ test('F19 library search, starred, recent, trash, restore and safe controls', { 
   await search.fill('KHO_C'); await waitTitles([titles[2]]); await search.fill(''); await waitTitles(titles); checked.push('search');
   await card(titles[0]).getByTitle('Gắn sao đề quan trọng', { exact: true }).click();
   await waitUntil(async () => (await f.db.exam.findUniqueOrThrow({ where: { id: ids[0] } })).isStarred, 'Star must persist');
-  await click(f.page, 'Đề quan trọng (Gắn sao)'); await waitTitles([titles[0]]); checked.push('starred');
-  await click(f.page, 'Đã sửa gần đây'); await waitTitles(titles); checked.push('recent');
-  await f.page.getByRole('navigation', { name: 'Không gian giáo viên' }).getByRole('link', { name: 'Kho đề', exact: true }).click(); await waitTitles(titles);
+  await menuLink(f.page, 'Đề quan trọng (Gắn sao)'); await waitTitles([titles[0]]); checked.push('starred');
+  await menuLink(f.page, 'Đã sửa gần đây'); await waitTitles(titles); checked.push('recent');
+  await menuLink(f.page, 'Tất cả đề thi'); await waitTitles(titles);
   await card(titles[1]).getByTitle('Chuyển vào thùng rác', { exact: true }).click();
   await f.page.getByRole('dialog', { name: 'Xác nhận thao tác', exact: true }).getByRole('button', { name: 'Xác nhận', exact: true }).click();
   await waitUntil(async () => Boolean((await f.db.exam.findUniqueOrThrow({ where: { id: ids[1] } })).deletedAt), 'Trash must persist');
@@ -695,10 +697,10 @@ test('F19 library search, starred, recent, trash, restore and safe controls', { 
   await f.page.getByRole('navigation', { name: 'Không gian giáo viên' }).getByRole('link', { name: 'Thùng rác', exact: true }).click(); await waitTitles([titles[1]]);
   await card(titles[1]).getByTitle('Khôi phục đề', { exact: true }).click(); await waitTitles([]);
   assert.equal((await f.db.exam.findUniqueOrThrow({ where: { id: ids[1] } })).deletedAt, null);
-  await f.page.getByRole('navigation', { name: 'Không gian giáo viên' }).getByRole('link', { name: 'Kho đề', exact: true }).click(); await waitTitles(titles); checked.push('trash-and-restore');
+  await menuLink(f.page, 'Tất cả đề thi'); await waitTitles(titles); checked.push('trash-and-restore');
   await card(titles[1]).click(); await f.page.getByTitle('Lưu các thay đổi lên máy chủ').first().waitFor();
   await f.page.getByText(titles[1] + '_CONTENT').filter({ visible: true }).first().waitFor(); assert.ok((await f.page.locator('body').innerText()).includes(titles[1] + '_CONTENT'));
-  await f.page.getByRole('link', { name: 'Về kho đề', exact: true }).click(); await waitTitles(titles); checked.push('open-and-return');
+  await menuLink(f.page, 'Tất cả đề thi'); await waitTitles(titles); checked.push('open-and-return');
   await f.page.getByTitle('Chế độ xem danh sách', { exact: true }).click(); await f.page.getByRole('table').waitFor();
   await f.page.getByTitle('Chế độ xem thẻ', { exact: true }).click(); await waitTitles(titles); checked.push('grid-and-list');
   const dark = await f.page.locator('html').evaluate(el => el.classList.contains('dark'));
@@ -731,12 +733,11 @@ test('F19 library search, starred, recent, trash, restore and safe controls', { 
     console.log('F19 closed ' + label);
   };
   await openClose(f.page.getByTitle('Quản lý Google Gemini API Key', { exact: true }), 'key-management');
-  await openClose(f.page.getByTitle('Kho Khóa AI', { exact: true }), 'key-management-rail');
   await openClose(f.page.getByTitle('Bộ não AI Sư Phạm: Xem và dạy các phong cách ra đề cho AI', { exact: true }), 'memory');
-  await f.page.getByTitle('Ngân hàng câu hỏi', { exact: true }).click();
+  await menuLink(f.page, 'Ngân hàng câu hỏi');
   await f.page.getByRole('heading', { name: 'Ngân hàng câu hỏi', exact: true }).waitFor();
   assert.equal(await f.page.getByRole('button', { name: /Thêm vào đề|Mở đề để chèn/ }).count(), 0);
-  await f.page.getByRole('navigation', { name: 'Không gian giáo viên' }).getByRole('link', { name: 'Kho đề', exact: true }).click();
+  await menuLink(f.page, 'Tất cả đề thi');
   checked.push('bank-management-page-without-editor-actions');
   await openClose(f.page.getByText('AI Sinh đề theo Ma trận', { exact: true }), 'generate-open-only');
   await openClose(f.page.getByText('Nhập từ Word / Ảnh OCR', { exact: true }), 'import-open-only');
@@ -748,7 +749,7 @@ test('F19 library search, starred, recent, trash, restore and safe controls', { 
   await f.page.locator('div.fixed.inset-y-0').locator('button:has(svg.lucide-x)').click(); checked.push('secretary-rail-open-close-only-no-ai-call');
   await f.page.getByRole('link', { name: 'Soạn đề thi mới', exact: true }).filter({ visible: true }).click();
   await f.page.getByTitle('Lưu các thay đổi lên máy chủ').first().waitFor();
-  await f.page.getByRole('link', { name: 'Về kho đề', exact: true }).click();
+  await menuLink(f.page, 'Tất cả đề thi');
   for (const id of ids) assert.equal((await f.db.exam.findUniqueOrThrow({ where: { id } })).deletedAt, null);
   checked.push('new-exam-and-return-keeps-originals');
   fs.writeFileSync(reportDir + '/library-ui-' + run + '.json', JSON.stringify({ run, buildId, checkedAt: new Date().toISOString(), inventory, checked, limitation: 'Inventory includes safe controls covered by other pilot flows; this flow does not send AI prompts, submit keys, delete folders or log out.' }, null, 2));
@@ -919,7 +920,7 @@ test('F24 comment resolution respects roles and private notes download as readab
 
   await panel.getByRole('button', { name: 'Đóng', exact: true }).click();
   const secret = 'pilot-f24-canary-key-0123456789'; await f.api('/api/user/keys', 'POST', { apiKey: secret, label: 'F24 fixture only' });
-  await f.page.getByTitle('Xem và chọn ghi chú, cách trình bày riêng cho trợ lý').click(); await click(f.page, 'Dạy AI quy tắc mới');
+  await f.page.getByTitle('Bộ não AI Sư Phạm: Xem và dạy các phong cách ra đề cho AI').click(); await click(f.page, 'Dạy AI quy tắc mới');
   await f.page.getByPlaceholder('Ví dụ: Không cho thử ngược nghiệm Casio').fill('F24 PRIVATE MANUAL NOTE');
   await f.page.getByPlaceholder(/^Ví dụ: Khi ra câu hỏi phương trình/).fill('F24 chỉ là ghi chú thử do giáo viên nhập.'); await click(f.page, 'Lưu ghi chú');
   await waitUntil(async () => await f.db.teacherAiMemory.count({ where: { userId: f.ids[0], title: 'F24 PRIVATE MANUAL NOTE' } }) === 1, 'Manual note must persist before export');

@@ -90,7 +90,7 @@ test('teacher management: trash, bank, class context, routes and mobile', { time
       await waitAbsent(card('Xóa vĩnh viễn thử'));
       assert.equal(await db.exam.findUnique({ where: { id: purgeId } }), null, 'the exam is gone for good');
       await api('/api/assignments', 'POST', { examId: assignedId, title: 'Bài giao kiểm', identityMode: 'FREE_NAME' });
-      await nav().getByRole('link', { name: 'Kho đề', exact: true }).click();
+      await nav().getByRole('link', { name: 'Tất cả đề thi', exact: true }).filter({ visible: true }).click();
       await card('Đề đã giao không xóa hẳn').getByTitle('Chuyển vào thùng rác', { exact: true }).click(); await confirm(true);
       await nav().getByRole('link', { name: 'Thùng rác', exact: true }).click();
       await card('Đề đã giao không xóa hẳn').getByRole('button', { name: 'Xóa vĩnh viễn', exact: true }).click(); await confirm(true);
