@@ -1,17 +1,19 @@
 # CODEX status
 
-task_id: OWNER-TEACHER-UI-FIX-20261027
+task_id: OWNER-LIBRARY-MERGE-20261028
 state: WAITING_REVIEW
-updated: 27/10/2026, Asia/Bangkok
+updated: 28/10/2026, Asia/Bangkok
 branch/worktree: rebuild/2026-10-local, F:/Workspace/Zazz/ExamCraft
-commit mã + test gần nhất: 1341eeb, sau 52b0af0 (nền 9283de2)
+commit mã + kiểm: 2681af8
 
-Chủ dự án đã duyệt sửa theo qa/rebuild-2026-10-27/teacher-ui-audit/PHAN_TICH.md. Đã sửa thùng rác, ngân hàng trang riêng/bộ chọn, chuẩn hóa và phân trang câu, khung teacher, ngữ cảnh lớp/bài giao, bộ lọc URL và giao diện điện thoại. Đã kiểm build/kiểu/lint, an toàn, browser/điện thoại mô phỏng/sáng-tối, quyền/đổi tài khoản, dữ liệu phản hồi muộn và các hồi quy liên quan. Bằng chứng/số liệu/giới hạn: qa/rebuild-2026-10-27/teacher-ui-fix/BAO_CAO.md. Chỉ DB thử đã xác nhận đích, không DB chính/provider thật/migration. Chưa tự đóng CV; chờ chủ dự án xem và Claude duyệt. Chi tiết đợt font trước giữ dưới đây.
+Yêu cầu chủ dự án đã thực hiện: gộp thư mục và đề thành Kho đề chính, đưa Gần đây/Gắn sao vào trong trang, menu nhóm hiển thị thẳng. Giữ khung Workspace và thay đổi mới của chủ dự án; thùng rác/ngân hàng/lớp/bài giao còn đầy đủ.
 
-QUYẾT ĐỊNH MỚI của chủ dự án: bỏ giới hạn AI theo ngày của ExamCraft, dùng theo nhà cung cấp. Đã bỏ chặn runtime và cấu hình/giao diện cap; chỉ giữ thống kê. Không khôi phục quota nội bộ từ hồ sơ/test cũ. aiDailyLimit trong DB/API đọc cũ giữ nguyên để bảo toàn, không dùng cấp/chặn quyền AI, không migration/ghi lại dữ liệu hàng loạt.
+Đã xong: xem thư mục/đề cùng màn và phân trang, đường dẫn cũ chuyển đúng vị trí, quyền đề được mời, ngữ cảnh tạo thủ công/AI giả/nhập theo thư mục; giữ nháp cũ, cứu nháp nếu thư mục đã xóa, chống khởi tạo đề trống sau đổi URL lưu. Không đổi schema/migration.
 
-Đã đồng bộ font tiếng Việt giao diện và tài liệu; bỏ fallback Georgia/Cambria gây trộn dấu. Font lưu tại dự án, đề ưu tiên Times tương thích Word và Noto Serif dự phòng. Giữ font toán. Zoom A4 là tỷ lệ thật, có Vừa khung/100% và điều khiển điện thoại; vùng đọc không mất khi nằm ngang. Đã kiểm font thực NFC/NFD/sáng/tối, điện thoại mô phỏng, Word/in, đề dài, admin và hồi quy liên quan. Số liệu/log/ảnh/giới hạn: qa/rebuild-2026-10-27/typography/BAO_CAO.md. Lượt trước giữ nguyên: phân trang tài khoản, trạng thái hoạt động xanh, bỏ cap AI nội bộ.
+Đã kiểm: build production/TypeScript, lint tệp liên quan, SAFE, trình duyệt kho hợp nhất và hồi quy teacher/F19, điện thoại mô phỏng dọc/ngang và sáng/tối. Số liệu, ảnh, bằng chứng dọn fixture và giới hạn chỉ tại qa/rebuild-2026-10-28/library-merge/BAO_CAO.md. Không suy đóng CV từ số kiểm. Chưa kiểm cảm ứng trên thiết bị thật hoặc chất lượng provider thật.
 
-Không DB chính/provider thật/khóa mã hóa cũ/.env/backup. Fixture riêng đã dọn theo ID; giữ dữ liệu và tài khoản có sẵn. Server3117 giữ bản Y9AvBfJPLDZK2xdngW8ix, AI thật tắt, LOCK_3117=USER; không build đè .next khi đang xem. Có thể cần mở lại server nếu tiến trình dừng giữa lượt chat.
+Server thử localhost3117 giữ build w0G2dmRUKY14u_VMa2WWW, isolatedTest, AI thật tắt; LOCK_3117=USER. Chỉ DB examcraft_test_20261022 đã kiểm đích và dữ liệu giả theo ID riêng; không ghi DB chính/key/.env/backup. Server có thể cần mở lại nếu tiến trình dừng giữa lượt chat; không build đè lúc người dùng xem.
 
-Giữ QA25/scratch/tmp có sẵn ngoài commit. Không sửa hồ sơ02/checklist/ASSIGNMENTS/BATCH_REVIEWS, không tự đóng CV, không push/reset/clean. Bước tiếp theo: chủ dự án xem sản phẩm; không tự mở tính năng hoặc phục hồi cap cũ.
+Bước kế: chủ dự án xem sản phẩm; Claude duyệt nhóm thay đổi/báo cáo. Không tự mở thêm tính năng, đóng CV hoặc sửa hồ sơ02/checklist/ASSIGNMENTS/BATCH_REVIEWS. Hồ sơ phân tích trước giữ tại qa/rebuild-2026-10-28/library-direction/PHAN_TICH_GOP_KHO_VA_THU_MUC.md.
+
+Tệp giữ ngoài commit: các sửa/ảnh/kết quả QA25 có sẵn, scratch/, tmp/. Không push/reset/clean. Bằng chứng đợt UI/font/AI-cap cũ: qa/rebuild-2026-10-27/teacher-ui-fix/BAO_CAO.md và các nhóm trước trong Git; không coi là nghiệm thu lại ở bản này.

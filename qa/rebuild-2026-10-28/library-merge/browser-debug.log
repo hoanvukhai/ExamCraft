@@ -1,0 +1,90 @@
+
+> exam-craft@0.1.0 test:library
+> node --import tsx scripts/pilot-run.cjs --library
+
+Pilot guard: installed browser; isolatedTest confirmed; exact test database selected.
+TAP version 13
+# Subtest: merged library: folders, scoped views, creation location, permissions and phone
+    # Subtest: one flat menu, folder cards plus root files, no lost invited exams
+    ok 1 - one flat menu, folder cards plus root files, no lost invited exams
+      ---
+      duration_ms: 752.8085
+      type: 'test'
+      ...
+    # Subtest: folders and old links share the same paged screen; star/recent remain scoped
+    ok 2 - folders and old links share the same paged screen; star/recent remain scoped
+      ---
+      duration_ms: 3126.2045
+      type: 'test'
+      ...
+    # Subtest: new manual, AI-proposed and imported files keep creation location; owner checks remain
+    ok 3 - new manual, AI-proposed and imported files keep creation location; owner checks remain
+      ---
+      duration_ms: 4120.7774
+      type: 'test'
+      ...
+# Deleted-folder draft probe {
+#   url: 'http://127.0.0.1:3117/editor/new?folder=cmvqz6ckc003vtbggyfvjqyh3',
+#   drafts: [
+#     {
+#       title: 'ĐỀ KIỂM TRA MỚI',
+#       creationFolderId: null,
+#       writerId: '9080f42a-e477-4591-8b7d-9206be8dfbda',
+#       unsaved: true
+#     }
+#   ]
+# }
+    # Subtest: deleted creation folder keeps draft and offers an explicit root save
+    not ok 4 - deleted creation folder keeps draft and offers an explicit root save
+      ---
+      duration_ms: 549.3092
+      type: 'test'
+      location: 'F:\\Workspace\\Zazz\\ExamCraft\\tests_pilot\\library.test.ts:2:12988'
+      failureType: 'testCodeFailure'
+      error: |-
+        new draft must retain the deleted destination
+        + actual - expected
+        
+        + null
+        - 'cmvqz6ckc003vtbggyfvjqyh3'
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 'cmvqz6ckc003vtbggyfvjqyh3'
+      actual: ~
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (F:\Workspace\Zazz\ExamCraft\tests_pilot\library.test.ts:133:14)
+        runNextTicks (node:internal/process/task_queues:65:5)
+        process.processImmediate (node:internal/timers:453:9)
+        process.callbackTrampoline (node:internal/async_hooks:130:17)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (F:\Workspace\Zazz\ExamCraft\tests_pilot\library.test.ts:124:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: desktop, phone portrait/landscape, themes, flat menu and folder CRUD errors
+    ok 5 - desktop, phone portrait/landscape, themes, flat menu and folder CRUD errors
+      ---
+      duration_ms: 6082.2288
+      type: 'test'
+      ...
+    1..5
+not ok 1 - merged library: folders, scoped views, creation location, permissions and phone
+  ---
+  duration_ms: 16599.003
+  type: 'test'
+  location: 'F:\\Workspace\\Zazz\\ExamCraft\\tests_pilot\\library.test.ts:2:1467'
+  failureType: 'subtestsFailed'
+  error: '1 subtest failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 6
+# suites 0
+# pass 4
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 17311.968
