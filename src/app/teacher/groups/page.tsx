@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { accountFetch } from '@/lib/account-fetch';
 import { pinsToCsv } from '@/lib/pin-csv';
@@ -10,11 +10,8 @@ import {
   Copy,
   CheckCircle2,
   ExternalLink,
-  BookOpen,
-  Trash2,
   X,
   GraduationCap,
-  Sparkles,
   ArrowLeft,
   Search,
 } from 'lucide-react';
@@ -57,6 +54,8 @@ export default function TeacherGroupsPage() {
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
   const [groupStudents, setGroupStudents] = useState<Student[]>([]);
   const [loadingStudents, setLoadingStudents] = useState(false);
+  const [detailError, setDetailError] = useState('');
+  const detailSequence = useRef(0), detailGroup = useRef<string | null>(null);
   const [newStudentName, setNewStudentName] = useState('');
   const [issuedPins, setIssuedPins] = useState<{ id: string; displayName: string; pin: string }[] | null>(null);
   const [pinBusy, setPinBusy] = useState(false);
@@ -74,6 +73,7 @@ export default function TeacherGroupsPage() {
       } else setAccountMessage(data.error || 'Chưa tải được lớp học.');
     } catch (err) {
       console.error('Lỗi tải danh sách lớp:', err);
+      setAccountMessage('Chưa kết nối được để tải lớp học. Hãy thử lại.');
     } finally {
       setLoading(false);
     }
@@ -91,6 +91,8 @@ export default function TeacherGroupsPage() {
       } catch { if (!cancelled) { setAccountMessage('Chưa kiểm tra được tài khoản. Hãy tải lại hoặc đăng nhập lại trước khi quản lý lớp.'); setLoading(false); } }
     })();
     return () => { cancelled = true; };
+    // Pin this mounted page to the initial account; do not repin after a session switch.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleCreateGroup = async (e: React.FormEvent) => {
@@ -134,18 +136,23 @@ export default function TeacherGroupsPage() {
   };
 
   const handleOpenGroupDetails = async (group: Group) => {
+    const request = ++detailSequence.current;
+    if (detailGroup.current !== group.id) setIssuedPins(null);
+    detailGroup.current = group.id;
     setSelectedGroup(group);
+    setGroupStudents([]); setDetailError('');
     try {
       setLoadingStudents(true);
       const res = await scopedFetch(`/api/groups/${group.id}`);
       const data = await res.json();
+      if (request !== detailSequence.current || detailGroup.current !== group.id) return;
       if (res.ok) {
         setGroupStudents(data.group?.students || []);
-      }
-    } catch (err) {
-      console.error(err);
+      } else setDetailError(data.error || 'Chưa tải được học sinh của lớp này.');
+    } catch {
+      if (request === detailSequence.current) setDetailError('Chưa kết nối được để tải học sinh.');
     } finally {
-      setLoadingStudents(false);
+      if (request === detailSequence.current) setLoadingStudents(false);
     }
   };
 
@@ -161,12 +168,10 @@ export default function TeacherGroupsPage() {
       });
       if (res.ok) {
         setNewStudentName('');
-        handleOpenGroupDetails(selectedGroup);
+        if (detailGroup.current === selectedGroup.id) void handleOpenGroupDetails(selectedGroup);
         fetchGroups();
       } else { const data = await res.json(); setAccountMessage(data.error || 'Chưa thêm được học sinh.'); }
-    } catch (err) {
-      console.error(err);
-    }
+    } catch { setAccountMessage('Chưa thêm được học sinh. Hãy kiểm tra kết nối và thử lại.'); }
   };
 
   const issuePins = async (studentIds?: string[]) => {
@@ -178,6 +183,7 @@ export default function TeacherGroupsPage() {
       const res = await scopedFetch(`/api/groups/${selectedGroup.id}/pins`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(studentIds ? { studentIds } : {}) });
       const data = await res.json();
       if (!res.ok) { setAccountMessage(data.error || 'Chưa cấp được PIN.'); return; }
+      if (detailGroup.current !== selectedGroup.id) return;
       setIssuedPins(previous => { const merged = new Map((previous ?? []).map(item => [item.id, item])); for (const item of data.pins) merged.set(item.id, item); return [...merged.values()].sort((a, b) => a.displayName.localeCompare(b.displayName, 'vi')); });
       await handleOpenGroupDetails(selectedGroup);
     } catch { setAccountMessage('Không thể kết nối đến máy chủ'); } finally { setPinBusy(false); }
@@ -205,6 +211,7 @@ export default function TeacherGroupsPage() {
     <div className="app-page min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] text-[#202124] dark:text-[#e3e3e3] py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto space-y-6">
         {accountMessage && <p role="alert" className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200">{accountMessage}</p>}
+        {accountMessage && <button type="button" className="app-button-secondary min-h-10 px-3" onClick={() => { setAccountMessage(''); void fetchGroups(); }}>Tải lại lớp học</button>}
         {/* Navigation & Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#dadce0] dark:border-[#3c4043]">
           <div>
@@ -213,7 +220,7 @@ export default function TeacherGroupsPage() {
                 href="/"
                 className="text-xs text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] flex items-center gap-1 transition-colors"
               >
-                <ArrowLeft className="w-3.5 h-3.5" /> Soạn đề thi
+                <ArrowLeft className="w-3.5 h-3.5" /> Kho đề
               </Link>
               <span className="text-[#dadce0] dark:text-[#3c4043]">/</span>
               <span className="text-xs text-[#3c4043] dark:text-[#e3e3e3] font-semibold">Quản lý lớp học</span>
@@ -258,10 +265,10 @@ export default function TeacherGroupsPage() {
             <div className="w-8 h-8 border-4 border-[#3c4043] dark:border-[#e3e3e3] border-t-transparent rounded-full animate-spin mb-3" />
             <p className="text-xs">Đang tải danh sách lớp học...</p>
           </div>
-        ) : filteredGroups.length === 0 ? (
+        ) : accountMessage ? null : filteredGroups.length === 0 ? (
           <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-12 text-center">
             <Users className="w-12 h-12 text-[#5f6368] dark:text-[#9aa0a6] mx-auto mb-3" />
-            <h3 className="text-base font-bold text-[#202124] dark:text-[#e3e3e3]">Chưa có lớp học nào</h3>
+            <h3 className="text-base font-bold text-[#202124] dark:text-[#e3e3e3]">{searchTerm ? 'Không có lớp phù hợp tìm kiếm' : 'Chưa có lớp học nào'}</h3>
             <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] mt-1 mb-5 max-w-md mx-auto">
               Hãy tạo lớp học mới, dán danh sách tên học sinh để dễ dàng giao bài và theo dõi bảng điểm.
             </p>
@@ -440,7 +447,7 @@ export default function TeacherGroupsPage() {
                   </p>
                 </div>
                 <button aria-label="Đóng hộp thoại"
-                  onClick={() => { setSelectedGroup(null); setIssuedPins(null); }}
+                  onClick={() => { detailSequence.current++; detailGroup.current = null; setSelectedGroup(null); setIssuedPins(null); }}
                   className="p-1.5 rounded-lg text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
                 >
                   <X className="w-5 h-5" />
@@ -482,7 +489,7 @@ export default function TeacherGroupsPage() {
 
               {/* Danh sách học sinh */}
               <div className="max-h-72 overflow-y-auto space-y-2 pr-1">
-                {loadingStudents ? (
+                {detailError ? <div role="alert" className="p-3 border rounded-lg"><p>{detailError}</p><button type="button" className="underline min-h-10" onClick={() => void handleOpenGroupDetails(selectedGroup)}>Thử lại</button></div> : loadingStudents ? (
                   <div className="py-8 text-center text-xs text-[#5f6368] dark:text-[#9aa0a6]">Đang tải học sinh...</div>
                 ) : groupStudents.length === 0 ? (
                   <div className="py-8 text-center text-xs text-[#5f6368] dark:text-[#9aa0a6]">Lớp chưa có học sinh nào.</div>
@@ -509,7 +516,7 @@ export default function TeacherGroupsPage() {
 
               <div className="app-dialog-footer mt-5 pt-3 border-t border-[#dadce0] dark:border-[#3c4043] flex justify-end">
                 <button
-                  onClick={() => { setSelectedGroup(null); setIssuedPins(null); }}
+                  onClick={() => { detailSequence.current++; detailGroup.current = null; setSelectedGroup(null); setIssuedPins(null); }}
                   className="px-5 py-2 bg-[#f1f3f4] hover:bg-[#e8eaed] dark:bg-[#292a2d] dark:hover:bg-[#303134] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043] text-xs font-semibold rounded-lg cursor-pointer"
                 >
                   Đóng

@@ -20,6 +20,7 @@
     "test:pilot": "node --import tsx scripts/pilot-run.cjs",
     "test:admin": "node --import tsx scripts/pilot-run.cjs --admin",
     "test:typography": "node --import tsx scripts/pilot-run.cjs --typography",
+    "test:teacher": "node --import tsx scripts/pilot-run.cjs --teacher",
     "ci": "node scripts/ci.cjs"
   },
   "dependencies": {

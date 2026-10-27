@@ -193,6 +193,17 @@ body {
 .app-page :where(h1, h2, h3):not(.a4-paper *) { overflow-wrap: anywhere; }
 .app-page h1:not(.a4-paper *) { line-height: 1.35; }
 .app-page h1 > svg { flex-shrink: 0; }
+.teacher-field {
+  min-height: 40px;
+  min-width: 0;
+  max-width: 100%;
+  border: 1px solid var(--ui-border);
+  border-radius: 10px;
+  background: var(--ui-surface);
+  color: var(--foreground);
+  padding: 0.5rem 0.75rem;
+  font-size: 14px;
+}
 .app-page :where(input:not([type]), input[type="text"], input[type="email"], input[type="password"], input[type="number"], select, textarea) {
   min-width: 0;
   max-width: 100%;
@@ -213,6 +224,15 @@ body {
 .dark .app-status-active { background: #0f291e; color: #81c995; border-color: #1e4a34; }
 
 @media (max-width: 639px) {
+  .app-exam-table, .app-exam-table tbody { display: block; width: 100%; }
+  .app-exam-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .app-exam-table tr { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); padding: 1rem; gap: 0.75rem; }
+  .app-exam-table td { display: block; min-width: 0; padding: 0; text-align: left; overflow-wrap: anywhere; }
+  .app-exam-table td:nth-child(2), .app-exam-table td:last-child { grid-column: 1 / -1; }
+  .app-exam-table td:last-child > div { flex-wrap: wrap; justify-content: flex-start; }
+  .app-exam-table td:nth-child(3)::before { content: 'Môn: '; }
+  .app-exam-table td:first-child:empty { display: none; }
+  .app-exam-table td[data-label]::before { content: attr(data-label) ': '; }
   /* Keep account actions next to their owner rather than offscreen in a wide table. */
   .app-user-table, .app-user-table tbody { display: block; width: 100%; }
   .app-user-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }

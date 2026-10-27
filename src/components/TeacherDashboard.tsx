@@ -1,20 +1,22 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { TeacherNavigation } from './TeacherNavigation';
+import { useConfirmAction } from './ConfirmAction';
+import { subjectLabel, teacherErrorMessage } from '@/lib/teacher-ui';
 import Link from 'next/link';
 import {
   Sparkles,
   Plus,
   Folder,
   FolderPlus,
-  FolderOpen,
   FileText,
   Search,
   Star,
   Clock,
   Trash2,
-  MoreVertical,
+  RotateCcw,
   Download,
   Edit3,
   Copy,
@@ -27,21 +29,17 @@ import {
   Users,
   Database,
   Upload,
-  ArrowRight,
   Sun,
   Moon,
   Key,
   ShieldCheck,
   Check,
   X,
-  AlertCircle,
-  HelpCircle,
   Brain
 } from 'lucide-react';
 import { useTheme } from '@/components/ThemeProvider';
 import { GenerateModal } from '@/components/GenerateModal';
 import { ImportModal } from '@/components/ImportModal';
-import { QuestionBankModal } from '@/components/QuestionBankModal';
 import { ApiKeyModal } from '@/components/ApiKeyModal';
 import { AiLearningModal } from '@/components/AiLearningModal';
 import { TeacherAiSecretaryDrawer } from '@/components/TeacherAiSecretaryDrawer';
@@ -76,6 +74,7 @@ interface ExamSummary {
   folder?: { id: string; name: string; color?: string } | null;
   updatedAt: string;
   createdAt: string;
+  deletedAt?: string | null;
   _count?: {
     items: number;
     assignments: number;
@@ -99,25 +98,41 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
   const [folders, setFolders] = useState<FolderData[]>([]);
   const [exams, setExams] = useState<ExamSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [page, setPageValue] = useState(1);
-  const setPage = (value: React.SetStateAction<number>) => { setIsLoading(true); setPageValue(value); };
+  const location = useSearchParams();
+  const page = Math.max(1, Number(location.get('page')) || 1);
+  const changeLocation = (key: string, value: string | null) => {
+    const params = new URLSearchParams(window.location.search);
+    if ((params.get(key) || null) === (value || null)) return;
+    setIsLoading(true); setLoadError('');
+    if (value) params.set(key, value); else params.delete(key);
+    if (key === 'view') params.delete('folder');
+    if (key === 'folder' && value) params.delete('view');
+    if (key !== 'page') params.delete('page');
+    const url = '/?' + params.toString();
+    if (key === 'search') window.history.replaceState(null, '', url); else window.history.pushState(null, '', url);
+  };
+  const setPage = (value: React.SetStateAction<number>) => changeLocation('page', String(typeof value === 'function' ? value(page) : value));
   const [totalPages, setTotalPages] = useState(1);
   const [totalExams, setTotalExams] = useState(0);
   const loadSequence = useRef(0);
 
   // Bộ lọc & Điều hướng
-  const [currentView, setCurrentView] = useState<'all' | 'starred' | 'recent' | 'trash'>('all');
-  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedSubject, setSelectedSubject] = useState<string>('all');
-  const [selectedGrade, setSelectedGrade] = useState<string>('all');
+  const currentView = ['starred', 'recent', 'trash'].includes(location.get('view') || '') ? location.get('view') as 'starred' | 'recent' | 'trash' : 'all';
+  const setCurrentView = (value: string) => changeLocation('view', value === 'all' ? null : value);
+  const selectedFolderId = location.get('folder');
+  const setSelectedFolderId = (value: string | null) => changeLocation('folder', value);
+  const searchQuery = location.get('search') || '';
+  const setSearchQuery = (value: string) => changeLocation('search', value);
+  const selectedSubject = location.get('subject') || 'all';
+  const setSelectedSubject = (value: string) => changeLocation('subject', value === 'all' ? null : value);
+  const selectedGrade = location.get('grade') || 'all';
+  const setSelectedGrade = (value: string) => changeLocation('grade', value === 'all' ? null : value);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({});
 
   // Modals & Popups
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
-  const [isQuestionBankOpen, setIsQuestionBankOpen] = useState(false);
   const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
   const [isAiSecretaryModalOpen, setIsAiSecretaryModalOpen] = useState(false);
   const [isAiLearningModalOpen, setIsAiLearningModalOpen] = useState(false);
@@ -132,6 +147,11 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
   const [activeExam, setActiveExam] = useState<ExamSummary | null>(null);
   const [newExamTitle, setNewExamTitle] = useState('');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState('');
+  const [actionError, setActionError] = useState('');
+  const [pendingExam, setPendingExam] = useState('');
+  const mutation = useRef(false);
+  const { confirmAction, confirmation } = useConfirmAction();
 
   // Key stats
   const [hasActiveKey, setHasActiveKey] = useState(false);
@@ -143,19 +163,20 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
   };
 
   // Nạp trạng thái Khóa AI
-  const loadKeyStatus = () => accountFetch(currentUser.id, '/api/user/keys').then(async res => {
+  const loadKeyStatus = useCallback(() => accountFetch(currentUser.id, '/api/user/keys').then(async res => {
     if (res.ok) {
       const data = await res.json(); const activeKeys = (data.keys || []).filter((key: { isActive: boolean }) => key.isActive);
       setHasActiveKey(activeKeys.length > 0); setKeyCount(activeKeys.length);
     }
-  }).catch(() => { /* Keep the last acknowledged state if offline. */ });
-  const loadFolders = () => accountFetch(currentUser.id, '/api/folders').then(async res => {
+  }).catch(() => { /* Keep the last acknowledged state if offline. */ }), [currentUser.id]);
+  const loadFolders = useCallback(() => accountFetch(currentUser.id, '/api/folders').then(async res => {
     if (res.ok) { const data = await res.json(); setFolders(data.folders || []); }
-  }).catch(error => { console.error('Lỗi nạp thư mục:', error); });
+  }).catch(error => { console.error('Lỗi nạp thư mục:', error); }), [currentUser.id]);
 
   // Nạp danh sách Đề thi theo bộ lọc
-  const readExams = () => {
+  const readExams = useCallback(() => {
     const sequence = ++loadSequence.current;
+    setIsLoading(true); setLoadError(''); setExams([]);
       const params = new URLSearchParams();
       params.set('page', String(page)); params.set('limit', '20');
       if (searchQuery) params.append('search', searchQuery);
@@ -168,6 +189,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
         if (currentView === 'starred') {
           params.append('isStarred', 'true');
         }
+        if (currentView === 'recent') params.set('recent', 'true');
         if (selectedFolderId) {
           params.append('folderId', selectedFolderId);
         }
@@ -180,29 +202,27 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
         setExams(data.exams || []);
         setTotalPages(Math.max(1, data.pagination?.totalPages ?? 1));
         setTotalExams(data.pagination?.totalCount ?? 0);
-        if (page > Math.max(1, data.pagination?.totalPages ?? 1)) setPage(Math.max(1, data.pagination?.totalPages ?? 1));
+        if (page > Math.max(1, data.pagination?.totalPages ?? 1)) { const params = new URLSearchParams(window.location.search); params.set('page', String(Math.max(1, data.pagination?.totalPages ?? 1))); window.history.replaceState(null, '', '/?' + params); }
       } else {
         const data = await res.json();
-        if (sequence === loadSequence.current) showToast(data.error || 'Chưa tải được kho đề.');
+        if (sequence === loadSequence.current) setLoadError(data.error || 'Chưa tải được kho đề.');
       }
-      }).catch(error => { console.error('Lỗi nạp danh sách đề thi:', error); }).finally(() => {
+      }).catch(() => { if (sequence === loadSequence.current) setLoadError('Chưa kết nối được để tải kho đề. Hãy thử lại.'); }).finally(() => {
         if (sequence === loadSequence.current) setIsLoading(false);
       });
-  };
+  }, [currentUser.id, currentView, selectedFolderId, selectedSubject, selectedGrade, searchQuery, page]);
   const loadExams = () => { setIsLoading(true); return readExams(); };
 
   useEffect(() => {
     loadKeyStatus();
     loadFolders();
-  }, []);
-
-  const filters = JSON.stringify([currentUser.id, currentView, selectedFolderId, selectedSubject, selectedGrade, searchQuery]);
-  const [previousFilters, setPreviousFilters] = useState(filters);
-  if (previousFilters !== filters) { setPreviousFilters(filters); setPage(1); }
+  }, [loadFolders, loadKeyStatus]);
 
   useEffect(() => {
+    // Prevent actions on rows belonging to the previous view while loading this one.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void readExams();
-  }, [currentView, selectedFolderId, selectedSubject, selectedGrade, searchQuery, page]);
+  }, [readExams]);
 
   // Tạo thư mục mới
   const handleCreateFolder = async (e: React.FormEvent) => {
@@ -319,26 +339,20 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
   // Xóa đề thi vào thùng rác
   const handleDeleteExam = async (examId: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    if (currentView === 'trash') {
-      const item = exams.find(exam => exam.id === examId);
-      const response = await accountFetch(currentUser.id, '/api/exams/' + examId, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ restore: true, baseVersion: item?.version }) });
-      const result = await response.json();
-      if (!response.ok) { showToast(result.error || 'Chưa khôi phục được đề'); return; }
-      showToast('Đã khôi phục đề'); await loadExams(); return;
-    }
-    if (!confirm('Chuyển đề này vào thùng rác? Bạn có thể khôi phục sau.')) return;
-
+    if (mutation.current) return;
+    const item = exams.find(exam => exam.id === examId);
+    if (!item || item.permissions?.canManage === false) return;
+    const restore = currentView === 'trash';
+    mutation.current = true; setPendingExam(examId); setActionError('');
     try {
-      const res = await accountFetch(currentUser.id, `/api/exams/${examId}`, { method: 'DELETE', headers: { 'If-Match': String(exams.find(item => item.id === examId)?.version ?? '') } });
-      if (!res.ok) { const result = await res.json(); showToast(result.error || 'Chưa chuyển được đề vào thùng rác'); await loadExams(); return; }
-      if (res.ok) {
-        showToast('Đã chuyển đề thi vào Thùng rác.');
-        loadExams();
-        loadFolders();
-      }
-    } catch {
-      alert('Lỗi khi xóa đề thi');
-    }
+      if (!restore && !await confirmAction(`Chuyển “${item.title}” vào thùng rác? Bạn có thể khôi phục sau.`)) return;
+      const res = await accountFetch(currentUser.id, `/api/exams/${examId}`, restore ? { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ restore: true, baseVersion: item.version }) } : { method: 'DELETE', headers: { 'If-Match': String(item.version) } });
+      const result = await res.json();
+      if (!res.ok) throw Error(result.error || 'Thao tác chưa được lưu.');
+      showToast(restore ? 'Đã khôi phục đề.' : 'Đã chuyển đề vào thùng rác.');
+      await loadExams(); await loadFolders();
+    } catch (cause) { setActionError(teacherErrorMessage(cause, 'Chưa kết nối được. Hãy thử lại thao tác.')); }
+    finally { mutation.current = false; setPendingExam(''); }
   };
 
   // Nhân bản đề thi (Clone)
@@ -435,7 +449,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Tìm kiếm theo tên đề, mã môn, năm học..."
+              placeholder="Tìm theo tên đề..."
               className="w-full pl-10 pr-9 py-2 bg-[#f1f3f4] dark:bg-[#292a2d] border border-transparent focus:border-[#3c4043] focus:bg-white dark:focus:bg-[#202124] rounded-full text-xs text-[#202124] dark:text-[#e3e3e3] outline-hidden transition-all shadow-2xs"
             />
             {searchQuery && (
@@ -510,6 +524,8 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
           </div>
         </div>
       </header>
+      <TeacherNavigation />
+      {confirmation}
 
       {/* ─────────────────────────────────────────────────────────────
           2. KHU VỰC CHÍNH (3 CỘT: MENU TRÁI + VÙNG GIỮA + AI CỘT PHẢI)
@@ -637,7 +653,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                             <span className="truncate">{folder.name}</span>
                           </div>
 
-                          <div className="flex items-center gap-1">
+                          <div className="flex flex-wrap items-center gap-1">
                             <span className="text-[10px] text-[#5f6368] dark:text-[#9aa0a6]">
                               {folder._count?.exams || 0}
                             </span>
@@ -693,7 +709,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                                     />
                                     <span className="truncate">{sub.name}</span>
                                   </div>
-                                  <div className="flex items-center gap-1">
+                                  <div className="flex flex-wrap items-center gap-1">
                                     <span className="text-[10px] text-[#5f6368] dark:text-[#9aa0a6]">
                                       {sub._count?.exams || 0}
                                     </span>
@@ -743,7 +759,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
               </Link>
 
               <button
-                onClick={() => setIsQuestionBankOpen(true)}
+                onClick={() => router.push('/teacher/questions')}
                 className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
               >
                 <Database className="w-4 h-4 text-[#5f6368] dark:text-[#9aa0a6]" />
@@ -782,17 +798,18 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
         </aside>
 
         {/* VÙNG GIỮA: NỘI DUNG CHÍNH (CANVAS QUẢN LÝ ĐỀ THI) */}
-        <main className="flex-1 overflow-y-auto px-4 sm:px-6 py-5 min-w-0">
-          <LocalDraftsPanel ownerId={currentUser.id} />
-          <nav aria-label="Điều hướng kho đề" className="lg:hidden my-3 flex flex-wrap items-center gap-2 text-xs">
+        <main className="app-page flex-1 overflow-y-auto px-4 sm:px-6 py-5 min-w-0">
+          {currentView !== 'trash' && <LocalDraftsPanel ownerId={currentUser.id} />}
+          {currentView !== 'trash' && <nav aria-label="Điều hướng kho đề" className="lg:hidden my-3 flex flex-wrap items-center gap-2 text-xs">
             {([{ value: 'all', name: 'Tất cả' }, { value: 'starred', name: 'Quan trọng' }, { value: 'recent', name: 'Gần đây' }, { value: 'trash', name: 'Thùng rác' }] as const).map(view => <button key={view.value} type="button" className={`border rounded-lg p-2 ${currentView === view.value ? 'app-button-tonal' : 'hover:bg-[var(--ui-surface-variant)]'}`} onClick={() => { setCurrentView(view.value); setSelectedFolderId(null); }}>{view.name}</button>)}
             <button type="button" className="border rounded-lg p-2" onClick={() => { setTargetParentFolderId(null); setIsCreateFolderModalOpen(true); }}>Tạo thư mục</button>
             <select aria-label="Chọn thư mục" className="border rounded-lg p-2 bg-transparent" value={selectedFolderId ?? ''} onChange={e => { setSelectedFolderId(e.target.value || null); setCurrentView('all'); }}><option value="">Mọi thư mục</option>{folders.flatMap(folder => [folder, ...(folder.children ?? [])]).map(folder => <option key={folder.id} value={folder.id}>{folder.name}</option>)}</select>
             <Link href="/teacher/groups" className="border rounded-lg p-2">Lớp học</Link><Link href="/teacher/assignments" className="border rounded-lg p-2">Bài đã giao</Link>
             <input aria-label="Tìm đề trong kho" placeholder="Tìm tên đề..." className="border rounded-lg p-2 bg-transparent flex-1 min-w-40" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
-          </nav>
+          </nav>}
+          {location.get('choose') === 'assign' && currentView !== 'trash' && <p role="status" className="border rounded-lg p-3 mb-4 text-sm">Chọn một đề để mở, rồi bấm “Chia sẻ &amp; Thi Online” để giao cho học sinh.</p>}
           {/* Top Quick Actions Banner: 3 thẻ tạo đề */}
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-3 mb-6">
+          {currentView !== 'trash' && <div className="grid grid-cols-1 xl:grid-cols-3 gap-3 mb-6">
             {/* Thẻ 1: Soạn đề trống */}
             <div
               onClick={() => handleOpenEditor()}
@@ -845,12 +862,15 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
             </div>
           </div>
 
+          }
+          {currentView === 'trash' && <section className="mb-5"><h1 className="text-2xl font-semibold">Thùng rác</h1><p className="text-sm text-[var(--ui-text-secondary)] mt-2">Đề đã chuyển vào thùng rác. Khôi phục để tiếp tục mở và chỉnh sửa.</p></section>}
+          {actionError && <p role="alert" className="border border-red-400 rounded-lg p-3 mb-4 text-sm">{actionError}</p>}
           {/* Thanh Toolbar lọc & chế độ xem */}
           <div className="flex flex-wrap items-center justify-between gap-3 mb-4 bg-white dark:bg-[#202124] p-3 rounded-xl border border-[#dadce0] dark:border-[#3c4043]">
             {/* Breadcrumb tiêu đề vùng làm việc */}
             <div className="flex items-center gap-2 text-xs font-semibold">
               <span className="text-[#5f6368] dark:text-[#9aa0a6]">
-                {currentView === 'trash' ? 'Thùng rác' : currentView === 'starred' ? 'Đề quan trọng' : currentView === 'recent' ? 'Gần đây' : 'Kho đề của tôi'}
+                {currentView === 'trash' ? 'Thùng rác' : currentView === 'starred' ? 'Đề quan trọng' : currentView === 'recent' ? 'Đã sửa trong 30 ngày' : 'Kho đề của tôi'}
               </span>
               {currentFolder && (
                 <>
@@ -867,12 +887,12 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
             </div>
 
             {/* Các dropdown lọc nhanh */}
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap min-w-0 max-w-full items-center gap-2">
               {/* Lọc theo môn */}
               <select
                 value={selectedSubject}
                 onChange={(e) => setSelectedSubject(e.target.value)}
-                className="px-2.5 py-1.5 text-xs bg-[#f1f3f4] dark:bg-[#292a2d] border border-transparent rounded-lg text-[#3c4043] dark:text-[#e3e3e3] outline-hidden cursor-pointer"
+                className="teacher-field px-2.5 py-1.5 text-xs bg-[#f1f3f4] dark:bg-[#292a2d] border border-transparent rounded-lg text-[#3c4043] dark:text-[#e3e3e3] outline-hidden cursor-pointer"
               >
                 <option value="all">Tất cả môn</option>
                 {getCatalogSubjects(selectedGrade === 'all' ? undefined : Number(selectedGrade)).map(subject => <option key={subject.key} value={subject.key}>{subject.label}</option>)}
@@ -882,7 +902,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
               <select
                 value={selectedGrade}
                 onChange={(e) => { setSelectedGrade(e.target.value); setSelectedSubject('all'); }}
-                className="px-2.5 py-1.5 text-xs bg-[#f1f3f4] dark:bg-[#292a2d] border border-transparent rounded-lg text-[#3c4043] dark:text-[#e3e3e3] outline-hidden cursor-pointer"
+                className="teacher-field px-2.5 py-1.5 text-xs bg-[#f1f3f4] dark:bg-[#292a2d] border border-transparent rounded-lg text-[#3c4043] dark:text-[#e3e3e3] outline-hidden cursor-pointer"
               >
                 <option value="all">Tất cả khối</option>
                 {Array.from({ length: 12 }, (_, index) => index + 1).map(grade => <option key={grade} value={grade}>Lớp {grade}</option>)}
@@ -913,7 +933,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
           </div>
 
           {/* VÙNG DANH SÁCH ĐỀ THI */}
-          {isLoading ? (
+          {loadError ? <div role="alert" className="border rounded-xl p-5"><p>{loadError}</p><button type="button" onClick={() => void loadExams()} className="app-button-secondary min-h-10 px-3 mt-3">Thử lại</button></div> : isLoading ? (
             <div className="py-24 text-center text-xs text-[#5f6368] dark:text-[#9aa0a6]">
               Đang tải danh sách đề thi...
             </div>
@@ -955,7 +975,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
               {exams.map((exam) => (
                 <div
                   key={exam.id}
-                  onClick={() => handleOpenEditor(exam.id)}
+                  onClick={currentView === 'trash' ? undefined : () => handleOpenEditor(exam.id)}
                   className="group bg-white dark:bg-[#202124] p-4 rounded-xl border border-[#dadce0] dark:border-[#3c4043] hover:border-[#3c4043] dark:hover:border-[#e3e3e3] hover:shadow-xs transition-all cursor-pointer relative flex flex-col justify-between"
                 >
                   {/* Top card: Badge môn học & Nút gắn sao */}
@@ -963,7 +983,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3]">
-                          {exam.subject} {exam.grade ? `Khối ${exam.grade}` : ''}
+                          {subjectLabel(exam.subject)} {exam.grade ? `Khối ${exam.grade}` : ''}
                         </span>
                         {exam.folder && (
                           <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#f1f3f4] dark:bg-[#292a2d] text-[#5f6368] dark:text-[#9aa0a6]">
@@ -973,15 +993,15 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                         )}
                       </div>
 
-                      <div className="flex items-center gap-1">
-                        <button
-                          disabled={exam.permissions?.canManage === false}
+                      <div className="flex flex-wrap items-center gap-1">
+                        {currentView !== 'trash' && <button
+                          disabled={!!pendingExam || exam.permissions?.canManage === false}
                           onClick={(e) => handleToggleStar(exam, e)}
                           title={exam.isStarred ? 'Bỏ gắn sao' : 'Gắn sao đề quan trọng'}
                           className="p-1 rounded-lg text-[#5f6368] hover:text-amber-500 hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
                         >
                           <Star className={`w-4 h-4 ${exam.isStarred ? 'text-amber-500 fill-amber-500' : ''}`} />
-                        </button>
+                        </button>}
                       </div>
                     </div>
 
@@ -997,10 +1017,11 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                     <div className="flex items-center gap-2">
                       <span>{exam._count?.items || 0} câu</span>
                       <span>•</span>
-                      <span>{exam.durationMinutes || 45} phút</span>
+                      <span>{currentView === 'trash' ? `Xóa ${new Date(exam.deletedAt || exam.updatedAt).toLocaleDateString('vi-VN')}` : `${exam.durationMinutes || 45} phút`}</span>
                     </div>
 
-                    <div className="flex items-center gap-1">
+                    <div className="flex flex-wrap items-center gap-1">
+                      {currentView !== 'trash' && <>
                       {/* Nút tải Word nhanh */}
                       <button
                         onClick={(e) => handleQuickExportDocx(exam, e)}
@@ -1026,7 +1047,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                           setActiveExam(exam);
                           setIsMoveExamModalOpen(true);
                         }}
-                        disabled={exam.permissions?.canManage === false}
+                        disabled={!!pendingExam || exam.permissions?.canManage === false}
                           title="Di chuyển vào thư mục"
                         className="p-1.5 rounded-lg hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] text-[#5f6368] hover:text-[#3c4043] cursor-pointer"
                       >
@@ -1041,21 +1062,22 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                           setNewExamTitle(exam.title);
                           setIsRenameExamModalOpen(true);
                         }}
-                        disabled={exam.permissions?.canManage === false}
+                        disabled={!!pendingExam || exam.permissions?.canManage === false}
                           title="Đổi tên đề"
                         className="p-1.5 rounded-lg hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] text-[#5f6368] hover:text-[#3c4043] cursor-pointer"
                       >
                         <Edit3 className="w-3.5 h-3.5" />
                       </button>
 
+                      </>}
                       {/* Nút xóa */}
                       <button
-                        disabled={exam.permissions?.canManage === false}
+                        disabled={!!pendingExam || exam.permissions?.canManage === false}
                           onClick={(e) => handleDeleteExam(exam.id, e)}
                         title={currentView === 'trash' ? 'Khôi phục đề' : 'Chuyển vào thùng rác'}
-                        className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 text-[#5f6368] hover:text-red-500 cursor-pointer"
+                        className="inline-flex items-center gap-1 min-h-10 px-2 rounded-lg hover:bg-[var(--ui-surface-variant)] text-[var(--ui-text-secondary)] cursor-pointer disabled:opacity-40"
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        {currentView === 'trash' ? <><RotateCcw className="w-3.5 h-3.5" /><span>Khôi phục</span></> : <Trash2 className="w-3.5 h-3.5" />}
                       </button>
                     </div>
                   </div>
@@ -1065,7 +1087,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
           ) : (
             /* DẠNG BẢNG DANH SÁCH (LIST VIEW) */
             <div className="bg-white dark:bg-[#202124] rounded-xl border border-[#dadce0] dark:border-[#3c4043] overflow-hidden shadow-2xs">
-              <table className="w-full border-collapse text-left text-xs">
+              <table className="app-exam-table w-full border-collapse text-left text-xs">
                 <thead>
                   <tr className="bg-[#f8f9fa] dark:bg-[#292a2d] border-b border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] font-semibold">
                     <th className="py-3 px-4 w-10 text-center">⭐</th>
@@ -1073,7 +1095,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                     <th className="py-3 px-4">Môn & Khối</th>
                     <th className="py-3 px-4">Thư mục</th>
                     <th className="py-3 px-4">Số câu</th>
-                    <th className="py-3 px-4">Cập nhật</th>
+                    <th className="py-3 px-4">{currentView === 'trash' ? 'Ngày xóa' : 'Cập nhật'}</th>
                     <th className="py-3 px-4 text-right">Thao tác</th>
                   </tr>
                 </thead>
@@ -1081,24 +1103,24 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                   {exams.map((exam) => (
                     <tr
                       key={exam.id}
-                      onClick={() => handleOpenEditor(exam.id)}
+                      onClick={currentView === 'trash' ? undefined : () => handleOpenEditor(exam.id)}
                       className="hover:bg-[#f8f9fa] dark:hover:bg-[#292a2d] transition-colors cursor-pointer group"
                     >
                       <td className="py-3 px-4 text-center">
-                        <button
-                          disabled={exam.permissions?.canManage === false}
+                        {currentView !== 'trash' && <button
+                          disabled={!!pendingExam || exam.permissions?.canManage === false}
                           onClick={(e) => handleToggleStar(exam, e)}
                           className="p-1 hover:text-amber-500 cursor-pointer"
                         >
                           <Star className={`w-3.5 h-3.5 ${exam.isStarred ? 'text-amber-500 fill-amber-500' : 'text-[#dadce0]'}`} />
-                        </button>
+                        </button>}
                       </td>
                       <td className="py-3 px-4 font-semibold text-[#202124] dark:text-white group-hover:text-[#3c4043]">
                         {exam.title}
                       </td>
                       <td className="py-3 px-4">
                         <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3]">
-                          {exam.subject} {exam.grade ? `K${exam.grade}` : ''}
+                          {subjectLabel(exam.subject)} {exam.grade ? `K${exam.grade}` : ''}
                         </span>
                       </td>
                       <td className="py-3 px-4 text-[#5f6368] dark:text-[#9aa0a6]">
@@ -1114,11 +1136,12 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                       <td className="py-3 px-4 text-[#5f6368] dark:text-[#9aa0a6]">
                         {exam._count?.items || 0} câu
                       </td>
-                      <td className="py-3 px-4 text-[#5f6368] dark:text-[#9aa0a6] text-[11px]">
-                        {new Date(exam.updatedAt).toLocaleDateString('vi-VN')}
+                      <td data-label={currentView === 'trash' ? 'Ngày xóa' : 'Cập nhật'} className="py-3 px-4 text-[#5f6368] dark:text-[#9aa0a6] text-[11px]">
+                        {new Date(currentView === 'trash' ? exam.deletedAt || exam.updatedAt : exam.updatedAt).toLocaleDateString('vi-VN')}
                       </td>
                       <td className="py-3 px-4 text-right">
                         <div className="flex items-center justify-end gap-1">
+                          {currentView !== 'trash' && <>
                           <button
                             onClick={(e) => handleQuickExportDocx(exam, e)}
                             title="Tải Word"
@@ -1133,13 +1156,16 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                           >
                             <Copy className="w-3.5 h-3.5" />
                           </button>
+<button type="button" title="Đổi tên đề" disabled={!!pendingExam || exam.permissions?.canManage === false} className="min-h-10 px-2" onClick={e => { e.stopPropagation(); setActiveExam(exam); setNewExamTitle(exam.title); setIsRenameExamModalOpen(true); }}><Edit3 className="w-4 h-4" /></button>
+                          <button type="button" title="Di chuyển vào thư mục" disabled={!!pendingExam || exam.permissions?.canManage === false} className="min-h-10 px-2" onClick={e => { e.stopPropagation(); setActiveExam(exam); setIsMoveExamModalOpen(true); }}><Folder className="w-4 h-4" /></button>
+                          </>}
                           <button
-                            disabled={exam.permissions?.canManage === false}
+                            disabled={!!pendingExam || exam.permissions?.canManage === false}
                           onClick={(e) => handleDeleteExam(exam.id, e)}
                             title={currentView === 'trash' ? 'Khôi phục đề' : 'Chuyển vào thùng rác'}
-                            className="p-3 sm:p-1.5 rounded-lg hover:bg-red-50 text-[#5f6368] hover:text-red-500 cursor-pointer"
+                            className="inline-flex items-center gap-1 min-h-10 px-2 rounded-lg hover:bg-[var(--ui-surface-variant)] text-[var(--ui-text-secondary)] cursor-pointer disabled:opacity-40"
                           >
-                            <Trash2 className="w-3.5 h-3.5" />
+                            {currentView === 'trash' ? <><RotateCcw className="w-3.5 h-3.5" /><span>Khôi phục</span></> : <Trash2 className="w-3.5 h-3.5" />}
                           </button>
                         </div>
                       </td>
@@ -1177,7 +1203,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
           </button>
 
           <button
-            onClick={() => setIsQuestionBankOpen(true)}
+            onClick={() => router.push('/teacher/questions')}
             title="Ngân hàng câu hỏi"
             className="w-10 h-10 rounded-xl text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] flex items-center justify-center cursor-pointer transition-colors"
           >
@@ -1386,8 +1412,8 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
 
       {/* TOAST NOTIFICATION */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#202124] text-white px-4 py-2.5 rounded-full text-xs font-semibold shadow-xs flex items-center gap-2 animate-in fade-in slide-in-from-bottom-4">
-          <Check className="w-4 h-4 text-emerald-400" />
+        <div role="status" className="fixed bottom-6 right-6 z-50 bg-[#202124] text-white px-4 py-2.5 rounded-full text-xs font-semibold shadow-xs flex items-center gap-2 animate-in fade-in slide-in-from-bottom-4">
+          <Check className="w-4 h-4" />
           <span>{toastMessage}</span>
         </div>
       )}
@@ -1429,13 +1455,6 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
           router.push('/editor/new');
         }}
         apiKey=""
-      />
-
-      <QuestionBankModal ownerId={currentUser.id} key={`bank:${currentUser.id}`}
-        isOpen={isQuestionBankOpen}
-        allowInsert={false}
-        onClose={() => setIsQuestionBankOpen(false)}
-        onInsertQuestion={() => {}}
       />
 
       <ApiKeyModal ownerId={currentUser.id} key={`keys:${currentUser.id}`}

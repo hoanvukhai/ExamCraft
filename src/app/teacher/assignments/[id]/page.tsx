@@ -3,6 +3,7 @@
 import { formatLocalDateTime } from '@/lib/assignment-options';
 import React, { useState, useEffect, useCallback, useRef, use } from 'react';
 import Link from 'next/link';
+import { assignmentStatusLabel } from '@/lib/teacher-ui';
 import { usePinnedAccount } from '@/hooks/usePinnedAccount';
 import { MathRenderer } from '@/components/MathRenderer';
 import { studentResponseText } from '@/lib/student-response-text';
@@ -22,19 +23,12 @@ import {
   RefreshCw,
   Search,
   ArrowLeft,
-  ChevronRight,
-  ExternalLink,
   Copy,
   Trash2,
   Eye,
-  Award,
   BarChart3,
-  Calendar,
-  Sparkles,
   Lock,
   Unlock,
-  PlusCircle,
-  Edit3,
   X,
 } from 'lucide-react';
 
@@ -473,7 +467,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
           <div>
             <div className="flex items-center gap-2 mb-1.5 text-xs text-[#5f6368] dark:text-[#9aa0a6]">
               <Link href="/" className="hover:text-[#202124] dark:hover:text-[#e3e3e3] flex items-center gap-1 transition-colors">
-                <ArrowLeft className="w-3.5 h-3.5" /> Soạn đề thi
+                <ArrowLeft className="w-3.5 h-3.5" /> Kho đề
               </Link>
               <span>/</span>
               <Link href="/teacher/groups" className="hover:text-[#202124] dark:hover:text-[#e3e3e3] transition-colors">
@@ -497,7 +491,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
                     assignment.status === 'OPEN' ? 'bg-[#137333] dark:bg-[#5bb98c] animate-pulse' : 'bg-[#c5221f] dark:bg-[#f28b82]'
                   }`}
                 />
-                {assignment.status === 'OPEN' ? 'Đang Mở' : 'Đã Đóng'}
+                {assignmentStatusLabel(assignment.status)}
               </span>
             </div>
 

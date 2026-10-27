@@ -15,7 +15,8 @@ import type { Exam } from '../src/types/exam';
 const origin = 'http://127.0.0.1:3117';
 const dbUrl = requireTestDatabase();
 assert.equal(new URL(dbUrl).pathname, '/examcraft_test_20261022');
-const reportDir = 'qa/rebuild-2026-10-25';
+const reportDir = process.env.PILOT_REPORT_DIR || 'qa/rebuild-2026-10-25';
+if (!/^qa\/rebuild-\d{4}-\d{2}-\d{2}$/.test(reportDir)) throw Error('Pilot reports require a dated QA root');
 fs.mkdirSync(reportDir, { recursive: true });
 const run = randomUUID();
 const sourceSha256 = createHash('sha256').update(fs.readFileSync('tests_pilot/pilot.test.ts')).digest('hex');
@@ -680,7 +681,7 @@ test('F19 library search, starred, recent, trash, restore and safe controls', { 
   await waitTitles(titles);
   const inventory = await f.page.getByRole('button').filter({ visible: true }).evaluateAll(buttons => buttons.map(button => ({ text: button.textContent?.trim(), title: button.getAttribute('title'), label: button.getAttribute('aria-label'), disabled: button.hasAttribute('disabled') })));
   const checked: string[] = [];
-  const search = f.page.getByPlaceholder('Tìm kiếm theo tên đề, mã môn, năm học...');
+  const search = f.page.getByPlaceholder('Tìm theo tên đề...');
   await search.fill('KHO_C'); await waitTitles([titles[2]]); await search.fill(''); await waitTitles(titles); checked.push('search');
   await card(titles[0]).getByTitle('Gắn sao đề quan trọng', { exact: true }).click();
   await waitUntil(async () => (await f.db.exam.findUniqueOrThrow({ where: { id: ids[0] } })).isStarred, 'Star must persist');
@@ -688,6 +689,7 @@ test('F19 library search, starred, recent, trash, restore and safe controls', { 
   await click(f.page, 'Đã sửa gần đây'); await waitTitles(titles); checked.push('recent');
   await f.page.getByRole('button', { name: /^Tất cả đề thi/ }).click(); await waitTitles(titles);
   await card(titles[1]).getByTitle('Chuyển vào thùng rác', { exact: true }).click();
+  await f.page.getByRole('dialog', { name: 'Xác nhận thao tác', exact: true }).getByRole('button', { name: 'Xác nhận', exact: true }).click();
   await waitUntil(async () => Boolean((await f.db.exam.findUniqueOrThrow({ where: { id: ids[1] } })).deletedAt), 'Trash must persist');
   await waitTitles([titles[0], titles[2], titles[3]]);
   await f.page.getByRole('button', { name: 'Thùng rác', exact: true }).filter({ visible: true }).click(); await waitTitles([titles[1]]);
@@ -723,14 +725,7 @@ test('F19 library search, starred, recent, trash, restore and safe controls', { 
     console.log('F19 opening ' + label);
     await control.click(); const modal = f.page.locator('div.fixed.inset-0').filter({ visible: true }).last(); await modal.waitFor();
     const layer = await modal.elementHandle(); assert.ok(layer);
-    if (label === 'bank-0') {
-      const seed = modal.getByRole('button', { name: 'Nạp 4 câu mẫu chuẩn', exact: true });
-      if (await seed.count()) await seed.click();
-      await waitUntil(async () => (await modal.getByRole('button', { name: 'Mở đề để chèn', exact: true }).count()) === 4, 'Bank must expose a truthful non-inserting action without an open exam');
-      for (const button of await modal.getByRole('button', { name: 'Mở đề để chèn', exact: true }).all()) assert.equal(await button.isDisabled(), true);
-      checked.push('bank-no-false-insert-success');
-    }
-    const close = label.startsWith('bank-') ? modal.getByRole('button', { name: 'Đóng ngân hàng câu hỏi', exact: true }) : modal.locator('button:has(svg.lucide-x)').filter({ visible: true }).last();
+    const close = modal.locator('button:has(svg.lucide-x)').filter({ visible: true }).last();
     await close.click();
     await layer.waitForElementState('hidden'); checked.push(label);
     console.log('F19 closed ' + label);
@@ -738,16 +733,19 @@ test('F19 library search, starred, recent, trash, restore and safe controls', { 
   await openClose(f.page.getByTitle('Quản lý Google Gemini API Key', { exact: true }), 'key-management');
   await openClose(f.page.getByTitle('Kho Khóa AI', { exact: true }), 'key-management-rail');
   await openClose(f.page.getByTitle('Bộ não AI Sư Phạm: Xem và dạy các phong cách ra đề cho AI', { exact: true }), 'memory');
-  const bankButtons = f.page.getByTitle('Ngân hàng câu hỏi', { exact: true }).filter({ visible: true });
-  for (let i=0;i<await bankButtons.count();i++) await openClose(bankButtons.nth(i), 'bank-' + i);
+  await f.page.getByTitle('Ngân hàng câu hỏi', { exact: true }).click();
+  await f.page.getByRole('heading', { name: 'Ngân hàng câu hỏi', exact: true }).waitFor();
+  assert.equal(await f.page.getByRole('button', { name: /Thêm vào đề|Mở đề để chèn/ }).count(), 0);
+  await f.page.getByRole('navigation', { name: 'Không gian giáo viên' }).getByRole('link', { name: 'Kho đề', exact: true }).click();
+  checked.push('bank-management-page-without-editor-actions');
   await openClose(f.page.getByText('AI Sinh đề theo Ma trận', { exact: true }), 'generate-open-only');
   await openClose(f.page.getByText('Nhập từ Word / Ảnh OCR', { exact: true }), 'import-open-only');
   await f.page.getByTitle('Mở Thư ký AI trợ lý riêng của Thầy/Cô', { exact: true }).click();
-  await f.page.getByText('Tính năng đang trong giai đoạn phát triển', { exact: false }).waitFor();
-  await click(f.page, 'Đã hiểu'); checked.push('secretary-explicit-development-notice');
+  await f.page.getByRole('heading', { name: 'Thư Ký Số & Trợ Lý Giáo Viên', exact: true }).waitFor();
+  await f.page.locator('div.fixed.inset-y-0').locator('button:has(svg.lucide-x)').click(); checked.push('secretary-open-close-only-no-ai-call');
   await f.page.getByTitle('Trợ lý Thư ký AI Cá Nhân (Bấm để xem)', { exact: true }).click();
-  await f.page.getByText('Tính năng đang trong giai đoạn phát triển', { exact: false }).waitFor();
-  await click(f.page, 'Đã hiểu'); checked.push('secretary-rail-development-notice');
+  await f.page.getByRole('heading', { name: 'Thư Ký Số & Trợ Lý Giáo Viên', exact: true }).waitFor();
+  await f.page.locator('div.fixed.inset-y-0').locator('button:has(svg.lucide-x)').click(); checked.push('secretary-rail-open-close-only-no-ai-call');
   await f.page.getByRole('button', { name: 'Soạn Đề Thi Mới', exact: true }).click();
   await f.page.getByTitle('Lưu các thay đổi lên máy chủ').first().waitFor();
   await f.page.getByRole('link', { name: 'Về kho đề', exact: true }).click();

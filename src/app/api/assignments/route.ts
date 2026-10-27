@@ -50,11 +50,13 @@ export async function GET(req: NextRequest) {
     const user = await requireRequestAuth(req);
     const { searchParams } = new URL(req.url);
     const groupId = searchParams.get('groupId') || undefined;
+    const examId = searchParams.get('examId') || undefined;
 
     const assignments = await prisma.assignment.findMany({
       where: {
         ownerId: user.id,
         groupId,
+        examId,
       },
       include: {
         group: { select: { id: true, name: true, publicCode: true } },

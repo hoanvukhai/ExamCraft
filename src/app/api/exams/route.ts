@@ -23,6 +23,7 @@ export async function GET(req: NextRequest) {
       ...(grade && Number.isInteger(Number(grade)) ? { grade: Number(grade) } : {}),
       ...(params.get('search') ? { title: { contains: params.get('search')!, mode: 'insensitive' as const } } : {}),
       ...(folder && folder !== 'all' ? { folderId: ['root', 'none'].includes(folder) ? null : folder } : {}),
+      ...(params.get('recent') === 'true' ? { updatedAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } } : {}),
       ...(params.get('isStarred') === 'true' ? { isStarred: true } : {}) };
     const [exams, totalCount] = await Promise.all([
       prisma.exam.findMany({ where, select: { ownerId: true, collaborators: { where: { userId: user.id, revokedAt: null }, select: { role: true } }, id: true, title: true, subject: true, grade: true, durationMinutes: true, version: true, folderId: true, isStarred: true, createdAt: true, updatedAt: true, deletedAt: true,

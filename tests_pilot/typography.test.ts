@@ -10,7 +10,7 @@ import { requireTestDatabase } from '../tests/helpers/test-database';
 import { loginBucket } from '../src/lib/auth-security';
 
 const origin = 'http://127.0.0.1:3117';
-const report = 'qa/rebuild-2026-10-27/typography';
+const report = process.env.TYPOGRAPHY_REPORT_DIR || 'qa/rebuild-2026-10-27/typography';
 const sample = 'Chủ đề · Chưa gắn mức · Yêu cầu cần đạt · Cấu hình điểm, hệ thống không tự quy về thang 10. Ắ ằ ẳ ẵ ặ ấ ầ ẩ ẫ ậ ế ề ể ễ ệ ố ồ ổỗ ộ ớ ờ ở ỡ ợ ứ ừử ữ ự ỳ ỷ ỹ ỵ';
 
 test('Vietnamese typography: full glyphs, paper zoom, phone scrolling, math and print', { timeout: 180000 }, async t => {
