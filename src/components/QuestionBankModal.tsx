@@ -1,5 +1,6 @@
+import { Database } from 'lucide-react';
 'use client';
-import { PageHeader } from '@/components/workspace/ui';
+import { PageHeader, EmptyState } from '@/components/workspace/ui';
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { accountFetch } from '@/lib/account-fetch';
@@ -114,7 +115,7 @@ function QuestionBankContent({ ownerId, onClose, onInsertQuestion, allowInsert =
         </div>
         {!loading && error && <div role="alert" className="border border-red-400 rounded-lg p-3 text-sm"><p>{error}</p><button type="button" onClick={reload} className="underline min-h-10">Thử lại</button></div>}
         {loading ? <p role="status">Đang tải câu hỏi...</p> : !error && <p className="text-sm text-[var(--ui-text-secondary)]">{total} câu phù hợp · Trang {page} / {pages}</p>}
-        {!loading && !error && items.length === 0 && <p className="border border-dashed rounded-xl p-8 text-center">{filters ? 'Không có câu hỏi phù hợp bộ lọc.' : 'Chưa có câu hỏi trong kho này.'}</p>}
+        {!loading && !error && items.length === 0 && <EmptyState Icon={Database} title={filters ? 'Không có câu hỏi phù hợp bộ lọc.' : 'Chưa có câu hỏi trong kho này.'} />}
         {!loading && dataQuery === queryKey && <div className={pageMode ? 'grid grid-cols-1 2xl:grid-cols-2 gap-4 items-start' : 'space-y-4'}>{items.map(q => {
           const matching = matchingDisplay(q), ordering = orderingDisplay(q);
           return <article key={q.id} data-bank-question={q.id} className="border rounded-xl p-4 space-y-3 [overflow-wrap:anywhere]">
