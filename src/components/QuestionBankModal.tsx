@@ -24,17 +24,18 @@ function QuestionBankContent({ ownerId, onClose, onInsertQuestion, allowInsert =
   const [search, setSearch] = useBankField<string>('search', '', pageMode), [subject, setSubject] = useBankField<string>('subject', 'all', pageMode), [grade, setGrade] = useBankField<string>('grade', 'all', pageMode);
   const [type, setType] = useBankField<string>('type', 'all', pageMode), [difficulty, setDifficulty] = useBankField<string>('difficulty', 'all', pageMode), [page, setPage] = useBankField<number>('page', 1, pageMode);
   const [items, setItems] = useState<Item[]>([]), [total, setTotal] = useState(0), [pages, setPages] = useState(1);
-  const [loading, setLoading] = useState(true), [error, setError] = useState(''), [notice, setNotice] = useState('');
+  const [error, setError] = useState(''), [notice, setNotice] = useState('');
   const [busy, setBusy] = useState(''), [refresh, setRefresh] = useState(0);
+  const queryKey = JSON.stringify([ownerId, tab, page, search, subject, grade, type, difficulty, refresh]);
+  const [loadedQuery, setLoadedQuery] = useState('');
+  const [dataQuery, setDataQuery] = useState('');
+  const loading = loadedQuery !== queryKey;
   const sequence = useRef(0), mutation = useRef(false);
   const panel = useRef<HTMLElement>(null);
   const { confirmAction, confirmation } = useConfirmAction();
   const reload = () => setRefresh(value => value + 1);
   useEffect(() => {
     const request = ++sequence.current, controller = new AbortController();
-    // A new account/filter must hide the previous result before it can be acted on.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setLoading(true); setError(''); setItems([]);
     const params = new URLSearchParams({ page: String(page), limit: '20' });
     if (search.trim()) params.set('search', search.trim());
     if (subject !== 'all') params.set('subject', subject);
@@ -43,16 +44,18 @@ function QuestionBankContent({ ownerId, onClose, onInsertQuestion, allowInsert =
     if (difficulty !== 'all') params.set('difficulty', difficulty.toUpperCase());
     void accountFetch(ownerId, `/api/questions${tab === 'shared' ? '/shared' : ''}?${params}`, { cache: 'no-store', signal: controller.signal }).then(async response => {
       const data = await response.json();
-      if (!response.ok) throw Error(data.error || 'Chưa tải được ngân hàng câu hỏi.');
       if (controller.signal.aborted || sequence.current !== request) return;
+      if (!response.ok) throw Error(data.error || 'Chưa tải được ngân hàng câu hỏi.');
+      setError('');
       const last = Math.max(1, data.pagination.totalPages);
       if (page > last) { setPage(last); return; }
       setItems(data.questions.map((q: Record<string, unknown>) => ({ ...normalizeQuestion(q), id: String(q.id), passage: bankPassage(q.passage), passageUnavailable: q.passageUnavailable === true, shareable: q.shareable !== false, importedFromFile: q.sourceKind === 'IMPORTED_FILE', author: q.author })));
       setTotal(data.pagination.totalCount); setPages(last);
+      setDataQuery(queryKey);
     }).catch(cause => { if (!controller.signal.aborted && sequence.current === request) setError(teacherErrorMessage(cause, 'Chưa kết nối được để tải ngân hàng. Hãy thử lại.')); })
-      .finally(() => { if (!controller.signal.aborted && sequence.current === request) setLoading(false); });
+      .finally(() => { if (!controller.signal.aborted && sequence.current === request) setLoadedQuery(queryKey); });
     return () => controller.abort();
-  }, [ownerId, tab, page, search, subject, grade, type, difficulty, refresh, setPage]);
+  }, [ownerId, tab, page, search, subject, grade, type, difficulty, refresh, setPage, queryKey]);
   useEffect(() => {
     if (pageMode) return;
     const previous = document.activeElement as HTMLElement | null;
@@ -105,10 +108,10 @@ function QuestionBankContent({ ownerId, onClose, onInsertQuestion, allowInsert =
           <label className="text-sm">Dạng câu<select aria-label="Dạng câu" className={field} value={type} onChange={e => { setType(e.target.value); setPage(1); }}><option value="all">Tất cả dạng câu</option>{Object.entries(questionTypeLabels).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label>
           <label className="text-sm">Độ khó đã lưu<select aria-label="Độ khó đã lưu" className={field} value={difficulty} onChange={e => { setDifficulty(e.target.value); setPage(1); }}><option value="all">Tất cả mức độ</option>{Object.entries(levels).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label>
         </div>
-        {error && <div role="alert" className="border border-red-400 rounded-lg p-3 text-sm"><p>{error}</p><button type="button" onClick={reload} className="underline min-h-10">Thử lại</button></div>}
+        {!loading && error && <div role="alert" className="border border-red-400 rounded-lg p-3 text-sm"><p>{error}</p><button type="button" onClick={reload} className="underline min-h-10">Thử lại</button></div>}
         {loading ? <p role="status">Đang tải câu hỏi...</p> : !error && <p className="text-sm text-[var(--ui-text-secondary)]">{total} câu phù hợp · Trang {page} / {pages}</p>}
         {!loading && !error && items.length === 0 && <p className="border border-dashed rounded-xl p-8 text-center">{filters ? 'Không có câu hỏi phù hợp bộ lọc.' : 'Chưa có câu hỏi trong kho này.'}</p>}
-        {!loading && items.map(q => {
+        {!loading && dataQuery === queryKey && items.map(q => {
           const matching = matchingDisplay(q), ordering = orderingDisplay(q);
           return <article key={q.id} data-bank-question={q.id} className="border rounded-xl p-4 space-y-3 [overflow-wrap:anywhere]">
             <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--ui-text-secondary)]"><span>{subjectLabel(q.subject || '')} · Lớp {q.grade}</span><span>· {questionTypeLabels[q.type] ?? q.type}</span>{q.author && tab === 'shared' && <span>· {q.author.name}</span>}</div>

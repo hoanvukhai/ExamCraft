@@ -257,20 +257,21 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
 
   // Xóa thư mục
   const handleDeleteFolder = async (folderId: string, folderName: string) => {
-    if (!confirm(`Thầy/Cô có chắc chắn muốn xóa thư mục "${folderName}"? Các đề thi bên trong sẽ được chuyển ra ngoài an toàn.`)) {
+    if (!await confirmAction(`Xóa thư mục “${folderName}”? Các đề bên trong được chuyển ra ngoài, không bị xóa.`)) {
       return;
     }
 
     try {
       const res = await accountFetch(currentUser.id, `/api/folders/${folderId}`, { method: 'DELETE' });
+      if (!res.ok) { const result = await res.json(); throw Error(result.error || 'Chưa xóa được thư mục.'); }
       if (res.ok) {
         showToast('Đã xóa thư mục.');
         if (selectedFolderId === folderId) setSelectedFolderId(null);
         loadFolders();
         loadExams();
       }
-    } catch {
-      alert('Lỗi khi xóa thư mục');
+    } catch (cause) {
+      setActionError(teacherErrorMessage(cause, 'Chưa kết nối được để xóa thư mục. Hãy thử lại.'));
     }
   };
 
@@ -755,7 +756,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                 className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors"
               >
                 <GraduationCap className="w-4 h-4 text-[#5f6368] dark:text-[#9aa0a6]" />
-                <span>Khảo thí & Bảng điểm</span>
+                <span>Bài đã giao</span>
               </Link>
 
               <button

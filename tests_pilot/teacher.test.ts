@@ -65,6 +65,16 @@ test('teacher management: trash, bank, class context, routes and mobile', { time
       assert.equal(restored.deletedAt, null); assert.deepEqual(restored.metadata, before.metadata); assert.equal(restored.version, before.version + 2);
       await page.reload(); await page.getByRole('heading', { name: 'Thùng rác', exact: true }).waitFor();
       await page.setViewportSize({ width: 1440, height: 1000 });
+      const folder = (await api('/api/folders', 'POST', { name: 'Thư mục kiểm lỗi', color: '#3c4043' })).folder;
+      await page.goto(origin + '/'); await page.getByText('Thư mục kiểm lỗi', { exact: true }).filter({ visible: true }).waitFor();
+      await page.getByText('Thư mục kiểm lỗi', { exact: true }).filter({ visible: true }).hover();
+      await page.getByTitle('Xóa thư mục này', { exact: true }).click(); await confirm(false);
+      assert.ok(await db.folder.findUnique({ where: { id: folder.id } }));
+      await page.route('**/api/folders/' + folder.id, route => route.fulfill({ status: 503, json: { error: 'Chưa xóa được thư mục kiểm lỗi' } }));
+      await page.getByTitle('Xóa thư mục này', { exact: true }).click(); await confirm(true);
+      await page.getByRole('alert').getByText('Chưa xóa được thư mục kiểm lỗi', { exact: true }).waitFor();
+      assert.ok(await db.folder.findUnique({ where: { id: folder.id } }));
+      await page.unroute('**/api/folders/' + folder.id);
     });
     const prefix = 'BANK_' + run;
     for (let i = 0; i < 23; i++) await db.question.create({ data: { ownerId: ids[1], authorId: ids[1], subject: 'toan', grade: 6, visibility: 'SHARED', points: 1, type: 'MULTIPLE_CHOICE', difficulty: 'THONG_HIEU', content: `${prefix}_${String(i).padStart(2, '0')} Tính $x^2$.`, solution: 'Lời giải được giữ', topics: [], tags: [], payload: { choices: [{ key: 'A', text: 'Phương án một' }, { key: 'B', text: 'Phương án hai' }], correct: 'A' } } });
@@ -168,7 +178,7 @@ test('teacher management: trash, bank, class context, routes and mobile', { time
         if (route.includes('trash')) await page.getByText('Thùng rác trống', { exact: true }).waitFor();
         if ((await page.evaluate(() => document.documentElement.classList.contains('dark'))) !== dark) {
           if (route.startsWith('/teacher/')) await page.getByRole('button', { name: /Chuyển sang giao diện/ }).click();
-          else await page.getByTitle('Đổi giao diện Sáng / Tối', { exact: true }).click();
+          else await page.getByTitle('Đổi giao diện Sáng / Tối', { exact: true }).filter({ visible: true }).click();
         }
         assert.equal(await page.evaluate(() => document.documentElement.classList.contains('dark')), dark);
         await page.evaluate(() => document.fonts.ready);
@@ -188,6 +198,7 @@ test('teacher management: trash, bank, class context, routes and mobile', { time
     await browser.close();
     await db.assignment.deleteMany({ where: { ownerId: { in: ids } } }); await db.group.deleteMany({ where: { ownerId: { in: ids } } });
     await db.exam.deleteMany({ where: { ownerId: { in: ids } } }); await db.question.deleteMany({ where: { ownerId: { in: ids } } }); await db.passage.deleteMany({ where: { ownerId: { in: ids } } });
+    await db.folder.deleteMany({ where: { ownerId: { in: ids } } });
     await db.auditLog.deleteMany({ where: { OR: [{ actorId: { in: ids } }, { targetType: 'LoginBucket', targetId: { in: emails.map(loginBucket) } }] } });
     await db.user.deleteMany({ where: { id: { in: ids } } }); assert.equal(await db.user.count({ where: { id: { in: ids } } }), 0);
     fs.writeFileSync(`${report}/cleanup.json`, JSON.stringify({ removedTaskUsers: true, buildId: fs.readFileSync('.next/BUILD_ID', 'utf8').trim() }, null, 2));
