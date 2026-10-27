@@ -732,8 +732,8 @@ test('F19 library search, starred, recent, trash, restore and safe controls', { 
     await layer.waitForElementState('hidden'); checked.push(label);
     console.log('F19 closed ' + label);
   };
-  await openClose(f.page.getByTitle('Quản lý Google Gemini API Key', { exact: true }), 'key-management');
-  await openClose(f.page.getByTitle('Bộ não AI Sư Phạm: Xem và dạy các phong cách ra đề cho AI', { exact: true }), 'memory');
+  await openClose(f.page.getByTitle('Quản lý Google Gemini API Key', { exact: true }).filter({ visible: true }), 'key-management');
+  await openClose(f.page.getByTitle('Bộ não AI Sư Phạm: Xem và dạy các phong cách ra đề cho AI', { exact: true }).filter({ visible: true }), 'memory');
   await menuLink(f.page, 'Ngân hàng câu hỏi');
   await f.page.getByRole('heading', { name: 'Ngân hàng câu hỏi', exact: true }).waitFor();
   assert.equal(await f.page.getByRole('button', { name: /Thêm vào đề|Mở đề để chèn/ }).count(), 0);
@@ -741,10 +741,10 @@ test('F19 library search, starred, recent, trash, restore and safe controls', { 
   checked.push('bank-management-page-without-editor-actions');
   await openClose(f.page.getByText('AI Sinh đề theo Ma trận', { exact: true }), 'generate-open-only');
   await openClose(f.page.getByText('Nhập từ Word / Ảnh OCR', { exact: true }), 'import-open-only');
-  await f.page.getByTitle('Mở Thư ký AI trợ lý riêng của Thầy/Cô', { exact: true }).click();
+  await f.page.getByTitle('Mở Thư ký AI trợ lý riêng của Thầy/Cô', { exact: true }).filter({ visible: true }).click();
   await f.page.getByRole('heading', { name: 'Thư Ký Số & Trợ Lý Giáo Viên', exact: true }).waitFor();
   await f.page.locator('div.fixed.inset-y-0').locator('button:has(svg.lucide-x)').click(); checked.push('secretary-open-close-only-no-ai-call');
-  await f.page.getByTitle('Trợ lý Thư ký AI Cá Nhân (Bấm để xem)', { exact: true }).click();
+  await f.page.getByTitle('Trợ lý Thư ký AI Cá Nhân (Bấm để xem)', { exact: true }).filter({ visible: true }).click();
   await f.page.getByRole('heading', { name: 'Thư Ký Số & Trợ Lý Giáo Viên', exact: true }).waitFor();
   await f.page.locator('div.fixed.inset-y-0').locator('button:has(svg.lucide-x)').click(); checked.push('secretary-rail-open-close-only-no-ai-call');
   await f.page.getByRole('link', { name: 'Soạn đề thi mới', exact: true }).filter({ visible: true }).click();
@@ -920,7 +920,7 @@ test('F24 comment resolution respects roles and private notes download as readab
 
   await panel.getByRole('button', { name: 'Đóng', exact: true }).click();
   const secret = 'pilot-f24-canary-key-0123456789'; await f.api('/api/user/keys', 'POST', { apiKey: secret, label: 'F24 fixture only' });
-  await f.page.getByTitle('Bộ não AI Sư Phạm: Xem và dạy các phong cách ra đề cho AI').click(); await click(f.page, 'Dạy AI quy tắc mới');
+  await f.page.getByTitle('Bộ não AI Sư Phạm: Xem và dạy các phong cách ra đề cho AI').filter({ visible: true }).click(); await click(f.page, 'Dạy AI quy tắc mới');
   await f.page.getByPlaceholder('Ví dụ: Không cho thử ngược nghiệm Casio').fill('F24 PRIVATE MANUAL NOTE');
   await f.page.getByPlaceholder(/^Ví dụ: Khi ra câu hỏi phương trình/).fill('F24 chỉ là ghi chú thử do giáo viên nhập.'); await click(f.page, 'Lưu ghi chú');
   await waitUntil(async () => await f.db.teacherAiMemory.count({ where: { userId: f.ids[0], title: 'F24 PRIVATE MANUAL NOTE' } }) === 1, 'Manual note must persist before export');

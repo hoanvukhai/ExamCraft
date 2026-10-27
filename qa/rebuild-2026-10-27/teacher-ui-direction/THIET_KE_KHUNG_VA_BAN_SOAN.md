@@ -114,3 +114,28 @@ Mỗi đợt dựng và kiểm ở bản sao riêng (không dựng đè bản đ
 1. Bàn soạn: **"Chia sẻ & Thi Online" là nút nổi bật ở góc phải thanh trên** (kiểu Google Docs), còn Tải Word/In/PDF vào **Xuất ▾** — có chấp nhận (tải Word chuyển từ thanh trên vào thanh công cụ)?
 2. Ngăn AI: dùng hai tab **Hỏi đáp** và **Ghi chú AI**, ở bàn soạn thêm **Sửa đề**; bỏ nút "Bộ não AI" riêng ở thanh trên — có chấp nhận?
 3. Bắt đầu **đợt A**?
+
+## 8. Tình trạng thực hiện (27/10/2026, commit 63370e5 trở đi)
+
+Cả bốn đợt đã làm trong mã. Bản dựng riêng ở thư mục khác, máy chủ thử cổng 3122:
+
+| Kiểm | Kết quả |
+|---|---|
+| Kiểm kiểu; lint toàn repo | Sạch; 0 lỗi, 114 cảnh báo (trước đợt này 120) |
+| Test an toàn (SAFE) | 498/498 |
+| Màu viết cứng (`check-ui-tokens.cjs`) | 3.394 (trước 3.754), tệp nào chỉ được giảm |
+| Bộ kiểm giáo viên `--teacher` | 7/7 |
+| Bộ kiểm quản trị `--admin` | 11/11 |
+| Bộ kiểm chữ tiếng Việt `--typography` | 4/4 |
+| Luồng F2, F3, F9, F11, F14, F16, F18, F19, F20, F21, F23, F24, F25 | Đạt cả mười ba (F21 từng trượt một lần khi chạy liền nhiều bộ, đạt khi chạy riêng, như đã ghi trước đây) |
+| Xem trực tiếp bằng trình duyệt | Kho đề, Lớp học, Ngân hàng, bàn soạn ở 1440 px và 375 px |
+
+**Cấu trúc đã đổi:** các trang chuyển vào nhóm route `src/app/(workspace)/` (địa chỉ không đổi) để một khung `WorkspaceShell` bao tất cả; `TeacherNavigation`, `AdminShell`, `LeftNavigationRail` bị xóa; thêm `src/components/workspace/` (ngữ cảnh, menu, thanh trên, thanh AI, thành phần đầu trang) và `EditorToolbar`. Hộp thoại khóa AI, ghi chú AI, trợ lý và tạo/xóa thư mục thuộc về khung.
+
+**Chỗ làm khác bản thiết kế (có chủ ý, ghi rõ):**
+1. **Điện thoại:** menu là một hàng tab cuộn ngang (không phải ngăn kéo); thanh công cụ bàn soạn cũng một dòng cuộn ngang. Cây thư mục chưa có trên điện thoại ngoài ô chọn thư mục của trang Kho đề.
+2. **Ghi chú AI:** là nút ở thanh phải (mở hộp thoại hiện có), không phải tab trong ngăn; "Hỏi đáp" vẫn là ngăn Thư ký AI.
+3. **Rà soát đề:** vẫn là thanh `<details>` dưới thanh công cụ, chưa thành nhãn nhỏ có khung xổ.
+4. **Hàng thẻ thư mục** ở đầu Kho đề: chưa làm (đã ghi "làm sau").
+5. **Mã màu viết cứng bên trong từng trang** (bảng, thẻ, hộp thoại) vẫn còn; khung, đầu trang, menu, thanh công cụ đã dùng biến màu chung.
+6. **Bản ẩn trong trang:** Next.js giữ một bản ẩn của khung (thuộc tính `hidden`); các bài kiểm phải chọn phần tử đang hiển thị (đã chỉnh trong `pilot.test.ts`).
