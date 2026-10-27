@@ -96,24 +96,26 @@ function QuestionBankContent({ ownerId, onClose, onInsertQuestion, allowInsert =
   const filters = search || subject !== 'all' || grade !== 'all' || type !== 'all' || difficulty !== 'all';
   return <div className={pageMode ? '' : 'fixed inset-0 z-50 bg-black/60 p-3 sm:p-4 flex items-center justify-center'}>
     {pageMode && <PageHeader title="Ngân hàng câu hỏi" description="Quản lý câu hỏi cá nhân và tìm câu hỏi được chia sẻ nội bộ." />}
-    <section ref={panel} role={pageMode ? undefined : 'dialog'} aria-modal={pageMode ? undefined : true} aria-label={pageMode ? undefined : 'Chọn câu từ ngân hàng'} className={`w-full bg-[var(--ui-surface)] text-[var(--foreground)] border rounded-xl ${pageMode ? 'mt-6' : 'max-w-5xl max-h-[92dvh] flex flex-col overflow-hidden'}`}>
+    <section ref={panel} role={pageMode ? undefined : 'dialog'} aria-modal={pageMode ? undefined : true} aria-label={pageMode ? undefined : 'Chọn câu từ ngân hàng'} className={`w-full ${pageMode ? '' : 'bg-[var(--ui-surface)] text-[var(--foreground)] border rounded-xl max-w-5xl max-h-[92dvh] flex flex-col overflow-hidden'}`}>
       {!pageMode && <header className="p-4 sm:p-6 border-b flex flex-wrap items-start justify-between gap-3"><div>{pageMode ? <h1 className="text-2xl font-semibold">Ngân hàng câu hỏi</h1> : <h2 className="text-lg font-semibold">Chọn câu từ ngân hàng</h2>}<p className="text-sm text-[var(--ui-text-secondary)] mt-1">{pageMode ? 'Quản lý câu hỏi cá nhân và tìm câu hỏi được chia sẻ nội bộ.' : 'Tìm câu hỏi, xem đáp án và thêm vào đề đang soạn.'}</p></div>
         {!pageMode && <div className="flex gap-3 items-center text-sm"><Link href="/teacher/questions" target="_blank" rel="noreferrer" className="underline">Mở trang quản lý</Link><button type="button" aria-label="Đóng ngân hàng câu hỏi" onClick={onClose} className="app-button-secondary min-h-10 px-3">Đóng</button></div>}
       </header>}
-      <div className="p-4 sm:p-6 space-y-4 overflow-auto min-h-0">
+      <div className={pageMode ? 'space-y-4' : 'p-4 sm:p-6 space-y-4 overflow-auto min-h-0'}>
         {confirmation}{notice && <p role="status" className="border rounded-lg p-3 text-sm">{notice}</p>}
+        <div className={pageMode ? 'rounded-xl border bg-[var(--ui-surface)] p-4 space-y-4' : 'space-y-4'}>
         <div className="flex flex-wrap gap-2" role="group" aria-label="Kho câu hỏi">{(['personal', 'shared'] as const).map(value => <button key={value} type="button" aria-pressed={tab === value} className={`${tab === value ? 'app-button-tonal' : 'app-button-secondary'} min-h-10 px-3 text-sm`} onClick={() => { setTab(value); setPage(1); setNotice(''); }}>{value === 'personal' ? 'Cá nhân' : 'Dùng chung nội bộ'}</button>)}</div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className={pageMode ? 'flex flex-wrap gap-3 [&>label]:min-w-44 [&>label]:flex-1' : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3'}>
           <label className="text-sm">Tìm nội dung<input className={field} value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} placeholder="Tìm trong nội dung câu hỏi..." /></label>
           <label className="text-sm">Lớp<select aria-label="Lớp" className={field} value={grade} onChange={e => { setGrade(e.target.value); setSubject('all'); setPage(1); }}><option value="all">Tất cả lớp</option>{Array.from({ length: 12 }, (_, i) => i + 1).map(g => <option key={g} value={g}>Lớp {g}</option>)}</select></label>
           <label className="text-sm">Môn<select aria-label="Môn" className={field} value={subject} onChange={e => { setSubject(e.target.value); setPage(1); }}><option value="all">Tất cả môn</option>{getCatalogSubjects(grade === 'all' ? undefined : Number(grade)).map(s => <option key={s.key} value={s.key}>{s.label}</option>)}</select></label>
           <label className="text-sm">Dạng câu<select aria-label="Dạng câu" className={field} value={type} onChange={e => { setType(e.target.value); setPage(1); }}><option value="all">Tất cả dạng câu</option>{Object.entries(questionTypeLabels).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label>
           <label className="text-sm">Độ khó đã lưu<select aria-label="Độ khó đã lưu" className={field} value={difficulty} onChange={e => { setDifficulty(e.target.value); setPage(1); }}><option value="all">Tất cả mức độ</option>{Object.entries(levels).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label>
         </div>
+        </div>
         {!loading && error && <div role="alert" className="border border-red-400 rounded-lg p-3 text-sm"><p>{error}</p><button type="button" onClick={reload} className="underline min-h-10">Thử lại</button></div>}
         {loading ? <p role="status">Đang tải câu hỏi...</p> : !error && <p className="text-sm text-[var(--ui-text-secondary)]">{total} câu phù hợp · Trang {page} / {pages}</p>}
         {!loading && !error && items.length === 0 && <p className="border border-dashed rounded-xl p-8 text-center">{filters ? 'Không có câu hỏi phù hợp bộ lọc.' : 'Chưa có câu hỏi trong kho này.'}</p>}
-        {!loading && dataQuery === queryKey && items.map(q => {
+        {!loading && dataQuery === queryKey && <div className={pageMode ? 'grid grid-cols-1 2xl:grid-cols-2 gap-4 items-start' : 'space-y-4'}>{items.map(q => {
           const matching = matchingDisplay(q), ordering = orderingDisplay(q);
           return <article key={q.id} data-bank-question={q.id} className="border rounded-xl p-4 space-y-3 [overflow-wrap:anywhere]">
             <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--ui-text-secondary)]"><span>{subjectLabel(q.subject || '')} · Lớp {q.grade}</span><span>· {questionTypeLabels[q.type] ?? q.type}</span>{q.author && tab === 'shared' && <span>· {q.author.name}</span>}</div>
@@ -129,7 +131,7 @@ function QuestionBankContent({ ownerId, onClose, onInsertQuestion, allowInsert =
               {busy === q.id && <span role="status">Đang xử lý...</span>}
             </div>
           </article>;
-        })}
+        })}</div>}
         {!error && <nav aria-label="Trang ngân hàng" className="flex flex-wrap gap-3 items-center justify-center"><button type="button" disabled={loading || page <= 1} className="app-button-secondary min-h-10 px-3 disabled:opacity-40" onClick={() => setPage(p => p - 1)}>Trang trước</button><span>{page} / {pages}</span><button type="button" disabled={loading || page >= pages} className="app-button-secondary min-h-10 px-3 disabled:opacity-40" onClick={() => setPage(p => p + 1)}>Trang sau</button></nav>}
       </div>
     </section>

@@ -1,6 +1,6 @@
 'use client';
 
-import { PageHeader } from '@/components/workspace/ui';
+import { PageHeader, FilterBar, SearchField, EmptyState, LoadingBlock, Tag } from '@/components/workspace/ui';
 import React, { useState, useEffect, useRef } from 'react';
 import { accountFetch } from '@/lib/account-fetch';
 import { pinsToCsv } from '@/lib/pin-csv';
@@ -11,7 +11,6 @@ import {
   CheckCircle2,
   ExternalLink,
   X,
-  Search,
 } from 'lucide-react';
 
 interface Student {
@@ -206,114 +205,50 @@ export default function TeacherGroupsPage() {
   );
 
   return (
-    <div className="app-page px-4 sm:px-6 lg:px-8 py-6">
-      <div className="max-w-6xl mx-auto space-y-6">
+    <div className="app-page w-full px-4 sm:px-6 py-5">
+      <div className="space-y-5">
         {accountMessage && <p role="alert" className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200">{accountMessage}</p>}
         {accountMessage && <button type="button" className="app-button-secondary min-h-10 px-3" onClick={() => { setAccountMessage(''); void fetchGroups(); }}>Tải lại lớp học</button>}
         {/* Đầu trang */}
         <PageHeader title="Lớp học" description="Quản lý danh sách học sinh và bài giao của từng lớp." actions={<button onClick={() => setShowCreateModal(true)} className="app-button-primary inline-flex items-center justify-center gap-2 min-h-10 px-5 text-sm font-semibold cursor-pointer"><Plus className="w-4 h-4" /> Tạo Lớp Mới</button>} />
 
-        {/* Thanh tìm kiếm */}
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="relative min-w-0 flex-1 basis-56 max-w-md">
-            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#5f6368] dark:text-[#9aa0a6]" />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Tìm kiếm theo tên lớp hoặc mã lớp..."
-              className="w-full bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-full pl-10 pr-4 py-2.5 text-xs sm:text-sm text-[#202124] dark:text-[#e3e3e3] placeholder-[#5f6368] dark:placeholder-[#9aa0a6] focus:border-[#3c4043] dark:focus:border-[#e3e3e3] outline-hidden"
-            />
-          </div>
-          <span className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">
-            Tổng cộng: <strong className="text-[#202124] dark:text-[#e3e3e3]">{filteredGroups.length}</strong> lớp
-          </span>
-        </div>
+        {/* Tìm kiếm */}
+        <FilterBar>
+          <SearchField label="Tìm lớp" value={searchTerm} onChange={setSearchTerm} placeholder="Tìm kiếm theo tên lớp hoặc mã lớp..." />
+          <span className="text-sm text-[var(--ui-text-secondary)]">Tổng cộng: <strong className="text-[var(--ui-text-primary)]">{filteredGroups.length}</strong> lớp</span>
+        </FilterBar>
 
         {/* Danh sách các Lớp */}
         {loading ? (
-          <div className="py-20 flex flex-col items-center justify-center text-[#5f6368] dark:text-[#9aa0a6]">
-            <div className="w-8 h-8 border-4 border-[#3c4043] dark:border-[#e3e3e3] border-t-transparent rounded-full animate-spin mb-3" />
-            <p className="text-xs">Đang tải danh sách lớp học...</p>
-          </div>
+          <LoadingBlock text="Đang tải danh sách lớp học..." />
         ) : accountMessage ? null : filteredGroups.length === 0 ? (
-          <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-12 text-center">
-            <Users className="w-12 h-12 text-[#5f6368] dark:text-[#9aa0a6] mx-auto mb-3" />
-            <h3 className="text-base font-bold text-[#202124] dark:text-[#e3e3e3]">{searchTerm ? 'Không có lớp phù hợp tìm kiếm' : 'Chưa có lớp học nào'}</h3>
-            <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] mt-1 mb-5 max-w-md mx-auto">
-              Hãy tạo lớp học mới, dán danh sách tên học sinh để dễ dàng giao bài và theo dõi bảng điểm.
-            </p>
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="px-5 py-2.5 app-button-primary dark:bg-[#e3e3e3] dark:text-[#17181a] text-white text-xs font-semibold rounded-lg shadow-xs transition-all cursor-pointer"
-            >
-              Tạo Lớp Đầu Tiên
-            </button>
-          </div>
+          <EmptyState Icon={Users} title={searchTerm ? 'Không có lớp phù hợp tìm kiếm' : 'Chưa có lớp học nào'} text="Hãy tạo lớp học mới, dán danh sách tên học sinh để dễ dàng giao bài và theo dõi bảng điểm."
+            action={<button onClick={() => setShowCreateModal(true)} className="app-button-primary min-h-10 px-5 text-sm font-semibold cursor-pointer">Tạo Lớp Đầu Tiên</button>} />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
             {filteredGroups.map((group) => (
-              <div
-                key={group.id}
-                className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] hover:border-[#3c4043] dark:hover:border-[#e3e3e3] rounded-xl p-5 shadow-xs hover:shadow-xs flex flex-col justify-between transition-all"
-              >
-                <div>
-                  <div className="flex items-start justify-between gap-3 mb-3">
-                    <span className="px-2.5 py-1 rounded-full text-[11px] font-mono font-bold bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043]">
-                      MÃ: {group.publicCode}
-                    </span>
-                    <button
-                      onClick={() => copyClassLink(group.publicCode)}
-                      title="Sao chép link lớp học"
-                      className="text-xs text-[#5f6368] hover:text-[#3c4043] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] flex items-center gap-1 p-1 rounded-lg hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
-                    >
-                      {copiedCode === group.publicCode ? (
-                        <>
-                          <CheckCircle2 className="w-3.5 h-3.5 text-[var(--ui-text-secondary)]" />
-                          <span className="text-[var(--ui-text-primary)] text-[11px]">Đã chép</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-3.5 h-3.5" />
-                          <span className="text-[11px]">Chép link</span>
-                        </>
-                      )}
+              <article key={group.id} className="flex flex-col justify-between rounded-xl border bg-[var(--ui-surface)] p-4 hover:border-[var(--ui-text-secondary)] transition-colors">
+                <div className="space-y-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <Tag><span className="font-mono">MÃ: {group.publicCode}</span></Tag>
+                    <button onClick={() => copyClassLink(group.publicCode)} title="Sao chép link lớp học" className="app-button-secondary min-h-9 px-2.5 text-xs flex items-center gap-1.5 cursor-pointer">
+                      {copiedCode === group.publicCode ? <><CheckCircle2 className="w-3.5 h-3.5" /><span>Đã chép</span></> : <><Copy className="w-3.5 h-3.5" /><span>Chép link</span></>}
                     </button>
                   </div>
-
-                  <h3 className="text-base font-bold text-[#202124] dark:text-[#e3e3e3] mb-1">{group.name}</h3>
-                  {group.note && <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] mb-4 line-clamp-2">{group.note}</p>}
-
-                  <div className="grid grid-cols-2 gap-2 my-4">
-                    <div className="bg-[#f8f9fa] dark:bg-[#292a2d] p-2.5 rounded-xl border border-[#dadce0] dark:border-[#3c4043] text-center">
-                      <span className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] block">Học sinh</span>
-                      <span className="text-lg font-black text-[#3c4043] dark:text-[#e3e3e3]">{group._count.students}</span>
-                    </div>
-                    <div className="bg-[#f8f9fa] dark:bg-[#292a2d] p-2.5 rounded-xl border border-[#dadce0] dark:border-[#3c4043] text-center">
-                      <span className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] block">Bài đã giao</span>
-                      <span className="text-lg font-black text-[var(--ui-text-primary)]">{group._count.assignments}</span>
-                    </div>
+                  <div>
+                    <h2 className="text-base font-semibold [overflow-wrap:anywhere]">{group.name}</h2>
+                    {group.note && <p className="text-sm text-[var(--ui-text-secondary)] mt-1 line-clamp-2">{group.note}</p>}
                   </div>
+                  <dl className="flex gap-8">
+                    <div><dt className="text-xs text-[var(--ui-text-secondary)]">Học sinh</dt><dd className="text-xl font-semibold">{group._count.students}</dd></div>
+                    <div><dt className="text-xs text-[var(--ui-text-secondary)]">Bài đã giao</dt><dd className="text-xl font-semibold">{group._count.assignments}</dd></div>
+                  </dl>
                 </div>
-
-                <div className="app-dialog-footer pt-3 border-t border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between gap-2">
-                  <button
-                    onClick={() => handleOpenGroupDetails(group)}
-                    className="flex-1 py-2 bg-[#f1f3f4] hover:bg-[#e8eaed] dark:bg-[#292a2d] dark:hover:bg-[#303134] text-[#202124] dark:text-[#e3e3e3] text-xs font-semibold rounded-lg border border-[#dadce0] dark:border-[#3c4043] transition-all cursor-pointer"
-                  >
-                    Xem Danh Sách
-                  </button>
-                  <a
-                    href={`/c/${group.publicCode}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="p-2 bg-[#f1f3f4] hover:bg-[#e8eaed] dark:bg-[#292a2d] dark:hover:bg-[#303134] text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] rounded-lg border border-[#dadce0] dark:border-[#3c4043] transition-all"
-                    title="Mở cổng lớp học"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                  </a>
+                <div className="app-dialog-footer mt-4 pt-3 border-t flex items-center gap-2">
+                  <button onClick={() => handleOpenGroupDetails(group)} className="app-button-secondary flex-1 min-h-10 text-sm font-medium cursor-pointer">Xem Danh Sách</button>
+                  <a href={`/c/${group.publicCode}`} target="_blank" rel="noreferrer" title="Mở cổng lớp học" aria-label="Mở cổng lớp học" className="app-button-secondary min-h-10 w-10 flex items-center justify-center"><ExternalLink className="w-4 h-4" /></a>
                 </div>
-              </div>
+              </article>
             ))}
           </div>
         )}
