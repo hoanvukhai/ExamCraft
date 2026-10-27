@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-require-imports -- CommonJS CLI entry loads the existing guarded database helper. */
 // No browser downloads or production database fallback. See tests_pilot/pilot.test.ts.
 const fs = require('node:fs');
 const { spawnSync } = require('node:child_process');
@@ -17,8 +16,9 @@ async function main() {
   console.log('Pilot guard: installed browser; isolatedTest confirmed; exact test database selected.');
   if (process.env.PILOT_FLOW && !/^F[1-7]$|^F9$|^F1[0-9]$|^F2[0-5]$/.test(process.env.PILOT_FLOW)) throw Error('BLOCKED: PILOT_FLOW must name F1-F7 or F9-F25. F8 is the separate backup rehearsal.');
   const admin = process.argv.includes('--admin');
-  if (admin && process.env.PILOT_FLOW) throw Error('Do not combine --admin with PILOT_FLOW.');
-  const result = spawnSync(process.execPath, ['--import', 'tsx', '--test', '--test-concurrency=1', ...(process.env.PILOT_FLOW ? ['--test-name-pattern', '^' + process.env.PILOT_FLOW + ' '] : []), admin ? 'tests_pilot/admin.test.ts' : 'tests_pilot/pilot.test.ts'], { env: { ...env, PILOT_BROWSER_PATH: browser }, stdio: 'inherit' });
+  const typography = process.argv.includes('--typography');
+  if ((admin || typography) && process.env.PILOT_FLOW || admin && typography) throw Error('Select only one browser suite or PILOT_FLOW.');
+  const result = spawnSync(process.execPath, ['--import', 'tsx', '--test', '--test-concurrency=1', ...(process.env.PILOT_FLOW ? ['--test-name-pattern', '^' + process.env.PILOT_FLOW + ' '] : []), typography ? 'tests_pilot/typography.test.ts' : admin ? 'tests_pilot/admin.test.ts' : 'tests_pilot/pilot.test.ts'], { env: { ...env, PILOT_BROWSER_PATH: browser }, stdio: 'inherit' });
   process.exitCode = result.status ?? 1;
 }
 main().catch(() => { console.error('BLOCKED: pilot preflight failed (browser, isolated server, or test DB). No fixture writes performed.'); process.exitCode = 1; });

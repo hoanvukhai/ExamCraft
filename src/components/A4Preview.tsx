@@ -20,7 +20,6 @@ import { resolveHeaderLines } from '@/lib/header-layout';
 import { 
   Printer, 
   Download, 
-  Eye, 
   FileText, 
   CheckSquare, 
   BookOpen, 
@@ -46,10 +45,12 @@ interface A4PreviewProps {
 
 export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
   const [viewMode, setViewMode] = useState<'exam' | 'parallel' | 'answers' | 'solutions' | 'matrix'>('exam');
-  const [zoom, setZoom] = useState<number>(100);
+  // null follows the available width; explicit percentages are actual paper zoom.
+  const [zoom, setZoom] = useState<number | null>(null);
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const scrollArea = useRef<HTMLDivElement>(null);
   const [fitScale, setFitScale] = useState(1);
+  const effectiveZoom = zoom ?? Math.round(fitScale * 100);
   useEffect(() => {
     const area = scrollArea.current;
     if (!area) return;
@@ -89,7 +90,8 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
   const headerLines = resolveHeaderLines(exam);
   const headerAreas = (['left', 'right'] as const).filter(area => headerLines.some(line => line.area === area));
 
-  const handlePrint = () => {
+  const handlePrint = async () => {
+    await document.fonts.ready;
     window.print();
   };
 
@@ -98,7 +100,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
 
 
   return (
-    <div className="a4-preview-container flex flex-col h-full bg-[#f1f3f4] dark:bg-[#17181a] rounded-2xl border border-[#dadce0] dark:border-[#3c4043] overflow-hidden shadow-xs">
+    <div className="a4-preview-container flex flex-col h-full min-h-[32rem] bg-[#f1f3f4] dark:bg-[#17181a] rounded-2xl border border-[#dadce0] dark:border-[#3c4043] overflow-hidden shadow-xs">
       {/* Top Preview Toolbar */}
       <div className="no-print bg-white dark:bg-[#202124] px-4 py-3 border-b border-[#dadce0] dark:border-[#3c4043] flex flex-wrap items-center justify-between gap-3">
         {/* Chế độ xem Google Segmented Pill */}
@@ -165,30 +167,35 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
         </div>
 
         {/* Nút hành động */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Zoom controls */}
-          <div className="hidden sm:flex items-center gap-1 text-[#5f6368] dark:text-[#9aa0a6] bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] px-2.5 py-1 rounded-full text-xs shadow-2xs">
+          <div className="flex flex-wrap items-center gap-1 text-[#5f6368] dark:text-[#9aa0a6] bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] px-2.5 py-1 rounded-xl text-xs shadow-2xs">
             <button
-              onClick={() => setZoom(Math.max(60, zoom - 10))}
+              onClick={() => setZoom(Math.max(25, effectiveZoom - 10))}
+              disabled={effectiveZoom <= 25}
               title="Thu nhỏ"
-              className="p-1 hover:text-[#202124] dark:hover:text-[#e3e3e3] cursor-pointer"
+              className="min-h-10 min-w-10 p-1 hover:text-[#202124] dark:hover:text-[#e3e3e3] cursor-pointer disabled:opacity-40"
             >
               <ZoomOut className="w-3.5 h-3.5" />
             </button>
-            <span className="w-10 text-center font-mono font-medium">{zoom}%</span>
+            <span className="w-10 text-center font-mono font-medium" aria-live="polite">{effectiveZoom}%</span>
             <button
-              onClick={() => setZoom(Math.min(140, zoom + 10))}
+              onClick={() => setZoom(Math.min(200, effectiveZoom + 10))}
+              disabled={effectiveZoom >= 200}
               title="Phóng to"
-              className="p-1 hover:text-[#202124] dark:hover:text-[#e3e3e3] cursor-pointer"
+              className="min-h-10 min-w-10 p-1 hover:text-[#202124] dark:hover:text-[#e3e3e3] cursor-pointer disabled:opacity-40"
             >
               <ZoomIn className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => setZoom(100)}
               title="Khôi phục chuẩn 100%"
-              className="p-1 hover:text-[#202124] dark:hover:text-[#e3e3e3] cursor-pointer"
+              className="min-h-10 px-2 hover:text-[#202124] dark:hover:text-[#e3e3e3] cursor-pointer"
             >
-              <Maximize2 className="w-3.5 h-3.5" />
+              100%
+            </button>
+            <button onClick={() => setZoom(null)} title="Vừa chiều ngang" aria-pressed={zoom === null} className="min-h-10 px-2 flex items-center gap-1 hover:text-[#202124] dark:hover:text-[#e3e3e3] cursor-pointer">
+              <Maximize2 className="w-3.5 h-3.5" /> Vừa khung
             </button>
           </div>
 
@@ -212,10 +219,10 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
       </div>
 
       {/* Vùng cuộn hiển thị trang A4 */}
-      <div ref={scrollArea} className="a4-scroll-area grow overflow-auto p-4 sm:p-8 flex justify-center items-start">
+      <div ref={scrollArea} className="a4-scroll-area grow min-h-0 overflow-auto p-4 sm:p-8">
         <div
-          style={{ zoom: fitScale * zoom / 100 }}
-          className="a4-paper shrink-0 w-[210mm] min-h-[297mm] bg-white text-black p-[18mm] shadow-xs border border-[#dadce0] font-serif leading-normal"
+          style={{ zoom: effectiveZoom / 100 }}
+          className="a4-paper mx-auto w-[210mm] min-h-[297mm] bg-white text-black p-[18mm] shadow-xs border border-[#dadce0] font-serif leading-normal"
         >
           {/* VIEW: ĐỀ THI */}
           {viewMode === 'exam' && (
