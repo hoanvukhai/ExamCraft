@@ -1,5 +1,5 @@
-import { Database } from 'lucide-react';
 'use client';
+import { Database } from 'lucide-react';
 import { PageHeader, EmptyState } from '@/components/workspace/ui';
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
