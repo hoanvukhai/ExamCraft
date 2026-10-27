@@ -687,15 +687,15 @@ test('F19 library search, starred, recent, trash, restore and safe controls', { 
   await waitUntil(async () => (await f.db.exam.findUniqueOrThrow({ where: { id: ids[0] } })).isStarred, 'Star must persist');
   await click(f.page, 'Đề quan trọng (Gắn sao)'); await waitTitles([titles[0]]); checked.push('starred');
   await click(f.page, 'Đã sửa gần đây'); await waitTitles(titles); checked.push('recent');
-  await f.page.getByRole('button', { name: /^Tất cả đề thi/ }).click(); await waitTitles(titles);
+  await f.page.getByRole('navigation', { name: 'Không gian giáo viên' }).getByRole('link', { name: 'Kho đề', exact: true }).click(); await waitTitles(titles);
   await card(titles[1]).getByTitle('Chuyển vào thùng rác', { exact: true }).click();
   await f.page.getByRole('dialog', { name: 'Xác nhận thao tác', exact: true }).getByRole('button', { name: 'Xác nhận', exact: true }).click();
   await waitUntil(async () => Boolean((await f.db.exam.findUniqueOrThrow({ where: { id: ids[1] } })).deletedAt), 'Trash must persist');
   await waitTitles([titles[0], titles[2], titles[3]]);
-  await f.page.getByRole('button', { name: 'Thùng rác', exact: true }).filter({ visible: true }).click(); await waitTitles([titles[1]]);
+  await f.page.getByRole('navigation', { name: 'Không gian giáo viên' }).getByRole('link', { name: 'Thùng rác', exact: true }).click(); await waitTitles([titles[1]]);
   await card(titles[1]).getByTitle('Khôi phục đề', { exact: true }).click(); await waitTitles([]);
   assert.equal((await f.db.exam.findUniqueOrThrow({ where: { id: ids[1] } })).deletedAt, null);
-  await f.page.getByRole('button', { name: /^Tất cả đề thi/ }).click(); await waitTitles(titles); checked.push('trash-and-restore');
+  await f.page.getByRole('navigation', { name: 'Không gian giáo viên' }).getByRole('link', { name: 'Kho đề', exact: true }).click(); await waitTitles(titles); checked.push('trash-and-restore');
   await card(titles[1]).click(); await f.page.getByTitle('Lưu các thay đổi lên máy chủ').first().waitFor();
   assert.ok((await f.page.locator('body').innerText()).includes(titles[1] + '_CONTENT'));
   await f.page.getByRole('link', { name: 'Về kho đề', exact: true }).click(); await waitTitles(titles); checked.push('open-and-return');
@@ -746,7 +746,7 @@ test('F19 library search, starred, recent, trash, restore and safe controls', { 
   await f.page.getByTitle('Trợ lý Thư ký AI Cá Nhân (Bấm để xem)', { exact: true }).click();
   await f.page.getByRole('heading', { name: 'Thư Ký Số & Trợ Lý Giáo Viên', exact: true }).waitFor();
   await f.page.locator('div.fixed.inset-y-0').locator('button:has(svg.lucide-x)').click(); checked.push('secretary-rail-open-close-only-no-ai-call');
-  await f.page.getByRole('button', { name: 'Soạn Đề Thi Mới', exact: true }).click();
+  await f.page.getByRole('link', { name: 'Soạn đề thi mới', exact: true }).filter({ visible: true }).click();
   await f.page.getByTitle('Lưu các thay đổi lên máy chủ').first().waitFor();
   await f.page.getByRole('link', { name: 'Về kho đề', exact: true }).click();
   for (const id of ids) assert.equal((await f.db.exam.findUniqueOrThrow({ where: { id } })).deletedAt, null);

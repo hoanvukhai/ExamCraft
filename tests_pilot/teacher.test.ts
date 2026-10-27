@@ -76,6 +76,25 @@ test('teacher management: trash, bank, class context, routes and mobile', { time
       assert.ok(await db.folder.findUnique({ where: { id: folder.id } }));
       await page.unroute('**/api/folders/' + folder.id);
     });
+    await t.test('permanent delete: cancel keeps the exam, confirm removes it, an assigned exam is refused with a reason', async () => {
+      await page.goto(origin + '/');
+      await card('Đề giao diện 1').getByTitle('Chuyển vào thùng rác', { exact: true }).click(); await confirm(true);
+      await nav().getByRole('link', { name: 'Thùng rác', exact: true }).click();
+      await page.getByRole('heading', { name: 'Thùng rác', exact: true }).waitFor();
+      await card('Đề giao diện 1').getByRole('button', { name: 'Xóa vĩnh viễn', exact: true }).click(); await confirm(false);
+      assert.ok(await db.exam.findUnique({ where: { id: examIds[1] } }), 'cancel keeps the exam');
+      await card('Đề giao diện 1').getByRole('button', { name: 'Xóa vĩnh viễn', exact: true }).click(); await confirm(true);
+      await waitAbsent(card('Đề giao diện 1'));
+      assert.equal(await db.exam.findUnique({ where: { id: examIds[1] } }), null, 'the exam is gone for good');
+      await api('/api/assignments', 'POST', { examId: examIds[0], title: 'Bài giao kiểm', identityMode: 'FREE_NAME' });
+      await nav().getByRole('link', { name: 'Kho đề', exact: true }).click();
+      await card('Đề giao diện 0').getByTitle('Chuyển vào thùng rác', { exact: true }).click(); await confirm(true);
+      await nav().getByRole('link', { name: 'Thùng rác', exact: true }).click();
+      await card('Đề giao diện 0').getByRole('button', { name: 'Xóa vĩnh viễn', exact: true }).click(); await confirm(true);
+      await page.getByRole('alert').getByText(/đã được giao/).waitFor();
+      const kept = await db.exam.findUniqueOrThrow({ where: { id: examIds[0] } });
+      assert.ok(kept.deletedAt, 'the assigned exam stays in the trash'); assert.equal(await db.assignment.count({ where: { examId: examIds[0] } }), 1);
+    });
     const prefix = 'BANK_' + run;
     for (let i = 0; i < 23; i++) await db.question.create({ data: { ownerId: ids[1], authorId: ids[1], subject: 'toan', grade: 6, visibility: 'SHARED', points: 1, type: 'MULTIPLE_CHOICE', difficulty: 'THONG_HIEU', content: `${prefix}_${String(i).padStart(2, '0')} Tính $x^2$.`, solution: 'Lời giải được giữ', topics: [], tags: [], payload: { choices: [{ key: 'A', text: 'Phương án một' }, { key: 'B', text: 'Phương án hai' }], correct: 'A' } } });
     const own = await db.question.create({ data: { ownerId: ids[0], authorId: ids[0], subject: 'toan', grade: 6, type: 'MATCHING', difficulty: 'THONG_HIEU', content: 'Câu riêng ghép đôi', solution: 'Lời giải riêng', topics: [], tags: [], payload: { matchingPairs: [{ id: 'a', left: 'Một', right: '1' }] } } });

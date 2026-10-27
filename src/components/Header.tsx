@@ -133,6 +133,7 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Nút Quay lại Kho đề của tôi */}
         <Link
           href="/"
+          aria-label="Về kho đề"
           title="Quay về Kho đề của tôi (Lưu tự động)"
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-[#5f6368] hover:text-[#3c4043] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] transition-colors cursor-pointer shrink-0"
         >

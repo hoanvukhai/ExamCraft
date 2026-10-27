@@ -3,7 +3,6 @@
 import { applyCopilotSubmission } from '@/lib/copilot-submission';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import Link from 'next/link';
 import { Exam, Question } from '@/types/exam';
 import { Header } from '@/components/Header';
 import { LeftNavigationRail } from '@/components/LeftNavigationRail';
@@ -317,22 +316,21 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         onPrintPdf={() => window.print()}
       />
 
-      <div className="no-print px-4 py-2 border-b flex flex-wrap gap-4 items-center text-sm">
-        <Link href="/" prefetch={false} onNavigate={event => { event.preventDefault(); window.location.assign('/'); }} className="underline">Về kho đề</Link>
-        <button type="button" disabled={!ready || !exam.questions.length} onClick={() => setPresentationOpen(true)} className="underline">Trình chiếu</button>
-        {exam.serverId && <button type="button" onClick={() => setCollaborationOpen(true)} className="underline">Cùng soạn · Góp ý · Lịch sử</button>}
-        {exam.access && <span>{exam.access.canManage ? 'Đề của bạn' : exam.access.canEdit ? 'Được mời cùng sửa' : exam.access.canComment ? 'Quyền xem và góp ý' : 'Quyền chỉ xem'}</span>}
+      <div className="no-print px-4 py-2 border-b flex flex-wrap gap-2 items-center text-sm bg-[var(--ui-surface)]">
+        <button type="button" disabled={!ready || !exam.questions.length} onClick={() => setPresentationOpen(true)} className="app-button-secondary min-h-9 px-3 text-xs disabled:opacity-40">Trình chiếu</button>
+        {exam.serverId && <button type="button" onClick={() => setCollaborationOpen(true)} className="app-button-secondary min-h-9 px-3 text-xs">Cùng soạn · Góp ý · Lịch sử</button>}
+        {exam.access && <span className="ml-auto text-xs px-2.5 py-1 rounded-full bg-[var(--ui-surface-variant)] text-[var(--ui-text-secondary)]">{exam.access.canManage ? 'Đề của bạn' : exam.access.canEdit ? 'Được mời cùng sửa' : exam.access.canComment ? 'Quyền xem và góp ý' : 'Quyền chỉ xem'}</span>}
       </div>
 
       {ready && <ExamReviewPanel exam={exam} />}
 
       {(saveState !== 'saved' || saveMessage) && (
-        <div role="status" className="px-4 py-2 text-sm border-b bg-white dark:bg-[#202124] flex items-center gap-3 flex-wrap">
-          <span>{saveState === 'loading' ? 'Đang mở đề…' : saveState === 'saving' ? 'Đang lưu…' : saveState === 'dirty' ? 'Có thay đổi đang chờ lưu' : saveState === 'offline' ? 'Mất kết nối — đang giữ bản nháp trên máy' : saveMessage || 'Chưa lưu được đề'}</span>
-          {saveState !== 'loading' && saveState !== 'saving' && <button onClick={() => void save()} className="underline">Thử lưu lại</button>}
-          <button onClick={downloadDraft} className="underline">Tải bản nháp</button>
-          {saveState === 'conflict' && <button onClick={() => void saveCopy()} className="underline">Lưu bản nháp thành đề mới</button>}
-          {saveState === 'conflict' && ready && exam.serverId && <button onClick={() => void openLatest()} className="underline">Mở bản máy chủ, giữ riêng nháp</button>}
+        <div role="status" className="px-4 py-2 text-sm border-b bg-[var(--ui-surface)] flex items-center gap-2 flex-wrap">
+          <span className="mr-1">{saveState === 'loading' ? 'Đang mở đề…' : saveState === 'saving' ? 'Đang lưu…' : saveState === 'dirty' ? 'Có thay đổi đang chờ lưu' : saveState === 'offline' ? 'Mất kết nối — đang giữ bản nháp trên máy' : saveMessage || 'Chưa lưu được đề'}</span>
+          {saveState !== 'loading' && saveState !== 'saving' && <button onClick={() => void save()} className="app-button-secondary min-h-9 px-3 text-xs">Thử lưu lại</button>}
+          <button onClick={downloadDraft} className="app-button-secondary min-h-9 px-3 text-xs">Tải bản nháp</button>
+          {saveState === 'conflict' && <button onClick={() => void saveCopy()} className="app-button-secondary min-h-9 px-3 text-xs">Lưu bản nháp thành đề mới</button>}
+          {saveState === 'conflict' && ready && exam.serverId && <button onClick={() => void openLatest()} className="app-button-secondary min-h-9 px-3 text-xs">Mở bản máy chủ, giữ riêng nháp</button>}
         </div>
       )}
       {!ready && <div className="p-4">{saveMessage || 'Đang tải nội dung. Vui lòng chờ trước khi sửa.'}</div>}

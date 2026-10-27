@@ -2,10 +2,9 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { TeacherNavigation } from './TeacherNavigation';
+import { TeacherNavigation, TeacherSidebar } from './TeacherNavigation';
 import { useConfirmAction } from './ConfirmAction';
 import { subjectLabel, teacherErrorMessage } from '@/lib/teacher-ui';
-import Link from 'next/link';
 import {
   Sparkles,
   Plus,
@@ -26,13 +25,11 @@ import {
   ChevronDown,
   Bot,
   GraduationCap,
-  Users,
   Database,
   Upload,
   Sun,
   Moon,
   Key,
-  ShieldCheck,
   Check,
   X,
   Brain
@@ -356,6 +353,40 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
     finally { mutation.current = false; setPendingExam(''); }
   };
 
+  // Xóa vĩnh viễn: chỉ trong thùng rác, có xác nhận riêng; máy chủ từ chối nếu đề đã giao
+  const purgeOne = async (item: ExamSummary) => {
+    const res = await accountFetch(currentUser.id, `/api/exams/${item.id}?permanent=1`, { method: 'DELETE' });
+    const result = await res.json().catch(() => ({}));
+    if (!res.ok) throw Error(result.error || 'Chưa xóa vĩnh viễn được.');
+  };
+  const handlePurgeExam = async (examId: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (mutation.current || currentView !== 'trash') return;
+    const item = exams.find(exam => exam.id === examId);
+    if (!item || item.permissions?.canManage === false) return;
+    mutation.current = true; setPendingExam(examId); setActionError('');
+    try {
+      if (!await confirmAction(`Xóa vĩnh viễn “${item.title}”? Không thể khôi phục. Các câu hỏi đã lưu trong Ngân hàng câu hỏi không bị xóa.`)) return;
+      await purgeOne(item);
+      showToast('Đã xóa vĩnh viễn đề.');
+      await loadExams(); await loadFolders();
+    } catch (cause) { setActionError(teacherErrorMessage(cause, 'Chưa kết nối được. Hãy thử lại thao tác.')); }
+    finally { mutation.current = false; setPendingExam(''); }
+  };
+  const handleEmptyTrash = async () => {
+    if (mutation.current || currentView !== 'trash' || !exams.length) return;
+    const targets = exams.filter(exam => exam.permissions?.canManage !== false);
+    mutation.current = true; setPendingExam('all'); setActionError('');
+    try {
+      if (!await confirmAction(`Xóa vĩnh viễn ${targets.length} đề đang hiển thị trong thùng rác? Không thể khôi phục. Đề đã giao cho học sinh sẽ được giữ lại.`)) return;
+      let removed = 0; const failures: string[] = [];
+      for (const item of targets) { try { await purgeOne(item); removed++; } catch (cause) { failures.push(`“${item.title}”: ${teacherErrorMessage(cause, 'chưa xóa được')}`); } }
+      if (removed) showToast(`Đã xóa vĩnh viễn ${removed} đề.`);
+      if (failures.length) setActionError(`${failures.length} đề chưa xóa được. ${failures[0]}`);
+      await loadExams(); await loadFolders();
+    } finally { mutation.current = false; setPendingExam(''); }
+  };
+
   // Nhân bản đề thi (Clone)
   const handleCloneExam = async (exam: ExamSummary, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
@@ -533,61 +564,13 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
       ───────────────────────────────────────────────────────────── */}
       <div className="flex-1 flex overflow-hidden min-h-0 relative">
         {/* CỘT TRÁI: MENU QUẢN LÝ & CÂY THƯ MỤC */}
-        <aside className="w-64 bg-white dark:bg-[#17181a] border-r border-[#dadce0] dark:border-[#3c4043] hidden lg:flex flex-col justify-between shrink-0 overflow-y-auto p-3 shadow-2xs z-20">
-          <div className="space-y-4">
-            {/* Nút Tạo đề mới to kiểu Google FAB */}
-            <div>
-              <button
-                onClick={() => handleOpenEditor()}
-                className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl app-button-primary text-white font-semibold text-xs shadow-xs transition-all cursor-pointer"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Soạn Đề Thi Mới</span>
-              </button>
-            </div>
-
-            {/* Mục điều hướng chính */}
-            <div className="space-y-0.5">
-              <button
-                onClick={() => { setCurrentView('all'); setSelectedFolderId(null); }}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
-                  currentView === 'all' && !selectedFolderId
-                    ? 'bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] font-semibold'
-                    : 'text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d]'
-                }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <FileText className="w-4 h-4 text-[#5f6368] dark:text-[#9aa0a6]" />
-                  <span>Tất cả đề thi</span>
-                </div>
-                <span className="text-[10px] text-[#5f6368] dark:text-[#9aa0a6]">{exams.length}</span>
-              </button>
-
-              <button
-                onClick={() => { setCurrentView('starred'); setSelectedFolderId(null); }}
-                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
-                  currentView === 'starred'
-                    ? 'bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] font-semibold'
-                    : 'text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d]'
-                }`}
-              >
-                <Star className="w-4 h-4 text-[var(--ui-text-secondary)] fill-current" />
-                <span>Đề quan trọng (Gắn sao)</span>
-              </button>
-
-              <button
-                onClick={() => { setCurrentView('recent'); setSelectedFolderId(null); }}
-                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
-                  currentView === 'recent'
-                    ? 'bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] font-semibold'
-                    : 'text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d]'
-                }`}
-              >
-                <Clock className="w-4 h-4 text-[#5f6368] dark:text-[#9aa0a6]" />
-                <span>Đã sửa gần đây</span>
-              </button>
-            </div>
-
+        <TeacherSidebar
+          isAdmin={currentUser.role === 'SUPER_ADMIN'}
+          libraryExtras={<>
+            <button type="button" onClick={() => { setCurrentView('starred'); setSelectedFolderId(null); }} aria-current={currentView === 'starred' ? 'page' : undefined} className={`w-full min-h-9 flex items-center gap-2 px-2 rounded-lg text-xs cursor-pointer ${currentView === 'starred' ? 'app-button-tonal font-semibold' : 'hover:bg-[var(--ui-surface-variant)]'}`}><Star className="w-3.5 h-3.5 text-[var(--ui-text-secondary)]" /><span>Đề quan trọng (Gắn sao)</span></button>
+            <button type="button" onClick={() => { setCurrentView('recent'); setSelectedFolderId(null); }} aria-current={currentView === 'recent' ? 'page' : undefined} className={`w-full min-h-9 flex items-center gap-2 px-2 rounded-lg text-xs cursor-pointer ${currentView === 'recent' ? 'app-button-tonal font-semibold' : 'hover:bg-[var(--ui-surface-variant)]'}`}><Clock className="w-3.5 h-3.5 text-[var(--ui-text-secondary)]" /><span>Đã sửa gần đây</span></button>
+          </>}
+        >
             {/* CÂY THƯ MỤC CÁ NHÂN (Tối đa 2 cấp) */}
             <div className="pt-2 border-t border-[#f1f3f4] dark:border-[#3c4043]">
               <div className="flex items-center justify-between px-3 mb-1.5">
@@ -737,75 +720,16 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
               </div>
             </div>
 
-            {/* DẠY HỌC & KHẢO THÍ */}
-            <div className="pt-2 border-t border-[#f1f3f4] dark:border-[#3c4043] space-y-0.5">
-              <span className="px-3 text-[10px] font-semibold uppercase tracking-wider text-[#5f6368] dark:text-[#9aa0a6] block mb-1">
-                Khảo thí & Lớp
-              </span>
-
-              <Link
-                href="/teacher/groups"
-                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors"
-              >
-                <Users className="w-4 h-4 text-[#5f6368] dark:text-[#9aa0a6]" />
-                <span>Quản lý Lớp học</span>
-              </Link>
-
-              <Link
-                href="/teacher/assignments"
-                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors"
-              >
-                <GraduationCap className="w-4 h-4 text-[#5f6368] dark:text-[#9aa0a6]" />
-                <span>Bài đã giao</span>
-              </Link>
-
-              <button
-                onClick={() => router.push('/teacher/questions')}
-                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
-              >
-                <Database className="w-4 h-4 text-[#5f6368] dark:text-[#9aa0a6]" />
-                <span>Ngân hàng câu hỏi</span>
-              </button>
-            </div>
-
-            {/* THÙNG RÁC */}
-            <div className="pt-2 border-t border-[#f1f3f4] dark:border-[#3c4043]">
-              <button
-                onClick={() => { setCurrentView('trash'); setSelectedFolderId(null); }}
-                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
-                  currentView === 'trash'
-                    ? 'bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 font-semibold'
-                    : 'text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d]'
-                }`}
-              >
-                <Trash2 className="w-4 h-4" />
-                <span>Thùng rác</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Dưới cùng cột trái: Link Admin nếu có quyền */}
-          {currentUser.role === 'SUPER_ADMIN' && (
-            <div className="pt-3 border-t border-[#f1f3f4] dark:border-[#3c4043]">
-              <Link
-                href="/admin/users"
-                className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-[#3c4043] dark:text-[#e3e3e3] font-semibold bg-[#f1f3f4] dark:bg-[#292a2d] hover:bg-[#dadce0] transition-colors"
-              >
-                <ShieldCheck className="w-4 h-4" />
-                <span>Trang Quản trị Hệ thống</span>
-              </Link>
-            </div>
-          )}
-        </aside>
+        </TeacherSidebar>
 
         {/* VÙNG GIỮA: NỘI DUNG CHÍNH (CANVAS QUẢN LÝ ĐỀ THI) */}
         <main className="app-page flex-1 overflow-y-auto px-4 sm:px-6 py-5 min-w-0">
           {currentView !== 'trash' && <LocalDraftsPanel ownerId={currentUser.id} />}
           {currentView !== 'trash' && <nav aria-label="Điều hướng kho đề" className="lg:hidden my-3 flex flex-wrap items-center gap-2 text-xs">
-            {([{ value: 'all', name: 'Tất cả' }, { value: 'starred', name: 'Quan trọng' }, { value: 'recent', name: 'Gần đây' }, { value: 'trash', name: 'Thùng rác' }] as const).map(view => <button key={view.value} type="button" className={`border rounded-lg p-2 ${currentView === view.value ? 'app-button-tonal' : 'hover:bg-[var(--ui-surface-variant)]'}`} onClick={() => { setCurrentView(view.value); setSelectedFolderId(null); }}>{view.name}</button>)}
+            {([{ value: 'all', name: 'Tất cả' }, { value: 'starred', name: 'Quan trọng' }, { value: 'recent', name: 'Gần đây' }] as const).map(view => <button key={view.value} type="button" className={`border rounded-lg p-2 ${currentView === view.value ? 'app-button-tonal' : 'hover:bg-[var(--ui-surface-variant)]'}`} onClick={() => { setCurrentView(view.value); setSelectedFolderId(null); }}>{view.name}</button>)}
             <button type="button" className="border rounded-lg p-2" onClick={() => { setTargetParentFolderId(null); setIsCreateFolderModalOpen(true); }}>Tạo thư mục</button>
             <select aria-label="Chọn thư mục" className="border rounded-lg p-2 bg-transparent" value={selectedFolderId ?? ''} onChange={e => { setSelectedFolderId(e.target.value || null); setCurrentView('all'); }}><option value="">Mọi thư mục</option>{folders.flatMap(folder => [folder, ...(folder.children ?? [])]).map(folder => <option key={folder.id} value={folder.id}>{folder.name}</option>)}</select>
-            <Link href="/teacher/groups" className="border rounded-lg p-2">Lớp học</Link><Link href="/teacher/assignments" className="border rounded-lg p-2">Bài đã giao</Link>
+            
             <input aria-label="Tìm đề trong kho" placeholder="Tìm tên đề..." className="border rounded-lg p-2 bg-transparent flex-1 min-w-40" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
           </nav>}
           {location.get('choose') === 'assign' && currentView !== 'trash' && <p role="status" className="border rounded-lg p-3 mb-4 text-sm">Chọn một đề để mở, rồi bấm “Chia sẻ &amp; Thi Online” để giao cho học sinh.</p>}
@@ -864,7 +788,8 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
           </div>
 
           }
-          {currentView === 'trash' && <section className="mb-5"><h1 className="text-2xl font-semibold">Thùng rác</h1><p className="text-sm text-[var(--ui-text-secondary)] mt-2">Đề đã chuyển vào thùng rác. Khôi phục để tiếp tục mở và chỉnh sửa.</p></section>}
+          {currentView === 'trash' && <section className="mb-5 flex flex-wrap items-start justify-between gap-3"><div><h1 className="text-2xl font-semibold">Thùng rác</h1><p className="text-sm text-[var(--ui-text-secondary)] mt-2">Đề đã chuyển vào thùng rác. Khôi phục để tiếp tục mở và chỉnh sửa, hoặc xóa vĩnh viễn nếu không cần nữa. Đề đã giao cho học sinh không xóa vĩnh viễn được.</p></div>
+            {exams.length > 0 && <button type="button" disabled={!!pendingExam} onClick={() => void handleEmptyTrash()} className="app-button-secondary inline-flex items-center gap-2 min-h-10 px-4 text-sm text-red-700 dark:text-red-300 disabled:opacity-40"><Trash2 className="w-4 h-4" /><span>Dọn thùng rác</span></button>}</section>}
           {actionError && <p role="alert" className="border border-red-400 rounded-lg p-3 mb-4 text-sm">{actionError}</p>}
           {/* Thanh Toolbar lọc & chế độ xem */}
           <div className="flex flex-wrap items-center justify-between gap-3 mb-4 bg-white dark:bg-[#202124] p-3 rounded-xl border border-[#dadce0] dark:border-[#3c4043]">
@@ -1080,6 +1005,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                       >
                         {currentView === 'trash' ? <><RotateCcw className="w-3.5 h-3.5" /><span>Khôi phục</span></> : <Trash2 className="w-3.5 h-3.5" />}
                       </button>
+                      {currentView === 'trash' && <button type="button" disabled={!!pendingExam || exam.permissions?.canManage === false} onClick={(e) => void handlePurgeExam(exam.id, e)} title="Xóa vĩnh viễn đề này" className="inline-flex items-center gap-1 min-h-10 px-2 rounded-lg hover:bg-[var(--ui-surface-variant)] text-red-700 dark:text-red-300 cursor-pointer disabled:opacity-40"><Trash2 className="w-3.5 h-3.5" /><span>Xóa vĩnh viễn</span></button>}
                     </div>
                   </div>
                 </div>
@@ -1168,6 +1094,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                           >
                             {currentView === 'trash' ? <><RotateCcw className="w-3.5 h-3.5" /><span>Khôi phục</span></> : <Trash2 className="w-3.5 h-3.5" />}
                           </button>
+                          {currentView === 'trash' && <button type="button" disabled={!!pendingExam || exam.permissions?.canManage === false} onClick={(e) => void handlePurgeExam(exam.id, e)} title="Xóa vĩnh viễn đề này" className="inline-flex items-center gap-1 min-h-10 px-2 rounded-lg hover:bg-[var(--ui-surface-variant)] text-red-700 dark:text-red-300 cursor-pointer disabled:opacity-40"><Trash2 className="w-3.5 h-3.5" /><span>Xóa vĩnh viễn</span></button>}
                         </div>
                       </td>
                     </tr>
