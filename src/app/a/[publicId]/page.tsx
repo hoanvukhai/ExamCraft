@@ -499,7 +499,7 @@ function StudentExamContent({
   // MÀN HÌNH 1: ĐANG TẢI HOẶC LỖI
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
+      <div className="app-page min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
         <div className="w-10 h-10 border-3 border-[#3c4043] dark:border-[#e3e3e3] border-t-transparent rounded-full animate-spin mb-4" />
         <p className="text-[#5f6368] dark:text-[#9aa0a6] font-medium text-sm">Đang tải phòng thi trực tuyến...</p>
       </div>
@@ -508,7 +508,7 @@ function StudentExamContent({
 
   if (error || !assignment) {
     return (
-      <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
+      <div className="app-page min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
         <div className="max-w-md w-full bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-8 text-center shadow-xs">
           <ShieldAlert className="w-14 h-14 text-[#c5221f] dark:text-[#f28b82] mx-auto mb-4" />
           <h2 className="text-xl font-bold text-[#202124] dark:text-[#e3e3e3] mb-2">Không thể truy cập bài thi</h2>
@@ -527,7 +527,7 @@ function StudentExamContent({
   // MÀN HÌNH 3: KẾT QUẢ SAU KHI NỘP BÀI THÀNH CÔNG
   if (submitResult) {
     return (
-      <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] text-[#202124] dark:text-[#e3e3e3] py-10 px-4">
+      <div className="app-page min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] text-[#202124] dark:text-[#e3e3e3] py-10 px-4">
         <div className="max-w-3xl mx-auto space-y-6">
           {submitNotice && <p role="status" className="p-4 border rounded-xl bg-neutral-50 text-[var(--ui-accent)]">{submitNotice}</p>}
           <StudentDraftRecovery entries={recoveryEntries} />
@@ -680,7 +680,7 @@ function StudentExamContent({
   // MÀN HÌNH 2: FORM ĐIỀN TÊN TRƯỚC KHI BẮT ĐẦU
   if (!attempt) {
     return (
-      <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
+      <div className="app-page min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
         <div className="max-w-md w-full bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-8 shadow-xs">
           <div className="w-12 h-12 bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] rounded-xl flex items-center justify-center mb-5 border border-[#3c4043]/30 dark:border-[#e3e3e3]/30">
             <User className="w-6 h-6" />
@@ -765,10 +765,10 @@ function StudentExamContent({
 
   // MÀN HÌNH 4: PHÒNG THI ĐANG DIỄN RA (EXAM ROOM)
   return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] text-[#202124] dark:text-[#e3e3e3] flex flex-col">
+    <div className="app-page min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] text-[#202124] dark:text-[#e3e3e3] flex flex-col">
       {/* Top Bar Cố Định */}
       <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#202124]/95 backdrop-blur-md border-b border-[#dadce0] dark:border-[#3c4043] px-4 py-3">
-        <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
+        <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
           <div className="min-w-0">
             <h1 className="text-sm md:text-base font-bold text-[#202124] dark:text-[#e3e3e3] truncate max-w-xs md:max-w-md">
               {assignment.title}
@@ -810,7 +810,7 @@ function StudentExamContent({
             <button
               onClick={() => setShowSubmitModal(true)}
               disabled={submitting}
-              className="px-4 py-2 bg-[#137333] hover:bg-[#0f5c29] text-white font-semibold text-xs md:text-sm rounded-lg shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
+              className="px-4 py-2 app-button-primary font-semibold text-xs md:text-sm rounded-lg shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
             >
               <Send className="w-4 h-4" /> Nộp bài
             </button>
@@ -1049,7 +1049,7 @@ function StudentExamContent({
               <button
                 type="button"
                 onClick={() => setShowSubmitModal(true)}
-                className="w-full py-3 bg-[#137333] hover:bg-[#0f5c29] text-white font-semibold text-sm rounded-lg shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
+                className="w-full py-3 app-button-primary font-semibold text-sm rounded-lg shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
               >
                 <Send className="w-4 h-4" /> Nộp bài thi
               </button>
@@ -1089,7 +1089,7 @@ function StudentExamContent({
                 type="button"
                 onClick={() => handleFinalSubmit(false)}
                 disabled={submitting}
-                className="flex-1 py-2.5 bg-[#137333] hover:bg-[#0f5c29] disabled:opacity-50 text-white text-sm font-semibold rounded-lg shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                className="flex-1 py-2.5 app-button-primary disabled:opacity-50 text-sm font-semibold rounded-lg shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 {submitting ? (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -1109,7 +1109,7 @@ export default function StudentExamPage(props: { params: Promise<{ publicId: str
   return (
     <React.Suspense
       fallback={
-        <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
+        <div className="app-page min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
           <div className="w-10 h-10 border-3 border-[#3c4043] dark:border-[#e3e3e3] border-t-transparent rounded-full animate-spin mb-4" />
           <p className="text-[#5f6368] dark:text-[#9aa0a6] font-medium text-sm">Đang tải phòng thi trực tuyến...</p>
         </div>

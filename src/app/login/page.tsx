@@ -109,7 +109,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col justify-center items-center px-4 py-12 relative overflow-hidden text-[#202124] dark:text-[#e3e3e3] transition-colors duration-200">
+    <div className="app-page min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col justify-center items-center px-4 py-12 relative overflow-hidden text-[#202124] dark:text-[#e3e3e3] transition-colors duration-200">
       {/* Background Glow */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-[#3c4043]/10 dark:bg-[#e3e3e3]/10 rounded-full blur-[130px] pointer-events-none" />
 
@@ -121,7 +121,7 @@ export default function LoginPage() {
           title={theme === 'dark' ? 'Chuyển sang giao diện Sáng' : 'Chuyển sang giao diện Tối'}
           className="p-2.5 rounded-lg border border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#242424] text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] shadow-xs transition-colors cursor-pointer"
         >
-          {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-[#5f6368]" />}
+          {theme === 'dark' ? <Sun className="w-4 h-4 text-[var(--ui-text-secondary)]" /> : <Moon className="w-4 h-4 text-[#5f6368]" />}
         </button>
       </div>
 
@@ -228,7 +228,7 @@ export default function LoginPage() {
 
         {/* Footer Notice */}
         <div className="mt-6 text-center text-xs text-[#5f6368] dark:text-[#9aa0a6] flex items-center justify-center gap-1.5">
-          <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-[#5bb98c]" />
+          <ShieldCheck className="w-4 h-4 text-[var(--ui-text-secondary)]" />
           <span>Bảo mật dữ liệu trên máy chủ PostgreSQL & mã hóa phiên an toàn</span>
         </div>
       </div>

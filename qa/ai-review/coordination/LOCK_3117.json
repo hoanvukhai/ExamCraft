@@ -1,6 +1,6 @@
 {
   "port": 3117,
   "holder": "USER",
-  "note": "Popup/menu/admin follow-up verified on build vlFYng_nKiWiGs8RrgX5x; isolated3117 running for owner. Do not build over .next. Report qa/rebuild-2026-10-27/ui-popup-review/BAO_CAO.md",
+  "note": "Remaining-page UI verified on YRo3GVgYP84Y4hWFfEGDE. Server3117 retained; task-only fixture cleaned. Admin redesign is analysis-only. Report qa/rebuild-2026-10-27/ui-page-review/BAO_CAO.md. Do not build over .next while previewing.",
   "since_utc": "2026-10-26T18:16:51.6253538Z"
 }

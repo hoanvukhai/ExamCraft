@@ -253,10 +253,10 @@ export default function AdminUsersPage() {
   const totalExams = users.reduce((acc, u) => acc + (u._count?.exams || 0), 0);
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] text-[#202124] dark:text-[#e3e3e3] flex flex-col transition-colors duration-200">
+    <div className="app-page min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] text-[#202124] dark:text-[#e3e3e3] flex flex-col transition-colors duration-200">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-5 right-5 z-50 bg-[var(--ui-surface-variant)] text-white px-4 py-3 rounded-full shadow-xs flex items-center gap-2.5 animate-in slide-in-from-top-3 duration-200 text-sm font-medium">
+        <div className="app-toast fixed top-5 right-5 z-50 app-feedback border px-4 py-3 rounded-full shadow-xs flex items-center gap-2.5 animate-in slide-in-from-top-3 duration-200 text-sm font-medium">
           <CheckCircle2 className="w-5 h-5 shrink-0" />
           <span>{toastMessage}</span>
         </div>
@@ -283,6 +283,7 @@ export default function AdminUsersPage() {
           {/* Link to AI Hub */}
           <Link
             href="/admin/ai"
+            aria-label="Giám sát AI Keys"
             className="text-xs text-[#3c4043] hover:text-[#303134] dark:text-[#e3e3e3] dark:hover:text-[#f1f3f4] px-3.5 py-1.5 rounded-lg border border-[#3c4043]/30 dark:border-[#e3e3e3]/30 bg-[#f1f3f4] dark:bg-[#292a2d] transition-colors flex items-center gap-1.5"
           >
             <Bot className="w-3.5 h-3.5" />
@@ -290,6 +291,7 @@ export default function AdminUsersPage() {
           </Link>
           <Link
             href="/admin/keys"
+            aria-label="Cấp khóa AI"
             className="text-xs text-[#3c4043] hover:text-[#303134] dark:text-[#e3e3e3] dark:hover:text-[#f1f3f4] px-3.5 py-1.5 rounded-lg border border-[#3c4043]/30 dark:border-[#e3e3e3]/30 flex items-center gap-1.5"
           >
             <KeyRound className="w-3.5 h-3.5" />
@@ -361,7 +363,7 @@ export default function AdminUsersPage() {
           >
             <div className="flex items-center justify-between text-[#5f6368] dark:text-[#9aa0a6] mb-2">
               <span className="text-xs font-medium">Hạ tầng AI</span>
-              <Bot className="w-4 h-4 text-[var(--ui-text-secondary)] dark:text-[#fdd663]  transition-transform" />
+              <Bot className="w-4 h-4 text-[var(--ui-text-secondary)]  transition-transform" />
             </div>
             <div className="text-2xl font-bold text-[#202124] dark:text-[#e3e3e3]">7 Gemini Keys</div>
             <div className="text-[11px] text-[var(--ui-text-primary)] dark:text-[var(--ui-text-primary)] mt-1">Hệ thống xoay tua chống nghẽn 429 →</div>
@@ -465,7 +467,7 @@ export default function AdminUsersPage() {
                       <td className="px-4 py-4">
                         {u.isActive ? (
                           <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-[var(--ui-surface-variant)] dark:bg-[var(--ui-surface-variant)] text-[var(--ui-text-primary)] dark:text-[var(--ui-text-primary)] border border-[var(--ui-border)] dark:border-[var(--ui-border)]">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[var(--ui-surface-variant)] dark:bg-[var(--ui-surface-variant)] " />
+                            <span className="w-1.5 h-1.5 rounded-full bg-[var(--ui-text-secondary)] " />
                             Đang hoạt động
                           </span>
                         ) : (

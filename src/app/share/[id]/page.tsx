@@ -106,7 +106,7 @@ function ShareExamContent({ examId }: { examId: string }) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col items-center justify-center p-4">
+      <div className="app-page min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col items-center justify-center p-4">
         <div className="w-10 h-10 border-4 border-[#3c4043] dark:border-[#e3e3e3] border-t-transparent rounded-full animate-spin mb-3" />
         <p className="text-xs font-semibold text-[#5f6368] dark:text-[#9aa0a6]">Đang tải đề thi chia sẻ...</p>
       </div>
@@ -115,7 +115,7 @@ function ShareExamContent({ examId }: { examId: string }) {
 
   if (error || !exam) {
     return (
-      <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col items-center justify-center p-4">
+      <div className="app-page min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col items-center justify-center p-4">
         <div className="bg-white dark:bg-[#202124] rounded-2xl p-8 max-w-md w-full text-center border border-[#dadce0] dark:border-[#3c4043] shadow-xs">
           <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-3" />
           <h2 className="text-lg font-bold text-[#202124] dark:text-[#e3e3e3] mb-2">Liên kết không hợp lệ</h2>
@@ -132,18 +132,18 @@ function ShareExamContent({ examId }: { examId: string }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] font-sans pb-16 text-[#202124] dark:text-[#e3e3e3]">
+    <div className="app-page min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] font-sans pb-16 text-[#202124] dark:text-[#e3e3e3]">
       {/* Top Banner Thanh thao tác chia sẻ */}
       <header className="no-print sticky top-0 z-40 bg-white/95 dark:bg-[#17181a]/95 backdrop-blur-md border-b border-[#dadce0] dark:border-[#3c4043] px-4 sm:px-6 py-3 shadow-xs">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] flex items-center justify-center shadow-xs">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-9 h-9 shrink-0 rounded-full bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] flex items-center justify-center shadow-xs">
               <Share2 className="w-5 h-5" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2 [overflow-wrap:anywhere]">
                 <span className="font-bold text-[#202124] dark:text-[#e3e3e3] text-sm">{exam.metadata.title}</span>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#fef7e0] dark:bg-[#33250b] text-[#b06000] dark:text-[#fdd663] border border-[#feefc3] dark:border-[#533f16]">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-medium app-feedback border">
                   Chế độ Chỉ Xem & Tải về
                 </span>
               </div>
@@ -177,16 +177,16 @@ function ShareExamContent({ examId }: { examId: string }) {
             {allowCopy && <button
               onClick={handleCloneToLocal}
               disabled={copying || copiedToLocal || !sourceVersion || !account.ownerId || Boolean(account.error)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold text-[#137333] dark:text-[#5bb98c] bg-[#e6f4ea] dark:bg-[#0f291e] hover:bg-[#ceead6] dark:hover:bg-[#1e4a34] border border-[#ceead6] dark:border-[#1e4a34] transition-all cursor-pointer"
+              className="app-button-secondary flex items-center gap-1.5 px-4 py-2 text-sm font-medium transition-all cursor-pointer"
             >
               {copiedToLocal ? (
                 <>
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-[var(--ui-text-secondary)]" />
                   <span>Đã lưu vào kho đề! Đang mở...</span>
                 </>
               ) : (
                 <>
-                  <Copy className="w-3.5 h-3.5 text-emerald-600" />
+                  <Copy className="w-3.5 h-3.5 text-[var(--ui-text-secondary)]" />
                   <span>{copying ? 'Đang sao chép...' : 'Tạo bản sao để sửa'}</span>
                 </>
               )}
@@ -203,7 +203,7 @@ function ShareExamContent({ examId }: { examId: string }) {
               className="p-2 rounded-lg text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] transition-all cursor-pointer"
               title="Sao chép link chia sẻ này"
             >
-              {copiedLink ? <CheckCircle2 className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+              {copiedLink ? <CheckCircle2 className="w-4 h-4 text-[var(--ui-text-secondary)]" /> : <Copy className="w-4 h-4" />}
             </button>
           </div>
         </div>
@@ -227,7 +227,7 @@ export default function ShareExamPage(props: SharePageProps) {
   return (
     <React.Suspense
       fallback={
-        <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex items-center justify-center p-4">
+        <div className="app-page min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex items-center justify-center p-4">
           <div className="w-10 h-10 border-4 border-[#3c4043] dark:border-[#e3e3e3] border-t-transparent rounded-full animate-spin" />
         </div>
       }

@@ -107,10 +107,10 @@ export default function AdminAiPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] text-[#202124] dark:text-[#e3e3e3] flex flex-col transition-colors duration-200">
+    <div className="app-page min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] text-[#202124] dark:text-[#e3e3e3] flex flex-col transition-colors duration-200">
       {/* Toast Notification */}
       {toastMsg && (
-        <div className="fixed top-5 right-5 z-50 bg-[var(--ui-surface-variant)] text-white px-4 py-3 rounded-full shadow-xs flex items-center gap-2.5 animate-in slide-in-from-top-3 duration-200 text-sm font-medium">
+        <div className="app-toast fixed top-5 right-5 z-50 app-feedback border px-4 py-3 rounded-full shadow-xs flex items-center gap-2.5 animate-in slide-in-from-top-3 duration-200 text-sm font-medium">
           <CheckCircle2 className="w-5 h-5 shrink-0" />
           <span>{toastMsg}</span>
         </div>
@@ -216,9 +216,9 @@ export default function AdminAiPage() {
 
         {/* 7 Keys Status Grid */}
         <div>
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
             <div>
-              <h2 className="text-base font-bold text-[#202124] dark:text-[#e3e3e3] flex items-center gap-2">
+              <h2 className="text-base font-semibold text-[#202124] dark:text-[#e3e3e3] flex flex-wrap items-center gap-2">
                 <span>Trạng thái 7 Google Gemini API Keys</span>
                 <span className="text-xs px-2.5 py-0.5 rounded-full bg-[var(--ui-surface-variant)] dark:bg-[var(--ui-surface-variant)] text-[var(--ui-text-primary)] dark:text-[var(--ui-text-primary)] border border-[var(--ui-border)] dark:border-[var(--ui-border)] font-normal">
                   Auto Round-Robin & Cooldown
@@ -264,7 +264,7 @@ export default function AdminAiPage() {
 
                       {isActive && (
                         <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[var(--ui-surface-variant)] dark:bg-[var(--ui-surface-variant)] text-[var(--ui-text-primary)] dark:text-[var(--ui-text-primary)] border border-[var(--ui-border)] dark:border-[var(--ui-border)]">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[var(--ui-surface-variant)] dark:bg-[var(--ui-surface-variant)] " />
+                          <span className="w-1.5 h-1.5 rounded-full bg-[var(--ui-text-secondary)] " />
                           ACTIVE
                         </span>
                       )}
@@ -325,7 +325,7 @@ export default function AdminAiPage() {
         <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-xl overflow-hidden shadow-xs">
           <div className="px-5 py-4 border-b border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between">
             <h3 className="text-sm font-bold text-[#202124] dark:text-[#e3e3e3] flex items-center gap-2">
-              <Zap className="w-4 h-4 text-[var(--ui-text-secondary)] dark:text-[#fdd663]" />
+              <Zap className="w-4 h-4 text-[var(--ui-text-secondary)]" />
               <span>Nhật ký gọi AI gần nhất (AiUsageLog)</span>
             </h3>
             <span className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">30 yêu cầu gần nhất</span>

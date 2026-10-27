@@ -8,7 +8,7 @@ interface Recipient { userId: string; name: string; email: string; accountActive
 interface Grant { grantId: string; label: string; keyMasked: string; createdAt: string; recipients: Recipient[] }
 
 const field = 'w-full rounded-xl border border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#242424] px-3 py-2 text-sm';
-const pill = 'px-3 py-1.5 rounded-full border border-[#dadce0] dark:border-[#3c4043] text-xs font-semibold disabled:opacity-50';
+const pill = 'app-button-secondary inline-flex items-center justify-center px-3 py-2 text-sm disabled:opacity-50';
 
 export default function AdminKeyGrantsPage() {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
@@ -53,14 +53,14 @@ export default function AdminKeyGrantsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] text-[#202124] dark:text-[#e3e3e3] py-8 px-4 sm:px-6 lg:px-8">
+    <div className="app-page min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] text-[#202124] dark:text-[#e3e3e3] py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#dadce0] dark:border-[#3c4043]">
           <div>
             <h1 className="text-2xl font-bold">Cấp khóa AI cho giáo viên</h1>
             <p className="text-sm text-[#5f6368] dark:text-[#9aa0a6]">Bạn nhập một khóa và chọn giáo viên nhận. Họ dùng được khóa nhưng không thấy, không xuất, không xóa được. Mỗi người vẫn bị giới hạn lệnh AI mỗi ngày riêng (đặt ở trang quản lý giáo viên).</p>
           </div>
-          <div className="flex gap-2 text-xs">
+          <div className="flex flex-wrap gap-2 text-sm">
             <Link className={pill} href="/admin/users">Quản lý giáo viên</Link>
             <Link className={pill} href="/admin/ai">Giám sát AI Keys</Link>
             <Link className={pill} href="/">Trang soạn đề</Link>
@@ -84,9 +84,9 @@ export default function AdminKeyGrantsPage() {
             </div>
             <ul className="max-h-56 overflow-y-auto divide-y divide-[#dadce0] dark:divide-[#3c4043] rounded-xl border border-[#dadce0] dark:border-[#3c4043]">
               {visible.map(t => (
-                <li key={t.id}><label className="flex items-center gap-3 px-3 py-2 text-sm cursor-pointer">
+                <li key={t.id}><label className="flex items-start gap-3 px-3 py-2 text-sm cursor-pointer [overflow-wrap:anywhere]">
                   <input type="checkbox" checked={chosen.has(t.id)} onChange={() => toggle(t.id)} aria-label={`Cấp cho ${t.name}`} />
-                  <span className="font-medium">{t.name}</span><span className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">{t.email} · {t.aiDailyLimit} lệnh/ngày</span>
+                  <span className="min-w-0 font-medium">{t.name}</span><span className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">{t.email} · {t.aiDailyLimit} lệnh/ngày</span>
                 </label></li>
               ))}
               {!visible.length && <li className="px-3 py-4 text-sm text-[#5f6368] dark:text-[#9aa0a6]">Không có giáo viên phù hợp.</li>}
@@ -107,7 +107,7 @@ export default function AdminKeyGrantsPage() {
                   <div className="flex flex-wrap gap-2">
                     <button type="button" disabled={busy} className={pill} onClick={() => void call('PATCH', '/api/admin/keys', { grantId: g.grantId, isActive: false })}>Tắt cho tất cả</button>
                     <button type="button" disabled={busy} className={pill} onClick={() => void call('PATCH', '/api/admin/keys', { grantId: g.grantId, isActive: true })}>Bật cho tất cả</button>
-                    <button type="button" disabled={busy} className={pill + ' text-red-700'} onClick={() => { if (confirm(`Thu hồi khóa "${g.label}" của tất cả ${g.recipients.length} người? Khóa bị xóa khỏi hệ thống.`)) void call('DELETE', `/api/admin/keys?grantId=${encodeURIComponent(g.grantId)}`); }}>Thu hồi của tất cả</button>
+                    <button type="button" disabled={busy} className={pill + ' app-button-danger'} onClick={() => { if (confirm(`Thu hồi khóa "${g.label}" của tất cả ${g.recipients.length} người? Khóa bị xóa khỏi hệ thống.`)) void call('DELETE', `/api/admin/keys?grantId=${encodeURIComponent(g.grantId)}`); }}>Thu hồi của tất cả</button>
                   </div>
                 </div>
                 <ul className="divide-y divide-[#dadce0] dark:divide-[#3c4043] text-sm">
@@ -117,7 +117,7 @@ export default function AdminKeyGrantsPage() {
                       <span className="flex items-center gap-2">
                         <span className="text-xs text-[var(--ui-text-secondary)]">{r.isActive ? 'Đang bật' : 'Đang tắt'}{r.errorCount ? ` · lỗi ${r.errorCount}` : ''}{r.lastUsedAt ? ` · dùng ${new Date(r.lastUsedAt).toLocaleDateString('vi-VN')}` : ' · chưa dùng'}</span>
                         <button type="button" disabled={busy} className={pill} onClick={() => void call('PATCH', '/api/admin/keys', { grantId: g.grantId, userId: r.userId, isActive: !r.isActive })} aria-label={`${r.isActive ? 'Tắt' : 'Bật'} khóa của ${r.name}`}>{r.isActive ? 'Tắt' : 'Bật'}</button>
-                        <button type="button" disabled={busy} className={pill + ' text-red-700'} onClick={() => { if (confirm(`Thu hồi khóa này của ${r.name}?`)) void call('DELETE', `/api/admin/keys?grantId=${encodeURIComponent(g.grantId)}&userId=${encodeURIComponent(r.userId)}`); }} aria-label={`Thu hồi khóa của ${r.name}`}>Thu hồi</button>
+                        <button type="button" disabled={busy} className={pill + ' app-button-danger'} onClick={() => { if (confirm(`Thu hồi khóa này của ${r.name}?`)) void call('DELETE', `/api/admin/keys?grantId=${encodeURIComponent(g.grantId)}&userId=${encodeURIComponent(r.userId)}`); }} aria-label={`Thu hồi khóa của ${r.name}`}>Thu hồi</button>
                       </span>
                     </li>
                   ))}

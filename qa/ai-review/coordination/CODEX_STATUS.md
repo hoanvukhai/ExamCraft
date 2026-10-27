@@ -1,11 +1,15 @@
 # CODEX status
 
-task_id: OWNER-POPUP-ADMIN-REVIEW-20261027
+task_id: OWNER-REMAINING-PAGES-ADMIN-ANALYSIS-20261027
 state: WAITING_REVIEW
 updated: 27/10/2026, Asia/Bangkok
 branch/worktree: rebuild/2026-10-local, F:/Workspace/Zazz/ExamCraft
+commit nền gần nhất: af919b3
 
-Theo chủ dự án: đã rà/sửa màu còn sót trong popup/menu/admin; dùng khung dialog/menu chung, sửa popup nhập tràn và menu tài khoản bị cắt ở màn hình ngang thấp, đồng bộ accent checkbox. Các form admin chỉ mở và đóng, không lưu hoặc đổi mật khẩu/quyền.
-Đã kiểm kiểu/lint/build, các luồng liên quan và giao diện điện thoại dọc/ngang, sáng/tối. Báo cáo, ảnh/số đo, test và giới hạn: qa/rebuild-2026-10-27/ui-popup-review/BAO_CAO.md. Không tổng nghiệm thu hoặc tự đóng CV.
-Server thử3117 đã dựng lại và để chạy cho chủ dự án, LOCK_3117=USER. Giữ dữ liệu thật, source ngoài phần trình bày, scratch và QA có sẵn. Không DB chính/AI thật/.env/backup/bí mật/push/reset/clean.
-Không sửa checklist/02/ASSIGNMENTS/BATCH_REVIEWS. Đợt trước:3b992de, qa/rebuild-2026-10-27/ui-neutral/BAO_CAO.md.
+Đã sửa phần trình bày còn lệch trên trang lớp/bài giao/giám sát, học sinh/chia sẻ, đăng nhập và admin; sửa thanh chế độ xem A4 bị ép/cắt trên điện thoại. Đã kiểm mã/build, giao diện sáng/tối trên máy tính/điện thoại và các luồng liên quan. Bằng chứng, số liệu, giới hạn: qa/rebuild-2026-10-27/ui-page-review/BAO_CAO.md.
+
+Theo yêu cầu chủ dự án, cấu trúc và nội dung cũ–mới chồng nhau CHỈ PHÂN TÍCH trong qa/rebuild-2026-10-27/ui-page-review/PHAN_TICH_TRANG_VA_ADMIN.md: pool khóa cũ, nhãn/số liệu, khung admin, popup Thư ký và nội dung kỹ thuật. Chưa đổi các hành vi/nội dung này, chưa tự đóng CV. Bước tiếp theo: chủ dự án đối chiếu nhận định rồi mới chốt phạm vi sửa cấu trúc/chức năng.
+
+Giữ dữ liệu chính, quyền và bí mật; DB thử có guard, không AI thật/schema. Đã dọn đúng fixture riêng của đợt; không đổi tài khoản có sẵn. Server thử3117 bản cuối giữ chạy, bàn giao LOCK_3117=USER; có thể cần mở lại nếu tiến trình dừng giữa lượt chat. Không build đè .next lúc đang xem.
+
+Giữ QA25/scratch/tmp có sẵn, không gom vào commit. Không sửa checklist/02/ASSIGNMENTS/BATCH_REVIEWS, không push/reset/clean. Đợt trước: qa/rebuild-2026-10-27/ui-popup-review/BAO_CAO.md.

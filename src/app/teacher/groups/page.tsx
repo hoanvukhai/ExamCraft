@@ -202,9 +202,9 @@ export default function TeacherGroupsPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] text-[#202124] dark:text-[#e3e3e3] py-8 px-4 sm:px-6 lg:px-8">
+    <div className="app-page min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] text-[#202124] dark:text-[#e3e3e3] py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto space-y-6">
-        {accountMessage && <p role="alert" className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">{accountMessage}</p>}
+        {accountMessage && <p role="alert" className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200">{accountMessage}</p>}
         {/* Navigation & Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#dadce0] dark:border-[#3c4043]">
           <div>
@@ -236,8 +236,8 @@ export default function TeacherGroupsPage() {
         </div>
 
         {/* Thanh tìm kiếm */}
-        <div className="flex items-center gap-3">
-          <div className="relative flex-1 max-w-md">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative min-w-0 flex-1 basis-56 max-w-md">
             <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#5f6368] dark:text-[#9aa0a6]" />
             <input
               type="text"
@@ -291,8 +291,8 @@ export default function TeacherGroupsPage() {
                     >
                       {copiedCode === group.publicCode ? (
                         <>
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-                          <span className="text-emerald-600 dark:text-emerald-400 text-[11px]">Đã chép</span>
+                          <CheckCircle2 className="w-3.5 h-3.5 text-[var(--ui-text-secondary)]" />
+                          <span className="text-[var(--ui-text-primary)] text-[11px]">Đã chép</span>
                         </>
                       ) : (
                         <>
@@ -313,7 +313,7 @@ export default function TeacherGroupsPage() {
                     </div>
                     <div className="bg-[#f8f9fa] dark:bg-[#292a2d] p-2.5 rounded-xl border border-[#dadce0] dark:border-[#3c4043] text-center">
                       <span className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] block">Bài đã giao</span>
-                      <span className="text-lg font-black text-emerald-600 dark:text-emerald-400">{group._count.assignments}</span>
+                      <span className="text-lg font-black text-[var(--ui-text-primary)]">{group._count.assignments}</span>
                     </div>
                   </div>
                 </div>
@@ -345,7 +345,7 @@ export default function TeacherGroupsPage() {
           <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
             <div className="app-dialog max-w-lg w-full bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-6 shadow-xs relative">
               <div className="app-dialog-header flex items-center justify-between pb-4 border-b border-[#dadce0] dark:border-[#3c4043]">
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <div className="w-8 h-8 rounded-full bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] flex items-center justify-center font-bold">
                     <Plus className="w-4 h-4" />
                   </div>
@@ -498,7 +498,7 @@ export default function TeacherGroupsPage() {
                         </span>
                         <span className="font-medium text-[#202124] dark:text-[#e3e3e3]">{st.displayName}</span>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
                         <span className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6]">{st.hasPin ? 'Đã có PIN' : 'Chưa có PIN'}</span>
                         <button type="button" disabled={pinBusy} onClick={() => void issuePins([st.id])} className="text-[11px] text-[#3c4043] dark:text-[#e3e3e3] font-semibold disabled:opacity-50">{st.hasPin ? 'Cấp lại PIN' : 'Cấp PIN'}</button>
                       </div>

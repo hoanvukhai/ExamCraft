@@ -1,0 +1,49 @@
+{
+  "scope": "JSX classes, aria-label and admin/keys pill class constant only; CSS reviewed separately",
+  "results": [
+    {
+      "file": "src/app/a/[publicId]/page.tsx",
+      "equalOutsideClassNamesAndPill": true
+    },
+    {
+      "file": "src/app/admin/ai/page.tsx",
+      "equalOutsideClassNamesAndPill": true
+    },
+    {
+      "file": "src/app/admin/keys/page.tsx",
+      "equalOutsideClassNamesAndPill": true
+    },
+    {
+      "file": "src/app/admin/users/page.tsx",
+      "equalOutsideClassNamesAndPill": true
+    },
+    {
+      "file": "src/app/c/[groupCode]/page.tsx",
+      "equalOutsideClassNamesAndPill": true
+    },
+    {
+      "file": "src/app/login/page.tsx",
+      "equalOutsideClassNamesAndPill": true
+    },
+    {
+      "file": "src/app/share/[id]/page.tsx",
+      "equalOutsideClassNamesAndPill": true
+    },
+    {
+      "file": "src/app/teacher/assignments/[id]/page.tsx",
+      "equalOutsideClassNamesAndPill": true
+    },
+    {
+      "file": "src/app/teacher/assignments/page.tsx",
+      "equalOutsideClassNamesAndPill": true
+    },
+    {
+      "file": "src/app/teacher/groups/page.tsx",
+      "equalOutsideClassNamesAndPill": true
+    },
+    {
+      "file": "src/components/A4Preview.tsx",
+      "equalOutsideClassNamesAndPill": true
+    }
+  ]
+}

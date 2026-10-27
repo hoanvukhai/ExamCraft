@@ -157,7 +157,32 @@ body {
   border-color: var(--ui-border);
 }
 
+/* Page-level controls share the dialog palette without restyling exam paper. */
+.app-page :where(h1, h2, h3):not(.a4-paper *) { overflow-wrap: anywhere; }
+.app-page h1:not(.a4-paper *) { line-height: 1.35; }
+.app-page h1 > svg { flex-shrink: 0; }
+.app-page :where(input:not([type]), input[type="text"], input[type="email"], input[type="password"], input[type="number"], select, textarea) {
+  min-width: 0;
+  max-width: 100%;
+  border-radius: 10px;
+}
+.app-page :where(.app-button-primary, .app-button-secondary) {
+  min-height: 40px;
+  justify-content: center;
+  text-align: center;
+}
+.app-toast {
+  max-width: calc(100vw - 2.5rem);
+  overflow-wrap: anywhere;
+}
+.app-button-danger { color: #b3261e; }
+.dark .app-button-danger { color: #f2b8b5; }
+
 @media (max-width: 639px) {
+  .app-page :where(input:not([type]), input[type="text"], input[type="email"], input[type="password"], input[type="number"], select, textarea) {
+    font-size: 16px;
+  }
+  .app-page :where(.app-button-primary, .app-button-secondary) { white-space: normal; }
   .app-dialog { max-width: calc(100vw - 2rem); padding: 1rem; }
   .app-dialog :where(button) { max-width: 100%; white-space: normal; }
   .app-dialog > :first-child { min-width: 0; }

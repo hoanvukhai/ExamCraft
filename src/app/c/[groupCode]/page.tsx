@@ -77,7 +77,7 @@ function ClassPortalContent({
 
   if (loading && !group) {
     return (
-      <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
+      <div className="app-page min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
         <div className="w-10 h-10 border-3 border-[#3c4043] dark:border-[#e3e3e3] border-t-transparent rounded-full animate-spin mb-4" />
         <p className="text-[#5f6368] dark:text-[#9aa0a6] font-medium text-sm">Đang tải thông tin lớp học...</p>
       </div>
@@ -86,7 +86,7 @@ function ClassPortalContent({
 
   if (error || !group) {
     return (
-      <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
+      <div className="app-page min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
         <div className="max-w-md w-full bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-8 text-center shadow-xs">
           <AlertCircle className="w-12 h-12 text-[#c5221f] dark:text-[#f28b82] mx-auto mb-4" />
           <h2 className="text-xl font-bold text-[#202124] dark:text-[#e3e3e3] mb-2">Không tìm thấy lớp học</h2>
@@ -103,7 +103,7 @@ function ClassPortalContent({
   }
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] text-[#202124] dark:text-[#e3e3e3] py-10 px-4">
+    <div className="app-page min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] text-[#202124] dark:text-[#e3e3e3] py-10 px-4">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Banner Lớp học */}
         <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-6 md:p-8 shadow-xs relative overflow-hidden">
@@ -120,7 +120,7 @@ function ClassPortalContent({
             </div>
 
             {/* Chọn tên học sinh */}
-            <div className="bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] p-4 rounded-xl min-w-[280px]">
+            <div className="bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] p-4 rounded-xl min-w-0 w-full md:w-72 md:shrink-0">
               <label className="block text-xs font-semibold text-[#5f6368] dark:text-[#9aa0a6] uppercase tracking-wider mb-2">
                 Chọn tên em để xem điểm:
               </label>
@@ -142,7 +142,7 @@ function ClassPortalContent({
 
         {/* Danh sách bài tập / bài thi của lớp */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="text-lg font-bold text-[#202124] dark:text-[#e3e3e3] flex items-center gap-2">
               <BookOpen className="w-5 h-5 text-[#3c4043] dark:text-[#e3e3e3]" /> Danh sách bài thi & bài tập
             </h2>
@@ -168,8 +168,8 @@ function ClassPortalContent({
                     key={asg.id}
                     className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] hover:border-[#bdc1c6] dark:hover:border-[#5f6368] rounded-xl p-5 transition-all shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4"
                   >
-                    <div className="space-y-1.5 flex-1">
-                      <div className="flex items-center gap-2">
+                    <div className="space-y-1.5 flex-1 min-w-0 [overflow-wrap:anywhere]">
+                      <div className="flex flex-wrap items-center gap-2">
                         <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wider bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border border-[#3c4043]/30 dark:border-[#e3e3e3]/30">
                           {asg.mode === 'EXAM' ? 'Bài Thi' : asg.mode === 'PRACTICE' ? 'Luyện tập' : 'Bài về nhà'}
                         </span>
@@ -253,7 +253,7 @@ export default function ClassPortalPage(props: { params: Promise<{ groupCode: st
   return (
     <React.Suspense
       fallback={
-        <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
+        <div className="app-page min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
           <div className="w-10 h-10 border-3 border-[#3c4043] dark:border-[#e3e3e3] border-t-transparent rounded-full animate-spin mb-4" />
           <p className="text-[#5f6368] dark:text-[#9aa0a6] font-medium text-sm">Đang tải thông tin lớp học...</p>
         </div>

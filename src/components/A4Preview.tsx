@@ -102,10 +102,10 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
       {/* Top Preview Toolbar */}
       <div className="no-print bg-white dark:bg-[#202124] px-4 py-3 border-b border-[#dadce0] dark:border-[#3c4043] flex flex-wrap items-center justify-between gap-3">
         {/* Chế độ xem Google Segmented Pill */}
-        <div className="flex items-center gap-1 bg-[#f1f3f4] dark:bg-[#292a2d] p-1 rounded-full">
+        <div className="flex flex-wrap min-w-0 max-w-full items-center gap-1 bg-[#f1f3f4] dark:bg-[#292a2d] p-1 rounded-xl">
           <button
             onClick={() => setViewMode('exam')}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+            className={`flex shrink-0 min-h-10 max-w-full items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
               viewMode === 'exam'
                 ? 'bg-white dark:bg-[#383a3d] text-[#202124] dark:text-[#e3e3e3] shadow-xs font-semibold'
                 : 'text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3]'
@@ -117,7 +117,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
 
           <button
             onClick={() => setViewMode('parallel')}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+            className={`flex shrink-0 min-h-10 max-w-full items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
               viewMode === 'parallel'
                 ? 'bg-white dark:bg-[#383a3d] text-[#202124] dark:text-[#e3e3e3] shadow-xs font-semibold'
                 : 'text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3]'
@@ -129,7 +129,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
 
           <button
             onClick={() => setViewMode('answers')}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+            className={`flex shrink-0 min-h-10 max-w-full items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
               viewMode === 'answers'
                 ? 'bg-white dark:bg-[#383a3d] text-[#202124] dark:text-[#e3e3e3] shadow-xs font-semibold'
                 : 'text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3]'
@@ -141,7 +141,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
 
           <button
             onClick={() => setViewMode('solutions')}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+            className={`flex shrink-0 min-h-10 max-w-full items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
               viewMode === 'solutions'
                 ? 'bg-white dark:bg-[#383a3d] text-[#202124] dark:text-[#e3e3e3] shadow-xs font-semibold'
                 : 'text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3]'
@@ -153,7 +153,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
 
           <button
             onClick={() => setViewMode('matrix')}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+            className={`flex shrink-0 min-h-10 max-w-full items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
               viewMode === 'matrix'
                 ? 'bg-white dark:bg-[#383a3d] text-[#202124] dark:text-[#e3e3e3] shadow-xs font-semibold'
                 : 'text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3]'
