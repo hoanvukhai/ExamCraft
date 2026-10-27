@@ -71,7 +71,7 @@ export function WorkspaceMenu({ variant }: { variant: WorkspaceVariant }) {
     <aside aria-label="Menu" className={`${frame} h-full flex flex-col border-r bg-[var(--ui-surface)] transition-[width] duration-150`}>
       <div className={`shrink-0 pt-3 pb-1 ${expanded ? 'px-4' : 'px-2 flex justify-center'}`}><Brand admin={nav.admin} compact={!expanded} /></div>
       <div className="flex-1 min-h-0 overflow-y-auto px-2 py-2 space-y-4">
-        {!nav.admin && <Link href={variant === 'library' && params.get('folder') && params.get('view') !== 'trash' ? `/editor/new?folder=${encodeURIComponent(params.get('folder')!)}` : '/editor/new'} title="Soạn đề thi mới" aria-label="Soạn đề thi mới" className={`app-button-primary flex items-center justify-center gap-2 min-h-11 rounded-xl text-sm font-semibold ${expanded ? 'px-4' : 'px-0'}`}><Plus className="w-4 h-4 shrink-0" />{expanded && <span>Soạn đề thi mới</span>}</Link>}
+        {!nav.admin && !(variant === 'library' && params.get('view') !== 'trash') && <Link href={variant === 'library' && params.get('folder') && params.get('view') !== 'trash' ? `/editor/new?folder=${encodeURIComponent(params.get('folder')!)}` : '/editor/new'} title="Soạn đề thi mới" aria-label="Soạn đề thi mới" className={`app-button-primary flex items-center justify-center gap-2 min-h-11 rounded-xl text-sm font-semibold ${expanded ? 'px-4' : 'px-0'}`}><Plus className="w-4 h-4 shrink-0" />{expanded && <span>Soạn đề thi mới</span>}</Link>}
         <nav aria-label={nav.admin ? 'Quản trị' : 'Không gian giáo viên'} className="space-y-4">
           {nav.admin ? <>
             <Section title="Quản trị" expanded={expanded}>{nav.items.map(item => <NavLink key={item.href} item={item} expanded={expanded} />)}</Section>

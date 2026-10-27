@@ -15,7 +15,6 @@ import { QuestionDraftPanel } from '@/components/QuestionDraftPanel';
 import { AiProposalJournalPanel } from '@/components/AiProposalJournalPanel';
 import { applyQuestionOrderCommand } from '@/lib/question-commands';
 import { A4Preview } from '@/components/A4Preview';
-import { ApiKeyModal } from '@/components/ApiKeyModal';
 import { GenerateModal } from '@/components/GenerateModal';
 import { ShuffleModal } from '@/components/ShuffleModal';
 import { ImportModal } from '@/components/ImportModal';
@@ -85,7 +84,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   const isCloudSaving = saveState === 'saving';
   const isCloudSaved = saveState === 'saved';
   const [submissionCount, setSubmissionCount] = useState<number>(0);
-  const [hasActiveKey, setHasActiveKey] = useState<boolean>(false);
+  const { hasActiveKey, openKeys } = useWorkspace();
 
   // Layout states
   const { copilotOpen: isCopilotOpen, setCopilotOpen: setIsCopilotOpen, setCopilotAvailable } = useWorkspace();
@@ -98,7 +97,6 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   const [selectedQuestionIds, setSelectedQuestionIds] = useState<string[]>([]);
 
   // Modals
-  const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
   const [isShuffleModalOpen, setIsShuffleModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
@@ -108,32 +106,6 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isResultsModalOpen, setIsResultsModalOpen] = useState(false);
 
-  const [keyStats, setKeyStats] = useState({
-    keyCount: 0,
-    keyErrorCount: 0,
-    hasActiveKey: false,
-    quota: { usedToday: 0 },
-  });
-
-  // Kiểm tra trạng thái Key từ server khi load
-  const checkUserKeys = () => accountFetch(currentUser.id, '/api/user/keys').then(async res => {
-      if (res.ok) {
-        const data = await res.json();
-        const keysList = data.keys || [];
-        const activeKeys = keysList.filter((k: { isActive: boolean }) => k.isActive);
-        const errorKeys = keysList.filter((k: { errorCount: number }) => k.errorCount > 0);
-        const isReady = activeKeys.length > 0;
-        setHasActiveKey(isReady);
-        setKeyStats({
-          keyCount: activeKeys.length,
-          keyErrorCount: errorKeys.length,
-          hasActiveKey: isReady,
-          quota: { usedToday: data.poolQuota?.usedToday ?? 0 },
-        });
-      }
-  }).catch(() => { /* Preserve the last acknowledged key state on network errors. */ });
-
-  useEffect(() => { void checkUserKeys(); }, []);
 
   // Đổi tên đề thi inline Google Docs style
   const handleUpdateTitle = (newTitle: string) => {
@@ -350,7 +322,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                 </span>
               </div>
               <button
-                onClick={() => setIsApiKeyModalOpen(true)}
+                onClick={openKeys}
                 className="ml-3 px-3.5 py-1 text-[#3c4043] dark:text-[#e3e3e3] bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] font-semibold rounded-lg shadow-2xs shrink-0 transition-colors cursor-pointer"
               >
                 Thêm khóa AI
@@ -577,11 +549,6 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       {/* CÁC MODALS NGHIỆP VỤ */}
       {presentationOpen && <ExamPresentation exam={exam} onClose={() => setPresentationOpen(false)} />}
       {collaborationOpen && exam.serverId && <div role="dialog" aria-modal="true" aria-label="Cộng tác và lịch sử" className="fixed inset-0 z-50 bg-black/50 p-4 flex items-center justify-center"><div className="app-dialog w-full max-w-3xl max-h-[90vh] overflow-auto bg-white dark:bg-[#202124] rounded-xl p-5"><button type="button" className="float-right px-3 py-2" onClick={() => setCollaborationOpen(false)}>Đóng</button><ExamCollaboratorsPanel key={`${exam.serverId}-${currentUser.id}`} examId={exam.serverId} expectedUserId={currentUser.id} questions={exam.questions.map((q, i) => ({ id: q.id, label: `Câu ${i + 1}: ${(q.content || '').replace(/\s+/g, ' ').slice(0, 40)}` }))} onRestored={document => { acceptServerDocument(document); }} beforeRestore={() => { if (saveState !== 'saved') { alert('Hãy lưu xong hoặc giữ bản nháp thành đề mới trước khi khôi phục lịch sử.'); return false; } return true; }} /></div></div>}
-      <ApiKeyModal ownerId={currentUser.id} key={`keys:${currentUser.id}`}
-        isOpen={isApiKeyModalOpen}
-        onClose={() => setIsApiKeyModalOpen(false)}
-        onKeyUpdated={checkUserKeys}
-      />
 
       <GenerateModal
         key={`${exam.metadata.subject}-${exam.metadata.grade}-${exam.metadata.knowledgePackage?.id ?? ''}-${exam.metadata.knowledgePackage?.revision ?? ''}`}
