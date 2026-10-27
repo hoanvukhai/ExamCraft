@@ -87,6 +87,8 @@ Chờ dòng `Ready`. **Để cửa sổ này mở suốt lúc test.** Tắt bằ
 | Giáo viên 2 (B) | `gv2@examcraft.test` | tạm, in ở bước 2.3 | kiểm cộng tác, chia sẻ, quyền |
 | Học sinh | không có tài khoản | — | vào bằng link bài giao hoặc link lớp, hoặc mã PIN |
 
+**Muốn sửa mã và thấy ngay, không phải dựng lại:** bật chế độ dev bằng `npm run dev:test` (tương đương `node scripts/test-server.cjs`). Trang tự cập nhật khi lưu tệp, dùng cơ sở dữ liệu thử, nhưng chậm và tốn RAM hơn. **Không dùng `npm run dev`**, lệnh đó trỏ vào cơ sở dữ liệu thật. Dùng `npm run build` rồi `npm run start:test` khi test kỹ lần cuối. Đổi giữa hai chế độ, hoặc sau khi di chuyển tệp, thì xóa thư mục `.next` trước (tắt máy chủ rồi `Remove-Item -Recurse -Force .next`).
+
 Ghi chú:
 - Mỗi lần khởi động lại máy chủ thử, **phiên đăng nhập bị đăng xuất** và **khóa AI đã lưu phải nhập lại** (máy chủ thử sinh khóa mã hóa mới mỗi lần). Đây là hành vi của bản thử; bản Vercel dùng một `SESSION_SECRET` cố định nên không bị.
 - Hai người test cùng lúc cần hai phiên đăng nhập tách biệt: dùng hai trình duyệt khác nhau, hoặc một cửa sổ thường và một cửa sổ ẩn danh.
