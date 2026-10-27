@@ -4,7 +4,7 @@ import { useConfirmAction } from '@/components/ConfirmAction';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 
-interface Teacher { id: string; name: string; email: string; role: 'SUPER_ADMIN' | 'TEACHER'; isActive: boolean; aiDailyLimit: number }
+interface Teacher { id: string; name: string; email: string; role: 'SUPER_ADMIN' | 'TEACHER'; isActive: boolean }
 interface Recipient { userId: string; name: string; email: string; accountActive: boolean; isActive: boolean; errorCount: number; lastUsedAt: string | null }
 interface Grant { grantId: string; label: string; keyMasked: string; createdAt: string; recipients: Recipient[] }
 
@@ -61,7 +61,7 @@ export default function AdminKeyGrantsPage() {
         <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#dadce0] dark:border-[#3c4043]">
           <div>
             <h1 className="text-2xl font-semibold">Cấp khóa AI</h1>
-            <p className="text-sm text-[#5f6368] dark:text-[#9aa0a6]">Bạn nhập một khóa và chọn tài khoản nhận. Họ dùng được khóa nhưng không thấy, không xuất, không xóa được. Mỗi người vẫn bị giới hạn lệnh AI mỗi ngày riêng (đặt ở trang quản lý tài khoản).</p>
+            <p className="text-sm text-[#5f6368] dark:text-[#9aa0a6]">Bạn nhập một khóa và chọn tài khoản nhận. Họ dùng được khóa nhưng không thấy, không xuất, không xóa được. Hạn mức sử dụng phụ thuộc nhà cung cấp của khóa.</p>
           </div>
 
         </div>
@@ -85,7 +85,7 @@ export default function AdminKeyGrantsPage() {
               {visible.map(t => (
                 <li key={t.id}><label className="flex items-start gap-3 px-3 py-2 text-sm cursor-pointer [overflow-wrap:anywhere]">
                   <input type="checkbox" checked={chosen.has(t.id)} onChange={() => toggle(t.id)} aria-label={`Cấp cho ${t.name}`} />
-                  <span className="min-w-0 font-medium">{t.name}</span><span className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">{t.email} · {t.aiDailyLimit} lệnh/ngày</span>
+                  <span className="min-w-0 font-medium">{t.name}</span><span className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">{t.email}</span>
                 </label></li>
               ))}
               {!visible.length && <li className="px-3 py-4 text-sm text-[#5f6368] dark:text-[#9aa0a6]">Không có tài khoản phù hợp.</li>}

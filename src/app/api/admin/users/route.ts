@@ -10,7 +10,6 @@ const CreateUserSchema = z.object({
   name: z.string().min(2, 'Tên người dùng phải có ít nhất 2 ký tự'),
   password: z.string().min(6, 'Mật khẩu tạm phải có ít nhất 6 ký tự'),
   role: z.nativeEnum(Role).default(Role.TEACHER),
-  aiDailyLimit: z.number().int().min(0).default(100),
 });
 
 export async function GET() {
@@ -69,7 +68,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { email, name, password, role, aiDailyLimit } = parsed.data;
+    const { email, name, password, role } = parsed.data;
 
     // Kiểm tra email trùng
     const existing = await prisma.user.findUnique({
@@ -91,7 +90,6 @@ export async function POST(req: NextRequest) {
         name,
         passwordHash,
         role,
-        aiDailyLimit,
         isActive: true,
         mustChangePassword: true, // Bắt buộc đổi mật khẩu ở lần đăng nhập đầu
       },

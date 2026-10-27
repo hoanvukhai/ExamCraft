@@ -3,7 +3,7 @@ import { MemoryGate as KeyGate, type MemoryToken as KeyToken } from './ai-memory
 export { KeyGate, type KeyToken };
 
 export interface UserKeyRow { id: string; label: string; keyMasked: string; isActive: boolean; usedToday: number; errorCount: number; granted?: boolean }
-export interface AppQuotaRow { limit: number; usedToday: number; remaining: number; resetsAt?: string }
+export interface AppQuotaRow { usedToday: number }
 export interface ModelOptionRow { id: string; name: string }
 
 const text = (value: unknown, max: number): value is string => typeof value === 'string' && value.length <= max;
@@ -28,7 +28,7 @@ export function parseKeyList(data: unknown) {
   return {
     keys, skipped: body.keys.length - keys.length, models,
     selectedModel: text(body.selectedAiModel, 200) ? body.selectedAiModel : '',
-    quota: quota && [quota.limit, quota.usedToday, quota.remaining].every(item => typeof item === 'number' && Number.isFinite(item)) ? { limit: quota.limit as number, usedToday: quota.usedToday as number, remaining: quota.remaining as number, ...(text(quota.resetsAt, 100) ? { resetsAt: quota.resetsAt } : {}) } : null,
+    quota: quota && typeof quota.usedToday === 'number' && Number.isFinite(quota.usedToday) && quota.usedToday >= 0 ? { usedToday: quota.usedToday } : null,
   };
 }
 

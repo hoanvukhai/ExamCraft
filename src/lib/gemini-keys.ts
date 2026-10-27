@@ -2,7 +2,7 @@ import { Prisma } from '@prisma/client';
 import { promptVersionFor } from './prompt-versions';
 import prisma from './prisma';
 import { decryptApiKey } from './crypto';
-import { applicationDayStart, applicationQuota, classifyProviderFailure, normalizeModelId } from './ai-policy';
+import { applicationDayStart, classifyProviderFailure, normalizeModelId } from './ai-policy';
 import { ApiError } from './api-error';
 
 export interface KeyInfo { alias: string; rawKey: string; }
@@ -18,24 +18,22 @@ export const AVAILABLE_GEMINI_MODELS: AiModelOption[] = [
 export function resolveModelId(model: string | null | undefined) { return normalizeModelId(model) ?? getGeminiModel(); }
 export class AiRequestError extends ApiError { constructor(message: string, status: number, code: string) { super(status, message, code); this.name = 'AiRequestError'; } }
 
+/** Historical name retained for callers: read-only usage, no application cap; provider capacity is unknown. */
 export async function checkUserAiQuota(userId: string) {
-  const [user, used, activeKeyCount] = await Promise.all([
-    prisma.user.findUnique({ where: { id: userId }, select: { aiDailyLimit: true } }),
-    prisma.aiUsageLog.count({ where: { userId, createdAt: { gte: applicationDayStart() }, httpStatus: { in: [102, 200] } } }),
+  const [used, activeKeyCount] = await Promise.all([
+    prisma.aiUsageLog.count({ where: { userId, createdAt: { gte: applicationDayStart() }, httpStatus: 200 } }),
     prisma.userApiKey.count({ where: { userId, isActive: true } }),
   ]);
-  return { ...applicationQuota(user?.aiDailyLimit ?? 0, used), activeKeyCount, source: 'application' as const, providerQuota: null, resetsAt: new Date(applicationDayStart().getTime() + 86400000).toISOString() };
+  return { allowed: true, limit: null, used, remaining: null, percentageUsed: null, activeKeyCount, source: 'provider' as const, providerQuota: null, resetsAt: null };
 }
 
 async function reserveOperation(userId: string, endpoint: string, requestedModel?: string, dataVersion?: string) {
   for (let retry = 0; retry < 3; retry++) {
     try {
       return await prisma.$transaction(async tx => {
-        const user = await tx.user.findUnique({ where: { id: userId }, select: { selectedAiModel: true, isActive: true, mustChangePassword: true, aiDailyLimit: true } });
+        const user = await tx.user.findUnique({ where: { id: userId }, select: { selectedAiModel: true, isActive: true, mustChangePassword: true } });
         if (!user?.isActive) throw new AiRequestError('Vui lòng đăng nhập để dùng AI.', 401, 'UNAUTHORIZED');
         if (user.mustChangePassword) throw new AiRequestError('Vui lòng đổi mật khẩu trước khi dùng AI.', 403, 'MUST_CHANGE_PASSWORD');
-        const used = await tx.aiUsageLog.count({ where: { userId, createdAt: { gte: applicationDayStart() }, httpStatus: { in: [102, 200] } } });
-        if (!applicationQuota(user.aiDailyLimit, used).allowed) throw new AiRequestError('Đã đạt giới hạn thao tác AI do ứng dụng đặt cho hôm nay (UTC). Giới hạn này không phải quota của Google.', 429, 'APPLICATION_AI_LIMIT');
         const model = resolveModelId(requestedModel ?? user.selectedAiModel);
         const log = await tx.aiUsageLog.create({ data: { userId, endpoint, model, keyAlias: 'pending', httpStatus: 102, promptVersion: promptVersionFor(endpoint), dataVersion: dataVersion?.slice(0, 200) ?? null } });
         return { logId: log.id, model };

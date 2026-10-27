@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
     ]);
     const used = new Map(usage.map(row => [row.keyAlias, row._count.id]));
     return NextResponse.json({ keys: keys.map(({ grantId, ...key }) => ({ ...key, keyMasked: grantId !== null ? '' : key.keyMasked, granted: grantId !== null, usedToday: used.get('user_key:' + key.id) ?? 0 })),
-      poolQuota: { activeKeyCount: quota.activeKeyCount, limit: quota.limit, usedToday: quota.used, remaining: quota.remaining, percentageUsed: quota.percentageUsed, source: 'application', resetsAt: quota.resetsAt },
+      poolQuota: { activeKeyCount: quota.activeKeyCount, limit: quota.limit, usedToday: quota.used, remaining: quota.remaining, percentageUsed: quota.percentageUsed, source: 'provider', resetsAt: quota.resetsAt },
       providerQuota: null, selectedAiModel: resolveModelId(settings?.selectedAiModel), availableModels: AVAILABLE_GEMINI_MODELS,
       hasActiveKey: keys.some(key => key.isActive), providerQuotaMessage: 'Quota và billing của Google phụ thuộc project/model; kiểm tra trong AI Studio. Nhiều khóa cùng project không nhân hạn mức.',
     }, { headers: { 'Cache-Control': 'no-store' } });

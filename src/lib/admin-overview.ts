@@ -2,7 +2,7 @@ export function summarizeAiUsage(rows: { httpStatus: number | null; _count: { _a
   let totalToday = 0, successToday = 0, errorToday = 0, pendingToday = 0;
   for (const row of rows) {
     totalToday += row._count._all;
-    if (row.httpStatus === null) pendingToday += row._count._all;
+    if (row.httpStatus === null || row.httpStatus === 102) pendingToday += row._count._all;
     else if (row.httpStatus === 200) successToday += row._count._all;
     else errorToday += row._count._all;
   }

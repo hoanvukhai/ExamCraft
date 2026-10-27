@@ -1,0 +1,94 @@
+
+> exam-craft@0.1.0 test:admin
+> node --import tsx scripts/pilot-run.cjs --admin
+
+Pilot guard: installed browser; isolatedTest confirmed; exact test database selected.
+TAP version 13
+# Subtest: admin: current data, access, confirmations and phone navigation
+    # Subtest: only admins read the overview and the server layout blocks teachers
+    ok 1 - only admins read the overview and the server layout blocks teachers
+      ---
+      duration_ms: 2224.392
+      type: 'test'
+      ...
+    # Subtest: overview counts account keys and separates unfinished requests
+    ok 2 - overview counts account keys and separates unfinished requests
+      ---
+      duration_ms: 18.4816
+      type: 'test'
+      ...
+    # Subtest: classwork is labelled correctly and only submitted attempts are counted
+    ok 3 - classwork is labelled correctly and only submitted attempts are counted
+      ---
+      duration_ms: 689.2324
+      type: 'test'
+      ...
+    # Subtest: phone account cards filter roles and cancel or confirm the right account
+    not ok 4 - phone account cards filter roles and cancel or confirm the right account
+      ---
+      duration_ms: 1484.6197
+      type: 'test'
+      location: 'F:\\Workspace\\Zazz\\ExamCraft\\tests_pilot\\admin.test.ts:2:7070'
+      failureType: 'testCodeFailure'
+      error: 'the active status is green in the rendered UI'
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: true
+      actual: false
+      operator: '=='
+      stack: |-
+        TestContext.<anonymous> (F:\Workspace\Zazz\ExamCraft\tests_pilot\admin.test.ts:97:14)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (F:\Workspace\Zazz\ExamCraft\tests_pilot\admin.test.ts:74:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: shared admin navigation has real labels and load errors preserve the last snapshot
+    ok 5 - shared admin navigation has real labels and load errors preserve the last snapshot
+      ---
+      duration_ms: 1630.8477
+      type: 'test'
+      ...
+    # Subtest: revoking one grant recipient leaves the other recipient untouched
+    ok 6 - revoking one grant recipient leaves the other recipient untouched
+      ---
+      duration_ms: 1589.5966
+      type: 'test'
+      ...
+    # Subtest: one secretary drawer replaces the old promotional popup
+    ok 7 - one secretary drawer replaces the old promotional popup
+      ---
+      duration_ms: 691.4372
+      type: 'test'
+      ...
+    # Subtest: pagination applies after filtering and resets when the search or page size changes
+    ok 8 - pagination applies after filtering and resets when the search or page size changes
+      ---
+      duration_ms: 722.4369
+      type: 'test'
+      ...
+    # Subtest: admin pages fit small, landscape and desktop viewports in both themes
+    ok 9 - admin pages fit small, landscape and desktop viewports in both themes
+      ---
+      duration_ms: 9118.6245
+      type: 'test'
+      ...
+    1..9
+not ok 1 - admin: current data, access, confirmations and phone navigation
+  ---
+  duration_ms: 22483.3269
+  type: 'test'
+  location: 'F:\\Workspace\\Zazz\\ExamCraft\\tests_pilot\\admin.test.ts:2:1462'
+  failureType: 'subtestsFailed'
+  error: '1 subtest failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 10
+# suites 0
+# pass 8
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 23531.4171

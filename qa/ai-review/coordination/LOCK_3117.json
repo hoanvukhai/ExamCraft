@@ -1,6 +1,6 @@
 {
   "port": 3117,
   "holder": "USER",
-  "note": "Admin cleanup verified on build 1ZWZ1zCtmRFAecwocOjjy. Isolated3117 retained; task fixtures removed. Report qa/rebuild-2026-10-27/admin-refresh/BAO_CAO.md. Do not build over .next while previewing.",
+  "note": "Provider-only daily AI policy, account pagination and green active status verified on -TELCUR5lFqU8EmJhRi20. Isolated3117 retained, real AI off; fixtures cleaned. Report qa/rebuild-2026-10-27/admin-pagination/BAO_CAO.md. Do not build over .next while previewing.",
   "since_utc": "2026-10-26T18:16:51.6253538Z"
 }

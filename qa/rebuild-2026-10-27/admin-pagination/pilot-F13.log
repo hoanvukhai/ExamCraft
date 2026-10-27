@@ -1,0 +1,22 @@
+
+> exam-craft@0.1.0 test:pilot
+> node --import tsx scripts/pilot-run.cjs
+
+Pilot guard: installed browser; isolatedTest confirmed; exact test database selected.
+TAP version 13
+# Starting F13
+# Subtest: F13 a student works and a teacher browses on a 375px phone without sideways scrolling
+ok 1 - F13 a student works and a teacher browses on a 375px phone without sideways scrolling
+  ---
+  duration_ms: 23572.2479
+  type: 'test'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 24873.05

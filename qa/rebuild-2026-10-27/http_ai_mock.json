@@ -1,0 +1,25 @@
+{
+  "checkedAt": "2026-10-27T03:05:41.336Z",
+  "checks": [
+    "cancelled-no-save-no-retry",
+    "no-key-no-call",
+    "temporary-key",
+    "stored-key-and-usage",
+    "invalid-key-disabled",
+    "rate-limit-fallback-and-isolation",
+    "provider-only-limits",
+    "choose-and-model",
+    "bad-output",
+    "generation-matches-plan",
+    "private-notes-in-prompts",
+    "analysis-provenance",
+    "imported-instructions-are-data",
+    "word-formulas-and-pictures",
+    "granted-key-used",
+    "outage-test-delete"
+  ],
+  "cleanupComplete": true,
+  "status": "PASS",
+  "environment": "isolated localhost:3117 with a local provider imitation on 3118",
+  "realAiCalls": false
+}

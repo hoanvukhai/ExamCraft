@@ -9,7 +9,7 @@ import { requireTestDatabase } from '../tests/helpers/test-database';
 import { loginBucket } from '../src/lib/auth-security';
 
 const origin = 'http://127.0.0.1:3117';
-const report = 'qa/rebuild-2026-10-27/admin-refresh';
+const report = process.env.ADMIN_REPORT_DIR ?? 'qa/rebuild-2026-10-27/admin-refresh';
 
 test('admin: current data, access, confirmations and phone navigation', { timeout: 240000 }, async t => {
   const url = requireTestDatabase();
@@ -47,7 +47,7 @@ test('admin: current data, access, confirmations and phone navigation', { timeou
       assert.equal(await teacherPage.getByRole('navigation', { name: 'Quản trị', exact: true }).count(), 0);
     });
     const baseline = await api('/api/admin/ai');
-    await db.aiUsageLog.createMany({ data: [200, 429, null].map(httpStatus => ({ userId: ids[1], endpoint: 'teacher.assistant.chat', httpStatus })) });
+    await db.aiUsageLog.createMany({ data: [200, 429, 102].map(httpStatus => ({ userId: ids[1], endpoint: 'teacher.assistant.chat', httpStatus })) });
     await api('/api/admin/keys', 'POST', { label: 'Khóa thử không gọi provider', apiKey: 'fixture-not-a-provider-key-' + run, userIds: [ids[1], ids[2]] });
     await t.test('overview counts account keys and separates unfinished requests', async () => {
       const actual = await api('/api/admin/ai');
@@ -92,6 +92,10 @@ test('admin: current data, access, confirmations and phone navigation', { timeou
       assert.equal((await db.user.findUniqueOrThrow({ where: { id: ids[1] } })).isActive, false);
       await row.getByTitle('Mở khóa tài khoản', { exact: true }).click(); await page.getByRole('dialog').getByRole('button', { name: 'Xác nhận', exact: true }).click();
       await row.getByText('Đang hoạt động', { exact: true }).waitFor();
+      const statusColor = await row.getByText('Đang hoạt động', { exact: true }).evaluate(element => getComputedStyle(element).color);
+      const [red, green, blue] = statusColor.match(/\d+/g)!.map(Number);
+      assert.ok(green > red && green > blue, 'the active status is green in the rendered UI');
+      assert.equal(await page.getByRole('columnheader', { name: /Hạn mức|Giới hạn.*ngày/i }).count(), 0);
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true);
       await page.screenshot({ path: `${report}/accounts-375.png`, fullPage: true });
     });
@@ -121,11 +125,45 @@ test('admin: current data, access, confirmations and phone navigation', { timeou
       assert.equal(await db.userApiKey.count({ where: { userId: ids[1] } }), 0);
       assert.equal(await db.userApiKey.count({ where: { userId: ids[2] } }), 1);
     });
+    await t.test('key dialog and editor menu show usage without a daily cap or fabricated remaining quota', async () => {
+      await page.goto(origin + '/'); await page.getByTitle('Quản lý Google Gemini API Key', { exact: true }).click();
+      const keys = page.getByRole('dialog', { name: 'Khóa AI của bạn', exact: true });
+      await keys.getByText(/ExamCraft không đặt giới hạn AI theo ngày/).waitFor();
+      assert.equal(await keys.getByText(/Giới hạn trong ứng dụng hôm nay/).count(), 0);
+      await page.screenshot({ path: `${report}/key-usage-375.png`, fullPage: false });
+      await keys.getByRole('button', { name: 'Đóng', exact: true }).click();
+      const exam = await db.exam.findFirstOrThrow({ where: { ownerId: ids[0] } });
+      await page.goto(origin + '/editor/' + exam.id);
+      await page.getByRole('button', { name: 'Mở menu tài khoản', exact: true }).click();
+      const menu = page.getByRole('region', { name: 'Tài khoản và khóa AI', exact: true });
+      await menu.getByText(/Thành công hôm nay:/).waitFor();
+      assert.equal(/Còn lại:\s*\d|\/\s*100\s*lượt/.test(await menu.innerText()), false);
+      await page.screenshot({ path: `${report}/editor-usage-375.png`, fullPage: false });
+    });
     await t.test('one secretary drawer replaces the old promotional popup', async () => {
       await page.goto(origin + '/'); await page.getByTitle('Mở Thư ký AI trợ lý riêng của Thầy/Cô').click();
       await page.getByRole('heading', { name: 'Thư Ký Số & Trợ Lý Giáo Viên', exact: true }).waitFor();
       assert.equal(await page.getByText('BETA / ĐANG HUẤN LUYỆN', { exact: true }).count(), 0);
       await page.screenshot({ path: `${report}/secretary-375.png`, fullPage: false });
+    });
+    await t.test('pagination applies after filtering and resets when the search or page size changes', async () => {
+      const template = (await api('/api/admin/users')).users.find((u: { id: string }) => u.id === ids[1]);
+      const users = Array.from({ length: 23 }, (_, index) => ({ ...template, id: `pagination-${index}`, name: `Phân trang ${index + 1}`, email: `pagination-${index}@example.invalid` }));
+      await page.route('**/api/admin/users', route => route.request().method() === 'GET' ? route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ users }) }) : route.continue());
+      await page.goto(origin + '/admin/users'); await page.getByText('Phân trang 1', { exact: true }).waitFor();
+      assert.equal(await page.locator('tbody tr').count(), 10);
+      await page.getByRole('button', { name: 'Trang sau', exact: true }).click(); await page.getByText('Phân trang 11', { exact: true }).waitFor();
+      assert.equal(await page.getByText('Phân trang 1', { exact: true }).count(), 0);
+      await page.getByRole('button', { name: 'Trang sau', exact: true }).click(); await page.getByText('Phân trang 23', { exact: true }).waitFor();
+      assert.equal(await page.locator('tbody tr').count(), 3);
+      assert.equal(await page.getByRole('button', { name: 'Trang sau', exact: true }).isDisabled(), true);
+      await page.getByLabel('Số tài khoản mỗi trang').selectOption('20'); await page.getByText('Phân trang 1', { exact: true }).waitFor();
+      assert.equal(await page.locator('tbody tr').count(), 20);
+      await page.getByPlaceholder('Tìm theo tên hoặc email...').fill('Phân trang 23'); await page.getByText('Phân trang 23', { exact: true }).waitFor();
+      assert.equal(await page.locator('tbody tr').count(), 1);
+      await page.getByLabel('Lọc vai trò').selectOption('SUPER_ADMIN'); await page.getByText('Không tìm thấy tài khoản phù hợp.').waitFor();
+      assert.equal(await page.getByRole('button', { name: 'Trang trước', exact: true }).isDisabled(), true);
+      await page.unroute('**/api/admin/users');
     });
     await t.test('admin pages fit small, landscape and desktop viewports in both themes', async () => {
       for (const [width, height] of [[320, 568], [568, 320], [1280, 720]]) for (const dark of [false, true]) for (const [path, title] of [['users', 'Tài khoản'], ['keys', 'Cấp khóa AI'], ['ai', 'Hoạt động AI']]) {

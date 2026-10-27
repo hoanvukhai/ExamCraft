@@ -6,13 +6,13 @@ const key = (id: string, over: Record<string, unknown> = {}) => ({ id, label: 'K
 
 test('key list response: bad shape throws and keeps the old list; bad or repeated rows are counted; quota and models fall back safely', () => {
   for (const broken of [null, {}, { keys: 'x' }, { keys: {} }]) assert.throws(() => parseKeyList(broken), /không đọc được/);
-  const parsed = parseKeyList({ keys: [key('a'), key('a', { label: 'again' }), key('b', { isActive: 'yes' }), { id: 'c' }, null, key('d', { usedToday: 'many', errorCount: -3 }), key('', {})], poolQuota: { limit: 10, usedToday: 3, remaining: 7, resetsAt: '2026-10-25T00:00:00Z' }, availableModels: [{ id: 'gemini-x', name: 'X' }, { id: 5 }, null], selectedAiModel: 'gemini-x' });
+  const parsed = parseKeyList({ keys: [key('a'), key('a', { label: 'again' }), key('b', { isActive: 'yes' }), { id: 'c' }, null, key('d', { usedToday: 'many', errorCount: -3 }), key('', {})], poolQuota: { usedToday: 3 }, availableModels: [{ id: 'gemini-x', name: 'X' }, { id: 5 }, null], selectedAiModel: 'gemini-x' });
   assert.deepEqual(parsed.keys.map(row => row.id), ['a', 'd']);
   assert.equal(parsed.skipped, 5);
   assert.deepEqual([parsed.keys[1].usedToday, parsed.keys[1].errorCount], [0, 0], 'a missing or negative count never shows as a real number');
   assert.deepEqual(parsed.models, [{ id: 'gemini-x', name: 'X' }]);
   assert.equal(parsed.selectedModel, 'gemini-x');
-  assert.deepEqual(parsed.quota, { limit: 10, usedToday: 3, remaining: 7, resetsAt: '2026-10-25T00:00:00Z' });
+  assert.deepEqual(parsed.quota, { usedToday: 3 });
   const bare = parseKeyList({ keys: [], poolQuota: { limit: 'x' }, availableModels: 'nope' });
   assert.deepEqual([bare.quota, bare.models, bare.selectedModel], [null, [], '']);
 });

@@ -7,8 +7,8 @@ test('an empty or unfinished AI day is not represented as 100 percent success', 
   assert.equal(summarizeAiUsage([]).successRate, null);
   const pending = summarizeAiUsage([{ httpStatus: null, _count: { _all: 4 } }]);
   assert.equal(pending.totalToday, 4); assert.equal(pending.completedToday, 0); assert.equal(pending.successRate, null);
-  const mixed = summarizeAiUsage([{ httpStatus: 200, _count: { _all: 3 } }, { httpStatus: 429, _count: { _all: 1 } }, { httpStatus: null, _count: { _all: 2 } }]);
-  assert.equal(mixed.successRate, 75); assert.equal(mixed.totalToday, 6); assert.equal(mixed.pendingToday, 2);
+  const mixed = summarizeAiUsage([{ httpStatus: 200, _count: { _all: 3 } }, { httpStatus: 429, _count: { _all: 1 } }, { httpStatus: null, _count: { _all: 2 } }, { httpStatus: 102, _count: { _all: 1 } }]);
+  assert.equal(mixed.successRate, 75); assert.equal(mixed.totalToday, 7); assert.equal(mixed.pendingToday, 3);
 });
 
 test('shared grants count per recipient, without inventing provider quota', () => {

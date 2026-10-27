@@ -40,8 +40,3 @@ export function requestApiKey(input: unknown): string | undefined {
 }
 
 export const applicationDayStart = (now = new Date()) => new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
-export function applicationQuota(limit: number, used: number) {
-  const safeLimit = Number.isFinite(limit) && limit >= 0 ? Math.floor(limit) : 0;
-  const safeUsed = Number.isFinite(used) && used >= 0 ? Math.floor(used) : 0;
-  return { allowed: safeUsed < safeLimit, limit: safeLimit, used: safeUsed, remaining: Math.max(0, safeLimit - safeUsed), percentageUsed: safeLimit ? Math.min(100, Math.round(safeUsed / safeLimit * 100)) : 100 };
-}

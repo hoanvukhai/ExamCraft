@@ -40,6 +40,7 @@ test('HTTP workflows on the isolated local server', { timeout: 120000 }, async t
       await prisma.passage.deleteMany({ where: { ownerId: { in: ids } } });
       await prisma.teacherAiMemory.deleteMany({ where: { userId: { in: ids } } });
       await prisma.auditLog.deleteMany({ where: { actorId: { in: ids } } });
+      await prisma.aiUsageLog.deleteMany({ where: { userId: { in: ids } } });
       await prisma.user.deleteMany({ where: { id: { in: ids } } });
       const reportDirectory = `qa/rebuild-${new Date().toISOString().slice(0, 10)}`;
       fs.mkdirSync(reportDirectory, { recursive: true });
@@ -128,9 +129,9 @@ test('HTTP workflows on the isolated local server', { timeout: 120000 }, async t
     const scopeRequest = { params: { subject: scopePackage.subject, grade: scopePackage.grade, message: 'Chọn phép cộng', bookId: null, knowledgePackage: scopePackage, scope: emptyKnowledgeScope(scopePackage) } };
     const usageBefore = await prisma.aiUsageLog.count({ where: { userId: ids[0] } });
     assert.equal((await request('/api/knowledge-scope/propose', 'POST', { params: { ...scopeRequest.params, bookId: 'unknown-book' } }, owner)).status, 400);
-    const quotaBlocked = await request('/api/knowledge-scope/propose', 'POST', scopeRequest, owner);
-    assert.equal(quotaBlocked.status, 429); assert.equal(quotaBlocked.data.code, 'APPLICATION_AI_LIMIT');
-    assert.equal(await prisma.aiUsageLog.count({ where: { userId: ids[0] } }), usageBefore, 'Invalid scope and zero-quota requests must not reserve or call a provider.');
+    const missingKey = await request('/api/knowledge-scope/propose', 'POST', scopeRequest, owner);
+    assert.equal(missingKey.status, 400); assert.equal(missingKey.data.code, 'NO_API_KEY');
+    assert.equal(await prisma.aiUsageLog.count({ where: { userId: ids[0] } }), usageBefore + 1, 'An old zero daily cap does not block the request; the missing-key failure is logged without a provider call.');
     const ownInFolder = await request('/api/exams', 'POST', { document: { ...exam, id: `folder-${suffix}` }, folderId }, owner);
     assert.equal(ownInFolder.status, 200);
     assert.equal((await request('/api/exams', 'POST', { document: { ...exam, id: `foreign-folder-${suffix}` }, folderId }, other)).status, 403);

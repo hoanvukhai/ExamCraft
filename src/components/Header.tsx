@@ -39,9 +39,9 @@ interface HeaderProps {
   keyCount?: number;
   keyErrorCount?: number;
   quota?: {
-    dailyLimit: number;
+
     usedToday: number;
-    remaining: number;
+
   };
   isCloudSaving?: boolean;
   isCloudSaved?: boolean;
@@ -67,7 +67,7 @@ export const Header: React.FC<HeaderProps> = ({
   hasActiveKey,
   keyCount = 0,
   keyErrorCount = 0,
-  quota = { dailyLimit: 100, usedToday: 0, remaining: 100 },
+  quota = { usedToday: 0 },
   isCloudSaving = false,
   isCloudSaved = true,
   currentUser = null,
@@ -105,9 +105,7 @@ export const Header: React.FC<HeaderProps> = ({
     finally { setLoggingOut(false); }
   };
 
-  const usagePercent = quota.dailyLimit > 0 
-    ? Math.min(100, Math.round((quota.usedToday / quota.dailyLimit) * 100))
-    : 0;
+
 
   return (
     <header className="app-bar no-print h-14 bg-white dark:bg-[#17181a] border-b border-[#dadce0] dark:border-[#3c4043] shrink-0 z-30 px-3 sm:px-5 flex items-center justify-between gap-3 shadow-xs transition-colors duration-200">
@@ -335,26 +333,7 @@ export const Header: React.FC<HeaderProps> = ({
                         </span>
                       </div>
 
-                      {/* Thanh tiến trình hạn mức hôm nay */}
-                      <div className="space-y-1">
-                        <div className="flex items-center justify-between text-[11px] text-[#5f6368] dark:text-[#9aa0a6]">
-                          <span>Đã dùng hôm nay:</span>
-                          <span className="font-bold text-[#202124] dark:text-[#e3e3e3]">{quota.usedToday} / {quota.dailyLimit} lượt</span>
-                        </div>
-                        <div className="w-full bg-[#dadce0] dark:bg-[#3c4043] h-1.5 rounded-full overflow-hidden">
-                          <div 
-                            className={`h-full rounded-full transition-all duration-300 ${
-                              usagePercent > 80 ? 'bg-rose-500' : 'bg-[#3c4043] dark:bg-[#e3e3e3]'
-                            }`}
-                            style={{ width: `${usagePercent}%` }}
-                          />
-                        </div>
-                        <div className="text-[10px] text-[var(--ui-text-secondary)] flex items-center justify-between">
-                          <span>Còn lại: {quota.remaining} lượt</span>
-                          <span className="text-[#5f6368] dark:text-[#9aa0a6] font-sans">({usagePercent}%)</span>
-                        </div>
-                      </div>
-
+                      <div className="text-xs text-[var(--ui-text-secondary)] space-y-1"><p>Thành công hôm nay: {quota.usedToday} lượt</p><p>Hạn mức do nhà cung cấp áp dụng; chưa biết số lượt còn lại.</p></div>
                       {/* Cảnh báo trạng thái */}
                       {!hasActiveKey ? (
                         <p className="text-[11px] text-[var(--ui-text-secondary)] flex items-center gap-1.5 pt-0.5">

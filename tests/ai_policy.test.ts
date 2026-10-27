@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import prisma from '../src/lib/prisma';
-import { applicationQuota, applicationDayStart, classifyProviderFailure, normalizeModelId, requestApiKey } from '../src/lib/ai-policy';
+import { applicationDayStart, classifyProviderFailure, normalizeModelId, requestApiKey } from '../src/lib/ai-policy';
 import { executeWithKeyRotation, AiRequestError, checkUserAiQuota } from '../src/lib/gemini-keys';
 import { encryptApiKey, decryptApiKey } from '../src/lib/crypto';
 
@@ -26,9 +26,7 @@ test('temporary key aliases agree or reject conflict and model ids permit new pr
   assert.equal(normalizeModelId('../secret'), null);
 });
 
-test('application quota is configured independently from the number of provider keys', () => {
-  assert.deepEqual(applicationQuota(2, 2), { allowed: false, limit: 2, used: 2, remaining: 0, percentageUsed: 100 });
-  assert.equal(applicationQuota(0, 0).allowed, false);
+test('daily statistics use a stable UTC day without imposing a daily cap', () => {
   assert.equal(applicationDayStart(new Date('2026-10-22T23:01:00Z')).toISOString(), '2026-10-22T00:00:00.000Z');
 });
 
@@ -56,15 +54,29 @@ test('successful generation is not repeated when usage logging fails; temporary 
   } finally { prisma.$transaction = transaction; prisma.aiUsageLog.update = update; }
 });
 
-test('local quota reports the application cap and unknown provider capacity', async () => {
+test('usage reports no application cap and does not invent provider capacity', async () => {
   const user = prisma.user.findUnique, count = prisma.aiUsageLog.count, keys = prisma.userApiKey.count;
   prisma.user.findUnique = (async () => ({ aiDailyLimit: 7 })) as unknown as typeof prisma.user.findUnique;
   prisma.aiUsageLog.count = (async () => 2) as unknown as typeof prisma.aiUsageLog.count;
   prisma.userApiKey.count = (async () => 100) as unknown as typeof prisma.userApiKey.count;
   try {
     const quota = await checkUserAiQuota('fixture-user');
-    assert.equal(quota.limit, 7); assert.equal(quota.remaining, 5); assert.equal(quota.providerQuota, null); assert.equal(quota.activeKeyCount, 100);
+    assert.equal(quota.limit, null); assert.equal(quota.remaining, null); assert.equal(quota.used, 2); assert.equal(quota.allowed, true); assert.equal(quota.providerQuota, null); assert.equal(quota.activeKeyCount, 100);
   } finally { prisma.user.findUnique = user; prisma.aiUsageLog.count = count; prisma.userApiKey.count = keys; }
+});
+
+test('legacy zero daily cap does not block an authenticated operation or read a daily allowance', async () => {
+  const transaction = prisma.$transaction, update = prisma.aiUsageLog.update;
+  let calls = 0;
+  prisma.$transaction = (async (callback: (tx: unknown) => Promise<unknown>) => callback({
+    user: { findUnique: async () => ({ isActive: true, mustChangePassword: false, aiDailyLimit: 0, selectedAiModel: 'gemini-fixture-model' }) },
+    aiUsageLog: { count: async () => { throw Error('An old daily allowance must not be consulted'); }, create: async () => ({ id: 'fixture-no-cap' }) },
+  })) as unknown as typeof prisma.$transaction;
+  prisma.aiUsageLog.update = (async () => ({})) as unknown as typeof prisma.aiUsageLog.update;
+  try {
+    for (let i = 0; i < 3; i++) assert.equal(await executeWithKeyRotation('temporary-fixture-key', async () => { calls++; return 'ok'; }, { userId: 'fixture-user' }), 'ok');
+    assert.equal(calls, 3);
+  } finally { prisma.$transaction = transaction; prisma.aiUsageLog.update = update; }
 });
 
 test('saved-key retry stays within the owner and preserves the requested model', async () => {

@@ -8,7 +8,6 @@ import { isSameOriginMutation } from '@/lib/attempt-access';
 const UpdateUserSchema = z.object({
   isActive: z.boolean().optional(),
   resetPassword: z.string().min(6, 'Mật khẩu tạm phải có ít nhất 6 ký tự').optional(),
-  aiDailyLimit: z.number().int().min(0).optional(),
   name: z.string().min(2).optional(),
   role: z.nativeEnum(Role).optional(),
 });
@@ -58,9 +57,7 @@ export async function PATCH(
       updateData.isActive = parsed.data.isActive;
     }
 
-    if (parsed.data.aiDailyLimit !== undefined) {
-      updateData.aiDailyLimit = parsed.data.aiDailyLimit;
-    }
+
 
     if (parsed.data.role !== undefined) {
       updateData.role = parsed.data.role;

@@ -102,7 +102,7 @@ test('AI routes use only the caller key, count usage per key id, fail honestly a
     assert.equal(list.data.keys.find((key: { id: string }) => key.id === keyId).usedToday, 1, 'usage is counted by key id');
     const usage = await request('/api/user/ai-usage', 'GET', undefined, cookies.a);
     assert.ok(!JSON.stringify(usage.data).includes(secret)); assert.ok(usage.data.logs.some((log: { keyAlias: string; endpoint: string; httpStatus: number }) => log.keyAlias === 'user_key:' + keyId && log.endpoint === 'exam.parse' && log.httpStatus === 200));
-    assert.equal(list.data.poolQuota.source, 'application', 'the application limit is not presented as the provider quota'); assert.equal(list.data.providerQuota, null);
+    assert.equal(list.data.poolQuota.source, 'provider', 'provider policy is explicit without inventing a remaining quota'); assert.equal(list.data.providerQuota, null);
     checks.push('stored-key-and-usage');
   });
 
@@ -127,19 +127,23 @@ test('AI routes use only the caller key, count usage per key id, fail honestly a
     checks.push('rate-limit-fallback-and-isolation');
   });
 
-  await t.test('the application daily limit stops calls before the provider and is not described as the provider limit', async () => {
+  await t.test('old daily limits including zero do not block calls; provider rules still apply', async () => {
     reset(); await addKey('q', 'quota-key-0123456789abcdef');
-    assert.equal((await parse('q')).status, 200); assert.equal((await parse('q')).status, 200);
-    const third = await parse('q'); assert.ok([403, 429].includes(third.status), `third call refused (${third.status})`); assert.match(String(third.data.error), /ứng dụng/);
-    assert.equal(seen.length, 2, 'the refused call never reached the provider');
-    checks.push('daily-limit');
+    await db.user.update({ where: { id: ids.q }, data: { aiDailyLimit: 0 } });
+    for (let i = 0; i < 3; i++) assert.equal((await parse('q')).status, 200);
+    assert.equal(seen.length, 3, 'all three requests reach the local provider despite the old zero cap');
+    assert.equal((await db.user.findUniqueOrThrow({ where: { id: ids.q } })).aiDailyLimit, 0, 'the old stored value is preserved, not rewritten');
+    reset(() => ({ status: 429, body: { error: { code: 429, message: 'RESOURCE_EXHAUSTED quota', status: 'RESOURCE_EXHAUSTED' } } }));
+    const limited = await parse('q'); assert.equal(limited.status, 429); assert.equal(limited.data.code, 'RATE_LIMITED');
+    assert.equal(seen.length, 1, 'provider 429 still applies and is not retried in a storm');
+    checks.push('provider-only-limits');
   });
 
-  await t.test('keys can be switched off and on, the model choice reaches the provider, and more keys never raise the application limit', async () => {
+  await t.test('keys can be switched off and on, the model choice reaches the provider, and usage does not advertise an application limit', async () => {
     reset(); await db.userApiKey.deleteMany({ where: { userId: ids.b } });
     const first = await addKey('b', 'first-key-0123456789abcdef', 'Khóa một'), second = await addKey('b', 'second-key-0123456789abcdef', 'Khóa hai');
     const list = await request('/api/user/keys', 'GET', undefined, cookies.b);
-    assert.equal(list.data.poolQuota.limit, 20, 'two keys are still one application limit'); assert.equal(list.data.poolQuota.activeKeyCount, 2);
+    assert.equal(list.data.poolQuota.limit, null, 'there is no application daily cap'); assert.equal(list.data.poolQuota.activeKeyCount, 2);
     assert.equal((await request('/api/user/keys', 'PATCH', { id: first, isActive: false }, cookies.b)).status, 200);
     assert.equal((await parse('b')).status, 200); assert.deepEqual([...new Set(seen.map(s => s.key))], ['second-key-0123456789abcdef'], 'a switched-off key is not used');
     assert.equal((await request('/api/user/keys', 'PATCH', { id: first, label: 'Đổi tên' }, cookies.b)).status, 200);
@@ -253,7 +257,7 @@ test('AI routes use only the caller key, count usage per key id, fail honestly a
     checks.push('word-formulas-and-pictures');
   });
 
-  await t.test('a key granted by an administrator is used for the chosen teacher only, and that teacher keeps their own daily limit', async () => {
+  await t.test('a key granted by an administrator is used for the chosen teacher only, and there is no extra application daily limit', async () => {
     const granted = 'granted-mock-key-0123456789abcdef';
     await db.user.create({ data: { id: ids.g, email: ids.g + '@example.invalid', name: 'AI mock granted', passwordHash: hash, mustChangePassword: false, aiDailyLimit: 2 } });
     await db.user.create({ data: { id: ids.admin, email: ids.admin + '@example.invalid', name: 'AI mock admin', passwordHash: hash, role: 'SUPER_ADMIN', mustChangePassword: false, aiDailyLimit: 20 } });
@@ -268,12 +272,11 @@ test('AI routes use only the caller key, count usage per key id, fail honestly a
     assert.equal((await request('/api/parse-exam-text', 'POST', { rawText: 'Câu 2: Hai cộng hai? A. 3 B. 4' }, cookies.g)).status, 200);
     assert.ok(sentCount() === 2 && seen.every(call => call.key === granted), 'the provider received the granted key and only that');
     const third = await request('/api/parse-exam-text', 'POST', { rawText: 'Câu 3: Ba cộng ba? A. 5 B. 6' }, cookies.g);
-    assert.ok(third.status >= 400 && /giới hạn thao tác AI do ứng dụng đặt/.test(String(third.data.error)), 'their own daily limit stops the third call, not the key');
-    assert.equal(sentCount(), 2, 'the refused call never reached the provider');
+    assert.equal(third.status, 200, 'a granted key also follows provider limits without the old application cap');
+    assert.equal(sentCount(), 3, 'the third allowed call reaches the local provider');
     assert.equal((await request(`/api/admin/keys?grantId=${made.data.grantId}`, 'DELETE', undefined, cookies.admin)).status, 200);
-    await db.user.update({ where: { id: ids.g }, data: { aiDailyLimit: 20 } });
     const after = await request('/api/parse-exam-text', 'POST', { rawText: 'Câu 4: Bốn cộng bốn? A. 7 B. 8' }, cookies.g);
-    assert.ok([400, 401].includes(after.status) && sentCount() === 2, 'once the grant is taken back the key stops working');
+    assert.ok([400, 401].includes(after.status) && sentCount() === 3, 'once the grant is taken back the key stops working');
     checks.push('granted-key-used');
   });
 

@@ -112,7 +112,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     keyCount: 0,
     keyErrorCount: 0,
     hasActiveKey: false,
-    quota: { dailyLimit: 0, usedToday: 0, remaining: 0 },
+    quota: { usedToday: 0 },
   });
 
   // Kiểm tra trạng thái Key từ server khi load
@@ -128,7 +128,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
           keyCount: activeKeys.length,
           keyErrorCount: errorKeys.length,
           hasActiveKey: isReady,
-          quota: data.quota || { dailyLimit: 0, usedToday: 0, remaining: 0 },
+          quota: { usedToday: data.poolQuota?.usedToday ?? 0 },
         });
       }
   }).catch(() => { /* Preserve the last acknowledged key state on network errors. */ });

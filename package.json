@@ -16,6 +16,7 @@
     "test:integration": "node --import tsx scripts/test-database.cjs run",
     "test:integration:legacy": "node --import tsx tests/run_all_v3_tests.ts",
     "test:http": "node --import tsx scripts/test-database.cjs http",
+    "test:http-ai": "node --import tsx scripts/test-database.cjs http-ai",
     "test:pilot": "node --import tsx scripts/pilot-run.cjs",
     "test:admin": "node --import tsx scripts/pilot-run.cjs --admin",
     "ci": "node scripts/ci.cjs"

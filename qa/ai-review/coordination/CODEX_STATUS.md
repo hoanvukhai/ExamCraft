@@ -1,15 +1,15 @@
 # CODEX status
 
-task_id: OWNER-ADMIN-REFRESH-20261027
+task_id: OWNER-PROVIDER-POLICY-PAGINATION-20261027
 state: WAITING_REVIEW
 updated: 27/10/2026, Asia/Bangkok
 branch/worktree: rebuild/2026-10-local, F:/Workspace/Zazz/ExamCraft
-commit nền gần nhất: 2bad395
+commit nền gần nhất: 393da5f
 
-Chủ dự án duyệt triển khai sau phân tích. Đã dọn admin: khung chung, kiểm quyền server, số liệu khóa và hoạt động hiện hành, trạng thái/rỗng/lỗi, tài khoản trên điện thoại và lọc vai trò, dialog xác nhận chung. Đã bỏ popup Thư ký cũ chồng drawer, sửa nhãn CLASSWORK, số lượt SUBMITTED, câu chữ và encoding đề mẫu kỹ thuật.
+QUYẾT ĐỊNH MỚI của chủ dự án: bỏ giới hạn AI theo ngày của ExamCraft, dùng theo nhà cung cấp. Đã bỏ chặn runtime và cấu hình/giao diện cap; chỉ giữ thống kê. Không khôi phục quota nội bộ từ hồ sơ/test cũ. aiDailyLimit trong DB/API đọc cũ giữ nguyên để bảo toàn, không dùng cấp/chặn quyền AI, không migration/ghi lại dữ liệu hàng loạt.
 
-Đã kiểm mã/build/an toàn, admin trên trình duyệt và hồi quy các luồng liên quan. Số liệu/log/ảnh/giới hạn và phần giữ tương thích: qa/rebuild-2026-10-27/admin-refresh/BAO_CAO.md. Chưa suy toàn sản phẩm/thiết bị/provider thật đã nghiệm thu. Bước tiếp theo: chủ dự án xem giao diện thực tế; không tự mở tính năng mới.
+Đã làm trạng thái Đang hoạt động xanh ở sáng/tối; phân trang tài khoản10/20/50 sau tìm/lọc, reset và kẹp trang, đưa focus về bảng. Giữ quyền/khóa/model/hủy/đầu vào và provider429. Đã kiểm mã/build/an toàn, API với provider giả, giao diện và các luồng liên quan. Số liệu/log/ảnh/giới hạn: qa/rebuild-2026-10-27/admin-pagination/BAO_CAO.md.
 
-Không DB chính/provider thật/schema/migration/khóa mã hóa cũ. Fixture riêng đã dọn, giữ dữ liệu và tài khoản có sẵn. Server thử3117 giữ chạy bản cuối, LOCK_3117=USER; không build đè .next lúc đang xem. Có thể cần mở lại server nếu tiến trình dừng giữa các lượt chat.
+Không DB chính/provider thật/khóa mã hóa cũ/.env/backup. Fixture riêng đã dọn theo ID; giữ dữ liệu và tài khoản có sẵn. Server3117 giữ bản cuối, AI thật tắt, LOCK_3117=USER; không build đè .next khi đang xem. Có thể cần mở lại server nếu tiến trình dừng giữa lượt chat.
 
-Giữ QA25/scratch/tmp có sẵn, không gom vào commit. Không sửa checklist/02/ASSIGNMENTS/BATCH_REVIEWS, không tự đóng CV, không push/reset/clean. Đợt phân tích trước: qa/rebuild-2026-10-27/ui-page-review/PHAN_TICH_TRANG_VA_ADMIN.md.
+Giữ QA25/scratch/tmp có sẵn ngoài commit. Không sửa hồ sơ02/checklist/ASSIGNMENTS/BATCH_REVIEWS, không tự đóng CV, không push/reset/clean. Bước tiếp theo: chủ dự án xem sản phẩm; không tự mở tính năng hoặc phục hồi cap cũ.

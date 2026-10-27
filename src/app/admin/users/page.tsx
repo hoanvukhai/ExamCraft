@@ -1,7 +1,7 @@
 'use client';
 
 import { useConfirmAction } from '@/components/ConfirmAction';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Users, UserPlus, KeyRound, Lock, Unlock, RefreshCw, Bot, FileText, Search, CheckCircle2, AlertCircle, X, Sliders } from 'lucide-react';
@@ -14,7 +14,6 @@ interface TeacherUser {
   role: 'SUPER_ADMIN' | 'TEACHER';
   isActive: boolean;
   mustChangePassword: boolean;
-  aiDailyLimit: number;
   createdAt: string;
   lastLoginAt: string | null;
   _count: {
@@ -34,6 +33,14 @@ export default function AdminUsersPage() {
   const [actionError, setActionError] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState('ALL');
+  const [requestedPage, setRequestedPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const tableRef = useRef<HTMLTableElement>(null);
+  const goToPage = (next: number) => {
+    setRequestedPage(next);
+    tableRef.current?.focus({ preventScroll: true });
+    tableRef.current?.scrollIntoView({ block: 'start' });
+  };
   const [currentUser, setCurrentUser] = useState<{ id: string; email: string; name: string } | null>(null);
 
 
@@ -46,7 +53,6 @@ export default function AdminUsersPage() {
   const [createEmail, setCreateEmail] = useState('');
   const [createName, setCreateName] = useState('');
   const [createPassword, setCreatePassword] = useState('GiaoVien2026@');
-  const [createAiLimit, setCreateAiLimit] = useState(100);
   const [createError, setCreateError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -56,7 +62,6 @@ export default function AdminUsersPage() {
 
   // Edit modal state
   const [editName, setEditName] = useState('');
-  const [editAiLimit, setEditAiLimit] = useState(100);
 
   // Feedback notification
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -104,7 +109,6 @@ export default function AdminUsersPage() {
           email: createEmail,
           name: createName,
           password: createPassword,
-          aiDailyLimit: createAiLimit,
           role: 'TEACHER',
         }),
       });
@@ -199,7 +203,6 @@ export default function AdminUsersPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: editName,
-          aiDailyLimit: editAiLimit,
         }),
       });
 
@@ -227,6 +230,10 @@ export default function AdminUsersPage() {
   );
 
   const totalTeachers = users.filter((u) => u.role === 'TEACHER').length;
+  const pageCount = Math.max(1, Math.ceil(filteredUsers.length / pageSize));
+  const page = Math.min(requestedPage, pageCount);
+  const pageStart = (page - 1) * pageSize;
+  const pagedUsers = filteredUsers.slice(pageStart, pageStart + pageSize);
   const activeTeachers = users.filter((u) => u.role === 'TEACHER' && u.isActive).length;
   const totalExams = users.reduce((acc, u) => acc + (u._count?.exams || 0), 0);
 
@@ -246,7 +253,7 @@ export default function AdminUsersPage() {
 
       {/* Main Content */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-8 space-y-6">
-        <div><h1 className="text-2xl font-semibold">Tài khoản</h1><p className="text-sm text-[var(--ui-text-secondary)] mt-1">Quản lý giáo viên, trạng thái tài khoản và hạn mức sử dụng AI.</p></div>
+        <div><h1 className="text-2xl font-semibold">Tài khoản</h1><p className="text-sm text-[var(--ui-text-secondary)] mt-1">Quản lý giáo viên và trạng thái tài khoản.</p></div>
         {actionError && <p role="alert" className="app-feedback border p-3 rounded-xl text-sm">{actionError}</p>}
         {loadError && <p role="alert" className="app-feedback border p-3 rounded-xl text-sm">{loadError} Dữ liệu bên dưới có thể là lần tải trước. Hãy bấm Tải lại.</p>}
         {/* Stat Cards */}
@@ -291,7 +298,7 @@ export default function AdminUsersPage() {
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => { setSearchQuery(e.target.value); setRequestedPage(1); }}
               placeholder="Tìm theo tên hoặc email..."
               className="w-full bg-white dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-full pl-10 pr-4 py-2.5 text-xs text-[#202124] dark:text-[#e3e3e3] placeholder-[#9aa0a6] dark:placeholder-[#5f6368] focus:outline-none focus:border-[#3c4043] dark:focus:border-[#e3e3e3]"
             />
@@ -319,18 +326,17 @@ export default function AdminUsersPage() {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 text-sm"><label className="flex items-center gap-2">Vai trò <select aria-label="Lọc vai trò" value={roleFilter} onChange={e => setRoleFilter(e.target.value)} className="app-button-secondary px-3 py-2"><option value="ALL">Mọi tài khoản</option><option value="TEACHER">Giáo viên</option><option value="SUPER_ADMIN">Quản trị viên</option></select></label><span className="text-[var(--ui-text-secondary)]">Hiện {filteredUsers.length} / {users.length} tài khoản</span></div>
+        <div className="flex flex-wrap items-center justify-between gap-3 text-sm"><label className="flex items-center gap-2">Vai trò <select aria-label="Lọc vai trò" value={roleFilter} onChange={e => { setRoleFilter(e.target.value); setRequestedPage(1); }} className="app-button-secondary px-3 py-2"><option value="ALL">Mọi tài khoản</option><option value="TEACHER">Giáo viên</option><option value="SUPER_ADMIN">Quản trị viên</option></select></label><span className="text-[var(--ui-text-secondary)]">{filteredUsers.length ? `Hiện ${pageStart + 1}–${Math.min(pageStart + pageSize, filteredUsers.length)} / ${filteredUsers.length} tài khoản` : 'Không có tài khoản phù hợp'}</span></div>
         {/* Teachers Table Card */}
         <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
-            <table role="table" aria-label="Danh sách tài khoản" className="app-user-table w-full text-left text-xs">
+            <table ref={tableRef} tabIndex={-1} role="table" aria-label="Danh sách tài khoản" className="app-user-table w-full text-left text-xs">
               <thead className="bg-[#f8f9fa] dark:bg-[#242424] border-b border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] uppercase tracking-wider text-[11px]">
                 <tr>
                   <th className="px-5 py-3.5 font-medium">Tài khoản</th>
                   <th className="px-4 py-3.5 font-medium">Vai trò</th>
                   <th className="px-4 py-3.5 font-medium">Trạng thái</th>
                   <th className="px-4 py-3.5 font-medium">Đề & Câu hỏi</th>
-                  <th className="px-4 py-3.5 font-medium">Hạn mức AI/ngày</th>
                   <th className="px-4 py-3.5 font-medium">Đăng nhập cuối</th>
                   <th className="px-5 py-3.5 font-medium text-right">Thao tác</th>
                 </tr>
@@ -338,7 +344,7 @@ export default function AdminUsersPage() {
               <tbody className="divide-y divide-[#dadce0] dark:divide-[#3c4043]">
                 {isLoading ? (
                   <tr>
-                    <td colSpan={7} className="px-5 py-12 text-center text-[#5f6368] dark:text-[#9aa0a6]">
+                    <td colSpan={6} className="px-5 py-12 text-center text-[#5f6368] dark:text-[#9aa0a6]">
                       <div className="flex items-center justify-center gap-2">
                         <div className="w-4 h-4 border-2 border-[#3c4043] dark:border-[#e3e3e3] border-t-transparent rounded-full animate-spin" />
                         <span>Đang tải danh sách tài khoản...</span>
@@ -347,12 +353,12 @@ export default function AdminUsersPage() {
                   </tr>
                 ) : filteredUsers.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-5 py-12 text-center text-[#5f6368] dark:text-[#9aa0a6]">
+                    <td colSpan={6} className="px-5 py-12 text-center text-[#5f6368] dark:text-[#9aa0a6]">
                       Không tìm thấy tài khoản phù hợp.
                     </td>
                   </tr>
                 ) : (
-                  filteredUsers.map((u) => (
+                  pagedUsers.map((u) => (
                     <tr key={u.id} className="hover:bg-[#f8f9fa] dark:hover:bg-[#292a2d] transition-colors">
                       {/* Teacher Column */}
                       <td data-label="Tài khoản" className="px-5 py-4">
@@ -372,7 +378,7 @@ export default function AdminUsersPage() {
                             Quản trị viên
                           </span>
                         ) : (
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[var(--ui-surface-variant)] dark:bg-[var(--ui-surface-variant)] text-[var(--ui-text-primary)] dark:text-[var(--ui-text-primary)] border border-[var(--ui-border)] dark:border-[var(--ui-border)]">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold app-feedback border">
                             Giáo viên
                           </span>
                         )}
@@ -381,8 +387,8 @@ export default function AdminUsersPage() {
                       {/* Status Column */}
                       <td data-label="Trạng thái" className="px-4 py-4">
                         {u.isActive ? (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-[var(--ui-surface-variant)] dark:bg-[var(--ui-surface-variant)] text-[var(--ui-text-primary)] dark:text-[var(--ui-text-primary)] border border-[var(--ui-border)] dark:border-[var(--ui-border)]">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[var(--ui-text-secondary)] " />
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-medium app-status-active border">
+                            <span className="w-1.5 h-1.5 rounded-full bg-current " />
                             Đang hoạt động
                           </span>
                         ) : (
@@ -400,10 +406,6 @@ export default function AdminUsersPage() {
                       </td>
 
                       {/* AI Quota Column */}
-                      <td data-label="Hạn mức AI/ngày" className="px-4 py-4">
-                        <span className="font-mono text-[#202124] dark:text-[#e3e3e3]">{u.aiDailyLimit}</span>
-                        <span className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6]"> lệnh/ngày</span>
-                      </td>
 
                       {/* Last Login Column */}
                       <td data-label="Đăng nhập cuối" className="px-4 py-4 text-[#5f6368] dark:text-[#9aa0a6] text-[11px]">
@@ -451,10 +453,9 @@ export default function AdminUsersPage() {
                           <button
                             onClick={() => {
                               setEditName(u.name);
-                              setEditAiLimit(u.aiDailyLimit);
                               setShowEditModal(u);
                             }}
-                            title="Chỉnh sửa thông tin & hạn mức"
+                            title="Chỉnh sửa thông tin"
                             className="p-2 rounded-lg text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#3c4043] dark:hover:text-[#e3e3e3] hover:bg-neutral-50 dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
                           >
                             <Sliders className="w-4 h-4" />
@@ -468,6 +469,10 @@ export default function AdminUsersPage() {
             </table>
           </div>
         </div>
+        <nav aria-label="Phân trang tài khoản" className="flex flex-wrap items-center justify-between gap-3 text-sm">
+          <label className="flex items-center gap-2">Mỗi trang<select aria-label="Số tài khoản mỗi trang" value={pageSize} onChange={e => { setPageSize(Number(e.target.value)); setRequestedPage(1); }} className="app-button-secondary px-3 py-2"><option value={10}>10</option><option value={20}>20</option><option value={50}>50</option></select></label>
+          <div className="flex flex-wrap items-center gap-2"><button disabled={isLoading || page <= 1} onClick={() => goToPage(page - 1)} className="app-button-secondary px-3 py-2 disabled:opacity-40">Trang trước</button><span aria-live="polite">Trang {page} / {pageCount}</span><button disabled={isLoading || page >= pageCount} onClick={() => goToPage(page + 1)} className="app-button-secondary px-3 py-2 disabled:opacity-40">Trang sau</button></div>
+        </nav>
       </main>
 
       {/* Modal: Tạo tài khoản giáo viên mới */}
@@ -547,19 +552,7 @@ export default function AdminUsersPage() {
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-[#5f6368] dark:text-[#9aa0a6] mb-1 uppercase tracking-wider">
-                  Hạn mức gọi AI tối đa (lệnh / ngày)
-                </label>
-                <input
-                  type="number"
-                  min={10}
-                  max={1000}
-                  value={createAiLimit}
-                  onChange={(e) => setCreateAiLimit(parseInt(e.target.value) || 100)}
-                  className="w-full bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2 text-xs text-[#202124] dark:text-[#e3e3e3] placeholder-[#9aa0a6] dark:placeholder-[#5f6368] focus:outline-none focus:border-[#3c4043] dark:focus:border-[#e3e3e3]"
-                />
-              </div>
+
 
               <div className="pt-2">
                 <button
@@ -647,7 +640,7 @@ export default function AdminUsersPage() {
         </div>
       )}
 
-      {/* Modal: Chỉnh sửa thông tin & Hạn mức */}
+      {/* Modal: Chỉnh sửa thông tin */}
       {showEditModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
           <div className="app-dialog w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl shadow-xs p-6 relative">
@@ -682,19 +675,7 @@ export default function AdminUsersPage() {
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-[#5f6368] dark:text-[#9aa0a6] mb-1 uppercase tracking-wider">
-                  Hạn mức AI mỗi ngày
-                </label>
-                <input
-                  type="number"
-                  min={10}
-                  max={2000}
-                  value={editAiLimit}
-                  onChange={(e) => setEditAiLimit(parseInt(e.target.value) || 100)}
-                  className="w-full bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2 text-xs text-[#202124] dark:text-[#e3e3e3] focus:outline-none focus:border-[#3c4043] dark:focus:border-[#e3e3e3]"
-                />
-              </div>
+
 
               <div className="flex justify-end gap-2 pt-2">
                 <button
