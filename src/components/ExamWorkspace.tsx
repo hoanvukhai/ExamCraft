@@ -87,8 +87,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   const { hasActiveKey, openKeys } = useWorkspace();
 
   // Layout states
-  const { copilotOpen: isCopilotOpen, setCopilotOpen: setIsCopilotOpen, setCopilotAvailable } = useWorkspace();
-  useEffect(() => { setCopilotAvailable(canEdit); return () => setCopilotAvailable(false); }, [canEdit, setCopilotAvailable]);
+  const { copilotOpen: isCopilotOpen, setCopilotOpen: setIsCopilotOpen } = useWorkspace();
   const [copilotCommand, setCopilotCommand] = useState<string>('');
   const [mobileTab, setMobileTab] = useState<'editor' | 'preview'>('editor');
   const [isMatrixTabActive, setIsMatrixTabActive] = useState(false);
@@ -280,6 +279,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
 
       <EditorToolbar
         canEdit={canEdit} ready={ready} hasQuestions={exam.questions.length > 0} hasServerExam={Boolean(exam.serverId)}
+        copilotOpen={isCopilotOpen} onCopilot={() => setIsCopilotOpen(open => !open)}
         access={exam.access} submissionCount={submissionCount} matrixActive={isMatrixTabActive}
         onGenerate={() => setIsGenerateModalOpen(true)} onImport={() => setIsImportModalOpen(true)} onBank={() => setIsQuestionBankModalOpen(true)}
         onHeaderSettings={() => setIsHeaderModalOpen(true)} onShuffle={() => setIsShuffleModalOpen(true)} onMatrix={() => setIsMatrixTabActive(!isMatrixTabActive)} onLibrary={() => setIsLibraryModalOpen(true)}
@@ -307,7 +307,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         
 
         {/* ZONE 2: VÙNG NỘI DUNG CHÍNH (CANVAS CHỦ ĐẠO MÀU TRẮNG GOOGLE, CUỘN ĐỘC LẬP) */}
-        <div className="print-flow flex-1 h-full overflow-y-auto px-4 sm:px-6 py-5 min-w-0">
+        <div className="print-flow @container flex-1 h-full overflow-y-auto px-4 sm:px-6 py-5 min-w-0">
           <LocalDraftsPanel ownerId={currentUser.id} />
           <QuestionDraftPanel key={`${currentUser.id}:${exam.id}`} ownerId={currentUser.id} documentId={exam.id} questionIds={exam.questions.map(question => question.id)} exam={exam} />
           <AiProposalJournalPanel key={`ai:${currentUser.id}:${exam.id}`} ownerId={currentUser.id} documentId={exam.id} questionIds={exam.questions.map(question => question.id)} onOpenCopilot={() => setIsCopilotOpen(true)} />
@@ -331,7 +331,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
           )}
 
           {/* Thanh chuyển tab trên mobile */}
-          <div className="no-print lg:hidden bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-full p-1 mb-4 flex items-center justify-center gap-1 shadow-2xs">
+          <div className="no-print @min-[900px]:hidden bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-full p-1 mb-4 flex items-center justify-center gap-1 shadow-2xs">
             <button
               onClick={() => setMobileTab('editor')}
               className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all ${
@@ -358,11 +358,11 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
           </div>
 
           {/* KHU VỰC CHÍNH SPLIT PANE: DANH SÁCH CÂU HỎI & A4 PREVIEW */}
-          <main className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start pb-8">
+          <main className="grid grid-cols-1 @min-[900px]:grid-cols-12 gap-6 items-start pb-8">
             {/* CỘT TRÁI: DANH SÁCH CÂU HỎI (6 Cột trên màn hình lớn) */}
             <fieldset disabled={!canEdit}
-              className={`no-print min-w-0 lg:col-span-6 space-y-4 ${
-                mobileTab === 'preview' ? 'hidden lg:block' : 'block'
+              className={`no-print min-w-0 @min-[900px]:col-span-6 space-y-4 ${
+                mobileTab === 'preview' ? 'hidden @min-[900px]:block' : 'block'
               }`}
             >
               {/* Thanh tiêu đề & Tác vụ danh sách câu hỏi */}
@@ -524,8 +524,8 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
 
             {/* CỘT PHẢI: KHUNG XEM TRƯỚC BẢN IN A4 (6 Cột trên màn hình lớn) */}
             <section
-              className={`a4-preview-section lg:col-span-6 sticky top-0 h-[calc(100vh-6rem)] ${
-                mobileTab === 'editor' ? 'hidden lg:block' : 'block'
+              className={`a4-preview-section @min-[900px]:col-span-6 sticky top-0 h-[calc(100vh-6rem)] ${
+                mobileTab === 'editor' ? 'hidden @min-[900px]:block' : 'block'
               } print:!block print:!static print:!h-auto print:!w-full print:!overflow-visible`}
             >
               <A4Preview exam={exam} />
@@ -538,7 +538,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
           key={`${currentUser.id}:${exam.id}`}
           ownerId={currentUser.id}
           onSubmitCopilot={submission => setExam(previous => applyCopilotSubmission(previous, submission, currentUser.id))}
-          isExpanded={isCopilotOpen}
+          isExpanded={isCopilotOpen && canEdit}
           onClose={() => setIsCopilotOpen(false)}
           exam={exam}
           selectedQuestionIds={selectedQuestionIds}

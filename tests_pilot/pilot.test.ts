@@ -749,7 +749,7 @@ test('F19 library search, starred, recent, trash, restore and safe controls', { 
   await openClose(f.page.getByRole('button', { name: 'Nhập Word / ảnh', exact: true }), 'import-open-only');
   await f.page.getByTitle('Mở Thư ký AI trợ lý riêng của Thầy/Cô', { exact: true }).filter({ visible: true }).click();
   await f.page.getByRole('heading', { name: 'Thư Ký Số & Trợ Lý Giáo Viên', exact: true }).waitFor();
-  await f.page.locator('div.fixed.inset-y-0').locator('button:has(svg.lucide-x)').click(); checked.push('secretary-open-close-only-no-ai-call');
+  await f.page.getByRole('button', { name: 'Đóng hỏi đáp AI', exact: true }).click(); checked.push('secretary-open-close-only-no-ai-call');
   await f.page.getByRole('button', { name: 'Tạo đề', exact: true }).click();
   await f.page.getByTitle('Lưu các thay đổi lên máy chủ').first().waitFor();
   await menuLink(f.page, 'Tất cả đề thi');

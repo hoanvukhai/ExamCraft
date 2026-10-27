@@ -28,6 +28,7 @@ function ToolMenu({ label, Icon, items }: { label: string; Icon: Icon; items: Me
 interface Props {
   canEdit: boolean; ready: boolean; hasQuestions: boolean; hasServerExam: boolean;
   access?: Exam['access']; submissionCount: number; matrixActive: boolean;
+  copilotOpen: boolean; onCopilot: () => void;
   onGenerate: () => void; onImport: () => void; onBank: () => void;
   onHeaderSettings: () => void; onShuffle: () => void; onMatrix: () => void; onLibrary: () => void;
   onExportWord: () => void; onPrint: () => void; onPresent: () => void;
@@ -39,6 +40,7 @@ export function EditorToolbar(p: Props) {
   const badge = p.access ? (p.access.canManage ? 'Đề của bạn' : p.access.canEdit ? 'Được mời cùng sửa' : p.access.canComment ? 'Quyền xem và góp ý' : 'Quyền chỉ xem') : null;
   return <div role="toolbar" aria-label="Công cụ soạn đề" className="no-print shrink-0 border-b bg-[var(--ui-surface)] px-3 sm:px-4 py-2 flex flex-nowrap sm:flex-wrap items-center gap-2 overflow-x-auto sm:overflow-visible">
     {p.canEdit && <>
+      <button type="button" onClick={p.onCopilot} aria-label="Sửa đề bằng Trợ lý AI" aria-pressed={p.copilotOpen} title={p.copilotOpen ? 'Đóng bảng Trợ lý AI' : 'Mở rộng bảng Trợ lý AI'} className={button}><Sparkles className="w-3.5 h-3.5" /><span>Sửa đề bằng AI</span></button>
       <button type="button" onClick={p.onBank} title="Chọn câu hỏi từ Ngân hàng chèn vào đề" className={button}><Database className="w-3.5 h-3.5 text-[var(--ui-text-secondary)]" /><span>Ngân hàng câu hỏi</span></button>
       <button type="button" onClick={p.onImport} title="Bóc tách câu hỏi từ file Word / Ảnh chụp đưa thêm vào đề" className={button}><Upload className="w-3.5 h-3.5 text-[var(--ui-text-secondary)]" /><span>Nhập đề (Word/Ảnh)</span></button>
       <button type="button" onClick={p.onGenerate} title="Tạo bản nháp đề để giáo viên kiểm tra và chỉnh sửa" className={button}><Sparkles className="w-3.5 h-3.5 text-[var(--ui-text-secondary)]" /><span>Sinh đề AI Mới</span></button>

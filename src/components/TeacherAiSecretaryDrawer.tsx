@@ -1,18 +1,12 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import { useSidePanel } from '@/hooks/useSidePanel';
 import {
   Sparkles,
   Send,
   X,
-  Bot,
-  Brain,
   RefreshCw,
-  HelpCircle,
-  Lightbulb,
-  FileText,
-  CheckCircle2,
-  ChevronRight
 } from 'lucide-react';
 
 interface ChatMessage {
@@ -30,20 +24,19 @@ interface TeacherAiSecretaryDrawerProps {
     email: string;
     role: string;
   };
-  onOpenAiLearningModal: () => void;
 }
 
 export const TeacherAiSecretaryDrawer: React.FC<TeacherAiSecretaryDrawerProps> = ({
   isOpen,
   onClose,
   currentUser,
-  onOpenAiLearningModal,
 }) => {
+  const { panelRef, modal } = useSidePanel(isOpen, onClose);
   const [messages, setMessages] = useState<ChatMessage[]>(() => [
     {
       id: 'msg_welcome',
       role: 'assistant',
-      content: `Kính chào Thầy/Cô ${currentUser.name}! Em là Thư ký số & Trợ lý sư phạm riêng của Thầy/Cô.\n\nEm đã được đồng bộ với kho đề thi và hồ sơ phong cách giảng dạy của Thầy/Cô. Thầy/Cô cần em hỗ trợ thống kê, tìm kiếm đề thi, hay tư vấn cấu trúc ra đề hôm nay ạ?`,
+      content: `Kính chào Thầy/Cô ${currentUser.name}! Em là Thư ký số & Trợ lý sư phạm riêng của Thầy/Cô.\n\nThầy/Cô có thể hỏi em về cách soạn và sử dụng đề. Để sửa trực tiếp đề đang mở, hãy dùng nút “Sửa đề bằng AI” trên thanh công cụ.`,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     },
   ]);
@@ -133,7 +126,8 @@ export const TeacherAiSecretaryDrawer: React.FC<TeacherAiSecretaryDrawerProps> =
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-y-0 right-0 z-50 w-full sm:w-[420px] bg-white dark:bg-[#202124] border-l border-[#dadce0] dark:border-[#3c4043] shadow-xs flex flex-col animate-in slide-in-from-right duration-200">
+    <div ref={panelRef} role={modal ? 'dialog' : 'complementary'} aria-modal={modal || undefined} aria-label="Hỏi đáp với Trợ lý AI" className="no-print fixed inset-0 z-40 w-full lg:relative lg:inset-auto lg:z-auto lg:w-96 h-full min-h-0 shrink-0 bg-[var(--ui-surface)] border-l flex flex-col">
+
       {/* Header */}
       <div className="h-16 px-4 border-b border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between shrink-0 bg-white dark:bg-[#202124]">
         <div className="flex items-center gap-3">
@@ -155,34 +149,13 @@ export const TeacherAiSecretaryDrawer: React.FC<TeacherAiSecretaryDrawerProps> =
 
         <div className="flex items-center gap-1">
           <button
-            onClick={onOpenAiLearningModal}
-            title="Xem hồ sơ phong cách mà em đã học từ Thầy/Cô"
-            className="p-1.5 rounded-lg text-[var(--ui-accent)] hover:bg-neutral-50 dark:hover:bg-neutral-900/40 transition-colors cursor-pointer"
-          >
-            <Brain className="w-4 h-4" />
-          </button>
-          <button
+            aria-label="Đóng hỏi đáp AI"
             onClick={onClose}
             className="p-1.5 rounded-lg text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-white hover:bg-black/5 cursor-pointer transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
-      </div>
-
-      {/* Profile Banner */}
-      <div className="px-4 py-2 bg-neutral-50/70 dark:bg-neutral-900/30 border-b border-[var(--ui-border)] dark:border-[var(--ui-border)]/40 flex items-center justify-between text-[11px] text-[var(--ui-accent)] dark:text-[var(--ui-accent)] shrink-0">
-        <div className="flex items-center gap-1.5 truncate">
-          <Brain className="w-3.5 h-3.5 text-[var(--ui-accent)] shrink-0" />
-          <span className="truncate">Đang áp dụng Hồ sơ phong cách riêng của Thầy/Cô</span>
-        </div>
-        <button
-          onClick={onOpenAiLearningModal}
-          className="text-[10px] font-bold text-[var(--ui-accent)] dark:text-[var(--ui-accent)] hover:underline shrink-0 flex items-center"
-        >
-          <span>Xem</span>
-          <ChevronRight className="w-3 h-3" />
-        </button>
       </div>
 
       {/* Messages Scroll Area */}

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useSidePanel } from '@/hooks/useSidePanel';
 import { Exam } from '@/types/exam';
 import { CopilotProposalReview } from './CopilotProposalReview';
 import { captureCopilotBase, type CopilotSubmission } from '@/lib/copilot-submission';
@@ -45,6 +46,7 @@ export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
   selectedQuestionIds,
   externalCommand,
 }) => {
+  const { panelRef, modal } = useSidePanel(isExpanded, onClose);
   const [command, setCommand] = useState(externalCommand ?? '');
   const [receivedCommand, setReceivedCommand] = useState(externalCommand);
   if (externalCommand !== receivedCommand) { setReceivedCommand(externalCommand); if (externalCommand) setCommand(externalCommand); }
@@ -136,10 +138,10 @@ export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
   };
 
   return (
-    <aside
+    <aside ref={panelRef} role={modal && isExpanded ? 'dialog' : undefined} aria-modal={modal && isExpanded || undefined}
       aria-label="Trợ lý và công cụ nhanh"
-      className={`no-print select-none shrink-0 transition-all duration-300 ease-in-out flex-col justify-between border-l border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#17181a] z-20 h-full overflow-hidden ${
-        isExpanded ? 'absolute inset-y-0 right-0 flex w-full sm:w-96 lg:relative shadow-xs' : 'hidden'
+      className={`no-print select-none shrink-0 transition-all duration-300 ease-in-out flex-col justify-between border-l border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#17181a] z-40 lg:z-auto h-full overflow-hidden ${
+        isExpanded ? 'fixed inset-0 flex w-full lg:relative lg:inset-auto lg:w-96 shadow-xs' : 'hidden'
       }`}
     >
       {proposalJournal.notice && <p role="status" className={isExpanded ? 'p-3 text-sm' : 'hidden'}>{proposalJournal.notice}</p>}
@@ -165,6 +167,7 @@ export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
             </div>
 
             <button
+              aria-label="Đóng trợ lý sửa đề"
               onClick={onClose}
               title="Đóng bảng Trợ lý AI"
               className="p-1.5 rounded-lg text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"

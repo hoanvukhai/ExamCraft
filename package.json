@@ -21,6 +21,7 @@
     "test:admin": "node --import tsx scripts/pilot-run.cjs --admin",
     "test:typography": "node --import tsx scripts/pilot-run.cjs --typography",
     "test:teacher": "node --import tsx scripts/pilot-run.cjs --teacher",
+    "test:frame": "node --import tsx scripts/pilot-run.cjs --frame",
     "test:library": "node --import tsx scripts/pilot-run.cjs --library",
     "dev:test": "node scripts/test-server.cjs",
     "start:test": "node scripts/test-server.cjs --production",

@@ -7,7 +7,6 @@ import { teacherErrorMessage } from '@/lib/teacher-ui';
 import { useConfirmAction } from '@/components/ConfirmAction';
 import { ApiKeyModal } from '@/components/ApiKeyModal';
 import { AiLearningModal } from '@/components/AiLearningModal';
-import { TeacherAiSecretaryDrawer } from '@/components/TeacherAiSecretaryDrawer';
 
 export interface WorkspaceUser { id: string; name: string; email: string; role: string }
 export interface FolderData { id: string; name: string; color?: string; parentId?: string | null; _count?: { exams: number }; children?: FolderData[] }
@@ -27,11 +26,10 @@ interface Workspace {
   openKeys: () => void;
   assistantOpen: boolean;
   toggleAssistant: () => void;
+  closeAssistant: () => void;
   openAiNotes: () => void;
   menuExpanded: boolean;
   setMenuExpanded: (value: boolean) => void;
-  copilotAvailable: boolean;
-  setCopilotAvailable: (value: boolean) => void;
   copilotOpen: boolean;
   setCopilotOpen: (value: boolean | ((previous: boolean) => boolean)) => void;
   updateFolder: (id: string, changes: { name?: string; color?: string }) => Promise<boolean>;
@@ -61,7 +59,13 @@ export function WorkspaceProvider({ user, children }: { user: WorkspaceUser; chi
   const [folderDialog, setFolderDialog] = useState<{ parentId: string | null } | null>(null);
   const [folderName, setFolderName] = useState(''), [folderColor, setFolderColor] = useState('#3c4043');
   const [menuExpanded, setMenuState] = useState(true);
-  const [copilotAvailable, setCopilotAvailable] = useState(false), [copilotOpen, setCopilotOpen] = useState(false);
+  const [copilotOpen, setCopilotState] = useState(false);
+  const setCopilotOpen = useCallback((value: boolean | ((previous: boolean) => boolean)) => {
+    setAssistantOpen(false);
+    setCopilotState(value);
+  }, []);
+  const toggleAssistant = useCallback(() => { setCopilotState(false); setAssistantOpen(open => !open); }, []);
+  const closeAssistant = useCallback(() => setAssistantOpen(false), []);
   const [toastMessage, setToastMessage] = useState<{ text: string; kind: 'info' | 'error' } | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -128,9 +132,9 @@ export function WorkspaceProvider({ user, children }: { user: WorkspaceUser; chi
 
   const value = useMemo<Workspace>(() => ({
     user, folders, foldersReady, foldersError, reloadFolders, openCreateFolder, deleteFolder, updateFolder, ...keyStats, hasActiveKey: keyStats.keyCount > 0, openKeys: () => setKeysOpen(true),
-    assistantOpen, toggleAssistant: () => setAssistantOpen(open => !open), openAiNotes: () => setNotesOpen(true),
-    menuExpanded, setMenuExpanded, copilotAvailable, setCopilotAvailable, copilotOpen, setCopilotOpen, toast, confirmAction,
-  }), [user, folders, foldersReady, foldersError, reloadFolders, openCreateFolder, deleteFolder, updateFolder, keyStats, assistantOpen, menuExpanded, setMenuExpanded, copilotAvailable, copilotOpen, toast, confirmAction]);
+    assistantOpen, toggleAssistant, closeAssistant, openAiNotes: () => setNotesOpen(true),
+    menuExpanded, setMenuExpanded, copilotOpen, setCopilotOpen, toast, confirmAction,
+  }), [user, folders, foldersReady, foldersError, reloadFolders, openCreateFolder, deleteFolder, updateFolder, keyStats, assistantOpen, menuExpanded, setMenuExpanded, copilotOpen, setCopilotOpen, toggleAssistant, closeAssistant, toast, confirmAction]);
 
   return <WorkspaceContext.Provider value={value}>
     {children}
@@ -156,6 +160,5 @@ export function WorkspaceProvider({ user, children }: { user: WorkspaceUser; chi
     {toastMessage && <div role={toastMessage.kind === 'error' ? 'alert' : 'status'} className={`no-print fixed bottom-6 right-6 z-50 max-w-sm px-4 py-2.5 rounded-2xl text-xs font-semibold shadow-xs flex items-center gap-2 ${toastMessage.kind === 'error' ? 'bg-red-700 text-white' : 'bg-[var(--ui-accent)] text-[var(--ui-on-primary)]'}`}>{toastMessage.kind === 'error' ? <AlertCircle className="w-4 h-4 shrink-0" /> : <Check className="w-4 h-4 shrink-0" />}<span>{toastMessage.text}</span></div>}
     <ApiKeyModal ownerId={user.id} key={`keys:${user.id}`} isOpen={keysOpen} onClose={() => { setKeysOpen(false); void reloadKeys(); }} onKeyUpdated={() => void reloadKeys()} />
     <AiLearningModal isOpen={notesOpen} onClose={() => setNotesOpen(false)} currentUser={{ id: user.id, name: user.name }} />
-    <TeacherAiSecretaryDrawer isOpen={assistantOpen} onClose={() => setAssistantOpen(false)} currentUser={user} onOpenAiLearningModal={() => setNotesOpen(true)} />
   </WorkspaceContext.Provider>;
 }

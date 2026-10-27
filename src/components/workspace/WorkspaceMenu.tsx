@@ -1,5 +1,5 @@
 'use client';
-import { useState, type ComponentType, type ReactNode } from 'react';
+import { type ComponentType, type ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { Activity, ChevronLeft, ChevronRight, Database, FileText, GraduationCap, KeyRound, Plus, ShieldCheck, Trash2, Users } from 'lucide-react';
@@ -59,15 +59,14 @@ function Section({ title, expanded, children }: { title: string; expanded: boole
   </div>;
 }
 
-/** Common destinations on wide screens; editor expands the same menu as an overlay. */
+/** Common destinations on wide screens; the editor keeps the same saved width. */
 export function WorkspaceMenu({ variant }: { variant: WorkspaceVariant }) {
   const { menuExpanded, setMenuExpanded, user } = useWorkspace();
   const nav = useDestinations(variant), params = useSearchParams();
-  const [peek, setPeek] = useState(false);
-  const overlay = variant === 'editor', expanded = overlay ? peek : menuExpanded;
-  const frame = overlay ? `absolute inset-y-0 left-0 z-30 ${peek ? 'w-64 shadow-lg' : 'w-14'}` : `relative ${menuExpanded ? 'w-64' : 'w-14'}`;
-  const fold = () => (overlay ? setPeek(open => !open) : setMenuExpanded(!menuExpanded));
-  return <div className={`no-print hidden lg:block shrink-0 ${overlay ? 'w-14 relative' : ''}`}>
+  const expanded = menuExpanded;
+  const frame = 'relative ' + (expanded ? 'w-64' : 'w-14');
+  const fold = () => setMenuExpanded(!expanded);
+  return <div className="no-print hidden lg:block shrink-0">
     <aside aria-label="Menu" className={`${frame} h-full flex flex-col border-r bg-[var(--ui-surface)] transition-[width] duration-150`}>
       <div className={`shrink-0 pt-3 pb-1 ${expanded ? 'px-4' : 'px-2 flex justify-center'}`}><Brand admin={nav.admin} compact={!expanded} /></div>
       <div className="flex-1 min-h-0 overflow-y-auto px-2 py-2 space-y-4">
