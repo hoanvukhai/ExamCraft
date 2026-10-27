@@ -1,8 +1,8 @@
 {
-  "since_utc": "2026-10-27T17:49:40.5729051Z",
-  "port": 3117,
-  "note": "Library merge ready for owner review; isolated test server, real AI off; do not overwrite build",
-  "buildId": "w0G2dmRUKY14u_VMa2WWW",
-  "codeCommit": "2681af8",
-  "holder": "USER"
+  "buildId": "YybkJ4jwHMqc0fbN2c9dw",
+  "since_utc": "2026-10-27T23:57:26.5066948Z",
+  "holder": "USER",
+  "codeCommit": "f467523",
+  "note": "Menu/panels ready for owner review; isolated test, real AI off; do not overwrite build",
+  "port": 3117
 }

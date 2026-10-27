@@ -1,19 +1,20 @@
 # CODEX status
 
-task_id: OWNER-LIBRARY-MERGE-20261028
+task_id: OWNER-FRAME-PANELS-20261028
 state: WAITING_REVIEW
 updated: 28/10/2026, Asia/Bangkok
 branch/worktree: rebuild/2026-10-local, F:/Workspace/Zazz/ExamCraft
-commit mã + kiểm: 2681af8
+commit mã + kiểm: f467523
+mốc đã đọc của Claude: 7d95594
 
-Yêu cầu chủ dự án đã thực hiện: gộp thư mục và đề thành Kho đề chính, đưa Gần đây/Gắn sao vào trong trang, menu nhóm hiển thị thẳng. Giữ khung Workspace và thay đổi mới của chủ dự án; thùng rác/ngân hàng/lớp/bài giao còn đầy đủ.
+Yêu cầu hiện tại đã xử lý: menu trái bàn soạn dùng cùng lựa chọn mở/thu với các trang, chia chỗ thay vì phủ; nút sửa đề bằng AI vào toolbar; avatar bỏ quản lý khóa trùng; chat bỏ nút ghi chú/banner trùng. Chat và Copilot chia chỗ trên desktop, mở toàn màn trên điện thoại có nút đóng/Escape/vòng Tab; không mở cả hai bảng cùng lúc, giữ nội dung đang gõ. Vùng soạn thích ứng bề rộng thực và avatar điện thoại nằm trong màn hình.
 
-Đã xong: xem thư mục/đề cùng màn và phân trang, đường dẫn cũ chuyển đúng vị trí, quyền đề được mời, ngữ cảnh tạo thủ công/AI giả/nhập theo thư mục; giữ nháp cũ, cứu nháp nếu thư mục đã xóa, chống khởi tạo đề trống sau đổi URL lưu. Không đổi schema/migration.
+Giữ thay đổi Claude: bỏ CopilotBar chết, một hộp khóa chung, bỏ nút tạo đề trùng trong menu Kho đề. Không đổi logic lưu/áp dụng AI/giao bài/schema/migration.
 
-Đã kiểm: build production/TypeScript, lint tệp liên quan, SAFE, trình duyệt kho hợp nhất và hồi quy teacher/F19, điện thoại mô phỏng dọc/ngang và sáng/tối. Số liệu, ảnh, bằng chứng dọn fixture và giới hạn chỉ tại qa/rebuild-2026-10-28/library-merge/BAO_CAO.md. Không suy đóng CV từ số kiểm. Chưa kiểm cảm ứng trên thiết bị thật hoặc chất lượng provider thật.
+Đã kiểm build production/TypeScript, lint phạm vi, SAFE, browser thanh bên/điện thoại mô phỏng/sáng-tối, F19 và F21 (provider giả, đúng tài khoản, không đè bản sửa mới). Số liệu/ảnh/log/dọn fixture/giới hạn chỉ tại qa/rebuild-2026-10-28/frame-panels/BAO_CAO.md. Không suy đóng CV từ số kiểm. Chưa kiểm cảm ứng thật/bàn phím ảo hoặc chất lượng AI thật.
 
-Server thử localhost3117 giữ build w0G2dmRUKY14u_VMa2WWW, isolatedTest, AI thật tắt; LOCK_3117=USER. Chỉ DB examcraft_test_20261022 đã kiểm đích và dữ liệu giả theo ID riêng; không ghi DB chính/key/.env/backup. Server có thể cần mở lại nếu tiến trình dừng giữa lượt chat; không build đè lúc người dùng xem.
+Server thử localhost3117 giữ build YybkJ4jwHMqc0fbN2c9dw, isolatedTest=true, AI thật tắt; LOCK_3117=USER. Chỉ DB examcraft_test_20261022 đã kiểm đích với fixture dọn riêng. Không DB chính/key/.env/backup. Không build đè lúc người dùng xem; mở lại server nếu tiến trình dừng giữa lượt chat.
 
-Bước kế: chủ dự án xem sản phẩm; Claude duyệt nhóm thay đổi/báo cáo. Không tự mở thêm tính năng, đóng CV hoặc sửa hồ sơ02/checklist/ASSIGNMENTS/BATCH_REVIEWS. Hồ sơ phân tích trước giữ tại qa/rebuild-2026-10-28/library-direction/PHAN_TICH_GOP_KHO_VA_THU_MUC.md.
+Bước kế: chủ dự án xem sản phẩm; Claude duyệt nhóm thay đổi và báo cáo. Không tự mở tính năng/đóng CV/sửa ASSIGNMENTS/BATCH_REVIEWS/hồ sơ02/checklist. Báo cáo gộp kho trước: qa/rebuild-2026-10-28/library-merge/BAO_CAO.md.
 
-Tệp giữ ngoài commit: các sửa/ảnh/kết quả QA25 có sẵn, scratch/, tmp/. Không push/reset/clean. Bằng chứng đợt UI/font/AI-cap cũ: qa/rebuild-2026-10-27/teacher-ui-fix/BAO_CAO.md và các nhóm trước trong Git; không coi là nghiệm thu lại ở bản này.
+Giữ ngoài commit: sửa/ảnh/kết quả QA25 có sẵn, scratch/, tmp/. Không push/reset/clean.
