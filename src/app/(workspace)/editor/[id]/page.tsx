@@ -32,9 +32,7 @@ export default function EditorPage({
   return (
     <Suspense
       fallback={
-        <div className="h-screen w-screen bg-[#F8F9FA] dark:bg-[#17181a] flex items-center justify-center text-sm font-medium text-[#5f6368] dark:text-[#9aa0a6]">
-          Đang tải không gian biên soạn đề thi...
-        </div>
+        <p role="status" className="p-6 text-sm text-[var(--ui-text-secondary)]">Đang tải không gian biên soạn đề thi...</p>
       }
     >
       <AuthenticatedEditor params={params} />

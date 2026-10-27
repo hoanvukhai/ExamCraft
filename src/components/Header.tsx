@@ -1,12 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
   GraduationCap, 
-  Menu, 
-  CloudCheck, 
   CloudUpload, 
   Sun, 
   Moon, 
@@ -19,21 +18,17 @@ import {
   Activity,
   AlertCircle,
   CheckCircle2,
-  ExternalLink,
   Sparkles,
-  ArrowLeft,
-  Download,
-  Printer
+  Share2,
 } from 'lucide-react';
 import { useTheme } from './ThemeProvider';
 import { logoutSession } from '@/lib/auth-client';
+import { useWorkspace } from '@/components/workspace/WorkspaceContext';
 
 interface HeaderProps {
   canEdit?: boolean;
   examTitle: string;
   onUpdateTitle: (newTitle: string) => void;
-  isSidebarCollapsed: boolean;
-  onToggleSidebar: () => void;
   onOpenApiKeyModal: () => void;
   hasActiveKey: boolean;
   keyCount?: number;
@@ -53,16 +48,13 @@ interface HeaderProps {
   } | null;
   onToggleCopilot?: () => void;
   isCopilotOpen?: boolean;
-  onExportWord?: () => void;
-  onPrintPdf?: () => void;
+  onShare?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   canEdit = true,
   examTitle,
   onUpdateTitle,
-  isSidebarCollapsed,
-  onToggleSidebar,
   onOpenApiKeyModal,
   hasActiveKey,
   keyCount = 0,
@@ -73,10 +65,10 @@ export const Header: React.FC<HeaderProps> = ({
   currentUser = null,
   onToggleCopilot,
   isCopilotOpen = false,
-  onExportWord,
-  onPrintPdf,
+  onShare,
 }) => {
   const router = useRouter();
+  const { topbarSlot } = useWorkspace();
   const { theme, toggleTheme } = useTheme();
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [titleDraft, setTitleDraft] = useState({ source: examTitle, value: examTitle });
@@ -107,18 +99,11 @@ export const Header: React.FC<HeaderProps> = ({
 
 
 
-  return (
+  const bar = (
     <header className="app-bar no-print h-14 bg-white dark:bg-[#17181a] border-b border-[#dadce0] dark:border-[#3c4043] shrink-0 z-30 px-3 sm:px-5 flex items-center justify-between gap-3 shadow-xs transition-colors duration-200">
       {/* KHU VỰC TRÁI: Toggle menu, Logo ExamCraft, Tiêu đề đề thi & Trạng thái lưu Google Docs style */}
       <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
-        {/* Nút toggle Sidebar */}
-        <button
-          onClick={onToggleSidebar}
-          title={isSidebarCollapsed ? 'Mở rộng bảng công cụ' : 'Thu gọn bảng công cụ'}
-          className="p-2 rounded-lg text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
-        >
-          <Menu className="w-5 h-5" />
-        </button>
+        
 
         {/* Logo ExamCraft Google Style */}
         <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
@@ -130,19 +115,9 @@ export const Header: React.FC<HeaderProps> = ({
           </span>
         </Link>
 
-        {/* Nút Quay lại Kho đề của tôi */}
-        <Link
-          href="/"
-          aria-label="Về kho đề"
-          title="Quay về Kho đề của tôi (Lưu tự động)"
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-[#5f6368] hover:text-[#3c4043] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] transition-colors cursor-pointer shrink-0"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Kho đề</span>
-        </Link>
+        
 
-        {/* Ngăn cách thanh mảnh */}
-        <div className="h-5 w-[1px] bg-[#dadce0] dark:bg-[#3c4043] hidden sm:block shrink-0" />
+        
 
         {/* Tên đề thi (Sửa trực tiếp phong cách Google Docs) */}
         <div className="flex items-center gap-2 min-w-0 flex-1 max-w-xl">
@@ -201,29 +176,8 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* KHU VỰC PHẢI: Dark Mode, Nút Khóa AI, Gemini Toggle, Avatar User & Menu Giám sát */}
       <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
-        {/* Nút xuất bản nhanh lên Header */}
-        <div className="hidden sm:flex items-center gap-2 pr-2 border-r border-[#dadce0] dark:border-[#3c4043]">
-          {onExportWord && (
-            <button
-              onClick={onExportWord}
-              title="Tải file Word (.docx) chuẩn công thức OMML"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold app-button-secondary text-white shadow-2xs transition-colors cursor-pointer"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span className="hidden md:inline">Tải Word (.docx)</span>
-            </button>
-          )}
-          {onPrintPdf && (
-            <button
-              onClick={onPrintPdf}
-              title="In đề thi hoặc xuất ra PDF"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f8f9fa] shadow-2xs transition-colors cursor-pointer"
-            >
-              <Printer className="w-3.5 h-3.5" />
-              <span className="hidden md:inline">In / PDF</span>
-            </button>
-          )}
-        </div>
+        {/* Xuất bản: chia sẻ cho học sinh hoặc đồng nghiệp */}
+        {canEdit && onShare && <button type="button" onClick={onShare} title="Tạo link cho học sinh làm bài hoặc chia sẻ đề cho đồng nghiệp" className="app-button-primary flex items-center gap-1.5 min-h-9 px-3 rounded-lg text-xs font-semibold cursor-pointer"><Share2 className="w-3.5 h-3.5" /><span className="hidden md:inline">Chia sẻ &amp; Thi Online</span><span className="md:hidden">Chia sẻ</span></button>}
 
         {/* Nút bật/tắt Bảng Trợ lý AI Gemini (Right Companion Rail) */}
         {onToggleCopilot && (
@@ -237,14 +191,14 @@ export const Header: React.FC<HeaderProps> = ({
             }`}
           >
             <Sparkles className="w-4 h-4 text-[var(--ui-text-secondary)] shrink-0" />
-            <span className="hidden md:inline">Gemini AI</span>
+            <span className="hidden md:inline">Trợ lý AI</span>
           </button>
         )}
 
         {/* Nút bật/tắt Dark Mode */}
         <button
           onClick={toggleTheme}
-          title={theme === 'dark' ? 'Chuyển sang chế độ Sáng (Màu trắng Google)' : 'Chuyển sang chế độ Tối (Dark Mode)'}
+          title="Đổi giao diện Sáng / Tối"
           className="p-2 rounded-lg text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
         >
           {theme === 'dark' ? <Sun className="w-4 h-4 text-[var(--ui-text-secondary)]" /> : <Moon className="w-4 h-4 text-[#5f6368]" />}
@@ -407,4 +361,5 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
     </header>
   );
+  return topbarSlot ? createPortal(bar, topbarSlot) : null;
 };

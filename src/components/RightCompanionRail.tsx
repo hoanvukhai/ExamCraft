@@ -9,6 +9,7 @@ import { useAiProposal } from '@/hooks/useAiProposal';
 import { appendCopilotHistory, confirmCopilotTravel, emptyCopilotHistory } from '@/lib/copilot-history';
 import { CopilotHistoryControls } from './CopilotHistoryControls';
 import { accountFetch } from '@/lib/account-fetch';
+import { AiRailButtons } from '@/components/workspace/AiRail';
 import { normalizeQuestion } from '@/lib/exam-document';
 import { 
   Sparkles, 
@@ -25,9 +26,6 @@ import {
   Binary,
   Compass,
   X,
-  TableProperties,
-  Shuffle,
-  Building2,
   ShieldCheck,
   Bot
 } from 'lucide-react';
@@ -40,9 +38,6 @@ interface RightCompanionRailProps {
   onSubmitCopilot: (submission: CopilotSubmission) => void;
   selectedQuestionIds: string[];
   externalCommand?: string;
-  onOpenMatrixModal?: () => void;
-  onOpenShuffleModal?: () => void;
-  onOpenHeaderSettingsModal?: () => void;
 }
 
 export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
@@ -53,9 +48,6 @@ export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
   onSubmitCopilot,
   selectedQuestionIds,
   externalCommand,
-  onOpenMatrixModal,
-  onOpenShuffleModal,
-  onOpenHeaderSettingsModal,
 }) => {
   const [command, setCommand] = useState(externalCommand ?? '');
   const [receivedCommand, setReceivedCommand] = useState(externalCommand);
@@ -174,38 +166,8 @@ export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
 
             <div className="w-6 h-[1px] bg-[#dadce0] dark:bg-[#3c4043]" />
 
-            {/* Quick Action: Ma trận */}
-            {onOpenMatrixModal && (
-              <button
-                onClick={onOpenMatrixModal}
-                title="Ma trận và đặc tả của đề"
-                className="p-2.5 rounded-xl text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
-              >
-                <TableProperties className="w-4 h-4" />
-              </button>
-            )}
-
-            {/* Quick Action: Trộn đề */}
-            {onOpenShuffleModal && (
-              <button
-                onClick={onOpenShuffleModal}
-                title="Trộn 4 mã đề thi hoán vị"
-                className="p-2.5 rounded-xl text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
-              >
-                <Shuffle className="w-4 h-4" />
-              </button>
-            )}
-
-            {/* Quick Action: Tiêu đề trường thi */}
-            {onOpenHeaderSettingsModal && (
-              <button
-                onClick={onOpenHeaderSettingsModal}
-                title="Cài đặt Tiêu đề Sở/Trường & Thông tin đề thi"
-                className="p-2.5 rounded-xl text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
-              >
-                <Building2 className="w-4 h-4" />
-              </button>
-            )}
+            {/* Hỏi đáp và ghi chú AI: cùng hai nút như bên ngoài trang soạn */}
+            <AiRailButtons />
           </div>
 
           {/* Nút mở rộng panel ở chân */}

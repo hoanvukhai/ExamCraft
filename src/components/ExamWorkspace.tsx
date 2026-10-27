@@ -5,7 +5,7 @@ import { applyCopilotSubmission } from '@/lib/copilot-submission';
 import React, { useState, useEffect, useMemo } from 'react';
 import { Exam, Question } from '@/types/exam';
 import { Header } from '@/components/Header';
-import { LeftNavigationRail } from '@/components/LeftNavigationRail';
+import { EditorToolbar } from '@/components/EditorToolbar';
 import { QuestionCard } from '@/components/QuestionCard';
 import { accountFetch } from '@/lib/account-fetch';
 import { applyQuestionManualSubmission, hasPendingQuestionDrafts, questionDraftSourceStamp, retireSavedQuestionDrafts } from '@/lib/question-draft';
@@ -23,7 +23,6 @@ import { QuestionBankModal } from '@/components/QuestionBankModal';
 import { RightCompanionRail } from '@/components/RightCompanionRail';
 import { ShareModal } from '@/components/ShareModal';
 import { StudentResultsModal } from '@/components/StudentResultsModal';
-import { AiLearningModal } from '@/components/AiLearningModal';
 import { exportExamToDocx } from '@/lib/docx-export';
 import { prepareExportFigures } from '@/lib/export-figures';
 import { useExamPersistence } from '@/components/useExamPersistence';
@@ -86,7 +85,6 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   const [hasActiveKey, setHasActiveKey] = useState<boolean>(false);
 
   // Layout states
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
   const [copilotCommand, setCopilotCommand] = useState<string>('');
   const [mobileTab, setMobileTab] = useState<'editor' | 'preview'>('editor');
@@ -105,7 +103,6 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   const [isQuestionBankModalOpen, setIsQuestionBankModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isResultsModalOpen, setIsResultsModalOpen] = useState(false);
-  const [isAiLearningModalOpen, setIsAiLearningModalOpen] = useState(false);
 
   const [keyStats, setKeyStats] = useState({
     keyCount: 0,
@@ -294,14 +291,12 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   };
 
   return (
-    <div className="print-flow h-dvh w-full overflow-hidden flex flex-col bg-[#F8F9FA] dark:bg-[#17181a] font-sans text-[#202124] dark:text-[#e3e3e3] transition-colors duration-200">
+    <div className="print-flow flex-1 min-h-0 w-full overflow-hidden flex flex-col bg-[var(--background)] text-[var(--foreground)]">
       {/* HEADER GOOGLE MINIMALIST */}
       <Header
         canEdit={canEdit}
         examTitle={exam.metadata.title}
         onUpdateTitle={handleUpdateTitle}
-        isSidebarCollapsed={isSidebarCollapsed}
-        onToggleSidebar={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
         onOpenApiKeyModal={() => setIsApiKeyModalOpen(true)}
         hasActiveKey={hasActiveKey}
         keyCount={keyStats.keyCount}
@@ -312,15 +307,18 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         currentUser={currentUser}
         onToggleCopilot={() => setIsCopilotOpen(!isCopilotOpen)}
         isCopilotOpen={isCopilotOpen}
-        onExportWord={handleExportWord}
-        onPrintPdf={() => window.print()}
+        onShare={() => { if (canPublish) setIsShareModalOpen(true); else setCollaborationOpen(true); }}
       />
 
-      <div className="no-print px-4 py-2 border-b flex flex-wrap gap-2 items-center text-sm bg-[var(--ui-surface)]">
-        <button type="button" disabled={!ready || !exam.questions.length} onClick={() => setPresentationOpen(true)} className="app-button-secondary min-h-9 px-3 text-xs disabled:opacity-40">Trình chiếu</button>
-        {exam.serverId && <button type="button" onClick={() => setCollaborationOpen(true)} className="app-button-secondary min-h-9 px-3 text-xs">Cùng soạn · Góp ý · Lịch sử</button>}
-        {exam.access && <span className="ml-auto text-xs px-2.5 py-1 rounded-full bg-[var(--ui-surface-variant)] text-[var(--ui-text-secondary)]">{exam.access.canManage ? 'Đề của bạn' : exam.access.canEdit ? 'Được mời cùng sửa' : exam.access.canComment ? 'Quyền xem và góp ý' : 'Quyền chỉ xem'}</span>}
-      </div>
+      <EditorToolbar
+        canEdit={canEdit} ready={ready} hasQuestions={exam.questions.length > 0} hasServerExam={Boolean(exam.serverId)}
+        access={exam.access} submissionCount={submissionCount} matrixActive={isMatrixTabActive}
+        onGenerate={() => setIsGenerateModalOpen(true)} onImport={() => setIsImportModalOpen(true)} onBank={() => setIsQuestionBankModalOpen(true)}
+        onHeaderSettings={() => setIsHeaderModalOpen(true)} onShuffle={() => setIsShuffleModalOpen(true)} onMatrix={() => setIsMatrixTabActive(!isMatrixTabActive)} onLibrary={() => setIsLibraryModalOpen(true)}
+        onExportWord={handleExportWord} onPrint={() => window.print()} onPresent={() => setPresentationOpen(true)}
+        onCollaborate={() => setCollaborationOpen(true)} onResults={() => setIsResultsModalOpen(true)}
+      />
+
 
       {ready && <ExamReviewPanel exam={exam} />}
 
@@ -336,30 +334,8 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       {!ready && <div className="p-4">{saveMessage || 'Đang tải nội dung. Vui lòng chờ trước khi sửa.'}</div>}
       {/* 3-ZONE ARCHITECTURE: LEFT RAIL + INDEPENDENT SCROLL WORKSPACE + RIGHT COMPANION RAIL */}
       <div className="print-flow flex-1 flex overflow-hidden min-h-0 relative">
-        {canEdit && !isSidebarCollapsed && <button type="button" aria-label="Đóng bảng công cụ" className="no-print absolute inset-0 z-10 bg-black/40 lg:hidden" onClick={() => setIsSidebarCollapsed(true)} />}
-        {/* ZONE 1: LEFT NAVIGATION RAIL */}
-        {canEdit && <LeftNavigationRail
-          isCollapsed={isSidebarCollapsed}
-          onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-          onOpenNewExamModal={() => setIsGenerateModalOpen(true)}
-          onToggleCopilot={() => setIsCopilotOpen(!isCopilotOpen)}
-          isCopilotOpen={isCopilotOpen}
-          onShuffleExam={() => setIsShuffleModalOpen(true)}
-          onOpenImportModal={() => setIsImportModalOpen(true)}
-          onOpenLibraryModal={() => setIsLibraryModalOpen(true)}
-          onOpenQuestionBankModal={() => setIsQuestionBankModalOpen(true)}
-          onOpenShareModal={() => { if (canPublish) setIsShareModalOpen(true); else setCollaborationOpen(true); }}
-          onOpenResultsModal={() => setIsResultsModalOpen(true)}
-          onOpenHeaderSettingsModal={() => setIsHeaderModalOpen(true)}
-          onOpenApiKeyModal={() => setIsApiKeyModalOpen(true)}
-          onExportWord={handleExportWord}
-          onPrintPdf={() => window.print()}
-          onToggleMatrixTab={() => setIsMatrixTabActive(!isMatrixTabActive)}
-          isMatrixTabActive={isMatrixTabActive}
-          submissionCount={submissionCount}
-          hasActiveKey={hasActiveKey}
-          onOpenAiLearningModal={() => setIsAiLearningModalOpen(true)}
-        />}
+        
+        
 
         {/* ZONE 2: VÙNG NỘI DUNG CHÍNH (CANVAS CHỦ ĐẠO MÀU TRẮNG GOOGLE, CUỘN ĐỘC LẬP) */}
         <div className="print-flow flex-1 h-full overflow-y-auto px-4 sm:px-6 py-5 min-w-0">
@@ -598,9 +574,6 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
           exam={exam}
           selectedQuestionIds={selectedQuestionIds}
           externalCommand={copilotCommand}
-          onOpenMatrixModal={() => setIsMatrixTabActive(true)}
-          onOpenShuffleModal={() => setIsShuffleModalOpen(true)}
-          onOpenHeaderSettingsModal={() => setIsHeaderModalOpen(true)}
         />}
       </div>
 
@@ -708,11 +681,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         }}
       />
 
-      <AiLearningModal
-        isOpen={isAiLearningModalOpen}
-        onClose={() => setIsAiLearningModalOpen(false)}
-        currentUser={currentUser}
-      />
+      
     </div>
   );
 };
