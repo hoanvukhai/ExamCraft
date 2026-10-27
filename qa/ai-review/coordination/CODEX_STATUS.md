@@ -1,10 +1,12 @@
 # CODEX status
 
-task_id: OWNER-VIETNAMESE-TYPOGRAPHY-20261027
+task_id: OWNER-TEACHER-UI-ANALYSIS-20261027
 state: WAITING_REVIEW
 updated: 27/10/2026, Asia/Bangkok
 branch/worktree: rebuild/2026-10-local, F:/Workspace/Zazz/ExamCraft
 commit mã + test gần nhất: 381a437 (nền 4689a16)
+
+YÊU CẦU HIỆN TẠI chỉ đọc/phân tích khu giáo viên: đã đối chiếu thùng rác, kho đề, ngân hàng câu hỏi, môn/lớp, khảo thí và lớp học. Phát hiện nhầm icon xóa/khôi phục, tái dùng màn không đúng nhiệm vụ, dữ liệu dùng chung chưa chuẩn hóa/phân trang và trạng thái lỗi/ngữ cảnh chưa rõ. Báo cáo: qa/rebuild-2026-10-27/teacher-ui-audit/PHAN_TICH.md. Không sửa code, không build/test mới, không DB/provider. Bước kế: chủ dự án/Claude duyệt hướng sửa theo nhóm; chưa tự chạy hàng đợi cũ. Chi tiết đợt font trước giữ dưới đây.
 
 QUYẾT ĐỊNH MỚI của chủ dự án: bỏ giới hạn AI theo ngày của ExamCraft, dùng theo nhà cung cấp. Đã bỏ chặn runtime và cấu hình/giao diện cap; chỉ giữ thống kê. Không khôi phục quota nội bộ từ hồ sơ/test cũ. aiDailyLimit trong DB/API đọc cũ giữ nguyên để bảo toàn, không dùng cấp/chặn quyền AI, không migration/ghi lại dữ liệu hàng loạt.
 
