@@ -1,6 +1,6 @@
 'use client';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { AlertCircle, Check, FolderPlus, X } from 'lucide-react';
 import { accountFetch } from '@/lib/account-fetch';
 import { teacherErrorMessage } from '@/lib/teacher-ui';
@@ -19,6 +19,8 @@ interface Workspace {
   openCreateFolder: (parentId?: string | null) => void;
   deleteFolder: (id: string, name: string) => Promise<void>;
   keyCount: number;
+  keyErrorCount: number;
+  usedToday: number;
   hasActiveKey: boolean;
   openKeys: () => void;
   assistantOpen: boolean;
@@ -26,8 +28,11 @@ interface Workspace {
   openAiNotes: () => void;
   menuExpanded: boolean;
   setMenuExpanded: (value: boolean) => void;
-  topbarSlot: HTMLElement | null;
-  setTopbarSlot: (element: HTMLElement | null) => void;
+  copilotAvailable: boolean;
+  setCopilotAvailable: (value: boolean) => void;
+  copilotOpen: boolean;
+  setCopilotOpen: (value: boolean | ((previous: boolean) => boolean)) => void;
+  updateFolder: (id: string, changes: { name?: string; color?: string }) => Promise<boolean>;
   toast: (message: string, kind?: 'info' | 'error') => void;
   confirmAction: (message: string) => Promise<boolean>;
 }
@@ -40,19 +45,19 @@ export function useWorkspace(): Workspace {
 }
 
 const menuKey = 'examcraft_menu_collapsed';
-const palette = ['#202124', '#3c4043', '#5f6368', '#80868b', '#9aa0a6', '#bdc1c6'];
+export const folderPalette = ['#202124', '#3c4043', '#5f6368', '#80868b', '#9aa0a6', '#bdc1c6'];
 
 /** Holds what every teacher page shares: folders, AI key status, the assistant and notes dialogs, the menu state and one confirmation/toast. */
 export function WorkspaceProvider({ user, children }: { user: WorkspaceUser; children: ReactNode }) {
-  const router = useRouter(), params = useSearchParams();
+  const router = useRouter(), params = useSearchParams(), pathname = usePathname();
   const { confirmAction, confirmation } = useConfirmAction();
   const [folders, setFolders] = useState<FolderData[]>([]);
-  const [keyCount, setKeyCount] = useState(0);
+  const [keyStats, setKeyStats] = useState({ keyCount: 0, keyErrorCount: 0, usedToday: 0 });
   const [keysOpen, setKeysOpen] = useState(false), [notesOpen, setNotesOpen] = useState(false), [assistantOpen, setAssistantOpen] = useState(false);
   const [folderDialog, setFolderDialog] = useState<{ parentId: string | null } | null>(null);
   const [folderName, setFolderName] = useState(''), [folderColor, setFolderColor] = useState('#3c4043');
   const [menuExpanded, setMenuState] = useState(true);
-  const [topbarSlot, setTopbarSlot] = useState<HTMLElement | null>(null);
+  const [copilotAvailable, setCopilotAvailable] = useState(false), [copilotOpen, setCopilotOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<{ text: string; kind: 'info' | 'error' } | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -71,7 +76,10 @@ export function WorkspaceProvider({ user, children }: { user: WorkspaceUser; chi
   }, []);
 
   const reloadKeys = useCallback(() => accountFetch(user.id, '/api/user/keys').then(async response => {
-    if (response.ok) { const data = await response.json(); setKeyCount((data.keys || []).filter((key: { isActive: boolean }) => key.isActive).length); }
+    if (response.ok) {
+      const data = await response.json(), keys: { isActive: boolean; errorCount: number }[] = data.keys || [];
+      setKeyStats({ keyCount: keys.filter(key => key.isActive).length, keyErrorCount: keys.filter(key => key.errorCount > 0).length, usedToday: data.poolQuota?.usedToday ?? 0 });
+    }
   }).catch(() => { /* Keep the last acknowledged state if offline. */ }), [user.id]);
   const reloadFolders = useCallback(() => accountFetch(user.id, '/api/folders').then(async response => {
     if (response.ok) { const data = await response.json(); setFolders(data.folders || []); }
@@ -89,22 +97,30 @@ export function WorkspaceProvider({ user, children }: { user: WorkspaceUser; chi
       toast('Đã tạo thư mục mới thành công!'); setFolderDialog(null); setFolderName(''); void reloadFolders();
     } catch { toast('Lỗi kết nối máy chủ khi tạo thư mục', 'error'); }
   };
+  const updateFolder = useCallback(async (id: string, changes: { name?: string; color?: string }) => {
+    try {
+      const response = await accountFetch(user.id, `/api/folders/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(changes) });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) { toast(data.error || 'Chưa lưu được thư mục', 'error'); return false; }
+      toast('Đã cập nhật thư mục.'); await reloadFolders(); return true;
+    } catch { toast('Chưa kết nối được để lưu thư mục. Hãy thử lại.', 'error'); return false; }
+  }, [reloadFolders, toast, user.id]);
   const deleteFolder = useCallback(async (id: string, name: string) => {
     if (!await confirmAction(`Xóa thư mục “${name}”? Các đề bên trong được chuyển ra ngoài, không bị xóa.`)) return;
     try {
       const response = await accountFetch(user.id, `/api/folders/${id}`, { method: 'DELETE' });
       if (!response.ok) { const result = await response.json(); throw Error(result.error || 'Chưa xóa được thư mục.'); }
       toast('Đã xóa thư mục.');
-      if (params.get('folder') === id) router.push('/');
+      if (params.get('folder') === id) router.push(pathname.startsWith('/teacher/folders') ? '/teacher/folders' : '/');
       await reloadFolders(); router.refresh();
     } catch (cause) { toast(teacherErrorMessage(cause, 'Chưa kết nối được để xóa thư mục. Hãy thử lại.'), 'error'); }
-  }, [confirmAction, params, reloadFolders, router, toast, user.id]);
+  }, [confirmAction, params, pathname, reloadFolders, router, toast, user.id]);
 
   const value = useMemo<Workspace>(() => ({
-    user, folders, reloadFolders, openCreateFolder, deleteFolder, keyCount, hasActiveKey: keyCount > 0, openKeys: () => setKeysOpen(true),
+    user, folders, reloadFolders, openCreateFolder, deleteFolder, updateFolder, ...keyStats, hasActiveKey: keyStats.keyCount > 0, openKeys: () => setKeysOpen(true),
     assistantOpen, toggleAssistant: () => setAssistantOpen(open => !open), openAiNotes: () => setNotesOpen(true),
-    menuExpanded, setMenuExpanded, topbarSlot, setTopbarSlot, toast, confirmAction,
-  }), [user, folders, reloadFolders, openCreateFolder, deleteFolder, keyCount, assistantOpen, menuExpanded, setMenuExpanded, topbarSlot, toast, confirmAction]);
+    menuExpanded, setMenuExpanded, copilotAvailable, setCopilotAvailable, copilotOpen, setCopilotOpen, toast, confirmAction,
+  }), [user, folders, reloadFolders, openCreateFolder, deleteFolder, updateFolder, keyStats, assistantOpen, menuExpanded, setMenuExpanded, copilotAvailable, copilotOpen, toast, confirmAction]);
 
   return <WorkspaceContext.Provider value={value}>
     {children}
@@ -119,7 +135,7 @@ export function WorkspaceProvider({ user, children }: { user: WorkspaceUser; chi
           <div><label htmlFor="workspace-folder-name" className="block text-xs font-semibold text-[var(--ui-text-secondary)] mb-1">Tên thư mục</label>
             <input id="workspace-folder-name" type="text" required autoFocus value={folderName} onChange={event => setFolderName(event.target.value)} placeholder="Ví dụ: Khối 12, Học kỳ 1, Ôn thi HSG..." className="teacher-field w-full px-3.5 text-sm" /></div>
           <div><span className="block text-xs font-semibold text-[var(--ui-text-secondary)] mb-1">Màu sắc nhận diện</span>
-            <div className="flex items-center gap-2">{palette.map(color => <button key={color} type="button" aria-label={`Màu ${color}`} onClick={() => setFolderColor(color)} className={`w-6 h-6 rounded-lg cursor-pointer transition-transform ${folderColor === color ? 'scale-125 ring-2 ring-black/40' : ''}`} style={{ backgroundColor: color }} />)}</div></div>
+            <div className="flex items-center gap-2">{folderPalette.map(color => <button key={color} type="button" aria-label={`Màu ${color}`} onClick={() => setFolderColor(color)} className={`w-6 h-6 rounded-lg cursor-pointer transition-transform ${folderColor === color ? 'scale-125 ring-2 ring-black/40' : ''}`} style={{ backgroundColor: color }} />)}</div></div>
         </div>
         <div className="flex items-center justify-end gap-2">
           <button type="button" onClick={() => setFolderDialog(null)} className="app-button-secondary min-h-10 px-4 text-sm">Hủy</button>

@@ -9,7 +9,6 @@ import { useAiProposal } from '@/hooks/useAiProposal';
 import { appendCopilotHistory, confirmCopilotTravel, emptyCopilotHistory } from '@/lib/copilot-history';
 import { CopilotHistoryControls } from './CopilotHistoryControls';
 import { accountFetch } from '@/lib/account-fetch';
-import { AiRailButtons } from '@/components/workspace/AiRail';
 import { normalizeQuestion } from '@/lib/exam-document';
 import { 
   Sparkles, 
@@ -19,20 +18,17 @@ import {
   CheckCircle2, 
   AlertCircle, 
   ChevronRight, 
-  ChevronLeft,
   Wand2, 
   Flame, 
   ArrowDownCircle, 
   Binary,
   Compass,
-  X,
-  ShieldCheck,
-  Bot
+  X
 } from 'lucide-react';
 
 interface RightCompanionRailProps {
   isExpanded: boolean;
-  onToggleExpand: () => void;
+  onClose: () => void;
   exam: Exam;
   ownerId: string;
   onSubmitCopilot: (submission: CopilotSubmission) => void;
@@ -42,7 +38,7 @@ interface RightCompanionRailProps {
 
 export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
   isExpanded,
-  onToggleExpand,
+  onClose,
   exam,
   ownerId,
   onSubmitCopilot,
@@ -143,44 +139,13 @@ export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
     <aside
       aria-label="Trợ lý và công cụ nhanh"
       className={`no-print select-none shrink-0 transition-all duration-300 ease-in-out flex-col justify-between border-l border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#17181a] z-20 h-full overflow-hidden ${
-        isExpanded ? 'absolute inset-y-0 right-0 flex w-full sm:w-96 lg:relative shadow-xs' : 'hidden lg:flex lg:w-13'
+        isExpanded ? 'absolute inset-y-0 right-0 flex w-full sm:w-96 lg:relative shadow-xs' : 'hidden'
       }`}
     >
       {proposalJournal.notice && <p role="status" className={isExpanded ? 'p-3 text-sm' : 'hidden'}>{proposalJournal.notice}</p>}
       {proposal && <div className={isExpanded ? 'max-h-[60%] shrink-0 min-h-0 overflow-y-auto' : 'hidden'}><CopilotProposalReview key={proposalJournal.entry!.key} base={proposal.base} result={proposal.result} ownerId={ownerId} exam={exam} onSubmit={onSubmitCopilot} onApplied={submission => { setHistory(value => appendCopilotHistory(value, submission)); proposalJournal.archive(); setSuccessMessage('Đã áp dụng vào bản soạn. Bản đối chiếu được giữ; hãy lưu đề và kiểm tra nội dung trước khi chốt.'); }} onDiscard={() => { proposalJournal.archive(); }} /></div>}
       {(history.undo.length > 0 || history.redo.length > 0) && <div className={isExpanded ? 'shrink-0' : 'hidden'}><CopilotHistoryControls key={`${history.undo.at(-1)?.id}:${history.redo.at(-1)?.id}`} history={history} ownerId={ownerId} exam={exam} disabled={!!proposal} onSubmit={onSubmitCopilot} onConfirmed={(entryId, direction, submission) => setHistory(value => confirmCopilotTravel(value, entryId, direction, submission))} /></div>}
-      {/* TRƯỜNG HỢP 1: THU GỌN THÀNH COMPANION RAIL SIÊU MỎNG (52px) */}
-      {!isExpanded ? (
-        <div className="flex flex-col items-center justify-between h-full py-3.5">
-          {/* Nhóm icon trên: Gemini AI & Quick Tools */}
-          <div className="flex flex-col items-center gap-3 w-full">
-            {/* Nút kích hoạt Gemini Side Panel */}
-            <button
-              onClick={onToggleExpand}
-              title="Mở Trợ lý Gemini AI Copilot (Bên phải)"
-              className="relative p-2.5 rounded-xl bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3]  transition-all shadow-xs cursor-pointer group"
-            >
-              <Sparkles className="w-5 h-5 " />
-              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[#3c4043] dark:bg-[#e3e3e3]" />
-            </button>
-
-            <div className="w-6 h-[1px] bg-[#dadce0] dark:bg-[#3c4043]" />
-
-            {/* Hỏi đáp và ghi chú AI: cùng hai nút như bên ngoài trang soạn */}
-            <AiRailButtons />
-          </div>
-
-          {/* Nút mở rộng panel ở chân */}
-          <button
-            onClick={onToggleExpand}
-            title="Mở rộng bảng Trợ lý AI"
-            className="p-2 rounded-xl text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-        </div>
-      ) : (
-        /* TRƯỜNG HỢP 2: MỞ RỘNG THÀNH SIDE PANEL GOOGLE GEMINI CHUYÊN NGHIỆP */
+      {isExpanded && (
         <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
           {/* Header của Side Panel chuẩn Google */}
           <div className="px-4 py-3 border-b border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between shrink-0 bg-[#f8f9fa] dark:bg-[#1f1f1f]">
@@ -200,8 +165,8 @@ export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
             </div>
 
             <button
-              onClick={onToggleExpand}
-              title="Thu gọn dải công cụ"
+              onClick={onClose}
+              title="Đóng bảng Trợ lý AI"
               className="p-1.5 rounded-lg text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
             >
               <X className="w-4 h-4" />

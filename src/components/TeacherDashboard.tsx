@@ -1,5 +1,6 @@
 'use client';
 
+import { SearchField } from '@/components/workspace/ui';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useWorkspace } from '@/components/workspace/WorkspaceContext';
@@ -357,13 +358,6 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
         {/* VÙNG GIỮA: NỘI DUNG CHÍNH (CANVAS QUẢN LÝ ĐỀ THI) */}
         <main className="app-page px-4 sm:px-6 py-5 min-w-0">
           {currentView !== 'trash' && <LocalDraftsPanel ownerId={currentUser.id} />}
-          {currentView !== 'trash' && <nav aria-label="Điều hướng kho đề" className="lg:hidden my-3 flex flex-wrap items-center gap-2 text-xs">
-            {([{ value: 'all', name: 'Tất cả' }, { value: 'starred', name: 'Quan trọng' }, { value: 'recent', name: 'Gần đây' }] as const).map(view => <button key={view.value} type="button" className={`border rounded-lg p-2 ${currentView === view.value ? 'app-button-tonal' : 'hover:bg-[var(--ui-surface-variant)]'}`} onClick={() => { setCurrentView(view.value); setSelectedFolderId(null); }}>{view.name}</button>)}
-            <button type="button" className="border rounded-lg p-2" onClick={() => openCreateFolder(null)}>Tạo thư mục</button>
-            <select aria-label="Chọn thư mục" className="border rounded-lg p-2 bg-transparent" value={selectedFolderId ?? ''} onChange={e => { setSelectedFolderId(e.target.value || null); setCurrentView('all'); }}><option value="">Mọi thư mục</option>{folders.flatMap(folder => [folder, ...(folder.children ?? [])]).map(folder => <option key={folder.id} value={folder.id}>{folder.name}</option>)}</select>
-            
-            <input aria-label="Tìm đề trong kho" placeholder="Tìm tên đề..." className="border rounded-lg p-2 bg-transparent flex-1 min-w-40" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
-          </nav>}
           {location.get('choose') === 'assign' && currentView !== 'trash' && <p role="status" className="border rounded-lg p-3 mb-4 text-sm">Chọn một đề để mở, rồi bấm “Chia sẻ &amp; Thi Online” để giao cho học sinh.</p>}
           {/* Top Quick Actions Banner: 3 thẻ tạo đề */}
           {currentView !== 'trash' && <div className="grid grid-cols-1 xl:grid-cols-3 gap-3 mb-6">
@@ -446,6 +440,8 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
 
             {/* Các dropdown lọc nhanh */}
             <div className="flex flex-wrap min-w-0 max-w-full items-center gap-2">
+              <SearchField value={searchQuery} onChange={setSearchQuery} placeholder="Tìm theo tên đề..." label="Tìm đề trong kho" />
+              <select aria-label="Chọn thư mục" className="teacher-field px-2.5 py-1.5 text-xs cursor-pointer" value={selectedFolderId ?? ''} onChange={e => { setSelectedFolderId(e.target.value || null); setCurrentView('all'); }}><option value="">Mọi thư mục</option>{folders.flatMap(folder => [folder, ...(folder.children ?? [])]).map(folder => <option key={folder.id} value={folder.id}>{folder.name}</option>)}</select>
               {/* Lọc theo môn */}
               <select
                 value={selectedSubject}

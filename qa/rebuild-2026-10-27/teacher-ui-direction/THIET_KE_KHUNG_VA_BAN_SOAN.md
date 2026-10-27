@@ -139,3 +139,18 @@ Cả bốn đợt đã làm trong mã. Bản dựng riêng ở thư mục khác,
 4. **Hàng thẻ thư mục** ở đầu Kho đề: chưa làm (đã ghi "làm sau").
 5. **Mã màu viết cứng bên trong từng trang** (bảng, thẻ, hộp thoại) vẫn còn; khung, đầu trang, menu, thanh công cụ đã dùng biến màu chung.
 6. **Bản ẩn trong trang:** Next.js giữ một bản ẩn của khung (thuộc tính `hidden`); các bài kiểm phải chọn phần tử đang hiển thị (đã chỉnh trong `pilot.test.ts`).
+
+## 9. Khung hai thanh kiểu Firebase (27/10/2026, đợt sau)
+
+Chủ dự án yêu cầu bỏ thanh trên cùng, chỉ còn hai thanh bên.
+
+- **Menu trái** (`WorkspaceMenu.tsx`): logo; nút "Soạn đề thi mới"; nhóm gập bằng mũi tên (Soạn đề, Thư mục gần đây, Khảo thí & Lớp); Thùng rác; chân menu có nút tròn thu gọn. Trong bàn soạn menu mặc định là thanh icon 56 px, mở đè lên trang.
+- **Rail phải** (`WorkspaceRail.tsx`): avatar tài khoản (trạng thái khóa AI, đăng xuất), Trợ lý AI sửa đề (chỉ trong bàn soạn), Thư ký AI, ghi chú AI, khóa AI, đổi sáng/tối ở đáy. Điện thoại: thanh mỏng + hàng tab thay cho hai thanh.
+- **Bàn soạn:** `Header.tsx` chỉ còn thanh tài liệu (tên đề, trạng thái lưu, Chia sẻ); không còn thanh trên cùng cũ nên không có "menu trên menu". Bảng Trợ lý AI mở bằng nút ở rail phải (trạng thái nằm trong `WorkspaceContext`).
+- **Kho đề:** ô tìm và chọn thư mục nằm trong thanh công cụ của trang.
+- **Trang Thư mục mới** `/teacher/folders`: thẻ thư mục, đường dẫn, tìm, tạo (cả thư mục con), sửa tên/màu, xóa, danh sách đề trong thư mục. Cây thư mục bên menu được thay bằng "Thư mục gần đây".
+- **Đã xóa:** `WorkspaceTopBar.tsx`, `AiRail.tsx`.
+
+Kiểm: bản dựng riêng, cổng 3122, DB thử. `--teacher` 7/7, `--admin` 11/11, `--typography` 4/4; luồng F2, F3, F9, F11, F14, F16, F18, F19, F20, F21, F23, F24, F25 đạt. Test đã sửa: chờ toast "Đã chuyển đề vào thùng rác" trước khi sang Thùng rác (đua dữ liệu, trước đây lúc đạt lúc trượt); `openExam` chờ tiêu đề đề thi bật được; bộ khóa/Thư ký dùng phần tử đang hiện. Màu viết cứng 3.128 (đã khóa).
+
+Chưa làm/chưa kiểm: chạy lại `npm run ci` đầy đủ trên cổng 3117; thử trên điện thoại thật; bàn soạn chi tiết (đợt kế); trang Thư mục chưa có kéo thả đề vào thư mục.

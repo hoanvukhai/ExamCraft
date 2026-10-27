@@ -41,7 +41,7 @@ test('teacher management: trash, bank, class context, routes and mobile', { time
     await t.test('cancel, soft-delete, clear restore action, failure and retry without data loss', async () => {
       await card('Đề giao diện 0').getByTitle('Chuyển vào thùng rác', { exact: true }).click(); await confirm(false);
       assert.deepEqual(await db.exam.findUniqueOrThrow({ where: { id: examIds[0] } }), before);
-      await card('Đề giao diện 0').getByTitle('Chuyển vào thùng rác', { exact: true }).click(); await confirm(true);
+      await card('Đề giao diện 0').getByTitle('Chuyển vào thùng rác', { exact: true }).click(); await confirm(true); await page.getByText('Đã chuyển đề vào thùng rác.', { exact: true }).first().waitFor();
       await waitAbsent(card('Đề giao diện 0')); assert.ok((await db.exam.findUniqueOrThrow({ where: { id: examIds[0] } })).deletedAt);
       await nav().getByRole('link', { name: 'Thùng rác', exact: true }).click();
       await page.getByRole('heading', { name: 'Thùng rác', exact: true }).waitFor();
@@ -66,12 +66,11 @@ test('teacher management: trash, bank, class context, routes and mobile', { time
       await page.reload(); await page.getByRole('heading', { name: 'Thùng rác', exact: true }).waitFor();
       await page.setViewportSize({ width: 1440, height: 1000 });
       const folder = (await api('/api/folders', 'POST', { name: 'Thư mục kiểm lỗi', color: '#3c4043' })).folder;
-      await page.goto(origin + '/'); await page.getByText('Thư mục kiểm lỗi', { exact: true }).filter({ visible: true }).waitFor();
-      await page.getByText('Thư mục kiểm lỗi', { exact: true }).filter({ visible: true }).hover();
-      await page.getByTitle('Xóa thư mục này', { exact: true }).click(); await confirm(false);
+      await page.goto(origin + '/teacher/folders?folder=' + folder.id); await page.getByRole('heading', { name: 'Thư mục kiểm lỗi', exact: true }).waitFor();
+      await page.getByRole('button', { name: 'Xóa', exact: true }).click(); await confirm(false);
       assert.ok(await db.folder.findUnique({ where: { id: folder.id } }));
       await page.route('**/api/folders/' + folder.id, route => route.fulfill({ status: 503, json: { error: 'Chưa xóa được thư mục kiểm lỗi' } }));
-      await page.getByTitle('Xóa thư mục này', { exact: true }).click(); await confirm(true);
+      await page.getByRole('button', { name: 'Xóa', exact: true }).click(); await confirm(true);
       await page.getByRole('alert').getByText('Chưa xóa được thư mục kiểm lỗi', { exact: true }).waitFor();
       assert.ok(await db.folder.findUnique({ where: { id: folder.id } }));
       await page.unroute('**/api/folders/' + folder.id);
@@ -81,7 +80,7 @@ test('teacher management: trash, bank, class context, routes and mobile', { time
       const own = async (title: string) => { const now = new Date().toISOString(); return (await api('/api/exams', 'POST', { document: { id: randomUUID(), version: 1, createdAt: now, updatedAt: now, metadata: { title, subject: 'toan', grade: 6, durationMinutes: 15 }, questions: [{ id: 'q1', type: 'short_answer', difficulty: 'thong_hieu', content: 'Một cộng hai?', correct_answer: '3', accepted_answers: ['3'], points: 1 }] } })).exam.id as string; };
       const purgeId = await own('Xóa vĩnh viễn thử'), assignedId = await own('Đề đã giao không xóa hẳn');
       await page.goto(origin + '/');
-      await card('Xóa vĩnh viễn thử').getByTitle('Chuyển vào thùng rác', { exact: true }).click(); await confirm(true);
+      await card('Xóa vĩnh viễn thử').getByTitle('Chuyển vào thùng rác', { exact: true }).click(); await confirm(true); await page.getByText('Đã chuyển đề vào thùng rác.', { exact: true }).first().waitFor();
       await nav().getByRole('link', { name: 'Thùng rác', exact: true }).click();
       await page.getByRole('heading', { name: 'Thùng rác', exact: true }).waitFor();
       await card('Xóa vĩnh viễn thử').getByRole('button', { name: 'Xóa vĩnh viễn', exact: true }).click(); await confirm(false);
@@ -91,7 +90,7 @@ test('teacher management: trash, bank, class context, routes and mobile', { time
       assert.equal(await db.exam.findUnique({ where: { id: purgeId } }), null, 'the exam is gone for good');
       await api('/api/assignments', 'POST', { examId: assignedId, title: 'Bài giao kiểm', identityMode: 'FREE_NAME' });
       await nav().getByRole('link', { name: 'Tất cả đề thi', exact: true }).filter({ visible: true }).click();
-      await card('Đề đã giao không xóa hẳn').getByTitle('Chuyển vào thùng rác', { exact: true }).click(); await confirm(true);
+      await card('Đề đã giao không xóa hẳn').getByTitle('Chuyển vào thùng rác', { exact: true }).click(); await confirm(true); await page.getByText('Đã chuyển đề vào thùng rác.', { exact: true }).first().waitFor();
       await nav().getByRole('link', { name: 'Thùng rác', exact: true }).click();
       await card('Đề đã giao không xóa hẳn').getByRole('button', { name: 'Xóa vĩnh viễn', exact: true }).click(); await confirm(true);
       await page.getByRole('alert').getByText(/đã được giao/).waitFor();

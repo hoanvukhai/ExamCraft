@@ -126,7 +126,7 @@ test('admin: current data, access, confirmations and phone navigation', { timeou
       assert.equal(await db.userApiKey.count({ where: { userId: ids[2] } }), 1);
     });
     await t.test('key dialog and editor menu show usage without a daily cap or fabricated remaining quota', async () => {
-      await page.goto(origin + '/'); await page.getByTitle('Quản lý Google Gemini API Key', { exact: true }).click();
+      await page.goto(origin + '/'); await page.getByTitle('Quản lý Google Gemini API Key', { exact: true }).filter({ visible: true }).click();
       const keys = page.getByRole('dialog', { name: 'Khóa AI của bạn', exact: true });
       await keys.getByText(/ExamCraft không đặt giới hạn AI theo ngày/).waitFor();
       assert.equal(await keys.getByText(/Giới hạn trong ứng dụng hôm nay/).count(), 0);
@@ -141,7 +141,7 @@ test('admin: current data, access, confirmations and phone navigation', { timeou
       await page.screenshot({ path: `${report}/editor-usage-375.png`, fullPage: false });
     });
     await t.test('one secretary drawer replaces the old promotional popup', async () => {
-      await page.goto(origin + '/'); await page.getByTitle('Mở Thư ký AI trợ lý riêng của Thầy/Cô').click();
+      await page.goto(origin + '/'); await page.getByTitle('Mở Thư ký AI trợ lý riêng của Thầy/Cô').filter({ visible: true }).click();
       await page.getByRole('heading', { name: 'Thư Ký Số & Trợ Lý Giáo Viên', exact: true }).waitFor();
       assert.equal(await page.getByText('BETA / ĐANG HUẤN LUYỆN', { exact: true }).count(), 0);
       await page.screenshot({ path: `${report}/secretary-375.png`, fullPage: false });

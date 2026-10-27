@@ -5,6 +5,7 @@ import { applyCopilotSubmission } from '@/lib/copilot-submission';
 import React, { useState, useEffect, useMemo } from 'react';
 import { Exam, Question } from '@/types/exam';
 import { Header } from '@/components/Header';
+import { useWorkspace } from '@/components/workspace/WorkspaceContext';
 import { EditorToolbar } from '@/components/EditorToolbar';
 import { QuestionCard } from '@/components/QuestionCard';
 import { accountFetch } from '@/lib/account-fetch';
@@ -85,7 +86,8 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   const [hasActiveKey, setHasActiveKey] = useState<boolean>(false);
 
   // Layout states
-  const [isCopilotOpen, setIsCopilotOpen] = useState(false);
+  const { copilotOpen: isCopilotOpen, setCopilotOpen: setIsCopilotOpen, setCopilotAvailable } = useWorkspace();
+  useEffect(() => { setCopilotAvailable(canEdit); return () => setCopilotAvailable(false); }, [canEdit, setCopilotAvailable]);
   const [copilotCommand, setCopilotCommand] = useState<string>('');
   const [mobileTab, setMobileTab] = useState<'editor' | 'preview'>('editor');
   const [isMatrixTabActive, setIsMatrixTabActive] = useState(false);
@@ -297,16 +299,8 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         canEdit={canEdit}
         examTitle={exam.metadata.title}
         onUpdateTitle={handleUpdateTitle}
-        onOpenApiKeyModal={() => setIsApiKeyModalOpen(true)}
-        hasActiveKey={hasActiveKey}
-        keyCount={keyStats.keyCount}
-        keyErrorCount={keyStats.keyErrorCount}
-        quota={keyStats.quota}
         isCloudSaving={isCloudSaving}
         isCloudSaved={isCloudSaved}
-        currentUser={currentUser}
-        onToggleCopilot={() => setIsCopilotOpen(!isCopilotOpen)}
-        isCopilotOpen={isCopilotOpen}
         onShare={() => { if (canPublish) setIsShareModalOpen(true); else setCollaborationOpen(true); }}
       />
 
@@ -570,7 +564,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
           ownerId={currentUser.id}
           onSubmitCopilot={submission => setExam(previous => applyCopilotSubmission(previous, submission, currentUser.id))}
           isExpanded={isCopilotOpen}
-          onToggleExpand={() => setIsCopilotOpen(!isCopilotOpen)}
+          onClose={() => setIsCopilotOpen(false)}
           exam={exam}
           selectedQuestionIds={selectedQuestionIds}
           externalCommand={copilotCommand}

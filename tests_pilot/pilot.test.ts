@@ -114,7 +114,7 @@ async function setup(id: string, firstPassword = false) {
 }
 async function authenticated(f: Fixture) { await login(f.page, f.emails[0], f.password); await f.page.waitForURL(origin + '/'); }
 async function seedExam(f: Fixture, subject: 'toan' | 'ngu_van' = 'toan') { return (await f.api('/api/exams', 'POST', { document: document(subject) })).exam.id as string; }
-async function openExam(f: Fixture, id: string) { await f.page.goto(origin + '/editor/' + id); await f.page.getByTitle('Lưu các thay đổi lên máy chủ').first().waitFor(); }
+async function openExam(f: Fixture, id: string) { await f.page.goto(origin + '/editor/' + id); await f.page.getByTitle('Lưu các thay đổi lên máy chủ').first().waitFor(); await f.page.locator('button[title="Nhấn để đổi tên đề thi"]:not([disabled])').waitFor(); }
 async function assignment(f: Fixture, examId: string) {
   return (await f.api('/api/assignments', 'POST', { examId, title: 'Pilot bài giao', mode: 'CLASSWORK', identityMode: 'FREE_NAME', durationMinutes: 15, maxAttempts: 1, shuffleQuestions: false, shuffleChoices: false, showResult: 'IMMEDIATE', showSolution: 'AFTER_CLOSE' })).assignment;
 }
@@ -715,11 +715,14 @@ test('F19 library search, starred, recent, trash, restore and safe controls', { 
   await card(titles[3]).getByTitle('Nhân bản đề này', { exact: true }).click();
   await waitUntil(async () => (await f.db.exam.count({ where: { ownerId: f.ids[0] } })) === 5, 'Clone must create a separate exam');
   const all = await f.db.exam.findMany({ where: { ownerId: f.ids[0] } }); assert.equal(all.filter(row => row.title.includes(titles[3])).length, 2); checked.push('clone');
-  await f.page.getByTitle('Tạo thư mục mới (Cấp 1)', { exact: true }).click();
+  await menuLink(f.page, 'Thư mục'); await f.page.getByRole('heading', { name: 'Thư mục', exact: true }).waitFor();
+  await f.page.getByRole('button', { name: 'Tạo thư mục', exact: true }).filter({ visible: true }).first().click();
   await f.page.getByPlaceholder('Ví dụ: Khối 12, Học kỳ 1, Ôn thi HSG...').fill('F19 Folder');
-  await f.page.getByRole('button', { name: 'Tạo thư mục', exact: true }).filter({ visible: true }).click();
+  await f.page.locator('form').getByRole('button', { name: 'Tạo thư mục', exact: true }).click();
   await waitUntil(async () => (await f.db.folder.count({ where: { ownerId: f.ids[0], name: 'F19 Folder' } })) === 1, 'Folder creation must persist');
   const folder = await f.db.folder.findFirstOrThrow({ where: { ownerId: f.ids[0], name: 'F19 Folder' } });
+  await f.page.getByRole('link', { name: /F19 Folder/ }).filter({ visible: true }).first().waitFor();
+  await menuLink(f.page, 'Tất cả đề thi');
   await card(titles[3]).getByTitle('Di chuyển vào thư mục', { exact: true }).click();
   await f.page.locator('div.fixed.inset-0').filter({ visible: true }).last().getByRole('button', { name: 'F19 Folder', exact: true }).click();
   await waitUntil(async () => (await f.db.exam.findUniqueOrThrow({ where: { id: ids[3] } })).folderId === folder.id, 'Move must persist'); checked.push('create-folder-and-move');
@@ -744,9 +747,6 @@ test('F19 library search, starred, recent, trash, restore and safe controls', { 
   await f.page.getByTitle('Mở Thư ký AI trợ lý riêng của Thầy/Cô', { exact: true }).filter({ visible: true }).click();
   await f.page.getByRole('heading', { name: 'Thư Ký Số & Trợ Lý Giáo Viên', exact: true }).waitFor();
   await f.page.locator('div.fixed.inset-y-0').locator('button:has(svg.lucide-x)').click(); checked.push('secretary-open-close-only-no-ai-call');
-  await f.page.getByTitle('Trợ lý Thư ký AI Cá Nhân (Bấm để xem)', { exact: true }).filter({ visible: true }).click();
-  await f.page.getByRole('heading', { name: 'Thư Ký Số & Trợ Lý Giáo Viên', exact: true }).waitFor();
-  await f.page.locator('div.fixed.inset-y-0').locator('button:has(svg.lucide-x)').click(); checked.push('secretary-rail-open-close-only-no-ai-call');
   await f.page.getByRole('link', { name: 'Soạn đề thi mới', exact: true }).filter({ visible: true }).click();
   await f.page.getByTitle('Lưu các thay đổi lên máy chủ').first().waitFor();
   await menuLink(f.page, 'Tất cả đề thi');
@@ -806,7 +806,7 @@ test('F21 collaborator Copilot uses its own key and preserves the owner concurre
     const context = await f.context(), b = await context.newPage(); await login(b, f.emails[1], f.password);
     await f.api('/api/user/keys', 'POST', { apiKey: 'pilot-editor-key-0123456789', label: 'Editor fixture' }, context);
     await b.goto(origin + '/editor/' + id);
-    await b.getByTitle('Mở rộng bảng Trợ lý AI').click();
+    await b.getByTitle('Mở rộng bảng Trợ lý AI').filter({ visible: true }).click();
     await b.locator('#right-copilot-input').fill('Sửa nội dung câu 1 thành câu thử F21'); await b.locator('#right-copilot-input').press('Enter');
     await waitUntil(async () => mock.keys.length === 1, 'Collaborator request must reach local provider');
     assert.deepEqual(mock.keys, ['pilot-editor-key-0123456789']);
