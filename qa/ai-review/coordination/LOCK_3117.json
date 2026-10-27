@@ -1,6 +1,6 @@
 {
+  "note": "Vietnamese fonts/actual A4 zoom verified; isolated build AhiXeEfCmodeHTtXmhyhD; real AI off. Report qa/rebuild-2026-10-27/typography/BAO_CAO.md. Do not build over .next while previewing.",
   "port": 3117,
   "holder": "USER",
-  "note": "Provider-only daily AI policy, account pagination and green active status verified on -TELCUR5lFqU8EmJhRi20. Isolated3117 retained, real AI off; fixtures cleaned. Report qa/rebuild-2026-10-27/admin-pagination/BAO_CAO.md. Do not build over .next while previewing.",
-  "since_utc": "2026-10-26T18:16:51.6253538Z"
+  "since_utc": "2026-10-27T03:39:31.4729937Z"
 }

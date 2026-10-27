@@ -1,0 +1,50 @@
+[
+  {
+    "id": "ui",
+    "computed": "\"Segoe UI\", Arial, sans-serif, \"Google Sans\", system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif",
+    "fonts": [
+      {
+        "familyName": "Segoe UI",
+        "postScriptName": "SegoeUI",
+        "isCustomFont": false,
+        "glyphCount": 91
+      }
+    ]
+  },
+  {
+    "id": "paper",
+    "computed": "ui-serif, Georgia, Cambria, \"Times New Roman\", Times, serif",
+    "fonts": [
+      {
+        "familyName": "Georgia",
+        "postScriptName": "Georgia-Bold",
+        "isCustomFont": false,
+        "glyphCount": 90
+      },
+      {
+        "familyName": "Cambria",
+        "postScriptName": "Cambria-Bold",
+        "isCustomFont": false,
+        "glyphCount": 7
+      }
+    ]
+  },
+  {
+    "id": "nfd",
+    "computed": "ui-serif, Georgia, Cambria, \"Times New Roman\", Times, serif",
+    "fonts": [
+      {
+        "familyName": "Cambria",
+        "postScriptName": "Cambria",
+        "isCustomFont": false,
+        "glyphCount": 14
+      },
+      {
+        "familyName": "Georgia",
+        "postScriptName": "Georgia",
+        "isCustomFont": false,
+        "glyphCount": 91
+      }
+    ]
+  }
+]

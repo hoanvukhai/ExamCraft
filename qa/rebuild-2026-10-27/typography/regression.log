@@ -1,0 +1,172 @@
+TAP version 13
+# Subtest: a 120-question exam exports to Word in order, with passages once, images present and formulas converted
+ok 1 - a 120-question exam exports to Word in order, with passages once, images present and formulas converted
+  ---
+  duration_ms: 428.8755
+  type: 'test'
+  ...
+# Subtest: solution and parallel exports keep every answer next to its own question
+ok 2 - solution and parallel exports keep every answer next to its own question
+  ---
+  duration_ms: 503.12
+  type: 'test'
+  ...
+# Subtest: actual Word matrix export contains all seven target types, loaded outcome, counts, points and deltas
+ok 3 - actual Word matrix export contains all seven target types, loaded outcome, counts, points and deltas
+  ---
+  duration_ms: 210.5987
+  type: 'test'
+  ...
+# Subtest: Word target comparison includes ambiguous/unmatched and unknown/precision point warnings without guessing
+ok 4 - Word target comparison includes ambiguous/unmatched and unknown/precision point warnings without guessing
+  ---
+  duration_ms: 86.1752
+  type: 'test'
+  ...
+# Subtest: stale/unknown outcomes remain visible in real Word export and cannot become an approved comparison
+ok 5 - stale/unknown outcomes remain visible in real Word export and cannot become an approved comparison
+  ---
+  duration_ms: 41.1902
+  type: 'test'
+  ...
+# Subtest: non-scored matrix exports no numeric targets and explicit exam/matrix views override solution booleans
+ok 6 - non-scored matrix exports no numeric targets and explicit exam/matrix views override solution booleans
+  ---
+  duration_ms: 185.5073
+  type: 'test'
+  ...
+# Subtest: shared print projection omits answer data, tolerates malformed historical plans, and keeps absent plans absent
+ok 7 - shared print projection omits answer data, tolerates malformed historical plans, and keeps absent plans absent
+  ---
+  duration_ms: 6.1372
+  type: 'test'
+  ...
+# Subtest: header submission only merges edited fields and preserves newer scope/plan and unedited header metadata
+ok 8 - header submission only merges edited fields and preserves newer scope/plan and unedited header metadata
+  ---
+  duration_ms: 14.7902
+  type: 'test'
+  ...
+# Subtest: a changed edited field, different document or lost permission blocks apply with exact same object and intact submission
+ok 9 - a changed edited field, different document or lost permission blocks apply with exact same object and intact submission
+  ---
+  duration_ms: 0.453
+  type: 'test'
+  ...
+# Subtest: grade/context edits retain old subject, framework, package references and plan for explicit review
+ok 10 - grade/context edits retain old subject, framework, package references and plan for explicit review
+  ---
+  duration_ms: 0.462
+  type: 'test'
+  ...
+# Subtest: empty override remains one visible blank line, hidden drops line, undefined uses bound value and literal order remains
+ok 11 - empty override remains one visible blank line, hidden drops line, undefined uses bound value and literal order remains
+  ---
+  duration_ms: 4.1689
+  type: 'test'
+  ...
+# Subtest: shared header resolves current year, notes, duration and actual score including0 instead of plan targets
+ok 12 - shared header resolves current year, notes, duration and actual score including0 instead of plan targets
+  ---
+  duration_ms: 0.7377
+  type: 'test'
+  ...
+# Subtest: default header omits empty school/year without invented authority, explicit empty lines roundtrip and malformed layouts reject
+ok 13 - default header omits empty school/year without invented authority, explicit empty lines roundtrip and malformed layouts reject
+  ---
+  duration_ms: 3.1375
+  type: 'test'
+  ...
+# Subtest: unsupported patch keys/empty internal title reject without changing document
+ok 14 - unsupported patch keys/empty internal title reject without changing document
+  ---
+  duration_ms: 0.6498
+  type: 'test'
+  ...
+# Subtest: actual Word header uses ordered shared lines, blanks, alignment, footer/year/current score and hides private answers
+ok 15 - actual Word header uses ordered shared lines, blanks, alignment, footer/year/current score and hides private answers
+  ---
+  duration_ms: 160.5893
+  type: 'test'
+  ...
+# Subtest: fractions, roots and nested fractions are real equation objects
+ok 16 - fractions, roots and nested fractions are real equation objects
+  ---
+  duration_ms: 282.0577
+  type: 'test'
+  ...
+# Subtest: powers, indices and combined scripts become superscripts and subscripts
+ok 17 - powers, indices and combined scripts become superscripts and subscripts
+  ---
+  duration_ms: 195.3306
+  type: 'test'
+  ...
+# Subtest: sums, limits, integrals, functions and symbols leave no raw LaTeX
+ok 18 - sums, limits, integrals, functions and symbols leave no raw LaTeX
+  ---
+  duration_ms: 126.4376
+  type: 'test'
+  ...
+# Subtest: systems, sets and text keep a readable one-line form, and unknown macros stay visible
+ok 19 - systems, sets and text keep a readable one-line form, and unknown macros stay visible
+  ---
+  duration_ms: 91.8225
+  type: 'test'
+  ...
+# Subtest: malformed input never breaks the export
+ok 20 - malformed input never breaks the export
+  ---
+  duration_ms: 138.4177
+  type: 'test'
+  ...
+# Subtest: an unset answer is never presented as an answer
+ok 21 - an unset answer is never presented as an answer
+  ---
+  duration_ms: 1.2653
+  type: 'test'
+  ...
+# Subtest: multiple choice, short answer and fill-in show the key; zero is a real answer
+ok 22 - multiple choice, short answer and fill-in show the key; zero is a real answer
+  ---
+  duration_ms: 1.1694
+  type: 'test'
+  ...
+# Subtest: true/false keeps false as Sai and an undecided item as missing
+ok 23 - true/false keeps false as Sai and an undecided item as missing
+  ---
+  duration_ms: 0.2176
+  type: 'test'
+  ...
+# Subtest: matching and ordering show the correct structure with readable labels
+ok 24 - matching and ordering show the correct structure with readable labels
+  ---
+  duration_ms: 0.2147
+  type: 'test'
+  ...
+# Subtest: essay lists rubric rows, keeps zero-point rows, and returns the trimmed solution
+ok 25 - essay lists rubric rows, keeps zero-point rows, and returns the trimmed solution
+  ---
+  duration_ms: 0.1672
+  type: 'test'
+  ...
+# Subtest: the helper does not change the question it reads
+ok 26 - the helper does not change the question it reads
+  ---
+  duration_ms: 0.1098
+  type: 'test'
+  ...
+# Subtest: a shared passage appears once, before its first question, and no question is dropped
+ok 27 - a shared passage appears once, before its first question, and no question is dropped
+  ---
+  duration_ms: 0.326
+  type: 'test'
+  ...
+1..27
+# tests 27
+# suites 0
+# pass 27
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1969.3044

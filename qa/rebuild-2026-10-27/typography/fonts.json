@@ -1,0 +1,30 @@
+[
+  {
+    "file": "public\\fonts\\NotoSans-Italic.woff2",
+    "bytes": 574848,
+    "sha256": "decabc187d2e06ac9a8bb734753738dd723425fea44a41ddb4347505234f15d0",
+    "sourceSha256": "58e6e0ebd1931b29a365aa2d3e2ee9a9e831a3af7cf3ad1462d4e72154f0b291",
+    "missingVietnameseCodepoints": []
+  },
+  {
+    "file": "public\\fonts\\NotoSans.woff2",
+    "bytes": 526088,
+    "sha256": "d5580924614ca0f81d6e17102ec7c24ee336ead2666d8cc84457d0ff666e2f57",
+    "sourceSha256": "bfb7bb691513f12e734dc346c03a03f784912432d7e3fa8e56efcf906fe86b3d",
+    "missingVietnameseCodepoints": []
+  },
+  {
+    "file": "public\\fonts\\NotoSerif-Italic.woff2",
+    "bytes": 576972,
+    "sha256": "3750bbe7a5868bfbcaeaa45a3bdff4ca22375c5e0b707f96a637db2c8e1c1d2e",
+    "sourceSha256": "e87acbc6c0efd0d9a20d6a8cbbda2b266c14be3a3a6f5af8ec9d7b2460570ad1",
+    "missingVietnameseCodepoints": []
+  },
+  {
+    "file": "public\\fonts\\NotoSerif.woff2",
+    "bytes": 467220,
+    "sha256": "4f58e4f05cd70df4d8467565c4543b6bb2a253e1288d59eb26219ba27cd016d6",
+    "sourceSha256": "4d8e6761424656867019081a1a01336f3cb086982682698714054fc33f782713",
+    "missingVietnameseCodepoints": []
+  }
+]
