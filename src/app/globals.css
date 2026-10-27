@@ -414,3 +414,13 @@ body {
 .a4-paper .math-rendered {
   color: #000000 !important;
 }
+
+/* The workspace frame is a fixed-height screen layout; on paper it must flow like a document. */
+@media print {
+  .workspace-root, .workspace-body, .workspace-column, .workspace-content {
+    display: block !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+}

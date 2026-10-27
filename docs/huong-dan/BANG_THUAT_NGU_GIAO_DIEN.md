@@ -49,7 +49,7 @@
   + `src/components/ShareModal.tsx` (dòng 251): đang dùng **Giao Bài Thi Online (Cho Học Sinh Làm Trực Tuyến)**
   + `src/components/ExamWorkspace.tsx`: đang dùng **Giao bài thi**
   + `src/components/TeacherDashboard.tsx`: đang dùng **Giao bài**
-  + `src/app/teacher/assignments/page.tsx`: đang dùng **Bài đã giao**
+  + `src/app/(workspace)/teacher/assignments/page.tsx`: đang dùng **Bài đã giao**
 - **Lý do đề xuất:** Giao bài thi ngắn gọn, trang trọng, vừa vặn trên các nút bấm điện thoại; tránh dùng từ chêm tiếng Anh (Online).
 
 ---
@@ -58,7 +58,7 @@
 - **Cách gọi đề xuất thống nhất:** **Số lượt làm bài**
 - **Các vị trí đang dùng cách gọi khác nhau:**
   + `src/components/ShareModal.tsx` (dòng 527): đang dùng **Số lượt làm tối đa**
-  + `src/app/teacher/assignments/[id]/page.tsx`: đang dùng **Lượt làm**
+  + `src/app/(workspace)/teacher/assignments/[id]/page.tsx`: đang dùng **Lượt làm**
   + `src/app/a/[publicId]/page.tsx`: đang dùng **Lượt 1**, **Lượt 2**
 - **Lý do đề xuất:** Diễn đạt đầy đủ nghĩa trong màn hình cấu hình phòng thi (Số lượt làm bài: 1 lượt / Không giới hạn); trong bảng điểm thì rút gọn thành Lượt 1, Lượt 2.
 
@@ -67,7 +67,7 @@
 ### 6. Thuật ngữ: Bản nháp lưu trữ tạm trên máy tính
 - **Cách gọi đề xuất thống nhất:** **Bản nháp tự lưu trên máy**
 - **Các vị trí đang dùng cách gọi khác nhau:**
-  + `src/app/editor/new/page.tsx`: đang dùng **Bản nháp chưa lưu trên máy này**
+  + `src/app/(workspace)/editor/new/page.tsx`: đang dùng **Bản nháp chưa lưu trên máy này**
   + `src/components/ExamWorkspace.tsx`: đang dùng trạng thái **Đang lưu nháp...** và **Đã lưu nháp**
   + `src/app/a/[publicId]/page.tsx`: đang dùng **Bản nháp tự động lưu trên máy**
 - **Lý do đề xuất:** Giúp người dùng hiểu cơ chế an toàn: dữ liệu đang được trình duyệt tự động bảo vệ tại bộ nhớ máy, không bị mất nếu đột ngột mất mạng.
@@ -77,7 +77,7 @@
 ### 7. Thuật ngữ: Đính chính đáp án sau khi đã thi
 - **Cách gọi đề xuất thống nhất:** **Sửa đáp án và chấm lại**
 - **Các vị trí đang dùng cách gọi khác nhau:**
-  + `src/app/teacher/assignments/[id]/page.tsx` (thẻ tab): đang dùng **Sửa đáp án & chấm lại**
+  + `src/app/(workspace)/teacher/assignments/[id]/page.tsx` (thẻ tab): đang dùng **Sửa đáp án & chấm lại**
   + `src/components/RegradePanel.tsx` (dòng 77, nút bấm): đang dùng **Sửa đáp án và chấm lại**
   + `src/components/RegradePanel.tsx` (dòng 76, nút xem trước): đang dùng **Xem trước ảnh hưởng**
 - **Lý do đề xuất:** Sử dụng chữ và thay cho ký tự và (&) để bảo đảm tính chuẩn mực văn bản tiếng Việt; nêu bật được hai bước: sửa đáp án rồi hệ thống tự động chấm lại điểm.
@@ -120,7 +120,7 @@
 - **Các vị trí đang dùng cách gọi khác nhau:**
   + `src/app/a/[publicId]/page.tsx` (dòng 1367): đang dùng **Bảng xếp hạng lớp**
   + `src/components/ShareModal.tsx` (tùy chọn): đang dùng **Bảng xếp hạng Top & Me**
-  + `src/app/teacher/assignments/[id]/page.tsx`: đang dùng **Bảng xếp hạng**
+  + `src/app/(workspace)/teacher/assignments/[id]/page.tsx`: đang dùng **Bảng xếp hạng**
 - **Lý do đề xuất:** Cụm từ Bảng xếp hạng lớp mang tính giáo dục, khích lệ tinh thần học tập tập thể, tránh dùng tiếng Anh Top and Me gây khó hiểu cho học sinh lớp 6.
 
 ---

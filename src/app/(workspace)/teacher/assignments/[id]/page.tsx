@@ -22,7 +22,6 @@ import {
   FileSpreadsheet,
   RefreshCw,
   Search,
-  ArrowLeft,
   Copy,
   Trash2,
   Eye,
@@ -434,7 +433,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
 
   if (loading && !assignment) {
     return (
-      <div className="app-page min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
+      <div className="app-page min-h-[60dvh] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
         <div className="w-10 h-10 border-3 border-[#3c4043] dark:border-[#e3e3e3] border-t-transparent rounded-full animate-spin mb-4" />
         <p className="text-[#5f6368] dark:text-[#9aa0a6] font-medium text-sm">Đang tải màn hình giám sát thi trực tuyến...</p>
       </div>
@@ -443,7 +442,7 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
 
   if (error || !assignment) {
     return (
-      <div className="app-page min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
+      <div className="app-page min-h-[60dvh] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
         <div className="max-w-md w-full bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-8 text-center shadow-xs">
           <AlertCircle className="w-12 h-12 text-[#c5221f] dark:text-[#f28b82] mx-auto mb-4" />
           <h2 className="text-xl font-bold text-[#202124] dark:text-[#e3e3e3] mb-2">Không tìm thấy bài giao</h2>
@@ -460,25 +459,13 @@ function TeacherMonitorContent({ params }: { params: Promise<{ id: string }> }) 
   }
 
   return (
-    <div className="app-page min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] text-[#202124] dark:text-[#e3e3e3] py-6 px-4 sm:px-6 lg:px-8">
+    <div className="app-page px-4 sm:px-6 lg:px-8 py-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Top Header Bar */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-[#dadce0] dark:border-[#3c4043]">
           <div>
-            <div className="flex items-center gap-2 mb-1.5 text-xs text-[#5f6368] dark:text-[#9aa0a6]">
-              <Link href="/" className="hover:text-[#202124] dark:hover:text-[#e3e3e3] flex items-center gap-1 transition-colors">
-                <ArrowLeft className="w-3.5 h-3.5" /> Kho đề
-              </Link>
-              <span>/</span>
-              <Link href="/teacher/groups" className="hover:text-[#202124] dark:hover:text-[#e3e3e3] transition-colors">
-                Lớp học
-              </Link>
-              <span>/</span>
-              <span className="text-[#3c4043] dark:text-[#e3e3e3] font-semibold">Giám sát bài thi</span>
-            </div>
-
             <div className="flex items-center gap-3">
-              <h1 className="text-xl md:text-2xl font-bold text-[#202124] dark:text-[#e3e3e3]">{assignment.title}</h1>
+              <h1 className="text-2xl font-semibold">{assignment.title}</h1>
               <span
                 className={`px-3 py-0.5 rounded-full text-xs font-semibold border flex items-center gap-1.5 ${
                   assignment.status === 'OPEN'
@@ -996,7 +983,7 @@ export default function TeacherMonitorPage(props: { params: Promise<{ id: string
   return (
     <React.Suspense
       fallback={
-        <div className="app-page min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
+        <div className="app-page min-h-[60dvh] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
           <div className="w-10 h-10 border-3 border-[#3c4043] dark:border-[#e3e3e3] border-t-transparent rounded-full animate-spin mb-4" />
           <p className="text-[#5f6368] dark:text-[#9aa0a6] font-medium text-sm">Đang tải màn hình giám sát...</p>
         </div>

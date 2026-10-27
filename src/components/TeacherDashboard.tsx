@@ -2,18 +2,15 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { TeacherNavigation, TeacherSidebar } from './TeacherNavigation';
+import { useWorkspace } from '@/components/workspace/WorkspaceContext';
 import { useConfirmAction } from './ConfirmAction';
 import { subjectLabel, teacherErrorMessage } from '@/lib/teacher-ui';
 import {
   Sparkles,
   Plus,
   Folder,
-  FolderPlus,
   FileText,
-  Search,
   Star,
-  Clock,
   Trash2,
   RotateCcw,
   Download,
@@ -22,24 +19,11 @@ import {
   LayoutGrid,
   List,
   ChevronRight,
-  ChevronDown,
-  Bot,
-  GraduationCap,
-  Database,
   Upload,
-  Sun,
-  Moon,
-  Key,
-  Check,
-  X,
-  Brain
+  X
 } from 'lucide-react';
-import { useTheme } from '@/components/ThemeProvider';
 import { GenerateModal } from '@/components/GenerateModal';
 import { ImportModal } from '@/components/ImportModal';
-import { ApiKeyModal } from '@/components/ApiKeyModal';
-import { AiLearningModal } from '@/components/AiLearningModal';
-import { TeacherAiSecretaryDrawer } from '@/components/TeacherAiSecretaryDrawer';
 import { exportExamToDocx } from '@/lib/docx-export';
 import { prepareExportFigures } from '@/lib/export-figures';
 import { Exam } from '@/types/exam';
@@ -48,15 +32,6 @@ import { writeDraft } from '@/lib/exam-draft';
 import { accountFetch } from '@/lib/account-fetch';
 import { LocalDraftsPanel } from '@/components/LocalDraftsPanel';
 import { getCatalogSubjects } from '@/lib/education-catalog';
-
-interface FolderData {
-  id: string;
-  name: string;
-  color?: string;
-  parentId?: string | null;
-  _count?: { exams: number };
-  children?: FolderData[];
-}
 
 interface ExamSummary {
   permissions?: Exam['access'];
@@ -89,10 +64,9 @@ interface TeacherDashboardProps {
 
 export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser }) => {
   const router = useRouter();
-  const { theme, toggleTheme } = useTheme();
+  const { folders, reloadFolders, openCreateFolder, toast: showToast } = useWorkspace();
 
   // State dữ liệu
-  const [folders, setFolders] = useState<FolderData[]>([]);
   const [exams, setExams] = useState<ExamSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const location = useSearchParams();
@@ -125,25 +99,16 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
   const selectedGrade = location.get('grade') || 'all';
   const setSelectedGrade = (value: string) => changeLocation('grade', value === 'all' ? null : value);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({});
 
   // Modals & Popups
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
-  const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
-  const [isAiSecretaryModalOpen, setIsAiSecretaryModalOpen] = useState(false);
-  const [isAiLearningModalOpen, setIsAiLearningModalOpen] = useState(false);
-  const [isCreateFolderModalOpen, setIsCreateFolderModalOpen] = useState(false);
-  const [targetParentFolderId, setTargetParentFolderId] = useState<string | null>(null);
-  const [folderNameInput, setFolderNameInput] = useState('');
-  const [folderColorInput, setFolderColorInput] = useState('#3c4043');
 
   // Thao tác với đề thi
   const [isRenameExamModalOpen, setIsRenameExamModalOpen] = useState(false);
   const [isMoveExamModalOpen, setIsMoveExamModalOpen] = useState(false);
   const [activeExam, setActiveExam] = useState<ExamSummary | null>(null);
   const [newExamTitle, setNewExamTitle] = useState('');
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [loadError, setLoadError] = useState('');
   const [actionError, setActionError] = useState('');
   const [pendingExam, setPendingExam] = useState('');
@@ -151,24 +116,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
   const { confirmAction, confirmation } = useConfirmAction();
 
   // Key stats
-  const [hasActiveKey, setHasActiveKey] = useState(false);
-  const [keyCount, setKeyCount] = useState(0);
 
-  const showToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3500);
-  };
-
-  // Nạp trạng thái Khóa AI
-  const loadKeyStatus = useCallback(() => accountFetch(currentUser.id, '/api/user/keys').then(async res => {
-    if (res.ok) {
-      const data = await res.json(); const activeKeys = (data.keys || []).filter((key: { isActive: boolean }) => key.isActive);
-      setHasActiveKey(activeKeys.length > 0); setKeyCount(activeKeys.length);
-    }
-  }).catch(() => { /* Keep the last acknowledged state if offline. */ }), [currentUser.id]);
-  const loadFolders = useCallback(() => accountFetch(currentUser.id, '/api/folders').then(async res => {
-    if (res.ok) { const data = await res.json(); setFolders(data.folders || []); }
-  }).catch(error => { console.error('Lỗi nạp thư mục:', error); }), [currentUser.id]);
 
   // Nạp danh sách Đề thi theo bộ lọc
   const readExams = useCallback(() => {
@@ -210,67 +158,12 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
   }, [currentUser.id, currentView, selectedFolderId, selectedSubject, selectedGrade, searchQuery, page]);
   const loadExams = () => { setIsLoading(true); return readExams(); };
 
-  useEffect(() => {
-    loadKeyStatus();
-    loadFolders();
-  }, [loadFolders, loadKeyStatus]);
 
   useEffect(() => {
     // Prevent actions on rows belonging to the previous view while loading this one.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     void readExams();
   }, [readExams]);
-
-  // Tạo thư mục mới
-  const handleCreateFolder = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!folderNameInput.trim()) return;
-
-    try {
-      const res = await accountFetch(currentUser.id, '/api/folders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: folderNameInput.trim(),
-          color: folderColorInput,
-          parentId: targetParentFolderId,
-        }),
-      });
-
-      const data = await res.json();
-      if (res.ok) {
-        showToast('Đã tạo thư mục mới thành công!');
-        setIsCreateFolderModalOpen(false);
-        setFolderNameInput('');
-        setTargetParentFolderId(null);
-        loadFolders();
-      } else {
-        alert(data.error || 'Không thể tạo thư mục');
-      }
-    } catch {
-      alert('Lỗi kết nối máy chủ khi tạo thư mục');
-    }
-  };
-
-  // Xóa thư mục
-  const handleDeleteFolder = async (folderId: string, folderName: string) => {
-    if (!await confirmAction(`Xóa thư mục “${folderName}”? Các đề bên trong được chuyển ra ngoài, không bị xóa.`)) {
-      return;
-    }
-
-    try {
-      const res = await accountFetch(currentUser.id, `/api/folders/${folderId}`, { method: 'DELETE' });
-      if (!res.ok) { const result = await res.json(); throw Error(result.error || 'Chưa xóa được thư mục.'); }
-      if (res.ok) {
-        showToast('Đã xóa thư mục.');
-        if (selectedFolderId === folderId) setSelectedFolderId(null);
-        loadFolders();
-        loadExams();
-      }
-    } catch (cause) {
-      setActionError(teacherErrorMessage(cause, 'Chưa kết nối được để xóa thư mục. Hãy thử lại.'));
-    }
-  };
 
   // Đổi trạng thái Gắn sao (Starred)
   const handleToggleStar = async (exam: ExamSummary, e: React.MouseEvent) => {
@@ -327,7 +220,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
         showToast('Đã di chuyển đề thi vào thư mục mới!');
         setIsMoveExamModalOpen(false);
         loadExams();
-        loadFolders();
+        reloadFolders();
       }
     } catch {
       alert('Lỗi khi di chuyển đề thi');
@@ -348,7 +241,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
       const result = await res.json();
       if (!res.ok) throw Error(result.error || 'Thao tác chưa được lưu.');
       showToast(restore ? 'Đã khôi phục đề.' : 'Đã chuyển đề vào thùng rác.');
-      await loadExams(); await loadFolders();
+      await loadExams(); await reloadFolders();
     } catch (cause) { setActionError(teacherErrorMessage(cause, 'Chưa kết nối được. Hãy thử lại thao tác.')); }
     finally { mutation.current = false; setPendingExam(''); }
   };
@@ -369,7 +262,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
       if (!await confirmAction(`Xóa vĩnh viễn “${item.title}”? Không thể khôi phục. Các câu hỏi đã lưu trong Ngân hàng câu hỏi không bị xóa.`)) return;
       await purgeOne(item);
       showToast('Đã xóa vĩnh viễn đề.');
-      await loadExams(); await loadFolders();
+      await loadExams(); await reloadFolders();
     } catch (cause) { setActionError(teacherErrorMessage(cause, 'Chưa kết nối được. Hãy thử lại thao tác.')); }
     finally { mutation.current = false; setPendingExam(''); }
   };
@@ -383,7 +276,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
       for (const item of targets) { try { await purgeOne(item); removed++; } catch (cause) { failures.push(`“${item.title}”: ${teacherErrorMessage(cause, 'chưa xóa được')}`); } }
       if (removed) showToast(`Đã xóa vĩnh viễn ${removed} đề.`);
       if (failures.length) setActionError(`${failures.length} đề chưa xóa được. ${failures[0]}`);
-      await loadExams(); await loadFolders();
+      await loadExams(); await reloadFolders();
     } finally { mutation.current = false; setPendingExam(''); }
   };
 
@@ -398,7 +291,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
       if (resCreate.ok) {
         showToast('Đã nhân bản đề thi thành công!');
         loadExams();
-        loadFolders();
+        reloadFolders();
       }
     } catch {
       alert('Lỗi khi nhân bản đề thi');
@@ -450,284 +343,23 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
     folders.flatMap(f => f.children || []).find(c => c.id === selectedFolderId);
 
   return (
-    <div className="flex flex-col h-dvh w-full bg-[#F8F9FA] dark:bg-[#17181a] text-[#202124] dark:text-[#E3E3E3] font-sans antialiased overflow-hidden select-none">
+    <>
       {/* ─────────────────────────────────────────────────────────────
           1. HEADER TRÊN CÙNG (Google App Bar Style)
       ───────────────────────────────────────────────────────────── */}
-      <header className="app-bar app-dashboard-bar h-16 px-4 sm:px-6 bg-white dark:bg-[#202124] border-b border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between z-30 shrink-0 shadow-2xs">
-        {/* Góc trái: Logo & Định danh thương hiệu */}
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#3c4043] flex items-center justify-center text-white shadow-xs">
-            <GraduationCap className="w-6 h-6" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-semibold text-base tracking-tight text-[#202124] dark:text-white">ExamCraft</span>
-              <span className="hidden sm:inline-flex text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3]">
-                Kho Đề Cá Nhân
-              </span>
-            </div>
-            <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] hidden sm:block">
-              Soạn đề, quản lý câu hỏi và giao bài
-            </p>
-          </div>
-        </div>
-
-        {/* Giữa: Ô tìm kiếm thông minh */}
-        <div className="flex-1 max-w-xl mx-4 lg:mx-8 hidden md:block">
-          <div className="relative">
-            <Search className="w-4 h-4 text-[#5f6368] dark:text-[#9aa0a6] absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Tìm theo tên đề..."
-              className="w-full pl-10 pr-9 py-2 bg-[#f1f3f4] dark:bg-[#292a2d] border border-transparent focus:border-[#3c4043] focus:bg-white dark:focus:bg-[#202124] rounded-full text-xs text-[#202124] dark:text-[#e3e3e3] outline-hidden transition-all shadow-2xs"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#5f6368] dark:text-[#9aa0a6] hover:text-black dark:hover:text-white cursor-pointer"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Góc phải: Dark Mode, Kho Khóa AI, Avatar User */}
-        <div className="flex items-center gap-2">
-          {/* Nút Bộ Não AI Tự Học */}
-          <button
-            onClick={() => setIsAiLearningModalOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--ui-surface)] border border-[var(--ui-border)] text-[var(--ui-text-secondary)] hover:bg-[var(--ui-surface-variant)] transition-colors cursor-pointer shadow-2xs"
-            title="Bộ não AI Sư Phạm: Xem và dạy các phong cách ra đề cho AI"
-          >
-            <Brain className="w-3.5 h-3.5 text-[var(--ui-accent)]" />
-            <span className="hidden sm:inline">Bộ não AI</span>
-          </button>
-
-          {/* Nút Thư Ký AI */}
-          <button
-            onClick={() => setIsAiSecretaryModalOpen(!isAiSecretaryModalOpen)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors cursor-pointer shadow-2xs ${
-              isAiSecretaryModalOpen
-                ? 'app-button-primary text-white border-[#3c4043]'
-                : 'bg-white dark:bg-[#292a2d] border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#303134]'
-            }`}
-            title="Mở Thư ký AI trợ lý riêng của Thầy/Cô"
-          >
-            <Bot className="w-3.5 h-3.5 text-[var(--ui-accent)] dark:text-[#e3e3e3]" />
-            <span className="hidden sm:inline">Thư ký AI</span>
-          </button>
-
-          {/* Nút Kho Khóa AI */}
-          <button
-            onClick={() => setIsApiKeyModalOpen(true)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors cursor-pointer ${
-              hasActiveKey
-                ? 'bg-transparent border-[#dadce0] dark:border-[#3c4043] text-[#3c4043] dark:text-[#e3e3e3] font-medium'
-                : 'bg-transparent border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] font-normal'
-            }`}
-            title="Quản lý Google Gemini API Key"
-          >
-            <Key className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Khóa AI: {keyCount}</span>
-          </button>
-
-          {/* Nút Dark/Light Mode */}
-          <button
-            onClick={toggleTheme}
-            className="w-9 h-9 rounded-lg flex items-center justify-center text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
-            title="Đổi giao diện Sáng / Tối"
-          >
-            {theme === 'dark' ? <Sun className="w-4 h-4 text-[var(--ui-text-secondary)]" /> : <Moon className="w-4 h-4" />}
-          </button>
-
-          {/* Avatar User */}
-          <div className="flex items-center gap-2 pl-2 border-l border-[#dadce0] dark:border-[#3c4043]">
-            <div className="w-8 h-8 rounded-full bg-[#3c4043] text-white flex items-center justify-center font-semibold text-xs shadow-2xs">
-              {currentUser.name.charAt(0).toUpperCase()}
-            </div>
-            <div className="hidden lg:block text-left text-xs">
-              <div className="font-semibold text-[#202124] dark:text-[#e3e3e3] truncate max-w-[120px]">{currentUser.name}</div>
-              <div className="text-[10px] text-[#5f6368] dark:text-[#9aa0a6] capitalize">{currentUser.role === 'SUPER_ADMIN' ? 'Quản trị viên' : 'Giáo viên'}</div>
-            </div>
-          </div>
-        </div>
-      </header>
-      <TeacherNavigation />
       {confirmation}
 
       {/* ─────────────────────────────────────────────────────────────
           2. KHU VỰC CHÍNH (3 CỘT: MENU TRÁI + VÙNG GIỮA + AI CỘT PHẢI)
       ───────────────────────────────────────────────────────────── */}
-      <div className="flex-1 flex overflow-hidden min-h-0 relative">
         {/* CỘT TRÁI: MENU QUẢN LÝ & CÂY THƯ MỤC */}
-        <TeacherSidebar
-          isAdmin={currentUser.role === 'SUPER_ADMIN'}
-          libraryExtras={<>
-            <button type="button" onClick={() => { setCurrentView('starred'); setSelectedFolderId(null); }} aria-current={currentView === 'starred' ? 'page' : undefined} className={`w-full min-h-9 flex items-center gap-2 px-2 rounded-lg text-xs cursor-pointer ${currentView === 'starred' ? 'app-button-tonal font-semibold' : 'hover:bg-[var(--ui-surface-variant)]'}`}><Star className="w-3.5 h-3.5 text-[var(--ui-text-secondary)]" /><span>Đề quan trọng (Gắn sao)</span></button>
-            <button type="button" onClick={() => { setCurrentView('recent'); setSelectedFolderId(null); }} aria-current={currentView === 'recent' ? 'page' : undefined} className={`w-full min-h-9 flex items-center gap-2 px-2 rounded-lg text-xs cursor-pointer ${currentView === 'recent' ? 'app-button-tonal font-semibold' : 'hover:bg-[var(--ui-surface-variant)]'}`}><Clock className="w-3.5 h-3.5 text-[var(--ui-text-secondary)]" /><span>Đã sửa gần đây</span></button>
-          </>}
-        >
-            {/* CÂY THƯ MỤC CÁ NHÂN (Tối đa 2 cấp) */}
-            <div className="pt-2 border-t border-[#f1f3f4] dark:border-[#3c4043]">
-              <div className="flex items-center justify-between px-3 mb-1.5">
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-[#5f6368] dark:text-[#9aa0a6]">
-                  Thư mục của tôi
-                </span>
-                <button
-                  onClick={() => {
-                    setTargetParentFolderId(null);
-                    setFolderNameInput('');
-                    setIsCreateFolderModalOpen(true);
-                  }}
-                  title="Tạo thư mục mới (Cấp 1)"
-                  className="p-1 rounded-md text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] hover:text-[#3c4043] cursor-pointer"
-                >
-                  <FolderPlus className="w-3.5 h-3.5" />
-                </button>
-              </div>
-
-              {/* Danh sách các Folder */}
-              <div className="space-y-0.5">
-                {folders.length === 0 ? (
-                  <div className="px-3 py-3 text-center text-[11px] text-[#5f6368] dark:text-[#9aa0a6] italic">
-                    Chưa có thư mục nào. Bấm nút + ở trên để tạo.
-                  </div>
-                ) : (
-                  folders.map((folder) => {
-                    const isSelected = selectedFolderId === folder.id;
-                    const isExpanded = !!expandedFolders[folder.id];
-                    const hasChildren = folder.children && folder.children.length > 0;
-
-                    return (
-                      <div key={folder.id} className="space-y-0.5">
-                        {/* Folder Cấp 1 */}
-                        <div
-                          className={`group flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
-                            isSelected
-                              ? 'bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] font-semibold'
-                              : 'text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d]'
-                          }`}
-                          onClick={() => {
-                            setSelectedFolderId(folder.id);
-                            setCurrentView('all');
-                          }}
-                        >
-                          <div className="flex items-center gap-2 truncate">
-                            {hasChildren ? (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setExpandedFolders(prev => ({ ...prev, [folder.id]: !prev[folder.id] }));
-                                }}
-                                className="p-0.5 hover:bg-black/5 dark:hover:bg-white/5 rounded cursor-pointer"
-                              >
-                                {isExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
-                              </button>
-                            ) : (
-                              <div className="w-3" />
-                            )}
-                            <Folder
-                              className="w-4 h-4 shrink-0"
-                              style={{ color: folder.color || '#3c4043' }}
-                            />
-                            <span className="truncate">{folder.name}</span>
-                          </div>
-
-                          <div className="flex flex-wrap items-center gap-1">
-                            <span className="text-[10px] text-[#5f6368] dark:text-[#9aa0a6]">
-                              {folder._count?.exams || 0}
-                            </span>
-                            {/* Thêm thư mục con cấp 2 */}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setTargetParentFolderId(folder.id);
-                                setFolderNameInput('');
-                                setIsCreateFolderModalOpen(true);
-                              }}
-                              title="Thêm thư mục con vào đây"
-                              className="opacity-0 group-hover:opacity-100 p-0.5 rounded text-[#5f6368] hover:text-[#3c4043] cursor-pointer"
-                            >
-                              <Plus className="w-3 h-3" />
-                            </button>
-                            {/* Xóa folder */}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDeleteFolder(folder.id, folder.name);
-                              }}
-                              title="Xóa thư mục này"
-                              className="opacity-0 group-hover:opacity-100 p-0.5 rounded text-[#5f6368] hover:text-red-500 cursor-pointer"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Thư mục con Cấp 2 (Indented) */}
-                        {isExpanded && hasChildren && (
-                          <div className="pl-6 space-y-0.5">
-                            {folder.children!.map((sub) => {
-                              const isSubSelected = selectedFolderId === sub.id;
-                              return (
-                                <div
-                                  key={sub.id}
-                                  className={`group flex items-center justify-between px-2 py-1 rounded-lg text-xs transition-colors cursor-pointer ${
-                                    isSubSelected
-                                      ? 'bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] font-semibold'
-                                      : 'text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d]'
-                                  }`}
-                                  onClick={() => {
-                                    setSelectedFolderId(sub.id);
-                                    setCurrentView('all');
-                                  }}
-                                >
-                                  <div className="flex items-center gap-2 truncate">
-                                    <Folder
-                                      className="w-3.5 h-3.5 shrink-0"
-                                      style={{ color: sub.color || folder.color || '#3c4043' }}
-                                    />
-                                    <span className="truncate">{sub.name}</span>
-                                  </div>
-                                  <div className="flex flex-wrap items-center gap-1">
-                                    <span className="text-[10px] text-[#5f6368] dark:text-[#9aa0a6]">
-                                      {sub._count?.exams || 0}
-                                    </span>
-                                    <button
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleDeleteFolder(sub.id, sub.name);
-                                      }}
-                                      title="Xóa thư mục con"
-                                      className="opacity-0 group-hover:opacity-100 p-0.5 rounded text-[#5f6368] hover:text-red-500 cursor-pointer"
-                                    >
-                                      <Trash2 className="w-2.5 h-2.5" />
-                                    </button>
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </div>
-
-        </TeacherSidebar>
 
         {/* VÙNG GIỮA: NỘI DUNG CHÍNH (CANVAS QUẢN LÝ ĐỀ THI) */}
-        <main className="app-page flex-1 overflow-y-auto px-4 sm:px-6 py-5 min-w-0">
+        <main className="app-page px-4 sm:px-6 py-5 min-w-0">
           {currentView !== 'trash' && <LocalDraftsPanel ownerId={currentUser.id} />}
           {currentView !== 'trash' && <nav aria-label="Điều hướng kho đề" className="lg:hidden my-3 flex flex-wrap items-center gap-2 text-xs">
             {([{ value: 'all', name: 'Tất cả' }, { value: 'starred', name: 'Quan trọng' }, { value: 'recent', name: 'Gần đây' }] as const).map(view => <button key={view.value} type="button" className={`border rounded-lg p-2 ${currentView === view.value ? 'app-button-tonal' : 'hover:bg-[var(--ui-surface-variant)]'}`} onClick={() => { setCurrentView(view.value); setSelectedFolderId(null); }}>{view.name}</button>)}
-            <button type="button" className="border rounded-lg p-2" onClick={() => { setTargetParentFolderId(null); setIsCreateFolderModalOpen(true); }}>Tạo thư mục</button>
+            <button type="button" className="border rounded-lg p-2" onClick={() => openCreateFolder(null)}>Tạo thư mục</button>
             <select aria-label="Chọn thư mục" className="border rounded-lg p-2 bg-transparent" value={selectedFolderId ?? ''} onChange={e => { setSelectedFolderId(e.target.value || null); setCurrentView('all'); }}><option value="">Mọi thư mục</option>{folders.flatMap(folder => [folder, ...(folder.children ?? [])]).map(folder => <option key={folder.id} value={folder.id}>{folder.name}</option>)}</select>
             
             <input aria-label="Tìm đề trong kho" placeholder="Tìm tên đề..." className="border rounded-lg p-2 bg-transparent flex-1 min-w-40" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
@@ -1110,108 +742,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
             CỘT PHẢI: TRỢ LÝ THƯ KÝ AI (COMPANION RAIL)
             (Mở cùng drawer với nút ở thanh trên)
         ───────────────────────────────────────────────────────────── */}
-        <aside className="w-14 bg-white dark:bg-[#17181a] border-l border-[#dadce0] dark:border-[#3c4043] hidden lg:flex flex-col items-center py-4 space-y-4 shrink-0 z-20">
-          <button
-            onClick={() => setIsAiSecretaryModalOpen(true)}
-            title="Trợ lý Thư ký AI Cá Nhân (Bấm để xem)"
-            className="w-10 h-10 rounded-xl app-button-tonal flex items-center justify-center shadow-xs hover:shadow-xs transition-all cursor-pointer relative group"
-          >
-            <Bot className="w-5 h-5 " />
-            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-[#9aa0a6] ring-2 ring-white dark:ring-[#17181a]" />
-          </button>
-
-          <div className="w-8 h-px bg-[#dadce0] dark:border-[#3c4043]" />
-
-          <button
-            onClick={() => setIsApiKeyModalOpen(true)}
-            title="Kho Khóa AI"
-            className="w-10 h-10 rounded-xl text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] flex items-center justify-center cursor-pointer transition-colors"
-          >
-            <Key className="w-4 h-4" />
-          </button>
-
-          <button
-            onClick={() => router.push('/teacher/questions')}
-            title="Ngân hàng câu hỏi"
-            className="w-10 h-10 rounded-xl text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] flex items-center justify-center cursor-pointer transition-colors"
-          >
-            <Database className="w-4 h-4" />
-          </button>
-        </aside>
-      </div>
 
       {/* ─────────────────────────────────────────────────────────────
           MODAL: TẠO THƯ MỤC
       ───────────────────────────────────────────────────────────── */}
-      {isCreateFolderModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <form
-            onSubmit={handleCreateFolder}
-            className="app-dialog bg-white dark:bg-[#202124] rounded-2xl p-6 max-w-sm w-full border border-[#dadce0] dark:border-[#3c4043] shadow-xs animate-in fade-in zoom-in-95"
-          >
-            <div className="app-dialog-header flex items-center justify-between pb-3 border-b border-[#dadce0] dark:border-[#3c4043] mb-4">
-              <h3 className="font-semibold text-sm text-[#202124] dark:text-white flex items-center gap-2">
-                <FolderPlus className="w-4 h-4 text-[#3c4043]" />
-                <span>{targetParentFolderId ? 'Tạo Thư Mục Con (Cấp 2)' : 'Tạo Thư Mục Mới (Cấp 1)'}</span>
-              </h3>
-              <button aria-label="Đóng hộp thoại"
-                type="button"
-                onClick={() => setIsCreateFolderModalOpen(false)}
-                className="p-1 rounded-lg text-[#5f6368] hover:bg-black/5 cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="space-y-3 mb-5">
-              <div>
-                <label className="block text-xs font-semibold text-[#5f6368] mb-1">Tên thư mục</label>
-                <input
-                  type="text"
-                  required
-                  value={folderNameInput}
-                  onChange={(e) => setFolderNameInput(e.target.value)}
-                  placeholder="Ví dụ: Khối 12, Học kỳ 1, Ôn thi HSG..."
-                  className="w-full px-3.5 py-2 text-xs bg-[#f1f3f4] dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] rounded-xl outline-hidden focus:border-[#3c4043]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-[#5f6368] mb-1">Màu sắc nhận diện</label>
-                <div className="flex items-center gap-2">
-                  {['#202124', '#3c4043', '#5f6368', '#80868b', '#9aa0a6', '#bdc1c6'].map(color => (
-                    <button
-                      key={color}
-                      type="button"
-                      onClick={() => setFolderColorInput(color)}
-                      className={`w-6 h-6 rounded-lg cursor-pointer transition-transform ${
-                        folderColorInput === color ? 'scale-125 ring-2 ring-black/40' : ''
-                      }`}
-                      style={{ backgroundColor: color }}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setIsCreateFolderModalOpen(false)}
-                className="px-4 py-2 text-xs text-[#5f6368] hover:bg-black/5 rounded-lg cursor-pointer font-medium"
-              >
-                Hủy
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 text-xs app-button-primary text-white rounded-lg font-semibold shadow-xs cursor-pointer"
-              >
-                Tạo thư mục
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
 
       {/* ─────────────────────────────────────────────────────────────
           MODAL: DI CHUYỂN ĐỀ VÀO THƯ MỤC
@@ -1339,12 +873,6 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
       )}
 
       {/* TOAST NOTIFICATION */}
-      {toastMessage && (
-        <div role="status" className="fixed bottom-6 right-6 z-50 bg-[#202124] text-white px-4 py-2.5 rounded-full text-xs font-semibold shadow-xs flex items-center gap-2 animate-in fade-in slide-in-from-bottom-4">
-          <Check className="w-4 h-4" />
-          <span>{toastMessage}</span>
-        </div>
-      )}
 
       {/* CÁC MODAL HỆ THỐNG DÙNG CHUNG */}
       <GenerateModal
@@ -1385,30 +913,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
         apiKey=""
       />
 
-      <ApiKeyModal ownerId={currentUser.id} key={`keys:${currentUser.id}`}
-        isOpen={isApiKeyModalOpen}
-        onClose={() => {
-          setIsApiKeyModalOpen(false);
-          loadKeyStatus();
-        }}
-        onKeyUpdated={() => {
-          loadKeyStatus();
-        }}
-      />
-
-      <AiLearningModal
-        isOpen={isAiLearningModalOpen}
-        onClose={() => setIsAiLearningModalOpen(false)}
-        currentUser={currentUser}
-      />
-
-      <TeacherAiSecretaryDrawer
-        isOpen={isAiSecretaryModalOpen}
-        onClose={() => setIsAiSecretaryModalOpen(false)}
-        currentUser={currentUser}
-        onOpenAiLearningModal={() => setIsAiLearningModalOpen(true)}
-      />
-    </div>
+    </>
   );
 };
 

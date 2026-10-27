@@ -1,7 +1,7 @@
 'use client';
 
+import { PageHeader } from '@/components/workspace/ui';
 import React, { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
 import { accountFetch } from '@/lib/account-fetch';
 import { pinsToCsv } from '@/lib/pin-csv';
 import {
@@ -11,8 +11,6 @@ import {
   CheckCircle2,
   ExternalLink,
   X,
-  GraduationCap,
-  ArrowLeft,
   Search,
 } from 'lucide-react';
 
@@ -208,39 +206,12 @@ export default function TeacherGroupsPage() {
   );
 
   return (
-    <div className="app-page min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] text-[#202124] dark:text-[#e3e3e3] py-8 px-4 sm:px-6 lg:px-8">
+    <div className="app-page px-4 sm:px-6 lg:px-8 py-6">
       <div className="max-w-6xl mx-auto space-y-6">
         {accountMessage && <p role="alert" className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200">{accountMessage}</p>}
         {accountMessage && <button type="button" className="app-button-secondary min-h-10 px-3" onClick={() => { setAccountMessage(''); void fetchGroups(); }}>Tải lại lớp học</button>}
-        {/* Navigation & Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#dadce0] dark:border-[#3c4043]">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <Link
-                href="/"
-                className="text-xs text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] flex items-center gap-1 transition-colors"
-              >
-                <ArrowLeft className="w-3.5 h-3.5" /> Kho đề
-              </Link>
-              <span className="text-[#dadce0] dark:text-[#3c4043]">/</span>
-              <span className="text-xs text-[#3c4043] dark:text-[#e3e3e3] font-semibold">Quản lý lớp học</span>
-            </div>
-            <h1 className="text-2xl font-bold text-[#202124] dark:text-[#e3e3e3] flex items-center gap-2.5">
-              <GraduationCap className="w-7 h-7 text-[#3c4043] dark:text-[#e3e3e3]" />
-              Lớp học
-            </h1>
-            <p className="text-xs sm:text-sm text-[#5f6368] dark:text-[#9aa0a6] mt-1">
-              Quản lý danh sách học sinh và bài giao của từng lớp.
-            </p>
-          </div>
-
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 app-button-primary dark:bg-[#e3e3e3] dark:text-[#17181a] dark:hover:bg-[#f1f3f4] text-white text-sm font-semibold rounded-lg shadow-xs transition-all cursor-pointer"
-          >
-            <Plus className="w-4 h-4" /> Tạo Lớp Mới
-          </button>
-        </div>
+        {/* Đầu trang */}
+        <PageHeader title="Lớp học" description="Quản lý danh sách học sinh và bài giao của từng lớp." actions={<button onClick={() => setShowCreateModal(true)} className="app-button-primary inline-flex items-center justify-center gap-2 min-h-10 px-5 text-sm font-semibold cursor-pointer"><Plus className="w-4 h-4" /> Tạo Lớp Mới</button>} />
 
         {/* Thanh tìm kiếm */}
         <div className="flex flex-wrap items-center gap-3">

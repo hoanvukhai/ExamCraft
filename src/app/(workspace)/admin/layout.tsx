@@ -1,6 +1,5 @@
 import { redirect } from 'next/navigation';
 import { getCurrentUser } from '@/lib/auth';
-import { AdminShell } from '@/components/AdminShell';
 import { Suspense } from 'react';
 
 async function AuthenticatedAdmin({ children }: { children: React.ReactNode }) {
@@ -8,7 +7,7 @@ async function AuthenticatedAdmin({ children }: { children: React.ReactNode }) {
   if (!user) redirect('/login');
   if (user.mustChangePassword) redirect('/login?change=required');
   if (user.role !== 'SUPER_ADMIN') redirect('/');
-  return <AdminShell user={{ id: user.id, name: user.name }}>{children}</AdminShell>;
+  return <>{children}</>;
 }
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

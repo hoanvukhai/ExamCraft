@@ -8,7 +8,7 @@ const files = [
   'docs/ke-hoach-2026-10-21/03_CHECKLIST.md',
   'qa/rebuild-2026-10-23/SHARE_COPY.md', 'qa/rebuild-2026-10-23/STUDENT_DRAFT_JOURNAL.md',
   'qa/rebuild-2026-10-23/MANUAL_GRADE_CAS_AND_HISTORY.md', 'qa/rebuild-2026-10-23/ASSIGNMENT_ACCESS_AND_STUDENT_FLOW.md',
-  'src/app/a/[publicId]/page.tsx', 'src/app/share/[id]/page.tsx', 'src/app/teacher/assignments/[id]/page.tsx',
+  'src/app/a/[publicId]/page.tsx', 'src/app/share/[id]/page.tsx', 'src/app/(workspace)/teacher/assignments/[id]/page.tsx',
   'src/app/api/public/share/[id]/copy/route.ts', 'src/app/api/public/share/[id]/route.ts',
   'src/app/api/public/assignments/[publicId]/start/route.ts', 'src/app/api/public/attempts/[id]/draft/route.ts',
   'src/app/api/public/attempts/[id]/submit/route.ts', 'src/app/api/teacher/attempts/[id]/route.ts',

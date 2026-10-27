@@ -1,5 +1,6 @@
 'use client';
 
+import { PageHeader } from '@/components/workspace/ui';
 import React, { useState, useEffect, useCallback } from 'react';
 import { usePinnedAccount } from '@/hooks/usePinnedAccount';
 import Link from 'next/link';
@@ -12,7 +13,6 @@ import {
   Clock,
   ExternalLink,
   Plus,
-  ArrowLeft,
   Calendar,
   Search,
 } from 'lucide-react';
@@ -73,34 +73,10 @@ export default function TeacherAssignmentsListPage() {
   );
 
   return (
-    <div className="app-page min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] text-[#202124] dark:text-[#e3e3e3] py-8 px-4 sm:px-6 lg:px-8">
+    <div className="app-page px-4 sm:px-6 lg:px-8 py-6">
       <div className="max-w-6xl mx-auto space-y-6">
-        {/* Header Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#dadce0] dark:border-[#3c4043]">
-          <div>
-            <div className="flex items-center gap-2 mb-1 text-xs text-[#5f6368] dark:text-[#9aa0a6]">
-              <Link href="/" className="hover:text-[#202124] dark:hover:text-[#e3e3e3] flex items-center gap-1 transition-colors">
-                <ArrowLeft className="w-3.5 h-3.5" /> Kho đề
-              </Link>
-              <span>/</span>
-              <span className="text-[#3c4043] dark:text-[#e3e3e3] font-semibold">Danh sách bài đã giao</span>
-            </div>
-            <h1 className="text-2xl font-bold text-[#202124] dark:text-[#e3e3e3] flex items-center gap-2.5">
-              <BookOpen className="w-7 h-7 text-[#3c4043] dark:text-[#e3e3e3]" />
-              Bài đã giao
-            </h1>
-            <p className="text-xs sm:text-sm text-[#5f6368] dark:text-[#9aa0a6] mt-1">
-              Theo dõi trực tiếp quá trình làm bài của học sinh và phân tích kết quả từng đợt thi.
-            </p>
-          </div>
-
-          <Link
-            href="/?choose=assign"
-            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 app-button-primary dark:bg-[#e3e3e3] dark:text-[#17181a] text-white text-sm font-semibold rounded-lg shadow-xs transition-all"
-          >
-            <Plus className="w-4 h-4" /> Chọn đề để giao
-          </Link>
-        </div>
+        {/* Đầu trang */}
+        <PageHeader title="Bài đã giao" description="Theo dõi trực tiếp quá trình làm bài của học sinh và phân tích kết quả từng đợt thi." actions={<Link href="/?choose=assign" className="app-button-primary inline-flex items-center justify-center gap-2 min-h-10 px-5 text-sm font-semibold"><Plus className="w-4 h-4" /> Chọn đề để giao</Link>} />
 
         {/* Search */}
         {(examId || groupId) && <p className="text-sm">Đang xem bài giao của {examId ? 'đề đã chọn' : 'lớp đã chọn'}. <Link className="underline" href="/teacher/assignments">Xem tất cả bài đã giao</Link></p>}

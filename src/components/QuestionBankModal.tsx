@@ -1,4 +1,5 @@
 'use client';
+import { PageHeader } from '@/components/workspace/ui';
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { accountFetch } from '@/lib/account-fetch';
@@ -94,10 +95,11 @@ function QuestionBankContent({ ownerId, onClose, onInsertQuestion, allowInsert =
   };
   const filters = search || subject !== 'all' || grade !== 'all' || type !== 'all' || difficulty !== 'all';
   return <div className={pageMode ? '' : 'fixed inset-0 z-50 bg-black/60 p-3 sm:p-4 flex items-center justify-center'}>
-    <section ref={panel} role={pageMode ? undefined : 'dialog'} aria-modal={pageMode ? undefined : true} aria-label={pageMode ? undefined : 'Chọn câu từ ngân hàng'} className={`w-full bg-[var(--ui-surface)] text-[var(--foreground)] border rounded-xl ${pageMode ? '' : 'max-w-5xl max-h-[92dvh] flex flex-col overflow-hidden'}`}>
-      <header className="p-4 sm:p-6 border-b flex flex-wrap items-start justify-between gap-3"><div>{pageMode ? <h1 className="text-2xl font-semibold">Ngân hàng câu hỏi</h1> : <h2 className="text-lg font-semibold">Chọn câu từ ngân hàng</h2>}<p className="text-sm text-[var(--ui-text-secondary)] mt-1">{pageMode ? 'Quản lý câu hỏi cá nhân và tìm câu hỏi được chia sẻ nội bộ.' : 'Tìm câu hỏi, xem đáp án và thêm vào đề đang soạn.'}</p></div>
+    {pageMode && <PageHeader title="Ngân hàng câu hỏi" description="Quản lý câu hỏi cá nhân và tìm câu hỏi được chia sẻ nội bộ." />}
+    <section ref={panel} role={pageMode ? undefined : 'dialog'} aria-modal={pageMode ? undefined : true} aria-label={pageMode ? undefined : 'Chọn câu từ ngân hàng'} className={`w-full bg-[var(--ui-surface)] text-[var(--foreground)] border rounded-xl ${pageMode ? 'mt-6' : 'max-w-5xl max-h-[92dvh] flex flex-col overflow-hidden'}`}>
+      {!pageMode && <header className="p-4 sm:p-6 border-b flex flex-wrap items-start justify-between gap-3"><div>{pageMode ? <h1 className="text-2xl font-semibold">Ngân hàng câu hỏi</h1> : <h2 className="text-lg font-semibold">Chọn câu từ ngân hàng</h2>}<p className="text-sm text-[var(--ui-text-secondary)] mt-1">{pageMode ? 'Quản lý câu hỏi cá nhân và tìm câu hỏi được chia sẻ nội bộ.' : 'Tìm câu hỏi, xem đáp án và thêm vào đề đang soạn.'}</p></div>
         {!pageMode && <div className="flex gap-3 items-center text-sm"><Link href="/teacher/questions" target="_blank" rel="noreferrer" className="underline">Mở trang quản lý</Link><button type="button" aria-label="Đóng ngân hàng câu hỏi" onClick={onClose} className="app-button-secondary min-h-10 px-3">Đóng</button></div>}
-      </header>
+      </header>}
       <div className="p-4 sm:p-6 space-y-4 overflow-auto min-h-0">
         {confirmation}{notice && <p role="status" className="border rounded-lg p-3 text-sm">{notice}</p>}
         <div className="flex flex-wrap gap-2" role="group" aria-label="Kho câu hỏi">{(['personal', 'shared'] as const).map(value => <button key={value} type="button" aria-pressed={tab === value} className={`${tab === value ? 'app-button-tonal' : 'app-button-secondary'} min-h-10 px-3 text-sm`} onClick={() => { setTab(value); setPage(1); setNotice(''); }}>{value === 'personal' ? 'Cá nhân' : 'Dùng chung nội bộ'}</button>)}</div>

@@ -24,9 +24,7 @@ export default function Page() {
   return (
     <Suspense
       fallback={
-        <div className="h-screen w-screen bg-[#F8F9FA] dark:bg-[#17181a] flex items-center justify-center text-sm font-medium text-[#5f6368] dark:text-[#9aa0a6]">
-          Đang tải kho đề thi ExamCraft...
-        </div>
+        <p role="status" className="p-6 text-sm text-[var(--ui-text-secondary)]">Đang tải kho đề thi ExamCraft...</p>
       }
     >
       <AuthenticatedDashboard />
