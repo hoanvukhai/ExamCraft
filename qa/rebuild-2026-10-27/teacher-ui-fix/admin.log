@@ -1,0 +1,82 @@
+
+> exam-craft@0.1.0 test:admin
+> node --import tsx scripts/pilot-run.cjs --admin
+
+Pilot guard: installed browser; isolatedTest confirmed; exact test database selected.
+TAP version 13
+# Subtest: admin: current data, access, confirmations and phone navigation
+    # Subtest: only admins read the overview and the server layout blocks teachers
+    ok 1 - only admins read the overview and the server layout blocks teachers
+      ---
+      duration_ms: 1631.954
+      type: 'test'
+      ...
+    # Subtest: overview counts account keys and separates unfinished requests
+    ok 2 - overview counts account keys and separates unfinished requests
+      ---
+      duration_ms: 142.6739
+      type: 'test'
+      ...
+    # Subtest: classwork is labelled correctly and only submitted attempts are counted
+    ok 3 - classwork is labelled correctly and only submitted attempts are counted
+      ---
+      duration_ms: 1247.8428
+      type: 'test'
+      ...
+    # Subtest: phone account cards filter roles and cancel or confirm the right account
+    ok 4 - phone account cards filter roles and cancel or confirm the right account
+      ---
+      duration_ms: 861.6829
+      type: 'test'
+      ...
+    # Subtest: shared admin navigation has real labels and load errors preserve the last snapshot
+    ok 5 - shared admin navigation has real labels and load errors preserve the last snapshot
+      ---
+      duration_ms: 779.4911
+      type: 'test'
+      ...
+    # Subtest: revoking one grant recipient leaves the other recipient untouched
+    ok 6 - revoking one grant recipient leaves the other recipient untouched
+      ---
+      duration_ms: 423.6579
+      type: 'test'
+      ...
+    # Subtest: key dialog and editor menu show usage without a daily cap or fabricated remaining quota
+    ok 7 - key dialog and editor menu show usage without a daily cap or fabricated remaining quota
+      ---
+      duration_ms: 866.7693
+      type: 'test'
+      ...
+    # Subtest: one secretary drawer replaces the old promotional popup
+    ok 8 - one secretary drawer replaces the old promotional popup
+      ---
+      duration_ms: 575.6045
+      type: 'test'
+      ...
+    # Subtest: pagination applies after filtering and resets when the search or page size changes
+    ok 9 - pagination applies after filtering and resets when the search or page size changes
+      ---
+      duration_ms: 377.9462
+      type: 'test'
+      ...
+    # Subtest: admin pages fit small, landscape and desktop viewports in both themes
+    ok 10 - admin pages fit small, landscape and desktop viewports in both themes
+      ---
+      duration_ms: 5057.5704
+      type: 'test'
+      ...
+    1..10
+ok 1 - admin: current data, access, confirmations and phone navigation
+  ---
+  duration_ms: 15519.1917
+  type: 'test'
+  ...
+1..1
+# tests 11
+# suites 0
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 16648.7102

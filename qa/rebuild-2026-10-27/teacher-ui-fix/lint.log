@@ -1,0 +1,224 @@
+
+> exam-craft@0.1.0 lint
+> eslint .
+
+
+F:\Workspace\Zazz\ExamCraft\postcss.config.mjs
+  1:1  warning  Assign object to a variable before exporting as module default  import/no-anonymous-default-export
+
+F:\Workspace\Zazz\ExamCraft\scratch\fill-part1.cjs
+  16:12  warning  '_' is assigned a value but never used       @typescript-eslint/no-unused-vars
+  16:39  warning  'kq' is assigned a value but never used      @typescript-eslint/no-unused-vars
+  16:43  warning  'ghiChu' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+F:\Workspace\Zazz\ExamCraft\scratch\fill-part4.cjs
+  13:12  warning  '_' is assigned a value but never used       @typescript-eslint/no-unused-vars
+  13:39  warning  'kq' is assigned a value but never used      @typescript-eslint/no-unused-vars
+  13:43  warning  'ghiChu' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+F:\Workspace\Zazz\ExamCraft\scratch\run-part1-tests.cjs
+    2:7  warning  'path' is assigned a value but never used        @typescript-eslint/no-unused-vars
+  280:9  warning  'trashRes' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  282:9  warning  'restoreRes' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+F:\Workspace\Zazz\ExamCraft\scratch\run-part2-tests.cjs
+  119:9  warning  'qChoice5' is assigned a value but never used       @typescript-eslint/no-unused-vars
+  137:9  warning  'qChoiceEmpty' is assigned a value but never used   @typescript-eslint/no-unused-vars
+  164:9  warning  'qTfIncomplete' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+F:\Workspace\Zazz\ExamCraft\scratch\run-part6-tests.cjs
+  186:9  warning  'revokeRes' is assigned a value but never used       @typescript-eslint/no-unused-vars
+  248:9  warning  'grantCommenter' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  257:9  warning  'grantEditor' is assigned a value but never used     @typescript-eslint/no-unused-vars
+  292:9  warning  'revokeCollab' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  310:9  warning  'c2Id' is assigned a value but never used            @typescript-eslint/no-unused-vars
+  396:9  warning  'gv2Bank' is assigned a value but never used         @typescript-eslint/no-unused-vars
+
+F:\Workspace\Zazz\ExamCraft\scratch\run-part7-tests.cjs
+  228:9  warning  'classAssignId' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  368:9  warning  'attemptDetail' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+F:\Workspace\Zazz\ExamCraft\scripts\check-doc-routes.cjs
+  1:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-require-imports')
+
+F:\Workspace\Zazz\ExamCraft\scripts\check-test-citations.cjs
+  1:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-require-imports')
+
+F:\Workspace\Zazz\ExamCraft\scripts\check-ui-labels.cjs
+  1:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-require-imports')
+
+F:\Workspace\Zazz\ExamCraft\scripts\load-class.cjs
+  1:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-require-imports')
+
+F:\Workspace\Zazz\ExamCraft\scripts\real-ai-eval-import.ts
+  16:72  warning  'quotaStop' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+F:\Workspace\Zazz\ExamCraft\scripts\run-with-test-db.cjs
+  1:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-require-imports')
+
+F:\Workspace\Zazz\ExamCraft\scripts\tally-test-results.cjs
+  1:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-require-imports')
+
+F:\Workspace\Zazz\ExamCraft\scripts\test-database.cjs
+  1:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-require-imports')
+
+F:\Workspace\Zazz\ExamCraft\scripts\test-server.cjs
+  1:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-require-imports')
+
+F:\Workspace\Zazz\ExamCraft\scripts\test_docx_export.mjs
+   8:3  warning  'Table' is defined but never used          @typescript-eslint/no-unused-vars
+   9:3  warning  'TableRow' is defined but never used       @typescript-eslint/no-unused-vars
+  10:3  warning  'TableCell' is defined but never used      @typescript-eslint/no-unused-vars
+  11:3  warning  'WidthType' is defined but never used      @typescript-eslint/no-unused-vars
+  12:3  warning  'AlignmentType' is defined but never used  @typescript-eslint/no-unused-vars
+  13:3  warning  'BorderStyle' is defined but never used    @typescript-eslint/no-unused-vars
+
+F:\Workspace\Zazz\ExamCraft\src\app\a\[publicId]\page.tsx
+  140:10  warning  'sections' is assigned a value but never used                                                                         @typescript-eslint/no-unused-vars
+  393:6   warning  React Hook useEffect has a missing dependency: 'handleFinalSubmit'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+F:\Workspace\Zazz\ExamCraft\src\app\admin\users\page.tsx
+  44:10  warning  'currentUser' is assigned a value but never used                                                              @typescript-eslint/no-unused-vars
+  88:6   warning  React Hook useEffect has a missing dependency: 'loadUsers'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+F:\Workspace\Zazz\ExamCraft\src\app\api\admin\users\route.ts
+  17:11  warning  'admin' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+F:\Workspace\Zazz\ExamCraft\src\app\api\auth\me\route.ts
+  5:27  warning  'req' is defined but never used  @typescript-eslint/no-unused-vars
+
+F:\Workspace\Zazz\ExamCraft\src\app\api\exam-copilot\route.ts
+  3:16  warning  'Question' is defined but never used  @typescript-eslint/no-unused-vars
+
+F:\Workspace\Zazz\ExamCraft\src\app\api\teacher\assistant\route.ts
+  27:36  warning  'customApiKey' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+F:\Workspace\Zazz\ExamCraft\src\app\api\verify-question\route.ts
+  4:10  warning  'Question' is defined but never used  @typescript-eslint/no-unused-vars
+
+F:\Workspace\Zazz\ExamCraft\src\app\c\[groupCode]\page.tsx
+   7:3  warning  'Users' is defined but never used                                                                                 @typescript-eslint/no-unused-vars
+  70:6  warning  React Hook useEffect has a missing dependency: 'loadGroupData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+F:\Workspace\Zazz\ExamCraft\src\app\login\page.tsx
+  9:9  warning  'router' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+F:\Workspace\Zazz\ExamCraft\src\components\ExamCopilotBar.tsx
+  40:3  warning  'onBatchUpdateQuestions' is defined but never used  @typescript-eslint/no-unused-vars
+
+F:\Workspace\Zazz\ExamCraft\src\components\ExamLibraryModal.tsx
+  38:83  warning  React Hook useEffect has a missing dependency: 'list'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+F:\Workspace\Zazz\ExamCraft\src\components\ExamWorkspace.tsx
+    7:10  warning  'Exam' is defined but never used                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+   47:3   warning  'Settings2' is defined but never used                                                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+   48:3   warning  'Layers' is defined but never used                                                                                                                                                                                                                                      @typescript-eslint/no-unused-vars
+   55:3   warning  'Building2' is defined but never used                                                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+   61:3   warning  'Bot' is defined but never used                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+   86:27  warning  'setSubmissionCount' is assigned a value but never used                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+  136:46  warning  React Hook useEffect has a missing dependency: 'checkUserKeys'. Either include it or remove the dependency array                                                                                                                                                        react-hooks/exhaustive-deps
+  321:88  warning  Do not use `window.location.assign()` to navigate to internal Next.js pages. Use `redirect()` in the render phase, or `useRouter().push()` in Client Components' event handlers instead. See: https://nextjs.org/docs/messages/no-location-assign-relative-destination  @next/next/no-location-assign-relative-destination
+  658:39  warning  Do not use `window.location.assign()` to navigate to internal Next.js pages. Use `redirect()` in the render phase, or `useRouter().push()` in Client Components' event handlers instead. See: https://nextjs.org/docs/messages/no-location-assign-relative-destination  @next/next/no-location-assign-relative-destination
+  675:28  warning  '_bankPassage' is assigned a value but never used                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+  675:62  warning  '_unavailable' is assigned a value but never used                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+
+F:\Workspace\Zazz\ExamCraft\src\components\FigureView.tsx
+  17:107  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+F:\Workspace\Zazz\ExamCraft\src\components\Header.tsx
+   9:3  warning  'CloudCheck' is defined but never used    @typescript-eslint/no-unused-vars
+  22:3  warning  'ExternalLink' is defined but never used  @typescript-eslint/no-unused-vars
+
+F:\Workspace\Zazz\ExamCraft\src\components\ImportModal.tsx
+   18:3   warning  'Check' is defined but never used                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+   23:3   warning  'FileCode' is defined but never used                                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+   25:3   warning  'ZoomIn' is defined but never used                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+  428:23  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+F:\Workspace\Zazz\ExamCraft\src\components\LeftNavigationRail.tsx
+   4:8  warning  'Link' is defined but never used           @typescript-eslint/no-unused-vars
+  10:3  warning  'Printer' is defined but never used        @typescript-eslint/no-unused-vars
+  15:3  warning  'BookMarked' is defined but never used     @typescript-eslint/no-unused-vars
+  20:3  warning  'GraduationCap' is defined but never used  @typescript-eslint/no-unused-vars
+  62:3  warning  'onExportWord' is defined but never used   @typescript-eslint/no-unused-vars
+  63:3  warning  'onPrintPdf' is defined but never used     @typescript-eslint/no-unused-vars
+
+F:\Workspace\Zazz\ExamCraft\src\components\LocalDraftsPanel.tsx
+  27:141  warning  Do not use `window.location.assign()` to navigate to internal Next.js pages. Use `redirect()` in the render phase, or `useRouter().push()` in Client Components' event handlers instead. See: https://nextjs.org/docs/messages/no-location-assign-relative-destination  @next/next/no-location-assign-relative-destination
+
+F:\Workspace\Zazz\ExamCraft\src\components\QuestionCard.tsx
+   18:3   warning  'ArrowUpRight' is defined but never used                 @typescript-eslint/no-unused-vars
+   19:3   warning  'ArrowDownRight' is defined but never used               @typescript-eslint/no-unused-vars
+   26:3   warning  'XCircle' is defined but never used                      @typescript-eslint/no-unused-vars
+   29:3   warning  'Send' is defined but never used                         @typescript-eslint/no-unused-vars
+   30:3   warning  'SlidersHorizontal' is defined but never used            @typescript-eslint/no-unused-vars
+   97:10  warning  'showCustomPrompt' is assigned a value but never used    @typescript-eslint/no-unused-vars
+   98:10  warning  'customPromptText' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  247:9   warning  'getDifficultyBadge' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+F:\Workspace\Zazz\ExamCraft\src\components\RightCompanionRail.tsx
+  31:3  warning  'ShieldCheck' is defined but never used  @typescript-eslint/no-unused-vars
+  32:3  warning  'Bot' is defined but never used          @typescript-eslint/no-unused-vars
+
+F:\Workspace\Zazz\ExamCraft\src\components\ShareModal.tsx
+  19:3   warning  'Clock' is defined but never used                   @typescript-eslint/no-unused-vars
+  20:3   warning  'Settings' is defined but never used                @typescript-eslint/no-unused-vars
+  23:3   warning  'Shield' is defined but never used                  @typescript-eslint/no-unused-vars
+  24:3   warning  'HelpCircle' is defined but never used              @typescript-eslint/no-unused-vars
+  66:10  warning  'loadingGroups' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+F:\Workspace\Zazz\ExamCraft\src\components\ShuffleModal.tsx
+  25:128  warning  React Hook React.useMemo has an unnecessary dependency: 'reshuffle'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps
+
+F:\Workspace\Zazz\ExamCraft\src\components\TeacherAiSecretaryDrawer.tsx
+   8:3  warning  'Bot' is defined but never used           @typescript-eslint/no-unused-vars
+  11:3  warning  'HelpCircle' is defined but never used    @typescript-eslint/no-unused-vars
+  12:3  warning  'Lightbulb' is defined but never used     @typescript-eslint/no-unused-vars
+  13:3  warning  'FileText' is defined but never used      @typescript-eslint/no-unused-vars
+  14:3  warning  'CheckCircle2' is defined but never used  @typescript-eslint/no-unused-vars
+
+F:\Workspace\Zazz\ExamCraft\src\lib\docx-export.ts
+  165:95  warning  'c' is defined but never used                  @typescript-eslint/no-unused-vars
+  404:11  warning  'metadata' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+F:\Workspace\Zazz\ExamCraft\tests\test_phase2_db_ai.ts
+  2:10  warning  'executeWithKeyRotation' is defined but never used  @typescript-eslint/no-unused-vars
+  2:52  warning  'getRegisteredKeys' is defined but never used       @typescript-eslint/no-unused-vars
+  3:66  warning  'AiKeyStatus' is defined but never used             @typescript-eslint/no-unused-vars
+
+F:\Workspace\Zazz\ExamCraft\tests\test_phase4_monitoring.ts
+  169:9  warning  'attC' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+F:\Workspace\Zazz\ExamCraft\tests\test_phase6_security_audit.ts
+  10:9  warning  'xssPayload' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+F:\Workspace\Zazz\ExamCraft\tests\unit_tests.mjs
+   5:3  warning  'buildAnswerMatrix' is defined but never used        @typescript-eslint/no-unused-vars
+  24:3  warning  'getAllSupportedSubjects' is defined but never used  @typescript-eslint/no-unused-vars
+
+F:\Workspace\Zazz\ExamCraft\tests_e2e\test_sprint1.ts
+    1:80  warning  'AttemptStatus' is defined but never used      @typescript-eslint/no-unused-vars
+  206:9   warning  'studentA' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+F:\Workspace\Zazz\ExamCraft\tests_e2e\test_sprint2.ts
+   1:56   warning  'Visibility' is defined but never used         @typescript-eslint/no-unused-vars
+   1:68   warning  'SourceKind' is defined but never used         @typescript-eslint/no-unused-vars
+   1:114  warning  'RevealPolicy' is defined but never used       @typescript-eslint/no-unused-vars
+  56:9    warning  'student2' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+F:\Workspace\Zazz\ExamCraft\tests_e2e\test_sprint3_security_perf_mutation.ts
+  1:30  warning  'QuestionType' is defined but never used  @typescript-eslint/no-unused-vars
+  1:44  warning  'Difficulty' is defined but never used    @typescript-eslint/no-unused-vars
+
+F:\Workspace\Zazz\ExamCraft\tests_e2e\test_vong2_http_audit.ts
+    8:11  warning  'PerfMetrics' is defined but never used               @typescript-eslint/no-unused-vars
+   27:12  warning  'e' is defined but never used                         @typescript-eslint/no-unused-vars
+  273:9   warning  'submitAnData' is assigned a value but never used     @typescript-eslint/no-unused-vars
+  317:9   warning  'startResponses' is assigned a value but never used   @typescript-eslint/no-unused-vars
+  337:9   warning  'submitResponses' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  504:9   warning  'perfAssignment' is assigned a value but never used   @typescript-eslint/no-unused-vars
+  566:14  warning  'err' is defined but never used                       @typescript-eslint/no-unused-vars
+
+✖ 120 problems (0 errors, 120 warnings)
+  0 errors and 8 warnings potentially fixable with the `--fix` option.
+

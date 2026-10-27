@@ -1,0 +1,20 @@
+{
+  "run": "69ce9c61-2e06-4392-bb95-cd3acc19d9a9",
+  "sourceSha256": "60b30409d2992511c043fe9c2a494d82fc2c8f9a1730dfbf5139ff80cb69bc19",
+  "buildId": "G-ANRR-A71qJf91p8iXU3",
+  "browserVersion": "155.0.8059.85",
+  "browserExecutable": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  "requestedFlow": "F19",
+  "checkedAt": "2026-10-27T06:31:52.243Z",
+  "environment": "isolatedTest localhost3117 / examcraft_test_20261022",
+  "realAiCalls": false,
+  "results": [
+    {
+      "id": "F19",
+      "status": "FAIL",
+      "durationMs": 32847,
+      "cleanupComplete": true,
+      "error": "locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('Tính năng đang trong giai đoạn phát triển') to be visible\u001b[22m\n"
+    }
+  ]
+}

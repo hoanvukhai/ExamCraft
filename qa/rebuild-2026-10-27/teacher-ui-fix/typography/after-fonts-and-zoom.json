@@ -1,0 +1,566 @@
+[
+  {
+    "dark": false,
+    "selector": "#ui-NFC-normal",
+    "fonts": [
+      {
+        "familyName": "Noto Sans",
+        "postScriptName": "NotoSans",
+        "isCustomFont": true,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": false,
+    "selector": "#ui-NFC-bold",
+    "fonts": [
+      {
+        "familyName": "Noto Sans",
+        "postScriptName": "NotoSans-Bold",
+        "isCustomFont": true,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": false,
+    "selector": "#ui-NFC-italic",
+    "fonts": [
+      {
+        "familyName": "Noto Sans",
+        "postScriptName": "NotoSansItalic-Italic",
+        "isCustomFont": true,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": false,
+    "selector": "#ui-NFD-normal",
+    "fonts": [
+      {
+        "familyName": "Noto Sans",
+        "postScriptName": "NotoSans",
+        "isCustomFont": true,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": false,
+    "selector": "#ui-NFD-bold",
+    "fonts": [
+      {
+        "familyName": "Noto Sans",
+        "postScriptName": "NotoSans-Bold",
+        "isCustomFont": true,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": false,
+    "selector": "#ui-NFD-italic",
+    "fonts": [
+      {
+        "familyName": "Noto Sans",
+        "postScriptName": "NotoSansItalic-Italic",
+        "isCustomFont": true,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": false,
+    "selector": "#paper-NFC-normal",
+    "fonts": [
+      {
+        "familyName": "Times New Roman",
+        "postScriptName": "TimesNewRomanPSMT",
+        "isCustomFont": false,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": false,
+    "selector": "#paper-NFC-bold",
+    "fonts": [
+      {
+        "familyName": "Times New Roman",
+        "postScriptName": "TimesNewRomanPS-BoldMT",
+        "isCustomFont": false,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": false,
+    "selector": "#paper-NFC-italic",
+    "fonts": [
+      {
+        "familyName": "Times New Roman",
+        "postScriptName": "TimesNewRomanPS-ItalicMT",
+        "isCustomFont": false,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": false,
+    "selector": "#paper-NFD-normal",
+    "fonts": [
+      {
+        "familyName": "Times New Roman",
+        "postScriptName": "TimesNewRomanPSMT",
+        "isCustomFont": false,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": false,
+    "selector": "#paper-NFD-bold",
+    "fonts": [
+      {
+        "familyName": "Times New Roman",
+        "postScriptName": "TimesNewRomanPS-BoldMT",
+        "isCustomFont": false,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": false,
+    "selector": "#paper-NFD-italic",
+    "fonts": [
+      {
+        "familyName": "Times New Roman",
+        "postScriptName": "TimesNewRomanPS-ItalicMT",
+        "isCustomFont": false,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": false,
+    "selector": "#fallback-NFC-normal",
+    "fonts": [
+      {
+        "familyName": "Noto Serif",
+        "postScriptName": "NotoSerif",
+        "isCustomFont": true,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": false,
+    "selector": "#fallback-NFC-bold",
+    "fonts": [
+      {
+        "familyName": "Noto Serif",
+        "postScriptName": "NotoSerif-Bold",
+        "isCustomFont": true,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": false,
+    "selector": "#fallback-NFC-italic",
+    "fonts": [
+      {
+        "familyName": "Noto Serif",
+        "postScriptName": "NotoSerifItalic-Italic",
+        "isCustomFont": true,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": false,
+    "selector": "#fallback-NFD-normal",
+    "fonts": [
+      {
+        "familyName": "Noto Serif",
+        "postScriptName": "NotoSerif",
+        "isCustomFont": true,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": false,
+    "selector": "#fallback-NFD-bold",
+    "fonts": [
+      {
+        "familyName": "Noto Serif",
+        "postScriptName": "NotoSerif-Bold",
+        "isCustomFont": true,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": false,
+    "selector": "#fallback-NFD-italic",
+    "fonts": [
+      {
+        "familyName": "Noto Serif",
+        "postScriptName": "NotoSerifItalic-Italic",
+        "isCustomFont": true,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": true,
+    "selector": "#ui-NFC-normal",
+    "fonts": [
+      {
+        "familyName": "Noto Sans",
+        "postScriptName": "NotoSans",
+        "isCustomFont": true,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": true,
+    "selector": "#ui-NFC-bold",
+    "fonts": [
+      {
+        "familyName": "Noto Sans",
+        "postScriptName": "NotoSans-Bold",
+        "isCustomFont": true,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": true,
+    "selector": "#ui-NFC-italic",
+    "fonts": [
+      {
+        "familyName": "Noto Sans",
+        "postScriptName": "NotoSansItalic-Italic",
+        "isCustomFont": true,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": true,
+    "selector": "#ui-NFD-normal",
+    "fonts": [
+      {
+        "familyName": "Noto Sans",
+        "postScriptName": "NotoSans",
+        "isCustomFont": true,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": true,
+    "selector": "#ui-NFD-bold",
+    "fonts": [
+      {
+        "familyName": "Noto Sans",
+        "postScriptName": "NotoSans-Bold",
+        "isCustomFont": true,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": true,
+    "selector": "#ui-NFD-italic",
+    "fonts": [
+      {
+        "familyName": "Noto Sans",
+        "postScriptName": "NotoSansItalic-Italic",
+        "isCustomFont": true,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": true,
+    "selector": "#paper-NFC-normal",
+    "fonts": [
+      {
+        "familyName": "Times New Roman",
+        "postScriptName": "TimesNewRomanPSMT",
+        "isCustomFont": false,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": true,
+    "selector": "#paper-NFC-bold",
+    "fonts": [
+      {
+        "familyName": "Times New Roman",
+        "postScriptName": "TimesNewRomanPS-BoldMT",
+        "isCustomFont": false,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": true,
+    "selector": "#paper-NFC-italic",
+    "fonts": [
+      {
+        "familyName": "Times New Roman",
+        "postScriptName": "TimesNewRomanPS-ItalicMT",
+        "isCustomFont": false,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": true,
+    "selector": "#paper-NFD-normal",
+    "fonts": [
+      {
+        "familyName": "Times New Roman",
+        "postScriptName": "TimesNewRomanPSMT",
+        "isCustomFont": false,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": true,
+    "selector": "#paper-NFD-bold",
+    "fonts": [
+      {
+        "familyName": "Times New Roman",
+        "postScriptName": "TimesNewRomanPS-BoldMT",
+        "isCustomFont": false,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": true,
+    "selector": "#paper-NFD-italic",
+    "fonts": [
+      {
+        "familyName": "Times New Roman",
+        "postScriptName": "TimesNewRomanPS-ItalicMT",
+        "isCustomFont": false,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": true,
+    "selector": "#fallback-NFC-normal",
+    "fonts": [
+      {
+        "familyName": "Noto Serif",
+        "postScriptName": "NotoSerif",
+        "isCustomFont": true,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": true,
+    "selector": "#fallback-NFC-bold",
+    "fonts": [
+      {
+        "familyName": "Noto Serif",
+        "postScriptName": "NotoSerif-Bold",
+        "isCustomFont": true,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": true,
+    "selector": "#fallback-NFC-italic",
+    "fonts": [
+      {
+        "familyName": "Noto Serif",
+        "postScriptName": "NotoSerifItalic-Italic",
+        "isCustomFont": true,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": true,
+    "selector": "#fallback-NFD-normal",
+    "fonts": [
+      {
+        "familyName": "Noto Serif",
+        "postScriptName": "NotoSerif",
+        "isCustomFont": true,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": true,
+    "selector": "#fallback-NFD-bold",
+    "fonts": [
+      {
+        "familyName": "Noto Serif",
+        "postScriptName": "NotoSerif-Bold",
+        "isCustomFont": true,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "dark": true,
+    "selector": "#fallback-NFD-italic",
+    "fonts": [
+      {
+        "familyName": "Noto Serif",
+        "postScriptName": "NotoSerifItalic-Italic",
+        "isCustomFont": true,
+        "glyphCount": 157
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "height": 1000,
+    "percent": 60,
+    "geometry": {
+      "left": 73.890625,
+      "paper": 476.21875,
+      "width": 624,
+      "scroll": 624
+    }
+  },
+  {
+    "width": 1440,
+    "height": 1000,
+    "percent": 100,
+    "geometry": {
+      "left": 32,
+      "paper": 793.6875,
+      "width": 624,
+      "scroll": 858
+    }
+  },
+  {
+    "width": 1440,
+    "height": 1000,
+    "percent": 150,
+    "geometry": {
+      "left": 32,
+      "paper": 1190.546875,
+      "width": 624,
+      "scroll": 1255
+    }
+  },
+  {
+    "width": 375,
+    "height": 812,
+    "percent": 60,
+    "geometry": {
+      "left": 16,
+      "paper": 476.21875,
+      "width": 341,
+      "scroll": 508
+    }
+  },
+  {
+    "width": 375,
+    "height": 812,
+    "percent": 100,
+    "geometry": {
+      "left": 16,
+      "paper": 793.6875,
+      "width": 341,
+      "scroll": 826
+    }
+  },
+  {
+    "width": 375,
+    "height": 812,
+    "percent": 150,
+    "geometry": {
+      "left": 16,
+      "paper": 1190.546875,
+      "width": 341,
+      "scroll": 1223
+    }
+  },
+  {
+    "width": 320,
+    "height": 740,
+    "percent": 60,
+    "geometry": {
+      "left": 16,
+      "paper": 476.21875,
+      "width": 286,
+      "scroll": 508
+    }
+  },
+  {
+    "width": 320,
+    "height": 740,
+    "percent": 100,
+    "geometry": {
+      "left": 16,
+      "paper": 793.6875,
+      "width": 286,
+      "scroll": 826
+    }
+  },
+  {
+    "width": 320,
+    "height": 740,
+    "percent": 150,
+    "geometry": {
+      "left": 16,
+      "paper": 1190.546875,
+      "width": 286,
+      "scroll": 1223
+    }
+  },
+  {
+    "width": 568,
+    "height": 320,
+    "percent": 60,
+    "geometry": {
+      "left": 28.890625,
+      "paper": 476.21875,
+      "width": 534,
+      "scroll": 534
+    }
+  },
+  {
+    "width": 568,
+    "height": 320,
+    "percent": 100,
+    "geometry": {
+      "left": 16,
+      "paper": 793.6875,
+      "width": 534,
+      "scroll": 826
+    }
+  },
+  {
+    "width": 568,
+    "height": 320,
+    "percent": 150,
+    "geometry": {
+      "left": 16,
+      "paper": 1190.546875,
+      "width": 534,
+      "scroll": 1223
+    }
+  }
+]
