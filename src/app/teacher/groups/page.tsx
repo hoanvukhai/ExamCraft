@@ -220,10 +220,10 @@ export default function TeacherGroupsPage() {
             </div>
             <h1 className="text-2xl font-bold text-[#202124] dark:text-[#e3e3e3] flex items-center gap-2.5">
               <GraduationCap className="w-7 h-7 text-[#3c4043] dark:text-[#e3e3e3]" />
-              Lớp Học & Danh Sách Học Sinh
+              Lớp học
             </h1>
             <p className="text-xs sm:text-sm text-[#5f6368] dark:text-[#9aa0a6] mt-1">
-              Quản lý lớp dạy thêm, danh sách học sinh và gửi link thi trực tuyến theo từng lớp.
+              Quản lý danh sách học sinh và bài giao của từng lớp.
             </p>
           </div>
 

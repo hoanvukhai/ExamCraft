@@ -59,7 +59,7 @@ export async function GET(req: NextRequest) {
       include: {
         group: { select: { id: true, name: true, publicCode: true } },
         _count: {
-          select: { attempts: true },
+          select: { attempts: { where: { status: 'SUBMITTED' } } },
         },
       },
       orderBy: { createdAt: 'desc' },

@@ -3,65 +3,28 @@ import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import { requireAdmin, logAudit } from '@/lib/auth';
 import { AiKeyStatus } from '@prisma/client';
+import { summarizeAiUsage, summarizeAccountKeys } from '@/lib/admin-overview';
 
 const ResetKeySchema = z.object({
   alias: z.string().optional(),
   action: z.enum(['reset_key', 'reset_all']),
 });
 
-// GET: Thống kê trạng thái 7 API Keys & Nhật ký gọi AI
+// GET: Account-owned keys and real usage; legacy keyStates retained for compatibility.
 export async function GET() {
   try {
     await requireAdmin();
 
-    const [keyStates, totalToday, successToday, errorToday, recentLogs] = await Promise.all([
-      prisma.aiKeyState.findMany({
-        orderBy: { alias: 'asc' },
-      }),
-      prisma.aiUsageLog.count({
-        where: {
-          createdAt: {
-            gte: new Date(new Date().setHours(0, 0, 0, 0)),
-          },
-        },
-      }),
-      prisma.aiUsageLog.count({
-        where: {
-          createdAt: {
-            gte: new Date(new Date().setHours(0, 0, 0, 0)),
-          },
-          httpStatus: 200,
-        },
-      }),
-      prisma.aiUsageLog.count({
-        where: {
-          createdAt: {
-            gte: new Date(new Date().setHours(0, 0, 0, 0)),
-          },
-          httpStatus: { not: 200 },
-        },
-      }),
-      prisma.aiUsageLog.findMany({
-        take: 30,
-        orderBy: { createdAt: 'desc' },
-        include: {
-          user: {
-            select: { id: true, name: true, email: true },
-          },
-        },
-      }),
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const [usage, accountKeys, recentLogs, keyStates] = await Promise.all([
+      prisma.aiUsageLog.groupBy({ by: ['httpStatus'], where: { createdAt: { gte: today } }, _count: { _all: true } }),
+      prisma.userApiKey.groupBy({ by: ['isActive', 'grantId'], _count: { _all: true } }),
+      prisma.aiUsageLog.findMany({ take: 30, orderBy: { createdAt: 'desc' },
+        select: { id: true, endpoint: true, keyAlias: true, httpStatus: true, latencyMs: true, createdAt: true, user: { select: { name: true, email: true } } } }),
+      // Kept for old API consumers; the current UI uses accountKeys, never this legacy pool.
+      prisma.aiKeyState.findMany({ orderBy: { alias: 'asc' } }),
     ]);
-
-    return NextResponse.json({
-      keyStates,
-      stats: {
-        totalToday,
-        successToday,
-        errorToday,
-        successRate: totalToday > 0 ? Math.round((successToday / totalToday) * 100) : 100,
-      },
-      recentLogs,
-    });
+    return NextResponse.json({ keyStates, stats: summarizeAiUsage(usage), keySummary: summarizeAccountKeys(accountKeys), recentLogs });
   } catch (error: unknown) {
     const err = error as Error;
     if (err.message === 'MUST_CHANGE_PASSWORD') return NextResponse.json({ error: 'Vui lòng đổi mật khẩu trước khi tiếp tục', code: 'MUST_CHANGE_PASSWORD' }, { status: 403 });
@@ -104,7 +67,7 @@ export async function POST(req: NextRequest) {
         targetType: 'AiKeyState',
       });
 
-      return NextResponse.json({ success: true, message: 'Đã đặt lại trạng thái hoạt động cho tất cả 7 keys!' });
+      return NextResponse.json({ success: true, message: 'Đã đặt lại trạng thái theo dõi khóa cũ. Thao tác này không bật lại khóa của tài khoản.' });
     }
 
     if (action === 'reset_key' && alias) {

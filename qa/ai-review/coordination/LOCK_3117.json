@@ -1,6 +1,6 @@
 {
   "port": 3117,
   "holder": "USER",
-  "note": "Remaining-page UI verified on YRo3GVgYP84Y4hWFfEGDE. Server3117 retained; task-only fixture cleaned. Admin redesign is analysis-only. Report qa/rebuild-2026-10-27/ui-page-review/BAO_CAO.md. Do not build over .next while previewing.",
+  "note": "Admin cleanup verified on build 1ZWZ1zCtmRFAecwocOjjy. Isolated3117 retained; task fixtures removed. Report qa/rebuild-2026-10-27/admin-refresh/BAO_CAO.md. Do not build over .next while previewing.",
   "since_utc": "2026-10-26T18:16:51.6253538Z"
 }

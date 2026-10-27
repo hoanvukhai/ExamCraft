@@ -1154,7 +1154,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
 
         {/* ─────────────────────────────────────────────────────────────
             CỘT PHẢI: TRỢ LÝ THƯ KÝ AI (COMPANION RAIL)
-            (Theo đúng yêu cầu của người dùng: Ấn vào báo đang phát triển)
+            (Mở cùng drawer với nút ở thanh trên)
         ───────────────────────────────────────────────────────────── */}
         <aside className="w-14 bg-white dark:bg-[#17181a] border-l border-[#dadce0] dark:border-[#3c4043] hidden lg:flex flex-col items-center py-4 space-y-4 shrink-0 z-20">
           <button
@@ -1187,74 +1187,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          MODAL: TRỢ LÝ THƯ KÝ AI - ĐANG PHÁT TRIỂN
-      ───────────────────────────────────────────────────────────── */}
-      {isAiSecretaryModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="app-dialog bg-white dark:bg-[#202124] rounded-2xl p-6 max-w-md w-full border border-[#dadce0] dark:border-[#3c4043] shadow-xs animate-in fade-in zoom-in-95">
-            <div className="app-dialog-header flex items-center justify-between pb-3 border-b border-[#dadce0] dark:border-[#3c4043]">
-              <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-xl app-neutral-icon text-white flex items-center justify-center shadow-xs">
-                  <Bot className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-sm text-[#202124] dark:text-white">Trợ Lý Thư Ký AI Cá Nhân</h3>
-                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-neutral-100 dark:bg-neutral-900 text-[var(--ui-accent)] dark:text-[var(--ui-accent)]">
-                    BETA / ĐANG HUẤN LUYỆN
-                  </span>
-                </div>
-              </div>
-              <button aria-label="Đóng hộp thoại"
-                onClick={() => setIsAiSecretaryModalOpen(false)}
-                className="p-1 rounded-lg text-[#5f6368] hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="py-4 space-y-3 text-xs text-[#3c4043] dark:text-[#e3e3e3] leading-relaxed">
-              <div className="p-3 bg-neutral-50 dark:bg-neutral-900/40 rounded-xl border border-[var(--ui-border)] dark:border-[var(--ui-border)] text-[var(--ui-accent)] dark:text-[var(--ui-accent)]">
-                🚀 <strong>Tính năng đang trong giai đoạn phát triển & hoàn thiện!</strong>
-                <p className="mt-1 text-[11px] opacity-90">
-                  Thư ký AI sẽ được cấp quyền riêng biệt để quản lý tài nguyên cá nhân của riêng Thầy/Cô, giúp giảm 80% thời gian tìm kiếm và dọn dẹp đề thi.
-                </p>
-              </div>
-
-              <div className="space-y-2 pt-2">
-                <h4 className="font-semibold text-xs uppercase tracking-wider text-[#5f6368] dark:text-[#9aa0a6]">
-                  Các quyền năng sắp ra mắt:
-                </h4>
-                <div className="space-y-2">
-                  <div className="flex items-start gap-2">
-                    <Check className="w-3.5 h-3.5 text-[var(--ui-accent)] shrink-0 mt-0.5" />
-                    <span><strong>Tìm kiếm đề bằng tiếng Việt:</strong> <em>&quot;Tìm giúp tôi các đề kiểm tra 1 tiết Toán 11 có phần Hình không gian&quot;</em></span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <Check className="w-3.5 h-3.5 text-[var(--ui-accent)] shrink-0 mt-0.5" />
-                    <span><strong>Tự động dọn dẹp thư mục:</strong> <em>&quot;Tạo thư mục Ôn thi Đại học và gom 5 đề thi thử vào đó&quot;</em></span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <Check className="w-3.5 h-3.5 text-[var(--ui-accent)] shrink-0 mt-0.5" />
-                    <span><strong>Thư ký phân tích học tập:</strong> Tự động phát hiện dạng câu hỏi mà học sinh lớp của Thầy/Cô hay làm sai nhất.</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="app-dialog-footer pt-3 border-t border-[#dadce0] dark:border-[#3c4043] flex justify-end">
-              <button
-                onClick={() => setIsAiSecretaryModalOpen(false)}
-                className="px-5 py-2 app-button-secondary text-white rounded-lg text-xs font-semibold cursor-pointer shadow-xs"
-              >
-                Đã hiểu
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ─────────────────────────────────────────────────────────────
-          MODAL: TẠO THƯ MỤC MỚI (Ràng buộc tối đa 2 cấp)
+          MODAL: TẠO THƯ MỤC
       ───────────────────────────────────────────────────────────── */}
       {isCreateFolderModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">

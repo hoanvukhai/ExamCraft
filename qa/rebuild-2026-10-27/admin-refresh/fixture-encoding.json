@@ -1,0 +1,8 @@
+{
+  "file": "tests/fixtures/pilot/toan6-bay-dang.json",
+  "strings": 51,
+  "repairedUtf8Sequences": 663,
+  "beforeSha256": "042bd81228a4b4a9b39abf6159b3c6711e01a190ca1d86bce5dae5dcf5ca5f31",
+  "afterSha256": "bc0d665a19cae8984a363df75da7c49d02f6cf8d1bac0bcc6d9449e3ea097998",
+  "title": "Đề Kiểm Tra Minh Họa Kỹ Thuật Toán 6 - Đủ 7 Dạng Câu Hỏi"
+}

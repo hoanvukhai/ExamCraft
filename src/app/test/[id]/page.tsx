@@ -11,7 +11,7 @@ export default function LegacyTestRedirectPage() {
         <div className="w-16 h-16 mx-auto bg-amber-50 dark:bg-[#33250b] text-amber-600 dark:text-[#fdd663] rounded-xl flex items-center justify-center border border-amber-200 dark:border-[#533f16]">
           <ShieldAlert className="w-8 h-8" />
         </div>
-        <h1 className="text-xl font-bold text-[#202124] dark:text-[#e3e3e3]">Chuyển Tiếp Phòng Thi Chuẩn v3.1</h1>
+        <h1 className="text-xl font-bold text-[#202124] dark:text-[#e3e3e3]">Liên kết bài thi cũ</h1>
         <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] leading-relaxed">
           Đường dẫn thi cũ không còn được hỗ trợ để đảm bảo an toàn đề thi và chống gian lận. Em hãy mở lại đúng liên kết bài giao do giáo viên gửi (dạng /a/…) hoặc hỏi giáo viên để được cấp liên kết mới.
         </p>

@@ -179,6 +179,17 @@ body {
 .dark .app-button-danger { color: #f2b8b5; }
 
 @media (max-width: 639px) {
+  /* Keep account actions next to their owner rather than offscreen in a wide table. */
+  .app-user-table, .app-user-table tbody { display: block; width: 100%; }
+  .app-user-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .app-user-table tr { display: block; }
+  .app-user-table tr:has(td[data-label]) { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0.75rem; padding: 1rem; }
+  .app-user-table td[data-label] { display: block; min-width: 0; padding: 0; text-align: left; overflow-wrap: anywhere; }
+  .app-user-table td[data-label]::before { content: attr(data-label); display: block; color: var(--ui-text-secondary); font-size: 12px; margin-bottom: 0.4rem; }
+  .app-user-table td[data-label]:first-child, .app-user-table td[data-label]:last-child { grid-column: 1 / -1; }
+  .app-user-table td[data-label]:last-child > div { justify-content: flex-start; }
+  .app-user-table td[data-label]:last-child button { display: inline-flex; align-items: center; justify-content: center; min-width: 40px; min-height: 40px; }
+  .app-user-table td[data-label]:first-child > div:nth-child(2) { font-size: 12px; }
   .app-page :where(input:not([type]), input[type="text"], input[type="email"], input[type="password"], input[type="number"], select, textarea) {
     font-size: 16px;
   }

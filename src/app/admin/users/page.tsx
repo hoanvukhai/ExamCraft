@@ -1,31 +1,11 @@
 'use client';
 
+import { useConfirmAction } from '@/components/ConfirmAction';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { logoutSession } from '@/lib/auth-client';
-import {
-  Users,
-  UserPlus,
-  ShieldAlert,
-  ShieldCheck,
-  KeyRound,
-  Lock,
-  Unlock,
-  RefreshCw,
-  LogOut,
-  Sparkles,
-  Bot,
-  FileText,
-  Search,
-  CheckCircle2,
-  AlertCircle,
-  X,
-  Sliders,
-  Sun,
-  Moon,
-} from 'lucide-react';
-import { useTheme } from '@/components/ThemeProvider';
+import { Users, UserPlus, KeyRound, Lock, Unlock, RefreshCw, Bot, FileText, Search, CheckCircle2, AlertCircle, X, Sliders } from 'lucide-react';
+
 
 interface TeacherUser {
   id: string;
@@ -45,13 +25,17 @@ interface TeacherUser {
 }
 
 export default function AdminUsersPage() {
+  const { confirmAction, confirmation } = useConfirmAction();
   const router = useRouter();
-  const { theme, toggleTheme } = useTheme();
+
   const [users, setUsers] = useState<TeacherUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
+  const [actionError, setActionError] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [roleFilter, setRoleFilter] = useState('ALL');
   const [currentUser, setCurrentUser] = useState<{ id: string; email: string; name: string } | null>(null);
-  const [logoutError, setLogoutError] = useState('');
+
 
   // Modal states
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -84,9 +68,9 @@ export default function AdminUsersPage() {
 
   const loadUsers = () => fetch('/api/admin/users').then(async res => {
     if (res.status === 401) { router.push('/login'); return; }
-    if (res.status === 403) { alert('Bạn không có quyền truy cập trang quản trị!'); router.push('/'); return; }
-    const data = await res.json(); setUsers(data.users || []);
-  }).catch(() => { console.error('Không tải được danh sách giáo viên'); }).finally(() => setIsLoading(false));
+    if (res.status === 403) { setLoadError('Bạn không có quyền truy cập hoặc cần đổi mật khẩu.'); return; }
+    const data = await res.json(); if (!res.ok) throw new Error(data.error || 'Chưa tải được tài khoản.'); setUsers(data.users || []); setLoadError('');
+  }).catch(() => { setLoadError('Không tải được danh sách tài khoản.'); }).finally(() => setIsLoading(false));
   const fetchUsers = () => { setIsLoading(true); return loadUsers(); };
 
   const fetchCurrentUser = () => fetch('/api/auth/me').then(async res => {
@@ -97,12 +81,6 @@ export default function AdminUsersPage() {
     void loadUsers();
     void fetchCurrentUser();
   }, []);
-
-  const handleLogout = async () => {
-    setLogoutError('');
-    try { await logoutSession(currentUser?.id); router.push('/login'); router.refresh(); }
-    catch (error) { setLogoutError(error instanceof Error ? error.message : 'Chưa đăng xuất được.'); }
-  };
 
   const generateRandomPassword = () => {
     const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789@#%';
@@ -116,7 +94,7 @@ export default function AdminUsersPage() {
   const handleCreateTeacher = async (e: React.FormEvent) => {
     e.preventDefault();
     setCreateError('');
-    setIsSubmitting(true);
+    setIsSubmitting(true); setActionError('');
 
     try {
       const res = await fetch('/api/admin/users', {
@@ -158,7 +136,7 @@ export default function AdminUsersPage() {
       ? `Bạn có chắc muốn MỞ KHÓA tài khoản cho ${user.name}?`
       : `Bạn có chắc muốn KHÓA tài khoản của ${user.name}? Giáo viên này sẽ không thể đăng nhập.`;
 
-    if (!confirm(confirmMsg)) return;
+    if (!await confirmAction(confirmMsg)) return;
 
     try {
       const res = await fetch(`/api/admin/users/${user.id}`, {
@@ -169,14 +147,14 @@ export default function AdminUsersPage() {
 
       if (!res.ok) {
         const data = await res.json();
-        alert(data.error || 'Cập nhật trạng thái thất bại');
+        setActionError(data.error || 'Cập nhật trạng thái thất bại');
         return;
       }
 
       showToast(`Đã ${newStatus ? 'mở khóa' : 'khóa'} tài khoản ${user.name}`);
       fetchUsers();
     } catch {
-      alert('Lỗi kết nối đến máy chủ');
+      setActionError('Lỗi kết nối đến máy chủ');
     }
   };
 
@@ -227,7 +205,7 @@ export default function AdminUsersPage() {
 
       if (!res.ok) {
         const data = await res.json();
-        alert(data.error || 'Cập nhật thất bại');
+        setActionError(data.error || 'Cập nhật thất bại');
         setIsSubmitting(false);
         return;
       }
@@ -236,13 +214,13 @@ export default function AdminUsersPage() {
       setShowEditModal(null);
       fetchUsers();
     } catch {
-      alert('Lỗi kết nối máy chủ');
+      setActionError('Lỗi kết nối máy chủ');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const filteredUsers = users.filter(
+  const filteredUsers = users.filter(u => roleFilter === 'ALL' || u.role === roleFilter).filter(
     (u) =>
       u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       u.email.toLowerCase().includes(searchQuery.toLowerCase())
@@ -253,7 +231,8 @@ export default function AdminUsersPage() {
   const totalExams = users.reduce((acc, u) => acc + (u._count?.exams || 0), 0);
 
   return (
-    <div className="app-page min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] text-[#202124] dark:text-[#e3e3e3] flex flex-col transition-colors duration-200">
+    <div className="app-page min-h-0 bg-[#f8f9fa] dark:bg-[#17181a] text-[#202124] dark:text-[#e3e3e3] flex flex-col transition-colors duration-200">
+      {confirmation}
       {/* Toast Notification */}
       {toastMessage && (
         <div className="app-toast fixed top-5 right-5 z-50 app-feedback border px-4 py-3 rounded-full shadow-xs flex items-center gap-2.5 animate-in slide-in-from-top-3 duration-200 text-sm font-medium">
@@ -263,80 +242,15 @@ export default function AdminUsersPage() {
       )}
 
       {/* Top Navbar */}
-      <header className="app-bar app-admin-bar border-b sticky top-0 z-30 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-[#3c4043] dark:bg-[#e3e3e3] text-white dark:text-[#17181a] flex items-center justify-center shadow-xs">
-            <Sparkles className="w-5 h-5" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-base tracking-tight text-[#202124] dark:text-[#e3e3e3]">ExamCraft</span>
-              <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] font-semibold uppercase tracking-wider border border-[#3c4043]/20 dark:border-[#e3e3e3]/30">
-                Admin Panel
-              </span>
-            </div>
-            <p className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6]">Quản trị người dùng & hệ thống v3.1</p>
-          </div>
-        </div>
 
-        <div className="flex items-center gap-3">
-          {/* Link to AI Hub */}
-          <Link
-            href="/admin/ai"
-            aria-label="Giám sát AI Keys"
-            className="text-xs text-[#3c4043] hover:text-[#303134] dark:text-[#e3e3e3] dark:hover:text-[#f1f3f4] px-3.5 py-1.5 rounded-lg border border-[#3c4043]/30 dark:border-[#e3e3e3]/30 bg-[#f1f3f4] dark:bg-[#292a2d] transition-colors flex items-center gap-1.5"
-          >
-            <Bot className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Giám sát AI Keys</span>
-          </Link>
-          <Link
-            href="/admin/keys"
-            aria-label="Cấp khóa AI"
-            className="text-xs text-[#3c4043] hover:text-[#303134] dark:text-[#e3e3e3] dark:hover:text-[#f1f3f4] px-3.5 py-1.5 rounded-lg border border-[#3c4043]/30 dark:border-[#e3e3e3]/30 flex items-center gap-1.5"
-          >
-            <KeyRound className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Cấp khóa AI</span>
-          </Link>
-
-          <button
-            onClick={() => router.push('/')}
-            className="text-xs text-[#3c4043] dark:text-[#e3e3e3] hover:text-black dark:hover:text-white px-3.5 py-1.5 rounded-lg border border-[#dadce0] dark:border-[#3c4043] hover:border-[#bdc1c6] dark:hover:border-[#5f6368] bg-white dark:bg-[#242424] transition-colors cursor-pointer"
-          >
-            ← Về trang Soạn Đề
-          </button>
-
-          {/* Theme Toggle Button */}
-          <button
-            type="button"
-            onClick={toggleTheme}
-            title={theme === 'dark' ? 'Chuyển sang giao diện Sáng' : 'Chuyển sang giao diện Tối'}
-            className="p-2 rounded-lg border border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#242424] text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
-          >
-            {theme === 'dark' ? <Sun className="w-4 h-4 text-[var(--ui-text-secondary)]" /> : <Moon className="w-4 h-4 text-[#5f6368]" />}
-          </button>
-
-          {currentUser && (
-            <div className="hidden sm:flex items-center gap-2 bg-white dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] px-3.5 py-1.5 rounded-full text-xs">
-              <ShieldCheck className="w-4 h-4 text-[#3c4043] dark:text-[#e3e3e3]" />
-              <span className="text-[#3c4043] dark:text-[#e3e3e3] font-medium">{currentUser.email}</span>
-            </div>
-          )}
-
-          <button
-            onClick={handleLogout}
-            title="Đăng xuất"
-            className="p-2 rounded-lg text-[#5f6368] dark:text-[#9aa0a6] hover:text-rose-600 dark:hover:text-[#f28b82] hover:bg-rose-50 dark:hover:bg-[#371918] transition-colors cursor-pointer"
-          >
-            <LogOut className="w-4 h-4" />
-          </button>
-        </div>
-      </header>
 
       {/* Main Content */}
-      {logoutError && <p role="alert" className="px-4 py-2 text-sm text-red-600">{logoutError}</p>}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-8 space-y-6">
+        <div><h1 className="text-2xl font-semibold">Tài khoản</h1><p className="text-sm text-[var(--ui-text-secondary)] mt-1">Quản lý giáo viên, trạng thái tài khoản và hạn mức sử dụng AI.</p></div>
+        {actionError && <p role="alert" className="app-feedback border p-3 rounded-xl text-sm">{actionError}</p>}
+        {loadError && <p role="alert" className="app-feedback border p-3 rounded-xl text-sm">{loadError} Dữ liệu bên dưới có thể là lần tải trước. Hãy bấm Tải lại.</p>}
         {/* Stat Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
           <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-xl p-5 shadow-xs">
             <div className="flex items-center justify-between text-[#5f6368] dark:text-[#9aa0a6] mb-2">
               <span className="text-xs font-medium">Tổng giáo viên</span>
@@ -354,19 +268,19 @@ export default function AdminUsersPage() {
               <FileText className="w-4 h-4 text-[#3c4043] dark:text-[#e3e3e3]" />
             </div>
             <div className="text-2xl font-bold text-[#202124] dark:text-[#e3e3e3]">{totalExams}</div>
-            <div className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] mt-1">Lưu trữ trên PostgreSQL server</div>
+            <div className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] mt-1">Tổng đề của các tài khoản</div>
           </div>
 
           <Link
             href="/admin/ai"
-            className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] hover:border-[#3c4043]/40 dark:hover:border-[#e3e3e3]/40 rounded-xl p-5 shadow-xs transition-colors block cursor-pointer group"
+            className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] hover:border-[#3c4043]/40 dark:hover:border-[#e3e3e3]/40 col-span-2 lg:col-span-1 rounded-xl p-5 shadow-xs transition-colors block cursor-pointer group"
           >
             <div className="flex items-center justify-between text-[#5f6368] dark:text-[#9aa0a6] mb-2">
-              <span className="text-xs font-medium">Hạ tầng AI</span>
+              <span className="text-xs font-medium">Hoạt động AI</span>
               <Bot className="w-4 h-4 text-[var(--ui-text-secondary)]  transition-transform" />
             </div>
-            <div className="text-2xl font-bold text-[#202124] dark:text-[#e3e3e3]">7 Gemini Keys</div>
-            <div className="text-[11px] text-[var(--ui-text-primary)] dark:text-[var(--ui-text-primary)] mt-1">Hệ thống xoay tua chống nghẽn 429 →</div>
+            <div className="text-2xl font-bold text-[#202124] dark:text-[#e3e3e3]">Xem hoạt động</div>
+            <div className="text-[11px] text-[var(--ui-text-primary)] dark:text-[var(--ui-text-primary)] mt-1">Lượt dùng, tình trạng và khóa đã lưu →</div>
           </Link>
         </div>
 
@@ -378,7 +292,7 @@ export default function AdminUsersPage() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Tìm theo tên hoặc email giáo viên..."
+              placeholder="Tìm theo tên hoặc email..."
               className="w-full bg-white dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-full pl-10 pr-4 py-2.5 text-xs text-[#202124] dark:text-[#e3e3e3] placeholder-[#9aa0a6] dark:placeholder-[#5f6368] focus:outline-none focus:border-[#3c4043] dark:focus:border-[#e3e3e3]"
             />
           </div>
@@ -405,13 +319,14 @@ export default function AdminUsersPage() {
           </div>
         </div>
 
+        <div className="flex flex-wrap items-center justify-between gap-3 text-sm"><label className="flex items-center gap-2">Vai trò <select aria-label="Lọc vai trò" value={roleFilter} onChange={e => setRoleFilter(e.target.value)} className="app-button-secondary px-3 py-2"><option value="ALL">Mọi tài khoản</option><option value="TEACHER">Giáo viên</option><option value="SUPER_ADMIN">Quản trị viên</option></select></label><span className="text-[var(--ui-text-secondary)]">Hiện {filteredUsers.length} / {users.length} tài khoản</span></div>
         {/* Teachers Table Card */}
         <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
+            <table role="table" aria-label="Danh sách tài khoản" className="app-user-table w-full text-left text-xs">
               <thead className="bg-[#f8f9fa] dark:bg-[#242424] border-b border-[#dadce0] dark:border-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] uppercase tracking-wider text-[11px]">
                 <tr>
-                  <th className="px-5 py-3.5 font-medium">Giáo viên</th>
+                  <th className="px-5 py-3.5 font-medium">Tài khoản</th>
                   <th className="px-4 py-3.5 font-medium">Vai trò</th>
                   <th className="px-4 py-3.5 font-medium">Trạng thái</th>
                   <th className="px-4 py-3.5 font-medium">Đề & Câu hỏi</th>
@@ -433,14 +348,14 @@ export default function AdminUsersPage() {
                 ) : filteredUsers.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="px-5 py-12 text-center text-[#5f6368] dark:text-[#9aa0a6]">
-                      Không tìm thấy giáo viên nào phù hợp với từ khóa.
+                      Không tìm thấy tài khoản phù hợp.
                     </td>
                   </tr>
                 ) : (
                   filteredUsers.map((u) => (
                     <tr key={u.id} className="hover:bg-[#f8f9fa] dark:hover:bg-[#292a2d] transition-colors">
                       {/* Teacher Column */}
-                      <td className="px-5 py-4">
+                      <td data-label="Tài khoản" className="px-5 py-4">
                         <div className="font-medium text-[#202124] dark:text-[#e3e3e3]">{u.name}</div>
                         <div className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6]">{u.email}</div>
                         {u.mustChangePassword && (
@@ -451,20 +366,20 @@ export default function AdminUsersPage() {
                       </td>
 
                       {/* Role Column */}
-                      <td className="px-4 py-4">
+                      <td data-label="Vai trò" className="px-4 py-4">
                         {u.role === 'SUPER_ADMIN' ? (
                           <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border border-[#3c4043]/20 dark:border-[#e3e3e3]/30">
-                            SUPER ADMIN
+                            Quản trị viên
                           </span>
                         ) : (
                           <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[var(--ui-surface-variant)] dark:bg-[var(--ui-surface-variant)] text-[var(--ui-text-primary)] dark:text-[var(--ui-text-primary)] border border-[var(--ui-border)] dark:border-[var(--ui-border)]">
-                            GIÁO VIÊN
+                            Giáo viên
                           </span>
                         )}
                       </td>
 
                       {/* Status Column */}
-                      <td className="px-4 py-4">
+                      <td data-label="Trạng thái" className="px-4 py-4">
                         {u.isActive ? (
                           <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-[var(--ui-surface-variant)] dark:bg-[var(--ui-surface-variant)] text-[var(--ui-text-primary)] dark:text-[var(--ui-text-primary)] border border-[var(--ui-border)] dark:border-[var(--ui-border)]">
                             <span className="w-1.5 h-1.5 rounded-full bg-[var(--ui-text-secondary)] " />
@@ -479,19 +394,19 @@ export default function AdminUsersPage() {
                       </td>
 
                       {/* Stats Column */}
-                      <td className="px-4 py-4 text-[#202124] dark:text-[#e3e3e3]">
+                      <td data-label="Đề và câu hỏi" className="px-4 py-4 text-[#202124] dark:text-[#e3e3e3]">
                         <div>{u._count.exams} đề thi</div>
                         <div className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6]">{u._count.questions} câu hỏi</div>
                       </td>
 
                       {/* AI Quota Column */}
-                      <td className="px-4 py-4">
+                      <td data-label="Hạn mức AI/ngày" className="px-4 py-4">
                         <span className="font-mono text-[#202124] dark:text-[#e3e3e3]">{u.aiDailyLimit}</span>
                         <span className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6]"> lệnh/ngày</span>
                       </td>
 
                       {/* Last Login Column */}
-                      <td className="px-4 py-4 text-[#5f6368] dark:text-[#9aa0a6] text-[11px]">
+                      <td data-label="Đăng nhập cuối" className="px-4 py-4 text-[#5f6368] dark:text-[#9aa0a6] text-[11px]">
                         {u.lastLoginAt ? (
                           new Date(u.lastLoginAt).toLocaleString('vi-VN', {
                             dateStyle: 'short',
@@ -503,7 +418,7 @@ export default function AdminUsersPage() {
                       </td>
 
                       {/* Actions Column */}
-                      <td className="px-5 py-4 text-right">
+                      <td data-label="Thao tác" className="px-5 py-4 text-right">
                         <div className="inline-flex items-center gap-1.5">
                           {/* Toggle Active Button */}
                           {u.role !== 'SUPER_ADMIN' && (

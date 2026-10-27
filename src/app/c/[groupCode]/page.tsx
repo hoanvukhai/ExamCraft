@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, use } from 'react';
 import Link from 'next/link';
+import { assignmentModeLabel } from '@/lib/admin-overview';
 import {
   Users,
   BookOpen,
@@ -110,7 +111,7 @@ function ClassPortalContent({
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
             <div>
               <div className="flex items-center gap-2 text-[#3c4043] dark:text-[#e3e3e3] text-xs font-bold uppercase tracking-wider mb-2">
-                <GraduationCap className="w-4 h-4" /> Lớp học trực tuyến
+                <GraduationCap className="w-4 h-4" /> Bài giao của lớp
               </div>
               <h1 className="text-2xl md:text-3xl font-bold text-[#202124] dark:text-[#e3e3e3]">{group.name}</h1>
               <p className="text-[#5f6368] dark:text-[#9aa0a6] text-xs md:text-sm mt-1">
@@ -171,7 +172,7 @@ function ClassPortalContent({
                     <div className="space-y-1.5 flex-1 min-w-0 [overflow-wrap:anywhere]">
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wider bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border border-[#3c4043]/30 dark:border-[#e3e3e3]/30">
-                          {asg.mode === 'EXAM' ? 'Bài Thi' : asg.mode === 'PRACTICE' ? 'Luyện tập' : 'Bài về nhà'}
+                          {assignmentModeLabel(asg.mode)}
                         </span>
                         {isSubmitted ? (
                           <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#e6f4ea] dark:bg-[#0f291e] text-[#137333] dark:text-[#5bb98c] border border-[#ceead6] dark:border-[#1e4d38] flex items-center gap-1">

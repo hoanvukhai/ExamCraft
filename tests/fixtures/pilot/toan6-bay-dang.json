@@ -1,237 +1,237 @@
 {
-    "id":  "exam-fixture-toan6-pilot",
-    "metadata":  {
-                     "title":  "Äá» Kiá»ƒm Tra Minh Há»a Ká»¹ Thuáº­t ToÃ¡n 6 - Äá»§ 7 Dáº¡ng CÃ¢u Há»i",
-                     "schoolName":  "TrÆ°á»ng THCS Thá»±c Nghiá»‡m",
-                     "departmentName":  "Tá»• ToÃ¡n - Tin",
-                     "subject":  "toan",
-                     "grade":  6,
-                     "durationMinutes":  45,
-                     "examCode":  "101",
-                     "academicYear":  "2026-2027",
-                     "semester":  "Há»c ká»³ 1",
-                     "assessmentMode":  "scored",
-                     "notes":  "VÃ­ dá»¥ ká»¹ thuáº­t phá»¥c vá»¥ bá»™ kiá»ƒm tá»± Ä‘á»™ng E2E cá»§a Codex; khÃ´ng pháº£i Ä‘á» tháº©m Ä‘á»‹nh chuyÃªn mÃ´n."
-                 },
-    "passages":  [
-                     {
-                         "id":  "pas-toan6-mua",
-                         "title":  "Báº£ng thá»‘ng kÃª lÆ°á»£ng mÆ°a thÃ¡ng 9 táº¡i ba tráº¡m Ä‘o",
-                         "content":  "Báº£ng sá»‘ liá»‡u thá»‘ng kÃª lÆ°á»£ng mÆ°a (Ä‘Æ¡n vá»‹: mm) Ä‘o Ä‘Æ°á»£c táº¡i ba tráº¡m khÃ­ tÆ°á»£ng A, B, C trong Ä‘á»£t mÆ°a Ä‘áº§u thÃ¡ng 9:\n- Tráº¡m A: NgÃ y thá»© nháº¥t mÆ°a $24\\text{ mm}$, ngÃ y thá»© hai mÆ°a $36\\text{ mm}$.\n- Tráº¡m B: NgÃ y thá»© nháº¥t mÆ°a $18\\text{ mm}$, ngÃ y thá»© hai mÆ°a $42\\text{ mm}$.\n- Tráº¡m C: Tá»•ng lÆ°á»£ng mÆ°a cáº£ hai ngÃ y lÃ  $70\\text{ mm}$.",
-                         "source":  "Sá»‘ liá»‡u giáº£ Ä‘á»‹nh phá»¥c vá»¥ kiá»ƒm thá»­ ká»¹ thuáº­t"
-                     }
-                 ],
-    "sections":  [
-                     {
-                         "id":  "sec-part1",
-                         "name":  "Pháº§n I",
-                         "title":  "Tráº¯c nghiá»‡m nhiá»u lá»±a chá»n",
-                         "type":  "multiple_choice",
-                         "pointsPerQuestion":  0.5
-                     },
-                     {
-                         "id":  "sec-part2",
-                         "name":  "Pháº§n II",
-                         "title":  "Tráº¯c nghiá»‡m ÄÃºng / Sai",
-                         "type":  "true_false_group",
-                         "pointsPerQuestion":  1.0
-                     },
-                     {
-                         "id":  "sec-part3",
-                         "name":  "Pháº§n III",
-                         "title":  "Tráº£ lá»i ngáº¯n, Tá»± luáº­n vÃ  cÃ¡c dáº¡ng tÆ°Æ¡ng tÃ¡c",
-                         "type":  "short_answer",
-                         "pointsPerQuestion":  1.0
-                     }
-                 ],
-    "questions":  [
-                      {
-                          "id":  "q-toan6-mc-01",
-                          "sectionId":  "sec-part1",
-                          "passageId":  "pas-toan6-mua",
-                          "type":  "multiple_choice",
-                          "difficulty":  "thong_hieu",
-                          "points":  0.5,
-                          "content":  "Dá»±a vÃ o báº£ng sá»‘ liá»‡u trÃªn, tá»•ng lÆ°á»£ng mÆ°a trong hai ngÃ y táº¡i tráº¡m A lÃ  bao nhiÃªu milimÃ©t?",
-                          "choices":  [
-                                          {
-                                              "key":  "A",
-                                              "text":  "$50\\text{ mm}$"
-                                          },
-                                          {
-                                              "key":  "B",
-                                              "text":  "$60\\text{ mm}$"
-                                          },
-                                          {
-                                              "key":  "C",
-                                              "text":  "$62\\text{ mm}$"
-                                          },
-                                          {
-                                              "key":  "D",
-                                              "text":  "$70\\text{ mm}$"
-                                          }
-                                      ],
-                          "correct_answer":  "B",
-                          "step_by_step_solution":  "Tá»•ng lÆ°á»£ng mÆ°a táº¡i tráº¡m A lÃ : $24 + 36 = 60\\text{ (mm)}$. Do Ä‘Ã³ Ä‘Ã¡p Ã¡n Ä‘Ãºng lÃ  $60\\text{ mm}$."
-                      },
-                      {
-                          "id":  "q-toan6-tf-02",
-                          "sectionId":  "sec-part2",
-                          "type":  "true_false_group",
-                          "difficulty":  "thong_hieu",
-                          "points":  1.0,
-                          "content":  "Cho táº­p há»£p cÃ¡c sá»‘ tá»± nhiÃªn $X = \\{x \\in \\mathbb{N} \\mid 5 \u003c x \\le 10\\}$. XÃ©t tÃ­nh ÄÃºng hay Sai cá»§a cÃ¡c má»‡nh Ä‘á» sau:",
-                          "sub_questions":  [
-                                                {
-                                                    "key":  "a",
-                                                    "content":  "Pháº§n tá»­ $5$ thuá»™c táº­p há»£p $X$ ($5 \\in X$).",
-                                                    "isCorrect":  false,
-                                                    "explanation":  "VÃ¬ Ä‘iá»u kiá»‡n lÃ  $x \u003e 5$ nÃªn sá»‘ 5 khÃ´ng thuá»™c táº­p há»£p $X$."
-                                                },
-                                                {
-                                                    "key":  "b",
-                                                    "content":  "Táº­p há»£p $X$ cÃ³ $5$ pháº§n tá»­.",
-                                                    "isCorrect":  true,
-                                                    "explanation":  "CÃ¡c pháº§n tá»­ cá»§a $X$ lÃ  $\\{6, 7, 8, 9, 10\\}$, cÃ³ Ä‘Ãºng 5 pháº§n tá»­."
-                                                },
-                                                {
-                                                    "key":  "c",
-                                                    "content":  "Sá»‘ $10$ thuá»™c táº­p há»£p $X$ ($10 \\in X$).",
-                                                    "isCorrect":  true,
-                                                    "explanation":  "VÃ¬ Ä‘iá»u kiá»‡n cÃ³ dáº¥u ngoáº·c báº±ng $x \\le 10$ nÃªn $10 \\in X$."
-                                                },
-                                                {
-                                                    "key":  "d",
-                                                    "content":  "Táº¥t cáº£ cÃ¡c pháº§n tá»­ trong $X$ Ä‘á»u lÃ  sá»‘ cháºµn.",
-                                                    "isCorrect":  false,
-                                                    "explanation":  "Táº­p $X$ cÃ³ cÃ¡c sá»‘ láº» nhÆ° $7, 9$ nÃªn nháº­n Ä‘á»‹nh nÃ y lÃ  Sai."
-                                                }
-                                            ],
-                          "step_by_step_solution":  "Liá»‡t kÃª cÃ¡c pháº§n tá»­ cá»§a táº­p há»£p: $X = \\{6; 7; 8; 9; 10\\}$.\na) Sai vÃ¬ $5$ khÃ´ng thá»a mÃ£n $5 \u003c 5$.\nb) ÄÃºng vÃ¬ táº­p há»£p cÃ³ 5 pháº§n tá»­: 6, 7, 8, 9, 10.\nc) ÄÃºng vÃ¬ $10 \\le 10$.\nd) Sai vÃ¬ 7 vÃ  9 lÃ  cÃ¡c sá»‘ láº»."
-                      },
-                      {
-                          "id":  "q-toan6-sa-03",
-                          "sectionId":  "sec-part3",
-                          "type":  "short_answer",
-                          "difficulty":  "van_dung",
-                          "points":  1.0,
-                          "content":  "TÃ¬m Æ°á»›c chung lá»›n nháº¥t cá»§a hai sá»‘ $36$ vÃ  $48$ (kÃ­ hiá»‡u $\\text{Æ¯CLN}(36, 48)$).",
-                          "correct_answer":  "12",
-                          "accepted_answers":  [
-                                                   "12",
-                                                   "12.0"
-                                               ],
-                          "step_by_step_solution":  "PhÃ¢n tÃ­ch ra thá»«a sá»‘ nguyÃªn tá»‘: $36 = 2^2 \\cdot 3^2$; $48 = 2^4 \\cdot 3$. CÃ¡c thá»«a sá»‘ nguyÃªn tá»‘ chung lÃ  $2$ vÃ  $3$. Sá»‘ mÅ© nhá» nháº¥t cá»§a $2$ lÃ  $2$, cá»§a $3$ lÃ  $1$. Váº­y $\\text{Æ¯CLN}(36, 48) = 2^2 \\cdot 3 = 12$."
-                      },
-                      {
-                          "id":  "q-toan6-essay-04",
-                          "sectionId":  "sec-part3",
-                          "type":  "essay",
-                          "difficulty":  "van_dung",
-                          "points":  2.0,
-                          "content":  "Má»™t khu vÆ°á»n hÃ¬nh chá»¯ nháº­t cÃ³ chiá»u dÃ i $15\\text{ m}$ vÃ  chiá»u rá»™ng $8\\text{ m}$. NgÆ°á»i ta Ä‘á»ƒ má»™t lá»‘i Ä‘i xung quanh rá»™ng $1\\text{ m}$, pháº§n Ä‘áº¥t cÃ²n láº¡i bÃªn trong dÃ¹ng Ä‘á»ƒ trá»“ng hoa (nhÆ° hÃ¬nh váº½ mÃ´ phá»ng).\na) TÃ­nh diá»‡n tÃ­ch toÃ n bá»™ khu vÆ°á»n ban Ä‘áº§u.\nb) TÃ­nh diá»‡n tÃ­ch pháº§n Ä‘áº¥t dÃ¹ng Ä‘á»ƒ trá»“ng hoa.",
-                          "figures":  [
-                                          {
-                                              "id":  "fig-garden-01",
-                                              "kind":  "image",
-                                              "caption":  "SÆ¡ Ä‘á»“ máº·t báº±ng khu vÆ°á»n vÃ  lá»‘i Ä‘i xung quanh rá»™ng 1m",
-                                              "data":  {
-                                                           "url":  "data:image/png;base64,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",
-                                                           "width":  300,
-                                                           "height":  180,
-                                                           "description":  "Hình chữ nhật lớn kích thước 15m x 8m, bên trong là hình chữ nhật nhỏ cách đều các cạnh 1m"
-                                                       }
-                                          }
-                                      ],
-                          "rubric":  [
-                                         {
-                                             "criterion":  "TÃ­nh Ä‘Ãºng diá»‡n tÃ­ch toÃ n bá»™ khu vÆ°á»n: S = 15 x 8 = 120 (m2)",
-                                             "maxPoints":  1.0
-                                         },
-                                         {
-                                             "criterion":  "TÃ­nh Ä‘Ãºng chiá»u dÃ i trá»“ng hoa (13m), chiá»u rá»™ng trá»“ng hoa (6m) vÃ  diá»‡n tÃ­ch trá»“ng hoa: S = 13 x 6 = 78 (m2)",
-                                             "maxPoints":  1.0
-                                         }
-                                     ],
-                          "step_by_step_solution":  "a) Diá»‡n tÃ­ch toÃ n bá»™ khu vÆ°á»n lÃ : $15 \\times 8 = 120\\text{ (m}^2\\text{)}$.\nb) Chiá»u dÃ i pháº§n trá»“ng hoa lÃ : $15 - 1 - 1 = 13\\text{ (m)}$.\nChiá»u rá»™ng pháº§n trá»“ng hoa lÃ : $8 - 1 - 1 = 6\\text{ (m)}$.\nDiá»‡n tÃ­ch pháº§n Ä‘áº¥t trá»“ng hoa lÃ : $13 \\times 6 = 78\\text{ (m}^2\\text{)}$."
-                      },
-                      {
-                          "id":  "q-toan6-fill-05",
-                          "sectionId":  "sec-part3",
-                          "type":  "fill_blank",
-                          "difficulty":  "nhan_biet",
-                          "points":  0.5,
-                          "content":  "Sá»‘ Ä‘á»‘i cá»§a sá»‘ nguyÃªn $-15$ lÃ  [blank].",
-                          "correct_answer":  "15",
-                          "accepted_answers":  [
-                                                   "15",
-                                                   "+15"
-                                               ],
-                          "step_by_step_solution":  "Theo Ä‘á»‹nh nghÄ©a sá»‘ Ä‘á»‘i trong táº­p há»£p cÃ¡c sá»‘ nguyÃªn $\\mathbb{Z}$, hai sá»‘ Ä‘á»‘i nhau cÃ³ tá»•ng báº±ng $0$. Sá»‘ Ä‘á»‘i cá»§a $-15$ lÃ  $15$."
-                      },
-                      {
-                          "id":  "q-toan6-match-06",
-                          "sectionId":  "sec-part3",
-                          "type":  "matching",
-                          "difficulty":  "thong_hieu",
-                          "points":  1.0,
-                          "content":  "GhÃ©p má»—i hÃ¬nh há»c pháº³ng á»Ÿ cá»™t bÃªn trÃ¡i vá»›i Ä‘áº·c Ä‘iá»ƒm tÆ°Æ¡ng á»©ng á»Ÿ cá»™t bÃªn pháº£i:",
-                          "matchingPairs":  [
-                                                {
-                                                    "id":  "m1",
-                                                    "left":  "Tam giÃ¡c Ä‘á»u",
-                                                    "right":  "CÃ³ 3 cáº¡nh báº±ng nhau vÃ  3 gÃ³c báº±ng nhau"
-                                                },
-                                                {
-                                                    "id":  "m2",
-                                                    "left":  "HÃ¬nh vuÃ´ng",
-                                                    "right":  "CÃ³ 4 cáº¡nh báº±ng nhau vÃ  4 gÃ³c vuÃ´ng"
-                                                },
-                                                {
-                                                    "id":  "m3",
-                                                    "left":  "HÃ¬nh lá»¥c giÃ¡c Ä‘á»u",
-                                                    "right":  "CÃ³ 6 cáº¡nh báº±ng nhau vÃ  6 gÃ³c báº±ng nhau"
-                                                }
-                                            ],
-                          "step_by_step_solution":  "- Tam giÃ¡c Ä‘á»u cÃ³ 3 cáº¡nh báº±ng nhau vÃ  3 gÃ³c báº±ng 60 Ä‘á»™.\n- HÃ¬nh vuÃ´ng cÃ³ 4 cáº¡nh báº±ng nhau vÃ  4 gÃ³c vuÃ´ng 90 Ä‘á»™.\n- HÃ¬nh lá»¥c giÃ¡c Ä‘á»u cÃ³ 6 cáº¡nh báº±ng nhau vÃ  6 gÃ³c báº±ng 120 Ä‘á»™."
-                      },
-                      {
-                          "id":  "q-toan6-order-07",
-                          "sectionId":  "sec-part3",
-                          "type":  "ordering",
-                          "difficulty":  "thong_hieu",
-                          "points":  1.0,
-                          "content":  "Sáº¯p xáº¿p cÃ¡c bÆ°á»›c thá»±c hiá»‡n phÃ©p tÃ­nh cÃ³ dáº¥u ngoáº·c $A = 50 - [30 - (8 - 3)^2]$ theo Ä‘Ãºng thá»© tá»± Æ°u tiÃªn tá»« trÆ°á»›c Ä‘áº¿n sau:",
-                          "correctOrder":  [
-                                               "TÃ­nh giÃ¡ trá»‹ trong ngoáº·c trÃ²n: (8 - 3) = 5",
-                                               "Thá»±c hiá»‡n lÅ©y thá»«a: 5^2 = 25",
-                                               "TÃ­nh giÃ¡ trá»‹ trong ngoáº·c vuÃ´ng: 30 - 25 = 5",
-                                               "Thá»±c hiá»‡n phÃ©p trá»« cuá»‘i cÃ¹ng ngoÃ i ngoáº·c vuÃ´ng: 50 - 5 = 45"
-                                           ],
-                          "step_by_step_solution":  "Thá»© tá»± thá»±c hiá»‡n phÃ©p tÃ­nh chuáº©n GDPT 2018: Ngoáº·c trÃ²n () trÆ°á»›c, sau Ä‘Ã³ Ä‘áº¿n lÅ©y thá»«a, tiáº¿p theo lÃ  ngoáº·c vuÃ´ng [], cuá»‘i cÃ¹ng lÃ  phÃ©p trá»« ngoÃ i ngoáº·c."
-                      },
-                      {
-                          "id":  "q-toan6-survey-08",
-                          "sectionId":  "sec-part3",
-                          "type":  "short_answer",
-                          "difficulty":  "nhan_biet",
-                          "points":  0,
-                          "content":  "[CÃ¢u há»i kháº£o sÃ¡t - Äiá»ƒm 0] Em Ä‘Ã£ dÃ nh khoáº£ng bao nhiÃªu phÃºt Ä‘á»ƒ hoÃ n thÃ nh toÃ n bá»™ bÃ i kiá»ƒm tra nÃ y?",
-                          "correct_answer":  "45",
-                          "accepted_answers":  [
-                                                   "15",
-                                                   "20",
-                                                   "25",
-                                                   "30",
-                                                   "35",
-                                                   "40",
-                                                   "45",
-                                                   "50"
-                                               ],
-                          "step_by_step_solution":  "CÃ¢u há»i kháº£o sÃ¡t thá»i gian lÃ m bÃ i thá»±c táº¿ cá»§a há»c sinh; cÃ¢u nÃ y cÃ³ sá»‘ Ä‘iá»ƒm báº±ng 0 Ä‘á»ƒ kiá»ƒm tra há»‡ thá»‘ng tÃ­nh Ä‘iá»ƒm khÃ´ng bá»‹ lá»—i khi cÃ¢u há»i cÃ³ Ä‘iá»ƒm báº±ng 0."
-                      }
-                  ],
-    "createdAt":  "2026-10-24T14:45:00.000Z",
-    "updatedAt":  "2026-10-24T14:45:00.000Z",
-    "version":  1
+    "id": "exam-fixture-toan6-pilot",
+    "metadata": {
+        "title": "Đề Kiểm Tra Minh Họa Kỹ Thuật Toán 6 - Đủ 7 Dạng Câu Hỏi",
+        "schoolName": "Trường THCS Thực Nghiệm",
+        "departmentName": "Tổ Toán - Tin",
+        "subject": "toan",
+        "grade": 6,
+        "durationMinutes": 45,
+        "examCode": "101",
+        "academicYear": "2026-2027",
+        "semester": "Học kỳ 1",
+        "assessmentMode": "scored",
+        "notes": "Ví dụ kỹ thuật phục vụ bộ kiểm tự động E2E của Codex; không phải đề thẩm định chuyên môn."
+    },
+    "passages": [
+        {
+            "id": "pas-toan6-mua",
+            "title": "Bảng thống kê lượng mưa tháng 9 tại ba trạm đo",
+            "content": "Bảng số liệu thống kê lượng mưa (đơn vị: mm) đo được tại ba trạm khí tượng A, B, C trong đợt mưa đầu tháng 9:\n- Trạm A: Ngày thứ nhất mưa $24\\text{ mm}$, ngày thứ hai mưa $36\\text{ mm}$.\n- Trạm B: Ngày thứ nhất mưa $18\\text{ mm}$, ngày thứ hai mưa $42\\text{ mm}$.\n- Trạm C: Tổng lượng mưa cả hai ngày là $70\\text{ mm}$.",
+            "source": "Số liệu giả định phục vụ kiểm thử kỹ thuật"
+        }
+    ],
+    "sections": [
+        {
+            "id": "sec-part1",
+            "name": "Phần I",
+            "title": "Trắc nghiệm nhiều lựa chọn",
+            "type": "multiple_choice",
+            "pointsPerQuestion": 0.5
+        },
+        {
+            "id": "sec-part2",
+            "name": "Phần II",
+            "title": "Trắc nghiệm Đúng / Sai",
+            "type": "true_false_group",
+            "pointsPerQuestion": 1
+        },
+        {
+            "id": "sec-part3",
+            "name": "Phần III",
+            "title": "Trả lời ngắn, Tự luận và các dạng tương tác",
+            "type": "short_answer",
+            "pointsPerQuestion": 1
+        }
+    ],
+    "questions": [
+        {
+            "id": "q-toan6-mc-01",
+            "sectionId": "sec-part1",
+            "passageId": "pas-toan6-mua",
+            "type": "multiple_choice",
+            "difficulty": "thong_hieu",
+            "points": 0.5,
+            "content": "Dựa vào bảng số liệu trên, tổng lượng mưa trong hai ngày tại trạm A là bao nhiêu milimét?",
+            "choices": [
+                {
+                    "key": "A",
+                    "text": "$50\\text{ mm}$"
+                },
+                {
+                    "key": "B",
+                    "text": "$60\\text{ mm}$"
+                },
+                {
+                    "key": "C",
+                    "text": "$62\\text{ mm}$"
+                },
+                {
+                    "key": "D",
+                    "text": "$70\\text{ mm}$"
+                }
+            ],
+            "correct_answer": "B",
+            "step_by_step_solution": "Tổng lượng mưa tại trạm A là: $24 + 36 = 60\\text{ (mm)}$. Do đó đáp án đúng là $60\\text{ mm}$."
+        },
+        {
+            "id": "q-toan6-tf-02",
+            "sectionId": "sec-part2",
+            "type": "true_false_group",
+            "difficulty": "thong_hieu",
+            "points": 1,
+            "content": "Cho tập hợp các số tự nhiên $X = \\{x \\in \\mathbb{N} \\mid 5 < x \\le 10\\}$. Xét tính Đúng hay Sai của các mệnh đề sau:",
+            "sub_questions": [
+                {
+                    "key": "a",
+                    "content": "Phần tử $5$ thuộc tập hợp $X$ ($5 \\in X$).",
+                    "isCorrect": false,
+                    "explanation": "Vì điều kiện là $x > 5$ nên số 5 không thuộc tập hợp $X$."
+                },
+                {
+                    "key": "b",
+                    "content": "Tập hợp $X$ có $5$ phần tử.",
+                    "isCorrect": true,
+                    "explanation": "Các phần tử của $X$ là $\\{6, 7, 8, 9, 10\\}$, có đúng 5 phần tử."
+                },
+                {
+                    "key": "c",
+                    "content": "Số $10$ thuộc tập hợp $X$ ($10 \\in X$).",
+                    "isCorrect": true,
+                    "explanation": "Vì điều kiện có dấu ngoặc bằng $x \\le 10$ nên $10 \\in X$."
+                },
+                {
+                    "key": "d",
+                    "content": "Tất cả các phần tử trong $X$ đều là số chẵn.",
+                    "isCorrect": false,
+                    "explanation": "Tập $X$ có các số lẻ như $7, 9$ nên nhận định này là Sai."
+                }
+            ],
+            "step_by_step_solution": "Liệt kê các phần tử của tập hợp: $X = \\{6; 7; 8; 9; 10\\}$.\na) Sai vì $5$ không thỏa mãn $5 < 5$.\nb) Đúng vì tập hợp có 5 phần tử: 6, 7, 8, 9, 10.\nc) Đúng vì $10 \\le 10$.\nd) Sai vì 7 và 9 là các số lẻ."
+        },
+        {
+            "id": "q-toan6-sa-03",
+            "sectionId": "sec-part3",
+            "type": "short_answer",
+            "difficulty": "van_dung",
+            "points": 1,
+            "content": "Tìm ước chung lớn nhất của hai số $36$ và $48$ (kí hiệu $\\text{ƯCLN}(36, 48)$).",
+            "correct_answer": "12",
+            "accepted_answers": [
+                "12",
+                "12.0"
+            ],
+            "step_by_step_solution": "Phân tích ra thừa số nguyên tố: $36 = 2^2 \\cdot 3^2$; $48 = 2^4 \\cdot 3$. Các thừa số nguyên tố chung là $2$ và $3$. Số mũ nhỏ nhất của $2$ là $2$, của $3$ là $1$. Vậy $\\text{ƯCLN}(36, 48) = 2^2 \\cdot 3 = 12$."
+        },
+        {
+            "id": "q-toan6-essay-04",
+            "sectionId": "sec-part3",
+            "type": "essay",
+            "difficulty": "van_dung",
+            "points": 2,
+            "content": "Một khu vườn hình chữ nhật có chiều dài $15\\text{ m}$ và chiều rộng $8\\text{ m}$. Người ta để một lối đi xung quanh rộng $1\\text{ m}$, phần đất còn lại bên trong dùng để trồng hoa (như hình vẽ mô phỏng).\na) Tính diện tích toàn bộ khu vườn ban đầu.\nb) Tính diện tích phần đất dùng để trồng hoa.",
+            "figures": [
+                {
+                    "id": "fig-garden-01",
+                    "kind": "image",
+                    "caption": "Sơ đồ mặt bằng khu vườn và lối đi xung quanh rộng 1m",
+                    "data": {
+                        "url": "data:image/png;base64,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",
+                        "width": 300,
+                        "height": 180,
+                        "description": "Hình chữ nhật lớn kích thước 15m x 8m, bên trong là hình chữ nhật nhỏ cách đều các cạnh 1m"
+                    }
+                }
+            ],
+            "rubric": [
+                {
+                    "criterion": "Tính đúng diện tích toàn bộ khu vườn: S = 15 x 8 = 120 (m2)",
+                    "maxPoints": 1
+                },
+                {
+                    "criterion": "Tính đúng chiều dài trồng hoa (13m), chiều rộng trồng hoa (6m) và diện tích trồng hoa: S = 13 x 6 = 78 (m2)",
+                    "maxPoints": 1
+                }
+            ],
+            "step_by_step_solution": "a) Diện tích toàn bộ khu vườn là: $15 \\times 8 = 120\\text{ (m}^2\\text{)}$.\nb) Chiều dài phần trồng hoa là: $15 - 1 - 1 = 13\\text{ (m)}$.\nChiều rộng phần trồng hoa là: $8 - 1 - 1 = 6\\text{ (m)}$.\nDiện tích phần đất trồng hoa là: $13 \\times 6 = 78\\text{ (m}^2\\text{)}$."
+        },
+        {
+            "id": "q-toan6-fill-05",
+            "sectionId": "sec-part3",
+            "type": "fill_blank",
+            "difficulty": "nhan_biet",
+            "points": 0.5,
+            "content": "Số đối của số nguyên $-15$ là [blank].",
+            "correct_answer": "15",
+            "accepted_answers": [
+                "15",
+                "+15"
+            ],
+            "step_by_step_solution": "Theo định nghĩa số đối trong tập hợp các số nguyên $\\mathbb{Z}$, hai số đối nhau có tổng bằng $0$. Số đối của $-15$ là $15$."
+        },
+        {
+            "id": "q-toan6-match-06",
+            "sectionId": "sec-part3",
+            "type": "matching",
+            "difficulty": "thong_hieu",
+            "points": 1,
+            "content": "Ghép mỗi hình học phẳng ở cột bên trái với đặc điểm tương ứng ở cột bên phải:",
+            "matchingPairs": [
+                {
+                    "id": "m1",
+                    "left": "Tam giác đều",
+                    "right": "Có 3 cạnh bằng nhau và 3 góc bằng nhau"
+                },
+                {
+                    "id": "m2",
+                    "left": "Hình vuông",
+                    "right": "Có 4 cạnh bằng nhau và 4 góc vuông"
+                },
+                {
+                    "id": "m3",
+                    "left": "Hình lục giác đều",
+                    "right": "Có 6 cạnh bằng nhau và 6 góc bằng nhau"
+                }
+            ],
+            "step_by_step_solution": "- Tam giác đều có 3 cạnh bằng nhau và 3 góc bằng 60 độ.\n- Hình vuông có 4 cạnh bằng nhau và 4 góc vuông 90 độ.\n- Hình lục giác đều có 6 cạnh bằng nhau và 6 góc bằng 120 độ."
+        },
+        {
+            "id": "q-toan6-order-07",
+            "sectionId": "sec-part3",
+            "type": "ordering",
+            "difficulty": "thong_hieu",
+            "points": 1,
+            "content": "Sắp xếp các bước thực hiện phép tính có dấu ngoặc $A = 50 - [30 - (8 - 3)^2]$ theo đúng thứ tự ưu tiên từ trước đến sau:",
+            "correctOrder": [
+                "Tính giá trị trong ngoặc tròn: (8 - 3) = 5",
+                "Thực hiện lũy thừa: 5^2 = 25",
+                "Tính giá trị trong ngoặc vuông: 30 - 25 = 5",
+                "Thực hiện phép trừ cuối cùng ngoài ngoặc vuông: 50 - 5 = 45"
+            ],
+            "step_by_step_solution": "Thứ tự thực hiện phép tính chuẩn GDPT 2018: Ngoặc tròn () trước, sau đó đến lũy thừa, tiếp theo là ngoặc vuông [], cuối cùng là phép trừ ngoài ngoặc."
+        },
+        {
+            "id": "q-toan6-survey-08",
+            "sectionId": "sec-part3",
+            "type": "short_answer",
+            "difficulty": "nhan_biet",
+            "points": 0,
+            "content": "[Câu hỏi khảo sát - Điểm 0] Em đã dành khoảng bao nhiêu phút để hoàn thành toàn bộ bài kiểm tra này?",
+            "correct_answer": "45",
+            "accepted_answers": [
+                "15",
+                "20",
+                "25",
+                "30",
+                "35",
+                "40",
+                "45",
+                "50"
+            ],
+            "step_by_step_solution": "Câu hỏi khảo sát thời gian làm bài thực tế của học sinh; câu này có số điểm bằng 0 để kiểm tra hệ thống tính điểm không bị lỗi khi câu hỏi có điểm bằng 0."
+        }
+    ],
+    "createdAt": "2026-10-24T14:45:00.000Z",
+    "updatedAt": "2026-10-24T14:45:00.000Z",
+    "version": 1
 }

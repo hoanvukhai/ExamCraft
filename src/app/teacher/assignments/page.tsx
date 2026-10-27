@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { usePinnedAccount } from '@/hooks/usePinnedAccount';
 import Link from 'next/link';
+import { assignmentModeLabel } from '@/lib/admin-overview';
 import {
   BookOpen,
   Users,
@@ -76,7 +77,7 @@ export default function TeacherAssignmentsListPage() {
             </div>
             <h1 className="text-2xl font-bold text-[#202124] dark:text-[#e3e3e3] flex items-center gap-2.5">
               <BookOpen className="w-7 h-7 text-[#3c4043] dark:text-[#e3e3e3]" />
-              Quản Lý Bài Giao & Bảng Điểm
+              Bài đã giao
             </h1>
             <p className="text-xs sm:text-sm text-[#5f6368] dark:text-[#9aa0a6] mt-1">
               Theo dõi trực tiếp quá trình làm bài của học sinh và phân tích kết quả từng đợt thi.
@@ -87,7 +88,7 @@ export default function TeacherAssignmentsListPage() {
             href="/"
             className="inline-flex items-center justify-center gap-2 px-5 py-2.5 app-button-primary dark:bg-[#e3e3e3] dark:text-[#17181a] text-white text-sm font-semibold rounded-lg shadow-xs transition-all"
           >
-            <Plus className="w-4 h-4" /> Giao Bài Mới
+            <Plus className="w-4 h-4" /> Chọn đề để giao
           </Link>
         </div>
 
@@ -125,7 +126,7 @@ export default function TeacherAssignmentsListPage() {
               href="/"
               className="px-5 py-2.5 app-button-primary dark:bg-[#e3e3e3] dark:text-[#17181a] text-white text-xs font-semibold rounded-lg shadow-xs"
             >
-              Về Trang Soạn Đề
+              Về kho đề
             </Link>
           </div>
         ) : (
@@ -147,7 +148,7 @@ export default function TeacherAssignmentsListPage() {
                       {asg.status === 'OPEN' ? 'Đang mở' : 'Đã đóng'}
                     </span>
                     <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043] uppercase tracking-wider">
-                      {asg.mode}
+                      {assignmentModeLabel(asg.mode)}
                     </span>
                     {asg.group && (
                       <span className="text-xs text-[#5f6368] dark:text-[#9aa0a6] font-semibold">

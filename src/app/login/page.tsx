@@ -133,10 +133,10 @@ export default function LoginPage() {
             <Sparkles className="w-7 h-7 text-white dark:text-[#17181a]" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-[#202124] dark:text-[#e3e3e3] flex items-center justify-center gap-2">
-            ExamCraft <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border border-[#3c4043]/20 dark:border-[#e3e3e3]/30 font-semibold">v3.1</span>
+            ExamCraft
           </h1>
           <p className="text-sm text-[#5f6368] dark:text-[#9aa0a6] mt-1.5">
-            Trợ lý Soạn Đề AI & Quản Lý Thi Chuẩn GDPT 2018
+            Soạn đề, quản lý câu hỏi và giao bài
           </p>
         </div>
 
@@ -229,7 +229,7 @@ export default function LoginPage() {
         {/* Footer Notice */}
         <div className="mt-6 text-center text-xs text-[#5f6368] dark:text-[#9aa0a6] flex items-center justify-center gap-1.5">
           <ShieldCheck className="w-4 h-4 text-[var(--ui-text-secondary)]" />
-          <span>Bảo mật dữ liệu trên máy chủ PostgreSQL & mã hóa phiên an toàn</span>
+          <span>Đề và bài làm được lưu theo tài khoản trên hệ thống</span>
         </div>
       </div>
 

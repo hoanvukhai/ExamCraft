@@ -138,14 +138,14 @@ export const TeacherAiSecretaryDrawer: React.FC<TeacherAiSecretaryDrawerProps> =
       <div className="h-16 px-4 border-b border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between shrink-0 bg-white dark:bg-[#202124]">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl app-neutral-icon text-white flex items-center justify-center shadow-xs">
-            <Sparkles className="w-5 h-5 text-amber-300" />
+            <Sparkles className="w-5 h-5 text-[var(--ui-text-primary)]" />
           </div>
           <div>
             <div className="flex items-center gap-1.5">
               <h3 className="font-bold text-xs sm:text-sm text-[#202124] dark:text-white">
                 Thư Ký Số & Trợ Lý Giáo Viên
               </h3>
-              <span className="w-2 h-2 rounded-full bg-emerald-500 " />
+              <span className="w-2 h-2 rounded-full bg-[var(--ui-text-secondary)] " />
             </div>
             <p className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6]">
               Trợ lý sư phạm cá nhân hóa
