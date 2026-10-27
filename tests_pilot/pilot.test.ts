@@ -697,7 +697,7 @@ test('F19 library search, starred, recent, trash, restore and safe controls', { 
   assert.equal((await f.db.exam.findUniqueOrThrow({ where: { id: ids[1] } })).deletedAt, null);
   await f.page.getByRole('navigation', { name: 'Không gian giáo viên' }).getByRole('link', { name: 'Kho đề', exact: true }).click(); await waitTitles(titles); checked.push('trash-and-restore');
   await card(titles[1]).click(); await f.page.getByTitle('Lưu các thay đổi lên máy chủ').first().waitFor();
-  assert.ok((await f.page.locator('body').innerText()).includes(titles[1] + '_CONTENT'));
+  await f.page.getByText(titles[1] + '_CONTENT').filter({ visible: true }).first().waitFor(); assert.ok((await f.page.locator('body').innerText()).includes(titles[1] + '_CONTENT'));
   await f.page.getByRole('link', { name: 'Về kho đề', exact: true }).click(); await waitTitles(titles); checked.push('open-and-return');
   await f.page.getByTitle('Chế độ xem danh sách', { exact: true }).click(); await f.page.getByRole('table').waitFor();
   await f.page.getByTitle('Chế độ xem thẻ', { exact: true }).click(); await waitTitles(titles); checked.push('grid-and-list');
