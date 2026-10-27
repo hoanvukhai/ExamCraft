@@ -33,7 +33,7 @@ export function SearchField({ value, onChange, placeholder, label }: { value: st
   return <label className="relative block min-w-52 flex-1 max-w-md">
     <span className="sr-only">{label}</span>
     <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--ui-text-secondary)] pointer-events-none" />
-    <input type="text" value={value} onChange={event => onChange(event.target.value)} placeholder={placeholder} className="teacher-field w-full pl-9" />
+    <input type="text" value={value} onChange={event => onChange(event.target.value)} placeholder={placeholder} className="teacher-field w-full" style={{ paddingLeft: '2.25rem' }} />
   </label>;
 }
 

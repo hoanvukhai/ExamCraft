@@ -57,7 +57,7 @@ export function WorkspaceTopBar({ variant }: { variant: WorkspaceVariant }) {
     <BrandLink variant={variant} />
     {variant === 'library' && <div className="flex-1 max-w-xl mx-2 lg:mx-8 hidden md:block"><div className="relative">
       <Search className="w-4 h-4 text-[var(--ui-text-secondary)] absolute left-3.5 top-1/2 -translate-y-1/2" />
-      <input type="text" aria-label="Tìm đề theo tên" value={search} onChange={event => change(event.target.value)} placeholder="Tìm theo tên đề..." className="teacher-field w-full pl-10 pr-9 rounded-full text-sm" />
+      <input type="text" aria-label="Tìm đề theo tên" value={search} onChange={event => change(event.target.value)} placeholder="Tìm theo tên đề..." className="teacher-field w-full rounded-full text-sm" style={{ paddingLeft: '2.5rem', paddingRight: '2.25rem' }} />
       {search && <button type="button" aria-label="Xóa ô tìm" onClick={() => change('')} className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"><X className="w-3.5 h-3.5" /></button>}
     </div></div>}
     <AccountCluster showAssistant={variant !== 'admin'} />

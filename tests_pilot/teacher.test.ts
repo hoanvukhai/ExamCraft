@@ -106,6 +106,7 @@ test('teacher management: trash, bank, class context, routes and mobile', { time
     const prefix = 'BANK_' + run;
     for (let i = 0; i < 23; i++) await db.question.create({ data: { ownerId: ids[1], authorId: ids[1], subject: 'toan', grade: 6, visibility: 'SHARED', points: 1, type: 'MULTIPLE_CHOICE', difficulty: 'THONG_HIEU', content: `${prefix}_${String(i).padStart(2, '0')} Tính $x^2$.`, solution: 'Lời giải được giữ', topics: [], tags: [], payload: { choices: [{ key: 'A', text: 'Phương án một' }, { key: 'B', text: 'Phương án hai' }], correct: 'A' } } });
     const own = await db.question.create({ data: { ownerId: ids[0], authorId: ids[0], subject: 'toan', grade: 6, type: 'MATCHING', difficulty: 'THONG_HIEU', content: 'Câu riêng ghép đôi', solution: 'Lời giải riêng', topics: [], tags: [], payload: { matchingPairs: [{ id: 'a', left: 'Một', right: '1' }] } } });
+    const bankCount = async (expected: number) => { const deadline = Date.now() + 10000; let last = -1; while (Date.now() < deadline) { last = await page.locator('[data-bank-question]').count(); if (last === expected) return; await new Promise(resolve => setTimeout(resolve, 100)); } assert.equal(last, expected); };
     await t.test('bank page uses real pagination, normalizes shared payload and distinguishes errors', async () => {
       await nav().getByRole('link', { name: 'Ngân hàng câu hỏi', exact: true }).click();
       await page.getByRole('heading', { name: 'Ngân hàng câu hỏi', exact: true }).waitFor();
@@ -113,9 +114,9 @@ test('teacher management: trash, bank, class context, routes and mobile', { time
       await page.getByRole('button', { name: 'Dùng chung nội bộ', exact: true }).click();
       await page.getByLabel('Tìm nội dung', { exact: true }).fill(prefix);
       await page.getByText('23 câu phù hợp · Trang 1 / 2', { exact: true }).waitFor();
-      assert.equal(await page.locator('[data-bank-question]').count(), 20);
+      await bankCount(20);
       await page.getByRole('navigation', { name: 'Trang ngân hàng' }).getByRole('button', { name: 'Trang sau', exact: true }).click();
-      await page.getByText('23 câu phù hợp · Trang 2 / 2', { exact: true }).waitFor(); assert.equal(await page.locator('[data-bank-question]').count(), 3);
+      await page.getByText('23 câu phù hợp · Trang 2 / 2', { exact: true }).waitFor(); await bankCount(3);
       await page.reload(); await page.getByText('23 câu phù hợp · Trang 2 / 2', { exact: true }).waitFor();
       await page.getByLabel('Dạng câu', { exact: true }).selectOption('multiple_choice');
       await page.getByText('23 câu phù hợp · Trang 1 / 2', { exact: true }).waitFor();
@@ -170,7 +171,7 @@ test('teacher management: trash, bank, class context, routes and mobile', { time
     for (let i = 0; i < 2; i++) await api('/api/assignments', 'POST', { title: `Đề giao diện ${i}`, examId: examIds[i], groupId: groups[i].id, mode: 'HOMEWORK', identityMode: 'FREE_NAME', durationMinutes: 15 });
     await t.test('class detail cannot reuse stale students; exam-scoped assignments and load errors', async () => {
       await page.goto(origin + '/teacher/groups');
-      const groupCard = (i: number) => page.locator('div').filter({ has: page.getByRole('heading', { name: `Lớp giao diện ${i}`, exact: true }) }).filter({ has: page.getByRole('button', { name: 'Xem Danh Sách', exact: true }) }).last();
+      const groupCard = (i: number) => page.locator('article').filter({ has: page.getByRole('heading', { name: `Lớp giao diện ${i}`, exact: true }) }).filter({ has: page.getByRole('button', { name: 'Xem Danh Sách', exact: true }) }).last();
       await groupCard(0).getByRole('button', { name: 'Xem Danh Sách', exact: true }).click(); await page.getByText('Học sinh lớp 0', { exact: true }).waitFor();
       await page.getByRole('button', { name: 'Đóng', exact: true }).last().click();
       await page.route('**/api/groups/' + groups[1].id, route => route.fulfill({ status: 503, json: { error: 'Chưa tải được đúng lớp' } }));
