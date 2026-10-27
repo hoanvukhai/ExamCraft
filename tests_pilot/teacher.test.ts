@@ -8,7 +8,7 @@ import { chromium, type Locator } from 'playwright-core';
 import { requireTestDatabase } from '../tests/helpers/test-database';
 import { loginBucket } from '../src/lib/auth-security';
 
-const origin = 'http://127.0.0.1:3117', report = 'qa/rebuild-2026-10-27/teacher-ui-fix';
+const origin = process.env.EXAMCRAFT_TEST_ORIGIN ?? 'http://127.0.0.1:3117', report = 'qa/rebuild-2026-10-27/teacher-ui-fix';
 test('teacher management: trash, bank, class context, routes and mobile', { timeout: 240000 }, async t => {
   const url = requireTestDatabase();
   assert.equal(new URL(url).pathname, '/examcraft_test_20261022');

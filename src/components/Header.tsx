@@ -169,7 +169,7 @@ export const Header: React.FC<HeaderProps> = ({
                 setTempTitle(examTitle);
                 setIsEditingTitle(true);
               }}
-              title="Nhấn để đổi tên đề thi (như Google Docs)"
+              title="Nhấn để đổi tên đề thi"
               className="group flex items-center gap-1.5 text-sm font-semibold text-[#202124] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] px-2 py-1 rounded-md transition-colors truncate text-left cursor-pointer"
             >
               <span className="truncate">{examTitle || 'Đề kiểm tra không tên'}</span>

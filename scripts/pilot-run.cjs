@@ -11,7 +11,7 @@ async function main() {
   requireTestDatabase(env);
   const browser = [process.env.PILOT_BROWSER_PATH, 'C:/Program Files/Google/Chrome/Application/chrome.exe', 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', 'C:/Program Files/Microsoft/Edge/Application/msedge.exe'].find(p => p && fs.existsSync(p));
   if (!browser) throw Error('BLOCKED: no installed Chrome/Edge. Browser download is disabled.');
-  const health = await fetch('http://127.0.0.1:3117/api/health', { signal: AbortSignal.timeout(10000) });
+  const health = await fetch((process.env.EXAMCRAFT_TEST_ORIGIN ?? 'http://127.0.0.1:3117') + '/api/health', { signal: AbortSignal.timeout(10000) });
   if (!health.ok || (await health.json()).isolatedTest !== true) throw Error('BLOCKED: server3117 did not prove isolatedTest. Start scripts/test-server.cjs --production.');
   console.log('Pilot guard: installed browser; isolatedTest confirmed; exact test database selected.');
   if (process.env.PILOT_FLOW && !/^F[1-7]$|^F9$|^F1[0-9]$|^F2[0-5]$/.test(process.env.PILOT_FLOW)) throw Error('BLOCKED: PILOT_FLOW must name F1-F7 or F9-F25. F8 is the separate backup rehearsal.');

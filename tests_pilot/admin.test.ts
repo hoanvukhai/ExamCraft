@@ -8,7 +8,7 @@ import { chromium, type Page } from 'playwright-core';
 import { requireTestDatabase } from '../tests/helpers/test-database';
 import { loginBucket } from '../src/lib/auth-security';
 
-const origin = 'http://127.0.0.1:3117';
+const origin = process.env.EXAMCRAFT_TEST_ORIGIN ?? 'http://127.0.0.1:3117';
 const report = process.env.ADMIN_REPORT_DIR ?? 'qa/rebuild-2026-10-27/admin-refresh';
 
 test('admin: current data, access, confirmations and phone navigation', { timeout: 240000 }, async t => {

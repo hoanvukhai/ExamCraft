@@ -12,7 +12,7 @@ import { requireTestDatabase } from '../tests/helpers/test-database';
 import { loginBucket } from '../src/lib/auth-security';
 import type { Exam } from '../src/types/exam';
 
-const origin = 'http://127.0.0.1:3117';
+const origin = process.env.EXAMCRAFT_TEST_ORIGIN ?? 'http://127.0.0.1:3117';
 const dbUrl = requireTestDatabase();
 assert.equal(new URL(dbUrl).pathname, '/examcraft_test_20261022');
 const reportDir = process.env.PILOT_REPORT_DIR || 'qa/rebuild-2026-10-25';
@@ -176,7 +176,7 @@ test('F2 author seven types, image, passage, zero, title and reopen', { timeout:
     await route.fulfill({ response });
   });
   await f.page.getByText('Soạn đề trống mới', { exact: true }).click();
-  await f.page.getByTitle('Nhấn để đổi tên đề thi (như Google Docs)').click();
+  await f.page.getByTitle('Nhấn để đổi tên đề thi').click();
   const titleInput = f.page.locator('header input').first(); await titleInput.fill('Pilot Toán 6 tự soạn'); await titleInput.press('Enter');
   for (const [index, type] of types.entries()) {
     await click(f.page, index === 0 ? 'Thêm câu hỏi mới' : 'Thêm câu hỏi');
@@ -302,11 +302,11 @@ test('F4 public link, collaborator edits and revoke', { timeout: 150000 }, () =>
   const pinNote=await f.page.getByTestId('share-pin-note').innerText();assert.match(pinNote,/Link giữ bản đề tại thời điểm tạo/);assert.match(pinNote,/phiên bản \d+ của đề/);
   const guest=await f.context(),p=await guest.newPage();await p.goto(origin+publicLink);await p.getByText('PILOT Q1 multiple_choice',{exact:true}).filter({visible:true}).first().waitFor();assert.ok(!(await p.locator('body').innerText()).includes(solution));
   await f.page.reload();await click(f.page,'Cùng soạn · Góp ý · Lịch sử');await f.page.getByLabel('Email giáo viên').fill(f.emails[1]);await f.page.getByLabel('Quyền cộng tác').selectOption('VIEWER');await click(f.page,'Cấp quyền');
-  const peer=await f.context(),other=await peer.newPage();await login(other,f.emails[1],f.password);await other.waitForURL(origin+'/');await other.goto(origin+'/editor/'+id);const title=other.getByTitle('Nhấn để đổi tên đề thi (như Google Docs)');await title.waitFor();assert.equal(await title.isDisabled(),true,'Viewer must not edit');
-  await f.page.getByLabel('Email giáo viên').fill(f.emails[1]);await f.page.getByLabel('Quyền cộng tác').selectOption('EDITOR');await click(f.page,'Cấp quyền');await waitUntil(async()=>await f.db.examCollaborator.count({where:{examId:id,userId:f.ids[1],role:'EDITOR',revokedAt:null}})===1,'Editor grant failed');await other.reload();await other.getByTitle('Nhấn để đổi tên đề thi (như Google Docs)').click();const input=other.locator('header input').first();await input.fill('Pilot đồng nghiệp sửa');await input.press('Enter');
+  const peer=await f.context(),other=await peer.newPage();await login(other,f.emails[1],f.password);await other.waitForURL(origin+'/');await other.goto(origin+'/editor/'+id);const title=other.getByTitle('Nhấn để đổi tên đề thi');await title.waitFor();assert.equal(await title.isDisabled(),true,'Viewer must not edit');
+  await f.page.getByLabel('Email giáo viên').fill(f.emails[1]);await f.page.getByLabel('Quyền cộng tác').selectOption('EDITOR');await click(f.page,'Cấp quyền');await waitUntil(async()=>await f.db.examCollaborator.count({where:{examId:id,userId:f.ids[1],role:'EDITOR',revokedAt:null}})===1,'Editor grant failed');await other.reload();await other.getByTitle('Nhấn để đổi tên đề thi').click();const input=other.locator('header input').first();await input.fill('Pilot đồng nghiệp sửa');await input.press('Enter');
   await waitUntil(async()=> (await f.db.exam.findUniqueOrThrow({where:{id}})).title==='Pilot đồng nghiệp sửa','Collaborator save failed');
   await click(f.page,'Thu hồi quyền');await waitUntil(async()=>await f.db.examCollaborator.count({where:{examId:id,userId:f.ids[1],revokedAt:null}})===0,'Revoke failed');
-  const denied=await peer.request.get(origin+'/api/exams/'+id);assert.ok([403,404].includes(denied.status()));await other.reload();await waitUntil(async()=>{const b=other.getByTitle('Nhấn để đổi tên đề thi (như Google Docs)');return !(await b.isVisible()) || await b.isDisabled();},'Revoked editor controls remain enabled');assert.ok(!(await other.locator('body').innerText()).includes('PILOT Q1 multiple_choice'));assert.equal((await f.db.exam.findUniqueOrThrow({where:{id}})).title,'Pilot đồng nghiệp sửa');
+  const denied=await peer.request.get(origin+'/api/exams/'+id);assert.ok([403,404].includes(denied.status()));await other.reload();await waitUntil(async()=>{const b=other.getByTitle('Nhấn để đổi tên đề thi');return !(await b.isVisible()) || await b.isDisabled();},'Revoked editor controls remain enabled');assert.ok(!(await other.locator('body').innerText()).includes('PILOT Q1 multiple_choice'));assert.equal((await f.db.exam.findUniqueOrThrow({where:{id}})).title,'Pilot đồng nghiệp sửa');
 }));
 
 test('F5 assign link with and without class and inspect frozen policies', { timeout: 150000 }, () => flow('F5', async f => {
@@ -392,7 +392,7 @@ test('F7 manual essay grade, total and CSV', { timeout: 150000 }, () => flow('F7
 test('F9 offline edits reconnect safely and preserve a conflicting draft as a separate exam', { timeout: 150000 }, () => flow('F9', async f => {
   await authenticated(f); const id = await seedExam(f); await openExam(f,id);
   const rename = async (value: string) => {
-    await f.page.getByTitle('Nhấn để đổi tên đề thi (như Google Docs)').click();
+    await f.page.getByTitle('Nhấn để đổi tên đề thi').click();
     const input=f.page.locator('header input').first(); await input.fill(value); await input.press('Enter');
   };
   const baseline = await f.db.exam.findUniqueOrThrow({where:{id}});
@@ -402,7 +402,7 @@ test('F9 offline edits reconnect safely and preserve a conflicting draft as a se
   assert.ok(await f.page.evaluate(()=>Object.values(localStorage).some(value=>value.includes('Pilot offline giữ nháp'))));
   await f.owner.setOffline(false);
   await waitUntil(async()=>(await f.db.exam.findUniqueOrThrow({where:{id}})).title==='Pilot offline giữ nháp','Reconnect did not save offline edit');
-  await f.page.reload(); await f.page.getByTitle('Nhấn để đổi tên đề thi (như Google Docs)').filter({hasText:'Pilot offline giữ nháp'}).waitFor();
+  await f.page.reload(); await f.page.getByTitle('Nhấn để đổi tên đề thi').filter({hasText:'Pilot offline giữ nháp'}).waitFor();
   await f.owner.setOffline(true); await rename('Pilot offline cần giữ riêng');
   await f.page.getByText('Mất kết nối — đang giữ bản nháp trên máy',{exact:true}).waitFor();
   const remote=(await f.api('/api/exams/'+id)).document as Exam;
@@ -411,7 +411,7 @@ test('F9 offline edits reconnect safely and preserve a conflicting draft as a se
   const remoteVersion=(await f.db.exam.findUniqueOrThrow({where:{id}})).version;
   await f.owner.setOffline(false);
   await f.page.getByRole('button',{name:'Lưu bản nháp thành đề mới',exact:true}).waitFor();
-  assert.ok((await f.page.getByTitle('Nhấn để đổi tên đề thi (như Google Docs)').innerText()).includes('Pilot offline cần giữ riêng'));
+  assert.ok((await f.page.getByTitle('Nhấn để đổi tên đề thi').innerText()).includes('Pilot offline cần giữ riêng'));
   assert.equal((await f.db.exam.findUniqueOrThrow({where:{id}})).version,remoteVersion);
   await click(f.page,'Lưu bản nháp thành đề mới');
   await waitUntil(async()=>await f.db.exam.count({where:{ownerId:f.ids[0],title:'Pilot offline cần giữ riêng (Bản sao phục hồi)'}})===1,'Conflicting draft copy was not saved');
@@ -421,7 +421,7 @@ test('F9 offline edits reconnect safely and preserve a conflicting draft as a se
 
 test('F10 switching accounts in one browser keeps a local draft private to its owner and recoverable', { timeout: 150000 }, () => flow('F10', async f => {
   await authenticated(f); const id = await seedExam(f); await openExam(f, id);
-  const titleOf = () => f.page.getByTitle('Nhấn để đổi tên đề thi (như Google Docs)');
+  const titleOf = () => f.page.getByTitle('Nhấn để đổi tên đề thi');
   const secret = 'Pilot nháp riêng của A';
   // Hold back every save so the edit stays a local draft that only account A owns.
   await f.page.route('**/api/exams/**', route => route.request().method() === 'PATCH' ? route.abort() : route.continue());
@@ -446,9 +446,9 @@ test('F10 switching accounts in one browser keeps a local draft private to its o
 test('F11 a reload that fails with no network loses nothing and the draft reaches the server on reconnect', { timeout: 150000 }, () => flow('F11', async f => {
   await authenticated(f); const id = await seedExam(f); await openExam(f, id);
   const offlineTitle = 'Pilot giữ nháp qua lần tải lại hỏng';
-  await f.page.locator('button[title="Nhấn để đổi tên đề thi (như Google Docs)"]:not([disabled])').waitFor();
+  await f.page.locator('button[title="Nhấn để đổi tên đề thi"]:not([disabled])').waitFor();
   await f.owner.setOffline(true);
-  await f.page.getByTitle('Nhấn để đổi tên đề thi (như Google Docs)').click(); const input = f.page.locator('header input').first(); await input.fill(offlineTitle); await input.press('Enter');
+  await f.page.getByTitle('Nhấn để đổi tên đề thi').click(); const input = f.page.locator('header input').first(); await input.fill(offlineTitle); await input.press('Enter');
   await f.page.getByText('Mất kết nối — đang giữ bản nháp trên máy', { exact: true }).waitFor();
   // The app has no offline shell, so a full reload cannot render; the draft on this machine must survive the failed attempt.
   await f.page.reload({ waitUntil: 'domcontentloaded' }).catch(() => {});
@@ -520,8 +520,8 @@ test('F14 two teachers edit the same exam at once: the first save wins, the othe
   await openExam(f, id);
   const peerContext = await f.context(), peer = await peerContext.newPage();
   await login(peer, f.emails[1], f.password); await peer.waitForURL(origin + '/'); await peer.goto(origin + '/editor/' + id);
-  const titleOf = (page: Page) => page.getByTitle('Nhấn để đổi tên đề thi (như Google Docs)');
-  const editable = (page: Page) => page.locator('button[title="Nhấn để đổi tên đề thi (như Google Docs)"]:not([disabled])');
+  const titleOf = (page: Page) => page.getByTitle('Nhấn để đổi tên đề thi');
+  const editable = (page: Page) => page.locator('button[title="Nhấn để đổi tên đề thi"]:not([disabled])');
   await editable(peer).waitFor();
   const rename = async (page: Page, value: string) => { await editable(page).waitFor(); await titleOf(page).click(); const input = page.locator('header input').first(); await input.fill(value); await input.press('Enter'); };
   // The second teacher loses the connection, edits, and the first teacher saves in the meantime.
