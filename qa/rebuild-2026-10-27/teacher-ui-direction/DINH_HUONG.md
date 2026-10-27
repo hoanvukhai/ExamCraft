@@ -45,3 +45,18 @@ Các màn có mã màu viết cứng nhiều nhất (đếm 27/10): `teacher/ass
 - Mở kho đề, lớp học, bài đã giao, ngân hàng ở màn rộng: mỗi trang có **một** menu dọc, không có hàng tab ngang; thu nhỏ dưới 1024 px: menu dọc biến mất, còn **một** hàng tab.
 - Thùng rác: có **Khôi phục** và **Xóa vĩnh viễn** trên từng đề; hủy xác nhận thì đề còn; đề đã giao hiện lý do và vẫn ở thùng rác.
 - Trang soạn: hàng nút dưới thanh đầu là nút, không còn chữ gạch chân; chỉ một đường về kho đề ở thanh đầu.
+
+## 6. Bằng chứng kiểm (commit 1b06171)
+
+Dựng riêng ở một bản sao thư mục khác (không đụng bản đang xem trên cổng 3117), chạy trên máy chủ thử cổng 3122, cơ sở dữ liệu thử:
+
+| Kiểm | Kết quả |
+|---|---|
+| Kiểm kiểu; lint toàn repo | Sạch; 0 lỗi, 120 cảnh báo (số cũ, không tăng) |
+| Test an toàn (SAFE) | 498/498 |
+| `tests/http_exam_purge.test.ts` (xóa vĩnh viễn: chỉ chủ đề, chỉ ở thùng rác, chặn khi đã giao, câu hỏi ngân hàng còn, có nhật ký) | 5/5 trên bản dựng riêng |
+| Bộ kiểm giáo viên `--teacher` (có bước xóa vĩnh viễn mới; bố cục 320/375/568/1440, sáng/tối) | 7/7 |
+| Luồng F2, F9, F11, F14, F19 | Đạt cả năm |
+| Xem trực tiếp bằng trình duyệt | Mỗi trang giáo viên có đúng một menu dọc ở màn rộng, một hàng tab ở 375px; xóa vĩnh viễn: hủy thì đề còn, xác nhận thì mất; trang soạn một đường về kho đề |
+
+Chưa chạy: `npm run ci` đầy đủ trên cổng 3117 (đang để bạn xem), bộ kiểm quản trị và chữ tiếng Việt, điện thoại thật. Hai lỗi nhỏ phát hiện khi viết test: bài test mới ban đầu dùng chung đề với các bước sau (đã chuyển sang đề riêng), và F19 đọc nội dung ngay khi nút lưu vừa hiện, sớm hơn lúc nội dung vẽ xong (đã chờ nội dung hiện ra). Còn 21 nút kiểu chữ gạch chân ở 12 tệp (ví dụ ô lập kế hoạch đề, mẫu đề, nháp câu hỏi) chưa đổi sang nút chung.
