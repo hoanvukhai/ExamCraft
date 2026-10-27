@@ -3,6 +3,7 @@
 import { applyCopilotSubmission } from '@/lib/copilot-submission';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Exam, Question } from '@/types/exam';
 import { Header } from '@/components/Header';
 import { useWorkspace } from '@/components/workspace/WorkspaceContext';
@@ -71,7 +72,8 @@ interface ExamWorkspaceProps {
 }
 
 export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examId }) => {
-  const { exam, editorSessionKey, setExam, save, ensureSaved, saveCopy, openLatest, acceptServerDocument, state: saveState, message: saveMessage, ready } = useExamPersistence(currentUser.id, examId);
+  const creationFolder = useSearchParams().get('folder');
+  const { exam, editorSessionKey, setExam, save, ensureSaved, saveCopy, openLatest, acceptServerDocument, state: saveState, message: saveMessage, folderUnavailable, ready } = useExamPersistence(currentUser.id, examId, examId === 'new' ? creationFolder : undefined);
   const scoredQuestions = freezeExamScoring(exam).questions;
   const canEdit = ready && exam.access?.canEdit !== false;
   const canPublish = ready && exam.access?.canPublish !== false;
@@ -320,6 +322,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         <div role="status" className="px-4 py-2 text-sm border-b bg-[var(--ui-surface)] flex items-center gap-2 flex-wrap">
           <span className="mr-1">{saveState === 'loading' ? 'Đang mở đề…' : saveState === 'saving' ? 'Đang lưu…' : saveState === 'dirty' ? 'Có thay đổi đang chờ lưu' : saveState === 'offline' ? 'Mất kết nối — đang giữ bản nháp trên máy' : saveMessage || 'Chưa lưu được đề'}</span>
           {saveState !== 'loading' && saveState !== 'saving' && <button onClick={() => void save()} className="app-button-secondary min-h-9 px-3 text-xs">Thử lưu lại</button>}
+          {folderUnavailable && ready && !exam.serverId && exam.creationFolderId && <button onClick={() => { setExam(value => ({ ...value, creationFolderId: null })); void save(); }} className="app-button-secondary min-h-9 px-3 text-xs">Lưu bản nháp ở ngoài thư mục</button>}
           <button onClick={downloadDraft} className="app-button-secondary min-h-9 px-3 text-xs">Tải bản nháp</button>
           {saveState === 'conflict' && <button onClick={() => void saveCopy()} className="app-button-secondary min-h-9 px-3 text-xs">Lưu bản nháp thành đề mới</button>}
           {saveState === 'conflict' && ready && exam.serverId && <button onClick={() => void openLatest()} className="app-button-secondary min-h-9 px-3 text-xs">Mở bản máy chủ, giữ riêng nháp</button>}

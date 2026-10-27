@@ -165,6 +165,8 @@ export interface ExamSection {
 }
 
 export interface Exam {
+  /** Local draft creation context; consumed only by POST, never moves an existing exam. */
+  creationFolderId?: string | null;
   /** Runtime permissions from the server; never sent as authority when saving. */
   access?: { role: string; canRead: boolean; canEdit: boolean; canComment: boolean; canManage: boolean; canPublish: boolean };
   id: string;

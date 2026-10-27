@@ -18,8 +18,9 @@ async function main() {
   const admin = process.argv.includes('--admin');
   const typography = process.argv.includes('--typography');
   const teacher = process.argv.includes('--teacher');
-  if ([admin, typography, teacher, !!process.env.PILOT_FLOW].filter(Boolean).length > 1) throw Error('Select only one browser suite or PILOT_FLOW.');
-  const result = spawnSync(process.execPath, ['--import', 'tsx', '--test', '--test-concurrency=1', ...(process.env.PILOT_FLOW ? ['--test-name-pattern', '^' + process.env.PILOT_FLOW + ' '] : []), teacher ? 'tests_pilot/teacher.test.ts' : typography ? 'tests_pilot/typography.test.ts' : admin ? 'tests_pilot/admin.test.ts' : 'tests_pilot/pilot.test.ts'], { env: { ...env, PILOT_BROWSER_PATH: browser }, stdio: 'inherit' });
+  const library = process.argv.includes('--library');
+  if ([admin, typography, teacher, library, !!process.env.PILOT_FLOW].filter(Boolean).length > 1) throw Error('Select only one browser suite or PILOT_FLOW.');
+  const result = spawnSync(process.execPath, ['--import', 'tsx', '--test', '--test-concurrency=1', ...(process.env.PILOT_FLOW ? ['--test-name-pattern', '^' + process.env.PILOT_FLOW + ' '] : []), library ? 'tests_pilot/library.test.ts' : teacher ? 'tests_pilot/teacher.test.ts' : typography ? 'tests_pilot/typography.test.ts' : admin ? 'tests_pilot/admin.test.ts' : 'tests_pilot/pilot.test.ts'], { env: { ...env, PILOT_BROWSER_PATH: browser }, stdio: 'inherit' });
   process.exitCode = result.status ?? 1;
 }
 main().catch(() => { console.error('BLOCKED: pilot preflight failed (browser, isolated server, or test DB). No fixture writes performed.'); process.exitCode = 1; });

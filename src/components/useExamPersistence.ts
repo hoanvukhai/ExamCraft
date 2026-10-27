@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import type { Exam } from '@/types/exam';
 import { loadExam, persistExam, SaveExamError, isExamAccessError } from '@/lib/exam-client';
 import { readDraft, writeDraft, retireWriterDraft, stageLatestExam } from '@/lib/exam-draft';
@@ -12,10 +13,12 @@ function blankExam(): Exam {
   return { id: `draft_${crypto.randomUUID()}`, metadata: { title: 'ĐỀ KIỂM TRA MỚI', schoolName: '', departmentName: '', subject: 'toan', grade: 6, durationMinutes: 45, academicYear: `${year} - ${year + 1}` }, questions: [], createdAt: now.toISOString(), updatedAt: now.toISOString() };
 }
 
-export function useExamPersistence(ownerId: string, requestedId?: string) {
+export function useExamPersistence(ownerId: string, requestedId?: string, creationFolderId?: string | null) {
+  const pathname = usePathname();
   const [exam, setValue] = useState<Exam>(blankExam);
   const [state, setState] = useState<SaveState>('loading');
   const [message, setMessage] = useState('');
+  const [folderUnavailable, setFolderUnavailable] = useState(false);
   const [loadedKey, setLoadedKey] = useState('');
   const [writerId] = useState(() => crypto.randomUUID());
   const [editorSessionKey, setEditorSessionKey] = useState(() => crypto.randomUUID());
@@ -35,19 +38,21 @@ export function useExamPersistence(ownerId: string, requestedId?: string) {
   useEffect(() => {
     let cancelled = false;
     const id = requestedId && requestedId !== 'new' ? requestedId : 'new';
-    if (ready.current && activeOwner.current === ownerId && current.current.serverId === id) {
+    // A successful create replaces the URL before Next updates the route props.
+    // Removing ?folder must not initialize a second, blank new document.
+    if (ready.current && activeOwner.current === ownerId && (current.current.serverId === id || (id === 'new' && current.current.serverId && pathname === `/editor/${current.current.serverId}`))) {
       queueMicrotask(() => { if (!cancelled) setLoadedKey(`${ownerId}/${requestedId ?? 'new'}`); });
       return () => { cancelled = true; };
     }
     generation.current += 1; flight.current = null;
     setEditorSessionKey(crypto.randomUUID());
     activeOwner.current = ownerId; ready.current = false; storageId.current = id;
-    setState('loading');
+    setState('loading'); setFolderUnavailable(false);
     (async () => {
       try {
         const draft = readDraft(localStorage, ownerId, id);
         let loaded: Exam;
-        if (id === 'new') loaded = draft ?? blankExam();
+        if (id === 'new') loaded = draft ?? { ...blankExam(), creationFolderId: creationFolderId ?? null };
         else {
           const server = await loadExam(id, ownerId);
           loaded = draft ? { ...draft, access: server.access } : server;
@@ -60,7 +65,7 @@ export function useExamPersistence(ownerId: string, requestedId?: string) {
         }
         if (cancelled) return;
         current.current = loaded; setValue(loaded); edits.current = draft ? 1 : 0; savedEdits.current = 0; ready.current = true; setLoadedKey(`${ownerId}/${requestedId ?? 'new'}`);
-        setState(draft ? 'dirty' : id === 'new' ? 'dirty' : 'saved'); setMessage('');
+        setState(draft ? 'dirty' : id === 'new' ? 'dirty' : 'saved'); setMessage(id === 'new' && draft && (draft.creationFolderId ?? null) !== (creationFolderId ?? null) ? 'Đang giữ bản nháp trước cùng vị trí tạo ban đầu. Hãy lưu hoặc giữ bản này thành đề riêng trước khi tạo đề ở thư mục khác.' : '');
       } catch (error) {
         if (cancelled) return;
         try {
@@ -74,7 +79,7 @@ export function useExamPersistence(ownerId: string, requestedId?: string) {
       }
     })();
     return () => { cancelled = true; };
-  }, [ownerId, requestedId]);
+  }, [ownerId, requestedId, creationFolderId, pathname]);
 
   const freezeAccess = useCallback(() => {
     let warning = '';
@@ -91,7 +96,7 @@ export function useExamPersistence(ownerId: string, requestedId?: string) {
     if (current.current.access?.canEdit === false) { setMessage('Bạn đang có quyền xem/góp ý. Chủ đề cần cấp quyền sửa để lưu thay đổi.'); return null; }
     if (flight.current) return flight.current;
     const document = current.current, revision = edits.current, savingOwner = ownerId, savingGeneration = generation.current;
-    setState('saving'); setMessage('');
+    setState('saving'); setMessage(''); setFolderUnavailable(false);
     const operation = (async () => {
       try {
         const saved = await persistExam(document, savingOwner);
@@ -120,6 +125,7 @@ export function useExamPersistence(ownerId: string, requestedId?: string) {
       } catch (error) {
         if (activeOwner.current !== savingOwner || generation.current !== savingGeneration) return null;
         const warning = isExamAccessError(error) ? freezeAccess() : '';
+        setFolderUnavailable(error instanceof SaveExamError && error.code === 'FOLDER_UNAVAILABLE');
         setState(error instanceof SaveExamError && error.status === 409 ? 'conflict' : navigator.onLine ? 'error' : 'offline');
         setMessage((error instanceof Error ? error.message : 'Chưa lưu được đề. Bản nháp vẫn được giữ.') + warning);
         return null;
@@ -232,5 +238,5 @@ export function useExamPersistence(ownerId: string, requestedId?: string) {
     return true;
   }, [ownerId, writerId]);
 
-  return { exam, editorSessionKey, setExam, save, ensureSaved, saveCopy, openLatest, acceptServerDocument, state, message, ready: state !== 'loading' && loadedKey === `${ownerId}/${requestedId ?? 'new'}` };
+  return { exam, editorSessionKey, setExam, save, ensureSaved, saveCopy, openLatest, acceptServerDocument, state, message, folderUnavailable, ready: state !== 'loading' && loadedKey === `${ownerId}/${requestedId ?? 'new'}` };
 }

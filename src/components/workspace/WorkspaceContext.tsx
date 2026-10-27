@@ -15,6 +15,8 @@ export interface FolderData { id: string; name: string; color?: string; parentId
 interface Workspace {
   user: WorkspaceUser;
   folders: FolderData[];
+  foldersReady: boolean;
+  foldersError: string;
   reloadFolders: () => Promise<void>;
   openCreateFolder: (parentId?: string | null) => void;
   deleteFolder: (id: string, name: string) => Promise<void>;
@@ -52,6 +54,8 @@ export function WorkspaceProvider({ user, children }: { user: WorkspaceUser; chi
   const router = useRouter(), params = useSearchParams(), pathname = usePathname();
   const { confirmAction, confirmation } = useConfirmAction();
   const [folders, setFolders] = useState<FolderData[]>([]);
+  const [foldersReady, setFoldersReady] = useState(false), [foldersError, setFoldersError] = useState('');
+  const folderSequence = useRef(0);
   const [keyStats, setKeyStats] = useState({ keyCount: 0, keyErrorCount: 0, usedToday: 0 });
   const [keysOpen, setKeysOpen] = useState(false), [notesOpen, setNotesOpen] = useState(false), [assistantOpen, setAssistantOpen] = useState(false);
   const [folderDialog, setFolderDialog] = useState<{ parentId: string | null } | null>(null);
@@ -81,9 +85,15 @@ export function WorkspaceProvider({ user, children }: { user: WorkspaceUser; chi
       setKeyStats({ keyCount: keys.filter(key => key.isActive).length, keyErrorCount: keys.filter(key => key.errorCount > 0).length, usedToday: data.poolQuota?.usedToday ?? 0 });
     }
   }).catch(() => { /* Keep the last acknowledged state if offline. */ }), [user.id]);
-  const reloadFolders = useCallback(() => accountFetch(user.id, '/api/folders').then(async response => {
-    if (response.ok) { const data = await response.json(); setFolders(data.folders || []); }
-  }).catch(() => { /* The menu keeps the last list while offline. */ }), [user.id]);
+  const reloadFolders = useCallback(() => {
+    const sequence = ++folderSequence.current;
+    return accountFetch(user.id, '/api/folders').then(async response => {
+      const data = await response.json();
+      if (!response.ok) throw Error(data.error || 'Chưa tải được thư mục.');
+      if (sequence === folderSequence.current) { setFolders(data.folders || []); setFoldersError(''); }
+    }).catch(cause => { if (sequence === folderSequence.current) setFoldersError(teacherErrorMessage(cause, 'Chưa kết nối được để tải thư mục.')); })
+      .finally(() => { if (sequence === folderSequence.current) setFoldersReady(true); });
+  }, [user.id]);
   useEffect(() => { void reloadKeys(); void reloadFolders(); }, [reloadKeys, reloadFolders]);
 
   const openCreateFolder = useCallback((parentId: string | null = null) => { setFolderName(''); setFolderDialog({ parentId }); }, []);
@@ -117,10 +127,10 @@ export function WorkspaceProvider({ user, children }: { user: WorkspaceUser; chi
   }, [confirmAction, params, pathname, reloadFolders, router, toast, user.id]);
 
   const value = useMemo<Workspace>(() => ({
-    user, folders, reloadFolders, openCreateFolder, deleteFolder, updateFolder, ...keyStats, hasActiveKey: keyStats.keyCount > 0, openKeys: () => setKeysOpen(true),
+    user, folders, foldersReady, foldersError, reloadFolders, openCreateFolder, deleteFolder, updateFolder, ...keyStats, hasActiveKey: keyStats.keyCount > 0, openKeys: () => setKeysOpen(true),
     assistantOpen, toggleAssistant: () => setAssistantOpen(open => !open), openAiNotes: () => setNotesOpen(true),
     menuExpanded, setMenuExpanded, copilotAvailable, setCopilotAvailable, copilotOpen, setCopilotOpen, toast, confirmAction,
-  }), [user, folders, reloadFolders, openCreateFolder, deleteFolder, updateFolder, keyStats, assistantOpen, menuExpanded, setMenuExpanded, copilotAvailable, copilotOpen, toast, confirmAction]);
+  }), [user, folders, foldersReady, foldersError, reloadFolders, openCreateFolder, deleteFolder, updateFolder, keyStats, assistantOpen, menuExpanded, setMenuExpanded, copilotAvailable, copilotOpen, toast, confirmAction]);
 
   return <WorkspaceContext.Provider value={value}>
     {children}

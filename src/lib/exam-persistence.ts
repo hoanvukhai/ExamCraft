@@ -25,7 +25,7 @@ const json = (value: unknown) => JSON.parse(JSON.stringify(value)) as Prisma.Inp
 const stableId = (kind: string, ...parts: string[]) => `${kind}_${createHash('sha256').update(JSON.stringify(parts)).digest('hex').slice(0, 40)}`;
 
 export async function assertExamReferences(tx: Prisma.TransactionClient, ownerId: string, input: CreateExamInput) {
-  if (input.folderId && !await tx.folder.findFirst({ where: { id: input.folderId, ownerId }, select: { id: true } })) throw new ApiError(403, 'Thư mục không thuộc tài khoản của bạn');
+  if (input.folderId && !await tx.folder.findFirst({ where: { id: input.folderId, ownerId }, select: { id: true } })) throw new ApiError(403, 'Thư mục không còn khả dụng cho tài khoản của bạn. Bản nháp vẫn được giữ.', 'FOLDER_UNAVAILABLE');
   if (input.templateId && !await tx.examTemplate.findFirst({ where: { id: input.templateId, OR: [{ ownerId }, { ownerId: null, isSystem: true }] }, select: { id: true } })) throw new ApiError(403, 'Bạn không được sử dụng mẫu này');
   const ids = [...new Set(input.questionItems?.map(i => i.questionId) ?? [])];
   if (ids.length && await tx.question.count({ where: { id: { in: ids }, ownerId, deletedAt: null } }) !== ids.length) throw new ApiError(403, 'Một số câu hỏi không thuộc kho riêng của bạn; hãy tạo bản sao được phép trước');

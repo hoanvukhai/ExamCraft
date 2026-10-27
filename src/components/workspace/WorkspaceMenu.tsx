@@ -2,7 +2,7 @@
 import { useState, type ComponentType, type ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { Activity, ChevronDown, ChevronLeft, ChevronRight, Clock, Database, FileText, Folder, FolderOpen, GraduationCap, KeyRound, Plus, ShieldCheck, Star, Trash2, Users } from 'lucide-react';
+import { Activity, ChevronLeft, ChevronRight, Database, FileText, GraduationCap, KeyRound, Plus, ShieldCheck, Trash2, Users } from 'lucide-react';
 import { useWorkspace } from './WorkspaceContext';
 import { Brand } from './Brand';
 
@@ -28,13 +28,10 @@ export function useDestinations(variant: WorkspaceVariant) {
     ];
     return { admin: true as const, items };
   }
-  const view = params.get('view'), folder = params.get('folder'), onLibrary = pathname === '/';
+  const view = params.get('view'), onLibrary = pathname === '/' || pathname.startsWith('/teacher/folders');
   const compose: Destination[] = [
-    { href: '/', label: 'Tất cả đề thi', Icon: FileText, active: onLibrary && !view && !folder },
-    { href: '/?view=starred', label: 'Đề quan trọng (Gắn sao)', Icon: Star, active: onLibrary && view === 'starred' },
-    { href: '/?view=recent', label: 'Đã sửa gần đây', Icon: Clock, active: onLibrary && view === 'recent' },
+    { href: '/', label: 'Kho đề', Icon: FileText, active: onLibrary && view !== 'trash' },
     { href: '/teacher/questions', label: 'Ngân hàng câu hỏi', Icon: Database, active: pathname.startsWith('/teacher/questions') },
-    { href: '/teacher/folders', label: 'Thư mục', Icon: Folder, active: pathname.startsWith('/teacher/folders') },
   ];
   const exams: Destination[] = [
     { href: '/teacher/groups', label: 'Lớp học', Icon: Users, active: pathname.startsWith('/teacher/groups') },
@@ -53,42 +50,35 @@ function NavLink({ item, expanded }: { item: Destination; expanded: boolean }) {
   </Link>;
 }
 
-/** A group that folds with an arrow, like the product categories of a console. In the icon rail the heading is gone and a rule separates the groups. */
-function Section({ id, title, expanded, closed, toggle, children }: { id: string; title: string; expanded: boolean; closed: Record<string, boolean>; toggle: (id: string) => void; children: ReactNode }) {
+/** Small destination groups stay visible; only the whole menu can collapse to icons. */
+function Section({ title, expanded, children }: { title: string; expanded: boolean; children: ReactNode }) {
   if (!expanded) return <div className="space-y-0.5 pt-2 border-t first:border-t-0 first:pt-0">{children}</div>;
-  const isClosed = Boolean(closed[id]);
   return <div className="space-y-0.5">
-    <button type="button" aria-expanded={!isClosed} onClick={() => toggle(id)} className="w-full min-h-8 flex items-center justify-between px-3 rounded-lg text-[11px] font-semibold uppercase tracking-wider text-[var(--ui-text-secondary)] hover:bg-[var(--ui-surface-variant)] cursor-pointer"><span>{title}</span>{isClosed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}</button>
-    {!isClosed && children}
+    <p className="px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--ui-text-secondary)]">{title}</p>
+    {children}
   </div>;
 }
 
-/** Left menu (wide screens): the brand, the places, the recent folders, and a round arrow at the foot to fold it. In the editor it starts as a 56 px icon rail and opens over the page. */
+/** Common destinations on wide screens; editor expands the same menu as an overlay. */
 export function WorkspaceMenu({ variant }: { variant: WorkspaceVariant }) {
-  const { menuExpanded, setMenuExpanded, user, folders } = useWorkspace();
-  const nav = useDestinations(variant), params = useSearchParams(), pathname = usePathname();
-  const [closed, setClosed] = useState<Record<string, boolean>>({}), [peek, setPeek] = useState(false);
+  const { menuExpanded, setMenuExpanded, user } = useWorkspace();
+  const nav = useDestinations(variant), params = useSearchParams();
+  const [peek, setPeek] = useState(false);
   const overlay = variant === 'editor', expanded = overlay ? peek : menuExpanded;
-  const toggle = (id: string) => setClosed(map => ({ ...map, [id]: !map[id] }));
   const frame = overlay ? `absolute inset-y-0 left-0 z-30 ${peek ? 'w-64 shadow-lg' : 'w-14'}` : `relative ${menuExpanded ? 'w-64' : 'w-14'}`;
-  const openFolder = pathname.startsWith('/teacher/folders') ? params.get('folder') : null;
-  const recent = folders.slice(0, 5);
   const fold = () => (overlay ? setPeek(open => !open) : setMenuExpanded(!menuExpanded));
   return <div className={`no-print hidden lg:block shrink-0 ${overlay ? 'w-14 relative' : ''}`}>
     <aside aria-label="Menu" className={`${frame} h-full flex flex-col border-r bg-[var(--ui-surface)] transition-[width] duration-150`}>
       <div className={`shrink-0 pt-3 pb-1 ${expanded ? 'px-4' : 'px-2 flex justify-center'}`}><Brand admin={nav.admin} compact={!expanded} /></div>
       <div className="flex-1 min-h-0 overflow-y-auto px-2 py-2 space-y-4">
-        {!nav.admin && <Link href="/editor/new" title="Soạn đề thi mới" aria-label="Soạn đề thi mới" className={`app-button-primary flex items-center justify-center gap-2 min-h-11 rounded-xl text-sm font-semibold ${expanded ? 'px-4' : 'px-0'}`}><Plus className="w-4 h-4 shrink-0" />{expanded && <span>Soạn đề thi mới</span>}</Link>}
+        {!nav.admin && <Link href={variant === 'library' && params.get('folder') && params.get('view') !== 'trash' ? `/editor/new?folder=${encodeURIComponent(params.get('folder')!)}` : '/editor/new'} title="Soạn đề thi mới" aria-label="Soạn đề thi mới" className={`app-button-primary flex items-center justify-center gap-2 min-h-11 rounded-xl text-sm font-semibold ${expanded ? 'px-4' : 'px-0'}`}><Plus className="w-4 h-4 shrink-0" />{expanded && <span>Soạn đề thi mới</span>}</Link>}
         <nav aria-label={nav.admin ? 'Quản trị' : 'Không gian giáo viên'} className="space-y-4">
           {nav.admin ? <>
-            <Section id="admin" title="Quản trị" expanded={expanded} closed={closed} toggle={toggle}>{nav.items.map(item => <NavLink key={item.href} item={item} expanded={expanded} />)}</Section>
+            <Section title="Quản trị" expanded={expanded}>{nav.items.map(item => <NavLink key={item.href} item={item} expanded={expanded} />)}</Section>
             <NavLink item={{ href: '/', label: 'Về khu giáo viên', Icon: FileText, active: false }} expanded={expanded} />
           </> : <>
-            <Section id="compose" title="Soạn đề" expanded={expanded} closed={closed} toggle={toggle}>{nav.compose.map(item => <NavLink key={item.href} item={item} expanded={expanded} />)}</Section>
-            {expanded && recent.length > 0 && <Section id="folders" title="Thư mục gần đây" expanded closed={closed} toggle={toggle}>
-              {recent.map(folder => <Link key={folder.id} href={`/teacher/folders?folder=${folder.id}`} aria-current={openFolder === folder.id ? 'page' : undefined} title={folder.name} className={rowClass(openFolder === folder.id)}><FolderOpen className="w-4 h-4 shrink-0" style={{ color: folder.color || undefined }} /><span className="truncate flex-1">{folder.name}</span><span className="text-[10px] text-[var(--ui-text-secondary)]">{folder._count?.exams || 0}</span></Link>)}
-            </Section>}
-            <Section id="exams" title="Khảo thí & Lớp" expanded={expanded} closed={closed} toggle={toggle}>{nav.exams.map(item => <NavLink key={item.href} item={item} expanded={expanded} />)}</Section>
+            <Section title="Soạn đề" expanded={expanded}>{nav.compose.map(item => <NavLink key={item.href} item={item} expanded={expanded} />)}</Section>
+            <Section title="Khảo thí & Lớp" expanded={expanded}>{nav.exams.map(item => <NavLink key={item.href} item={item} expanded={expanded} />)}</Section>
             <div className="pt-2 border-t"><NavLink item={nav.trash} expanded={expanded} /></div>
           </>}
         </nav>

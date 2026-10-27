@@ -43,6 +43,7 @@ type ImportSourceType = 'image' | 'word' | 'text' | 'latex';
 export const ImportModal: React.FC<ImportModalProps> = props => <ImportModalContent key={`${props.ownerId}:${props.documentId ?? 'new'}`} {...props} />;
 const ImportModalContent: React.FC<ImportModalProps> = ({
   ownerId,
+  documentId,
   isOpen,
   onClose,
   onImportQuestions,
@@ -673,7 +674,7 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
               className="flex items-center gap-1.5 px-5 py-2 text-xs font-medium app-button-primary rounded-lg shadow-xs transition-all cursor-pointer"
             >
               <Plus className="w-4 h-4" />
-              <span>Thêm {parsedQuestions.length} câu hỏi vào Đề thi hiện tại</span>
+              <span>{documentId ? `Thêm ${parsedQuestions.length} câu hỏi vào Đề thi hiện tại` : `Tạo đề từ ${parsedQuestions.length} câu hỏi`}</span>
             </button>
           )}
         </div>

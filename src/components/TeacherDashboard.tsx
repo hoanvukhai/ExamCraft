@@ -1,5 +1,6 @@
 'use client';
 
+import { LibraryFolders } from './LibraryFolders';
 import { SearchField } from '@/components/workspace/ui';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -19,7 +20,6 @@ import {
   Copy,
   LayoutGrid,
   List,
-  ChevronRight,
   Upload,
   X
 } from 'lucide-react';
@@ -65,7 +65,7 @@ interface TeacherDashboardProps {
 
 export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser }) => {
   const router = useRouter();
-  const { folders, reloadFolders, openCreateFolder, toast: showToast } = useWorkspace();
+  const { folders, foldersReady, foldersError, reloadFolders, toast: showToast } = useWorkspace();
 
   // State dữ liệu
   const [exams, setExams] = useState<ExamSummary[]>([]);
@@ -77,7 +77,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
     if ((params.get(key) || null) === (value || null)) return;
     setIsLoading(true); setLoadError('');
     if (value) params.set(key, value); else params.delete(key);
-    if (key === 'view') params.delete('folder');
+    if (key === 'view' && value === 'trash') params.delete('folder');
     if (key === 'folder' && value) params.delete('view');
     if (key !== 'page') params.delete('page');
     const url = '/?' + params.toString();
@@ -87,18 +87,21 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
   const [totalPages, setTotalPages] = useState(1);
   const [totalExams, setTotalExams] = useState(0);
   const loadSequence = useRef(0);
+  const [loadedQuery, setLoadedQuery] = useState('');
 
   // Bộ lọc & Điều hướng
   const currentView = ['starred', 'recent', 'trash'].includes(location.get('view') || '') ? location.get('view') as 'starred' | 'recent' | 'trash' : 'all';
   const setCurrentView = (value: string) => changeLocation('view', value === 'all' ? null : value);
   const selectedFolderId = location.get('folder');
-  const setSelectedFolderId = (value: string | null) => changeLocation('folder', value);
   const searchQuery = location.get('search') || '';
   const setSearchQuery = (value: string) => changeLocation('search', value);
   const selectedSubject = location.get('subject') || 'all';
   const setSelectedSubject = (value: string) => changeLocation('subject', value === 'all' ? null : value);
   const selectedGrade = location.get('grade') || 'all';
   const setSelectedGrade = (value: string) => changeLocation('grade', value === 'all' ? null : value);
+  const queryKey = JSON.stringify([currentUser.id, currentView, selectedFolderId, searchQuery, selectedSubject, selectedGrade, page]);
+  const pendingList = isLoading || loadedQuery !== queryKey;
+  const rootScope = currentView === 'all' && !selectedFolderId && !searchQuery.trim() && selectedSubject === 'all' && selectedGrade === 'all';
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   // Modals & Popups
@@ -126,6 +129,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
       const params = new URLSearchParams();
       params.set('page', String(page)); params.set('limit', '20');
       if (searchQuery) params.append('search', searchQuery);
+      if (rootScope) params.set('location', 'root');
       if (selectedSubject !== 'all') params.append('subject', selectedSubject);
       if (selectedGrade !== 'all') params.append('grade', selectedGrade);
 
@@ -154,11 +158,13 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
         if (sequence === loadSequence.current) setLoadError(data.error || 'Chưa tải được kho đề.');
       }
       }).catch(() => { if (sequence === loadSequence.current) setLoadError('Chưa kết nối được để tải kho đề. Hãy thử lại.'); }).finally(() => {
-        if (sequence === loadSequence.current) setIsLoading(false);
+        if (sequence === loadSequence.current) { setLoadedQuery(queryKey); setIsLoading(false); }
       });
-  }, [currentUser.id, currentView, selectedFolderId, selectedSubject, selectedGrade, searchQuery, page]);
+  }, [currentUser.id, currentView, selectedFolderId, selectedSubject, selectedGrade, searchQuery, page, rootScope, queryKey]);
   const loadExams = () => { setIsLoading(true); return readExams(); };
 
+  // Refresh folder counts when returning from the editor to this screen.
+  useEffect(() => { void reloadFolders(); }, [reloadFolders]);
 
   useEffect(() => {
     // Prevent actions on rows belonging to the previous view while loading this one.
@@ -286,7 +292,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
     if (e) e.stopPropagation();
     try {
       const original = await loadExam(exam.id, currentUser.id);
-      await persistExam({ ...original, id: 'draft_' + crypto.randomUUID(), serverId: undefined, version: undefined, metadata: { ...original.metadata, title: original.metadata.title + ' (Bản sao)' } }, currentUser.id);
+      await persistExam({ ...original, id: 'draft_' + crypto.randomUUID(), serverId: undefined, version: undefined, creationFolderId: selectedFolderId ?? null, metadata: { ...original.metadata, title: original.metadata.title + ' (Bản sao)' } }, currentUser.id);
       const resCreate = { ok: true };
 
       if (resCreate.ok) {
@@ -304,17 +310,17 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
     if (examId) {
       router.push(`/editor/${examId}`);
     } else {
-      router.push('/editor/new');
+      router.push(selectedFolderId ? `/editor/new?folder=${encodeURIComponent(selectedFolderId)}` : '/editor/new');
     }
   };
 
   // Khi AI sinh đề thành công từ Dashboard
   const handleExamGeneratedFromAi = async (generatedExam: Exam) => {
     // Keep the preview open if preserving the draft fails.
-    writeDraft(localStorage, currentUser.id, 'new', { ...generatedExam, id: 'draft_' + crypto.randomUUID(), serverId: undefined, version: undefined });
+    writeDraft(localStorage, currentUser.id, 'new', { ...generatedExam, id: 'draft_' + crypto.randomUUID(), serverId: undefined, version: undefined, creationFolderId: selectedFolderId ?? null });
     setIsGenerateModalOpen(false);
     showToast('Đã giữ bản nháp. Đang mở bàn soạn...');
-    router.push('/editor/new');
+    router.push(selectedFolderId ? `/editor/new?folder=${encodeURIComponent(selectedFolderId)}` : '/editor/new');
   };
 
   // Xuất file Word nhanh từ danh sách
@@ -343,6 +349,8 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
   const currentFolder = folders.find(f => f.id === selectedFolderId) ||
     folders.flatMap(f => f.children || []).find(c => c.id === selectedFolderId);
 
+  const folderUnavailable = selectedFolderId && (!foldersReady || foldersError || !currentFolder);
+
   return (
     <>
       {/* ─────────────────────────────────────────────────────────────
@@ -359,61 +367,14 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
         <main className="app-page px-4 sm:px-6 py-5 min-w-0">
           {currentView !== 'trash' && <LocalDraftsPanel ownerId={currentUser.id} />}
           {location.get('choose') === 'assign' && currentView !== 'trash' && <p role="status" className="border rounded-lg p-3 mb-4 text-sm">Chọn một đề để mở, rồi bấm “Chia sẻ &amp; Thi Online” để giao cho học sinh.</p>}
-          {/* Top Quick Actions Banner: 3 thẻ tạo đề */}
-          {currentView !== 'trash' && <div className="grid grid-cols-1 xl:grid-cols-3 gap-3 mb-6">
-            {/* Thẻ 1: Soạn đề trống */}
-            <div
-              onClick={() => handleOpenEditor()}
-              className="bg-white dark:bg-[#202124] p-4 rounded-xl border border-[#dadce0] dark:border-[#3c4043] hover:shadow-xs hover:border-[#3c4043] dark:hover:border-[#e3e3e3] transition-all cursor-pointer group flex items-start gap-3"
-            >
-              <div className="w-10 h-10 rounded-xl bg-[var(--ui-surface-variant)] text-[var(--ui-accent)] flex items-center justify-center shrink-0  transition-transform">
-                <Plus className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-xs text-[#202124] dark:text-white mb-0.5">Soạn đề trống mới</h3>
-                <p className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] leading-relaxed">
-                  Mở trang giấy A4 trắng tinh để tự nhập câu hỏi thủ công.
-                </p>
-              </div>
-            </div>
-
-            {/* Thẻ 2: AI Sinh đề */}
-            <div
-              onClick={() => setIsGenerateModalOpen(true)}
-              className="bg-white dark:bg-[#202124] p-4 rounded-xl border border-[#dadce0] dark:border-[#3c4043] hover:shadow-xs hover:border-[#3c4043] dark:hover:border-[#e3e3e3] transition-all cursor-pointer group flex items-start gap-3"
-            >
-              <div className="w-10 h-10 rounded-xl bg-[var(--ui-surface-variant)] text-[var(--ui-accent)] flex items-center justify-center shrink-0  transition-transform">
-                <Sparkles className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-xs text-[#202124] dark:text-white mb-0.5 flex items-center gap-1.5">
-                  <span>AI Sinh đề theo Ma trận</span>
-                  <span className="text-[9px] font-semibold px-1.5 py-0.2 bg-[var(--ui-surface-variant)] text-[var(--ui-text-secondary)] rounded-full">AI</span>
-                </h3>
-                <p className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] leading-relaxed">
-                  Chọn môn, lớp và nội dung; AI đề xuất câu hỏi để thầy cô kiểm tra.
-                </p>
-              </div>
-            </div>
-
-            {/* Thẻ 3: Nhập từ file Word / Ảnh */}
-            <div
-              onClick={() => setIsImportModalOpen(true)}
-              className="bg-white dark:bg-[#202124] p-4 rounded-xl border border-[#dadce0] dark:border-[#3c4043] hover:shadow-xs hover:border-[#3c4043] dark:hover:border-[#e3e3e3] transition-all cursor-pointer group flex items-start gap-3"
-            >
-              <div className="w-10 h-10 rounded-xl bg-[var(--ui-surface-variant)] text-[var(--ui-accent)] flex items-center justify-center shrink-0  transition-transform">
-                <Upload className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-xs text-[#202124] dark:text-white mb-0.5">Nhập từ Word / Ảnh OCR</h3>
-                <p className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] leading-relaxed">
-                  Bóc tách câu hỏi tự động từ file docx hoặc hình chụp đề.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          }
+          {currentView !== 'trash' && <>
+            <header className="flex flex-wrap items-start justify-between gap-3 mb-5">
+              <div><h1 className="text-2xl font-semibold">{selectedFolderId ? currentFolder?.name || 'Thư mục' : 'Thư mục và đề thi'}</h1><p className="text-sm text-[var(--ui-text-secondary)] mt-1">{selectedFolderId ? 'Thư mục con và đề tại vị trí này.' : 'Sắp xếp đề theo môn học, học kỳ, dự án hoặc cách riêng của bạn.'}</p></div>
+              <div className="flex flex-wrap gap-2 text-sm"><button type="button" disabled={!!folderUnavailable} onClick={() => handleOpenEditor()} className="app-button-primary min-h-10 px-4 inline-flex items-center gap-2 disabled:opacity-40"><Plus size={16} />Tạo đề</button><button type="button" disabled={!!folderUnavailable} onClick={() => setIsGenerateModalOpen(true)} className="app-button-secondary min-h-10 px-3 inline-flex items-center gap-2 disabled:opacity-40"><Sparkles size={16} />AI soạn đề</button><button type="button" disabled={!!folderUnavailable} onClick={() => setIsImportModalOpen(true)} className="app-button-secondary min-h-10 px-3 inline-flex items-center gap-2 disabled:opacity-40"><Upload size={16} />Nhập Word / ảnh</button></div>
+            </header>
+            <nav aria-label="Chế độ kho đề" className="flex flex-wrap gap-2 mb-4 text-sm">{([{ key: 'all', label: 'Tất cả' }, { key: 'recent', label: 'Đã sửa gần đây' }, { key: 'starred', label: 'Gắn sao' }] as const).map(view => <button key={view.key} type="button" aria-pressed={currentView === view.key} onClick={() => setCurrentView(view.key)} className={(currentView === view.key ? 'app-button-tonal' : 'app-button-secondary') + ' min-h-10 px-3'}>{view.label}</button>)}</nav>
+            <LibraryFolders folderId={selectedFolderId} showCards={currentView === 'all' && !searchQuery.trim() && selectedSubject === 'all' && selectedGrade === 'all'} />
+          </>}
           {currentView === 'trash' && <section className="mb-5 flex flex-wrap items-start justify-between gap-3"><div><h1 className="text-2xl font-semibold">Thùng rác</h1><p className="text-sm text-[var(--ui-text-secondary)] mt-2">Đề đã chuyển vào thùng rác. Khôi phục để tiếp tục mở và chỉnh sửa, hoặc xóa vĩnh viễn nếu không cần nữa. Đề đã giao cho học sinh không xóa vĩnh viễn được.</p></div>
             {exams.length > 0 && <button type="button" disabled={!!pendingExam} onClick={() => void handleEmptyTrash()} className="app-button-secondary inline-flex items-center gap-2 min-h-10 px-4 text-sm text-red-700 dark:text-red-300 disabled:opacity-40"><Trash2 className="w-4 h-4" /><span>Dọn thùng rác</span></button>}</section>}
           {actionError && <p role="alert" className="border border-red-400 rounded-lg p-3 mb-4 text-sm">{actionError}</p>}
@@ -422,26 +383,16 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
             {/* Breadcrumb tiêu đề vùng làm việc */}
             <div className="flex items-center gap-2 text-xs font-semibold">
               <span className="text-[#5f6368] dark:text-[#9aa0a6]">
-                {currentView === 'trash' ? 'Thùng rác' : currentView === 'starred' ? 'Đề quan trọng' : currentView === 'recent' ? 'Đã sửa trong 30 ngày' : 'Kho đề của tôi'}
+                {currentView === 'trash' ? 'Thùng rác' : currentView === 'starred' ? 'Đề quan trọng' : currentView === 'recent' ? 'Đã sửa trong 30 ngày' : selectedFolderId ? 'Đề trong thư mục' : rootScope ? 'Đề ở ngoài thư mục và đề được chia sẻ' : 'Kết quả trong toàn kho'}
               </span>
-              {currentFolder && (
-                <>
-                  <ChevronRight className="w-3.5 h-3.5 text-[#5f6368]" />
-                  <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3]">
-                    <Folder className="w-3 h-3" style={{ color: currentFolder.color }} />
-                    <span>{currentFolder.name}</span>
-                  </span>
-                </>
-              )}
               <span className="text-[11px] font-normal text-[#5f6368] dark:text-[#9aa0a6]">
-                ({totalExams} đề thi)
+                ({pendingList ? 'Đang tải' : totalExams} đề thi)
               </span>
             </div>
 
             {/* Các dropdown lọc nhanh */}
             <div className="flex flex-wrap min-w-0 max-w-full items-center gap-2">
               <SearchField value={searchQuery} onChange={setSearchQuery} placeholder="Tìm theo tên đề..." label="Tìm đề trong kho" />
-              <select aria-label="Chọn thư mục" className="teacher-field px-2.5 py-1.5 text-xs cursor-pointer" value={selectedFolderId ?? ''} onChange={e => { setSelectedFolderId(e.target.value || null); setCurrentView('all'); }}><option value="">Mọi thư mục</option>{folders.flatMap(folder => [folder, ...(folder.children ?? [])]).map(folder => <option key={folder.id} value={folder.id}>{folder.name}</option>)}</select>
               {/* Lọc theo môn */}
               <select
                 value={selectedSubject}
@@ -487,7 +438,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
           </div>
 
           {/* VÙNG DANH SÁCH ĐỀ THI */}
-          {loadError ? <div role="alert" className="border rounded-xl p-5"><p>{loadError}</p><button type="button" onClick={() => void loadExams()} className="app-button-secondary min-h-10 px-3 mt-3">Thử lại</button></div> : isLoading ? (
+          {folderUnavailable && currentView !== 'trash' ? null : loadError && loadedQuery === queryKey ? <div role="alert" className="border rounded-xl p-5"><p>{loadError}</p><button type="button" onClick={() => void loadExams()} className="app-button-secondary min-h-10 px-3 mt-3">Thử lại</button></div> : pendingList ? (
             <div className="py-24 text-center text-xs text-[#5f6368] dark:text-[#9aa0a6]">
               Đang tải danh sách đề thi...
             </div>
@@ -497,31 +448,13 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                 <FileText className="w-7 h-7" />
               </div>
               <h3 className="font-semibold text-[#202124] dark:text-[#e3e3e3] text-sm mb-1">
-                {currentView === 'trash' ? 'Thùng rác trống' : 'Chưa có đề thi nào trong mục này'}
+                {currentView === 'trash' ? 'Thùng rác trống' : currentView === 'starred' ? 'Chưa có đề gắn sao trong mục này' : currentView === 'recent' ? 'Chưa có đề sửa gần đây trong mục này' : searchQuery ? 'Không tìm thấy đề phù hợp' : 'Chưa có đề ở vị trí này'}
               </h3>
               <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] mb-5 max-w-sm mx-auto">
                 {currentView === 'trash'
                   ? 'Không có đề thi nào bị xóa.'
-                  : 'Hãy bấm Soạn đề mới hoặc nhờ AI hỗ trợ soạn bản nháp để bắt đầu.'}
+                  : currentView === 'starred' ? 'Bấm ngôi sao trên thẻ đề để đánh dấu và tìm lại nhanh.' : currentView === 'recent' ? 'Mục này chỉ hiện đề có chỉnh sửa trong 30 ngày gần đây.' : searchQuery ? 'Thử tên đề hoặc bộ lọc khác.' : 'Dùng nút Tạo đề ở phía trên; các đề đã xếp sẽ nằm trong thư mục tương ứng.'}
               </p>
-              {currentView !== 'trash' && (
-                <div className="flex items-center justify-center gap-3">
-                  <button
-                    onClick={() => handleOpenEditor()}
-                    className="px-4 py-2 app-button-primary text-white rounded-lg text-xs font-semibold shadow-xs cursor-pointer flex items-center gap-1.5"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Soạn đề trống</span>
-                  </button>
-                  <button
-                    onClick={() => setIsGenerateModalOpen(true)}
-                    className="px-4 py-2 bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f8f9fa] rounded-lg text-xs font-semibold shadow-2xs cursor-pointer flex items-center gap-1.5"
-                  >
-                    <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                    <span>Sinh đề AI</span>
-                  </button>
-                </div>
-              )}
             </div>
           ) : viewMode === 'grid' ? (
             /* DẠNG THẺ GRID CARDS */
@@ -529,6 +462,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
               {exams.map((exam) => (
                 <div
                   key={exam.id}
+                  data-library-exam={exam.id}
                   onClick={currentView === 'trash' ? undefined : () => handleOpenEditor(exam.id)}
                   className="group bg-white dark:bg-[#202124] p-4 rounded-xl border border-[#dadce0] dark:border-[#3c4043] hover:border-[#3c4043] dark:hover:border-[#e3e3e3] hover:shadow-xs transition-all cursor-pointer relative flex flex-col justify-between"
                 >
@@ -541,7 +475,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                         </span>
                         {exam.folder && (
                           <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#f1f3f4] dark:bg-[#292a2d] text-[#5f6368] dark:text-[#9aa0a6]">
-                            <Folder className="w-2.5 h-2.5" style={{ color: exam.folder.color }} />
+                            <Folder className="w-2.5 h-2.5 dark:!text-[var(--ui-text-primary)]" style={{ color: exam.folder.color }} />
                             <span>{exam.folder.name}</span>
                           </span>
                         )}
@@ -657,7 +591,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                 <tbody className="divide-y divide-[#f1f3f4] dark:divide-[#3c4043]">
                   {exams.map((exam) => (
                     <tr
-                      key={exam.id}
+                      key={exam.id} data-library-exam={exam.id}
                       onClick={currentView === 'trash' ? undefined : () => handleOpenEditor(exam.id)}
                       className="hover:bg-[#f8f9fa] dark:hover:bg-[#292a2d] transition-colors cursor-pointer group"
                     >
@@ -681,7 +615,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                       <td className="py-3 px-4 text-[#5f6368] dark:text-[#9aa0a6]">
                         {exam.folder ? (
                           <span className="flex items-center gap-1.5">
-                            <Folder className="w-3.5 h-3.5" style={{ color: exam.folder.color }} />
+                            <Folder className="w-3.5 h-3.5 dark:!text-[var(--ui-text-primary)]" style={{ color: exam.folder.color }} />
                             <span>{exam.folder.name}</span>
                           </span>
                         ) : (
@@ -731,7 +665,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
               </table>
             </div>
           )}
-          {totalPages > 1 && <nav aria-label="Trang kho đề" className="flex justify-center items-center gap-4 py-5 text-sm"><button type="button" disabled={isLoading || page <= 1} onClick={() => setPage(p => p - 1)} className="border rounded px-3 py-2 disabled:opacity-40">Trang trước</button><span>Trang {page} / {totalPages}</span><button type="button" disabled={isLoading || page >= totalPages} onClick={() => setPage(p => p + 1)} className="border rounded px-3 py-2 disabled:opacity-40">Trang sau</button></nav>}
+          {totalPages > 1 && <nav aria-label="Trang kho đề" className="flex justify-center items-center gap-4 py-5 text-sm"><button type="button" disabled={pendingList || page <= 1} onClick={() => setPage(p => p - 1)} className="border rounded px-3 py-2 disabled:opacity-40">Trang trước</button><span>Trang {page} / {totalPages}</span><button type="button" disabled={pendingList || page >= totalPages} onClick={() => setPage(p => p + 1)} className="border rounded px-3 py-2 disabled:opacity-40">Trang sau</button></nav>}
         </main>
 
         {/* ─────────────────────────────────────────────────────────────
@@ -783,7 +717,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                     onClick={() => handleMoveExam(folder.id)}
                     className="w-full text-left px-3 py-1.5 rounded-lg text-xs hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] cursor-pointer flex items-center gap-2 font-medium"
                   >
-                    <Folder className="w-3.5 h-3.5" style={{ color: folder.color }} />
+                    <Folder className="w-3.5 h-3.5 dark:!text-[var(--ui-text-primary)]" style={{ color: folder.color }} />
                     <span>{folder.name}</span>
                   </button>
 
@@ -903,8 +837,8 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
           };
-          writeDraft(localStorage, currentUser.id, 'new', { ...newExam, id: 'draft_' + crypto.randomUUID(), serverId: undefined, version: undefined });
-          router.push('/editor/new');
+          writeDraft(localStorage, currentUser.id, 'new', { ...newExam, id: 'draft_' + crypto.randomUUID(), serverId: undefined, version: undefined, creationFolderId: selectedFolderId ?? null });
+          router.push(selectedFolderId ? `/editor/new?folder=${encodeURIComponent(selectedFolderId)}` : '/editor/new');
         }}
         apiKey=""
       />

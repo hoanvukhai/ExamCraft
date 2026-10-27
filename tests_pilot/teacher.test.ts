@@ -8,7 +8,7 @@ import { chromium, type Locator } from 'playwright-core';
 import { requireTestDatabase } from '../tests/helpers/test-database';
 import { loginBucket } from '../src/lib/auth-security';
 
-const origin = process.env.EXAMCRAFT_TEST_ORIGIN ?? 'http://127.0.0.1:3117', report = 'qa/rebuild-2026-10-27/teacher-ui-fix';
+const origin = process.env.EXAMCRAFT_TEST_ORIGIN ?? 'http://127.0.0.1:3117', report = process.env.TEACHER_REPORT_DIR || 'qa/rebuild-2026-10-27/teacher-ui-fix';
 test('teacher management: trash, bank, class context, routes and mobile', { timeout: 240000 }, async t => {
   const url = requireTestDatabase();
   assert.equal(new URL(url).pathname, '/examcraft_test_20261022');
@@ -67,10 +67,10 @@ test('teacher management: trash, bank, class context, routes and mobile', { time
       await page.setViewportSize({ width: 1440, height: 1000 });
       const folder = (await api('/api/folders', 'POST', { name: 'Thư mục kiểm lỗi', color: '#3c4043' })).folder;
       await page.goto(origin + '/teacher/folders?folder=' + folder.id); await page.getByRole('heading', { name: 'Thư mục kiểm lỗi', exact: true }).waitFor();
-      await page.getByRole('button', { name: 'Xóa', exact: true }).click(); await confirm(false);
+      await page.getByRole('button', { name: 'Xóa thư mục', exact: true }).click(); await confirm(false);
       assert.ok(await db.folder.findUnique({ where: { id: folder.id } }));
       await page.route('**/api/folders/' + folder.id, route => route.fulfill({ status: 503, json: { error: 'Chưa xóa được thư mục kiểm lỗi' } }));
-      await page.getByRole('button', { name: 'Xóa', exact: true }).click(); await confirm(true);
+      await page.getByRole('button', { name: 'Xóa thư mục', exact: true }).click(); await confirm(true);
       await page.getByRole('alert').getByText('Chưa xóa được thư mục kiểm lỗi', { exact: true }).waitFor();
       assert.ok(await db.folder.findUnique({ where: { id: folder.id } }));
       await page.unroute('**/api/folders/' + folder.id);
@@ -89,7 +89,7 @@ test('teacher management: trash, bank, class context, routes and mobile', { time
       await waitAbsent(card('Xóa vĩnh viễn thử'));
       assert.equal(await db.exam.findUnique({ where: { id: purgeId } }), null, 'the exam is gone for good');
       await api('/api/assignments', 'POST', { examId: assignedId, title: 'Bài giao kiểm', identityMode: 'FREE_NAME' });
-      await nav().getByRole('link', { name: 'Tất cả đề thi', exact: true }).filter({ visible: true }).click();
+      await nav().getByRole('link', { name: 'Kho đề', exact: true }).filter({ visible: true }).click();
       await card('Đề đã giao không xóa hẳn').getByTitle('Chuyển vào thùng rác', { exact: true }).click(); await confirm(true); await page.getByText('Đã chuyển đề vào thùng rác.', { exact: true }).first().waitFor();
       await nav().getByRole('link', { name: 'Thùng rác', exact: true }).click();
       await card('Đề đã giao không xóa hẳn').getByRole('button', { name: 'Xóa vĩnh viễn', exact: true }).click(); await confirm(true);
@@ -209,7 +209,7 @@ test('teacher management: trash, bank, class context, routes and mobile', { time
         }
         assert.equal(await page.evaluate(() => document.documentElement.classList.contains('dark')), dark);
         await page.evaluate(() => document.fonts.ready);
-        if (route === '/') { await card('Đề giao diện 0').waitFor(); await page.getByTitle('Chế độ xem danh sách', { exact: true }).click(); }
+        if (route === '/') { await card('Đề giao diện 0').waitFor(); await page.getByTitle('Chế độ xem danh sách', { exact: true }).filter({ visible: true }).click(); }
         assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true, `${route} ${width} ${dark}`);
         for (const input of await page.locator('main select, main input').all()) if (await input.isVisible()) {
           const box = await input.boundingBox(); assert.ok(box && box.x >= -1 && box.x + box.width <= width + 1, `field must fit ${route} ${width}`);
@@ -232,4 +232,3 @@ test('teacher management: trash, bank, class context, routes and mobile', { time
     await db.$disconnect();
   }
 });
-

@@ -6,7 +6,7 @@ export class SaveExamError extends Error {
 }
 
 export function isExamAccessError(error: unknown): error is SaveExamError {
-  return error instanceof SaveExamError && ([401, 403, 404].includes(error.status) || error.code === 'ACCOUNT_CHANGED');
+  return error instanceof SaveExamError && (([401, 403, 404].includes(error.status) && error.code !== 'FOLDER_UNAVAILABLE') || error.code === 'ACCOUNT_CHANGED');
 }
 
 async function fetchExam(url: string, options: RequestInit) {
@@ -15,12 +15,12 @@ async function fetchExam(url: string, options: RequestInit) {
 }
 
 export async function persistExam(exam: Exam, expectedUserId?: string): Promise<Exam> {
-  const document = normalizeExamDocument(exam);
+  const { creationFolderId, ...document } = normalizeExamDocument(exam);
   delete document.access;
   const existing = document.serverId === document.id && document.version != null;
   const response = await fetchExam(existing ? `/api/exams/${encodeURIComponent(document.id)}` : '/api/exams', {
     method: existing ? 'PATCH' : 'POST', headers: { 'Content-Type': 'application/json', ...(expectedUserId ? { 'x-examcraft-user': expectedUserId } : {}) },
-    body: JSON.stringify(existing ? { document, baseVersion: document.version } : { document, clientId: document.id }),
+    body: JSON.stringify(existing ? { document, baseVersion: document.version } : { document, clientId: document.id, ...(creationFolderId === undefined ? {} : { folderId: creationFolderId }) }),
   });
   const result = await response.json().catch(() => ({}));
   if (!response.ok) throw new SaveExamError(result.error ?? 'Chưa lưu được đề. Bản nháp vẫn được giữ trên máy', response.status, result.code);

@@ -47,7 +47,10 @@ async function waitUntil(check: () => Promise<boolean>, message: string, timeout
 }
 async function openDetails(page: Page, summary: string) { await page.locator('summary', { hasText: summary }).first().evaluate(el => { (el.parentElement as HTMLDetailsElement).open = true; }); }
 async function openTool(page: Page, label: 'Xuất' | 'Đề thi') { await page.getByRole('button', { name: label, exact: true }).click(); }
-async function menuLink(page: Page, name: string) { await page.getByRole('navigation', { name: 'Không gian giáo viên' }).getByRole('link', { name, exact: true }).filter({ visible: true }).click(); }
+async function menuLink(page: Page, name: string) {
+  if (name === 'Đề quan trọng (Gắn sao)' || name === 'Đã sửa gần đây') { await page.getByRole('navigation', { name: 'Chế độ kho đề' }).getByRole('button', { name: name === 'Đã sửa gần đây' ? name : 'Gắn sao', exact: true }).click(); return; }
+  await page.getByRole('navigation', { name: 'Không gian giáo viên' }).getByRole('link', { name: name === 'Tất cả đề thi' ? 'Kho đề' : name, exact: true }).filter({ visible: true }).click();
+}
 async function click(page: Page, name: string | RegExp) { await page.getByRole('button', { name, exact: typeof name === 'string' }).click(); }
 async function login(page: Page, email: string, password: string) {
   // The effect's session lookup proves hydration; SSR form controls alone do not.
@@ -715,7 +718,7 @@ test('F19 library search, starred, recent, trash, restore and safe controls', { 
   await card(titles[3]).getByTitle('Nhân bản đề này', { exact: true }).click();
   await waitUntil(async () => (await f.db.exam.count({ where: { ownerId: f.ids[0] } })) === 5, 'Clone must create a separate exam');
   const all = await f.db.exam.findMany({ where: { ownerId: f.ids[0] } }); assert.equal(all.filter(row => row.title.includes(titles[3])).length, 2); checked.push('clone');
-  await menuLink(f.page, 'Thư mục'); await f.page.getByRole('heading', { name: 'Thư mục', exact: true }).waitFor();
+  await menuLink(f.page, 'Kho đề'); await f.page.getByRole('heading', { name: 'Thư mục và đề thi', exact: true }).waitFor();
   await f.page.getByRole('button', { name: 'Tạo thư mục', exact: true }).filter({ visible: true }).first().click();
   await f.page.getByPlaceholder('Ví dụ: Khối 12, Học kỳ 1, Ôn thi HSG...').fill('F19 Folder');
   await f.page.locator('form').getByRole('button', { name: 'Tạo thư mục', exact: true }).click();
@@ -742,8 +745,8 @@ test('F19 library search, starred, recent, trash, restore and safe controls', { 
   assert.equal(await f.page.getByRole('button', { name: /Thêm vào đề|Mở đề để chèn/ }).count(), 0);
   await menuLink(f.page, 'Tất cả đề thi');
   checked.push('bank-management-page-without-editor-actions');
-  await openClose(f.page.getByText('AI Sinh đề theo Ma trận', { exact: true }), 'generate-open-only');
-  await openClose(f.page.getByText('Nhập từ Word / Ảnh OCR', { exact: true }), 'import-open-only');
+  await openClose(f.page.getByRole('button', { name: 'AI soạn đề', exact: true }), 'generate-open-only');
+  await openClose(f.page.getByRole('button', { name: 'Nhập Word / ảnh', exact: true }), 'import-open-only');
   await f.page.getByTitle('Mở Thư ký AI trợ lý riêng của Thầy/Cô', { exact: true }).filter({ visible: true }).click();
   await f.page.getByRole('heading', { name: 'Thư Ký Số & Trợ Lý Giáo Viên', exact: true }).waitFor();
   await f.page.locator('div.fixed.inset-y-0').locator('button:has(svg.lucide-x)').click(); checked.push('secretary-open-close-only-no-ai-call');
