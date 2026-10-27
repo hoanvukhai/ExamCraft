@@ -198,7 +198,7 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Nút bật/tắt Dark Mode */}
         <button
           onClick={toggleTheme}
-          title="Đổi giao diện Sáng / Tối"
+          title="Đổi giao diện Sáng / Tối" aria-label={`Chuyển sang giao diện ${theme === 'dark' ? 'Sáng' : 'Tối'}`}
           className="p-2 rounded-lg text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
         >
           {theme === 'dark' ? <Sun className="w-4 h-4 text-[var(--ui-text-secondary)]" /> : <Moon className="w-4 h-4 text-[#5f6368]" />}

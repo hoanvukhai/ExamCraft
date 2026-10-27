@@ -121,7 +121,7 @@ export function WorkspaceMenu({ variant }: { variant: WorkspaceVariant }) {
 /** Phones and narrow windows: one row of tabs in place of the side menu. */
 export function WorkspaceTabs({ variant }: { variant: WorkspaceVariant }) {
   const nav = useDestinations(variant);
-  return <nav aria-label={nav.admin ? 'Quản trị' : 'Không gian giáo viên'} className="no-print lg:hidden shrink-0 flex flex-wrap gap-1 px-3 sm:px-6 py-2 text-sm border-b bg-[var(--ui-surface)]">
-    {nav.items.map(({ href, label, active }) => <Link key={href} href={href} aria-current={active ? 'page' : undefined} className={`min-h-10 inline-flex items-center px-3 rounded-lg ${active ? 'app-button-tonal font-semibold' : 'hover:bg-[var(--ui-surface-variant)]'}`}>{label}</Link>)}
+  return <nav aria-label={nav.admin ? 'Quản trị' : 'Không gian giáo viên'} className="no-print lg:hidden shrink-0 flex gap-1 overflow-x-auto whitespace-nowrap px-3 sm:px-6 py-2 text-sm border-b bg-[var(--ui-surface)]">
+    {nav.items.map(({ href, label, active }) => <Link key={href} href={href} aria-current={active ? 'page' : undefined} className={`min-h-10 shrink-0 inline-flex items-center px-3 rounded-lg ${active ? 'app-button-tonal font-semibold' : 'hover:bg-[var(--ui-surface-variant)]'}`}>{label}</Link>)}
   </nav>;
 }

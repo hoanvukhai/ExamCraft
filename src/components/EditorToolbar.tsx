@@ -6,10 +6,10 @@ import type { Exam } from '@/types/exam';
 type Icon = ComponentType<{ className?: string }>;
 interface MenuItem { label: string; title?: string; onClick: () => void; disabled?: boolean }
 
-const button = 'app-button-secondary inline-flex items-center gap-1.5 min-h-9 px-3 rounded-lg text-xs font-medium cursor-pointer disabled:opacity-40 disabled:cursor-default';
+const button = 'app-button-secondary shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 min-h-9 px-3 rounded-lg text-xs font-medium cursor-pointer disabled:opacity-40 disabled:cursor-default';
 
 function ToolMenu({ label, Icon, items }: { label: string; Icon: Icon; items: MenuItem[] }) {
-  const [open, setOpen] = useState(false), box = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false), [where, setWhere] = useState({ top: 0, left: 0 }), box = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!open) return;
     const away = (event: MouseEvent) => { if (!box.current?.contains(event.target as Node)) setOpen(false); };
@@ -18,8 +18,8 @@ function ToolMenu({ label, Icon, items }: { label: string; Icon: Icon; items: Me
     return () => { document.removeEventListener('mousedown', away); document.removeEventListener('keydown', escape); };
   }, [open]);
   return <div ref={box} className="relative">
-    <button type="button" aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen(value => !value)} className={button}><Icon className="w-3.5 h-3.5 text-[var(--ui-text-secondary)]" /><span>{label}</span><ChevronDown className="w-3 h-3 text-[var(--ui-text-secondary)]" /></button>
-    {open && <div role="menu" aria-label={label} className="app-menu absolute left-0 top-full mt-1 min-w-60 rounded-xl border bg-[var(--ui-surface)] p-1.5 shadow-lg z-40">
+    <button type="button" aria-haspopup="menu" aria-expanded={open} onClick={event => { const rect = event.currentTarget.getBoundingClientRect(); setWhere({ top: rect.bottom + 4, left: Math.max(8, Math.min(rect.left, window.innerWidth - 248)) }); setOpen(value => !value); }} className={button}><Icon className="w-3.5 h-3.5 text-[var(--ui-text-secondary)]" /><span>{label}</span><ChevronDown className="w-3 h-3 text-[var(--ui-text-secondary)]" /></button>
+    {open && <div role="menu" aria-label={label} style={{ top: where.top, left: where.left }} className="app-menu fixed w-60 rounded-xl border bg-[var(--ui-surface)] p-1.5 shadow-lg z-40">
       {items.map(item => <button key={item.label} type="button" role="menuitem" title={item.title} disabled={item.disabled} onClick={() => { setOpen(false); item.onClick(); }} className="w-full text-left min-h-10 px-3 rounded-lg text-sm hover:bg-[var(--ui-surface-variant)] disabled:opacity-40 disabled:cursor-default cursor-pointer">{item.label}</button>)}
     </div>}
   </div>;
@@ -37,7 +37,7 @@ interface Props {
 /** The editor's tools, as one row under the top bar. What was a vertical rail (and a second copy on the right) lives here once. */
 export function EditorToolbar(p: Props) {
   const badge = p.access ? (p.access.canManage ? 'Đề của bạn' : p.access.canEdit ? 'Được mời cùng sửa' : p.access.canComment ? 'Quyền xem và góp ý' : 'Quyền chỉ xem') : null;
-  return <div role="toolbar" aria-label="Công cụ soạn đề" className="no-print shrink-0 border-b bg-[var(--ui-surface)] px-3 sm:px-4 py-2 flex flex-wrap items-center gap-2">
+  return <div role="toolbar" aria-label="Công cụ soạn đề" className="no-print shrink-0 border-b bg-[var(--ui-surface)] px-3 sm:px-4 py-2 flex flex-nowrap sm:flex-wrap items-center gap-2 overflow-x-auto sm:overflow-visible">
     {p.canEdit && <>
       <button type="button" onClick={p.onBank} title="Chọn câu hỏi từ Ngân hàng chèn vào đề" className={button}><Database className="w-3.5 h-3.5 text-[var(--ui-text-secondary)]" /><span>Ngân hàng câu hỏi</span></button>
       <button type="button" onClick={p.onImport} title="Bóc tách câu hỏi từ file Word / Ảnh chụp đưa thêm vào đề" className={button}><Upload className="w-3.5 h-3.5 text-[var(--ui-text-secondary)]" /><span>Nhập đề (Word/Ảnh)</span></button>
@@ -57,6 +57,6 @@ export function EditorToolbar(p: Props) {
     ]} />
     {p.canEdit && <button type="button" onClick={p.onResults} title="Xem danh sách bài nộp và phổ điểm học sinh" className={button}><BarChart3 className="w-3.5 h-3.5 text-[var(--ui-text-secondary)]" /><span>Bảng điểm thi</span>{p.submissionCount > 0 && <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-[var(--ui-surface-variant)]">{p.submissionCount}</span>}</button>}
     {p.hasServerExam && <button type="button" onClick={p.onCollaborate} className={button}><Users className="w-3.5 h-3.5 text-[var(--ui-text-secondary)]" /><span>Cùng soạn · Góp ý · Lịch sử</span></button>}
-    {badge && <span className="ml-auto text-xs px-2.5 py-1 rounded-full bg-[var(--ui-surface-variant)] text-[var(--ui-text-secondary)]">{badge}</span>}
+    {badge && <span className="ml-auto shrink-0 whitespace-nowrap text-xs px-2.5 py-1 rounded-full bg-[var(--ui-surface-variant)] text-[var(--ui-text-secondary)]">{badge}</span>}
   </div>;
 }

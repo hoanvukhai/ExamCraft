@@ -1,7 +1,7 @@
 'use client';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Check, FolderPlus, X } from 'lucide-react';
+import { AlertCircle, Check, FolderPlus, X } from 'lucide-react';
 import { accountFetch } from '@/lib/account-fetch';
 import { teacherErrorMessage } from '@/lib/teacher-ui';
 import { useConfirmAction } from '@/components/ConfirmAction';
@@ -28,7 +28,7 @@ interface Workspace {
   setMenuExpanded: (value: boolean) => void;
   topbarSlot: HTMLElement | null;
   setTopbarSlot: (element: HTMLElement | null) => void;
-  toast: (message: string) => void;
+  toast: (message: string, kind?: 'info' | 'error') => void;
   confirmAction: (message: string) => Promise<boolean>;
 }
 
@@ -53,7 +53,7 @@ export function WorkspaceProvider({ user, children }: { user: WorkspaceUser; chi
   const [folderName, setFolderName] = useState(''), [folderColor, setFolderColor] = useState('#3c4043');
   const [menuExpanded, setMenuState] = useState(true);
   const [topbarSlot, setTopbarSlot] = useState<HTMLElement | null>(null);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<{ text: string; kind: 'info' | 'error' } | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -64,10 +64,10 @@ export function WorkspaceProvider({ user, children }: { user: WorkspaceUser; chi
     setMenuState(value);
     try { localStorage.setItem(menuKey, value ? '0' : '1'); } catch { /* ignore */ }
   }, []);
-  const toast = useCallback((message: string) => {
-    setToastMessage(message);
+  const toast = useCallback((message: string, kind: 'info' | 'error' = 'info') => {
+    setToastMessage({ text: message, kind });
     if (toastTimer.current) clearTimeout(toastTimer.current);
-    toastTimer.current = setTimeout(() => setToastMessage(null), 3500);
+    toastTimer.current = setTimeout(() => setToastMessage(null), kind === 'error' ? 9000 : 3500);
   }, []);
 
   const reloadKeys = useCallback(() => accountFetch(user.id, '/api/user/keys').then(async response => {
@@ -85,9 +85,9 @@ export function WorkspaceProvider({ user, children }: { user: WorkspaceUser; chi
     try {
       const response = await accountFetch(user.id, '/api/folders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: folderName.trim(), color: folderColor, parentId: folderDialog.parentId }) });
       const data = await response.json();
-      if (!response.ok) { toast(data.error || 'Không thể tạo thư mục'); return; }
+      if (!response.ok) { toast(data.error || 'Không thể tạo thư mục', 'error'); return; }
       toast('Đã tạo thư mục mới thành công!'); setFolderDialog(null); setFolderName(''); void reloadFolders();
-    } catch { toast('Lỗi kết nối máy chủ khi tạo thư mục'); }
+    } catch { toast('Lỗi kết nối máy chủ khi tạo thư mục', 'error'); }
   };
   const deleteFolder = useCallback(async (id: string, name: string) => {
     if (!await confirmAction(`Xóa thư mục “${name}”? Các đề bên trong được chuyển ra ngoài, không bị xóa.`)) return;
@@ -97,7 +97,7 @@ export function WorkspaceProvider({ user, children }: { user: WorkspaceUser; chi
       toast('Đã xóa thư mục.');
       if (params.get('folder') === id) router.push('/');
       await reloadFolders(); router.refresh();
-    } catch (cause) { toast(teacherErrorMessage(cause, 'Chưa kết nối được để xóa thư mục. Hãy thử lại.')); }
+    } catch (cause) { toast(teacherErrorMessage(cause, 'Chưa kết nối được để xóa thư mục. Hãy thử lại.'), 'error'); }
   }, [confirmAction, params, reloadFolders, router, toast, user.id]);
 
   const value = useMemo<Workspace>(() => ({
@@ -127,7 +127,7 @@ export function WorkspaceProvider({ user, children }: { user: WorkspaceUser; chi
         </div>
       </form>
     </div>}
-    {toastMessage && <div role="status" className="no-print fixed bottom-6 right-6 z-50 bg-[var(--ui-accent)] text-[var(--ui-on-primary)] px-4 py-2.5 rounded-full text-xs font-semibold shadow-xs flex items-center gap-2"><Check className="w-4 h-4" /><span>{toastMessage}</span></div>}
+    {toastMessage && <div role={toastMessage.kind === 'error' ? 'alert' : 'status'} className={`no-print fixed bottom-6 right-6 z-50 max-w-sm px-4 py-2.5 rounded-2xl text-xs font-semibold shadow-xs flex items-center gap-2 ${toastMessage.kind === 'error' ? 'bg-red-700 text-white' : 'bg-[var(--ui-accent)] text-[var(--ui-on-primary)]'}`}>{toastMessage.kind === 'error' ? <AlertCircle className="w-4 h-4 shrink-0" /> : <Check className="w-4 h-4 shrink-0" />}<span>{toastMessage.text}</span></div>}
     <ApiKeyModal ownerId={user.id} key={`keys:${user.id}`} isOpen={keysOpen} onClose={() => { setKeysOpen(false); void reloadKeys(); }} onKeyUpdated={() => void reloadKeys()} />
     <AiLearningModal isOpen={notesOpen} onClose={() => setNotesOpen(false)} currentUser={{ id: user.id, name: user.name }} />
     <TeacherAiSecretaryDrawer isOpen={assistantOpen} onClose={() => setAssistantOpen(false)} currentUser={user} onOpenAiLearningModal={() => setNotesOpen(true)} />

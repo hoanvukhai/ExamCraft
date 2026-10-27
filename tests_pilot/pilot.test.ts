@@ -237,7 +237,7 @@ test('F3 answer views, shuffle, Word and print', { timeout: 120000 }, () => flow
   await review.locator('summary').click();
   assert.ok((await review.innerText()).includes('Tổng điểm: 6,00'));
   assert.ok(!(await review.innerText()).includes(solution));
-  await click(f.page, 'Trình chiếu');
+  await openTool(f.page, 'Xuất'); await f.page.getByRole('menuitem', { name: 'Trình chiếu', exact: true }).click();
   const presentation = f.page.getByRole('dialog', { name: 'Trình chiếu đề' });
   await presentation.waitFor();
   assert.ok(!(await presentation.innerText()).includes(solution));
@@ -652,7 +652,7 @@ test('F17 pasting an exam as text with no AI key still gives a usable preview th
 test('F18 the presentation moves with the arrow keys, hides the answer until asked, resizes, and never changes the exam', { timeout: 150000 }, () => flow('F18', async f => {
   await authenticated(f); const id = await seedExam(f); await openExam(f, id);
   const before = await f.db.exam.findUniqueOrThrow({ where: { id } });
-  await click(f.page, 'Trình chiếu');
+  await openTool(f.page, 'Xuất'); await f.page.getByRole('menuitem', { name: 'Trình chiếu', exact: true }).click();
   const dialog = f.page.getByRole('dialog', { name: 'Trình chiếu đề' }); await dialog.waitFor();
   const header = () => dialog.locator('strong').first().innerText();
   const shows = async (n: number) => waitUntil(async () => new RegExp(`Câu ${n}/7`).test(await header()), `the presentation shows question ${n}`, 5000);
@@ -704,9 +704,9 @@ test('F19 library search, starred, recent, trash, restore and safe controls', { 
   await f.page.getByTitle('Chế độ xem danh sách', { exact: true }).click(); await f.page.getByRole('table').waitFor();
   await f.page.getByTitle('Chế độ xem thẻ', { exact: true }).click(); await waitTitles(titles); checked.push('grid-and-list');
   const dark = await f.page.locator('html').evaluate(el => el.classList.contains('dark'));
-  await f.page.getByTitle('Đổi giao diện Sáng / Tối', { exact: true }).click();
+  await f.page.getByTitle('Đổi giao diện Sáng / Tối', { exact: true }).filter({ visible: true }).click();
   await waitUntil(async () => (await f.page.locator('html').evaluate(el => el.classList.contains('dark'))) !== dark, 'Theme toggle must change the page');
-  await f.page.getByTitle('Đổi giao diện Sáng / Tối', { exact: true }).click(); checked.push('theme');
+  await f.page.getByTitle('Đổi giao diện Sáng / Tối', { exact: true }).filter({ visible: true }).click(); checked.push('theme');
   const [word] = await Promise.all([f.page.waitForEvent('download'), card(titles[0]).getByTitle('Tải file Word (.docx)', { exact: true }).click()]);
   const wordPath = await word.path(); assert.ok(wordPath); const zip = await JSZip.loadAsync(fs.readFileSync(wordPath)); assert.ok((await zip.file('word/document.xml')!.async('string')).includes(titles[0] + '_CONTENT')); checked.push('download-word');
   await card(titles[2]).getByTitle('Đổi tên đề', { exact: true }).click();
