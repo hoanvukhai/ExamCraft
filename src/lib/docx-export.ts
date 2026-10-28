@@ -100,7 +100,10 @@ export function cleanLatexForWord(text: string): string {
 
   // 4. Xử lý lặp để gỡ sạch ngoặc lồng nhau của \frac, \dfrac, \sqrt
   let prev = '';
-  while (prev !== result && (result.includes('\\frac') || result.includes('\\dfrac') || result.includes('\\sqrt'))) {
+  while (
+    prev !== result &&
+    (result.includes('\\frac') || result.includes('\\dfrac') || result.includes('\\sqrt'))
+  ) {
     prev = result;
     result = result.replace(/\\sqrt\[([^{}]+)\]\{([^{}]+)\}/g, '√[$1]($2)');
     result = result.replace(/\\sqrt\{([^{}]+)\}/g, '√($1)');
@@ -142,7 +145,7 @@ export function renderContentBlocksForWord(
   text: string,
   paragraph: { indent?: { left?: number; right?: number }; spacing?: { before?: number; after?: number } },
   options: { fontSize?: number; italics?: boolean },
-  lead: TextRun[] = []
+  lead: TextRun[] = [],
 ): (Paragraph | Table)[] {
   const blocks = splitContentBlocks(text ?? '');
   const out: (Paragraph | Table)[] = [];
@@ -151,22 +154,57 @@ export function renderContentBlocksForWord(
   for (const block of blocks) {
     if (block.kind === 'text') {
       if (!block.text.trim() && (leadUsed || !lead.length)) continue;
-      out.push(new Paragraph({ ...paragraph, children: [...(leadUsed ? [] : lead), ...renderLatexRunsForWord(block.text, options)] }));
+      out.push(
+        new Paragraph({
+          ...paragraph,
+          children: [...(leadUsed ? [] : lead), ...renderLatexRunsForWord(block.text, options)],
+        }),
+      );
       leadUsed = true;
       continue;
     }
-    if (!leadUsed && lead.length) { out.push(new Paragraph({ ...paragraph, children: lead })); leadUsed = true; }
-    const cell = (value: string, align: 'left' | 'center' | 'right', bold: boolean) => new TableCell({
-      margins: { top: 40, bottom: 40, left: 80, right: 80 },
-      children: [new Paragraph({ alignment: align === 'center' ? AlignmentType.CENTER : align === 'right' ? AlignmentType.RIGHT : AlignmentType.LEFT, children: renderLatexRunsForWord(value, { fontSize: fontSize > 21 ? 21 : fontSize, bold, italics: options.italics }) })],
-    });
-    out.push(new Table({
-      width: { size: 100, type: WidthType.PERCENTAGE },
-      rows: [
-        new TableRow({ tableHeader: true, cantSplit: true, children: block.header.map(value => cell(value, 'center', true)) }),
-        ...block.rows.map(row => new TableRow({ cantSplit: true, children: row.map((value, c) => cell(value, block.align[c], false)) })),
-      ],
-    }));
+    if (!leadUsed && lead.length) {
+      out.push(new Paragraph({ ...paragraph, children: lead }));
+      leadUsed = true;
+    }
+    const cell = (value: string, align: 'left' | 'center' | 'right', bold: boolean) =>
+      new TableCell({
+        margins: { top: 40, bottom: 40, left: 80, right: 80 },
+        children: [
+          new Paragraph({
+            alignment:
+              align === 'center'
+                ? AlignmentType.CENTER
+                : align === 'right'
+                  ? AlignmentType.RIGHT
+                  : AlignmentType.LEFT,
+            children: renderLatexRunsForWord(value, {
+              fontSize: fontSize > 21 ? 21 : fontSize,
+              bold,
+              italics: options.italics,
+            }),
+          }),
+        ],
+      });
+    out.push(
+      new Table({
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        rows: [
+          new TableRow({
+            tableHeader: true,
+            cantSplit: true,
+            children: block.header.map((value) => cell(value, 'center', true)),
+          }),
+          ...block.rows.map(
+            (row) =>
+              new TableRow({
+                cantSplit: true,
+                children: row.map((value, c) => cell(value, block.align[c], false)),
+              }),
+          ),
+        ],
+      }),
+    );
     out.push(new Paragraph({ spacing: { after: 80 }, children: [] }));
   }
   return out;
@@ -174,14 +212,25 @@ export function renderContentBlocksForWord(
 
 export function renderLatexRunsForWord(
   rawText: string,
-  options?: { fontSize?: number; font?: string; bold?: boolean; italics?: boolean }
+  options?: { fontSize?: number; font?: string; bold?: boolean; italics?: boolean },
 ): (TextRun | Math)[] {
   if (!rawText) return [];
   const runs: (TextRun | Math)[] = [];
   const fontSize = options?.fontSize || 22;
   const font = options?.font || 'Times New Roman';
   // Word ignores a raw newline inside a run; each line break must be an explicit break so poems, code and multi-line stems keep their lines.
-  const textRuns = (text: string) => text.split(/\r?\n/).map((line, index) => new TextRun({ text: line, ...(index > 0 ? { break: 1 } : {}), font, size: fontSize, bold: options?.bold, italics: options?.italics }));
+  const textRuns = (text: string) =>
+    text.split(/\r?\n/).map(
+      (line, index) =>
+        new TextRun({
+          text: line,
+          ...(index > 0 ? { break: 1 } : {}),
+          font,
+          size: fontSize,
+          bold: options?.bold,
+          italics: options?.italics,
+        }),
+    );
 
   // Biểu thức tách chuỗi: tìm các đoạn $$...$$ hoặc $...$
   const regex = /(\$\$[\s\S]*?\$\$|\$[^$]+\$)/g;
@@ -193,7 +242,10 @@ export function renderLatexRunsForWord(
     if (textBefore) runs.push(...textRuns(textBefore));
 
     const mathExpr = match[0];
-    const innerMath = mathExpr.replace(/^\$\$|\$\$$/g, '').replace(/^\$|\$$/g, '').trim();
+    const innerMath = mathExpr
+      .replace(/^\$\$|\$\$$/g, '')
+      .replace(/^\$|\$$/g, '')
+      .trim();
 
     // Phân tích biểu thức LaTeX thành phương trình Word thật: phân số, căn, chỉ số trên/dưới, tổng, giới hạn
     runs.push(new Math({ children: latexToMath(innerMath) }));
@@ -214,7 +266,7 @@ export function renderLatexRunsForWord(
         size: fontSize,
         bold: options?.bold,
         italics: options?.italics,
-      })
+      }),
     );
   }
 
@@ -234,7 +286,8 @@ export function renderFiguresForDocx(figures?: Figure[], compact = false): (Para
         const cleanBase64 = fig.renderedBase64.replace(/^data:image\/\w+;base64,/, '');
         const imgBuffer = Buffer.from(cleanBase64, 'base64');
         const dimensions = (fig as Figure & { exportSize?: { width: number; height: number } }).exportSize;
-        const width = dimensions?.width ?? 380, height = dimensions?.height ?? 240;
+        const width = dimensions?.width ?? 380,
+          height = dimensions?.height ?? 240;
         const scale = compact ? globalThis.Math.min(1, 230 / width) : 1;
         elements.push(
           new Paragraph({
@@ -247,22 +300,38 @@ export function renderFiguresForDocx(figures?: Figure[], compact = false): (Para
                   width: width * scale,
                   height: height * scale,
                 },
-                type: fig.renderedBase64.startsWith('data:image/jpeg') ? 'jpg' : fig.renderedBase64.startsWith('data:image/gif') ? 'gif' : 'png',
+                type: fig.renderedBase64.startsWith('data:image/jpeg')
+                  ? 'jpg'
+                  : fig.renderedBase64.startsWith('data:image/gif')
+                    ? 'gif'
+                    : 'png',
               }),
             ],
-          })
+          }),
         );
       } catch {
-        throw new Error(`Không chèn được hình “${fig.caption ?? fig.id}” vào Word. Dữ liệu gốc vẫn được giữ.`);
+        throw new Error(
+          `Không chèn được hình “${fig.caption ?? fig.id}” vào Word. Dữ liệu gốc vẫn được giữ.`,
+        );
       }
     } else if (fig.kind === 'variation_table' && fig.data) {
       const vData = fig.data as VariationTableData;
-      if (!Array.isArray(vData.xValues) || vData.xValues.length < 2 || !Array.isArray(vData.yPrimeSigns) || !vData.yPrimeSigns.length || !Array.isArray(vData.yValues) || !vData.yValues.length) throw new Error(`Bảng biến thiên “${fig.caption ?? fig.id}” chưa đủ dữ liệu.`);
+      if (
+        !Array.isArray(vData.xValues) ||
+        vData.xValues.length < 2 ||
+        !Array.isArray(vData.yPrimeSigns) ||
+        !vData.yPrimeSigns.length ||
+        !Array.isArray(vData.yValues) ||
+        !vData.yValues.length
+      )
+        throw new Error(`Bảng biến thiên “${fig.caption ?? fig.id}” chưa đủ dữ liệu.`);
       if (Array.isArray(vData.xValues) && Array.isArray(vData.yPrimeSigns)) {
         // Tạo bảng biến thiên dạng Table trong docx
         const totalWidth = compact ? 3450 : 8500; // dxa
         const headerColWidth = 1000;
-        const contentColWidth = globalThis.Math.floor((totalWidth - headerColWidth) / globalThis.Math.max(1, vData.xValues.length));
+        const contentColWidth = globalThis.Math.floor(
+          (totalWidth - headerColWidth) / globalThis.Math.max(1, vData.xValues.length),
+        );
 
         // Hàng 1: x
         const rowXCells = [
@@ -271,20 +340,25 @@ export function renderFiguresForDocx(figures?: Figure[], compact = false): (Para
             children: [
               new Paragraph({
                 alignment: AlignmentType.CENTER,
-                children: [new TextRun({ text: 'x', bold: true, italics: true, font: 'Times New Roman', size: 20 })],
+                children: [
+                  new TextRun({ text: 'x', bold: true, italics: true, font: 'Times New Roman', size: 20 }),
+                ],
               }),
             ],
           }),
-          ...vData.xValues.map((xVal: string) =>
-            new TableCell({
-              width: { size: contentColWidth, type: WidthType.DXA },
-              children: [
-                new Paragraph({
-                  alignment: AlignmentType.CENTER,
-                  children: [new TextRun({ text: cleanLatexForWord(xVal), font: 'Times New Roman', size: 20 })],
-                }),
-              ],
-            })
+          ...vData.xValues.map(
+            (xVal: string) =>
+              new TableCell({
+                width: { size: contentColWidth, type: WidthType.DXA },
+                children: [
+                  new Paragraph({
+                    alignment: AlignmentType.CENTER,
+                    children: [
+                      new TextRun({ text: cleanLatexForWord(xVal), font: 'Times New Roman', size: 20 }),
+                    ],
+                  }),
+                ],
+              }),
           ),
         ];
 
@@ -295,7 +369,9 @@ export function renderFiguresForDocx(figures?: Figure[], compact = false): (Para
             children: [
               new Paragraph({
                 alignment: AlignmentType.CENTER,
-                children: [new TextRun({ text: "y'", bold: true, italics: true, font: 'Times New Roman', size: 20 })],
+                children: [
+                  new TextRun({ text: "y'", bold: true, italics: true, font: 'Times New Roman', size: 20 }),
+                ],
               }),
             ],
           }),
@@ -334,7 +410,9 @@ export function renderFiguresForDocx(figures?: Figure[], compact = false): (Para
             children: [
               new Paragraph({
                 alignment: AlignmentType.CENTER,
-                children: [new TextRun({ text: 'y', bold: true, italics: true, font: 'Times New Roman', size: 20 })],
+                children: [
+                  new TextRun({ text: 'y', bold: true, italics: true, font: 'Times New Roman', size: 20 }),
+                ],
               }),
             ],
           }),
@@ -343,7 +421,13 @@ export function renderFiguresForDocx(figures?: Figure[], compact = false): (Para
             children: [
               new Paragraph({
                 alignment: AlignmentType.CENTER,
-                children: [new TextRun({ text: ySummary || 'Giá trị hàm số biến thiên', font: 'Times New Roman', size: 20 })],
+                children: [
+                  new TextRun({
+                    text: ySummary || 'Giá trị hàm số biến thiên',
+                    font: 'Times New Roman',
+                    size: 20,
+                  }),
+                ],
               }),
             ],
           }),
@@ -369,7 +453,9 @@ export function renderFiguresForDocx(figures?: Figure[], compact = false): (Para
         elements.push(varTable);
       }
     } else {
-      throw new Error(`Hình “${fig.caption ?? fig.id}” chưa có ảnh để xuất Word. Hãy xuất từ bàn soạn sau khi kiểm tra hình.`);
+      throw new Error(
+        `Hình “${fig.caption ?? fig.id}” chưa có ảnh để xuất Word. Hãy xuất từ bàn soạn sau khi kiểm tra hình.`,
+      );
     }
 
     if (fig.caption) {
@@ -385,7 +471,7 @@ export function renderFiguresForDocx(figures?: Figure[], compact = false): (Para
               font: 'Times New Roman',
             }),
           ],
-        })
+        }),
       );
     }
   }
@@ -397,25 +483,60 @@ export function renderFiguresForDocx(figures?: Figure[], compact = false): (Para
  * Tạo tài liệu Word .docx hoàn chỉnh theo quy chuẩn đề thi Việt Nam
  */
 export async function exportExamToDocx(
-  exam: Exam, 
-  includeSolutions: boolean = true, 
+  exam: Exam,
+  includeSolutions: boolean = true,
   includeMatrix: boolean = true,
-  view: 'all' | 'exam' | 'answers' | 'solutions' | 'matrix' | 'parallel' = 'all'
+  view: 'all' | 'exam' | 'answers' | 'solutions' | 'matrix' | 'parallel' = 'all',
 ): Promise<Blob> {
   const structure = outlineView(exam);
   const questions = structure.questions;
 
   const headerLines = resolveHeaderLines(exam);
-  const headerParagraph = (line: ReturnType<typeof resolveHeaderLines>[number]) => new Paragraph({
-    alignment: line.align === 'left' ? AlignmentType.LEFT : line.align === 'right' ? AlignmentType.RIGHT : AlignmentType.CENTER,
-    children: [new TextRun({ text: line.text, bold: line.bold, italics: line.italic, font: 'Times New Roman', size: 22 })],
-  });
-  const headerAreas = ['left', 'right'].filter(area => headerLines.some(line => line.area === area));
-  const headerBlocks: (Paragraph | Table)[] = headerAreas.length ? [new Table({
-    width: { size: 100, type: WidthType.PERCENTAGE },
-    borders: { top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE }, left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE }, insideHorizontal: { style: BorderStyle.NONE }, insideVertical: { style: BorderStyle.NONE } },
-    rows: [new TableRow({ children: headerAreas.map(area => new TableCell({ width: { size: 100 / headerAreas.length, type: WidthType.PERCENTAGE }, children: headerLines.filter(line => line.area === area).map(headerParagraph) })) })],
-  })] : [];
+  const headerParagraph = (line: ReturnType<typeof resolveHeaderLines>[number]) =>
+    new Paragraph({
+      alignment:
+        line.align === 'left'
+          ? AlignmentType.LEFT
+          : line.align === 'right'
+            ? AlignmentType.RIGHT
+            : AlignmentType.CENTER,
+      children: [
+        new TextRun({
+          text: line.text,
+          bold: line.bold,
+          italics: line.italic,
+          font: 'Times New Roman',
+          size: 22,
+        }),
+      ],
+    });
+  const headerAreas = ['left', 'right'].filter((area) => headerLines.some((line) => line.area === area));
+  const headerBlocks: (Paragraph | Table)[] = headerAreas.length
+    ? [
+        new Table({
+          width: { size: 100, type: WidthType.PERCENTAGE },
+          borders: {
+            top: { style: BorderStyle.NONE },
+            bottom: { style: BorderStyle.NONE },
+            left: { style: BorderStyle.NONE },
+            right: { style: BorderStyle.NONE },
+            insideHorizontal: { style: BorderStyle.NONE },
+            insideVertical: { style: BorderStyle.NONE },
+          },
+          rows: [
+            new TableRow({
+              children: headerAreas.map(
+                (area) =>
+                  new TableCell({
+                    width: { size: 100 / headerAreas.length, type: WidthType.PERCENTAGE },
+                    children: headerLines.filter((line) => line.area === area).map(headerParagraph),
+                  }),
+              ),
+            }),
+          ],
+        }),
+      ]
+    : [];
 
   // Thông tin học sinh & số báo danh
   const studentInfoTable = new Table({
@@ -467,19 +588,45 @@ export async function exportExamToDocx(
   });
 
   const docChildren: (Paragraph | Table)[] = [];
-  const parallelQuestions: (Paragraph | Table)[][] = [], parallelAnswers: (Paragraph | Table)[][] = [];
+  const parallelQuestions: (Paragraph | Table)[][] = [],
+    parallelAnswers: (Paragraph | Table)[][] = [];
 
   // Nếu bật tùy chọn Ma trận: Chèn bảng Ma trận CV 7991 lên trang đầu
   if (includeMatrix) {
     const plan = examPlanOutput(exam);
     if (plan) {
-      const text = (value: string, bold = false) => new Paragraph({ spacing: { before: 60, after: 60 }, children: [new TextRun({ text: value, bold, font: 'Times New Roman', size: 19 })] });
-      docChildren.push(text(plan.title, true), text(plan.disclaimer), text(plan.status, true), ...plan.summaries.map(value => text(value)));
+      const text = (value: string, bold = false) =>
+        new Paragraph({
+          spacing: { before: 60, after: 60 },
+          children: [new TextRun({ text: value, bold, font: 'Times New Roman', size: 19 })],
+        });
+      docChildren.push(
+        text(plan.title, true),
+        text(plan.disclaimer),
+        text(plan.status, true),
+        ...plan.summaries.map((value) => text(value)),
+      );
       if (plan.headers.length) {
-        const row = (cells: string[], header = false) => new TableRow({ tableHeader: header, children: cells.map(value => new TableCell({ width: { size: 25, type: WidthType.PERCENTAGE }, children: [text(value, header)] })) });
-        docChildren.push(new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [row(plan.headers, true), ...plan.rows.map(cells => row(cells))] }));
+        const row = (cells: string[], header = false) =>
+          new TableRow({
+            tableHeader: header,
+            children: cells.map(
+              (value) =>
+                new TableCell({
+                  width: { size: 25, type: WidthType.PERCENTAGE },
+                  children: [text(value, header)],
+                }),
+            ),
+          });
+        docChildren.push(
+          new Table({
+            width: { size: 100, type: WidthType.PERCENTAGE },
+            rows: [row(plan.headers, true), ...plan.rows.map((cells) => row(cells))],
+          }),
+        );
       }
-      if (plan.warnings.length) docChildren.push(text('Cần rà soát', true), ...plan.warnings.map(value => text(value)));
+      if (plan.warnings.length)
+        docChildren.push(text('Cần rà soát', true), ...plan.warnings.map((value) => text(value)));
     }
     docChildren.push(
       new Paragraph({
@@ -498,7 +645,7 @@ export async function exportExamToDocx(
       new Paragraph({
         spacing: { before: 140, after: 100 },
         children: [new PageBreak()],
-      })
+      }),
     );
   }
 
@@ -510,55 +657,141 @@ export async function exportExamToDocx(
     new Paragraph({ spacing: { before: 150, after: 100 } }),
   );
 
-  const structureBlocks = (blocks: StructureBlock[] = []): (Paragraph | Table)[] => blocks.flatMap(block => {
-    const output: (Paragraph | Table)[] = [];
-    if (block.title) output.push(...renderContentBlocksForWord(block.title,
-      { spacing: { before: 160, after: 80 } }, { fontSize: 23 }));
-    if (block.instructions) output.push(...renderContentBlocksForWord(block.instructions, {}, { fontSize: 22 }));
-    if (block.missingPassageId) output.push(new Paragraph('Chưa tìm thấy nội dung dùng chung: ' + block.missingPassageId));
-    if (block.passage) {
-      const passage = block.passage;
-      if (passage.title) output.push(new Paragraph({ children: [new TextRun({ text: passage.title, bold: true })] }));
-      output.push(...renderContentBlocksForWord(passage.content, {}, { fontSize: 22 }));
-      output.push(...renderFiguresForDocx(passage.figures));
-      if (passage.source) output.push(new Paragraph({ children: [new TextRun({ text: passage.source, italics: true })] }));
-    }
-    return output;
-  });
+  const structureBlocks = (blocks: StructureBlock[] = []): (Paragraph | Table)[] =>
+    blocks.flatMap((block) => {
+      const output: (Paragraph | Table)[] = [];
+      if (block.title)
+        output.push(
+          ...renderContentBlocksForWord(
+            block.title,
+            { spacing: { before: 160, after: 80 } },
+            { fontSize: 23 },
+          ),
+        );
+      if (block.instructions)
+        output.push(...renderContentBlocksForWord(block.instructions, {}, { fontSize: 22 }));
+      if (block.missingPassageId)
+        output.push(new Paragraph('Chưa tìm thấy nội dung dùng chung: ' + block.missingPassageId));
+      if (block.passage) {
+        const passage = block.passage;
+        if (passage.title)
+          output.push(new Paragraph({ children: [new TextRun({ text: passage.title, bold: true })] }));
+        output.push(...renderContentBlocksForWord(passage.content, {}, { fontSize: 22 }));
+        output.push(...renderFiguresForDocx(passage.figures));
+        if (passage.source)
+          output.push(new Paragraph({ children: [new TextRun({ text: passage.source, italics: true })] }));
+      }
+      return output;
+    });
   const parallelPrefixes: (Paragraph | Table)[][] = [];
   questions.forEach((q, index) => {
     const prefix = structureBlocks(structure.before.get(q.id));
     parallelPrefixes.push(prefix);
     docChildren.push(...prefix);
     const blockStart = docChildren.length;
-    docChildren.push(...renderContentBlocksForWord(q.content, { spacing: { before: 140, after: 80 } }, { fontSize: 22 }, [new TextRun({ text: 'Câu ' + (structure.numbers.get(q.id) ?? index + 1) + ': ', bold: true, size: 22 })]));
-    if (q.type === 'multiple_choice') q.choices?.forEach(choice => docChildren.push(new Paragraph({ indent: { left: 300 }, children: [new TextRun({ text: choice.key + '. ', bold: true, size: 22 }), ...renderLatexRunsForWord(choice.text, { fontSize: 22 })] })));
-    if (q.type === 'true_false_group') q.sub_questions?.forEach(sub => docChildren.push(new Paragraph({ indent: { left: 300 }, children: [new TextRun({ text: sub.key + ') ', bold: true, size: 22 }), ...renderLatexRunsForWord(sub.content, { fontSize: 22 }), new TextRun({ text: '    □ Đúng    □ Sai', size: 20 })] })));
+    docChildren.push(
+      ...renderContentBlocksForWord(q.content, { spacing: { before: 140, after: 80 } }, { fontSize: 22 }, [
+        new TextRun({
+          text: 'Câu ' + (structure.numbers.get(q.id) ?? index + 1) + ': ',
+          bold: true,
+          size: 22,
+        }),
+      ]),
+    );
+    if (q.type === 'multiple_choice')
+      q.choices?.forEach((choice) =>
+        docChildren.push(
+          new Paragraph({
+            indent: { left: 300 },
+            children: [
+              new TextRun({ text: choice.key + '. ', bold: true, size: 22 }),
+              ...renderLatexRunsForWord(choice.text, { fontSize: 22 }),
+            ],
+          }),
+        ),
+      );
+    if (q.type === 'true_false_group')
+      q.sub_questions?.forEach((sub) =>
+        docChildren.push(
+          new Paragraph({
+            indent: { left: 300 },
+            children: [
+              new TextRun({ text: sub.key + ') ', bold: true, size: 22 }),
+              ...renderLatexRunsForWord(sub.content, { fontSize: 22 }),
+              new TextRun({ text: '    □ Đúng    □ Sai', size: 20 }),
+            ],
+          }),
+        ),
+      );
     if (q.type === 'matching') {
       const matching = matchingDisplay(q);
       if (matching) {
-        const row = (left: string, right: string) => new TableRow({ children: [left, right].map(text => new TableCell({ width: { size: 50, type: WidthType.PERCENTAGE }, children: [new Paragraph({ children: renderLatexRunsForWord(text, { fontSize: 22 }) })] })) });
-        docChildren.push(new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [row('Cột trái', 'Cột phải'), ...Array.from({ length: globalThis.Math.max(matching.left.length, matching.right.length) }, (_, i) => row(matching.left[i] ? (i + 1) + '. ' + matching.left[i].text : '', matching.right[i] ? String.fromCharCode(65 + i) + '. ' + matching.right[i].text : ''))] }));
+        const row = (left: string, right: string) =>
+          new TableRow({
+            children: [left, right].map(
+              (text) =>
+                new TableCell({
+                  width: { size: 50, type: WidthType.PERCENTAGE },
+                  children: [new Paragraph({ children: renderLatexRunsForWord(text, { fontSize: 22 }) })],
+                }),
+            ),
+          });
+        docChildren.push(
+          new Table({
+            width: { size: 100, type: WidthType.PERCENTAGE },
+            rows: [
+              row('Cột trái', 'Cột phải'),
+              ...Array.from(
+                { length: globalThis.Math.max(matching.left.length, matching.right.length) },
+                (_, i) =>
+                  row(
+                    matching.left[i] ? i + 1 + '. ' + matching.left[i].text : '',
+                    matching.right[i] ? String.fromCharCode(65 + i) + '. ' + matching.right[i].text : '',
+                  ),
+              ),
+            ],
+          }),
+        );
       } else docChildren.push(new Paragraph('[Chưa thiết lập hai cột ghép nối]'));
     }
     if (q.type === 'ordering') {
       const ordering = orderingDisplay(q);
-      if (ordering) ordering.items.forEach((item, i) => docChildren.push(new Paragraph({ children: [new TextRun({ text: '[' + (i + 1) + '] ', bold: true }), ...renderLatexRunsForWord(item.text, { fontSize: 22 })] })));
+      if (ordering)
+        ordering.items.forEach((item, i) =>
+          docChildren.push(
+            new Paragraph({
+              children: [
+                new TextRun({ text: '[' + (i + 1) + '] ', bold: true }),
+                ...renderLatexRunsForWord(item.text, { fontSize: 22 }),
+              ],
+            }),
+          ),
+        );
       else docChildren.push(new Paragraph('[Chưa thiết lập các mục sắp xếp]'));
     }
-    if (['short_answer', 'fill_blank', 'ordering', 'matching'].includes(q.type)) docChildren.push(new Paragraph('Trả lời: ................................................................................'));
+    if (['short_answer', 'fill_blank', 'ordering', 'matching'].includes(q.type))
+      docChildren.push(
+        new Paragraph(
+          'Trả lời: ................................................................................',
+        ),
+      );
     docChildren.push(...renderFiguresForDocx(q.figures, view === 'parallel'));
     q.parts?.forEach((part, i) => {
       const label = questionPartLabel(q, i, structure.numbers.get(q.id));
-      docChildren.push(...renderContentBlocksForWord(part.content, { indent: { left: 300 } }, { fontSize: 22 }, [
-        new TextRun({ text: label + ') ' + (part.points !== undefined ? '(' + part.points + ' điểm) ' : ''), bold: true }),
-      ]));
+      docChildren.push(
+        ...renderContentBlocksForWord(part.content, { indent: { left: 300 } }, { fontSize: 22 }, [
+          new TextRun({
+            text: label + ') ' + (part.points !== undefined ? '(' + part.points + ' điểm) ' : ''),
+            bold: true,
+          }),
+        ]),
+      );
     });
     parallelQuestions.push(docChildren.slice(blockStart));
   });
 
   docChildren.push(...structureBlocks(structure.trailing));
-  docChildren.push(...headerLines.filter(line => line.area === 'footer').map(headerParagraph));
+  docChildren.push(...headerLines.filter((line) => line.area === 'footer').map(headerParagraph));
 
   // Cuối đề thi
   docChildren.push(
@@ -573,7 +806,7 @@ export async function exportExamToDocx(
           size: 22,
         }),
       ],
-    })
+    }),
   );
 
   if (['answers', 'solutions', 'matrix'].includes(view)) docChildren.splice(questionBodyStart);
@@ -594,7 +827,7 @@ export async function exportExamToDocx(
             color: '1E3A8A',
           }),
         ],
-      })
+      }),
     );
 
     questions.forEach((q, idx) => {
@@ -604,16 +837,25 @@ export async function exportExamToDocx(
       if (q.type === 'multiple_choice') {
         answerLabel = `Đáp án đúng: ${q.correct_answer || 'Chưa đặt đáp án'}`;
       } else if (q.type === 'true_false_group') {
-        const tfDetails = q.sub_questions
-          ?.map(sq => `${sq.key}) ${sq.isCorrect === undefined ? 'Chưa có đáp án' : sq.isCorrect ? 'Đúng' : 'Sai'}`)
-          .join('   ') || '';
+        const tfDetails =
+          q.sub_questions
+            ?.map(
+              (sq) =>
+                `${sq.key}) ${sq.isCorrect === undefined ? 'Chưa có đáp án' : sq.isCorrect ? 'Đúng' : 'Sai'}`,
+            )
+            .join('   ') || '';
         answerLabel = `Đáp án: ${tfDetails || q.correct_answer?.trim() || 'Chưa đặt đáp án'}`;
       } else if (q.type === 'short_answer' || q.type === 'fill_blank') {
-        answerLabel = `Đáp số: ${q.correct_answer?.trim() || q.accepted_answers?.filter(value => value.trim()).join(' / ') || 'Chưa đặt đáp án'}`;
+        answerLabel = `Đáp số: ${q.correct_answer?.trim() || q.accepted_answers?.filter((value) => value.trim()).join(' / ') || 'Chưa đặt đáp án'}`;
       } else if (q.type === 'matching') {
-        answerLabel = 'Cặp đúng: ' + (q.matchingPairs?.map(pair => pair.left + ' → ' + pair.right).join('; ') || q.correct_answer || 'Chưa đặt đáp án');
+        answerLabel =
+          'Cặp đúng: ' +
+          (q.matchingPairs?.map((pair) => pair.left + ' → ' + pair.right).join('; ') ||
+            q.correct_answer ||
+            'Chưa đặt đáp án');
       } else if (q.type === 'ordering') {
-        answerLabel = 'Thứ tự đúng: ' + (q.correctOrder?.join(' → ') || q.correct_answer || 'Chưa đặt đáp án');
+        answerLabel =
+          'Thứ tự đúng: ' + (q.correctOrder?.join(' → ') || q.correct_answer || 'Chưa đặt đáp án');
       } else {
         answerLabel = 'Hướng dẫn chấm / Lời giải:';
       }
@@ -636,12 +878,12 @@ export async function exportExamToDocx(
               size: 22,
             }),
           ],
-        })
+        }),
       );
 
       // In chi tiết từng ý đúng/sai nếu có explanation
       if (q.type === 'true_false_group' && q.sub_questions) {
-        q.sub_questions.forEach(sq => {
+        q.sub_questions.forEach((sq) => {
           if (sq.explanation) {
             docChildren.push(
               new Paragraph({
@@ -656,7 +898,7 @@ export async function exportExamToDocx(
                   }),
                   ...renderLatexRunsForWord(sq.explanation, { fontSize: 20 }),
                 ],
-              })
+              }),
             );
           }
         });
@@ -671,7 +913,14 @@ export async function exportExamToDocx(
                 width: { size: 75, type: WidthType.PERCENTAGE },
                 children: [
                   new Paragraph({
-                    children: [new TextRun({ text: 'Tiêu chí đánh giá / Yêu cầu cần đạt', bold: true, size: 20, font: 'Times New Roman' })],
+                    children: [
+                      new TextRun({
+                        text: 'Tiêu chí đánh giá / Yêu cầu cần đạt',
+                        bold: true,
+                        size: 20,
+                        font: 'Times New Roman',
+                      }),
+                    ],
                   }),
                 ],
               }),
@@ -680,33 +929,45 @@ export async function exportExamToDocx(
                 children: [
                   new Paragraph({
                     alignment: AlignmentType.CENTER,
-                    children: [new TextRun({ text: 'Điểm tối đa', bold: true, size: 20, font: 'Times New Roman' })],
+                    children: [
+                      new TextRun({ text: 'Điểm tối đa', bold: true, size: 20, font: 'Times New Roman' }),
+                    ],
                   }),
                 ],
               }),
             ],
           }),
-          ...q.rubric.map(r => new TableRow({
-            children: [
-              new TableCell({
-                width: { size: 75, type: WidthType.PERCENTAGE },
+          ...q.rubric.map(
+            (r) =>
+              new TableRow({
                 children: [
-                  new Paragraph({
-                    children: [new TextRun({ text: r.criterion, size: 20, font: 'Times New Roman' })],
+                  new TableCell({
+                    width: { size: 75, type: WidthType.PERCENTAGE },
+                    children: [
+                      new Paragraph({
+                        children: [new TextRun({ text: r.criterion, size: 20, font: 'Times New Roman' })],
+                      }),
+                    ],
+                  }),
+                  new TableCell({
+                    width: { size: 25, type: WidthType.PERCENTAGE },
+                    children: [
+                      new Paragraph({
+                        alignment: AlignmentType.CENTER,
+                        children: [
+                          new TextRun({
+                            text: `${r.maxPoints}đ`,
+                            bold: true,
+                            size: 20,
+                            font: 'Times New Roman',
+                          }),
+                        ],
+                      }),
+                    ],
                   }),
                 ],
               }),
-              new TableCell({
-                width: { size: 25, type: WidthType.PERCENTAGE },
-                children: [
-                  new Paragraph({
-                    alignment: AlignmentType.CENTER,
-                    children: [new TextRun({ text: `${r.maxPoints}đ`, bold: true, size: 20, font: 'Times New Roman' })],
-                  }),
-                ],
-              }),
-            ],
-          })),
+          ),
         ];
 
         docChildren.push(
@@ -714,19 +975,31 @@ export async function exportExamToDocx(
             width: { size: 90, type: WidthType.PERCENTAGE },
             rows: rubricRows,
           }),
-          new Paragraph({ spacing: { after: 120 } })
+          new Paragraph({ spacing: { after: 120 } }),
         );
       }
 
       if (q.step_by_step_solution && view !== 'answers') {
-        docChildren.push(...renderContentBlocksForWord(q.step_by_step_solution, { indent: { left: 400 }, spacing: { after: 120 } }, { fontSize: 20 }));
+        docChildren.push(
+          ...renderContentBlocksForWord(
+            q.step_by_step_solution,
+            { indent: { left: 400 }, spacing: { after: 120 } },
+            { fontSize: 20 },
+          ),
+        );
       }
       q.parts?.forEach((part, i) => {
-        docChildren.push(...renderContentBlocksForWord(
-          questionPartLabel(q, i, structure.numbers.get(q.id)) + ') ' + (part.answer || 'Chưa có đáp án'), {}, { fontSize: 20 },
-        ));
-        for (const row of part.rubric ?? []) docChildren.push(new Paragraph(row.criterion + ': ' + row.maxPoints + ' điểm'));
-        if (view !== 'answers' && part.solution) docChildren.push(...renderContentBlocksForWord(part.solution, {}, { fontSize: 20 }));
+        docChildren.push(
+          ...renderContentBlocksForWord(
+            questionPartLabel(q, i, structure.numbers.get(q.id)) + ') ' + (part.answer || 'Chưa có đáp án'),
+            {},
+            { fontSize: 20 },
+          ),
+        );
+        for (const row of part.rubric ?? [])
+          docChildren.push(new Paragraph(row.criterion + ': ' + row.maxPoints + ' điểm'));
+        if (view !== 'answers' && part.solution)
+          docChildren.push(...renderContentBlocksForWord(part.solution, {}, { fontSize: 20 }));
       });
       parallelAnswers.push(docChildren.slice(answerStart));
     });
@@ -735,25 +1008,60 @@ export async function exportExamToDocx(
   if (view === 'answers' || view === 'solutions') docChildren.push(...structureBlocks(structure.trailing));
 
   if (view === 'parallel') {
-    const label = (text: string) => new Paragraph({ children: [new TextRun({ text, bold: true, font: 'Times New Roman', size: 22 })] });
-    const cell = (children: (Paragraph | Table)[]) => new TableCell({ width: { size: 50, type: WidthType.PERCENTAGE }, children: [...children, new Paragraph('')] });
+    const label = (text: string) =>
+      new Paragraph({ children: [new TextRun({ text, bold: true, font: 'Times New Roman', size: 22 })] });
+    const cell = (children: (Paragraph | Table)[]) =>
+      new TableCell({
+        width: { size: 50, type: WidthType.PERCENTAGE },
+        children: [...children, new Paragraph('')],
+      });
     // Reuse exactly the same question/answer renderers; remove their sequential
     // copies. Shared passages stay full width once, outside the two-column table.
-    docChildren.splice(questionBodyStart, docChildren.length - questionBodyStart,
-      ...headerBlocks, label('ĐỀ VÀ ĐÁP ÁN SONG SONG'),
-      new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [
-        new TableRow({ tableHeader: true, children: [cell([label('Đề bài')]), cell([label('Đáp án / hướng dẫn chấm')])] }),
-        ...parallelQuestions.flatMap((blocks, index) => [
-          ...(parallelPrefixes[index]?.length ? [new TableRow({ children: [new TableCell({
-            columnSpan: 2, children: parallelPrefixes[index],
-          })] })] : []),
-          new TableRow({ children: [cell(blocks), cell(parallelAnswers[index] ?? [new Paragraph('Không kèm đáp án')])] }),
-        ]),
-        ...(structure.trailing.length ? [new TableRow({ children: [new TableCell({
-          columnSpan: 2, children: structureBlocks(structure.trailing),
-        })] })] : []),
-      ] }),
-      ...headerLines.filter(line => line.area === 'footer').map(headerParagraph));
+    docChildren.splice(
+      questionBodyStart,
+      docChildren.length - questionBodyStart,
+      ...headerBlocks,
+      label('ĐỀ VÀ ĐÁP ÁN SONG SONG'),
+      new Table({
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        rows: [
+          new TableRow({
+            tableHeader: true,
+            children: [cell([label('Đề bài')]), cell([label('Đáp án / hướng dẫn chấm')])],
+          }),
+          ...parallelQuestions.flatMap((blocks, index) => [
+            ...(parallelPrefixes[index]?.length
+              ? [
+                  new TableRow({
+                    children: [
+                      new TableCell({
+                        columnSpan: 2,
+                        children: parallelPrefixes[index],
+                      }),
+                    ],
+                  }),
+                ]
+              : []),
+            new TableRow({
+              children: [cell(blocks), cell(parallelAnswers[index] ?? [new Paragraph('Không kèm đáp án')])],
+            }),
+          ]),
+          ...(structure.trailing.length
+            ? [
+                new TableRow({
+                  children: [
+                    new TableCell({
+                      columnSpan: 2,
+                      children: structureBlocks(structure.trailing),
+                    }),
+                  ],
+                }),
+              ]
+            : []),
+        ],
+      }),
+      ...headerLines.filter((line) => line.area === 'footer').map(headerParagraph),
+    );
   }
 
   // Khởi tạo Document

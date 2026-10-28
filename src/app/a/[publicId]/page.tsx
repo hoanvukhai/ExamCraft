@@ -1,6 +1,15 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef, use, useLayoutEffect, useSyncExternalStore, useEffectEvent } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  use,
+  useLayoutEffect,
+  useSyncExternalStore,
+  useEffectEvent,
+} from 'react';
 import Link from 'next/link';
 import { MathRenderer } from '@/components/MathRenderer';
 import { VariationTable, VariationTableData } from '@/components/VariationTable';
@@ -23,7 +32,16 @@ import {
   ArrowLeft,
   Award,
 } from 'lucide-react';
-import { readStudentJournals, writeWriterJournal, retireWriterJournal, reconcileStudentJournals, unsubmittedStudentJournals, importStudentJournal, stableJson, type StudentJournalEntry } from '@/lib/student-draft-journal';
+import {
+  readStudentJournals,
+  writeWriterJournal,
+  retireWriterJournal,
+  reconcileStudentJournals,
+  unsubmittedStudentJournals,
+  importStudentJournal,
+  stableJson,
+  type StudentJournalEntry,
+} from '@/lib/student-draft-journal';
 import { StudentDraftRecovery } from '@/components/StudentDraftRecovery';
 import { withStudentRequestTimeout } from '@/lib/student-network';
 
@@ -34,7 +52,14 @@ interface Question {
   sectionId?: string;
   passageId?: string;
   position: number;
-  type: 'MULTIPLE_CHOICE' | 'TRUE_FALSE_GROUP' | 'SHORT_ANSWER' | 'ESSAY' | 'FILL_BLANK' | 'MATCHING' | 'ORDERING';
+  type:
+    | 'MULTIPLE_CHOICE'
+    | 'TRUE_FALSE_GROUP'
+    | 'SHORT_ANSWER'
+    | 'ESSAY'
+    | 'FILL_BLANK'
+    | 'MATCHING'
+    | 'ORDERING';
   difficulty?: string;
   content: string;
   figures?: Array<Figure & { url?: string }>;
@@ -108,17 +133,134 @@ interface SubmitResult {
 }
 
 function responseText(question: Question, response: unknown): string {
-  if (question.matching && response && typeof response === 'object' && !Array.isArray(response)) return question.matching.left.map(left => left.text + ' → ' + (question.matching!.right.find(right => right.key === (response as Record<string, unknown>)[left.key])?.text || 'Chưa chọn')).join('; ');
-  if (question.ordering && Array.isArray(response)) return response.map(key => question.ordering!.items.find(item => item.key === key)?.text || '').filter(Boolean).join(' → ') || 'Chưa sắp xếp';
-  if (response && typeof response === 'object') return Object.entries(response).map(([key, value]) => key + ': ' + (typeof value === 'boolean' ? (value ? 'Đúng' : 'Sai') : value)).join('; ');
+  if (question.matching && response && typeof response === 'object' && !Array.isArray(response))
+    return question.matching.left
+      .map(
+        (left) =>
+          left.text +
+          ' → ' +
+          (question.matching!.right.find(
+            (right) => right.key === (response as Record<string, unknown>)[left.key],
+          )?.text || 'Chưa chọn'),
+      )
+      .join('; ');
+  if (question.ordering && Array.isArray(response))
+    return (
+      response
+        .map((key) => question.ordering!.items.find((item) => item.key === key)?.text || '')
+        .filter(Boolean)
+        .join(' → ') || 'Chưa sắp xếp'
+    );
+  if (response && typeof response === 'object')
+    return Object.entries(response)
+      .map(([key, value]) => key + ': ' + (typeof value === 'boolean' ? (value ? 'Đúng' : 'Sai') : value))
+      .join('; ');
   return response === null || response === undefined || response === '' ? 'Chưa trả lời' : String(response);
 }
-function StructuredAnswer({ question, value, onChange }: { question: Question; value: unknown; onChange: (value: unknown) => void }) {
-  if (question.matching) return <div className="space-y-3 mt-4"><p className="text-xs">Chọn vế phải cho mỗi nội dung bên trái.</p>{question.matching.left.map(left => <label key={left.key} className="grid md:grid-cols-2 gap-3 items-center border rounded-xl p-3"><MathRenderer content={left.text} /><select aria-label={'Ghép cho ' + left.text} value={value && typeof value === 'object' && !Array.isArray(value) ? String((value as Record<string, unknown>)[left.key] || '') : ''} onChange={event => onChange({ ...(value && typeof value === 'object' && !Array.isArray(value) ? value : {}), [left.key]: event.target.value })} className="border rounded-xl p-2 bg-transparent"><option value="">Chọn nội dung phù hợp</option>{question.matching!.right.map(right => <option key={right.key} value={right.key}>{right.text}</option>)}</select></label>)}</div>;
+function StructuredAnswer({
+  question,
+  value,
+  onChange,
+}: {
+  question: Question;
+  value: unknown;
+  onChange: (value: unknown) => void;
+}) {
+  if (question.matching)
+    return (
+      <div className="space-y-3 mt-4">
+        <p className="text-xs">Chọn vế phải cho mỗi nội dung bên trái.</p>
+        {question.matching.left.map((left) => (
+          <label key={left.key} className="grid md:grid-cols-2 gap-3 items-center border rounded-xl p-3">
+            <MathRenderer content={left.text} />
+            <select
+              aria-label={'Ghép cho ' + left.text}
+              value={
+                value && typeof value === 'object' && !Array.isArray(value)
+                  ? String((value as Record<string, unknown>)[left.key] || '')
+                  : ''
+              }
+              onChange={(event) =>
+                onChange({
+                  ...(value && typeof value === 'object' && !Array.isArray(value) ? value : {}),
+                  [left.key]: event.target.value,
+                })
+              }
+              className="border rounded-xl p-2 bg-transparent"
+            >
+              <option value="">Chọn nội dung phù hợp</option>
+              {question.matching!.right.map((right) => (
+                <option key={right.key} value={right.key}>
+                  {right.text}
+                </option>
+              ))}
+            </select>
+          </label>
+        ))}
+      </div>
+    );
   if (question.ordering) {
-    const selected = Array.isArray(value) ? value.filter(key => typeof key === 'string' && question.ordering!.items.some(item => item.key === key)) as string[] : [];
-    const move = (i: number, offset: number) => { const target = i + offset; if (target < 0 || target >= selected.length) return; const next = [...selected]; [next[i], next[target]] = [next[target], next[i]]; onChange(next); };
-    return <div className="space-y-3 mt-4"><p className="text-xs">Thêm các mục theo thứ tự mong muốn; dùng nút lên/xuống để sửa.</p><ol className="space-y-2">{selected.map((key, i) => <li key={key} className="border rounded-xl p-3 flex items-center gap-3"><span>{i + 1}.</span><div className="flex-1"><MathRenderer content={question.ordering!.items.find(item => item.key === key)!.text} /></div><button type="button" aria-label={'Đưa mục ' + (i + 1) + ' lên'} disabled={i === 0} onClick={() => move(i, -1)}>↑</button><button type="button" aria-label={'Đưa mục ' + (i + 1) + ' xuống'} disabled={i === selected.length - 1} onClick={() => move(i, 1)}>↓</button><button type="button" onClick={() => onChange(selected.filter(item => item !== key))}>Bỏ</button></li>)}</ol><div className="space-y-2">{question.ordering.items.filter(item => !selected.includes(item.key)).map(item => <button key={item.key} type="button" onClick={() => onChange([...selected, item.key])} className="block text-left w-full border rounded-xl p-3"><span className="text-xs text-[var(--ui-accent)]">Thêm vào thứ tự: </span><MathRenderer content={item.text} inline /></button>)}</div></div>;
+    const selected = Array.isArray(value)
+      ? (value.filter(
+          (key) => typeof key === 'string' && question.ordering!.items.some((item) => item.key === key),
+        ) as string[])
+      : [];
+    const move = (i: number, offset: number) => {
+      const target = i + offset;
+      if (target < 0 || target >= selected.length) return;
+      const next = [...selected];
+      [next[i], next[target]] = [next[target], next[i]];
+      onChange(next);
+    };
+    return (
+      <div className="space-y-3 mt-4">
+        <p className="text-xs">Thêm các mục theo thứ tự mong muốn; dùng nút lên/xuống để sửa.</p>
+        <ol className="space-y-2">
+          {selected.map((key, i) => (
+            <li key={key} className="border rounded-xl p-3 flex items-center gap-3">
+              <span>{i + 1}.</span>
+              <div className="flex-1">
+                <MathRenderer content={question.ordering!.items.find((item) => item.key === key)!.text} />
+              </div>
+              <button
+                type="button"
+                aria-label={'Đưa mục ' + (i + 1) + ' lên'}
+                disabled={i === 0}
+                onClick={() => move(i, -1)}
+              >
+                ↑
+              </button>
+              <button
+                type="button"
+                aria-label={'Đưa mục ' + (i + 1) + ' xuống'}
+                disabled={i === selected.length - 1}
+                onClick={() => move(i, 1)}
+              >
+                ↓
+              </button>
+              <button type="button" onClick={() => onChange(selected.filter((item) => item !== key))}>
+                Bỏ
+              </button>
+            </li>
+          ))}
+        </ol>
+        <div className="space-y-2">
+          {question.ordering.items
+            .filter((item) => !selected.includes(item.key))
+            .map((item) => (
+              <button
+                key={item.key}
+                type="button"
+                onClick={() => onChange([...selected, item.key])}
+                className="block text-left w-full border rounded-xl p-3"
+              >
+                <span className="text-xs text-[var(--ui-accent)]">Thêm vào thứ tự: </span>
+                <MathRenderer content={item.text} inline />
+              </button>
+            ))}
+        </div>
+      </div>
+    );
   }
   return null;
 }
@@ -130,14 +272,12 @@ function subscribeStudentLocation(changed: () => void) {
   return () => window.removeEventListener('popstate', changed);
 }
 
-function StudentExamContent({
-  params,
-}: {
-  params: Promise<{ publicId: string }>;
-}) {
+function StudentExamContent({ params }: { params: Promise<{ publicId: string }> }) {
   const { publicId } = use(params);
 
-  const submitTimedOut = useEffectEvent(() => { void handleFinalSubmit(true); });
+  const submitTimedOut = useEffectEvent(() => {
+    void handleFinalSubmit(true);
+  });
 
   // Trạng thái chung
   const [loading, setLoading] = useState(true);
@@ -178,7 +318,9 @@ function StudentExamContent({
   const [canStartAnother, setCanStartAnother] = useState(false);
 
   const answersRef = useRef(answers);
-  useLayoutEffect(() => { answersRef.current = answers; }, [answers]);
+  useLayoutEffect(() => {
+    answersRef.current = answers;
+  }, [answers]);
   const draftRevisionRef = useRef('');
   const activeAttemptRef = useRef<string | null>(null);
   const draftSaveRef = useRef<Promise<void> | null>(null);
@@ -208,12 +350,14 @@ function StudentExamContent({
         setCanStartAnother(Boolean(data.canStartAnother));
         setQuestions(data.exam?.questions || []);
         setSections(data.exam?.sections || []);
-        setPassages(data.exam?.passages || []); setOutline(data.exam?.outline);
+        setPassages(data.exam?.passages || []);
+        setOutline(data.exam?.outline);
         if (data.myAttempt?.status === 'SUBMITTED') {
           const resultResponse = await fetch('/api/public/attempts/' + data.myAttempt.id + '/submit');
           const result = await resultResponse.json();
           if (resultResponse.ok) {
-            setSubmitResult(result); setAnswers(result.responses || {});
+            setSubmitResult(result);
+            setAnswers(result.responses || {});
             const stored = readStudentJournals(() => localStorage, data.myAttempt.id);
             setRecoveryEntries(unsubmittedStudentJournals(stored.entries, result.responses || {}));
           }
@@ -244,20 +388,21 @@ function StudentExamContent({
 
     try {
       setStarting(true);
-      const { res, data } = await withStudentRequestTimeout(async signal => {
-      const res = await fetch(`/api/public/assignments/${publicId}/start`, {
-        method: 'POST',
-        signal,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          studentId: assignment.identityMode === 'PICK_FROM_LIST' ? selectedStudentId : undefined,
-          freeName: assignment.identityMode === 'FREE_NAME' ? freeName.trim() : undefined,
-          personalToken: assignment.identityMode === 'PERSONAL_LINK' ? personalToken : undefined,
-          pin: pin || undefined, joinCode: joinCode || undefined,
-        }),
-      });
+      const { res, data } = await withStudentRequestTimeout(async (signal) => {
+        const res = await fetch(`/api/public/assignments/${publicId}/start`, {
+          method: 'POST',
+          signal,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            studentId: assignment.identityMode === 'PICK_FROM_LIST' ? selectedStudentId : undefined,
+            freeName: assignment.identityMode === 'FREE_NAME' ? freeName.trim() : undefined,
+            personalToken: assignment.identityMode === 'PERSONAL_LINK' ? personalToken : undefined,
+            pin: pin || undefined,
+            joinCode: joinCode || undefined,
+          }),
+        });
 
-      return { res, data: await res.json() };
+        return { res, data: await res.json() };
       });
       if (!res.ok) {
         alert(data.error || 'Không thể bắt đầu làm bài.');
@@ -272,20 +417,50 @@ function StudentExamContent({
       serverDraftRef.current = data.attempt.draft || {};
       draftSaveRef.current = null;
       draftConflictRef.current = false;
-      setSaveError(null); setSubmitError(null); setSubmitNotice(null); setLastSaved(null); setIsSaving(false);
+      setSaveError(null);
+      setSubmitError(null);
+      setSubmitNotice(null);
+      setLastSaved(null);
+      setIsSaving(false);
       setAttempt(data.attempt);
       setCanStartAnother(data.attempt.attemptNo < assignment.maxAttempts);
-      if (data.exam) { setQuestions(data.exam.questions || []); setSections(data.exam.sections || []); setPassages(data.exam.passages || []); setOutline(data.exam.outline); }
+      if (data.exam) {
+        setQuestions(data.exam.questions || []);
+        setSections(data.exam.sections || []);
+        setPassages(data.exam.passages || []);
+        setOutline(data.exam.outline);
+      }
       // Answers typed on this browser but never acknowledged by the server (tab closed, power loss) come back here.
       const stored = readStudentJournals(() => localStorage, data.attempt.id);
-      const outcome = reconcileStudentJournals(stored.entries, data.attempt.draft || {}, data.attempt.draftRevision);
-      setRecoveryEntries(stored.entries.filter(entry => !entry.value || stableJson(entry.value.answers) !== stableJson(serverDraftRef.current)));
-      const restored = stored.entries.find(entry => entry.value && stableJson(entry.value.answers) === stableJson(outcome.answers));
-      if (outcome.kind === 'conflict' && restored?.value) journalBaseRef.current = restored.value.baseRevision;
-      setJournalNotice(stored.unavailable ? 'Trình duyệt không cho lưu nháp trên máy này. Bài vẫn làm và lưu lên máy chủ được; hãy giữ trang mở tới khi có xác nhận.' : outcome.kind === 'restored' ? 'Đã khôi phục các câu em làm dở trên máy này; hệ thống sẽ tự lưu lại.' : null);
+      const outcome = reconcileStudentJournals(
+        stored.entries,
+        data.attempt.draft || {},
+        data.attempt.draftRevision,
+      );
+      setRecoveryEntries(
+        stored.entries.filter(
+          (entry) => !entry.value || stableJson(entry.value.answers) !== stableJson(serverDraftRef.current),
+        ),
+      );
+      const restored = stored.entries.find(
+        (entry) => entry.value && stableJson(entry.value.answers) === stableJson(outcome.answers),
+      );
+      if (outcome.kind === 'conflict' && restored?.value)
+        journalBaseRef.current = restored.value.baseRevision;
+      setJournalNotice(
+        stored.unavailable
+          ? 'Trình duyệt không cho lưu nháp trên máy này. Bài vẫn làm và lưu lên máy chủ được; hãy giữ trang mở tới khi có xác nhận.'
+          : outcome.kind === 'restored'
+            ? 'Đã khôi phục các câu em làm dở trên máy này; hệ thống sẽ tự lưu lại.'
+            : null,
+      );
       if (outcome.kind === 'conflict' || outcome.kind === 'choose') {
         draftConflictRef.current = true;
-        setSaveError(outcome.kind === 'choose' ? 'Có nhiều bản nháp khác nhau trên máy này. Hãy mở mục bản nháp để chọn và đối chiếu; chưa tự gộp hoặc nộp.' : 'Nháp trên máy chủ đã thay đổi ở trang khác sau lần em làm dở trên máy này. Chưa ghi đè hay nộp; hãy tải bản đang nhập về trước khi mở lại.');
+        setSaveError(
+          outcome.kind === 'choose'
+            ? 'Có nhiều bản nháp khác nhau trên máy này. Hãy mở mục bản nháp để chọn và đối chiếu; chưa tự gộp hoặc nộp.'
+            : 'Nháp trên máy chủ đã thay đổi ở trang khác sau lần em làm dở trên máy này. Chưa ghi đè hay nộp; hãy tải bản đang nhập về trước khi mở lại.',
+        );
       }
       setAnswers(outcome.answers);
 
@@ -311,54 +486,78 @@ function StudentExamContent({
       const savingAttemptId = attempt.id;
       const savingContext = draftContextRef.current;
       const operation = (async () => {
-      try {
-        setIsSaving(true);
-        const { response, result } = await withStudentRequestTimeout(async signal => {
-        const response = await fetch(`/api/public/attempts/${attempt.id}/draft`, {
-          method: 'PATCH',
-          signal,
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ draft: currentAnswers, baseDraftRevision: draftRevisionRef.current }),
-        });
-        return { response, result: await response.json() };
-        });
-        if (activeAttemptRef.current !== savingAttemptId || draftContextRef.current !== savingContext) return;
-        if (!response.ok) {
-          if (result.code === 'DRAFT_CONFLICT' || result.code === 'DRAFT_REVISION_REQUIRED') draftConflictRef.current = true;
-          throw new Error(result.error || 'Chưa lưu được bản nháp');
+        try {
+          setIsSaving(true);
+          const { response, result } = await withStudentRequestTimeout(async (signal) => {
+            const response = await fetch(`/api/public/attempts/${attempt.id}/draft`, {
+              method: 'PATCH',
+              signal,
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ draft: currentAnswers, baseDraftRevision: draftRevisionRef.current }),
+            });
+            return { response, result: await response.json() };
+          });
+          if (activeAttemptRef.current !== savingAttemptId || draftContextRef.current !== savingContext)
+            return;
+          if (!response.ok) {
+            if (result.code === 'DRAFT_CONFLICT' || result.code === 'DRAFT_REVISION_REQUIRED')
+              draftConflictRef.current = true;
+            throw new Error(result.error || 'Chưa lưu được bản nháp');
+          }
+          if (typeof result.draftRevision !== 'string')
+            throw new Error('Chưa nhận được xác nhận phiên bản nháp. Bản đang nhập vẫn giữ trên trang này.');
+          draftRevisionRef.current = result.draftRevision;
+          journalBaseRef.current = result.draftRevision;
+          serverDraftRef.current = currentAnswers;
+          if (
+            !writeWriterJournal(
+              () => localStorage,
+              savingAttemptId,
+              journalWriterRef.current,
+              result.draftRevision,
+              answersRef.current,
+            )
+          )
+            setJournalNotice('Đã lưu lên máy chủ, nhưng chưa giữ được bản nháp dự phòng trên máy này.');
+          setSaveError(null);
+          const now = new Date();
+          setLastSaved(
+            `${now.getHours().toString().padStart(2, '0')}:${now
+              .getMinutes()
+              .toString()
+              .padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`,
+          );
+        } catch (err) {
+          if (activeAttemptRef.current !== savingAttemptId || draftContextRef.current !== savingContext)
+            return;
+          setSaveError(err instanceof Error ? err.message : 'Chưa lưu được bản nháp');
+          console.error('Lỗi tự động lưu nháp:', err);
+        } finally {
+          if (activeAttemptRef.current === savingAttemptId) setIsSaving(false);
         }
-        if (typeof result.draftRevision !== 'string') throw new Error('Chưa nhận được xác nhận phiên bản nháp. Bản đang nhập vẫn giữ trên trang này.');
-        draftRevisionRef.current = result.draftRevision;
-        journalBaseRef.current = result.draftRevision;
-        serverDraftRef.current = currentAnswers;
-        if (!writeWriterJournal(() => localStorage, savingAttemptId, journalWriterRef.current, result.draftRevision, answersRef.current)) setJournalNotice('Đã lưu lên máy chủ, nhưng chưa giữ được bản nháp dự phòng trên máy này.');
-        setSaveError(null);
-        const now = new Date();
-        setLastSaved(
-          `${now.getHours().toString().padStart(2, '0')}:${now
-            .getMinutes()
-            .toString()
-            .padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`
-        );
-      } catch (err) {
-        if (activeAttemptRef.current !== savingAttemptId || draftContextRef.current !== savingContext) return;
-        setSaveError(err instanceof Error ? err.message : 'Chưa lưu được bản nháp');
-        console.error('Lỗi tự động lưu nháp:', err);
-      } finally {
-        if (activeAttemptRef.current === savingAttemptId) setIsSaving(false);
-      }
       })();
       draftSaveRef.current = operation;
       await operation;
       if (draftSaveRef.current === operation) draftSaveRef.current = null;
     },
-    [attempt]
+    [attempt],
   );
 
   // Keep edits even during conflicts, still bound to their original server revision.
   useEffect(() => {
     if (!attempt?.id || submitResult) return;
-    if (!writeWriterJournal(() => localStorage, attempt.id, journalWriterRef.current, journalBaseRef.current, answers)) setJournalNotice('Chưa lưu được nháp dự phòng trên máy này. Hệ thống vẫn thử lưu máy chủ; đừng đóng trang trước khi có xác nhận.');
+    if (
+      !writeWriterJournal(
+        () => localStorage,
+        attempt.id,
+        journalWriterRef.current,
+        journalBaseRef.current,
+        answers,
+      )
+    )
+      setJournalNotice(
+        'Chưa lưu được nháp dự phòng trên máy này. Hệ thống vẫn thử lưu máy chủ; đừng đóng trang trước khi có xác nhận.',
+      );
   }, [answers, attempt?.id, submitResult]);
 
   // Định kỳ tự lưu nháp mỗi 15 giây
@@ -384,7 +583,10 @@ function StudentExamContent({
   // 4. Đồng hồ đếm ngược (Countdown Timer)
   useEffect(() => {
     if (timeLeft === null || submitResult) return;
-    if (timeLeft <= 0) { submitTimedOut(); return; }
+    if (timeLeft <= 0) {
+      submitTimedOut();
+      return;
+    }
 
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
@@ -416,7 +618,8 @@ function StudentExamContent({
 
   const handleSelectTrueFalse = (questionId: string, subKey: string, value: boolean) => {
     setAnswers((prev) => {
-      const currentGroup = typeof prev[questionId] === 'object' && prev[questionId] !== null ? prev[questionId] : {};
+      const currentGroup =
+        typeof prev[questionId] === 'object' && prev[questionId] !== null ? prev[questionId] : {};
       return {
         ...prev,
         [questionId]: {
@@ -437,7 +640,11 @@ function StudentExamContent({
   // 6. Nộp bài thi
   async function handleFinalSubmit(isAuto = false) {
     if (!attempt?.id || submittingRef.current) return;
-    if (draftConflictRef.current && !isAuto) { setSaveError('Nháp đã thay đổi ở trang khác. Hãy tải bản đang nhập trước khi mở lại; chưa nộp bản cũ.'); setShowSubmitModal(false); return; }
+    if (draftConflictRef.current && !isAuto) {
+      setSaveError('Nháp đã thay đổi ở trang khác. Hãy tải bản đang nhập trước khi mở lại; chưa nộp bản cũ.');
+      setShowSubmitModal(false);
+      return;
+    }
 
     try {
       submittingRef.current = true;
@@ -447,23 +654,32 @@ function StudentExamContent({
       await draftSaveRef.current;
 
       const localAnswers = answersRef.current;
-      const send = (savedOnly: boolean) => withStudentRequestTimeout(async signal => {
-      const res = await fetch(`/api/public/attempts/${attempt.id}/submit`, {
-        method: 'POST',
-        signal,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(savedOnly ? { answers: {}, useSavedDraftOnly: true } : { answers: localAnswers, baseDraftRevision: draftRevisionRef.current }),
-      });
-      return { res, data: await res.json() };
-      });
+      const send = (savedOnly: boolean) =>
+        withStudentRequestTimeout(async (signal) => {
+          const res = await fetch(`/api/public/attempts/${attempt.id}/submit`, {
+            method: 'POST',
+            signal,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(
+              savedOnly
+                ? { answers: {}, useSavedDraftOnly: true }
+                : { answers: localAnswers, baseDraftRevision: draftRevisionRef.current },
+            ),
+          });
+          return { res, data: await res.json() };
+        });
       let savedOnly = isAuto && draftConflictRef.current;
       let { res, data } = await send(savedOnly);
       if (isAuto && !res.ok && data.code === 'DRAFT_CONFLICT') {
-        draftConflictRef.current = true; savedOnly = true;
+        draftConflictRef.current = true;
+        savedOnly = true;
         ({ res, data } = await send(true));
       }
       if (!res.ok) {
-        if (data.code === 'DRAFT_CONFLICT' || data.code === 'DRAFT_REVISION_REQUIRED') { draftConflictRef.current = true; setSaveError(data.error); }
+        if (data.code === 'DRAFT_CONFLICT' || data.code === 'DRAFT_REVISION_REQUIRED') {
+          draftConflictRef.current = true;
+          setSaveError(data.error);
+        }
         setSubmitError(data.error || 'Chưa nộp được bài. Câu trả lời vẫn giữ để thử lại.');
         return;
       }
@@ -471,18 +687,41 @@ function StudentExamContent({
       setSubmitResult(data);
       retireWriterJournal(() => localStorage, attempt.id, journalWriterRef.current, data.responses || {});
       const remaining = readStudentJournals(() => localStorage, attempt.id).entries;
-      if (!remaining.some(entry => entry.value && stableJson(entry.value.answers) === stableJson(localAnswers))) {
-        const value = { v: 2 as const, attemptId: attempt.id, writerId: journalWriterRef.current, baseRevision: journalBaseRef.current, answers: localAnswers, savedAt: new Date().toISOString() };
-        remaining.push({ key: 'memory:' + journalWriterRef.current, raw: JSON.stringify(value, null, 2), value });
+      if (
+        !remaining.some(
+          (entry) => entry.value && stableJson(entry.value.answers) === stableJson(localAnswers),
+        )
+      ) {
+        const value = {
+          v: 2 as const,
+          attemptId: attempt.id,
+          writerId: journalWriterRef.current,
+          baseRevision: journalBaseRef.current,
+          answers: localAnswers,
+          savedAt: new Date().toISOString(),
+        };
+        remaining.push({
+          key: 'memory:' + journalWriterRef.current,
+          raw: JSON.stringify(value, null, 2),
+          value,
+        });
       }
       setRecoveryEntries(unsubmittedStudentJournals(remaining, data.responses || {}));
       setAnswers(data.responses || {});
       if (isAuto) {
-        setSubmitNotice(savedOnly ? 'Đã hết giờ. Hệ thống chỉ nộp bản máy chủ đã lưu; bản nháp khác được giữ để đối chiếu.' : 'Đã hết giờ làm bài. Bài thi đã được nộp tự động.');
+        setSubmitNotice(
+          savedOnly
+            ? 'Đã hết giờ. Hệ thống chỉ nộp bản máy chủ đã lưu; bản nháp khác được giữ để đối chiếu.'
+            : 'Đã hết giờ làm bài. Bài thi đã được nộp tự động.',
+        );
       }
     } catch (err) {
       console.error(err);
-      setSubmitError(err instanceof Error && err.message.includes('chưa phản hồi') ? err.message : 'Chưa xác nhận được bài đã nộp. Câu trả lời vẫn giữ trên trang này; kiểm tra mạng rồi thử nộp lại.');
+      setSubmitError(
+        err instanceof Error && err.message.includes('chưa phản hồi')
+          ? err.message
+          : 'Chưa xác nhận được bài đã nộp. Câu trả lời vẫn giữ trên trang này; kiểm tra mạng rồi thử nộp lại.',
+      );
     } finally {
       submittingRef.current = false;
       setSubmitting(false);
@@ -491,20 +730,43 @@ function StudentExamContent({
 
   // Tính số câu đã hoàn thành
   const structure = outlineView({
-    id: 'student-view', metadata: {}, questions, sections, passages, outline, createdAt: '', updatedAt: '',
+    id: 'student-view',
+    metadata: {},
+    questions,
+    sections,
+    passages,
+    outline,
+    createdAt: '',
+    updatedAt: '',
   } as unknown as Exam);
-  const answeredParts = (question: Question, response: unknown) => !!question.parts?.length &&
-    !!response && typeof response === 'object' && question.parts.every(part =>
-      typeof (response as Record<string, unknown>)[part.id] === 'string' &&
-      String((response as Record<string, unknown>)[part.id]).trim());
+  const answeredParts = (question: Question, response: unknown) =>
+    !!question.parts?.length &&
+    !!response &&
+    typeof response === 'object' &&
+    question.parts.every(
+      (part) =>
+        typeof (response as Record<string, unknown>)[part.id] === 'string' &&
+        String((response as Record<string, unknown>)[part.id]).trim(),
+    );
   const answeredCount = questions.reduce((acc, q) => {
     const ans = answers[q.id];
     if (!ans) return acc;
     if (q.type === 'ORDERING' && Array.isArray(ans) && ans.length) return acc + 1;
-    if (q.type === 'MATCHING' && typeof ans === 'object' && !Array.isArray(ans) && Object.values(ans).some(value => typeof value === 'string' && value)) return acc + 1;
+    if (
+      q.type === 'MATCHING' &&
+      typeof ans === 'object' &&
+      !Array.isArray(ans) &&
+      Object.values(ans).some((value) => typeof value === 'string' && value)
+    )
+      return acc + 1;
     if (answeredParts(q, ans)) return acc + 1;
     if (q.type === 'MULTIPLE_CHOICE' && typeof ans === 'string' && ans.trim()) return acc + 1;
-    if (['SHORT_ANSWER', 'FILL_BLANK', 'ESSAY', 'MATCHING', 'ORDERING'].includes(q.type) && typeof ans === 'string' && ans.trim()) return acc + 1;
+    if (
+      ['SHORT_ANSWER', 'FILL_BLANK', 'ESSAY', 'MATCHING', 'ORDERING'].includes(q.type) &&
+      typeof ans === 'string' &&
+      ans.trim()
+    )
+      return acc + 1;
     if (q.type === 'TRUE_FALSE_GROUP' && typeof ans === 'object') {
       const keys = Object.keys(ans);
       if (keys.length > 0) return acc + 1;
@@ -517,7 +779,9 @@ function StudentExamContent({
     return (
       <div className="app-page min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
         <div className="w-10 h-10 border-3 border-[#3c4043] dark:border-[#e3e3e3] border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="text-[#5f6368] dark:text-[#9aa0a6] font-medium text-sm">Đang tải phòng thi trực tuyến...</p>
+        <p className="text-[#5f6368] dark:text-[#9aa0a6] font-medium text-sm">
+          Đang tải phòng thi trực tuyến...
+        </p>
       </div>
     );
   }
@@ -527,11 +791,16 @@ function StudentExamContent({
       <div className="app-page min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
         <div className="max-w-md w-full bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-8 text-center shadow-xs">
           <ShieldAlert className="w-14 h-14 text-[#c5221f] dark:text-[#f28b82] mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-[#202124] dark:text-[#e3e3e3] mb-2">Không thể truy cập bài thi</h2>
+          <h2 className="text-xl font-bold text-[#202124] dark:text-[#e3e3e3] mb-2">
+            Không thể truy cập bài thi
+          </h2>
           <p className="text-[#5f6368] dark:text-[#9aa0a6] text-sm mb-6 leading-relaxed">{error}</p>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 px-5 py-2.5 app-button-primary dark:bg-[#e3e3e3] hover:bg-[#303134] dark:hover:bg-[#f1f3f4] text-white dark:text-[#202124] text-sm font-semibold rounded-lg transition-all shadow-xs"
+            className={
+              'inline-flex items-center gap-2 px-5 py-2.5 app-button-primary dark:bg-[#e3e3e3] hover:bg-[#303134] ' +
+              'dark:hover:bg-[#f1f3f4] text-white dark:text-[#202124] text-sm font-semibold rounded-lg transition-all shadow-xs'
+            }
           >
             <ArrowLeft className="w-4 h-4" /> Về trang chủ
           </Link>
@@ -545,27 +814,43 @@ function StudentExamContent({
     return (
       <div className="app-page min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] text-[#202124] dark:text-[#e3e3e3] py-10 px-4">
         <div className="max-w-3xl mx-auto space-y-6">
-          {submitNotice && <p role="status" className="p-4 border rounded-xl bg-neutral-50 text-[var(--ui-accent)]">{submitNotice}</p>}
+          {submitNotice && (
+            <p role="status" className="p-4 border rounded-xl bg-neutral-50 text-[var(--ui-accent)]">
+              {submitNotice}
+            </p>
+          )}
           <StudentDraftRecovery entries={recoveryEntries} />
           {/* Card điểm số chính */}
           <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-8 text-center relative overflow-hidden shadow-xs">
-            <div className="w-16 h-16 bg-[#e6f4ea] dark:bg-[#0f291e] text-[#137333] dark:text-[#5bb98c] rounded-full flex items-center justify-center mx-auto mb-4 border border-[#ceead6] dark:border-[#1e4d38]">
+            <div
+              className={
+                'w-16 h-16 bg-[#e6f4ea] dark:bg-[#0f291e] text-[#137333] dark:text-[#5bb98c] rounded-full flex items-center ' +
+                'justify-center mx-auto mb-4 border border-[#ceead6] dark:border-[#1e4d38]'
+              }
+            >
               <CheckCircle2 className="w-8 h-8" />
             </div>
 
             <h1 className="text-2xl font-bold text-[#202124] dark:text-[#e3e3e3] mb-2">{assignment.title}</h1>
             <p className="text-[#5f6368] dark:text-[#9aa0a6] text-sm mb-6 [overflow-wrap:anywhere]">
-              Học sinh: <span className="font-semibold text-[#137333] dark:text-[#5bb98c]">{submitResult.studentName}</span>
+              Học sinh:{' '}
+              <span className="font-semibold text-[#137333] dark:text-[#5bb98c]">
+                {submitResult.studentName}
+              </span>
             </p>
 
             {submitResult.score !== null ? (
               <div className="inline-block bg-[#f8f9fa] dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-8 py-5 my-2 shadow-xs">
                 <span className="text-xs uppercase tracking-wider text-[#5f6368] dark:text-[#9aa0a6] font-semibold block mb-1">
-                  {submitResult.needsGrading ? 'Điểm tạm tính — còn câu chờ giáo viên chấm' : 'Điểm số đạt được'}
+                  {submitResult.needsGrading
+                    ? 'Điểm tạm tính — còn câu chờ giáo viên chấm'
+                    : 'Điểm số đạt được'}
                 </span>
                 <div className="text-5xl font-black text-[#137333] dark:text-[#5bb98c] tracking-tight">
                   {submitResult.score}
-                  <span className="text-2xl text-[#5f6368] dark:text-[#9aa0a6] font-normal ml-1">/ {submitResult.maxScore ?? 10}</span>
+                  <span className="text-2xl text-[#5f6368] dark:text-[#9aa0a6] font-normal ml-1">
+                    / {submitResult.maxScore ?? 10}
+                  </span>
                 </div>
               </div>
             ) : (
@@ -580,7 +865,19 @@ function StudentExamContent({
             </p>
           </div>
 
-          {canStartAnother && <button onClick={() => { setSubmitResult(null); setAttempt(null); setAnswers({}); setTimeLeft(null); }} className="px-5 py-3 rounded-lg app-button-primary text-white">Làm lượt tiếp theo</button>}
+          {canStartAnother && (
+            <button
+              onClick={() => {
+                setSubmitResult(null);
+                setAttempt(null);
+                setAnswers({});
+                setTimeLeft(null);
+              }}
+              className="px-5 py-3 rounded-lg app-button-primary text-white"
+            >
+              Làm lượt tiếp theo
+            </button>
+          )}
 
           {/* Bảng xếp hạng Top & Me */}
           {submitResult.leaderboard && (
@@ -602,17 +899,21 @@ function StudentExamContent({
                           item.rank === 1
                             ? 'bg-[#fef7e0] text-[#b06000] border border-[#feefc3]'
                             : item.rank === 2
-                            ? 'bg-[#f1f3f4] text-[#5f6368] border border-[#dadce0]'
-                            : item.rank === 3
-                            ? 'bg-[#fce8e6] text-[#c5221f] border border-[#fad2cf]'
-                            : 'bg-[#f1f3f4] dark:bg-[#333538] text-[#5f6368] dark:text-[#9aa0a6]'
+                              ? 'bg-[#f1f3f4] text-[#5f6368] border border-[#dadce0]'
+                              : item.rank === 3
+                                ? 'bg-[#fce8e6] text-[#c5221f] border border-[#fad2cf]'
+                                : 'bg-[#f1f3f4] dark:bg-[#333538] text-[#5f6368] dark:text-[#9aa0a6]'
                         }`}
                       >
                         {item.rank}
                       </span>
-                      <span className="text-sm font-medium text-[#202124] dark:text-[#e3e3e3]">{item.name}</span>
+                      <span className="text-sm font-medium text-[#202124] dark:text-[#e3e3e3]">
+                        {item.name}
+                      </span>
                     </div>
-                    <span className="text-sm font-bold text-[#137333] dark:text-[#5bb98c]">{item.score} đ</span>
+                    <span className="text-sm font-bold text-[#137333] dark:text-[#5bb98c]">
+                      {item.score} đ
+                    </span>
                   </div>
                 ))}
               </div>
@@ -622,14 +923,20 @@ function StudentExamContent({
                 <div className="flex items-center gap-3">
                   <Award className="w-5 h-5 text-[#3c4043] dark:text-[#e3e3e3]" />
                   <div>
-                    <span className="text-xs text-[#3c4043] dark:text-[#e3e3e3] font-semibold block">Vị trí của em</span>
+                    <span className="text-xs text-[#3c4043] dark:text-[#e3e3e3] font-semibold block">
+                      Vị trí của em
+                    </span>
                     <span className="text-sm font-bold text-[#202124] dark:text-[#e3e3e3]">
-                      {submitResult.leaderboard.me.rank === null ? 'Chưa xếp hạng — chờ điểm chốt' : `Hạng #${submitResult.leaderboard.me.rank} / ${submitResult.leaderboard.me.total} bạn`}
+                      {submitResult.leaderboard.me.rank === null
+                        ? 'Chưa xếp hạng — chờ điểm chốt'
+                        : `Hạng #${submitResult.leaderboard.me.rank} / ${submitResult.leaderboard.me.total} bạn`}
                     </span>
                   </div>
                 </div>
                 <span className="text-base font-bold text-[#3c4043] dark:text-[#e3e3e3]">
-                  {submitResult.leaderboard.me.score === null ? 'Chờ chấm' : `${submitResult.leaderboard.me.score} đ`}
+                  {submitResult.leaderboard.me.score === null
+                    ? 'Chờ chấm'
+                    : `${submitResult.leaderboard.me.score} đ`}
                 </span>
               </div>
             </div>
@@ -639,7 +946,8 @@ function StudentExamContent({
           {submitResult.solutions && (
             <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-6 shadow-xs space-y-6">
               <h3 className="text-base font-bold text-[#202124] dark:text-[#e3e3e3] flex items-center gap-2">
-                <HelpCircle className="w-5 h-5 text-[#3c4043] dark:text-[#e3e3e3]" /> Đáp án & Lời giải chi tiết
+                <HelpCircle className="w-5 h-5 text-[#3c4043] dark:text-[#e3e3e3]" /> Đáp án & Lời giải chi
+                tiết
               </h3>
 
               <div className="space-y-6">
@@ -648,17 +956,27 @@ function StudentExamContent({
                   const studentAns = answers[q.id];
 
                   return (
-                    <div key={q.id} className="p-4 bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-xl space-y-3">
+                    <div
+                      key={q.id}
+                      className="p-4 bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-xl space-y-3"
+                    >
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-bold px-2.5 py-1 bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] rounded-full">
                           Câu {idx + 1}
                         </span>
-                        <span className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">{assignment.assessmentMode === undefined || assignment.assessmentMode === 'scored' ? (q.points ?? 0) + ' điểm' : 'Nhận xét / rubric'}</span>
+                        <span className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">
+                          {assignment.assessmentMode === undefined || assignment.assessmentMode === 'scored'
+                            ? (q.points ?? 0) + ' điểm'
+                            : 'Nhận xét / rubric'}
+                        </span>
                       </div>
 
                       <div className="text-sm text-[#202124] dark:text-[#e3e3e3]">
                         <MathRenderer content={q.content} />
-                  <QuestionParts question={q as unknown as AuthorQuestion} number={structure.numbers.get(q.id)} />
+                        <QuestionParts
+                          question={q as unknown as AuthorQuestion}
+                          number={structure.numbers.get(q.id)}
+                        />
                       </div>
 
                       <div className="text-xs space-y-1.5 pt-3 border-t border-[#dadce0] dark:border-[#3c4043]">
@@ -671,14 +989,25 @@ function StudentExamContent({
                         {sol?.correct && (
                           <div>
                             <span className="text-[#137333] dark:text-[#5bb98c]">Đáp án đúng: </span>
-                            <span className="font-bold text-[#137333] dark:text-[#5bb98c]">{sol.correct}</span>
+                            <span className="font-bold text-[#137333] dark:text-[#5bb98c]">
+                              {sol.correct}
+                            </span>
                           </div>
                         )}
-                        {sol?.matchingPairs?.length ? <p>Ghép đúng: {sol.matchingPairs.map(pair => pair.left + ' → ' + pair.right).join('; ')}</p> : null}
-                        {sol?.correctOrder?.length ? <p>Thứ tự đúng: {sol.correctOrder.join(' → ')}</p> : null}
+                        {sol?.matchingPairs?.length ? (
+                          <p>
+                            Ghép đúng:{' '}
+                            {sol.matchingPairs.map((pair) => pair.left + ' → ' + pair.right).join('; ')}
+                          </p>
+                        ) : null}
+                        {sol?.correctOrder?.length ? (
+                          <p>Thứ tự đúng: {sol.correctOrder.join(' → ')}</p>
+                        ) : null}
                         {sol?.solution && (
                           <div className="p-3 bg-white dark:bg-[#202124] rounded-xl border border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] mt-2">
-                            <span className="text-[#3c4043] dark:text-[#e3e3e3] font-semibold block mb-1">Hướng dẫn giải:</span>
+                            <span className="text-[#3c4043] dark:text-[#e3e3e3] font-semibold block mb-1">
+                              Hướng dẫn giải:
+                            </span>
                             <MathRenderer content={sol.solution} />
                           </div>
                         )}
@@ -699,41 +1028,87 @@ function StudentExamContent({
     return (
       <div className="app-page min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
         <div className="max-w-md w-full bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-8 shadow-xs">
-          <div className="w-12 h-12 bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] rounded-xl flex items-center justify-center mb-5 border border-[#3c4043]/30 dark:border-[#e3e3e3]/30">
+          <div
+            className={
+              'w-12 h-12 bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] rounded-xl flex items-center justify-center ' +
+              'mb-5 border border-[#3c4043]/30 dark:border-[#e3e3e3]/30'
+            }
+          >
             <User className="w-6 h-6" />
           </div>
 
           <span className="text-xs font-semibold uppercase tracking-wider text-[#3c4043] dark:text-[#e3e3e3]">
             {assignment.group?.name || 'Phòng thi trực tuyến'}
           </span>
-          <h1 className="text-2xl font-bold text-[#202124] dark:text-[#e3e3e3] mt-1 mb-2 leading-tight">{assignment.title}</h1>
+          <h1 className="text-2xl font-bold text-[#202124] dark:text-[#e3e3e3] mt-1 mb-2 leading-tight">
+            {assignment.title}
+          </h1>
 
           <div className="flex items-center gap-4 text-xs text-[#5f6368] dark:text-[#9aa0a6] mb-6 pb-6 border-b border-[#dadce0] dark:border-[#3c4043]">
             {assignment.durationMinutes && (
               <span className="flex items-center gap-1.5">
-                <Clock className="w-4 h-4 text-[#5f6368] dark:text-[#9aa0a6]" /> {assignment.durationMinutes} phút
+                <Clock className="w-4 h-4 text-[#5f6368] dark:text-[#9aa0a6]" /> {assignment.durationMinutes}{' '}
+                phút
               </span>
             )}
             <span>Số câu: {questions.length} câu</span>
             <span>Tối đa: {assignment.maxAttempts} lượt làm</span>
           </div>
 
-          <p className="text-xs mb-4">Hết giờ, hệ thống tự gửi bài. Máy chủ dành tối đa 15 giây để nhận bài khi đường truyền chậm; không nhận bản nháp sửa sau giờ làm.</p>
+          <p className="text-xs mb-4">
+            Hết giờ, hệ thống tự gửi bài. Máy chủ dành tối đa 15 giây để nhận bài khi đường truyền chậm; không
+            nhận bản nháp sửa sau giờ làm.
+          </p>
           <form onSubmit={handleStartExam} className="space-y-5">
-            {assignment.requirePin && <label className="block text-sm">PIN do giáo viên cấp<input type="password" required value={pin} onChange={e => setPin(e.target.value)} className="w-full border rounded-xl px-4 py-2 mt-2" /></label>}
-            {assignment.requireJoinCode && <label className="block text-sm">Mã vào bài<input required value={joinCode} onChange={e => setJoinCode(e.target.value)} className="w-full border rounded-xl px-4 py-2 mt-2" /></label>}
+            {assignment.requirePin && (
+              <label className="block text-sm">
+                PIN do giáo viên cấp
+                <input
+                  type="password"
+                  required
+                  value={pin}
+                  onChange={(e) => setPin(e.target.value)}
+                  className="w-full border rounded-xl px-4 py-2 mt-2"
+                />
+              </label>
+            )}
+            {assignment.requireJoinCode && (
+              <label className="block text-sm">
+                Mã vào bài
+                <input
+                  required
+                  value={joinCode}
+                  onChange={(e) => setJoinCode(e.target.value)}
+                  className="w-full border rounded-xl px-4 py-2 mt-2"
+                />
+              </label>
+            )}
             {assignment.identityMode === 'PERSONAL_LINK' ? (
-              <label className="block text-sm">Mã link cá nhân<input required value={personalToken} onChange={e => setPersonalToken(e.target.value)} className="w-full border rounded-xl px-4 py-2 mt-2" /></label>
+              <label className="block text-sm">
+                Mã link cá nhân
+                <input
+                  required
+                  value={personalToken}
+                  onChange={(e) => setPersonalToken(e.target.value)}
+                  className="w-full border rounded-xl px-4 py-2 mt-2"
+                />
+              </label>
             ) : assignment.identityMode === 'PICK_FROM_LIST' && assignment.group?.students ? (
               <div>
-                <label htmlFor="student-pick" className="block text-xs font-semibold text-[#5f6368] dark:text-[#9aa0a6] uppercase tracking-wider mb-2">
+                <label
+                  htmlFor="student-pick"
+                  className="block text-xs font-semibold text-[#5f6368] dark:text-[#9aa0a6] uppercase tracking-wider mb-2"
+                >
                   Chọn tên của em trong danh sách lớp:
                 </label>
                 <select
                   id="student-pick"
                   value={selectedStudentId}
                   onChange={(e) => setSelectedStudentId(e.target.value)}
-                  className="w-full bg-[#f8f9fa] dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2.5 text-sm text-[#202124] dark:text-[#e3e3e3] focus:outline-none focus:border-[#3c4043] dark:focus:border-[#e3e3e3]"
+                  className={
+                    'w-full bg-[#f8f9fa] dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2.5 text-sm ' +
+                    'text-[#202124] dark:text-[#e3e3e3] focus:outline-none focus:border-[#3c4043] dark:focus:border-[#e3e3e3]'
+                  }
                   required
                 >
                   <option value="">-- Chọn họ và tên --</option>
@@ -746,7 +1121,10 @@ function StudentExamContent({
               </div>
             ) : (
               <div>
-                <label htmlFor="student-free-name" className="block text-xs font-semibold text-[#5f6368] dark:text-[#9aa0a6] uppercase tracking-wider mb-2">
+                <label
+                  htmlFor="student-free-name"
+                  className="block text-xs font-semibold text-[#5f6368] dark:text-[#9aa0a6] uppercase tracking-wider mb-2"
+                >
                   Nhập họ và tên của em:
                 </label>
                 <input
@@ -755,7 +1133,11 @@ function StudentExamContent({
                   value={freeName}
                   onChange={(e) => setFreeName(e.target.value)}
                   placeholder="Ví dụ: Nguyễn Văn An"
-                  className="w-full bg-[#f8f9fa] dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2.5 text-sm text-[#202124] dark:text-[#e3e3e3] placeholder-[#5f6368] dark:placeholder-[#9aa0a6] focus:outline-none focus:border-[#3c4043] dark:focus:border-[#e3e3e3]"
+                  className={
+                    'w-full bg-[#f8f9fa] dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2.5 text-sm ' +
+                    'text-[#202124] dark:text-[#e3e3e3] placeholder-[#5f6368] dark:placeholder-[#9aa0a6] focus:outline-none ' +
+                    'focus:border-[#3c4043] dark:focus:border-[#e3e3e3]'
+                  }
                   required
                 />
               </div>
@@ -764,7 +1146,11 @@ function StudentExamContent({
             <button
               type="submit"
               disabled={starting}
-              className="w-full py-3 app-button-primary dark:bg-[#e3e3e3] dark:hover:bg-[#f1f3f4] disabled:opacity-50 text-white dark:text-[#202124] font-semibold text-sm rounded-lg shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
+              className={
+                'w-full py-3 app-button-primary dark:bg-[#e3e3e3] dark:hover:bg-[#f1f3f4] disabled:opacity-50 text-white ' +
+                'dark:text-[#202124] font-semibold text-sm rounded-lg shadow-xs flex items-center justify-center gap-2 transition-all ' +
+                'cursor-pointer'
+              }
             >
               {starting ? (
                 <div className="w-5 h-5 border-2 border-white dark:border-[#202124] border-t-transparent rounded-full animate-spin" />
@@ -791,7 +1177,8 @@ function StudentExamContent({
               {assignment.title}
             </h1>
             <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] [overflow-wrap:anywhere]">
-              Học sinh: <span className="text-[#3c4043] dark:text-[#e3e3e3] font-semibold">{attempt.studentName}</span>
+              Học sinh:{' '}
+              <span className="text-[#3c4043] dark:text-[#e3e3e3] font-semibold">{attempt.studentName}</span>
             </p>
           </div>
 
@@ -816,9 +1203,14 @@ function StudentExamContent({
                 <>
                   <Save className="w-3.5 h-3.5 animate-spin text-[#b06000] dark:text-[#fdd663]" /> Đang lưu...
                 </>
-              ) : saveError ? (<span role="alert" className="text-red-600">{saveError}</span>) : lastSaved ? (
+              ) : saveError ? (
+                <span role="alert" className="text-red-600">
+                  {saveError}
+                </span>
+              ) : lastSaved ? (
                 <>
-                  <CheckCircle2 className="w-3.5 h-3.5 text-[#137333] dark:text-[#5bb98c]" /> Lưu nháp {lastSaved}
+                  <CheckCircle2 className="w-3.5 h-3.5 text-[#137333] dark:text-[#5bb98c]" /> Lưu nháp{' '}
+                  {lastSaved}
                 </>
               ) : null}
             </div>
@@ -836,45 +1228,129 @@ function StudentExamContent({
       </header>
 
       <div role="status" aria-live="polite" className="md:hidden px-4 py-2 text-xs border-b">
-        {isSaving ? 'Đang gửi nháp lên máy chủ...' : saveError ? 'Chưa lưu được nháp máy chủ. Xem thông báo bên dưới.' : lastSaved ? `Lần lưu máy chủ gần nhất: ${lastSaved}` : 'Chưa có xác nhận lưu nháp từ máy chủ.'}
+        {isSaving
+          ? 'Đang gửi nháp lên máy chủ...'
+          : saveError
+            ? 'Chưa lưu được nháp máy chủ. Xem thông báo bên dưới.'
+            : lastSaved
+              ? `Lần lưu máy chủ gần nhất: ${lastSaved}`
+              : 'Chưa có xác nhận lưu nháp từ máy chủ.'}
       </div>
-      {submitError && <div role="alert" className="max-w-6xl mx-auto w-full p-4 border rounded-xl bg-amber-50 text-amber-950">
-        <p>{submitError}</p>
-        {timeLeft === 0 && <p>Đã hết giờ nên không sửa thêm đáp án. Khi kết nối lại, máy chủ xác nhận phần bài được nhận trong thời gian cho phép; các bản khác giữ để đối chiếu.</p>}
-        <button type="button" disabled={submitting} onClick={() => handleFinalSubmit(timeLeft === 0)} className="border rounded-lg p-2 mt-2">{submitting ? 'Đang xác nhận...' : 'Thử nộp lại khi có mạng'}</button>
-      </div>}
-      {journalNotice && !saveError && <div role="status" className="max-w-6xl mx-auto w-full px-4 py-3 text-sm bg-neutral-50 text-[var(--ui-accent)] border border-[var(--ui-border)] rounded-xl">{journalNotice}</div>}
-      <StudentDraftRecovery entries={recoveryEntries} onImport={raw => {
-        if (!attempt || activeAttemptRef.current !== attempt.id) return 'Lượt làm bài đã thay đổi. Hãy mở lại tệp ở đúng lượt.';
-        const imported = importStudentJournal(() => localStorage, attempt.id, crypto.randomUUID(), raw);
-        if (imported.error) return imported.error;
-        setRecoveryEntries(previous => [...previous, imported.entry!]);
-        setJournalNotice('Đã giữ tệp nháp riêng. Mở bản vừa nhập để đối chiếu rồi chọn nếu phù hợp; chưa thay câu trả lời đang nhập.');
-        return null;
-      }} onChoose={entry => {
-        if (!entry.value || !attempt || entry.value.attemptId !== attempt.id || activeAttemptRef.current !== attempt.id) return;
-        draftContextRef.current++;
-        journalBaseRef.current = entry.value.baseRevision;
-        const stale = entry.value.baseRevision !== draftRevisionRef.current;
-        draftConflictRef.current = stale; setAnswers(entry.value.answers);
-        setSaveError(stale ? 'Bản được chọn dựa trên nháp máy chủ cũ. Chỉ xem/đối chiếu; chưa ghi đè hoặc nộp nội dung này.' : null);
-      }} onServer={() => {
-        draftContextRef.current++;
-        journalBaseRef.current = draftRevisionRef.current; draftConflictRef.current = false;
-        setAnswers(serverDraftRef.current); setSaveError(null);
-      }} />
-      {(saveError || submitError) && <div className="max-w-6xl mx-auto w-full px-4 py-3 text-sm bg-amber-50 text-amber-900 border border-amber-300 rounded-xl">
-        {saveError && <p role="alert">{saveError}</p>}
-        <p>Bản đang nhập vẫn ở trang này. Tải bản sao trước khi đóng hoặc tải lại trang; tệp này dùng để đối chiếu, chưa thay cho bài đã nộp.</p>
-        <button type="button" className="underline font-semibold mt-2" onClick={() => {
-          const blob = new Blob([JSON.stringify({ format: 'examcraft-student-answers-v1', assignmentTitle: assignment?.title, attemptId: attempt?.id, baseDraftRevision: journalBaseRef.current, exportedAt: new Date().toISOString(), responses: answersRef.current }, null, 2)], { type: 'application/json' });
-          const url = URL.createObjectURL(blob), link = document.createElement('a');
-          link.href = url; link.download = `examcraft-bai-lam-${attempt?.id}.json`; link.click();
-          setTimeout(() => URL.revokeObjectURL(url), 30_000);
-        }}>Tải bản câu trả lời đang nhập</button>
-      </div>}
+      {submitError && (
+        <div
+          role="alert"
+          className="max-w-6xl mx-auto w-full p-4 border rounded-xl bg-amber-50 text-amber-950"
+        >
+          <p>{submitError}</p>
+          {timeLeft === 0 && (
+            <p>
+              Đã hết giờ nên không sửa thêm đáp án. Khi kết nối lại, máy chủ xác nhận phần bài được nhận trong
+              thời gian cho phép; các bản khác giữ để đối chiếu.
+            </p>
+          )}
+          <button
+            type="button"
+            disabled={submitting}
+            onClick={() => handleFinalSubmit(timeLeft === 0)}
+            className="border rounded-lg p-2 mt-2"
+          >
+            {submitting ? 'Đang xác nhận...' : 'Thử nộp lại khi có mạng'}
+          </button>
+        </div>
+      )}
+      {journalNotice && !saveError && (
+        <div
+          role="status"
+          className="max-w-6xl mx-auto w-full px-4 py-3 text-sm bg-neutral-50 text-[var(--ui-accent)] border border-[var(--ui-border)] rounded-xl"
+        >
+          {journalNotice}
+        </div>
+      )}
+      <StudentDraftRecovery
+        entries={recoveryEntries}
+        onImport={(raw) => {
+          if (!attempt || activeAttemptRef.current !== attempt.id)
+            return 'Lượt làm bài đã thay đổi. Hãy mở lại tệp ở đúng lượt.';
+          const imported = importStudentJournal(() => localStorage, attempt.id, crypto.randomUUID(), raw);
+          if (imported.error) return imported.error;
+          setRecoveryEntries((previous) => [...previous, imported.entry!]);
+          setJournalNotice(
+            'Đã giữ tệp nháp riêng. Mở bản vừa nhập để đối chiếu rồi chọn nếu phù hợp; chưa thay câu trả lời đang nhập.',
+          );
+          return null;
+        }}
+        onChoose={(entry) => {
+          if (
+            !entry.value ||
+            !attempt ||
+            entry.value.attemptId !== attempt.id ||
+            activeAttemptRef.current !== attempt.id
+          )
+            return;
+          draftContextRef.current++;
+          journalBaseRef.current = entry.value.baseRevision;
+          const stale = entry.value.baseRevision !== draftRevisionRef.current;
+          draftConflictRef.current = stale;
+          setAnswers(entry.value.answers);
+          setSaveError(
+            stale
+              ? 'Bản được chọn dựa trên nháp máy chủ cũ. Chỉ xem/đối chiếu; chưa ghi đè hoặc nộp nội dung này.'
+              : null,
+          );
+        }}
+        onServer={() => {
+          draftContextRef.current++;
+          journalBaseRef.current = draftRevisionRef.current;
+          draftConflictRef.current = false;
+          setAnswers(serverDraftRef.current);
+          setSaveError(null);
+        }}
+      />
+      {(saveError || submitError) && (
+        <div className="max-w-6xl mx-auto w-full px-4 py-3 text-sm bg-amber-50 text-amber-900 border border-amber-300 rounded-xl">
+          {saveError && <p role="alert">{saveError}</p>}
+          <p>
+            Bản đang nhập vẫn ở trang này. Tải bản sao trước khi đóng hoặc tải lại trang; tệp này dùng để đối
+            chiếu, chưa thay cho bài đã nộp.
+          </p>
+          <button
+            type="button"
+            className="underline font-semibold mt-2"
+            onClick={() => {
+              const blob = new Blob(
+                [
+                  JSON.stringify(
+                    {
+                      format: 'examcraft-student-answers-v1',
+                      assignmentTitle: assignment?.title,
+                      attemptId: attempt?.id,
+                      baseDraftRevision: journalBaseRef.current,
+                      exportedAt: new Date().toISOString(),
+                      responses: answersRef.current,
+                    },
+                    null,
+                    2,
+                  ),
+                ],
+                { type: 'application/json' },
+              );
+              const url = URL.createObjectURL(blob),
+                link = document.createElement('a');
+              link.href = url;
+              link.download = `examcraft-bai-lam-${attempt?.id}.json`;
+              link.click();
+              setTimeout(() => URL.revokeObjectURL(url), 30_000);
+            }}
+          >
+            Tải bản câu trả lời đang nhập
+          </button>
+        </div>
+      )}
       {/* Thân bài thi */}
-      <main inert={timeLeft === 0 || submitting} className="max-w-6xl mx-auto w-full p-4 md:p-6 flex-1 flex flex-col md:flex-row gap-6">
+      <main
+        inert={timeLeft === 0 || submitting}
+        className="max-w-6xl mx-auto w-full p-4 md:p-6 flex-1 flex flex-col md:flex-row gap-6"
+      >
         {/* Danh sách câu hỏi */}
         <div className="flex-1 space-y-6">
           {questions.map((q, index) => {
@@ -884,25 +1360,38 @@ function StudentExamContent({
               <div
                 key={q.id}
                 id={`q-${index + 1}`}
-                className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-5 md:p-6 shadow-xs transition-all hover:border-[#bdc1c6] dark:hover:border-[#5f6368]"
+                className={
+                  'bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-5 md:p-6 shadow-xs transition-all ' +
+                  'hover:border-[#bdc1c6] dark:hover:border-[#5f6368]'
+                }
               >
                 {/* Header câu hỏi */}
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <span className="w-8 h-8 rounded-full bg-[#f1f3f4] dark:bg-[#292a2d] border border-[#3c4043]/30 dark:border-[#e3e3e3]/30 text-[#3c4043] dark:text-[#e3e3e3] flex items-center justify-center font-bold text-sm">
+                    <span
+                      className={
+                        'w-8 h-8 rounded-full bg-[#f1f3f4] dark:bg-[#292a2d] border border-[#3c4043]/30 dark:border-[#e3e3e3]/30 text-[#3c4043] ' +
+                        'dark:text-[#e3e3e3] flex items-center justify-center font-bold text-sm'
+                      }
+                    >
                       {structure.numbers.get(q.id) ?? index + 1}
                     </span>
                     <span className="text-xs font-semibold text-[#5f6368] dark:text-[#9aa0a6] uppercase tracking-wider">
                       {q.type === 'MULTIPLE_CHOICE'
                         ? 'Trắc nghiệm 4 lựa chọn'
                         : q.type === 'TRUE_FALSE_GROUP'
-                        ? 'Đúng / Sai'
-                        : q.type === 'SHORT_ANSWER'
-                        ? 'Trả lời ngắn'
-                        : 'Câu hỏi'}
+                          ? 'Đúng / Sai'
+                          : q.type === 'SHORT_ANSWER'
+                            ? 'Trả lời ngắn'
+                            : 'Câu hỏi'}
                     </span>
                   </div>
-                  {(assignment.assessmentMode === undefined || assignment.assessmentMode === 'scored') && q.points !== undefined && <span className="text-xs text-[#5f6368] dark:text-[#9aa0a6] font-medium">{q.points} điểm</span>}
+                  {(assignment.assessmentMode === undefined || assignment.assessmentMode === 'scored') &&
+                    q.points !== undefined && (
+                      <span className="text-xs text-[#5f6368] dark:text-[#9aa0a6] font-medium">
+                        {q.points} điểm
+                      </span>
+                    )}
                 </div>
 
                 <StructureBlocks blocks={structure.before.get(q.id)} />
@@ -915,10 +1404,35 @@ function StudentExamContent({
                 {q.figures && q.figures.length > 0 && (
                   <div className="my-4 flex flex-wrap gap-4">
                     {q.figures.map((fig, fIdx) => (
-                      <div key={fIdx} className="bg-[#f8f9fa] dark:bg-[#202124] p-2 rounded-xl border border-[#dadce0] dark:border-[#3c4043]">
+                      <div
+                        key={fIdx}
+                        className="bg-[#f8f9fa] dark:bg-[#202124] p-2 rounded-xl border border-[#dadce0] dark:border-[#3c4043]"
+                      >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <>{fig.kind === 'variation_table' ? <VariationTable data={fig.data as VariationTableData} /> : fig.kind === 'function_plot' ? <FunctionPlot data={fig.data as FunctionPlotData} /> : <img src={fig.url || (typeof fig.data === 'string' ? fig.data : (fig.data as { url?: string })?.url) || fig.renderedBase64} alt={fig.caption || `Hình ${fIdx + 1}`} className="max-h-60 rounded-xl" />}</>
-                        {fig.caption && <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] text-center mt-1">{fig.caption}</p>}
+                        <>
+                          {fig.kind === 'variation_table' ? (
+                            <VariationTable data={fig.data as VariationTableData} />
+                          ) : fig.kind === 'function_plot' ? (
+                            <FunctionPlot data={fig.data as FunctionPlotData} />
+                          ) : (
+                            <img
+                              src={
+                                fig.url ||
+                                (typeof fig.data === 'string'
+                                  ? fig.data
+                                  : (fig.data as { url?: string })?.url) ||
+                                fig.renderedBase64
+                              }
+                              alt={fig.caption || `Hình ${fIdx + 1}`}
+                              className="max-h-60 rounded-xl"
+                            />
+                          )}
+                        </>
+                        {fig.caption && (
+                          <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] text-center mt-1">
+                            {fig.caption}
+                          </p>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -928,7 +1442,10 @@ function StudentExamContent({
                 {q.type === 'MULTIPLE_CHOICE' && q.payload?.choices && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
                     {q.payload.choices.map((c) => {
-                      const isSelected = String(currentAns || '').trim().toUpperCase() === c.key.toUpperCase();
+                      const isSelected =
+                        String(currentAns || '')
+                          .trim()
+                          .toUpperCase() === c.key.toUpperCase();
                       return (
                         <button
                           key={c.key}
@@ -942,7 +1459,9 @@ function StudentExamContent({
                         >
                           <span
                             className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0 mt-0.5 ${
-                              isSelected ? 'bg-[#3c4043] dark:bg-[#e3e3e3] text-white dark:text-[#202124]' : 'bg-[#e8eaed] dark:bg-[#333538] text-[#5f6368] dark:text-[#9aa0a6]'
+                              isSelected
+                                ? 'bg-[#3c4043] dark:bg-[#e3e3e3] text-white dark:text-[#202124]'
+                                : 'bg-[#e8eaed] dark:bg-[#333538] text-[#5f6368] dark:text-[#9aa0a6]'
                             }`}
                           >
                             {c.key}
@@ -960,16 +1479,25 @@ function StudentExamContent({
                 {q.type === 'TRUE_FALSE_GROUP' && q.payload?.sub_questions && (
                   <div className="space-y-3 mt-4">
                     {q.payload.sub_questions.map((sub) => {
-                      const groupVal = typeof currentAns === 'object' && currentAns !== null ? currentAns : {};
+                      const groupVal =
+                        typeof currentAns === 'object' && currentAns !== null ? currentAns : {};
                       const userVal = (groupVal as Record<string, unknown>)[sub.key];
 
                       return (
                         <div
                           key={sub.key}
-                          className="flex flex-col md:flex-row md:items-center justify-between gap-3 p-3.5 bg-[#f8f9fa] dark:bg-[#242424] border border-[#dadce0] dark:border-[#3c4043] rounded-xl"
+                          className={
+                            'flex flex-col md:flex-row md:items-center justify-between gap-3 p-3.5 bg-[#f8f9fa] dark:bg-[#242424] border ' +
+                            'border-[#dadce0] dark:border-[#3c4043] rounded-xl'
+                          }
                         >
                           <div className="flex items-start gap-2.5">
-                            <span className="w-5 h-5 rounded-full bg-[#e8eaed] dark:bg-[#333538] text-[#5f6368] dark:text-[#9aa0a6] font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                            <span
+                              className={
+                                'w-5 h-5 rounded-full bg-[#e8eaed] dark:bg-[#333538] text-[#5f6368] dark:text-[#9aa0a6] font-bold text-xs flex ' +
+                                'items-center justify-center shrink-0 mt-0.5'
+                              }
+                            >
                               {sub.key}
                             </span>
                             <div className="text-sm text-[#202124] dark:text-[#e3e3e3]">
@@ -1007,32 +1535,78 @@ function StudentExamContent({
                   </div>
                 )}
 
-                {!!q.parts?.length && <div className="space-y-3 mt-3">{q.parts.map((part, i) => {
-                  const value = currentAns && typeof currentAns === 'object' ? currentAns as Record<string, unknown> : {};
-                  const label = questionPartLabel(q as unknown as AuthorQuestion, i, structure.numbers.get(q.id));
-                  return <label key={part.id} className="block text-sm">Trả lời ý {label}
-                    <textarea aria-label={'Trả lời ý ' + label + ' câu ' + (index + 1)} rows={3}
-                      className="w-full min-w-0 border rounded-lg p-2 bg-transparent mt-1"
-                      value={typeof value[part.id] === 'string' ? String(value[part.id]) : ''}
-                      onChange={event => { const text = event.target.value; setAnswers(current => {
-                        const old = current[q.id];
-                        const previous = old && typeof old === 'object' && !Array.isArray(old) ? old : {};
-                        return { ...current, [q.id]: { ...previous, [part.id]: text } };
-                      }); }} />
-                  </label>;
-                })}</div>}
-                {(q.matching || q.ordering) && <StructuredAnswer question={q} value={currentAns} onChange={value => setAnswers(current => ({ ...current, [q.id]: value }))} />}
-                {!q.parts?.length && (q.type === 'ESSAY' || q.type === 'MATCHING' && !q.matching || q.type === 'ORDERING' && !q.ordering) && <label className="block text-sm mt-4">Trình bày câu trả lời (giáo viên sẽ chấm)<textarea value={typeof currentAns === 'string' ? currentAns : ''} onChange={e => handleShortAnswerChange(q.id, e.target.value)} rows={6} className="block w-full border rounded-xl p-3 mt-2 bg-transparent" /></label>}
+                {!!q.parts?.length && (
+                  <div className="space-y-3 mt-3">
+                    {q.parts.map((part, i) => {
+                      const value =
+                        currentAns && typeof currentAns === 'object'
+                          ? (currentAns as Record<string, unknown>)
+                          : {};
+                      const label = questionPartLabel(
+                        q as unknown as AuthorQuestion,
+                        i,
+                        structure.numbers.get(q.id),
+                      );
+                      return (
+                        <label key={part.id} className="block text-sm">
+                          Trả lời ý {label}
+                          <textarea
+                            aria-label={'Trả lời ý ' + label + ' câu ' + (index + 1)}
+                            rows={3}
+                            className="w-full min-w-0 border rounded-lg p-2 bg-transparent mt-1"
+                            value={typeof value[part.id] === 'string' ? String(value[part.id]) : ''}
+                            onChange={(event) => {
+                              const text = event.target.value;
+                              setAnswers((current) => {
+                                const old = current[q.id];
+                                const previous =
+                                  old && typeof old === 'object' && !Array.isArray(old) ? old : {};
+                                return { ...current, [q.id]: { ...previous, [part.id]: text } };
+                              });
+                            }}
+                          />
+                        </label>
+                      );
+                    })}
+                  </div>
+                )}
+                {(q.matching || q.ordering) && (
+                  <StructuredAnswer
+                    question={q}
+                    value={currentAns}
+                    onChange={(value) => setAnswers((current) => ({ ...current, [q.id]: value }))}
+                  />
+                )}
+                {!q.parts?.length &&
+                  (q.type === 'ESSAY' ||
+                    (q.type === 'MATCHING' && !q.matching) ||
+                    (q.type === 'ORDERING' && !q.ordering)) && (
+                    <label className="block text-sm mt-4">
+                      Trình bày câu trả lời (giáo viên sẽ chấm)
+                      <textarea
+                        value={typeof currentAns === 'string' ? currentAns : ''}
+                        onChange={(e) => handleShortAnswerChange(q.id, e.target.value)}
+                        rows={6}
+                        className="block w-full border rounded-xl p-3 mt-2 bg-transparent"
+                      />
+                    </label>
+                  )}
                 {/* DẠNG 3: TRẢ LỜI NGẮN (SHORT_ANSWER) */}
                 {!q.parts?.length && (q.type === 'SHORT_ANSWER' || q.type === 'FILL_BLANK') && (
                   <div className="mt-4">
-                    <label className="block text-xs text-[#5f6368] dark:text-[#9aa0a6] mb-2">Điền câu trả lời hoặc số:</label>
+                    <label className="block text-xs text-[#5f6368] dark:text-[#9aa0a6] mb-2">
+                      Điền câu trả lời hoặc số:
+                    </label>
                     <input
                       type="text"
                       value={typeof currentAns === 'string' ? currentAns : ''}
                       onChange={(e) => handleShortAnswerChange(q.id, e.target.value)}
                       placeholder="Ví dụ: 3.14 hoặc 1/2..."
-                      className="w-full md:w-80 bg-[#f8f9fa] dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2 text-sm text-[#202124] dark:text-[#e3e3e3] font-mono focus:outline-none focus:border-[#3c4043] dark:focus:border-[#e3e3e3]"
+                      className={
+                        'w-full md:w-80 bg-[#f8f9fa] dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-full px-4 py-2 ' +
+                        'text-sm text-[#202124] dark:text-[#e3e3e3] font-mono focus:outline-none focus:border-[#3c4043] ' +
+                        'dark:focus:border-[#e3e3e3]'
+                      }
                     />
                   </div>
                 )}
@@ -1045,7 +1619,9 @@ function StudentExamContent({
         <aside className="w-full md:w-72 shrink-0 space-y-4">
           <div className="bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-5 sticky top-20 shadow-xs">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#5f6368] dark:text-[#9aa0a6]">Bảng câu hỏi</h3>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#5f6368] dark:text-[#9aa0a6]">
+                Bảng câu hỏi
+              </h3>
               <span className="text-xs font-semibold text-[#137333] dark:text-[#5bb98c]">
                 {answeredCount} / {questions.length} câu
               </span>
@@ -1054,10 +1630,27 @@ function StudentExamContent({
             <div className="grid grid-cols-5 gap-2 max-h-80 overflow-y-auto pr-1">
               {questions.map((q, idx) => {
                 const ans = answers[q.id];
-                let isFilled = answeredParts(q, ans) || q.type === 'ORDERING' && Array.isArray(ans) && ans.length > 0 || q.type === 'MATCHING' && ans && typeof ans === 'object' && !Array.isArray(ans) && Object.values(ans).some(value => typeof value === 'string' && value);
+                let isFilled =
+                  answeredParts(q, ans) ||
+                  (q.type === 'ORDERING' && Array.isArray(ans) && ans.length > 0) ||
+                  (q.type === 'MATCHING' &&
+                    ans &&
+                    typeof ans === 'object' &&
+                    !Array.isArray(ans) &&
+                    Object.values(ans).some((value) => typeof value === 'string' && value));
                 if (q.type === 'MULTIPLE_CHOICE' && ans) isFilled = true;
-                if (['SHORT_ANSWER', 'FILL_BLANK', 'ESSAY', 'MATCHING', 'ORDERING'].includes(q.type) && typeof ans === 'string' && ans.trim()) isFilled = true;
-                if (q.type === 'TRUE_FALSE_GROUP' && ans !== null && typeof ans === 'object' && Object.keys(ans).length > 0)
+                if (
+                  ['SHORT_ANSWER', 'FILL_BLANK', 'ESSAY', 'MATCHING', 'ORDERING'].includes(q.type) &&
+                  typeof ans === 'string' &&
+                  ans.trim()
+                )
+                  isFilled = true;
+                if (
+                  q.type === 'TRUE_FALSE_GROUP' &&
+                  ans !== null &&
+                  typeof ans === 'object' &&
+                  Object.keys(ans).length > 0
+                )
                   isFilled = true;
 
                 return (
@@ -1093,14 +1686,23 @@ function StudentExamContent({
       {showSubmitModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="app-dialog max-w-md w-full bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-6 shadow-xs">
-            <div className="w-12 h-12 rounded-full bg-[#fef7e0] dark:bg-[#33250b] text-[#b06000] dark:text-[#fdd663] flex items-center justify-center mb-4 border border-[#feefc3] dark:border-[#4d380e]">
+            <div
+              className={
+                'w-12 h-12 rounded-full bg-[#fef7e0] dark:bg-[#33250b] text-[#b06000] dark:text-[#fdd663] flex items-center ' +
+                'justify-center mb-4 border border-[#feefc3] dark:border-[#4d380e]'
+              }
+            >
               <AlertCircle className="w-6 h-6" />
             </div>
 
-            <h3 className="app-dialog-header text-lg font-bold text-[#202124] dark:text-[#e3e3e3] mb-2">Xác nhận nộp bài thi?</h3>
+            <h3 className="app-dialog-header text-lg font-bold text-[#202124] dark:text-[#e3e3e3] mb-2">
+              Xác nhận nộp bài thi?
+            </h3>
             <p className="text-[#5f6368] dark:text-[#9aa0a6] text-sm mb-4 leading-relaxed">
-              Em đã hoàn thành <span className="font-bold text-[#202124] dark:text-[#e3e3e3]">{answeredCount}</span> trên tổng số{' '}
-              <span className="font-bold text-[#202124] dark:text-[#e3e3e3]">{questions.length}</span> câu hỏi.
+              Em đã hoàn thành{' '}
+              <span className="font-bold text-[#202124] dark:text-[#e3e3e3]">{answeredCount}</span> trên tổng
+              số <span className="font-bold text-[#202124] dark:text-[#e3e3e3]">{questions.length}</span> câu
+              hỏi.
               {answeredCount < questions.length && (
                 <span className="text-[#b06000] dark:text-[#fdd663] block mt-1">
                   Vẫn còn {questions.length - answeredCount} câu chưa làm xong!
@@ -1112,7 +1714,10 @@ function StudentExamContent({
               <button
                 type="button"
                 onClick={() => setShowSubmitModal(false)}
-                className="flex-1 py-2.5 bg-[#f1f3f4] hover:bg-[#e8eaed] dark:bg-[#292a2d] dark:hover:bg-[#333538] text-[#202124] dark:text-[#e3e3e3] text-sm font-semibold rounded-lg transition-all cursor-pointer"
+                className={
+                  'flex-1 py-2.5 bg-[#f1f3f4] hover:bg-[#e8eaed] dark:bg-[#292a2d] dark:hover:bg-[#333538] text-[#202124] ' +
+                  'dark:text-[#e3e3e3] text-sm font-semibold rounded-lg transition-all cursor-pointer'
+                }
               >
                 Làm tiếp
               </button>
@@ -1120,7 +1725,10 @@ function StudentExamContent({
                 type="button"
                 onClick={() => handleFinalSubmit(false)}
                 disabled={submitting}
-                className="flex-1 py-2.5 app-button-primary disabled:opacity-50 text-sm font-semibold rounded-lg shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                className={
+                  'flex-1 py-2.5 app-button-primary disabled:opacity-50 text-sm font-semibold rounded-lg shadow-xs transition-all flex ' +
+                  'items-center justify-center gap-1.5 cursor-pointer'
+                }
               >
                 {submitting ? (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -1142,7 +1750,9 @@ export default function StudentExamPage(props: { params: Promise<{ publicId: str
       fallback={
         <div className="app-page min-h-screen bg-[#f8f9fa] dark:bg-[#17181a] flex flex-col items-center justify-center text-[#202124] dark:text-[#e3e3e3] p-4">
           <div className="w-10 h-10 border-3 border-[#3c4043] dark:border-[#e3e3e3] border-t-transparent rounded-full animate-spin mb-4" />
-          <p className="text-[#5f6368] dark:text-[#9aa0a6] font-medium text-sm">Đang tải phòng thi trực tuyến...</p>
+          <p className="text-[#5f6368] dark:text-[#9aa0a6] font-medium text-sm">
+            Đang tải phòng thi trực tuyến...
+          </p>
         </div>
       }
     >

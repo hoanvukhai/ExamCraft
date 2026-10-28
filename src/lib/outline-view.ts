@@ -22,11 +22,18 @@ export function outlineView(exam: Exam) {
       pending = [];
     } else {
       pending.push({
-        id: node.id, kind: node.kind as 'part' | 'group',
-        title: [label, node.title || (node.kind === 'part' ? 'Phần chưa đặt tên' : '')].filter(Boolean).join('. '),
+        id: node.id,
+        kind: node.kind as 'part' | 'group',
+        title: [label, node.title || (node.kind === 'part' ? 'Phần chưa đặt tên' : '')]
+          .filter(Boolean)
+          .join('. '),
         instructions: node.instructions,
-        passage: node.kind === 'group' ? exam.passages?.find(passage => passage.id === node.passageId) : undefined,
-        missingPassageId: node.passageId && !exam.passages?.some(passage => passage.id === node.passageId) ? node.passageId : undefined,
+        passage:
+          node.kind === 'group' ? exam.passages?.find((passage) => passage.id === node.passageId) : undefined,
+        missingPassageId:
+          node.passageId && !exam.passages?.some((passage) => passage.id === node.passageId)
+            ? node.passageId
+            : undefined,
       });
     }
   }
@@ -39,8 +46,9 @@ export function questionPartLabel(question: Question, index: number, number?: nu
   return outlineNumber(index, question.partsNumbering === 'roman' ? 'roman' : 'letters').toLowerCase();
 }
 export function publicOutline(nodes: OutlineNode[]): OutlineNode[] {
-  return nodes.map(node => ({
-    id: node.id, kind: node.kind,
+  return nodes.map((node) => ({
+    id: node.id,
+    kind: node.kind,
     ...(node.title !== undefined ? { title: node.title } : {}),
     ...(node.instructions !== undefined ? { instructions: node.instructions } : {}),
     ...(node.numbering !== undefined ? { numbering: node.numbering } : {}),

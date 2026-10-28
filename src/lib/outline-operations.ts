@@ -15,12 +15,17 @@ export function shuffleOutline(exam: Exam, random: () => number, shuffleGroups =
   const visit = (nodes: OutlineNode[]): OutlineNode[] => {
     const result: OutlineNode[] = [];
     let run: OutlineNode[] = [];
-    const flush = () => { result.push(...shuffled(run, random)); run = []; };
+    const flush = () => {
+      result.push(...shuffled(run, random));
+      run = [];
+    };
     for (const node of nodes) {
       if (node.kind === 'part') {
-        flush(); result.push({ ...node, children: visit(node.children!) });
+        flush();
+        result.push({ ...node, children: visit(node.children!) });
       } else if (node.kind === 'group' && !shuffleGroups) {
-        flush(); result.push(structuredClone(node));
+        flush();
+        result.push(structuredClone(node));
       } else run.push(structuredClone(node));
     }
     flush();
@@ -30,27 +35,38 @@ export function shuffleOutline(exam: Exam, random: () => number, shuffleGroups =
 }
 export function outlineSkeleton(exam: Exam): OutlineNode[] {
   let index = 0;
-  const prune = (nodes: OutlineNode[]): OutlineNode[] => nodes.flatMap(node => {
-    if (node.kind === 'question') return [];
-    const { passageId: _passage, ...container } = node;
-    void _passage;
-    return [{ ...container, id: 'skeleton:' + index++,
-      ...(node.kind === 'part' ? { sectionId: node.sectionId ?? node.id } : {}),
-      children: prune(node.children ?? []),
-    }];
-  });
+  const prune = (nodes: OutlineNode[]): OutlineNode[] =>
+    nodes.flatMap((node) => {
+      if (node.kind === 'question') return [];
+      const { passageId: _passage, ...container } = node;
+      void _passage;
+      return [
+        {
+          ...container,
+          id: 'skeleton:' + index++,
+          ...(node.kind === 'part' ? { sectionId: node.sectionId ?? node.id } : {}),
+          children: prune(node.children ?? []),
+        },
+      ];
+    });
   return publicOutline(prune(exam.outline ?? legacyOutline(exam)));
 }
-export function copyOutlineSkeleton(nodes: OutlineNode[], sectionMap: Map<string, string>, token: string): OutlineNode[] {
+export function copyOutlineSkeleton(
+  nodes: OutlineNode[],
+  sectionMap: Map<string, string>,
+  token: string,
+): OutlineNode[] {
   let counter = 0;
-  const visit = (list: OutlineNode[]): OutlineNode[] => list.map(node => {
-    if (node.kind === 'question') throw Error('Mẫu dàn ý không được chứa câu hỏi.');
-    const section = node.sectionId ?? node.id;
-    return {
-      ...node, id: `template:${token}:${counter++}`,
-      ...(node.kind === 'part' ? { sectionId: sectionMap.get(section) ?? section } : {}),
-      children: visit(node.children ?? []),
-    };
-  });
+  const visit = (list: OutlineNode[]): OutlineNode[] =>
+    list.map((node) => {
+      if (node.kind === 'question') throw Error('Mẫu dàn ý không được chứa câu hỏi.');
+      const section = node.sectionId ?? node.id;
+      return {
+        ...node,
+        id: `template:${token}:${counter++}`,
+        ...(node.kind === 'part' ? { sectionId: sectionMap.get(section) ?? section } : {}),
+        children: visit(node.children ?? []),
+      };
+    });
   return validateOutline(visit(nodes), []);
 }

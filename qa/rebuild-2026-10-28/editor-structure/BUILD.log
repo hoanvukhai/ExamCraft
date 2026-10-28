@@ -1,0 +1,15 @@
+C:\Users\ACER\.codex\worktrees\editor-structure\ExamCraft\tests\helpers\test-database.ts:16
+    if (sameHost && (app.port || '5432') === (target.port || '5432') && app.pathname === target.pathname) throw new Error('Test target matches the application database.');
+                                                                                                          ^
+
+Error: Test target matches the application database.
+    at requireTestDatabase (C:\Users\ACER\.codex\worktrees\editor-structure\ExamCraft\tests\helpers\test-database.ts:16:113)
+    at [eval]:1:382
+    at runScriptInThisContext (node:internal/vm:209:10)
+    at node:internal/process/execution:446:12
+    at [eval]-wrapper:6:24
+    at runScriptInContext (node:internal/process/execution:444:60)
+    at evalFunction (node:internal/process/execution:279:30)
+    at asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:11)
+
+Node.js v22.21.0

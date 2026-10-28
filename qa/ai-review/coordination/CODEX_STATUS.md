@@ -1,15 +1,9 @@
 # CODEX status
 
-task_id: OWNER-EDITOR-GROUPING-20261028
-state: WAITING_REVIEW
-updated: 28/10/2026, Asia/Bangkok
-branch/worktree: rebuild/2026-10-local, F:/Workspace/Zazz/ExamCraft
-commit mã + kiểm: 5d1fec3; giữ sửa Claude 52099b3 và đợt inline 27af86a
+task_id: EDITOR-STRUCTURE-S0-S7-20261028
+state: IN_PROGRESS
+worktree: C:/Users/ACER/.codex/worktrees/editor-structure/ExamCraft
+branch: codex/editor-structure, nền b6d81a6
+commit S0: 7a4193e; S1: 47cfe7c; S2 xem HEAD nhánh codex/editor-structure
 
-Đã gom theo yêu cầu chủ dự án: phần/ngữ liệu và liên kết nằm tại nội dung câu; sửa ngữ liệu tại nhóm; phạm vi/khung nhận thức/ma trận trong Yêu cầu ra đề tùy chọn; mẫu từ menu công cụ. Bỏ dãy thẻ thiết lập cũ, giữ xem trước thông tin trực tiếp và nháp câu mới.
-
-Đã kiểm production build/TypeScript, lint, SAFE, trình duyệt sáng/tối và điện thoại mô phỏng, tạo các dạng câu/ảnh/nguồn/mẫu và khôi phục bản sao. Báo cáo/bằng chứng/giới hạn: [báo cáo](../../rebuild-2026-10-28/editor-grouping/BAO_CAO.md). Test chỉ DB thử đã guard, không DB chính/provider thật/schema mới. Lượt kiểm bị ngắt đã dọn đúng fixture riêng.
-
-Bản thử: http://127.0.0.1:3117, build n4qu6eyMIwfEAbaa-jL4c; LOCK_3117=USER. Bước kế: Claude duyệt; chủ dự án xem giao diện và cảm ứng/bàn phím ảo trên máy thật. Các giới hạn chuyên môn, Word desktop và nháp thông tin chưa áp dụng vẫn giữ.
-
-Không tự đóng CV/sửa hồ sơ02/checklist/ASSIGNMENTS/BATCH_REVIEWS. Giữ ngoài commit các tệp QA25 chưa theo dõi có sẵn, scratch/, tmp/. Không push/reset/clean.
+Đã qua kiểm thuần/hồi quy cho S0–S2: dàn ý/ý nhỏ, đầu ra và lọc bí mật học sinh, trộn theo nhóm, mẫu dàn ý, rà soát và giữ nháp cũ. Đang làm S3 bàn soạn dàn ý; S3–S7 và kiểm build/DB/trình duyệt/F2/F3/F4/F9/F19/F21 cùng các suite bắt buộc chưa nghiệm thu. Báo cáo: qa/rebuild-2026-10-28/editor-structure/BAO_CAO.md. Không tích hợp hoặc build đè bản 3117 (LOCK=USER); không DB chính/provider thật/schema mới. Không báo hoàn tất.

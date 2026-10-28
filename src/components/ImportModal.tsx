@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable @next/next/no-img-element -- Browser-only preview of a teacher-selected data URL. */
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Question, Subject, Passage } from '@/types/exam';
@@ -6,26 +7,24 @@ import { getCatalogSubjects } from '@/lib/education-catalog';
 import { parseExTestLatex, parseRawVietnameseDocument } from '@/lib/exam-parser';
 import { MathRenderer } from './MathRenderer';
 import { ImportQuestionEditor, importAnswerMissing } from './ImportQuestionEditor';
+import { suggestImportedParts, type ImportedPart } from '@/lib/import-outline';
 import { withImportSources } from '@/lib/import-source';
 import { accountFetch } from '@/lib/account-fetch';
 import { isAccountFailure, RequestGate } from '@/lib/template-request-context';
-import { 
-  X, 
-  FileText, 
-  Sparkles, 
-  Code, 
-  Upload, 
-  Check, 
-  AlertCircle, 
+import {
+  X,
+  FileText,
+  Sparkles,
+  Code,
+  Upload,
+  AlertCircle,
   RefreshCw,
   Plus,
   Image as ImageIcon,
-  FileCode,
   Trash2,
-  ZoomIn,
   CheckCircle2,
   Eye,
-  Layers
+  Layers,
 } from 'lucide-react';
 
 interface ImportModalProps {
@@ -33,14 +32,20 @@ interface ImportModalProps {
   documentId?: string;
   isOpen: boolean;
   onClose: () => void;
-  onImportQuestions: (questions: Question[], context: { subject: Subject; grade: number; passages?: Passage[] }) => void;
+  onImportQuestions: (
+    questions: Question[],
+    context: { subject: Subject; grade: number; passages?: Passage[]; parts?: ImportedPart[] },
+  ) => void | boolean | Promise<void | boolean>;
   context?: { subject: Subject; grade: number };
   apiKey: string;
+  allowParts?: boolean;
 }
 
 type ImportSourceType = 'image' | 'word' | 'text' | 'latex';
 
-export const ImportModal: React.FC<ImportModalProps> = props => <ImportModalContent key={`${props.ownerId}:${props.documentId ?? 'new'}`} {...props} />;
+export const ImportModal: React.FC<ImportModalProps> = (props) => (
+  <ImportModalContent key={`${props.ownerId}:${props.documentId ?? 'new'}`} {...props} />
+);
 const ImportModalContent: React.FC<ImportModalProps> = ({
   ownerId,
   documentId,
@@ -49,15 +54,16 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
   onImportQuestions,
   apiKey,
   context,
+  allowParts = true,
 }) => {
   const [importGrade, setImportGrade] = useState(context?.grade ?? 0);
   const [importSubject, setImportSubject] = useState<Subject | ''>(context?.subject ?? '');
   const [sourceType, setSourceType] = useState<ImportSourceType>('image');
-  
+
   // State cho ảnh
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [imageFileName, setImageFileName] = useState<string>('');
-  
+
   // State cho Word & Text & LaTeX
   const [rawText, setRawText] = useState('');
   const [textFileName, setTextFileName] = useState('');
@@ -67,11 +73,14 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
   // State kết quả bóc tách
   const [parsedQuestions, setParsedQuestions] = useState<Question[]>([]);
   const [editingQuestion, setEditingQuestion] = useState<string | null>(null);
+  const [suggestedParts, setSuggestedParts] = useState<ImportedPart[]>([]);
+  const [createParts, setCreateParts] = useState(false);
   const [parsedPassages, setParsedPassages] = useState<Passage[]>([]);
   const [importWarnings, setImportWarnings] = useState<string[]>([]);
   const parseRequest = useRef(0);
   const requestGate = useRef<RequestGate | null>(null);
-  const imageRead = useRef(0), textRead = useRef(0);
+  const imageRead = useRef(0),
+    textRead = useRef(0);
   const readContext = useRef(0);
   const [accountLocked, setAccountLocked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -80,22 +89,63 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const wordInputRef = useRef<HTMLInputElement>(null);
-  const [previousInput, setPreviousInput] = useState({ sourceType, rawText, selectedImage, wordFile, isOpen });
-  if (previousInput.sourceType !== sourceType || previousInput.rawText !== rawText || previousInput.selectedImage !== selectedImage || previousInput.wordFile !== wordFile || previousInput.isOpen !== isOpen) {
+  const [previousInput, setPreviousInput] = useState({
+    sourceType,
+    rawText,
+    selectedImage,
+    wordFile,
+    isOpen,
+  });
+  if (
+    previousInput.sourceType !== sourceType ||
+    previousInput.rawText !== rawText ||
+    previousInput.selectedImage !== selectedImage ||
+    previousInput.wordFile !== wordFile ||
+    previousInput.isOpen !== isOpen
+  ) {
     setPreviousInput({ sourceType, rawText, selectedImage, wordFile, isOpen });
-    setParsedQuestions([]); setParsedPassages([]); setImportWarnings([]); setEditingQuestion(null);
-    setStatusMessage(null); setErrorMessage(null); setIsLoading(false);
+    setParsedQuestions([]);
+    setParsedPassages([]);
+    setSuggestedParts([]);
+    setCreateParts(false);
+    setImportWarnings([]);
+    setEditingQuestion(null);
+    setStatusMessage(null);
+    setErrorMessage(null);
+    setIsLoading(false);
   }
   useEffect(() => {
-    const gate = new RequestGate(); requestGate.current = gate;
+    const gate = new RequestGate();
+    requestGate.current = gate;
     parseRequest.current += 1;
-    return () => { gate.dispose(); parseRequest.current++; };
+    return () => {
+      gate.dispose();
+      parseRequest.current++;
+    };
   }, [sourceType, rawText, selectedImage, wordFile, isOpen]);
-  useEffect(() => () => { readContext.current++; imageRead.current++; textRead.current++; }, [isOpen, sourceType]);
+  useEffect(
+    () => () => {
+      readContext.current++;
+      imageRead.current++;
+      textRead.current++;
+    },
+    [isOpen, sourceType],
+  );
 
   if (!isOpen) return null;
-  const handleClose = () => { requestGate.current?.dispose(); parseRequest.current++; imageRead.current++; textRead.current++; onClose(); };
-  const cancelParsing = () => { requestGate.current?.cancel(); parseRequest.current++; setIsLoading(false); setStatusMessage('Đã hủy yêu cầu. Chưa thêm câu hỏi nào vào đề.'); };
+  const handleClose = () => {
+    requestGate.current?.dispose();
+    parseRequest.current++;
+    imageRead.current++;
+    textRead.current++;
+    onClose();
+  };
+  const cancelParsing = () => {
+    requestGate.current?.cancel();
+    parseRequest.current++;
+    setIsLoading(false);
+    setStatusMessage('Đã hủy yêu cầu. Chưa thêm câu hỏi nào vào đề.');
+  };
 
   // Xử lý chọn ảnh
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -108,7 +158,8 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
     setStatusMessage(null);
 
     const reader = new FileReader();
-    const readId = ++imageRead.current, contextId = readContext.current;
+    const readId = ++imageRead.current,
+      contextId = readContext.current;
     reader.onload = (event) => {
       if (readId !== imageRead.current || contextId !== readContext.current) return;
       setSelectedImage(event.target?.result as string);
@@ -135,7 +186,8 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
 
     const reader = new FileReader();
     setRawText('');
-    const readId = ++textRead.current, contextId = readContext.current;
+    const readId = ++textRead.current,
+      contextId = readContext.current;
     reader.onload = (event) => {
       if (readId !== textRead.current || contextId !== readContext.current) return;
       const content = event.target?.result as string;
@@ -152,7 +204,8 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
   // Bắt đầu quá trình bóc tách
   const handleStartParsing = async () => {
     if (accountLocked) return;
-    const gate = requestGate.current, token = gate?.begin();
+    const gate = requestGate.current,
+      token = gate?.begin();
     if (!gate || !token) return;
     const requestId = ++parseRequest.current;
     setIsLoading(true);
@@ -163,8 +216,12 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
       const res = await accountFetch(ownerId, url, { ...init, signal: token.signal });
       const data = await res.json();
       if (token.isLive() && isAccountFailure(res.status, data)) {
-        gate.lock(); setAccountLocked(true); setIsLoading(false);
-        setErrorMessage('Phiên hoặc tài khoản đã thay đổi. Nguồn đang nhập vẫn giữ; hãy tải lại trang bằng đúng tài khoản.');
+        gate.lock();
+        setAccountLocked(true);
+        setIsLoading(false);
+        setErrorMessage(
+          'Phiên hoặc tài khoản đã thay đổi. Nguồn đang nhập vẫn giữ; hãy tải lại trang bằng đúng tài khoản.',
+        );
       }
       return { res, data };
     };
@@ -190,6 +247,8 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
         if (!token.isLive() || requestId !== parseRequest.current) return;
         if (res.ok && data.success && Array.isArray(data.questions)) {
           setParsedQuestions(data.questions);
+          setSuggestedParts(data.suggestedParts ?? []);
+          setCreateParts(false);
           setParsedPassages(data.passages ?? []);
           setImportWarnings(data.warnings ?? []);
           setStatusMessage(`AI Vision đã nhận diện thành công ${data.questions.length} câu hỏi từ ảnh chụp!`);
@@ -215,6 +274,8 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
         if (!token.isLive() || requestId !== parseRequest.current) return;
         if (res.ok && data.success && Array.isArray(data.questions)) {
           setParsedQuestions(data.questions);
+          setSuggestedParts(data.suggestedParts ?? []);
+          setCreateParts(false);
           setParsedPassages(data.passages ?? []);
           setImportWarnings(data.warnings ?? []);
           setStatusMessage(`Đã bóc tách thành công ${data.questions.length} câu hỏi từ file Word!`);
@@ -256,19 +317,31 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
         if (!token.isLive() || requestId !== parseRequest.current) return;
         if (res.ok && data.success && Array.isArray(data.questions)) {
           setParsedQuestions(data.questions);
+          setSuggestedParts(data.suggestedParts ?? []);
+          setCreateParts(false);
           setParsedPassages(data.passages ?? []);
           setImportWarnings(data.warnings ?? []);
-          setStatusMessage(`AI đã chuyển đổi thành công ${data.questions.length} câu hỏi có công thức KaTeX!`);
+          setStatusMessage(
+            `AI đã chuyển đổi thành công ${data.questions.length} câu hỏi có công thức KaTeX!`,
+          );
         } else {
-          setErrorMessage(data.error || 'AI chưa đọc được tài liệu. Kết quả bên dưới chỉ là tách văn bản cơ bản, cần kiểm tra lại.');
+          setErrorMessage(
+            data.error ||
+              'AI chưa đọc được tài liệu. Kết quả bên dưới chỉ là tách văn bản cơ bản, cần kiểm tra lại.',
+          );
           const fallback = parseRawVietnameseDocument(rawText);
           setParsedQuestions(withImportSources(fallback.questions, 'Văn bản nhập', textFileName));
           setParsedPassages(fallback.passages);
-          setStatusMessage(`Bóc tách cơ bản ${fallback.questions.length} câu hỏi${fallback.passages.length ? ' và 1 ngữ liệu dùng chung' : ''} theo mẫu tiếng Việt.`);
+          setSuggestedParts(fallback.suggestedParts ?? suggestImportedParts(rawText, fallback.questions));
+          setCreateParts(false);
+          setStatusMessage(
+            `Bóc tách cơ bản ${fallback.questions.length} câu hỏi${fallback.passages.length ? ' và 1 ngữ liệu dùng chung' : ''} theo mẫu tiếng Việt.`,
+          );
         }
       }
     } catch (err: unknown) {
-      if (token.isLive() && requestId === parseRequest.current) setErrorMessage(err instanceof Error ? err.message : 'Chưa đọc được tài liệu.');
+      if (token.isLive() && requestId === parseRequest.current)
+        setErrorMessage(err instanceof Error ? err.message : 'Chưa đọc được tài liệu.');
     } finally {
       if (token.isLive() && requestId === parseRequest.current) setIsLoading(false);
       token.release();
@@ -278,71 +351,175 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
   // Xóa bớt một câu hỏi khỏi danh sách xem trước
   const handleDeleteQuestion = (id: string) => {
     if (requestGate.current?.busy) return;
-    setParsedQuestions(prev => prev.filter(q => q.id !== id));
+    setParsedQuestions((prev) => prev.filter((q) => q.id !== id));
   };
 
   // Thêm tất cả vào đề thi hiện tại
   const handleConfirmImport = async () => {
     if (accountLocked) return;
-    if (!importGrade || !importSubject || !getCatalogSubjects(importGrade).some(s => s.key === importSubject)) {
-      setErrorMessage('Hãy chọn môn và lớp của tài liệu trước khi đưa câu hỏi vào đề.'); return;
+    if (
+      !importGrade ||
+      !importSubject ||
+      !getCatalogSubjects(importGrade).some((s) => s.key === importSubject)
+    ) {
+      setErrorMessage('Hãy chọn môn và lớp của tài liệu trước khi đưa câu hỏi vào đề.');
+      return;
     }
     if (parsedQuestions.length > 0) {
-      const gate = requestGate.current, token = gate?.begin();
+      const gate = requestGate.current,
+        token = gate?.begin();
       if (!gate || !token) return;
       setIsLoading(true);
       try {
-      const response = await accountFetch(ownerId, '/api/auth/me', { signal: token.signal, cache: 'no-store' });
-      const data = await response.json();
-      if (!token.isLive()) return;
-      if (!response.ok || data.user?.id !== ownerId) {
-        gate.lock(); setAccountLocked(true); setIsLoading(false);
-        setErrorMessage('Chưa xác nhận đúng tài khoản để nhập câu hỏi. Nguồn và bản xem trước được giữ; hãy tải lại trang bằng đúng tài khoản.'); return;
+        const response = await accountFetch(ownerId, '/api/auth/me', {
+          signal: token.signal,
+          cache: 'no-store',
+        });
+        const data = await response.json();
+        if (!token.isLive()) return;
+        if (!response.ok || data.user?.id !== ownerId) {
+          gate.lock();
+          setAccountLocked(true);
+          setIsLoading(false);
+          setErrorMessage(
+            'Chưa xác nhận đúng tài khoản để nhập câu hỏi. Nguồn và bản xem trước được giữ; hãy tải lại trang bằng đúng tài khoản.',
+          );
+          return;
+        }
+        const remap = new Map(parsedQuestions.map((q) => [q.id, 'q_' + crypto.randomUUID()]));
+        const questions: Question[] = parsedQuestions.map((q) => ({
+          ...q,
+          id: remap.get(q.id)!,
+          subject: importSubject,
+          grade: importGrade,
+          status: 'draft',
+          verifiedBy: 'none',
+        }));
+        const parts =
+          createParts && allowParts
+            ? suggestedParts.map((p) => ({
+                ...p,
+                questionIds: p.questionIds.filter((id) => remap.has(id)).map((id) => remap.get(id)!),
+              }))
+            : undefined;
+        const applied = await onImportQuestions(questions, {
+          subject: importSubject,
+          grade: importGrade,
+          passages: parsedPassages.filter((p) => parsedQuestions.some((q) => q.passageId === p.id)),
+          parts,
+        });
+        if (!token.isLive()) return;
+        if (applied === false) throw Error('Chưa thêm được câu. Nguồn và bản xem trước vẫn được giữ.');
+        setParsedQuestions([]);
+        handleClose();
+      } catch (error) {
+        if (token.isLive())
+          setErrorMessage(
+            error instanceof Error ? error.message : 'Chưa xác nhận được tài khoản; bản xem trước vẫn giữ.',
+          );
+      } finally {
+        if (token.isLive()) setIsLoading(false);
+        token.release();
       }
-      onImportQuestions(parsedQuestions.map(q => ({ ...q, id: `q_${crypto.randomUUID()}`, subject: importSubject, grade: importGrade, status: 'draft', verifiedBy: 'none' })), { subject: importSubject, grade: importGrade, passages: parsedPassages.filter(p => parsedQuestions.some(q => q.passageId === p.id)) });
-      setParsedQuestions([]);
-      handleClose();
-      } catch (error) { if (token.isLive()) setErrorMessage(error instanceof Error ? error.message : 'Chưa xác nhận được tài khoản; bản xem trước vẫn giữ.'); }
-      finally { if (token.isLive()) setIsLoading(false); token.release(); }
     }
   };
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5">
-      <div className="app-dialog bg-white dark:bg-[#202124] rounded-2xl max-w-6xl w-full p-5 sm:p-6 shadow-xs border border-[#dadce0] dark:border-[#3c4043] relative max-h-[92vh] flex flex-col text-[#202124] dark:text-[#e3e3e3] animate-in fade-in zoom-in-95 duration-150">
+      <div
+        className={
+          'app-dialog bg-white dark:bg-[#202124] rounded-2xl max-w-6xl w-full p-5 sm:p-6 shadow-xs border border-[#dadce0] ' +
+          'dark:border-[#3c4043] relative max-h-[92vh] flex flex-col text-[#202124] dark:text-[#e3e3e3] animate-in fade-in ' +
+          'zoom-in-95 duration-150'
+        }
+      >
         {/* Header */}
         <div className="app-dialog-header flex items-center justify-between pb-3 border-b border-[#dadce0] dark:border-[#3c4043]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043] flex items-center justify-center shadow-xs">
+            <div
+              className={
+                'w-10 h-10 rounded-xl bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] ' +
+                'dark:border-[#3c4043] flex items-center justify-center shadow-xs'
+              }
+            >
               <Upload className="w-5 h-5 text-[#3c4043] dark:text-[#e3e3e3]" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-bold text-[#202124] dark:text-[#e3e3e3] text-lg">Phòng Số Hóa & Bóc Tách Đề Thi (AI Ingestion Studio)</h3>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043]">
+                <h3 className="font-bold text-[#202124] dark:text-[#e3e3e3] text-lg">
+                  Phòng Số Hóa & Bóc Tách Đề Thi (AI Ingestion Studio)
+                </h3>
+                <span
+                  className={
+                    'px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] ' +
+                    'border border-[#dadce0] dark:border-[#3c4043]'
+                  }
+                >
                   Multimodal OCR + Word
                 </span>
               </div>
-              <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">Chuyển đổi ảnh chụp, file Word .docx hoặc văn bản thô thành câu hỏi KaTeX chuẩn mực</p>
+              <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">
+                Chuyển đổi ảnh chụp, file Word .docx hoặc văn bản thô thành câu hỏi KaTeX chuẩn mực
+              </p>
             </div>
           </div>
 
-          <button aria-label="Đóng hộp thoại"
+          <button
+            aria-label="Đóng hộp thoại"
             onClick={handleClose}
-            className="p-1.5 text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] rounded-lg hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
+            className={
+              'p-1.5 text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] rounded-lg hover:bg-[#f1f3f4] ' +
+              'dark:hover:bg-[#292a2d] transition-colors cursor-pointer'
+            }
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         <div className="flex flex-wrap gap-3 py-2 text-sm">
-          <label>Lớp của tài liệu <select aria-label="Lớp tài liệu nhập" disabled={isLoading || accountLocked} className="border rounded p-2 bg-transparent" value={importGrade} onChange={e => { setImportGrade(Number(e.target.value)); setImportSubject(''); }}><option value={0}>Chọn lớp</option>{Array.from({ length: 12 }, (_, i) => <option key={i + 1} value={i + 1}>Lớp {i + 1}</option>)}</select></label>
-          <label>Môn <select aria-label="Môn tài liệu nhập" disabled={isLoading || accountLocked} className="border rounded p-2 bg-transparent" value={importSubject} onChange={e => setImportSubject(e.target.value as Subject)}><option value="">Chọn môn</option>{getCatalogSubjects(importGrade || undefined).map(s => <option key={s.key} value={s.key}>{s.label}</option>)}</select></label>
+          <label>
+            Lớp của tài liệu{' '}
+            <select
+              aria-label="Lớp tài liệu nhập"
+              disabled={isLoading || accountLocked}
+              className="border rounded p-2 bg-transparent"
+              value={importGrade}
+              onChange={(e) => {
+                setImportGrade(Number(e.target.value));
+                setImportSubject('');
+              }}
+            >
+              <option value={0}>Chọn lớp</option>
+              {Array.from({ length: 12 }, (_, i) => (
+                <option key={i + 1} value={i + 1}>
+                  Lớp {i + 1}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Môn{' '}
+            <select
+              aria-label="Môn tài liệu nhập"
+              disabled={isLoading || accountLocked}
+              className="border rounded p-2 bg-transparent"
+              value={importSubject}
+              onChange={(e) => setImportSubject(e.target.value as Subject)}
+            >
+              <option value="">Chọn môn</option>
+              {getCatalogSubjects(importGrade || undefined).map((s) => (
+                <option key={s.key} value={s.key}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
         {/* Thanh chọn 4 định dạng nguồn (Tabs) */}
         <div className="flex flex-wrap items-center gap-2 pt-3 pb-2 border-b border-[#dadce0] dark:border-[#3c4043]">
           <button
-            disabled={isLoading || accountLocked} onClick={() => setSourceType('image')}
+            disabled={isLoading || accountLocked}
+            onClick={() => setSourceType('image')}
             className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
               sourceType === 'image'
                 ? 'app-button-tonal'
@@ -354,7 +531,8 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
           </button>
 
           <button
-            disabled={isLoading || accountLocked} onClick={() => setSourceType('word')}
+            disabled={isLoading || accountLocked}
+            onClick={() => setSourceType('word')}
             className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
               sourceType === 'word'
                 ? 'app-button-tonal'
@@ -366,7 +544,8 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
           </button>
 
           <button
-            disabled={isLoading || accountLocked} onClick={() => setSourceType('text')}
+            disabled={isLoading || accountLocked}
+            onClick={() => setSourceType('text')}
             className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
               sourceType === 'text'
                 ? 'app-button-tonal'
@@ -378,7 +557,8 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
           </button>
 
           <button
-            disabled={isLoading || accountLocked} onClick={() => setSourceType('latex')}
+            disabled={isLoading || accountLocked}
+            onClick={() => setSourceType('latex')}
             className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
               sourceType === 'latex'
                 ? 'app-button-tonal'
@@ -431,16 +611,26 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
                         alt="Ảnh đề thi"
                         className="max-h-72 w-auto object-contain rounded-xl border border-[#dadce0] dark:border-[#3c4043] shadow-xs"
                       />
-                      <span className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] mt-2 truncate max-w-xs">{imageFileName}</span>
+                      <span className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] mt-2 truncate max-w-xs">
+                        {imageFileName}
+                      </span>
                     </div>
                   ) : (
                     <div
                       onClick={() => fileInputRef.current?.click()}
-                      className="h-full border-2 border-dashed border-[#dadce0] dark:border-[#3c4043] hover:border-[#3c4043] dark:hover:border-[#e3e3e3] rounded-xl flex flex-col items-center justify-center p-6 text-center cursor-pointer transition-all hover:bg-[#f1f3f4]/30 dark:hover:bg-[#292a2d]/40"
+                      className={
+                        'h-full border-2 border-dashed border-[#dadce0] dark:border-[#3c4043] hover:border-[#3c4043] dark:hover:border-[#e3e3e3] ' +
+                        'rounded-xl flex flex-col items-center justify-center p-6 text-center cursor-pointer transition-all hover:bg-[#f1f3f4]/30 ' +
+                        'dark:hover:bg-[#292a2d]/40'
+                      }
                     >
                       <ImageIcon className="w-12 h-12 text-[#5f6368] dark:text-[#9aa0a6] mb-2 opacity-50" />
-                      <p className="font-bold text-sm text-[#202124] dark:text-[#e3e3e3]">Kéo thả hoặc nhấp để tải ảnh đề thi</p>
-                      <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] mt-1">Hỗ trợ ảnh PNG, JPG, JPEG, WebP (Rõ nét công thức)</p>
+                      <p className="font-bold text-sm text-[#202124] dark:text-[#e3e3e3]">
+                        Kéo thả hoặc nhấp để tải ảnh đề thi
+                      </p>
+                      <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] mt-1">
+                        Hỗ trợ ảnh PNG, JPG, JPEG, WebP (Rõ nét công thức)
+                      </p>
                     </div>
                   )}
                   <input
@@ -460,19 +650,34 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
                     <div className="h-full flex flex-col items-center justify-center p-6 bg-white dark:bg-[#292a2d] rounded-xl border border-[#dadce0] dark:border-[#3c4043]">
                       <FileText className="w-14 h-14 text-[#3c4043] dark:text-[#e3e3e3] mb-2" />
                       <p className="font-bold text-sm text-[#202124] dark:text-[#e3e3e3]">{wordFileName}</p>
-                      <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] mt-1">Kích thước: {(wordFile.size / 1024).toFixed(1)} KB</p>
-                      <span className="mt-3 px-3 py-1 rounded-full text-xs font-medium bg-[#e6f4ea] dark:bg-[#0f291e] text-[#137333] dark:text-[#5bb98c] border border-[#ceead6] dark:border-[#1d4834]">
+                      <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] mt-1">
+                        Kích thước: {(wordFile.size / 1024).toFixed(1)} KB
+                      </p>
+                      <span
+                        className={
+                          'mt-3 px-3 py-1 rounded-full text-xs font-medium bg-[#e6f4ea] dark:bg-[#0f291e] text-[#137333] dark:text-[#5bb98c] border ' +
+                          'border-[#ceead6] dark:border-[#1d4834]'
+                        }
+                      >
                         Sẵn sàng bóc tách bằng mammoth
                       </span>
                     </div>
                   ) : (
                     <div
                       onClick={() => wordInputRef.current?.click()}
-                      className="h-full border-2 border-dashed border-[#dadce0] dark:border-[#3c4043] hover:border-[#3c4043] dark:hover:border-[#e3e3e3] rounded-xl flex flex-col items-center justify-center p-6 text-center cursor-pointer transition-all hover:bg-[#f1f3f4]/30 dark:hover:bg-[#292a2d]/40"
+                      className={
+                        'h-full border-2 border-dashed border-[#dadce0] dark:border-[#3c4043] hover:border-[#3c4043] dark:hover:border-[#e3e3e3] ' +
+                        'rounded-xl flex flex-col items-center justify-center p-6 text-center cursor-pointer transition-all hover:bg-[#f1f3f4]/30 ' +
+                        'dark:hover:bg-[#292a2d]/40'
+                      }
                     >
                       <FileText className="w-12 h-12 text-[#5f6368] dark:text-[#9aa0a6] mb-2 opacity-50" />
-                      <p className="font-bold text-sm text-[#202124] dark:text-[#e3e3e3]">Tải lên file đề thi Word (.docx)</p>
-                      <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] mt-1">Tự động nhận diện câu hỏi, bảng biểu và phương án A-B-C-D</p>
+                      <p className="font-bold text-sm text-[#202124] dark:text-[#e3e3e3]">
+                        Tải lên file đề thi Word (.docx)
+                      </p>
+                      <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] mt-1">
+                        Tự động nhận diện câu hỏi, bảng biểu và phương án A-B-C-D
+                      </p>
                     </div>
                   )}
                   <input
@@ -490,19 +695,33 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
                 <div className="h-full flex flex-col">
                   <textarea
                     value={rawText}
-                    onChange={(e) => { textRead.current++; setRawText(e.target.value); }}
+                    onChange={(e) => {
+                      textRead.current++;
+                      setRawText(e.target.value);
+                    }}
                     placeholder={
                       sourceType === 'latex'
-                        ? 'Dán mã LaTeX câu hỏi EX_Test tại đây:\n\\begin{ex}%[2D1B1-1]\nCho hàm số y = f(x)...\n\\choice\n{Đáp án A}\n{\\True Đáp án B}\n{Đáp án C}\n{Đáp án D}\n\\loigiai{...}\n\\end{ex}'
-                        : 'Dán đoạn văn bản đề thi thô tại đây (copy từ Word, PDF, Web):\nCâu 1: Cho hàm số y = (2x+1)/(x-1). Đạo hàm là:\nA. y\' = -3/(x-1)^2\nB. y\' = 1\nC. ...\n\nCâu 2: ...'
+                        ? 'Dán mã LaTeX câu hỏi EX_Test tại đây:\n\\begin{ex}%[2D1B1-1]\nCho hàm số y = f(x)...\n\\choice\n{Đáp án A}\n{\\True Đáp án ' +
+                          'B}\n{Đáp án C}\n{Đáp án D}\n\\loigiai{...}\n\\end{ex}'
+                        : "Dán đoạn văn bản đề thi thô tại đây (copy từ Word, PDF, Web):\nCâu 1: Cho hàm số y = (2x+1)/(x-1). Đạo hàm là:\nA. y' = " +
+                          "-3/(x-1)^2\nB. y' = 1\nC. ...\n\nCâu 2: ..."
                     }
-                    className="w-full grow text-xs p-3 border border-[#dadce0] dark:border-[#3c4043] rounded-xl focus:border-[#3c4043] dark:focus:border-[#e3e3e3] focus:ring-1 focus:ring-[#3c4043] dark:focus:ring-[#e3e3e3] outline-hidden font-mono leading-relaxed resize-none bg-white dark:bg-[#292a2d] text-[#202124] dark:text-[#e3e3e3]"
+                    className={
+                      'w-full grow text-xs p-3 border border-[#dadce0] dark:border-[#3c4043] rounded-xl focus:border-[#3c4043] ' +
+                      'dark:focus:border-[#e3e3e3] focus:ring-1 focus:ring-[#3c4043] dark:focus:ring-[#e3e3e3] outline-hidden font-mono ' +
+                      'leading-relaxed resize-none bg-white dark:bg-[#292a2d] text-[#202124] dark:text-[#e3e3e3]'
+                    }
                   />
                   <div className="flex justify-between items-center text-[11px] text-[#5f6368] dark:text-[#9aa0a6] pt-2">
                     <span>{rawText.length} ký tự</span>
                     <label className="cursor-pointer text-[#3c4043] dark:text-[#e3e3e3] hover:underline">
                       Tải file .txt / .tex
-                      <input type="file" accept=".txt,.tex,.md" onChange={handleTextFileSelect} className="hidden" />
+                      <input
+                        type="file"
+                        accept=".txt,.tex,.md"
+                        onChange={handleTextFileSelect}
+                        className="hidden"
+                      />
                     </label>
                   </div>
                 </div>
@@ -514,7 +733,10 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
               <button
                 onClick={handleStartParsing}
                 disabled={isLoading || accountLocked}
-                className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-white app-button-primary dark:bg-[#e3e3e3] dark:hover:bg-[#f1f3f4] dark:text-[#202124] rounded-lg shadow-xs transition-all cursor-pointer disabled:opacity-50"
+                className={
+                  'flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-white app-button-primary dark:bg-[#e3e3e3] ' +
+                  'dark:hover:bg-[#f1f3f4] dark:text-[#202124] rounded-lg shadow-xs transition-all cursor-pointer disabled:opacity-50'
+                }
               >
                 {isLoading ? (
                   <>
@@ -551,37 +773,102 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
 
             {/* Thông báo trạng thái hoặc lỗi */}
             {statusMessage && (
-              <div className="mt-2 p-2.5 bg-[#e6f4ea] dark:bg-[#0f291e] border border-[#ceead6] dark:border-[#1d4834] text-[#137333] dark:text-[#5bb98c] rounded-xl text-xs flex items-center gap-2">
+              <div
+                className={
+                  'mt-2 p-2.5 bg-[#e6f4ea] dark:bg-[#0f291e] border border-[#ceead6] dark:border-[#1d4834] text-[#137333] ' +
+                  'dark:text-[#5bb98c] rounded-xl text-xs flex items-center gap-2'
+                }
+              >
                 <CheckCircle2 className="w-4 h-4 text-[#137333] dark:text-[#5bb98c] shrink-0" />
                 <span>{statusMessage}</span>
               </div>
             )}
             {(errorMessage || accountLocked) && (
-              <div className="mt-2 p-2.5 bg-[#fce8e6] dark:bg-[#371918] border border-[#fad2cf] dark:border-[#5c2523] text-[#c5221f] dark:text-[#f28b82] rounded-xl text-xs flex items-center gap-2">
+              <div
+                className={
+                  'mt-2 p-2.5 bg-[#fce8e6] dark:bg-[#371918] border border-[#fad2cf] dark:border-[#5c2523] text-[#c5221f] ' +
+                  'dark:text-[#f28b82] rounded-xl text-xs flex items-center gap-2'
+                }
+              >
                 <AlertCircle className="w-4 h-4 text-[#c5221f] dark:text-[#f28b82] shrink-0" />
-                <span>{errorMessage || 'Phiên hoặc tài khoản đã thay đổi; nguồn và bản xem trước vẫn giữ. Hãy tải lại trang bằng đúng tài khoản.'}</span>
+                <span>
+                  {errorMessage ||
+                    'Phiên hoặc tài khoản đã thay đổi; nguồn và bản xem trước vẫn giữ. Hãy tải lại trang bằng đúng tài khoản.'}
+                </span>
               </div>
             )}
 
-            {importWarnings.length > 0 && <div role="note" className="text-xs border border-amber-400 rounded p-2 my-2"><p className="font-semibold">Cần đối chiếu tài liệu gốc</p>{importWarnings.map((warning, i) => <p key={i}>{warning}</p>)}</div>}
-            {parsedPassages.length > 0 && <details className="my-2 text-sm"><summary>Ngữ liệu dùng chung ({parsedPassages.length})</summary>{parsedPassages.map(p => <div key={p.id} className="border rounded p-2 my-2"><strong>{p.title}</strong><p className="whitespace-pre-wrap">{p.content}</p></div>)}</details>}
+            {importWarnings.length > 0 && (
+              <div role="note" className="text-xs border border-amber-400 rounded p-2 my-2">
+                <p className="font-semibold">Cần đối chiếu tài liệu gốc</p>
+                {importWarnings.map((warning, i) => (
+                  <p key={i}>{warning}</p>
+                ))}
+              </div>
+            )}
+            {suggestedParts.length > 0 && (
+              <section className="my-2 rounded border p-3 text-sm space-y-2">
+                <p>
+                  Tài liệu có {suggestedParts.length} phần: {suggestedParts.map((p) => p.title).join(' · ')}
+                </p>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={createParts}
+                    disabled={!allowParts}
+                    onChange={(event) => setCreateParts(event.target.checked)}
+                  />
+                  Tạo các phần tương ứng khi thêm câu
+                </label>
+                {!allowParts && (
+                  <p>
+                    Chọn vị trí ngoài các phần để nhập cả cấu trúc. Hiện tại chỉ thêm câu vào vị trí đã chọn.
+                  </p>
+                )}
+              </section>
+            )}
+            {parsedPassages.length > 0 && (
+              <details className="my-2 text-sm">
+                <summary>Ngữ liệu dùng chung ({parsedPassages.length})</summary>
+                {parsedPassages.map((p) => (
+                  <div key={p.id} className="border rounded p-2 my-2">
+                    <strong>{p.title}</strong>
+                    <p className="whitespace-pre-wrap">{p.content}</p>
+                  </div>
+                ))}
+              </details>
+            )}
             {/* Danh sách thẻ câu hỏi */}
             <div className="grow overflow-y-auto py-2 space-y-2.5 pr-1">
               {parsedQuestions.map((q, idx) => (
                 <div
                   key={q.id || idx}
                   data-testid="import-preview-question"
-                  className="p-3 bg-white dark:bg-[#292a2d] rounded-xl border border-[#dadce0] dark:border-[#3c4043] hover:border-[#3c4043] dark:hover:border-[#e3e3e3] shadow-xs transition-all space-y-2 relative group"
+                  className={
+                    'p-3 bg-white dark:bg-[#292a2d] rounded-xl border border-[#dadce0] dark:border-[#3c4043] hover:border-[#3c4043] ' +
+                    'dark:hover:border-[#e3e3e3] shadow-xs transition-all space-y-2 relative group'
+                  }
                 >
                   <div className="flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-[#3c4043] dark:text-[#e3e3e3]">Câu {idx + 1}</span>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-[#f1f3f4] dark:bg-[#202124] text-[#5f6368] dark:text-[#9aa0a6] border border-[#dadce0] dark:border-[#3c4043]">
+                      <span
+                        className={
+                          'px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-[#f1f3f4] dark:bg-[#202124] text-[#5f6368] ' +
+                          'dark:text-[#9aa0a6] border border-[#dadce0] dark:border-[#3c4043]'
+                        }
+                      >
                         {q.type}
                       </span>
                     </div>
 
-                    <button type="button" disabled={isLoading || accountLocked} onClick={() => setEditingQuestion(editingQuestion === q.id ? null : q.id)}>{editingQuestion === q.id ? 'Xong' : 'Sửa'}</button>
+                    <button
+                      type="button"
+                      disabled={isLoading || accountLocked}
+                      onClick={() => setEditingQuestion(editingQuestion === q.id ? null : q.id)}
+                    >
+                      {editingQuestion === q.id ? 'Xong' : 'Sửa'}
+                    </button>
                     <button
                       onClick={() => handleDeleteQuestion(q.id)}
                       title="Xóa câu này"
@@ -591,8 +878,22 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
                     </button>
                   </div>
 
-                  {importAnswerMissing(q) && <p role="note" className="text-amber-700 dark:text-amber-300 text-xs">Chưa có đáp án — kiểm lại</p>}
-                  {editingQuestion === q.id && <ImportQuestionEditor question={q} disabled={isLoading || accountLocked} onChange={updated => setParsedQuestions(items => items.map(item => item.id === q.id ? updated : item))} />}
+                  {importAnswerMissing(q) && (
+                    <p role="note" className="text-amber-700 dark:text-amber-300 text-xs">
+                      Chưa có đáp án — kiểm lại
+                    </p>
+                  )}
+                  {editingQuestion === q.id && (
+                    <ImportQuestionEditor
+                      question={q}
+                      disabled={isLoading || accountLocked}
+                      onChange={(updated) =>
+                        setParsedQuestions((items) =>
+                          items.map((item) => (item.id === q.id ? updated : item)),
+                        )
+                      }
+                    />
+                  )}
 
                   {/* Nội dung câu hỏi KaTeX */}
                   <div className="text-xs text-[#202124] dark:text-[#e3e3e3] leading-relaxed">
@@ -622,13 +923,18 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
                   {q.sub_questions && q.sub_questions.length > 0 && (
                     <div className="space-y-1.5 pt-1 text-xs">
                       {q.sub_questions.map((sub) => (
-                        <div key={sub.key} className="flex items-baseline gap-2 bg-[#f8f9fa] dark:bg-[#202124] p-2 rounded-xl border border-[#dadce0] dark:border-[#3c4043]">
+                        <div
+                          key={sub.key}
+                          className="flex items-baseline gap-2 bg-[#f8f9fa] dark:bg-[#202124] p-2 rounded-xl border border-[#dadce0] dark:border-[#3c4043]"
+                        >
                           <span className="font-bold">{sub.key})</span>
-                          <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                            sub.isCorrect 
-                              ? 'bg-[#e6f4ea] dark:bg-[#0f291e] text-[#137333] dark:text-[#5bb98c] border border-[#ceead6] dark:border-[#1d4834]' 
-                              : 'bg-[#fce8e6] dark:bg-[#371918] text-[#c5221f] dark:text-[#f28b82] border border-[#fad2cf] dark:border-[#5c2523]'
-                          }`}>
+                          <span
+                            className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                              sub.isCorrect
+                                ? 'bg-[#e6f4ea] dark:bg-[#0f291e] text-[#137333] dark:text-[#5bb98c] border border-[#ceead6] dark:border-[#1d4834]'
+                                : 'bg-[#fce8e6] dark:bg-[#371918] text-[#c5221f] dark:text-[#f28b82] border border-[#fad2cf] dark:border-[#5c2523]'
+                            }`}
+                          >
                             {sub.isCorrect === undefined ? 'CHƯA ĐẶT' : sub.isCorrect ? 'ĐÚNG' : 'SAI'}
                           </span>
                           <MathRenderer content={sub.content} inline />
@@ -650,7 +956,9 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
                 <div className="h-full flex flex-col items-center justify-center p-8 text-center text-[#5f6368] dark:text-[#9aa0a6]">
                   <Layers className="w-10 h-10 text-[#5f6368] dark:text-[#9aa0a6] mb-2 opacity-40" />
                   <p className="text-xs">Chưa có câu hỏi nào được bóc tách.</p>
-                  <p className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] mt-1">Chọn nguồn bên trái và bấm &quot;Bắt đầu phân rã&quot; để xem kết quả tại đây.</p>
+                  <p className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] mt-1">
+                    Chọn nguồn bên trái và bấm &quot;Bắt đầu phân rã&quot; để xem kết quả tại đây.
+                  </p>
                 </div>
               )}
             </div>
@@ -658,11 +966,18 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
         </div>
 
         {/* Footer */}
-        {isLoading && <button type="button" onClick={cancelParsing}>Hủy yêu cầu AI</button>}
+        {isLoading && (
+          <button type="button" onClick={cancelParsing}>
+            Hủy yêu cầu AI
+          </button>
+        )}
         <div className="app-dialog-footer pt-3 border-t border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between">
           <button
-              onClick={handleClose}
-            className="px-4 py-2 text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] rounded-lg transition-colors cursor-pointer"
+            onClick={handleClose}
+            className={
+              'px-4 py-2 text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] rounded-lg ' +
+              'transition-colors cursor-pointer'
+            }
           >
             Đóng
           </button>
@@ -674,7 +989,11 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
               className="flex items-center gap-1.5 px-5 py-2 text-xs font-medium app-button-primary rounded-lg shadow-xs transition-all cursor-pointer"
             >
               <Plus className="w-4 h-4" />
-              <span>{documentId ? `Thêm ${parsedQuestions.length} câu hỏi vào Đề thi hiện tại` : `Tạo đề từ ${parsedQuestions.length} câu hỏi`}</span>
+              <span>
+                {documentId
+                  ? `Thêm ${parsedQuestions.length} câu hỏi vào Đề thi hiện tại`
+                  : `Tạo đề từ ${parsedQuestions.length} câu hỏi`}
+              </span>
             </button>
           )}
         </div>
