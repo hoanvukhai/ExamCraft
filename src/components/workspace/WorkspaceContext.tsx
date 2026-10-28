@@ -60,11 +60,14 @@ export function WorkspaceProvider({ user, children }: { user: WorkspaceUser; chi
   const [folderName, setFolderName] = useState(''), [folderColor, setFolderColor] = useState('#3c4043');
   const [menuExpanded, setMenuState] = useState(true);
   const [copilotOpen, setCopilotState] = useState(false);
+  const copilotRef = useRef(false);
   const setCopilotOpen = useCallback((value: boolean | ((previous: boolean) => boolean)) => {
-    setAssistantOpen(false);
-    setCopilotState(value);
+    const next = typeof value === 'function' ? value(copilotRef.current) : value;
+    copilotRef.current = next;
+    if (next) setAssistantOpen(false);
+    setCopilotState(next);
   }, []);
-  const toggleAssistant = useCallback(() => { setCopilotState(false); setAssistantOpen(open => !open); }, []);
+  const toggleAssistant = useCallback(() => { copilotRef.current = false; setCopilotState(false); setAssistantOpen(open => !open); }, []);
   const closeAssistant = useCallback(() => setAssistantOpen(false), []);
   const [toastMessage, setToastMessage] = useState<{ text: string; kind: 'info' | 'error' } | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
