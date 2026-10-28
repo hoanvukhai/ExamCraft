@@ -9,7 +9,7 @@ type Props = { exam: Exam; onChange: (update: (previous: Exam) => Exam) => void 
 type FormRow = Omit<ExamPlanSlot, 'count' | 'targetPointsHundredths'> & { countText: string; pointsText: string };
 type Form = { header: Omit<ExamPlan, 'slots'>; rows: FormRow[]; baseStamp: string };
 const names: Record<QuestionType, string> = { multiple_choice: 'Lựa chọn', true_false_group: 'Đúng / sai', short_answer: 'Trả lời ngắn', essay: 'Tự luận', fill_blank: 'Điền khuyết', matching: 'Ghép nối', ordering: 'Sắp xếp' };
-const field = 'w-full border rounded p-2 bg-transparent text-sm';
+const field = 'min-w-0 w-full border rounded p-2 bg-transparent text-sm';
 function toForm(plan: ExamPlan, exam: Exam): Form {
   const { slots, ...header } = plan;
   return { header, baseStamp: examPlanContextStamp(exam), rows: slots.map(({ count, targetPointsHundredths, ...slot }) => ({ ...slot, countText: String(count), pointsText: targetPointsHundredths === null ? '' : formatHundredths(targetPointsHundredths) })) };

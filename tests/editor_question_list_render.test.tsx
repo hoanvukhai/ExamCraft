@@ -13,3 +13,21 @@ test('shared passage stays once per group, keeps attribution and does not alter 
   assert.ok(html.indexOf('FIRST_QUESTION') < html.indexOf('SECOND_QUESTION'));
   assert.equal(JSON.stringify(exam), before);
 });
+
+test('section labels and placement controls preserve original IDs, attribution and order; read view has no edit forms', () => {
+  const exam: Exam = { id: 'sections', metadata: { title: 'Test', schoolName: '', departmentName: '', subject: 'toan', grade: 6, durationMinutes: 15 }, createdAt: '', updatedAt: '', sections: [{ id: 's', name: 'SECTION_PRESERVED' }], passages: [{ id: 'p', content: 'PASSAGE_PRESERVED', source: 'SOURCE_PRESERVED' }], questions: [{ id: 'q', type: 'essay', content: 'QUESTION_PRESERVED', difficulty: 'thong_hieu', step_by_step_solution: '', sectionId: 's', passageId: 'p', points: 0 }] };
+  const before = structuredClone(exam);
+  const renderQuestion = (question: Exam['questions'][number]) => <div>{question.content}</div>;
+  const read = renderToStaticMarkup(<EditorQuestionList exam={exam} renderQuestion={renderQuestion} />);
+  assert.ok(read.includes('SECTION_PRESERVED'));
+  assert.ok(read.indexOf('SECTION_PRESERVED') < read.indexOf('QUESTION_PRESERVED'));
+  assert.ok(!read.includes('Sửa nội dung dùng chung'));
+  assert.ok(!read.includes('<select'));
+  const editable = renderToStaticMarkup(<EditorQuestionList exam={exam} onChange={() => { throw Error('Rendering must not write'); }} renderQuestion={renderQuestion} />);
+  assert.ok(editable.includes('Sửa nội dung dùng chung'));
+  assert.ok(editable.includes('Phần của câu 1'));
+  assert.ok(editable.includes('Ngữ liệu của câu 1'));
+  assert.ok(editable.includes('value="s" selected=""'));
+  assert.ok(editable.includes('value="p" selected=""'));
+  assert.deepEqual(exam, before);
+});

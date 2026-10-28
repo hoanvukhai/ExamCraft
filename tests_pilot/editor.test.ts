@@ -11,7 +11,7 @@ import { requireTestDatabase } from '../tests/helpers/test-database';
 import { loginBucket } from '../src/lib/auth-security';
 
 const origin = process.env.EXAMCRAFT_TEST_ORIGIN || 'http://127.0.0.1:3117';
-const report = process.env.EDITOR_REPORT_DIR || 'qa/rebuild-2026-10-28/editor-inline';
+const report = process.env.EDITOR_REPORT_DIR || 'qa/rebuild-2026-10-28/editor-grouping';
 
 test('editor P0-P8: settings recovery review exports and narrow screens', { timeout: 180000 }, async t => {
   const url = requireTestDatabase();
@@ -36,7 +36,7 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
 
     const openFold = async (text: string) => { const summary = page.locator('summary', {hasText:text}).first(); if (!await summary.evaluate(el => (el.parentElement as HTMLDetailsElement).open)) await summary.click(); };
     const poll = async (check: () => Promise<boolean>) => { const end = Date.now() + 15000; while (Date.now() < end) { if (await check()) return; await new Promise(resolve => setTimeout(resolve,100)); } assert.fail('expected saved state'); };
-    await t.test('empty starter, single save entry, BYOK reminder and five settings tabs', async () => {
+    await t.test('empty starter, live info preview, optional requirements and template menu', async () => {
       await page.goto(origin + '/editor/' + examId);
       await page.getByRole('region', { name: 'Thêm nội dung đề', exact: true }).waitFor();
       assert.equal(await page.getByText('Bản nháp chưa lưu trên máy này', { exact: true }).count(), 0);
@@ -58,7 +58,19 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
       await page.getByRole('navigation',{name:'Chuyển vùng soạn',exact:true}).getByRole('button',{name:'Soạn câu',exact:true}).click();
       assert.equal(await settings.getByLabel('Ghi chú cuối đề',{exact:true}).inputValue(),'Ghi chú còn khi đổi thẻ');
       await page.setViewportSize({width:1440,height:1000});
-      for (const label of ['Phần & ngữ liệu','Ma trận','Phạm vi kiến thức','Mẫu','Thông tin']) await settings.getByRole('button', { name: label, exact: true }).click();
+      assert.equal(await settings.getByRole('navigation').count(),0);
+      assert.equal(await settings.getByLabel('Khung mức nhận thức',{exact:true}).count(),0);
+      await settings.getByRole('button',{name:'Đóng thiết lập đề',exact:true}).click();
+      const requirements=page.getByLabel('Yêu cầu ra đề',{exact:true});
+      assert.equal(await requirements.evaluate(el=>(el as HTMLDetailsElement).open),false);
+      await requirements.locator('summary').first().click();
+      await requirements.getByLabel('Khung mức nhận thức',{exact:true}).waitFor();
+      await requirements.locator('summary').first().click();
+      await page.getByRole('button',{name:'Thêm công cụ',exact:true}).filter({visible:true}).click();
+      await page.getByRole('menuitem',{name:'Dùng mẫu / lưu thành mẫu',exact:true}).click();
+      await page.getByRole('region',{name:'Dùng và lưu mẫu đề',exact:true}).waitFor();
+      await page.getByRole('button',{name:'Đóng mẫu',exact:true}).click();
+      await page.getByRole('button',{name:'Thiết lập đề',exact:true}).click();
       assert.equal(await settings.getByLabel('Ghi chú cuối đề', { exact: true }).inputValue(), 'Ghi chú còn khi đổi thẻ');
       await settings.getByRole('button', { name: 'Áp dụng các trường đã sửa', exact: true }).click();
       await poll(async () => JSON.stringify((await db.exam.findUniqueOrThrow({ where: { id: examId } })).metadata).includes('Ghi chú còn khi đổi thẻ'));
@@ -105,7 +117,7 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
       doc.questions = [{ id:'q1',type:'multiple_choice',difficulty:'thong_hieu',content:'QUESTION_ONE',choices:[{key:'A',text:'CHOICE_CORRECT'},{key:'B',text:'CHOICE_OTHER'}],correct_answer:'A',points:0,passageId:'p1',step_by_step_solution:'PRIVATE_EXPLANATION_ONE' },{ id:'q2',type:'short_answer',difficulty:'thong_hieu',content:'QUESTION_TWO',correct_answer:'2',accepted_answers:['2'],passageId:'p1',step_by_step_solution:'PRIVATE_EXPLANATION_TWO' }];
       const patched = await context.request.patch(origin + '/api/exams/' + examId,{headers:{Origin:origin},data:{document:doc,baseVersion:doc.version}}); assert.ok(patched.ok());
       await page.reload(); await page.getByText('QUESTION_ONE',{exact:true}).filter({visible:true}).first().waitFor();
-      assert.equal(await page.getByRole('region',{name:'Bài đọc dùng chung',exact:true}).getByText('NGU_LIEU_PRESERVED',{exact:true}).count(),1);
+      assert.equal(await page.getByRole('region',{name:'Bài đọc dùng chung',exact:true}).getByText('NGU_LIEU_PRESERVED',{exact:true}).filter({visible:true}).count(),1);
       await page.getByRole('region',{name:'Bài đọc dùng chung',exact:true}).getByText('SOURCE_LOCAL_DOCUMENT',{exact:true}).waitFor();
       await page.getByRole('button',{name:'Rà soát đề',exact:true}).click();
       const review=page.getByRole('dialog',{name:'Rà soát đề',exact:true}); await review.getByRole('button',{name:'Đến câu 2',exact:true}).first().click();
@@ -118,6 +130,67 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
         if(label==='Word – đáp án/barem') assert.ok(xml.includes('ĐÁP ÁN') || xml.includes('Đáp án'));
         if(label==='Word – ma trận') { assert.ok(xml.includes('BẢNG PHÂN BỔ CÂU HỎI')); assert.ok(xml.includes('<w:tbl')); assert.ok(!xml.includes('QUESTION_ONE')); }
       }
+    });
+    await t.test('content groups and inline shared passage preserve links, source and question order', async () => {
+      const loaded=await context.request.get(origin+'/api/exams/'+examId).then(r=>r.json());
+      const order=loaded.document.questions.map((q:{id:string})=>q.id);
+      const structure=page.getByLabel('Tổ chức nội dung đề',{exact:true});
+      await structure.locator('summary').first().click(); await structure.getByRole('button',{name:'Thêm phần',exact:true}).click();
+      await structure.getByLabel('Tên phần 1',{exact:true}).fill('PHAN_NOI_DUNG');
+      await structure.locator('summary').first().click();
+      const first=page.locator('#editor-question-q1');
+      await first.locator('summary',{hasText:'Phần / nội dung dùng chung của câu 1'}).click();
+      await first.getByLabel('Phần của câu 1',{exact:true}).selectOption({label:'PHAN_NOI_DUNG'});
+      const shared=page.getByRole('region',{name:'Bài đọc dùng chung',exact:true});
+      await shared.locator('summary',{hasText:'Sửa nội dung dùng chung'}).click();
+      await shared.getByLabel('Nội dung ngữ liệu 1',{exact:true}).fill('NGU_LIEU_PRESERVED_REVISED');
+      assert.equal(await shared.getByRole('button',{name:'Bỏ ngữ liệu',exact:true}).isDisabled(),true);
+      await poll(async()=>JSON.stringify((await db.exam.findUniqueOrThrow({where:{id:examId}})).metadata).includes('NGU_LIEU_PRESERVED_REVISED'));
+      const saved=await context.request.get(origin+'/api/exams/'+examId).then(r=>r.json());
+      assert.deepEqual(saved.document.questions.map((q:{id:string})=>q.id),order);
+      assert.ok(saved.document.questions.every((q:{passageId:string})=>q.passageId==='p1'));
+      assert.equal(saved.document.passages[0].source,'SOURCE_LOCAL_DOCUMENT');
+      assert.equal(saved.document.questions[0].points,0);
+      await shared.locator('summary',{hasText:'Sửa nội dung dùng chung'}).click();
+    });
+    await t.test('requirements keep unsaved scope and plan when collapsed and save without changing questions', async () => {
+      const requirements=page.getByLabel('Yêu cầu ra đề',{exact:true});
+      await requirements.locator('summary').first().click();
+      await requirements.getByLabel('Khung mức nhận thức',{exact:true}).selectOption('legacy_4');
+      await openFold('Kiến thức và phạm vi ra đề');
+      await requirements.getByLabel('Nhập gói kiến thức (.json)',{exact:true}).setInputFiles('tests/fixtures/knowledge-package.json');
+      const methods=requirements.getByLabel('Giới hạn phương pháp / điều chưa học (mỗi dòng một yêu cầu)',{exact:true});
+      await methods.fill('METHOD_LIMIT_PRESERVED');
+      await requirements.locator('summary').first().click();await requirements.locator('summary').first().click();
+      assert.equal(await methods.inputValue().catch(async error=>{
+        await page.screenshot({path:report+'/requirements-failure.png',fullPage:true});
+        fs.writeFileSync(report+'/requirements-failure.html',await requirements.evaluate(el=>el.outerHTML));throw error;
+      }),'METHOD_LIMIT_PRESERVED');
+      await requirements.getByRole('button',{name:'Áp dụng phạm vi vào đề',exact:true}).click();
+      await poll(async()=>JSON.stringify((await db.exam.findUniqueOrThrow({where:{id:examId}})).metadata).includes('METHOD_LIMIT_PRESERVED'));
+      await openFold('Kế hoạch đề · mục tiêu và thực tế');
+      await requirements.getByRole('button',{name:'Thêm ô mục tiêu',exact:true}).click();
+      const count=requirements.getByLabel('Số câu mục tiêu (có thể 0)',{exact:true});await count.fill('2');
+      await requirements.locator('summary').first().click();await requirements.locator('summary').first().click();
+      assert.equal(await count.inputValue(),'2');
+      await requirements.getByRole('button',{name:'Áp dụng kế hoạch vào đề',exact:true}).click();
+      await poll(async()=>JSON.stringify((await db.exam.findUniqueOrThrow({where:{id:examId}})).metadata).includes('examPlan'));
+      for(const width of [375,320]) {
+        await page.setViewportSize({width,height:812});await fitting();
+        assert.equal(await requirements.evaluate(el=>el.scrollWidth<=el.clientWidth+1),true,'requirements fit phone column');
+        await page.screenshot({path:report+'/requirements-'+width+'.png'});
+        await page.getByRole('button',{name:'Thêm công cụ',exact:true}).filter({visible:true}).click();
+        await page.getByRole('menuitem',{name:'Dùng mẫu / lưu thành mẫu',exact:true}).click();
+        const templates=page.getByRole('region',{name:'Dùng và lưu mẫu đề',exact:true});
+        await openFold('Lưu cấu hình đề hiện tại thành mẫu riêng');
+        if(width===320)assert.equal(await templates.getByLabel('Tên bản mẫu riêng',{exact:true}).inputValue(),'UNSAVED_TEMPLATE_NAME');
+        await templates.getByLabel('Tên bản mẫu riêng',{exact:true}).fill('UNSAVED_TEMPLATE_NAME');
+        await fitting();assert.equal(await templates.evaluate(el=>el.scrollWidth<=el.clientWidth+1),true,'template panel fits phone');
+        await page.screenshot({path:report+'/template-'+width+'.png'});
+        await templates.getByRole('button',{name:'Đóng mẫu',exact:true}).click();
+      }
+      await page.setViewportSize({width:1440,height:1000});
+      await requirements.locator('summary').first().click();
     });
     await t.test('question drafts remain discoverable and save failures keep retry/download controls', async () => {
       await page.locator('#editor-question-q1').getByTitle('Sửa nội dung câu hỏi thủ công', {exact:true}).click();
@@ -176,6 +249,8 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
       await page.locator('#editor-question-q1').getByRole('button',{name:'Thao tác câu 1',exact:true}).click(); releaseAccess();
       await page.getByTitle('Nhấn để đổi tên đề thi').waitFor();await poll(async()=>await page.getByTitle('Nhấn để đổi tên đề thi').isDisabled());
       await page.getByRole('menu',{name:'Thao tác câu 1',exact:true}).waitFor({state:'hidden'});
+      await page.getByLabel('Yêu cầu ra đề',{exact:true}).locator('summary').first().click();
+      assert.equal(await page.getByLabel('Yêu cầu ra đề',{exact:true}).getByLabel('Khung mức nhận thức',{exact:true}).isDisabled(),true);
       await openFold('Cần xử lý'); await openFold('Nháp câu hỏi trên máy');
       assert.equal(await page.getByRole('button',{name:'Tải nháp câu',exact:true}).first().isEnabled(),true);
       assert.notEqual((await db.exam.findUniqueOrThrow({where:{id:examId}})).title,'Không được ghi sau mất quyền');

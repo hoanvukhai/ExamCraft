@@ -221,11 +221,13 @@ test('F2 author seven types, image, passage, zero, title and reopen', { timeout:
     assert.equal(await f.page.getByRole('menuitem', { name: 'Lưu bản sao vào ngân hàng', exact: true }).isDisabled(), true); await f.page.keyboard.press('Escape');
     await f.page.getByRole('button',{name:'Đóng, giữ nháp',exact:true}).click();
   }
-  await f.page.getByRole('button',{name:'Thiết lập đề',exact:true}).click(); await f.page.getByRole('button',{name:'Phần & ngữ liệu',exact:true}).click(); await click(f.page,'Thêm ngữ liệu');
+  await openDetails(f.page,'Thêm / sửa phần và nội dung dùng chung'); await click(f.page,'Thêm ngữ liệu');
+  await openDetails(f.page,'Ngữ liệu 1');
   await f.page.getByLabel('Tên ngữ liệu 1').fill('Ngữ liệu thử'); await f.page.getByLabel('Nội dung ngữ liệu 1').fill('Lan đọc sách ở thư viện.');
+  await openDetails(f.page,'Phần / nội dung dùng chung của câu 1');
   await f.page.getByLabel('Ngữ liệu của câu 1').selectOption({ label: 'Ngữ liệu thử' });
   const bankSaved = f.page.waitForResponse(r => r.url().endsWith('/api/questions') && r.request().method() === 'POST');
-  await f.page.getByRole('button',{name:'Đóng thiết lập đề',exact:true}).click(); await f.page.getByRole('button',{name:'Thao tác câu 1',exact:true}).click(); await f.page.getByRole('menuitem',{name:'Lưu bản sao vào ngân hàng',exact:true}).click();
+  await f.page.getByRole('button',{name:'Thao tác câu 1',exact:true}).click(); await f.page.getByRole('menuitem',{name:'Lưu bản sao vào ngân hàng',exact:true}).click();
   { const bankResponse = await bankSaved; assert.equal(bankResponse.status(), 200, 'POST /api/questions status ' + bankResponse.status()); } // this endpoint answers 200 with { success, question }, not 201
   await f.page.getByText('Đã lưu bản sao riêng vào ngân hàng', { exact: true }).waitFor();
   const bankRows = await f.db.question.findMany({ where: { ownerId: f.ids[0], NOT: { tags: { has: '__workspace_only' } } }, include: { passage: true } });
@@ -233,7 +235,7 @@ test('F2 author seven types, image, passage, zero, title and reopen', { timeout:
   assert.equal(bankRows[0].content, 'PILOT Q1 multiple_choice');
   assert.equal(Number(bankRows[0].points), 0);
   assert.equal(bankRows[0].passage?.content, 'Lan đọc sách ở thư viện.');
-  await f.page.getByRole('button',{name:'Thiết lập đề',exact:true}).click(); await f.page.getByRole('button',{name:'Mẫu',exact:true}).click(); await openDetails(f.page, 'Mẫu cá nhân và nguồn tham khảo');
+  await f.page.getByRole('button',{name:'Thêm công cụ',exact:true}).filter({visible:true}).click(); await f.page.getByRole('menuitem',{name:'Dùng mẫu / lưu thành mẫu',exact:true}).click(); await openDetails(f.page, 'Mẫu cá nhân và nguồn tham khảo');
   await openDetails(f.page, 'Lưu cấu hình đề hiện tại thành mẫu riêng');
   await f.page.getByLabel('Tên bản mẫu riêng', { exact: true }).fill('Mẫu pilot riêng');
   const templateSaved = f.page.waitForResponse(r=>r.url().endsWith('/api/templates') && r.request().method()==='POST');
