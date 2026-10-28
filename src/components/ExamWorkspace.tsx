@@ -36,6 +36,7 @@ import type { BankQuestion } from '@/lib/question-client';
 import { ExamPresentation } from '@/components/ExamPresentation';
 import { EditorReview } from '@/components/editor/EditorReview';
 import { reviewExam } from '@/lib/exam-review';
+import { PhonePreview } from '@/components/editor/PhonePreview';
 import { EditorPending } from '@/components/editor/EditorPending';
 import { KnowledgeScopeEditor } from '@/components/KnowledgeScopeEditor';
 import { ExamPlanEditor } from '@/components/ExamPlanEditor';
@@ -97,6 +98,8 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   // Layout states
   const { settingsOpen, setSettingsOpen, copilotOpen: isCopilotOpen, setCopilotOpen: setIsCopilotOpen } = useWorkspace();
   const [copilotCommand, setCopilotCommand] = useState<string>('');
+  const [phonePreview, setPhonePreview] = useState(false);
+  const editorScroll = useRef<HTMLDivElement>(null), editorScrollTop = useRef(0);
   const [mobileTab, setMobileTab] = useState<'editor' | 'preview'>('editor');
 
   // Selected questions for batch operations
@@ -280,7 +283,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   };
 
   return (
-    <div className="print-flow flex-1 min-h-0 w-full overflow-hidden flex flex-col bg-[var(--background)] text-[var(--foreground)]">
+    <div className="print-flow @container flex-1 min-h-0 w-full overflow-hidden flex flex-col bg-[var(--background)] text-[var(--foreground)]">
       {reviewOpen && <EditorReview exam={exam} onClose={() => setReviewOpen(false)} onContinue={reviewAction.current ? () => { setReviewOpen(false); reviewAction.current?.(); } : undefined} onQuestion={id => { setReviewOpen(false); setMobileTab('editor'); setTimeout(() => { const node = document.getElementById('editor-question-' + id); node?.scrollIntoView({ block: 'center' }); node?.focus(); }, 0); }} />}
       {keyReminder && <div role="dialog" aria-modal="true" aria-label="Cần khóa AI" className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"><div className="app-dialog p-5 rounded-xl border bg-[var(--ui-surface)] max-w-sm space-y-4"><h2>Cần khóa AI</h2><p>Thêm khóa cá nhân để dùng chức năng AI. Bạn vẫn soạn và xuất đề thủ công được.</p><button type="button" className="app-button-primary p-2" onClick={() => { setKeyReminder(false); openKeys(); }}>Thêm khóa AI</button><button type="button" className="app-button-secondary p-2 ml-2" onClick={() => setKeyReminder(false)}>Đóng</button></div></div>}
       {/* HEADER GOOGLE MINIMALIST */}
@@ -323,6 +326,9 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
 
 
 
+      <nav aria-label="Chuyển vùng soạn" className="no-print @min-[900px]:hidden shrink-0 sticky top-0 z-20 flex gap-2 p-2 border-b bg-[var(--ui-surface)]">{(['editor','preview'] as const).map(tab => <button type="button" key={tab} aria-pressed={mobileTab === tab} className={(mobileTab === tab ? 'app-button-tonal' : 'app-button-secondary') + ' min-h-10 px-4 flex-1 text-sm'} onClick={() => { if (mobileTab === 'editor') editorScrollTop.current = editorScroll.current?.scrollTop ?? 0; setMobileTab(tab); requestAnimationFrame(() => { if (editorScroll.current) editorScroll.current.scrollTop = tab === 'editor' ? editorScrollTop.current : 0; }); }}>{tab === 'editor' ? 'Soạn câu' : 'Xem đề'}</button>)}</nav>
+      <PhonePreview exam={exam} open={phonePreview} onClose={() => setPhonePreview(false)} />
+      {mobileTab === 'editor' && !selectedQuestionIds.length && <button type="button" className="no-print sm:hidden fixed bottom-4 right-4 z-30 app-button-primary rounded-full px-4 min-h-11 shadow-lg" onClick={() => setPhonePreview(true)}>Xem đề</button>}
       {!ready && <div className="p-4">{saveMessage || 'Đang tải nội dung. Vui lòng chờ trước khi sửa.'}</div>}
       {/* 3-ZONE ARCHITECTURE: LEFT RAIL + INDEPENDENT SCROLL WORKSPACE + RIGHT COMPANION RAIL */}
       <div className="print-flow flex-1 flex overflow-hidden min-h-0 relative">
@@ -330,34 +336,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         
 
         {/* ZONE 2: VÙNG NỘI DUNG CHÍNH (CANVAS CHỦ ĐẠO MÀU TRẮNG GOOGLE, CUỘN ĐỘC LẬP) */}
-        <div className="print-flow @container flex-1 h-full overflow-y-auto px-4 sm:px-6 py-5 min-w-0">
-          {/* Thanh chuyển tab trên mobile */}
-          <div className="no-print @min-[900px]:hidden bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-full p-1 mb-4 flex items-center justify-center gap-1 shadow-2xs">
-            <button
-              onClick={() => setMobileTab('editor')}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all ${
-                mobileTab === 'editor'
-                  ? 'bg-[#202124] text-white dark:bg-[#292a2d] dark:text-[#e3e3e3] shadow-xs'
-                  : 'text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d]'
-              }`}
-            >
-              <FileEdit className="w-3.5 h-3.5" />
-              <span>Danh sách câu hỏi ({exam.questions.length})</span>
-            </button>
-
-            <button
-              onClick={() => setMobileTab('preview')}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all ${
-                mobileTab === 'preview'
-                  ? 'bg-[#202124] text-white dark:bg-[#292a2d] dark:text-[#e3e3e3] shadow-xs'
-                  : 'text-[#5f6368] dark:text-[#9aa0a6] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d]'
-              }`}
-            >
-              <Eye className="w-3.5 h-3.5" />
-              <span>Xem trang in A4</span>
-            </button>
-          </div>
-
+        <div ref={editorScroll} className="print-flow @container flex-1 h-full overflow-y-auto px-4 sm:px-6 py-5 min-w-0">
           {/* KHU VỰC CHÍNH SPLIT PANE: DANH SÁCH CÂU HỎI & A4 PREVIEW */}
           <main className="grid grid-cols-1 @min-[900px]:grid-cols-12 gap-6 items-start pb-8">
             {/* CỘT TRÁI: DANH SÁCH CÂU HỎI (6 Cột trên màn hình lớn) */}

@@ -63,6 +63,9 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
   const { metadata, questions, passages } = exam;
   const subjectConfig = getSubjectConfig(metadata.subject, metadata.grade);
 
+  const matrixData = computeExamMatrix(exam);
+  const specData = computeExamSpecification(exam);
+  const planOutput = examPlanOutput(exam);
   const headerLines = resolveHeaderLines(exam);
   const headerAreas = (['left', 'right'] as const).filter(area => headerLines.some(line => line.area === area));
 
