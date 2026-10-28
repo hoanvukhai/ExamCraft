@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, type ReactNode } from 'react';
 import { CloudUpload, Edit3, Share2 } from 'lucide-react';
 
 interface HeaderProps {
+  children?: ReactNode;
   canEdit?: boolean;
   examTitle: string;
   onUpdateTitle: (newTitle: string) => void;
@@ -13,7 +14,7 @@ interface HeaderProps {
 }
 
 /** The document bar of the editor: the exam name, the save state and the share button. Account, assistant and theme live in the frame's right rail. */
-export const Header: React.FC<HeaderProps> = ({ canEdit = true, examTitle, onUpdateTitle, isCloudSaving = false, isCloudSaved = true, onShare }) => {
+export const Header: React.FC<HeaderProps> = ({ children, canEdit = true, examTitle, onUpdateTitle, isCloudSaving = false, isCloudSaved = true, onShare }) => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [titleDraft, setTitleDraft] = useState({ source: examTitle, value: examTitle });
   const tempTitle = titleDraft.source === examTitle ? titleDraft.value : examTitle;
@@ -53,17 +54,10 @@ export const Header: React.FC<HeaderProps> = ({ canEdit = true, examTitle, onUpd
             <Edit3 className="w-3.5 h-3.5 text-[var(--ui-text-secondary)] opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
           </button>
         )}
-        <div className="hidden md:flex items-center gap-1 text-[11px] text-[var(--ui-text-secondary)] shrink-0">
-          {isCloudSaving ? (
-            <span className="flex items-center gap-1"><CloudUpload className="w-3.5 h-3.5 animate-bounce" /><span>Đang lưu...</span></span>
-          ) : isCloudSaved ? (
-            <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /><span>Đã lưu trên máy chủ</span></span>
-          ) : (
-            <span className="flex items-center gap-1 text-amber-500"><span className="w-1.5 h-1.5 rounded-full bg-amber-500" /><span>Chưa lưu</span></span>
-          )}
-        </div>
+
       </div>
-      {canEdit && onShare && <button type="button" onClick={onShare} title="Tạo link cho học sinh làm bài hoặc chia sẻ đề cho đồng nghiệp" className="app-button-primary flex items-center gap-1.5 min-h-9 px-3 rounded-lg text-xs font-semibold cursor-pointer shrink-0"><Share2 className="w-3.5 h-3.5" /><span className="hidden md:inline">Chia sẻ &amp; Thi Online</span><span className="md:hidden">Chia sẻ</span></button>}
+      {children}
+      {canEdit && onShare && <button type="button" onClick={onShare} title="Tạo link cho học sinh làm bài hoặc chia sẻ đề cho đồng nghiệp" className="app-button-primary flex items-center gap-1.5 min-h-9 px-3 rounded-lg text-xs font-semibold cursor-pointer shrink-0"><Share2 className="w-3.5 h-3.5" /><span className="hidden md:inline">Giao bài</span><span className="md:hidden">Giao bài</span></button>}
     </header>
   );
 };

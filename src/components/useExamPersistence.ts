@@ -18,6 +18,7 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
   const [exam, setValue] = useState<Exam>(blankExam);
   const [state, setState] = useState<SaveState>('loading');
   const [message, setMessage] = useState('');
+  const [recoveredDraft, setRecoveredDraft] = useState(false);
   const [folderUnavailable, setFolderUnavailable] = useState(false);
   const [loadedKey, setLoadedKey] = useState('');
   const [writerId] = useState(() => crypto.randomUUID());
@@ -51,6 +52,7 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
     (async () => {
       try {
         const draft = readDraft(localStorage, ownerId, id);
+        if (!cancelled) setRecoveredDraft(Boolean(draft && id !== 'new'));
         let loaded: Exam;
         if (id === 'new') loaded = draft ?? { ...blankExam(), creationFolderId: creationFolderId ?? null };
         else {
@@ -238,5 +240,5 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
     return true;
   }, [ownerId, writerId]);
 
-  return { exam, editorSessionKey, setExam, save, ensureSaved, saveCopy, openLatest, acceptServerDocument, state, message, folderUnavailable, ready: state !== 'loading' && loadedKey === `${ownerId}/${requestedId ?? 'new'}` };
+  return { exam, editorSessionKey, setExam, save, ensureSaved, saveCopy, openLatest, acceptServerDocument, state, message, folderUnavailable, recoveredDraft, dismissRecoveredDraft: () => setRecoveredDraft(false), ready: state !== 'loading' && loadedKey === `${ownerId}/${requestedId ?? 'new'}` };
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { listUnsavedDrafts, writeDraft, recoveryDraftAsNew } from '@/lib/exam-draft';
 import type { Exam } from '@/types/exam';
 
@@ -8,10 +8,17 @@ export function LocalDraftsPanel({ ownerId }: { ownerId: string }) {
   const [items, setItems] = useState<{ storageId: string; exam: Exam; savedAt: string }[]>([]);
   const [unreadable, setUnreadable] = useState<string[]>([]);
   const [message, setMessage] = useState('');
+  const [available, setAvailable] = useState(false);
+  useEffect(() => {
+    const refresh = () => { try { const result = listUnsavedDrafts(localStorage, ownerId); setItems(result.drafts); setUnreadable(result.unreadable); setAvailable(Boolean(result.drafts.length || result.unreadable.length)); } catch { setAvailable(true); setMessage('Chưa đọc được bộ nhớ nháp; dữ liệu được giữ.'); } };
+    refresh(); window.addEventListener('focus', refresh); window.addEventListener('storage', refresh);
+    return () => { window.removeEventListener('focus', refresh); window.removeEventListener('storage', refresh); };
+  }, [ownerId]);
   const download = (content: string, filename: string) => {
     const url = URL.createObjectURL(new Blob([content], { type: 'application/json' }));
     const anchor = document.createElement('a'); anchor.href = url; anchor.download = filename; anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
+  if (!available) return null;
   return <details className="no-print app-recovery-panel border rounded-xl p-4 text-sm" onToggle={e => {
     if (!e.currentTarget.open) return;
     try { const result = listUnsavedDrafts(localStorage, ownerId); setItems(result.drafts); setUnreadable(result.unreadable); }
