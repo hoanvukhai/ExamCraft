@@ -1,20 +1,18 @@
 'use client';
 
 import React, { useState, type ReactNode } from 'react';
-import { CloudUpload, Edit3, Share2 } from 'lucide-react';
+import { Edit3, Share2 } from 'lucide-react';
 
 interface HeaderProps {
   children?: ReactNode;
   canEdit?: boolean;
   examTitle: string;
   onUpdateTitle: (newTitle: string) => void;
-  isCloudSaving?: boolean;
-  isCloudSaved?: boolean;
   onShare?: () => void;
 }
 
 /** The document bar of the editor: the exam name, the save state and the share button. Account, assistant and theme live in the frame's right rail. */
-export const Header: React.FC<HeaderProps> = ({ children, canEdit = true, examTitle, onUpdateTitle, isCloudSaving = false, isCloudSaved = true, onShare }) => {
+export const Header: React.FC<HeaderProps> = ({ children, canEdit = true, examTitle, onUpdateTitle, onShare }) => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [titleDraft, setTitleDraft] = useState({ source: examTitle, value: examTitle });
   const tempTitle = titleDraft.source === examTitle ? titleDraft.value : examTitle;

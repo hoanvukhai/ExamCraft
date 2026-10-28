@@ -41,7 +41,7 @@ export function HeaderForm({ metadata, documentId, onClose, onSaveMetadata, embe
       setSubmitted(submission); onSaveMetadata(submission); setError('');
     } catch (cause) { setError(cause instanceof Error && cause.name !== 'ZodError' ? cause.message : 'Kiểm tra tên đề, số phút và bố cục tối đa 30 dòng.'); }
   };
-  return <div className={embedded ? 'contents' : 'fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4'}><div role={embedded ? undefined : 'dialog'} aria-modal={embedded ? undefined : true} aria-label="Tùy chỉnh tiêu đề" className="app-dialog bg-white dark:bg-[#202124] rounded-xl w-full max-w-2xl max-h-[90vh] overflow-auto p-5 space-y-3">
+  return <div className={embedded ? 'contents' : 'fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4'}><div role={embedded ? undefined : 'dialog'} aria-modal={embedded ? undefined : true} aria-label="Tùy chỉnh tiêu đề" className="app-dialog bg-[var(--ui-surface)] dark:bg-[var(--ui-surface)] rounded-xl w-full max-w-2xl max-h-[90vh] overflow-auto p-5 space-y-3">
     <div className="app-dialog-header flex justify-between gap-3"><h2 className="font-semibold">Tiêu đề và bố cục in</h2><button type="button" onClick={onClose}>Đóng</button></div>
     <p className="text-xs">Chỉ áp dụng các trường bạn sửa. Thay đổi phạm vi hoặc kế hoạch mới hơn được giữ. Đổi môn/lớp không tự đổi bộ kiến thức, kế hoạch hay khung mức.</p>
     <div className="grid grid-cols-2 gap-3">

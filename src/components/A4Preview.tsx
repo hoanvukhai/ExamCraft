@@ -4,30 +4,17 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Exam, Figure } from '@/types/exam';
 import { MathRenderer } from './MathRenderer';
 import { FigureView } from './FigureView';
-import { exportExamToDocx } from '@/lib/docx-export';
+
 import { parallelAnswer, parallelRows } from '@/lib/parallel-view';
-import { prepareExportFigures } from '@/lib/export-figures';
-import { 
-  formatPointsString, 
-  calculateExamTotalPoints 
-} from '@/lib/scoring';
+
+import { formatPointsString, calculateExamTotalPoints } from '@/lib/scoring';
 import { getSubjectConfig } from '@/lib/subject-config';
 import { requiresNumericScore } from '@/lib/education-catalog';
 import { matchingDisplay, orderingDisplay } from '@/lib/structured-question';
 import { computeExamMatrix, computeExamSpecification } from '@/lib/matrix-spec-generator';
 import { examPlanOutput } from '@/lib/exam-plan-output';
 import { resolveHeaderLines } from '@/lib/header-layout';
-import { 
-  Printer, 
-  Download, 
-  FileText, 
-  CheckSquare, 
-  BookOpen, 
-  ZoomIn, 
-  ZoomOut,
-  Maximize2,
-  TableProperties
-} from 'lucide-react';
+
 
 const renderPreviewFigure = (figure: Figure) => <FigureView key={figure.id} figure={figure} forceLight />;
 

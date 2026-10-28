@@ -4,21 +4,21 @@ import { applyCopilotSubmission } from '@/lib/copilot-submission';
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Exam, Question } from '@/types/exam';
+import { Question } from '@/types/exam';
 import { Header } from '@/components/Header';
 import { useWorkspace } from '@/components/workspace/WorkspaceContext';
 import { EditorToolbar, type ExportView } from '@/components/EditorToolbar';
 import { QuestionCard } from '@/components/QuestionCard';
 import { accountFetch } from '@/lib/account-fetch';
 import { applyQuestionManualSubmission, hasPendingQuestionDrafts, questionDraftSourceStamp, retireSavedQuestionDrafts } from '@/lib/question-draft';
-import { QuestionDraftPanel } from '@/components/QuestionDraftPanel';
-import { AiProposalJournalPanel } from '@/components/AiProposalJournalPanel';
+
+
 import { applyQuestionOrderCommand } from '@/lib/question-commands';
 import { A4Preview } from '@/components/A4Preview';
 import { GenerateModal } from '@/components/GenerateModal';
 import { ShuffleModal } from '@/components/ShuffleModal';
 import { ImportModal } from '@/components/ImportModal';
-import { ExamLibraryModal } from '@/components/ExamLibraryModal';
+
 import { EditorSettings, type SettingsTab } from '@/components/editor/EditorSettings';
 import { subjectLabel } from '@/lib/teacher-ui';
 import { QuestionBankModal } from '@/components/QuestionBankModal';
@@ -31,38 +31,21 @@ import { useExamPersistence } from '@/components/useExamPersistence';
 import { ExamCollaboratorsPanel } from '@/components/ExamCollaboratorsPanel';
 import { freezeExamScoring } from '@/lib/snapshot-scoring';
 import { requiresNumericScore } from '@/lib/education-catalog';
-import { ExamStructureEditor } from '@/components/ExamStructureEditor';
+
 import type { BankQuestion } from '@/lib/question-client';
 import { ExamPresentation } from '@/components/ExamPresentation';
 import { EditorReview } from '@/components/editor/EditorReview';
 import { reviewExam } from '@/lib/exam-review';
 import { PhonePreview } from '@/components/editor/PhonePreview';
+import { EditorQuestionList, EditorQuestionHeading } from '@/components/editor/EditorQuestionList';
 import { EditorStart } from '@/components/editor/EditorStart';
 import { EditorPending } from '@/components/editor/EditorPending';
-import { KnowledgeScopeEditor } from '@/components/KnowledgeScopeEditor';
-import { ExamPlanEditor } from '@/components/ExamPlanEditor';
-import { applyHeaderSubmission } from '@/lib/header-layout';
-import { ExamTemplatePanel } from '@/components/ExamTemplatePanel';
+
+
+
+
 import { applyGeneratedDraft, generationDocumentStamp } from '@/lib/generation-plan';
-import { 
-  Sparkles, 
-  Plus, 
-  Settings2, 
-  Layers, 
-  Eye, 
-  FileEdit, 
-  Save, 
-  Check, 
-  BookMarked,
-  Info,
-  Building2,
-  Trash2,
-  Link2,
-  CheckSquare,
-  Square,
-  X,
-  Bot
-} from 'lucide-react';
+import { Trash2, Link2, CheckSquare, Square, X } from 'lucide-react';
 
 interface ExamWorkspaceProps {
   currentUser: {
@@ -85,15 +68,13 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   const [collaborationOpen, setCollaborationOpen] = useState(false);
   const [presentationOpen, setPresentationOpen] = useState(false);
   const [manualDraftMessage, setManualDraftMessage] = useState('');
-  const isCloudSaving = saveState === 'saving';
-  const isCloudSaved = saveState === 'saved';
   const [submissionCount, setSubmissionCount] = useState<number>(0);
   const { hasActiveKey, openKeys } = useWorkspace();
 
   const [reviewOpen, setReviewOpen] = useState(false);
-  const reviewAction = useRef<(() => void) | null>(null);
+  const [pendingReviewAction, setPendingReviewAction] = useState<(() => void) | null>(null);
   const reviewed = reviewExam(exam);
-  const reviewBefore = (action: () => void) => { if (reviewed.issues.length) { reviewAction.current = action; setReviewOpen(true); } else action(); };
+  const reviewBefore = (action: () => void) => { if (reviewed.issues.length) { setPendingReviewAction(() => action); setReviewOpen(true); } else action(); };
   const [keyReminder, setKeyReminder] = useState(false);
   const withAi = (action: () => void) => { if (!hasActiveKey) setKeyReminder(true); else action(); };
   // Layout states
@@ -285,15 +266,13 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
 
   return (
     <div className="print-flow @container flex-1 min-h-0 w-full overflow-hidden flex flex-col bg-[var(--background)] text-[var(--foreground)]">
-      {reviewOpen && <EditorReview exam={exam} onClose={() => setReviewOpen(false)} onContinue={reviewAction.current ? () => { setReviewOpen(false); reviewAction.current?.(); } : undefined} onQuestion={id => { setReviewOpen(false); setMobileTab('editor'); setTimeout(() => { const node = document.getElementById('editor-question-' + id); node?.scrollIntoView({ block: 'center' }); node?.focus(); }, 0); }} />}
+      {reviewOpen && <EditorReview exam={exam} onClose={() => setReviewOpen(false)} onContinue={pendingReviewAction ? () => { setReviewOpen(false); pendingReviewAction?.(); } : undefined} onQuestion={id => { setReviewOpen(false); setMobileTab('editor'); setTimeout(() => { const node = document.getElementById('editor-question-' + id); node?.scrollIntoView({ block: 'center' }); node?.focus(); }, 0); }} />}
       {keyReminder && <div role="dialog" aria-modal="true" aria-label="Cần khóa AI" className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"><div className="app-dialog p-5 rounded-xl border bg-[var(--ui-surface)] max-w-sm space-y-4"><h2>Cần khóa AI</h2><p>Thêm khóa cá nhân để dùng chức năng AI. Bạn vẫn soạn và xuất đề thủ công được.</p><button type="button" className="app-button-primary p-2" onClick={() => { setKeyReminder(false); openKeys(); }}>Thêm khóa AI</button><button type="button" className="app-button-secondary p-2 ml-2" onClick={() => setKeyReminder(false)}>Đóng</button></div></div>}
       {/* HEADER GOOGLE MINIMALIST */}
       <Header
         canEdit={canEdit}
         examTitle={exam.metadata.title}
         onUpdateTitle={handleUpdateTitle}
-        isCloudSaving={isCloudSaving}
-        isCloudSaved={isCloudSaved}
         onShare={() => reviewBefore(() => { if (canPublish) setIsShareModalOpen(true); else setCollaborationOpen(true); })}
       >
         <button type="button" aria-label="Thông tin và thiết lập đề" onClick={() => openSettings('info')} className="app-button-secondary text-xs px-2 min-h-9 max-w-44 truncate hidden md:block">{subjectLabel(exam.metadata.subject)} {exam.metadata.grade} · {exam.metadata.durationMinutes ?? 0}′ · {scoredQuestions.reduce((sum, q) => sum + (q.points ?? 0), 0)}đ</button>
@@ -311,7 +290,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       )}
 
         </details>
-        <button type="button" className="app-button-secondary text-xs min-h-9 px-2 shrink-0" aria-label="Rà soát đề" onClick={() => { reviewAction.current = null; setReviewOpen(true); }}>{reviewed.issues.length ? '⚠ ' + reviewed.issues.length + ' cần xem' : '✓ Rà soát'}</button>
+        <button type="button" className="app-button-secondary text-xs min-h-9 px-2 shrink-0" aria-label="Rà soát đề" onClick={() => { setPendingReviewAction(null); setReviewOpen(true); }}>{reviewed.issues.length ? '⚠ ' + reviewed.issues.length + ' cần xem' : '✓ Rà soát'}</button>
       </Header>
 
       <EditorToolbar
@@ -349,30 +328,18 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
               {recoveredDraft && <div role="status" className="border rounded p-3 text-sm">Đang mở nháp trên máy của đề này. <button type="button" className="underline" onClick={dismissRecoveredDraft}>Tiếp tục với nháp</button>{exam.serverId && <button type="button" className="underline ml-3" onClick={() => void openLatest().then(value => { if (value) dismissRecoveredDraft(); })}>Mở bản máy chủ, cất riêng nháp</button>}</div>}
               <EditorPending ownerId={currentUser.id} exam={exam} onCopilot={() => setIsCopilotOpen(true)} />
               {/* Thanh tiêu đề & Tác vụ danh sách câu hỏi */}
-              <div className="bg-white dark:bg-[#202124] p-4 rounded-2xl border border-[#dadce0] dark:border-[#3c4043] shadow-xs flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <h2 className="font-bold text-[#202124] dark:text-[#e3e3e3] text-sm sm:text-base flex items-center gap-2">
-                    <span>Câu hỏi</span>
-                    <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043]">
-                      {exam.questions.length} câu
-                    </span>
-                  </h2>
-                  <p className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] mt-0.5">
-                    {exam.metadata.title} ({exam.metadata.subject.toUpperCase()} {exam.metadata.grade})
-                  </p>
-                </div>
-
+              <EditorQuestionHeading exam={exam} points={scoredQuestions.reduce((total, q) => total + (q.points ?? 0), 0)}>
                 <div className="flex items-center gap-2">
                   {exam.questions.length > 0 && (
                     <button
                       onClick={handleSelectAll}
                       title={selectedQuestionIds.length === exam.questions.length ? "Bỏ chọn tất cả" : "Chọn tất cả câu hỏi"}
-                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] rounded-lg transition-colors cursor-pointer shadow-2xs"
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[var(--ui-text-primary)] dark:text-[var(--ui-text-primary)] bg-[var(--ui-surface)] dark:bg-[var(--ui-surface-variant)] border border-[var(--ui-border)] dark:border-[var(--ui-border)] hover:bg-[var(--ui-surface-variant)] dark:hover:bg-[#303134] rounded-lg transition-colors cursor-pointer shadow-2xs"
                     >
                       {selectedQuestionIds.length === exam.questions.length && exam.questions.length > 0 ? (
-                        <CheckSquare className="w-3.5 h-3.5 text-[#202124] dark:text-[#e3e3e3]" />
+                        <CheckSquare className="w-3.5 h-3.5 text-[var(--ui-text-primary)] dark:text-[var(--ui-text-primary)]" />
                       ) : (
-                        <Square className="w-3.5 h-3.5 text-[#5f6368] dark:text-[#9aa0a6]" />
+                        <Square className="w-3.5 h-3.5 text-[var(--ui-text-secondary)] dark:text-[var(--ui-text-secondary)]" />
                       )}
                       <span className="hidden sm:inline">
                         {selectedQuestionIds.length === exam.questions.length ? "Bỏ chọn" : "Chọn tất cả"}
@@ -381,14 +348,16 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                   )}
 
                 </div>
-              </div>
+              </EditorQuestionHeading>
+
+
 
               {/* Danh sách các câu hỏi dạng thẻ Block Card */}
               <div className="space-y-3.5">
-                {exam.questions.map((q, idx) => (
-                  <div key={q.id} id={`editor-question-${q.id}`} tabIndex={-1}><QuestionCard withAi={withAi} ownerId={currentUser.id}
+                <EditorQuestionList exam={exam} renderQuestion={(q, idx) => (
+                  <QuestionCard withAi={withAi} ownerId={currentUser.id}
                     displayPoints={scoredQuestions[idx]?.points}
-                    passage={exam.passages?.find(p => p.id === q.passageId)}
+                    hidePassage passage={exam.passages?.find(p => p.id === q.passageId)}
                     numericScore={requiresNumericScore(exam.metadata.assessmentMode)}
                     cognitiveFrameworkId={exam.metadata.cognitiveFrameworkId}
                       knowledgePackage={exam.metadata.knowledgePackage}
@@ -409,8 +378,8 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                     isSelected={selectedQuestionIds.includes(q.id)}
                     onToggleSelect={handleToggleSelectQuestion}
                     onAskAiAboutQuestion={handleAskAiAboutQuestion}
-                  /></div>
-                ))}
+                  />
+                )} />
 
                 {exam.questions.length === 0 && <EditorStart exam={exam} hasKey={hasActiveKey} onSettings={openSettings} onAdd={handleAddQuestion} onBank={() => setIsQuestionBankModalOpen(true)} onImport={() => setIsImportModalOpen(true)} onGenerate={() => withAi(() => setIsGenerateModalOpen(true))} />}
                 {exam.questions.length > 0 && <button type="button" className="app-button-secondary w-full min-h-11" onClick={handleAddQuestion}>+ Thêm câu hỏi</button>}
@@ -418,7 +387,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
 
               {/* Thanh tác vụ hàng loạt nổi cố định ở dưới (Floating Batch Action Bar) */}
               {selectedQuestionIds.length > 0 && (
-                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-[#202124]/95 dark:bg-[#202124]/95 backdrop-blur-md text-white px-5 py-3 rounded-full shadow-xs border border-[#dadce0]/30 dark:border-[#3c4043] flex items-center gap-3 animate-in fade-in slide-in-from-bottom-5">
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-[#202124]/95 dark:bg-[var(--ui-surface)]/95 backdrop-blur-md text-white px-5 py-3 rounded-full shadow-xs border border-[var(--ui-border)]/30 dark:border-[var(--ui-border)] flex items-center gap-3 animate-in fade-in slide-in-from-bottom-5">
                   <span className="text-xs font-bold text-[#e3e3e3] bg-[#292a2d] px-2.5 py-1 rounded-full border border-[#3c4043]">
                     Đã chọn {selectedQuestionIds.length} câu
                   </span>
@@ -472,6 +441,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         </div>
 
         {/* ZONE 3: THANH MENU DỌC BÊN PHẢI (GOOGLE GEMINI COMPANION RAIL) */}
+        <EditorSettings key={`${currentUser.id}:${editorSessionKey}`} ownerId={currentUser.id} exam={exam} canEdit={canEdit} hasActiveKey={hasActiveKey} onChange={setExam} isOpen={settingsOpen} tab={settingsTab} onTab={setSettingsTab} onClose={() => setSettingsOpen(false)} />
         {canEdit && <RightCompanionRail
           key={`${currentUser.id}:${exam.id}`}
           ownerId={currentUser.id}
@@ -486,7 +456,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
 
       {/* CÁC MODALS NGHIỆP VỤ */}
       {presentationOpen && <ExamPresentation exam={exam} onClose={() => setPresentationOpen(false)} />}
-      {collaborationOpen && exam.serverId && <div role="dialog" aria-modal="true" aria-label="Cộng tác và lịch sử" className="fixed inset-0 z-50 bg-black/50 p-4 flex items-center justify-center"><div className="app-dialog w-full max-w-3xl max-h-[90vh] overflow-auto bg-white dark:bg-[#202124] rounded-xl p-5"><button type="button" className="float-right px-3 py-2" onClick={() => setCollaborationOpen(false)}>Đóng</button><ExamCollaboratorsPanel key={`${exam.serverId}-${currentUser.id}`} examId={exam.serverId} expectedUserId={currentUser.id} questions={exam.questions.map((q, i) => ({ id: q.id, label: `Câu ${i + 1}: ${(q.content || '').replace(/\s+/g, ' ').slice(0, 40)}` }))} onRestored={document => { acceptServerDocument(document); }} beforeRestore={() => { if (saveState !== 'saved') { alert('Hãy lưu xong hoặc giữ bản nháp thành đề mới trước khi khôi phục lịch sử.'); return false; } return true; }} /></div></div>}
+      {collaborationOpen && exam.serverId && <div role="dialog" aria-modal="true" aria-label="Cộng tác và lịch sử" className="fixed inset-0 z-50 bg-black/50 p-4 flex items-center justify-center"><div className="app-dialog w-full max-w-3xl max-h-[90vh] overflow-auto bg-[var(--ui-surface)] dark:bg-[var(--ui-surface)] rounded-xl p-5"><button type="button" className="float-right px-3 py-2" onClick={() => setCollaborationOpen(false)}>Đóng</button><ExamCollaboratorsPanel key={`${exam.serverId}-${currentUser.id}`} examId={exam.serverId} expectedUserId={currentUser.id} questions={exam.questions.map((q, i) => ({ id: q.id, label: `Câu ${i + 1}: ${(q.content || '').replace(/\s+/g, ' ').slice(0, 40)}` }))} onRestored={document => { acceptServerDocument(document); }} beforeRestore={() => { if (saveState !== 'saved') { alert('Hãy lưu xong hoặc giữ bản nháp thành đề mới trước khi khôi phục lịch sử.'); return false; } return true; }} /></div></div>}
 
       <GenerateModal
         key={`${exam.metadata.subject}-${exam.metadata.grade}-${exam.metadata.knowledgePackage?.id ?? ''}-${exam.metadata.knowledgePackage?.revision ?? ''}`}
@@ -528,7 +498,8 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         isOpen={isQuestionBankModalOpen}
         onClose={() => setIsQuestionBankModalOpen(false)}
         onInsertQuestion={(q, passage) => {
-          const { passage: _bankPassage, passageUnavailable: _unavailable, ...question } = q as BankQuestion;
+          const question = { ...q } as BankQuestion;
+          delete question.passage; delete question.passageUnavailable;
           const newQuestion: Question = {
             ...question,
             id: crypto.randomUUID(),

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import type { Exam } from '@/types/exam';
 import { loadExam, persistExam } from '@/lib/exam-client';
 import { dbExportDatabaseToJson } from '@/lib/db';
@@ -21,7 +21,7 @@ export function ExamLibraryModal({ isOpen, onClose, onLoadExam, ownerId }: Props
   const [preparedDownloads, setPreparedDownloads] = useState<{ url: string; name: string; examCount: number }[]>([]);
   useEffect(() => () => { for (const file of preparedDownloads) URL.revokeObjectURL(file.url); }, [preparedDownloads]);
   const upload = useRef<HTMLInputElement>(null);
-  async function readList() {
+  const readList = useCallback(async () => {
     const all: Summary[] = [];
     for (let page = 1; ; page++) {
       const response = await fetch(`/api/exams?limit=100&page=${page}`, { cache: 'no-store', headers: { 'x-examcraft-user': ownerId } });
@@ -31,11 +31,11 @@ export function ExamLibraryModal({ isOpen, onClose, onLoadExam, ownerId }: Props
       if (page >= data.pagination.totalPages) break;
     }
     return all;
-  }
-  function list() { return readList().then(all => { setExams(all); return all; }); }
+  }, [ownerId]);
+  const list = useCallback(() => readList().then(all => { setExams(all); return all; }), [readList]);
   const [previousOpen, setPreviousOpen] = useState(isOpen);
   if (previousOpen !== isOpen) { setPreviousOpen(isOpen); if (isOpen) setMessage(''); }
-  useEffect(() => { if (isOpen) void list().catch(e => setMessage(e.message)); }, [isOpen]);
+  useEffect(() => { if (isOpen) void list().catch(e => setMessage(e.message)); }, [isOpen, list]);
   if (!isOpen) return null;
   async function action(fn: () => Promise<void>) {
     setBusy(true); setMessage('');
