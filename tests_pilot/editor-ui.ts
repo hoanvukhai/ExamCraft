@@ -25,5 +25,20 @@ export async function toggleTheme(page: Page) {
   if (await direct.count()) { await direct.first().click(); return; }
   await page.getByRole('button', { name: 'Menu ứng dụng', exact: true }).click();
   await page.getByRole('region', { name: 'Tùy chọn ứng dụng', exact: true }).getByRole('button', { name: /Chuyển sang giao diện/ }).click();
-  await page.getByRole('button', { name: 'Đóng menu ứng dụng', exact: true }).click();
+  await page.getByRole('button', { name: 'Đóng menu ứng dụng', exact: true }).dispatchEvent('click');
+}
+/** Open the account menu; on the phone editor it sits inside the app menu. */
+export async function openAccount(page: Page) {
+  const direct = page.getByRole('button', { name: 'Mở menu tài khoản', exact: true }).filter({ visible: true });
+  if (!await direct.count()) await page.getByRole('button', { name: 'Menu ứng dụng', exact: true }).click();
+  await page.getByRole('button', { name: 'Mở menu tài khoản', exact: true }).filter({ visible: true }).first().click();
+}
+/** Click a rail button by its accessible name; on the phone editor it sits inside the app menu, which closes itself afterwards. */
+export async function railClick(page: Page, name: string) {
+  const direct = page.getByRole('button', { name, exact: true }).filter({ visible: true });
+  if (await direct.count()) { await direct.first().click(); return; }
+  await page.getByRole('button', { name: 'Menu ứng dụng', exact: true }).click();
+  await page.getByRole('region', { name: 'Tùy chọn ứng dụng', exact: true }).getByRole('button', { name, exact: true }).click();
+  const close = page.getByRole('button', { name: 'Đóng menu ứng dụng', exact: true });
+  if (await close.count()) await close.dispatchEvent('click');
 }

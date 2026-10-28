@@ -1,3 +1,4 @@
+import { toggleTheme, openAccount, railClick } from './editor-ui';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -79,13 +80,12 @@ test('frame: persistent menu, document toolbar and non-overlapping assistant pan
       for (const [width, height] of [[1024, 800], [375, 812], [320, 740], [568, 320]]) {
         await page.setViewportSize({ width, height });
         for (const dark of [false, true]) {
-          if (await page.evaluate(() => document.documentElement.classList.contains('dark')) !== dark) await page.getByRole('button', { name: /Chuyển sang giao diện/ }).filter({ visible: true }).click();
-          const avatar = page.getByRole('button', { name: 'Mở menu tài khoản', exact: true }).filter({ visible: true });
-          await avatar.click();
+          if (await page.evaluate(() => document.documentElement.classList.contains('dark')) !== dark) await toggleTheme(page);
+          await openAccount(page);
           const account = page.getByRole('region', { name: 'Tài khoản', exact: true }); await account.waitFor();
           const accountBox = await account.boundingBox(); assert.ok(accountBox && accountBox.x >= 0 && accountBox.x + accountBox.width <= width);
-          await avatar.press('Escape'); await account.waitFor({ state: 'hidden' });
-          await toggleChat().click();
+          await page.keyboard.press('Escape'); await account.waitFor({ state: 'hidden' }); { const closeApp = page.getByRole('button', { name: 'Đóng menu ứng dụng', exact: true }); if (await closeApp.count()) await closeApp.dispatchEvent('click'); }
+          await railClick(page, 'Hỏi đáp với Trợ lý AI');
           const panel = page.getByRole(width >= 1024 ? 'complementary' : 'dialog', { name: 'Hỏi đáp với Trợ lý AI', exact: true }); await panel.waitFor();
           if (width < 1024) {
             assert.equal(await panel.getAttribute('aria-modal'), 'true');

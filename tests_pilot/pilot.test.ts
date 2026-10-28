@@ -59,6 +59,8 @@ async function click(page: Page, name: string | RegExp) {
   if (name === 'Sinh đề AI Mới') { await addSource(page, 'Sinh bằng AI'); return; }
   if (name === 'Song song') { await page.getByLabel('Bố cục song song', { exact: true }).check(); return; }
   if (name === 'Thêm câu hỏi mới') { await addSource(page, 'Tự soạn câu mới'); return; }
+  if (name === 'Thêm câu hỏi') { await page.getByRole('button', { name: 'Thêm vào cuối đề', exact: true }).click(); await page.getByRole('menuitem', { name: 'Câu tự soạn', exact: true }).click(); return; }
+  if (name === 'Cùng soạn · Góp ý · Lịch sử') { await page.getByRole('button', { name: 'Thêm công cụ', exact: true }).filter({ visible: true }).click(); await page.getByRole('menuitem', { name: 'Cùng soạn', exact: true }).click(); return; }
   await page.getByRole('button', { name: typeof name === 'string' ? labels[name] ?? name : name, exact: typeof name === 'string' }).click();
   await acceptReview(page);
 }
@@ -251,7 +253,7 @@ test('F2 author seven types, image, passage, zero, title and reopen', { timeout:
 
 test('F3 answer views, shuffle, Word and print', { timeout: 120000 }, () => flow('F3', async f => {
   await authenticated(f); await openExam(f,await seedExam(f,'ngu_van'));
-  await f.page.getByRole('button', { name: 'Rà soát đề', exact: true }).click();
+  await f.page.getByRole('button', { name: 'Thêm công cụ', exact: true }).filter({ visible: true }).click(); await f.page.getByRole('menuitem', { name: 'Rà soát đề', exact: true }).click();
   const review = f.page.getByRole('dialog', { name: 'Rà soát đề', exact: true });
   assert.ok((await review.innerText()).includes('Tổng điểm: 6,00'));
   assert.ok(!(await review.innerText()).includes(solution));
@@ -832,10 +834,10 @@ test('F21 collaborator Copilot uses its own key and preserves the owner concurre
     await f.db.user.updateMany({ where: { id: { in: f.ids } }, data: { aiDailyLimit: 10 } });
     await f.api('/api/user/keys', 'POST', { apiKey: 'pilot-owner-key-0123456789', label: 'Owner fixture' });
     await f.api('/api/exams/' + id + '/collaborators', 'POST', { email: f.emails[1], role: 'EDITOR' });
-    const context = await f.context(), b = await context.newPage(); await login(b, f.emails[1], f.password);
+    const context = await f.context(), b = await context.newPage(); await login(b, f.emails[1], f.password); await b.waitForURL(origin + '/');
     await f.api('/api/user/keys', 'POST', { apiKey: 'pilot-editor-key-0123456789', label: 'Editor fixture' }, context);
     await b.goto(origin + '/editor/' + id);
-    await b.getByTitle('Mở rộng bảng Trợ lý AI').filter({ visible: true }).click();
+    await b.getByRole('button', { name: 'Sửa đề bằng Trợ lý AI', exact: true }).click();
     await b.locator('#right-copilot-input').fill('Sửa nội dung câu 1 thành câu thử F21'); await b.locator('#right-copilot-input').press('Enter');
     await waitUntil(async () => mock.keys.length === 1, 'Collaborator request must reach local provider');
     assert.deepEqual(mock.keys, ['pilot-editor-key-0123456789']);

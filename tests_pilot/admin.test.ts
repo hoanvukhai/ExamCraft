@@ -1,3 +1,4 @@
+import { openAccount } from './editor-ui';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
@@ -134,7 +135,7 @@ test('admin: current data, access, confirmations and phone navigation', { timeou
       await keys.getByRole('button', { name: 'Đóng', exact: true }).click();
       const exam = await db.exam.findFirstOrThrow({ where: { ownerId: ids[0] } });
       await page.goto(origin + '/editor/' + exam.id);
-      await page.getByRole('button', { name: 'Mở menu tài khoản', exact: true }).click();
+      await openAccount(page);
       const menu = page.getByRole('region', { name: 'Tài khoản', exact: true });
       await menu.getByText('Đăng xuất').waitFor();
       assert.equal(/Còn lại:\s*\d|\/\s*100\s*lượt/.test(await menu.innerText()), false);
