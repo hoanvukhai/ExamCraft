@@ -2,6 +2,8 @@
 
 import React, { useRef, useState } from 'react';
 import { Question } from '@/types/exam';
+import { ToolMenu } from './EditorToolbar';
+import { MoreHorizontal } from 'lucide-react';
 import { MathRenderer } from './MathRenderer';
 import { QuestionEditor } from './QuestionEditor';
 import { QuestionAiReview } from './QuestionAiReview';
@@ -44,6 +46,7 @@ import { questionValueStamp, type QuestionManualSubmission } from '@/lib/questio
 import { confirmedUndoHistory, prepareQuestionUndo, type QuestionUndoEntry } from '@/lib/question-commands';
 
 interface QuestionCardProps {
+  withAi?: (action: () => void) => void;
   ownerId: string;
   documentId: string;
   sourceStamp: string;
@@ -69,6 +72,7 @@ interface QuestionCardProps {
 }
 
 export const QuestionCard: React.FC<QuestionCardProps> = ({
+  withAi = action => action(),
   ownerId,
   documentId,
   sourceStamp,
@@ -297,7 +301,8 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
               checked={isSelected || false}
               onChange={() => onToggleSelect(question.id)}
               title="Chọn câu hỏi này để gộp câu hoặc thao tác hàng loạt"
-              className="w-4 h-4 rounded text-[var(--ui-accent)] focus:ring-[var(--ui-accent)] border-[#dadce0] cursor-pointer"
+              aria-label={'Chọn câu ' + (index + 1)}
+              className={'w-4 h-4 rounded lg:opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus:opacity-100 ' + (isSelected ? '!opacity-100 ' : '') + 'text-[var(--ui-accent)] focus:ring-[var(--ui-accent)] border-[#dadce0] cursor-pointer'}
             />
           )}
           <span className="w-7 h-7 rounded-full bg-[#202124] text-white dark:bg-[#303134] dark:text-[#e3e3e3] dark:border dark:border-[#3c4043] font-bold text-xs flex items-center justify-center shadow-2xs">
@@ -330,130 +335,21 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
           {bankSaveError && <span role="alert" className="text-xs text-red-600">{bankSaveError}</span>}
         </div>
 
-        {/* Nút hành động thanh công cụ Google Ghost Pill */}
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <button
-            onClick={() => handleAiTweak('change_numbers')}
-            disabled={isLoadingAi || !!pendingNewQuestion}
-            title="Đổi số liệu bài toán bằng AI"
-            className="flex items-center gap-1.5 px-3 py-1 text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] bg-white dark:bg-[#292a2d] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] rounded-lg transition-colors border border-[#dadce0] dark:border-[#3c4043] shadow-2xs cursor-pointer"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-            <span>Đổi số liệu</span>
-          </button>
-
-          <button
-            onClick={() => handleAiTweak('similar_question')}
-            disabled={isLoadingAi || !!pendingNewQuestion}
-            title="Tạo câu hỏi tương đương bằng AI"
-            className="flex items-center gap-1.5 px-3 py-1 text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] bg-white dark:bg-[#292a2d] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] rounded-lg transition-colors border border-[#dadce0] dark:border-[#3c4043] shadow-2xs cursor-pointer"
-          >
-            <RefreshCw className="w-3.5 h-3.5 text-[#5f6368] dark:text-[#9aa0a6]" />
-            <span className="hidden sm:inline">Câu tương tự</span>
-          </button>
-
-          {/* Nút Thẩm định AI Dual-Solve */}
-          <button
-            onClick={handleVerifyQuestion}
-            disabled={isVerifying}
-            title="Thẩm định độc lập bằng AI: AI giải từ đầu không nhìn đáp án để kiểm tra tính chính xác"
-            className={`flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-lg transition-colors border shadow-2xs cursor-pointer ${
-              question.status === 'verified'
-                ? 'bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100'
-                : verifyResult && !verifyResult.isMatch
-                ? 'bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100'
-                : 'bg-white dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f8f9fa] dark:hover:bg-[#303134]'
-            }`}
-          >
-            {isVerifying ? (
-              <RefreshCw className="w-3.5 h-3.5 animate-spin text-[#5f6368]" />
-            ) : question.status === 'verified' ? (
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-            ) : verifyResult && !verifyResult.isMatch ? (
-              <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
-            ) : (
-              <CheckCheck className="w-3.5 h-3.5 text-[#5f6368] dark:text-[#9aa0a6]" />
-            )}
-            <span className="hidden md:inline">
-              {isVerifying
-                ? 'Đang giải...'
-                : question.status === 'verified'
-                ? 'Đã thẩm định'
-                : verifyResult && !verifyResult.isMatch
-                ? 'Lệch đáp án!'
-                : 'Thẩm định AI'}
-            </span>
-          </button>
-
-          {/* Nút Trợ lý AI Sửa Câu */}
-          {onAskAiAboutQuestion && (
-            <button
-              onClick={() => onAskAiAboutQuestion(index)}
-              title="Bảo Trợ lý AI ở bên phải chỉnh sửa câu hỏi này theo ý bạn"
-              className="flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-lg bg-white dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] border border-[#dadce0] dark:border-[#3c4043] shadow-2xs transition-colors cursor-pointer"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-              <span>Bảo AI sửa câu này</span>
-            </button>
-          )}
-
-          <button
-            onClick={handleSaveToBank}
-            disabled={bankSaving || isEditing || !!pendingNewQuestion}
-            aria-label={bankSaving ? 'Đang lưu bản sao vào ngân hàng' : 'Lưu bản sao vào ngân hàng'}
-            title={isEditing || pendingNewQuestion ? 'Áp dụng hoặc đóng bản đang sửa trước khi lưu vào ngân hàng' : 'Lưu bản sao riêng vào ngân hàng; sửa đề sau đó không đổi bản sao này'}
-            className="p-1.5 text-[#5f6368] hover:text-emerald-600 dark:text-[#9aa0a6] dark:hover:text-emerald-400 hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] rounded-lg transition-colors cursor-pointer"
-          >
-            <BookmarkPlus className="w-4 h-4" />
-          </button>
-
-          {onMoveUp && (
-            <button
-              onClick={onMoveUp}
-              disabled={isFirst}
-              title="Di chuyển câu hỏi lên trên (↑)"
-              className="p-1.5 text-[#5f6368] hover:text-[var(--ui-accent)] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] disabled:opacity-25 disabled:cursor-not-allowed rounded-lg transition-colors cursor-pointer"
-            >
-              <ArrowUp className="w-4 h-4" />
-            </button>
-          )}
-
-          {onMoveDown && (
-            <button
-              onClick={onMoveDown}
-              disabled={isLast}
-              title="Di chuyển câu hỏi xuống dưới (↓)"
-              className="p-1.5 text-[#5f6368] hover:text-[var(--ui-accent)] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] disabled:opacity-25 disabled:cursor-not-allowed rounded-lg transition-colors cursor-pointer"
-            >
-              <ArrowDown className="w-4 h-4" />
-            </button>
-          )}
-
-          {onDuplicate && (
-            <button
-              onClick={onDuplicate}
-              title="Nhân bản (sao chép) câu hỏi này"
-              className="p-1.5 text-[#5f6368] hover:text-emerald-600 dark:text-[#9aa0a6] dark:hover:text-emerald-400 hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] rounded-lg transition-colors cursor-pointer"
-            >
-              <Copy className="w-4 h-4" />
-            </button>
-          )}
-
-          <button
-            onClick={() => setIsEditing(!isEditing)}
-            title="Sửa nội dung câu hỏi thủ công"
-            className="p-1.5 text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] rounded-lg transition-colors cursor-pointer"
-          >
-            <Edit3 className="w-4 h-4" />
-          </button>
-
-          <button
-            onClick={() => onDelete(question.id)}
-            title="Xóa câu hỏi này"
-            className="p-1.5 text-[#5f6368] hover:text-red-600 dark:text-[#9aa0a6] dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg transition-colors cursor-pointer"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
+        <div className="flex items-center gap-1 flex-wrap">
+          <button type="button" aria-label={'Sửa câu ' + (index + 1)} title="Sửa nội dung câu hỏi thủ công" onClick={() => setIsEditing(!isEditing)} className="app-button-secondary px-3 min-h-9 text-xs inline-flex gap-1 items-center"><Edit3 className="w-3.5 h-3.5" />Sửa</button>
+          <ToolMenu label={'AI câu ' + (index + 1)} Icon={Sparkles} items={[
+            { label: 'Đổi số liệu', title: 'Đổi số liệu bài toán bằng AI', disabled: isLoadingAi || !!pendingNewQuestion, onClick: () => withAi(() => void handleAiTweak('change_numbers')) },
+            { label: 'Tạo câu tương đương', title: 'Tạo câu hỏi tương đương bằng AI', disabled: isLoadingAi || !!pendingNewQuestion, onClick: () => withAi(() => void handleAiTweak('similar_question')) },
+            { label: isVerifying ? 'Đang thẩm định…' : 'Thẩm định', disabled: isVerifying, onClick: () => withAi(() => void handleVerifyQuestion()) },
+            ...(onAskAiAboutQuestion ? [{ label: 'Bảo AI sửa', onClick: () => withAi(() => onAskAiAboutQuestion(index)) }] : [])
+          ]} />
+          <ToolMenu label={'Thao tác câu ' + (index + 1)} compact Icon={MoreHorizontal} items={[
+            ...(onMoveUp ? [{ label: 'Di chuyển lên', disabled: isFirst, onClick: onMoveUp }] : []),
+            ...(onMoveDown ? [{ label: 'Di chuyển xuống', disabled: isLast, onClick: onMoveDown }] : []),
+            ...(onDuplicate ? [{ label: 'Nhân bản câu', onClick: onDuplicate }] : []),
+            { label: 'Lưu bản sao vào ngân hàng', disabled: bankSaving || isEditing || !!pendingNewQuestion, onClick: () => void handleSaveToBank() },
+            { label: 'Xóa câu hỏi này', onClick: () => onDelete(question.id) }
+          ]} />
         </div>
       </div>
 

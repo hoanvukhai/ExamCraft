@@ -413,7 +413,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
               {/* Danh sách các câu hỏi dạng thẻ Block Card */}
               <div className="space-y-3.5">
                 {exam.questions.map((q, idx) => (
-                  <div key={q.id} id={`editor-question-${q.id}`} tabIndex={-1}><QuestionCard ownerId={currentUser.id}
+                  <div key={q.id} id={`editor-question-${q.id}`} tabIndex={-1}><QuestionCard withAi={withAi} ownerId={currentUser.id}
                     displayPoints={scoredQuestions[idx]?.points}
                     passage={exam.passages?.find(p => p.id === q.passageId)}
                     numericScore={requiresNumericScore(exam.metadata.assessmentMode)}
