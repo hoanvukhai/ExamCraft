@@ -5,8 +5,8 @@ import type { ExamMetadata } from '@/types/exam';
 import { getCatalogSubjects, COGNITIVE_FRAMEWORKS } from '@/lib/education-catalog';
 import { defaultHeaderLayout, headerEditableSnapshot, headerPatch, headerSubmissionApplied, headerSubmissionConflict, sameHeaderValue, validateHeaderSubmission, type HeaderSnapshot, type HeaderSubmission, type HeaderLayout } from '@/lib/header-layout';
 
-interface HeaderSettingsModalProps {
-  isOpen: boolean; onClose: () => void; metadata: ExamMetadata; documentId: string; ownerId: string;
+export interface HeaderSettingsModalProps {
+  embedded?: boolean; isOpen: boolean; onClose: () => void; metadata: ExamMetadata; documentId: string; ownerId: string;
   onSaveMetadata: (submission: HeaderSubmission) => void;
 }
 const field = 'w-full border rounded p-2 bg-transparent text-sm';
@@ -15,7 +15,7 @@ const labels = { schoolName: 'Đơn vị chủ quản', departmentName: 'Trườ
 export function HeaderSettingsModal(props: HeaderSettingsModalProps) {
   return props.isOpen ? <HeaderForm key={`${props.ownerId}:${props.documentId}`} {...props} /> : null;
 }
-function HeaderForm({ metadata, documentId, onClose, onSaveMetadata }: HeaderSettingsModalProps) {
+export function HeaderForm({ metadata, documentId, onClose, onSaveMetadata, embedded }: HeaderSettingsModalProps) {
   const [base, setBase] = useState(() => headerEditableSnapshot(metadata));
   const [form, setForm] = useState(() => headerEditableSnapshot(metadata));
   const [submitted, setSubmitted] = useState<HeaderSubmission | null>(null), [error, setError] = useState('');
@@ -41,7 +41,7 @@ function HeaderForm({ metadata, documentId, onClose, onSaveMetadata }: HeaderSet
       setSubmitted(submission); onSaveMetadata(submission); setError('');
     } catch (cause) { setError(cause instanceof Error && cause.name !== 'ZodError' ? cause.message : 'Kiểm tra tên đề, số phút và bố cục tối đa 30 dòng.'); }
   };
-  return <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4"><div role="dialog" aria-modal="true" aria-label="Tùy chỉnh tiêu đề" className="app-dialog bg-white dark:bg-[#202124] rounded-xl w-full max-w-2xl max-h-[90vh] overflow-auto p-5 space-y-3">
+  return <div className={embedded ? 'contents' : 'fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4'}><div role={embedded ? undefined : 'dialog'} aria-modal={embedded ? undefined : true} aria-label="Tùy chỉnh tiêu đề" className="app-dialog bg-white dark:bg-[#202124] rounded-xl w-full max-w-2xl max-h-[90vh] overflow-auto p-5 space-y-3">
     <div className="app-dialog-header flex justify-between gap-3"><h2 className="font-semibold">Tiêu đề và bố cục in</h2><button type="button" onClick={onClose}>Đóng</button></div>
     <p className="text-xs">Chỉ áp dụng các trường bạn sửa. Thay đổi phạm vi hoặc kế hoạch mới hơn được giữ. Đổi môn/lớp không tự đổi bộ kiến thức, kế hoạch hay khung mức.</p>
     <div className="grid grid-cols-2 gap-3">
@@ -65,7 +65,7 @@ function HeaderForm({ metadata, documentId, onClose, onSaveMetadata }: HeaderSet
       <button type="button" disabled={layout.lines.length >= 30} onClick={() => change({ headerLayout: { ...layout, lines: [...layout.lines, { id: crypto.randomUUID(), area: 'right', align: 'center', hidden: false, text: '' }] } })}>Thêm dòng riêng</button>
     </details>
     {conflict && <p role="alert" className="text-sm text-amber-700">Trường đang sửa đã đổi ở bản mới. Nháp của bạn vẫn giữ trong hộp này; chưa ghi đè.</p>}
-    {applied && <p role="status" className="text-sm text-emerald-700">Đã áp dụng các trường vào bản soạn. Bấm Lưu đề để lưu trên máy chủ.</p>}
+    {applied && <p role="status" className="text-sm text-emerald-700">Đã áp dụng các trường vào bản soạn. Đề sẽ tự lưu trên máy chủ; xem trạng thái cạnh tên đề.</p>}
     {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
     <div className="flex gap-4"><button type="button" className="app-button-primary text-white rounded px-3 py-2 text-sm disabled:opacity-50" disabled={applied || !Object.keys(submission.patch).length} onClick={submit}>Áp dụng các trường đã sửa</button><button type="button" onClick={onClose}>Đóng, giữ bản soạn hiện tại</button></div>
   </div></div>;

@@ -19,7 +19,8 @@ import { GenerateModal } from '@/components/GenerateModal';
 import { ShuffleModal } from '@/components/ShuffleModal';
 import { ImportModal } from '@/components/ImportModal';
 import { ExamLibraryModal } from '@/components/ExamLibraryModal';
-import { HeaderSettingsModal } from '@/components/HeaderSettingsModal';
+import { EditorSettings, type SettingsTab } from '@/components/editor/EditorSettings';
+import { subjectLabel } from '@/lib/teacher-ui';
 import { QuestionBankModal } from '@/components/QuestionBankModal';
 import { RightCompanionRail } from '@/components/RightCompanionRail';
 import { ShareModal } from '@/components/ShareModal';
@@ -94,7 +95,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   const [keyReminder, setKeyReminder] = useState(false);
   const withAi = (action: () => void) => { if (!hasActiveKey) setKeyReminder(true); else action(); };
   // Layout states
-  const { copilotOpen: isCopilotOpen, setCopilotOpen: setIsCopilotOpen } = useWorkspace();
+  const { settingsOpen, setSettingsOpen, copilotOpen: isCopilotOpen, setCopilotOpen: setIsCopilotOpen } = useWorkspace();
   const [copilotCommand, setCopilotCommand] = useState<string>('');
   const [mobileTab, setMobileTab] = useState<'editor' | 'preview'>('editor');
 
@@ -106,7 +107,8 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   const [isShuffleModalOpen, setIsShuffleModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isLibraryModalOpen, setIsLibraryModalOpen] = useState(false);
-  const [isHeaderModalOpen, setIsHeaderModalOpen] = useState(false);
+  const [settingsTab, setSettingsTab] = useState<SettingsTab>('info');
+  const openSettings = (tab: SettingsTab = 'info') => { setSettingsTab(tab); setSettingsOpen(true); };
   const [isQuestionBankModalOpen, setIsQuestionBankModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isResultsModalOpen, setIsResultsModalOpen] = useState(false);
@@ -284,6 +286,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         isCloudSaved={isCloudSaved}
         onShare={() => reviewBefore(() => { if (canPublish) setIsShareModalOpen(true); else setCollaborationOpen(true); })}
       >
+        <button type="button" aria-label="Thông tin và thiết lập đề" onClick={() => openSettings('info')} className="app-button-secondary text-xs px-2 min-h-9 max-w-44 truncate hidden md:block">{subjectLabel(exam.metadata.subject)} {exam.metadata.grade} · {exam.metadata.durationMinutes ?? 0}′ · {scoredQuestions.reduce((sum, q) => sum + (q.points ?? 0), 0)}đ</button>
         <details className="no-print shrink-0"><summary title="Lưu các thay đổi lên máy chủ" className="cursor-pointer text-xs list-none min-h-9 flex items-center gap-1" aria-label="Trạng thái lưu"><span className={saveState === 'saved' ? 'text-emerald-600' : ['error','conflict','offline'].includes(saveState) ? 'text-amber-600' : ''}>●</span><span className="hidden sm:inline">{saveState === 'saved' ? 'Đã lưu' : saveState === 'saving' ? 'Đang lưu…' : saveState === 'dirty' ? 'Đang chờ lưu' : 'Cần xử lý lưu'}</span></summary>
       {true && (
         <div role="status" className="app-menu fixed left-3 right-3 sm:left-auto sm:right-20 top-14 z-40 max-w-xl p-4 border rounded-xl bg-[var(--ui-surface)] flex flex-wrap gap-2 text-sm shadow-lg">
@@ -306,7 +309,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         copilotOpen={isCopilotOpen} onCopilot={() => withAi(() => setIsCopilotOpen(open => !open))}
         access={exam.access} submissionCount={submissionCount}
         onGenerate={() => withAi(() => setIsGenerateModalOpen(true))} onImport={() => setIsImportModalOpen(true)} onBank={() => setIsQuestionBankModalOpen(true)}
-        onHeaderSettings={() => setIsHeaderModalOpen(true)} onShuffle={() => setIsShuffleModalOpen(true)} onLibrary={() => setIsLibraryModalOpen(true)}
+        onHeaderSettings={() => openSettings('info')} onShuffle={() => setIsShuffleModalOpen(true)} onLibrary={() => setIsLibraryModalOpen(true)}
         onExportWord={() => reviewBefore(() => void handleExportWord())} onPrint={() => reviewBefore(() => window.print())} onPresent={() => setPresentationOpen(true)}
         onCollaborate={() => setCollaborationOpen(true)} onResults={() => setIsResultsModalOpen(true)}
       />
@@ -403,10 +406,6 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
 
               {/* Danh sách các câu hỏi dạng thẻ Block Card */}
               <div className="space-y-3.5">
-                <ExamStructureEditor exam={exam} onChange={setExam} />
-                <ExamTemplatePanel ownerId={currentUser.id} exam={exam} onChange={setExam} />
-                <KnowledgeScopeEditor exam={exam} onChange={setExam} ownerId={currentUser.id} hasActiveKey={hasActiveKey} />
-                <ExamPlanEditor exam={exam} onChange={setExam} />
                 {exam.questions.map((q, idx) => (
                   <div key={q.id} id={`editor-question-${q.id}`} tabIndex={-1}><QuestionCard ownerId={currentUser.id}
                     displayPoints={scoredQuestions[idx]?.points}
@@ -577,15 +576,6 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         onClose={() => setIsLibraryModalOpen(false)}
         onLoadExam={(loadedExam) => { window.location.assign(`/editor/${loadedExam.id}`); }}
         currentExam={exam}
-      />
-
-      <HeaderSettingsModal
-        documentId={exam.id}
-        ownerId={currentUser.id}
-        isOpen={isHeaderModalOpen}
-        onClose={() => setIsHeaderModalOpen(false)}
-        metadata={exam.metadata}
-        onSaveMetadata={(submission) => setExam(previous => applyHeaderSubmission(previous, submission))}
       />
 
       <QuestionBankModal ownerId={currentUser.id} key={`bank:${currentUser.id}`}

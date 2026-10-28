@@ -30,6 +30,8 @@ interface Workspace {
   openAiNotes: () => void;
   menuExpanded: boolean;
   setMenuExpanded: (value: boolean) => void;
+  settingsOpen: boolean;
+  setSettingsOpen: (value: boolean) => void;
   copilotOpen: boolean;
   setCopilotOpen: (value: boolean | ((previous: boolean) => boolean)) => void;
   updateFolder: (id: string, changes: { name?: string; color?: string }) => Promise<boolean>;
@@ -61,13 +63,15 @@ export function WorkspaceProvider({ user, children }: { user: WorkspaceUser; chi
   const [menuExpanded, setMenuState] = useState(true);
   const [copilotOpen, setCopilotState] = useState(false);
   const copilotRef = useRef(false);
+  const [settingsOpen, setSettingsState] = useState(false);
+  const setSettingsOpen = useCallback((value: boolean) => { if (value) { copilotRef.current = false; setCopilotState(false); setAssistantOpen(false); } setSettingsState(value); }, []);
   const setCopilotOpen = useCallback((value: boolean | ((previous: boolean) => boolean)) => {
     const next = typeof value === 'function' ? value(copilotRef.current) : value;
     copilotRef.current = next;
-    if (next) setAssistantOpen(false);
+    if (next) { setAssistantOpen(false); setSettingsState(false); }
     setCopilotState(next);
   }, []);
-  const toggleAssistant = useCallback(() => { copilotRef.current = false; setCopilotState(false); setAssistantOpen(open => !open); }, []);
+  const toggleAssistant = useCallback(() => { setSettingsState(false); copilotRef.current = false; setCopilotState(false); setAssistantOpen(open => !open); }, []);
   const closeAssistant = useCallback(() => setAssistantOpen(false), []);
   const [toastMessage, setToastMessage] = useState<{ text: string; kind: 'info' | 'error' } | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -136,8 +140,8 @@ export function WorkspaceProvider({ user, children }: { user: WorkspaceUser; chi
   const value = useMemo<Workspace>(() => ({
     user, folders, foldersReady, foldersError, reloadFolders, openCreateFolder, deleteFolder, updateFolder, ...keyStats, hasActiveKey: keyStats.keyCount > 0, openKeys: () => setKeysOpen(true),
     assistantOpen, toggleAssistant, closeAssistant, openAiNotes: () => setNotesOpen(true),
-    menuExpanded, setMenuExpanded, copilotOpen, setCopilotOpen, toast, confirmAction,
-  }), [user, folders, foldersReady, foldersError, reloadFolders, openCreateFolder, deleteFolder, updateFolder, keyStats, assistantOpen, menuExpanded, setMenuExpanded, copilotOpen, setCopilotOpen, toggleAssistant, closeAssistant, toast, confirmAction]);
+    menuExpanded, setMenuExpanded, settingsOpen, setSettingsOpen, copilotOpen, setCopilotOpen, toast, confirmAction,
+  }), [user, folders, foldersReady, foldersError, reloadFolders, openCreateFolder, deleteFolder, updateFolder, keyStats, assistantOpen, menuExpanded, setMenuExpanded, settingsOpen, setSettingsOpen, copilotOpen, setCopilotOpen, toggleAssistant, closeAssistant, toast, confirmAction]);
 
   return <WorkspaceContext.Provider value={value}>
     {children}
