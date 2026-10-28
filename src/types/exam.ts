@@ -83,7 +83,30 @@ export interface RubricItem {
   maxPoints: number;     // Điểm tối đa cho ý này
 }
 
+export interface QuestionPart {
+  id: string;
+  label?: string;
+  content: string;
+  points?: number;
+  answer?: string;
+  solution?: string;
+  rubric?: RubricItem[];
+}
+export interface OutlineNode {
+  id: string;
+  kind: 'part' | 'group' | 'question';
+  title?: string;
+  instructions?: string;
+  numbering?: 'none' | 'roman' | 'letters' | 'decimal';
+  questionNumbering?: 'continuous' | 'restart';
+  sectionId?: string;
+  passageId?: string;
+  questionId?: string;
+  children?: OutlineNode[];
+}
+
 export interface Question {
+  parts?: QuestionPart[];
   id: string;
   cognitiveLevel?: string;
   learningOutcome?: string;
@@ -176,6 +199,7 @@ export interface Exam {
   passages?: Passage[];
   sections?: ExamSection[];
   questions: Question[];
+  outline?: OutlineNode[];
   createdAt: string;
   updatedAt: string;
   version?: number;

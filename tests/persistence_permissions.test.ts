@@ -4,6 +4,7 @@ import { Prisma } from '@prisma/client';
 import type { Exam, Question, QuestionType } from '../src/types/exam';
 import { normalizeExamDocument, normalizeQuestion, fromDatabaseExam, questionToDatabase, DocumentValidationError } from '../src/lib/exam-document';
 import { assertExamReferences, createExam, updateExam } from '../src/lib/exam-persistence';
+import { legacyOutline } from '../src/lib/exam-outline';
 import { persistExam, loadExam, SaveExamError, isExamAccessError } from '../src/lib/exam-client';
 
 test('only access failures freeze editing; validation, version conflicts and outages keep recovery available', () => {
@@ -113,7 +114,8 @@ const status = (expected: number) => (error: unknown) => Boolean(error && typeof
 test('adapter roundtrip retains seven question types, zero points, passages, figures and authoring fields', () => {
   const original = fixture();
   const normalized = normalizeExamDocument(original);
-  assert.deepEqual(normalized, original);
+  assert.deepEqual(normalized, { ...original, outline: legacyOutline(original) });
+  assert.equal(Object.hasOwn(original, 'outline'), false, 'Reading never writes the legacy document');
   for (const q of normalized.questions) {
     const stored = questionToDatabase(q, { ownerId: 'teacher-a', subject: 'toan', grade: 5, examId: 'exam-a', questionId: `db-${q.id}` });
     const restored = normalizeQuestion(stored);

@@ -3,6 +3,7 @@ import type { Exam, Question, QuestionType, DifficultyLevel, Subject, Figure } f
 import { parseKnowledgePackage, resolveKnowledgeScope } from './knowledge-package';
 import { parseExamPlan } from './exam-plan';
 import { parseHeaderLayout } from './header-layout';
+import { syncOutline } from './exam-outline';
 import { templateApplicationSchema } from './exam-template';
 
 const questionTypes = new Set(['multiple_choice', 'true_false_group', 'short_answer', 'essay', 'fill_blank', 'matching', 'ordering']);
@@ -59,6 +60,7 @@ export function normalizeQuestion(input: unknown, index = 0): Question {
     correct_answer: field('correct_answer', [q, 'correctAnswer'], [payload, 'correct'], [payload, 'correct_answer'], [editor, 'correct_answer']),
     accepted_answers: field('accepted_answers', [payload, 'accepted_answers'], [editor, 'accepted_answers']),
     rubric: field('rubric', [payload, 'rubric'], [editor, 'rubric']),
+    parts: field('parts', [editor, 'parts']),
     step_by_step_solution: field('step_by_step_solution', [q, 'solution'], [editor, 'step_by_step_solution']) ?? '',
     // A canonical DB null means removed, not "reuse the older editor payload".
     figures: figures(Object.hasOwn(q, 'figures') ? q.figures : editor.figures),
@@ -89,6 +91,19 @@ export function normalizeQuestion(input: unknown, index = 0): Question {
   if (result.correctOrder != null && (!Array.isArray(result.correctOrder) || result.correctOrder.length > 100 || result.correctOrder.some(item => typeof item !== 'string'))) fail('thứ tự đúng phải là danh sách văn bản');
   const rubric = validateList(result.rubric, 'tiêu chí');
   if (rubric.some(row => typeof row.criterion !== 'string' || typeof row.maxPoints !== 'number' || !Number.isFinite(row.maxPoints) || row.maxPoints < 0)) fail('tiêu chí hoặc điểm tối đa không hợp lệ');
+  const parts = validateList(result.parts, 'ý của câu');
+  if (parts.length && !['essay', 'short_answer'].includes(result.type)) fail('ý riêng chỉ dùng cho tự luận hoặc trả lời ngắn');
+  if (parts.length > 100 || parts.some(part => typeof part.id !== 'string' || !part.id.trim() ||
+      typeof part.content !== 'string' || ['label', 'answer', 'solution'].some(key =>
+        part[key] !== undefined && typeof part[key] !== 'string') ||
+      part.points !== undefined && (typeof part.points !== 'number' || !Number.isFinite(part.points) || part.points < 0)) ||
+      new Set(parts.map(part => part.id)).size !== parts.length) fail('ý bị trùng mã hoặc nội dung/điểm không hợp lệ');
+  for (const part of parts) {
+    if (part.rubric !== undefined && (!Array.isArray(part.rubric) || part.rubric.length > 100 || part.rubric.some(value => {
+      const row = record(value);
+      return typeof row.criterion !== 'string' || typeof row.maxPoints !== 'number' || !Number.isFinite(row.maxPoints) || row.maxPoints < 0;
+    }))) fail('barem của ý không hợp lệ');
+  }
   const pointValue = Object.hasOwn(q, 'points') ? q.points : editor.points;
   if (pointValue != null) result.points = number(pointValue, `Điểm câu ${index + 1}`);
   else delete result.points;
@@ -161,7 +176,8 @@ export function normalizeExamDocument(input: unknown): Exam {
     document.passages = document.passages.map(p => ({ ...p, ...(p.figures != null ? { figures: figures(p.figures) } : {}) }));
   }
   if (BufferByteLength(JSON.stringify(document)) > 15 * 1024 * 1024) throw new DocumentValidationError('Đề vượt 15 MB; hãy giảm dung lượng ảnh trước khi lưu');
-  return document;
+  try { return syncOutline(document); }
+  catch (error) { throw new DocumentValidationError(error instanceof Error ? error.message : 'Dàn ý không hợp lệ'); }
 }
 
 function BufferByteLength(value: string): number { return new TextEncoder().encode(value).length; }

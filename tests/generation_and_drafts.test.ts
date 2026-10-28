@@ -1,3 +1,4 @@
+import { normalizeExamDocument } from '../src/lib/exam-document';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { applyGeneratedDraft, generationDocumentStamp, generationPlanSchema, validateGeneratedExam } from '../src/lib/generation-plan';
@@ -16,8 +17,8 @@ test('independent writer slots preserve both drafts even when shared-slot reads 
   writeDraft(storage, 'owner', exam.id, exam, true, 'a');
   writeDraft(storage, 'owner', other.id, other, true, 'b');
   const actual = { ...storage, getItem: (key: string) => values.get(key) ?? null };
-  assert.deepEqual(readDraft(actual, 'owner', writerDraftId(exam.id, 'a')), exam);
-  assert.deepEqual(readDraft(actual, 'owner', writerDraftId(exam.id, 'b')), other);
+  assert.deepEqual(readDraft(actual, 'owner', writerDraftId(exam.id, 'a')), normalizeExamDocument(exam));
+  assert.deepEqual(readDraft(actual, 'owner', writerDraftId(exam.id, 'b')), normalizeExamDocument(other));
   assert.deepEqual(listUnsavedDrafts(actual, 'owner').drafts.map(item => item.exam.metadata.title).sort(), ['Writer A', 'Writer B']);
   writeDraft(actual, 'owner', other.id, other, false, 'b');
   assert.ok(listUnsavedDrafts(actual, 'owner').drafts.some(item => item.exam.metadata.title === 'Writer A'));
@@ -31,7 +32,7 @@ test('retiring an acknowledged new draft never removes another writer and failed
   writeDraft(storage, 'owner', 'new', a, true, 'a'); writeDraft(storage, 'owner', 'new', b, true, 'b');
   const before = storage.getItem(draftKey('owner', 'new'));
   retireWriterDraft(storage, 'owner', 'new', 'a', { ...a, id: 'server-a', serverId: 'server-a', version: 1 });
-  assert.equal(storage.getItem(draftKey('owner', 'new')), before); assert.deepEqual(readDraft(storage, 'owner', 'new'), b);
+  assert.equal(storage.getItem(draftKey('owner', 'new')), before); assert.deepEqual(readDraft(storage, 'owner', 'new'), normalizeExamDocument(b));
   assert.throws(() => writeDraft({ ...storage, setItem: (key, value) => { if (key === draftKey('owner', writerDraftId('new', 'c'))) throw Error('Quota'); storage.setItem(key, value); } }, 'owner', 'new', a, true, 'c'), /Quota/);
   assert.equal(storage.getItem(draftKey('owner', 'new')), before);
   retireWriterDraft(storage, 'owner', 'new', 'b', { ...b, id: 'server-b', serverId: 'server-b', version: 1 });
@@ -47,8 +48,8 @@ test('different tab writers preserve unsaved content even when a server cache re
   writeDraft(storage, 'teacher', a.id, a, true, 'tab-a');
   writeDraft(storage, 'teacher', a.id, b, false, 'tab-b');
   const archive = listUnsavedDrafts(storage, 'teacher').drafts;
-  assert.equal(archive.length, 1); assert.ok(archive[0].storageId.startsWith('recovery:')); assert.deepEqual(archive[0].exam, a);
-  assert.deepEqual(readDraft(storage, 'teacher', a.id, true), b);
+  assert.equal(archive.length, 1); assert.ok(archive[0].storageId.startsWith('recovery:')); assert.deepEqual(archive[0].exam, normalizeExamDocument(a));
+  assert.deepEqual(readDraft(storage, 'teacher', a.id, true), normalizeExamDocument(b));
   writeDraft(storage, 'teacher', a.id, b, true, 'tab-b');
   writeDraft(storage, 'teacher', a.id, { ...b, metadata: { ...b.metadata, title: 'B edited' } }, true, 'tab-b');
   assert.equal(listUnsavedDrafts(storage, 'teacher').drafts.length, 2, 'Same writer edits should not create an archive on every change.');
@@ -74,8 +75,8 @@ test('opening latest archives the full unsaved draft separately and a recovery o
   const local: Exam = { id: 'saved', serverId: 'saved', version: 1, metadata: { title: 'Nháp riêng', schoolName: '', departmentName: '', subject: 'toan', grade: 6, durationMinutes: 15 }, questions: [{ ...q, id: 'q', type: 'multiple_choice', difficulty: 'thong_hieu', step_by_step_solution: 'Lời giải riêng' }], passages: [{ id: 'p', content: 'Ngữ liệu riêng' }], createdAt: 'before', updatedAt: 'dirty' };
   const remote = { ...local, version: 2, metadata: { ...local.metadata, title: 'Bản máy chủ' }, questions: [] };
   const before = JSON.stringify(local), archive = stageLatestExam(storage, 'teacher-a', local, remote);
-  assert.equal(JSON.stringify(local), before); assert.deepEqual(readDraft(storage, 'teacher-a', archive), local);
-  assert.equal(readDraft(storage, 'teacher-a', local.id), null); assert.deepEqual(readDraft(storage, 'teacher-a', local.id, true), remote);
+  assert.equal(JSON.stringify(local), before); assert.deepEqual(readDraft(storage, 'teacher-a', archive), normalizeExamDocument(local));
+  assert.equal(readDraft(storage, 'teacher-a', local.id), null); assert.deepEqual(readDraft(storage, 'teacher-a', local.id, true), normalizeExamDocument(remote));
   assert.equal(listUnsavedDrafts(storage, 'teacher-a').drafts[0].storageId, archive); assert.equal(listUnsavedDrafts(storage, 'teacher-b').drafts.length, 0);
   const copy = recoveryDraftAsNew(local); assert.notEqual(copy.id, local.id); assert.equal(copy.serverId, undefined); assert.equal(copy.version, undefined); assert.equal(copy.access, undefined); assert.deepEqual(copy.questions, local.questions);
   assert.notEqual(stageLatestExam(storage, 'teacher-a', local, remote), archive);
@@ -86,12 +87,12 @@ test('a blocked archive or mismatched document never replaces the original local
   const values = new Map<string, string>(), storage = { getItem: (key: string) => values.get(key) ?? null, setItem: (key: string, value: string) => { values.set(key, value); } };
   writeDraft(storage, 'teacher-a', local.id, local);
   assert.throws(() => stageLatestExam({ ...storage, setItem: () => { throw Error('Quota'); } }, 'teacher-a', local, { ...local, version: 2 }), /Quota/);
-  assert.deepEqual(readDraft(storage, 'teacher-a', local.id), local);
+  assert.deepEqual(readDraft(storage, 'teacher-a', local.id), normalizeExamDocument(local));
   assert.throws(() => stageLatestExam(storage, 'teacher-a', local, { ...local, id: 'another' }), /không khớp/);
   assert.equal(values.size, 1);
   const blockedCurrentSlot = { ...storage, setItem: (key: string, value: string) => { if (key === draftKey('teacher-a', local.id)) throw Error('Current slot blocked'); storage.setItem(key, value); } };
   assert.throws(() => stageLatestExam(blockedCurrentSlot, 'teacher-a', local, { ...local, version: 2 }), /Current slot blocked/);
-  assert.deepEqual(readDraft(storage, 'teacher-a', local.id), local);
+  assert.deepEqual(readDraft(storage, 'teacher-a', local.id), normalizeExamDocument(local));
   const archiveKey = [...values.keys()].find(key => key !== draftKey('teacher-a', local.id))!;
   assert.deepEqual(JSON.parse(values.get(archiveKey)!).exam, local);
 });
