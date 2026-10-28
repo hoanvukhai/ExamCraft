@@ -47,7 +47,6 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
   const [viewMode, setViewMode] = useState<'exam' | 'parallel' | 'answers' | 'solutions' | 'matrix'>('exam');
   // null follows the available width; explicit percentages are actual paper zoom.
   const [zoom, setZoom] = useState<number | null>(null);
-  const [isExporting, setIsExporting] = useState<boolean>(false);
   const scrollArea = useRef<HTMLDivElement>(null);
   const [fitScale, setFitScale] = useState(1);
   const effectiveZoom = zoom ?? Math.round(fitScale * 100);
@@ -64,36 +63,8 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
   const { metadata, questions, passages } = exam;
   const subjectConfig = getSubjectConfig(metadata.subject, metadata.grade);
 
-  // Xử lý xuất file Word
-  const handleExportDocx = async () => {
-    try {
-      setIsExporting(true);
-      const blob = await exportExamToDocx(await prepareExportFigures(exam), viewMode !== 'exam' && viewMode !== 'matrix', viewMode === 'matrix', viewMode);
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${metadata.title.replace(/\s+/g, '_')}_${metadata.examCode || 'DeThi'}.docx`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } catch (err) {
-      alert(err instanceof Error ? err.message : 'Chưa xuất được tệp Word.');
-    } finally {
-      setIsExporting(false);
-    }
-  };
-
-  const matrixData = computeExamMatrix(exam);
-  const specData = computeExamSpecification(exam);
-  const planOutput = examPlanOutput(exam);
   const headerLines = resolveHeaderLines(exam);
   const headerAreas = (['left', 'right'] as const).filter(area => headerLines.some(line => line.area === area));
-
-  const handlePrint = async () => {
-    await document.fonts.ready;
-    window.print();
-  };
 
   const totalPoints = calculateExamTotalPoints(exam);
   const numericScore = requiresNumericScore(metadata.assessmentMode);
@@ -101,123 +72,10 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
 
   return (
     <div className="a4-preview-container flex flex-col h-full min-h-[32rem] bg-[#f1f3f4] dark:bg-[#17181a] rounded-2xl border border-[#dadce0] dark:border-[#3c4043] overflow-hidden shadow-xs">
-      {/* Top Preview Toolbar */}
-      <div className="no-print bg-white dark:bg-[#202124] px-4 py-3 border-b border-[#dadce0] dark:border-[#3c4043] flex flex-wrap items-center justify-between gap-3">
-        {/* Chế độ xem Google Segmented Pill */}
-        <div className="flex flex-wrap min-w-0 max-w-full items-center gap-1 bg-[#f1f3f4] dark:bg-[#292a2d] p-1 rounded-xl">
-          <button
-            onClick={() => setViewMode('exam')}
-            className={`flex shrink-0 min-h-10 max-w-full items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
-              viewMode === 'exam'
-                ? 'bg-white dark:bg-[#383a3d] text-[#202124] dark:text-[#e3e3e3] shadow-xs font-semibold'
-                : 'text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3]'
-            }`}
-          >
-            <FileText className="w-3.5 h-3.5" />
-            <span>Đề thi in ấn</span>
-          </button>
-
-          <button
-            onClick={() => setViewMode('parallel')}
-            className={`flex shrink-0 min-h-10 max-w-full items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
-              viewMode === 'parallel'
-                ? 'bg-white dark:bg-[#383a3d] text-[#202124] dark:text-[#e3e3e3] shadow-xs font-semibold'
-                : 'text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3]'
-            }`}
-          >
-            <TableProperties className="w-3.5 h-3.5" />
-            <span>Song song</span>
-          </button>
-
-          <button
-            onClick={() => setViewMode('answers')}
-            className={`flex shrink-0 min-h-10 max-w-full items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
-              viewMode === 'answers'
-                ? 'bg-white dark:bg-[#383a3d] text-[#202124] dark:text-[#e3e3e3] shadow-xs font-semibold'
-                : 'text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3]'
-            }`}
-          >
-            <CheckSquare className="w-3.5 h-3.5" />
-            <span>Bảng đáp án & Barem</span>
-          </button>
-
-          <button
-            onClick={() => setViewMode('solutions')}
-            className={`flex shrink-0 min-h-10 max-w-full items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
-              viewMode === 'solutions'
-                ? 'bg-white dark:bg-[#383a3d] text-[#202124] dark:text-[#e3e3e3] shadow-xs font-semibold'
-                : 'text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3]'
-            }`}
-          >
-            <BookOpen className="w-3.5 h-3.5" />
-            <span>Hướng dẫn giải</span>
-          </button>
-
-          <button
-            onClick={() => setViewMode('matrix')}
-            className={`flex shrink-0 min-h-10 max-w-full items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
-              viewMode === 'matrix'
-                ? 'bg-white dark:bg-[#383a3d] text-[#202124] dark:text-[#e3e3e3] shadow-xs font-semibold'
-                : 'text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3]'
-            }`}
-          >
-            <TableProperties className="w-3.5 h-3.5" />
-            <span>Ma trận & Đặc tả</span>
-          </button>
-        </div>
-
-        {/* Nút hành động */}
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Zoom controls */}
-          <div className="flex flex-wrap items-center gap-1 text-[#5f6368] dark:text-[#9aa0a6] bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] px-2.5 py-1 rounded-xl text-xs shadow-2xs">
-            <button
-              onClick={() => setZoom(Math.max(25, effectiveZoom - 10))}
-              disabled={effectiveZoom <= 25}
-              title="Thu nhỏ"
-              className="min-h-10 min-w-10 p-1 hover:text-[#202124] dark:hover:text-[#e3e3e3] cursor-pointer disabled:opacity-40"
-            >
-              <ZoomOut className="w-3.5 h-3.5" />
-            </button>
-            <span className="w-10 text-center font-mono font-medium" aria-live="polite">{effectiveZoom}%</span>
-            <button
-              onClick={() => setZoom(Math.min(200, effectiveZoom + 10))}
-              disabled={effectiveZoom >= 200}
-              title="Phóng to"
-              className="min-h-10 min-w-10 p-1 hover:text-[#202124] dark:hover:text-[#e3e3e3] cursor-pointer disabled:opacity-40"
-            >
-              <ZoomIn className="w-3.5 h-3.5" />
-            </button>
-            <button
-              onClick={() => setZoom(100)}
-              title="Khôi phục chuẩn 100%"
-              className="min-h-10 px-2 hover:text-[#202124] dark:hover:text-[#e3e3e3] cursor-pointer"
-            >
-              100%
-            </button>
-            <button onClick={() => setZoom(null)} title="Vừa chiều ngang" aria-pressed={zoom === null} className="min-h-10 px-2 flex items-center gap-1 hover:text-[#202124] dark:hover:text-[#e3e3e3] cursor-pointer">
-              <Maximize2 className="w-3.5 h-3.5" /> Vừa khung
-            </button>
-          </div>
-
-          <button
-            onClick={handlePrint}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] transition-colors shadow-2xs"
-          >
-            <Printer className="w-3.5 h-3.5 text-[#5f6368] dark:text-[#9aa0a6]" />
-            <span>In / PDF</span>
-          </button>
-
-          <button
-            onClick={handleExportDocx}
-            disabled={isExporting}
-            className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-medium text-white bg-[#202124] hover:bg-[#303134] dark:bg-[#292a2d] dark:text-[#e3e3e3] dark:hover:bg-[#303134] dark:border dark:border-[#3c4043] shadow-2xs hover:shadow-xs transition-all disabled:opacity-50"
-          >
-            <Download className="w-3.5 h-3.5" />
-            <span>{isExporting ? 'Đang tạo .docx...' : 'Tải file Word (.docx)'}</span>
-          </button>
-        </div>
+      <div className="no-print shrink-0 border-b p-2 space-y-2 bg-[var(--ui-surface)]">
+        <nav aria-label="Các bản xem trước" className="flex flex-nowrap overflow-x-auto gap-1">{([{ key: 'exam', name: 'Đề' }, { key: 'answers', name: 'Đáp án' }, { key: 'solutions', name: 'Lời giải' }, { key: 'matrix', name: 'Ma trận' }] as const).map(tab => <button type="button" key={tab.key} aria-label={tab.name} aria-pressed={viewMode === tab.key || tab.key === 'exam' && viewMode === 'parallel'} onClick={() => setViewMode(tab.key)} className={(viewMode === tab.key || tab.key === 'exam' && viewMode === 'parallel' ? 'app-button-tonal' : 'app-button-secondary') + ' shrink-0 min-h-9 px-3 text-xs'}>{tab.name}</button>)}</nav>
+        <div className="flex items-center gap-2 text-xs flex-wrap">{(viewMode === 'exam' || viewMode === 'parallel') && <label className="inline-flex gap-1 items-center"><input type="checkbox" aria-label="Bố cục song song" checked={viewMode === 'parallel'} onChange={e => setViewMode(e.target.checked ? 'parallel' : 'exam')} />Song song</label>}<div className="ml-auto flex items-center gap-1"><button type="button" aria-label="Thu nhỏ" title="Thu nhỏ" className="app-button-secondary min-w-9 min-h-9" disabled={effectiveZoom <= 25} onClick={() => setZoom(Math.max(25, effectiveZoom - 10))}>−</button><span className="min-w-10 text-center" aria-live="polite">{effectiveZoom}%</span><button type="button" aria-label="Phóng to" title="Phóng to" className="app-button-secondary min-w-9 min-h-9" disabled={effectiveZoom >= 200} onClick={() => setZoom(Math.min(200, effectiveZoom + 10))}>+</button><select className="teacher-field max-w-28 text-xs" aria-label="Kiểu thu phóng" value={zoom === null ? 'fit' : zoom === 100 ? '100' : 'custom'} onChange={e => { if (e.target.value !== 'custom') setZoom(e.target.value === 'fit' ? null : 100); }}><option value="fit">Vừa khung</option><option value="100">100%</option>{zoom !== null && zoom !== 100 && <option value="custom">{zoom}%</option>}</select></div></div>
       </div>
-
       {/* Vùng cuộn hiển thị trang A4 */}
       <div ref={scrollArea} className="a4-scroll-area grow min-h-0 overflow-auto p-4 sm:p-8">
         <div
