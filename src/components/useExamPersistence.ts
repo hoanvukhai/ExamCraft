@@ -1,4 +1,5 @@
 'use client';
+import { reconcileQuestionOutline } from '@/lib/exam-outline';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
@@ -30,7 +31,10 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
 
   const setExam = useCallback((value: React.SetStateAction<Exam>) => {
     if (!ready.current || activeOwner.current !== ownerId || current.current.access?.canEdit === false) return;
-    const next = typeof value === 'function' ? value(current.current) : value;
+    const candidate = typeof value === 'function' ? value(current.current) : value;
+    let next: Exam;
+    try { next = reconcileQuestionOutline(current.current, candidate); }
+    catch { setMessage('Chưa áp dụng được thay đổi dàn ý. Nội dung đang soạn vẫn được giữ.'); return; }
     if (next === current.current) return;
     current.current = next; edits.current += 1;
     setValue(next); setState(previous => previous === 'conflict' ? previous : 'dirty');

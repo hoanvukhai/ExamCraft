@@ -1,3 +1,5 @@
+import { outlineLocation, nudgeOutlineNode } from './outline-editing';
+import { outlineNodes, insertOutlineNodes } from './exam-outline';
 import type { Exam, Question } from '@/types/exam';
 import { questionValueStamp, type QuestionManualSubmission } from './question-draft';
 
@@ -16,6 +18,18 @@ export function applyQuestionOrderCommand(previous: Exam, command: { documentId:
   if (previous.id !== command.documentId || previous.access?.canEdit === false || JSON.stringify(previous.questions.map(question => question.id)) !== JSON.stringify(command.baseOrder)) return previous;
   const index = previous.questions.findIndex(question => question.id === command.questionId);
   if (index < 0) return previous;
+  if (previous.outline) {
+    const node = outlineNodes(previous.outline).find(item => item.questionId === command.questionId);
+    if (!node) return previous;
+    if (command.action !== 'duplicate') return nudgeOutlineNode(previous, node.id, command.action);
+    if (!command.newId || previous.questions.some(question => question.id === command.newId)) return previous;
+    const location = outlineLocation(previous.outline, node.id)!;
+    const question = { ...structuredClone(previous.questions[index]), id: command.newId,
+      version: 1, status: 'draft' as const, verifiedBy: 'none' as const };
+    return insertOutlineNodes(previous, { parentId: location.parentId, afterId: node.id }, [{
+      id: 'question:' + command.newId, kind: 'question', questionId: command.newId,
+    }], [question]);
+  }
   const questions = [...previous.questions];
   if (command.action === 'duplicate') {
     if (!command.newId || questions.some(question => question.id === command.newId)) return previous;

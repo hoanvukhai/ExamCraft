@@ -218,9 +218,18 @@ export function reconcileQuestionOutline(previous: Exam, next: Exam): Exam {
   if (!previous.outline || next.outline !== previous.outline) return next;
   const available = new Set(next.questions.map(question => question.id));
   const seen = new Set<string>();
+  const oldIds = new Set(previous.questions.map(question => question.id));
+  const added = next.questions.filter(question => !oldIds.has(question.id));
+  let placed = false;
+  const newNodes = () => added.map(question => ({
+    id: 'question:' + question.id, kind: 'question' as const, questionId: question.id,
+  }));
   const prune = (nodes: OutlineNode[]): OutlineNode[] => nodes.flatMap(node => {
     if (node.kind === 'question') {
-      if (!available.has(node.questionId!)) return [];
+      if (!available.has(node.questionId!)) {
+        if (!placed && added.length) { placed = true; return newNodes(); }
+        return [];
+      }
       seen.add(node.questionId!);
       return [copy(node)];
     }
@@ -228,7 +237,7 @@ export function reconcileQuestionOutline(previous: Exam, next: Exam): Exam {
   });
   const outline = prune(previous.outline);
   for (const question of next.questions) {
-    if (seen.has(question.id)) continue;
+    if (seen.has(question.id) || placed && added.some(item => item.id === question.id)) continue;
     outline.push({ id: `question:${question.id}`, kind: 'question', questionId: question.id });
   }
   return syncOutline(next, outline);

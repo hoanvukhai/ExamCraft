@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Question, QuestionType } from '@/types/exam';
 import { getCognitiveFramework } from '@/lib/education-catalog';
+import { QuestionPartsEditor } from './editor/QuestionPartsEditor';
 import { FigureEditor } from './FigureEditor';
 import type { KnowledgePackage, KnowledgeScope } from '@/lib/knowledge-package';
 import { bindQuestionKnowledge, reviewQuestionKnowledge } from '@/lib/question-knowledge';
@@ -108,6 +109,7 @@ export function QuestionEditor({ ownerId, documentId, sourceStamp, question, fra
       </> : <p className="text-xs">Có thể tự mô tả yêu cầu bằng chữ. Muốn gắn mã, hãy chọn gói trong mục Kiến thức và phạm vi ra đề.</p>}
       {framework && <label className="block text-sm">{framework.label}<select aria-label="Mức nhận thức" className={field} value={draft.cognitiveLevel ?? ''} onChange={e => update({ cognitiveLevel: e.target.value || undefined })}><option value="">Chưa gắn mức</option>{framework.levels.map(level => <option key={level.id} value={level.id}>{level.label}</option>)}</select></label>}
     </div></details>
+    <QuestionPartsEditor question={draft} onChange={update} />
     <div className="flex flex-wrap gap-3 justify-end"><button type="button" onClick={onCancel}>{creating ? 'Hủy thêm, giữ nháp' : 'Đóng, giữ nháp'}</button><button type="button" disabled={stale || acknowledged} className="px-4 py-2 rounded app-button-primary text-white disabled:opacity-50" onClick={submit}>{creating ? 'Thêm vào đề' : 'Áp dụng câu vào đề'}</button></div>
   </div>;
 }

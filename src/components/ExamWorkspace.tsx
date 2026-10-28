@@ -41,10 +41,11 @@ import { ExamPresentation } from '@/components/ExamPresentation';
 import { EditorReview } from '@/components/editor/EditorReview';
 import { reviewExam } from '@/lib/exam-review';
 import { PhonePreview } from '@/components/editor/PhonePreview';
-import { EditorQuestionList, EditorQuestionHeading } from '@/components/editor/EditorQuestionList';
+import { EditorQuestionHeading } from '@/components/editor/EditorQuestionList';
 import { EditorSaveStatus } from '@/components/editor/EditorSaveStatus';
-import { EditorRequirements, EditorTemplate } from '@/components/editor/EditorRequirements';
-import { ExamStructureEditor } from '@/components/ExamStructureEditor';
+import { EditorTemplate } from '@/components/editor/EditorRequirements';
+import { OutlineEditor, type QuestionSource } from '@/components/editor/OutlineEditor';
+import { type InsertPoint } from '@/lib/exam-outline';
 import { EditorStart } from '@/components/editor/EditorStart';
 import { EditorPending } from '@/components/editor/EditorPending';
 
@@ -104,11 +105,14 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   const updateHeaderPreview = useCallback((draft: HeaderSubmission | null) => setHeaderDraft(draft), []);
   const previewExam = settingsOpen ? previewHeaderDraft(exam, headerDraft) : exam;
   const settingsAnchor = useRef<HTMLDivElement>(null), addAnchor = useRef<HTMLDivElement>(null);
+  const [selectedPoint, setSelectedPoint] = useState<InsertPoint | null>(null);
+  const [newQuestionPoint, setNewQuestionPoint] = useState<InsertPoint | undefined>();
+  const insertionPoint = (): InsertPoint => selectedPoint ?? { parentId: null, afterId: exam.outline?.at(-1)?.id ?? null };
   const [newQuestion, setNewQuestion] = useState<Question | null>(null);
   const sessionScope = currentUser.id + ':' + editorSessionKey;
   const [draftSession, setDraftSession] = useState(sessionScope);
   if (draftSession !== sessionScope) {
-    setDraftSession(sessionScope); setNewQuestion(null); setHeaderDraft(null); setTemplateOpen(false);
+    setDraftSession(sessionScope); setNewQuestion(null); setHeaderDraft(null); setTemplateOpen(false); setSelectedPoint(null); setNewQuestionPoint(undefined);
   }
   const openSettings = () => { setSettingsOpen(true); setMobileTab('editor');
     requestAnimationFrame(() => settingsAnchor.current?.scrollIntoView({ block: 'start', behavior: 'smooth' }));
@@ -163,7 +167,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   };
 
   // Thêm câu hỏi thủ công
-  const handleAddQuestion = () => {
+  const handleAddQuestion = (point?: InsertPoint) => {
     if (!canEdit) return;
     const recovered = listQuestionDrafts(currentUser.id, exam.id).find(entry => entry.value?.questionId.startsWith('q_new_') && !exam.questions.some(question => question.id === entry.value?.questionId));
     const seed: Question = recovered?.value?.baseQuestion ?? {
@@ -171,6 +175,8 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       content: '', choices: [{ key: 'A', text: '' }, { key: 'B', text: '' }, { key: 'C', text: '' }, { key: 'D', text: '' }],
       subject: exam.metadata.subject, grade: exam.metadata.grade, step_by_step_solution: '',
     };
+    const target = point && 'parentId' in point ? point : insertionPoint();
+    setNewQuestionPoint(target); setSelectedPoint(target);
     setNewQuestion(seed); setMobileTab('editor');
     requestAnimationFrame(() => addAnchor.current?.scrollIntoView({ block: 'start', behavior: 'smooth' }));
   };
@@ -279,6 +285,11 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     }
   };
 
+  const composer = (
+              newQuestion && <section ref={addAnchor} aria-label="Soạn câu mới" className="rounded-xl border p-4 space-y-3 bg-[var(--ui-surface)]"><h3 className="font-semibold">Thêm câu hỏi</h3><QuestionEditor key={currentUser.id + ':' + editorSessionKey + ':' + newQuestion.id} creating ownerId={currentUser.id} documentId={exam.id} sourceStamp={manualSourceStamp} question={exam.questions.find(q => q.id === newQuestion.id) ?? newQuestion} frameworkId={exam.metadata.cognitiveFrameworkId} knowledgePackage={exam.metadata.knowledgePackage} knowledgeScope={exam.metadata.knowledgeScope} onSave={submission => setExam(previous => appendManualQuestion(previous, submission, currentUser.id, newQuestion, newQuestionPoint))} onApplied={() => setNewQuestion(null)} onCancel={() => setNewQuestion(null)} /></section>
+
+
+  );
   return (
     <div className="print-flow @container flex-1 min-h-0 w-full overflow-hidden flex flex-col bg-[var(--background)] text-[var(--foreground)]">
       {reviewOpen && <EditorReview exam={exam} onClose={() => setReviewOpen(false)} onContinue={pendingReviewAction ? () => { setReviewOpen(false); pendingReviewAction?.(); } : undefined} onQuestion={id => { setReviewOpen(false); setMobileTab('editor'); setTimeout(() => { const node = document.getElementById('editor-question-' + id); node?.scrollIntoView({ block: 'center' }); node?.focus(); }, 0); }} />}
@@ -340,11 +351,9 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
               {recoveredDraft && saveState !== 'saved' && <div role="status" className="border rounded p-3 text-sm">Đang mở nháp trên máy của đề này. <button type="button" className="underline" onClick={dismissRecoveredDraft}>Tiếp tục với nháp</button>{exam.serverId && <button type="button" className="underline ml-3" onClick={() => void openLatest().then(value => { if (value) dismissRecoveredDraft(); })}>Mở bản máy chủ, cất riêng nháp</button>}</div>}
               <EditorPending ownerId={currentUser.id} exam={exam} onCopilot={() => setIsCopilotOpen(true)} />
               <div ref={settingsAnchor} className="scroll-mt-16">
-                <section className="border rounded-xl p-4 bg-[var(--ui-surface)] flex flex-wrap items-center justify-between gap-2" aria-label="Thông tin chung của đề"><div><h2 className="font-semibold text-sm">Thông tin đề</h2><p className="text-xs text-[var(--ui-text-secondary)]">{subjectLabel(exam.metadata.subject)} · Lớp {exam.metadata.grade}{exam.metadata.durationMinutes ? ' · ' + exam.metadata.durationMinutes + ' phút' : ''}</p></div><button type="button" className="app-button-secondary min-h-10 px-3 text-sm" onClick={() => settingsOpen ? setSettingsOpen(false) : openSettings()}>{settingsOpen ? 'Thu gọn' : 'Chỉnh thông tin'}</button></section>
                 <EditorSettings key={`${currentUser.id}:${editorSessionKey}`} ownerId={currentUser.id} exam={exam} canEdit={canEdit} onChange={setExam} isOpen={settingsOpen} onPreview={updateHeaderPreview} onClose={() => setSettingsOpen(false)} />
               </div>
               <div ref={templateAnchor} className="scroll-mt-16"><EditorTemplate key={currentUser.id + ':' + editorSessionKey} ownerId={currentUser.id} exam={exam} canEdit={canEdit} onChange={setExam} open={templateOpen} onClose={() => setTemplateOpen(false)} /></div>
-              <EditorRequirements key={currentUser.id + ':' + editorSessionKey} ownerId={currentUser.id} exam={exam} canEdit={canEdit} hasActiveKey={hasActiveKey} onChange={setExam} />
               <fieldset disabled={!canEdit} className="space-y-4 min-w-0">
               {/* Thanh tiêu đề & Tác vụ danh sách câu hỏi */}
               <EditorQuestionHeading exam={exam} points={scoredQuestions.reduce((total, q) => total + (q.points ?? 0), 0)}>
@@ -371,14 +380,18 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
 
 
 
-              <ExamStructureEditor exam={exam} onChange={setExam} />
-              <div ref={addAnchor} className="scroll-mt-16">
-              {newQuestion && <section aria-label="Soạn câu mới" className="rounded-xl border p-4 space-y-3 bg-[var(--ui-surface)]"><h3 className="font-semibold">Thêm câu hỏi</h3><QuestionEditor key={currentUser.id + ':' + editorSessionKey + ':' + newQuestion.id} creating ownerId={currentUser.id} documentId={exam.id} sourceStamp={manualSourceStamp} question={exam.questions.find(q => q.id === newQuestion.id) ?? newQuestion} frameworkId={exam.metadata.cognitiveFrameworkId} knowledgePackage={exam.metadata.knowledgePackage} knowledgeScope={exam.metadata.knowledgeScope} onSave={submission => setExam(previous => appendManualQuestion(previous, submission, currentUser.id, newQuestion))} onApplied={() => setNewQuestion(null)} onCancel={() => setNewQuestion(null)} /></section>}
-              </div>
               {/* Danh sách các câu hỏi dạng thẻ Block Card */}
               <div className="space-y-3.5">
-                <EditorQuestionList onChange={canEdit ? setExam : undefined} exam={exam} renderQuestion={(q, idx) => (
-                  <QuestionCard selectionActive={selectedQuestionIds.length > 0} withAi={withAi} ownerId={currentUser.id}
+                <OutlineEditor key={currentUser.id + ':' + editorSessionKey} exam={exam} canEdit={canEdit} onChange={setExam} onPoint={setSelectedPoint}
+                  onSource={(point, source: QuestionSource) => {
+                    setSelectedPoint(point);
+                    if (source === 'manual') handleAddQuestion(point);
+                    else if (source === 'bank') setIsQuestionBankModalOpen(true);
+                    else if (source === 'import') setIsImportModalOpen(true);
+                    else withAi(() => setIsGenerateModalOpen(true));
+                  }} composerPoint={newQuestionPoint} composer={composer}
+                  renderQuestion={(q, idx, number, controls) => (
+                  <QuestionCard displayNumber={number} extraItems={controls.moveItems} selectionActive={selectedQuestionIds.length > 0} withAi={withAi} ownerId={currentUser.id}
                     displayPoints={scoredQuestions[idx]?.points}
                     hidePassage passage={exam.passages?.find(p => p.id === q.passageId)}
                     numericScore={requiresNumericScore(exam.metadata.assessmentMode)}
@@ -396,8 +409,8 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                     onMoveUp={() => handleMoveQuestion(idx, 'up')}
                     onMoveDown={() => handleMoveQuestion(idx, 'down')}
                     onDuplicate={() => handleDuplicateQuestion(idx)}
-                    isFirst={idx === 0}
-                    isLast={idx === exam.questions.length - 1}
+                    isFirst={controls.first}
+                    isLast={controls.last}
                     isSelected={selectedQuestionIds.includes(q.id)}
                     onToggleSelect={handleToggleSelectQuestion}
                     onAskAiAboutQuestion={handleAskAiAboutQuestion}
@@ -405,7 +418,6 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                 )} />
 
                 {exam.questions.length === 0 && !newQuestion && <EditorStart hasKey={hasActiveKey} onAdd={handleAddQuestion} onBank={() => setIsQuestionBankModalOpen(true)} onImport={() => setIsImportModalOpen(true)} onGenerate={() => withAi(() => setIsGenerateModalOpen(true))} />}
-                {exam.questions.length > 0 && <button type="button" className="app-button-secondary w-full min-h-11" onClick={handleAddQuestion}>+ Thêm câu hỏi</button>}
               </div>
 
               {/* Thanh tác vụ hàng loạt nổi cố định ở dưới (Floating Batch Action Bar) */}

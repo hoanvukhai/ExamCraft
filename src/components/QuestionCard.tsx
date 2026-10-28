@@ -2,7 +2,7 @@
 
 import React, { useRef, useState } from 'react';
 import { Question } from '@/types/exam';
-import { ToolMenu } from './EditorToolbar';
+import { ToolMenu, type MenuItem } from './EditorToolbar';
 import { MoreHorizontal } from 'lucide-react';
 import { MathRenderer } from './MathRenderer';
 import { QuestionEditor } from './QuestionEditor';
@@ -24,6 +24,8 @@ import { confirmedUndoHistory, prepareQuestionUndo, type QuestionUndoEntry } fro
 
 interface QuestionCardProps {
   selectionActive?: boolean;
+  displayNumber?: number;
+  extraItems?: MenuItem[];
   hidePassage?: boolean;
   withAi?: (action: () => void) => void;
   ownerId: string;
@@ -51,6 +53,8 @@ interface QuestionCardProps {
 }
 
 export const QuestionCard: React.FC<QuestionCardProps> = ({
+  displayNumber,
+  extraItems = [],
   selectionActive = false,
   hidePassage = false,
   withAi = action => action(),
@@ -268,7 +272,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
             />
           )}
           <span className="w-7 h-7 rounded-full bg-[var(--ui-accent)] text-[var(--ui-on-primary)] dark:bg-[var(--ui-surface-variant)] dark:text-[var(--ui-text-primary)] dark:border dark:border-[var(--ui-border)] font-bold text-xs flex items-center justify-center shadow-2xs">
-            {index + 1}
+            {displayNumber ?? index + 1}
           </span>
           {getTypeBadge(question.type)}
           {question.cognitiveLevel && <span className="px-2 py-1 text-xs rounded bg-neutral-50 text-[var(--ui-accent)]">{getCognitiveFramework(cognitiveFrameworkId)?.levels.find(level => level.id === question.cognitiveLevel)?.label ?? 'Mức cần kiểm tra'}</span>}
@@ -310,6 +314,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
             ...(onMoveDown ? [{ label: 'Di chuyển xuống', disabled: isLast, onClick: onMoveDown }] : []),
             ...(onDuplicate ? [{ label: 'Nhân bản câu', onClick: onDuplicate }] : []),
             { label: 'Lưu bản sao vào ngân hàng', disabled: bankSaving || isEditing || !!pendingNewQuestion, onClick: () => void handleSaveToBank() },
+            ...extraItems.map(item => ({ ...item, disabled: item.disabled || isEditing || !!pendingNewQuestion })),
             { label: 'Xóa câu hỏi này', onClick: () => onDelete(question.id) }
           ]} />
         </div>
