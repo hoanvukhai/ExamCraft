@@ -71,7 +71,7 @@ export function ToolMenu({
       >
         <Icon className="w-4 h-4 shrink-0" />
         {!compact && <span className="@max-[300px]:hidden">{label}</span>}
-        <ChevronDown className="w-3 h-3" />
+        {!compact && <ChevronDown className="w-3 h-3" />}
       </button>
       {open &&
         createPortal(

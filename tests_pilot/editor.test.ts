@@ -216,6 +216,12 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
         await fitting();
         const toolbar=page.getByRole('toolbar',{name:'Công cụ soạn đề',exact:true});
         const boxes=await toolbar.locator('button').filter({visible:true}).evaluateAll(items=>items.map(el=>el.getBoundingClientRect().top)); assert.ok(Math.max(...boxes)-Math.min(...boxes)<2);
+        assert.equal(await toolbar.evaluate(el => {
+          const bounds = el.getBoundingClientRect();
+          return Array.from(el.querySelectorAll('button')).filter(button => button.getClientRects().length > 0)
+            .every(button => { const rect = button.getBoundingClientRect();
+              return rect.left >= bounds.left - 1 && rect.right <= bounds.right + 1; });
+        }), true, 'Every visible toolbar button fits, including the final menu at 320px');
         await page.waitForTimeout(220); await page.screenshot({path:report+'/rich-'+width+'-'+(dark?'dark':'light')+'.png'});
         await page.getByRole('button',{name: 'Thông tin đề',exact:true}).click();
         const panel=page.getByRole('complementary',{name: 'Thông tin đề',exact:true}); await panel.waitFor();
@@ -239,6 +245,30 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
       assert.equal(await page.getByRole('button',{name:'Tải nháp câu',exact:true}).first().isEnabled(),true);
       assert.notEqual((await db.exam.findUniqueOrThrow({where:{id:examId}})).title,'Không được ghi sau mất quyền');
       await page.unroute('**/api/exams/' + examId);
+    });
+    await t.test('removing an insertion part keeps the unsaved composer and does not insert a stale question', async () => {
+      await page.setViewportSize({ width: 1440, height: 1000 });
+      const now = new Date().toISOString();
+      const response = await context.request.post(origin + '/api/exams', { headers: { Origin: origin }, data: {
+        document: { id: randomUUID(), metadata: { title: 'Guard composer', schoolName: '', departmentName: '',
+          subject: 'toan', grade: 6, durationMinutes: 15 }, questions: [], createdAt: now, updatedAt: now },
+      } });
+      assert.ok(response.ok()); const guardId = (await response.json()).exam.id;
+      await page.goto(origin + '/editor/' + guardId);
+      const tree = page.getByRole('region', { name: 'Dàn ý đề', exact: true });
+      await tree.getByRole('button', { name: '+ Thêm phần', exact: true }).click();
+      await tree.getByRole('button', { name: 'Xong', exact: true }).click();
+      await tree.getByRole('button', { name: 'Thêm vào Phần mới', exact: true }).click();
+      await page.getByRole('menuitem', { name: 'Câu tự soạn', exact: true }).click();
+      const composer = page.getByRole('region', { name: 'Soạn câu mới', exact: true });
+      await composer.getByLabel('Nội dung câu hỏi', { exact: true }).fill('KEEP_STALE_COMPOSER');
+      await tree.getByRole('button', { name: 'Thao tác Phần mới', exact: true }).click();
+      await page.getByRole('menuitem', { name: 'Xóa phần', exact: true }).click();
+      await page.getByRole('dialog', { name: 'Xóa mục trong đề', exact: true })
+        .getByRole('button', { name: 'Bỏ mục, giữ câu', exact: true }).click();
+      assert.equal(await composer.getByLabel('Nội dung câu hỏi', { exact: true }).inputValue(), 'KEEP_STALE_COMPOSER');
+      assert.equal(await composer.getByRole('button', { name: 'Thêm vào đề', exact: true }).isDisabled(), true);
+      assert.equal((await context.request.get(origin + '/api/exams/' + guardId).then(r => r.json())).document.questions.length, 0);
     });
   } finally {
     await browser.close();
