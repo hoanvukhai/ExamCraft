@@ -1,0 +1,64 @@
+TAP version 13
+# Subtest: missing duration is readable in preview and Word without assigning a new duration
+ok 1 - missing duration is readable in preview and Word without assigning a new duration
+  ---
+  duration_ms: 101.7852
+  type: 'test'
+  ...
+# Subtest: header submission only merges edited fields and preserves newer scope/plan and unedited header metadata
+ok 2 - header submission only merges edited fields and preserves newer scope/plan and unedited header metadata
+  ---
+  duration_ms: 10.1889
+  type: 'test'
+  ...
+# Subtest: a changed edited field, different document or lost permission blocks apply with exact same object and intact submission
+ok 3 - a changed edited field, different document or lost permission blocks apply with exact same object and intact submission
+  ---
+  duration_ms: 0.5636
+  type: 'test'
+  ...
+# Subtest: grade/context edits retain old subject, framework, package references and plan for explicit review
+ok 4 - grade/context edits retain old subject, framework, package references and plan for explicit review
+  ---
+  duration_ms: 0.3038
+  type: 'test'
+  ...
+# Subtest: empty override remains one visible blank line, hidden drops line, undefined uses bound value and literal order remains
+ok 5 - empty override remains one visible blank line, hidden drops line, undefined uses bound value and literal order remains
+  ---
+  duration_ms: 2.7253
+  type: 'test'
+  ...
+# Subtest: shared header resolves current year, notes, duration and actual score including0 instead of plan targets
+ok 6 - shared header resolves current year, notes, duration and actual score including0 instead of plan targets
+  ---
+  duration_ms: 0.6381
+  type: 'test'
+  ...
+# Subtest: default header omits empty school/year without invented authority, explicit empty lines roundtrip and malformed layouts reject
+ok 7 - default header omits empty school/year without invented authority, explicit empty lines roundtrip and malformed layouts reject
+  ---
+  duration_ms: 2.4693
+  type: 'test'
+  ...
+# Subtest: unsupported patch keys/empty internal title reject without changing document
+ok 8 - unsupported patch keys/empty internal title reject without changing document
+  ---
+  duration_ms: 0.7428
+  type: 'test'
+  ...
+# Subtest: actual Word header uses ordered shared lines, blanks, alignment, footer/year/current score and hides private answers
+ok 9 - actual Word header uses ordered shared lines, blanks, alignment, footer/year/current score and hides private answers
+  ---
+  duration_ms: 21.7643
+  type: 'test'
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 9
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1123.1648

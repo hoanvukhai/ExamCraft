@@ -1,0 +1,19 @@
+{
+  "run": "9e793100-f10a-48ba-be3b-9a1451a2fc64",
+  "sourceSha256": "c647588aec5914c2f68a704ed9348c349adf2f09d514a5fcc27f509d05c9993f",
+  "buildId": "CEkZxGWVgnpGSncaO-7sK",
+  "browserVersion": "156.0.8078.48",
+  "browserExecutable": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  "requestedFlow": "F3",
+  "checkedAt": "2026-10-28T03:59:29.125Z",
+  "environment": "isolatedTest localhost3117 / examcraft_test_20261022",
+  "realAiCalls": false,
+  "results": [
+    {
+      "id": "F3",
+      "status": "PASS",
+      "durationMs": 8489,
+      "cleanupComplete": true
+    }
+  ]
+}

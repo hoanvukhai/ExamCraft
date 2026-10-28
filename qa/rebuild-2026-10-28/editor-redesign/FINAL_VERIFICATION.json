@@ -1,0 +1,85 @@
+{
+  "buildId": "CdjH_2G3WN7rc0EiXHZB4",
+  "checkedAt": "2026-10-28T04:53:47.373Z",
+  "environment": "isolatedTest / examcraft_test_20261022",
+  "realProvider": false,
+  "flows": [
+    {
+      "flow": "F2",
+      "run": "9af5d16a-ebb5-497c-8df1-5bc0a9dc2d52",
+      "status": "PASS",
+      "cleanupComplete": true,
+      "evidence": "flows/F2.json"
+    },
+    {
+      "flow": "F3",
+      "run": "823109fb-7907-4fed-a9e0-85bece1f9a15",
+      "status": "PASS",
+      "cleanupComplete": true,
+      "evidence": "flows/F3.json"
+    },
+    {
+      "flow": "F4",
+      "run": "82b5a177-385f-469c-9038-5c470414b8d2",
+      "status": "PASS",
+      "cleanupComplete": true,
+      "evidence": "flows/F4.json"
+    },
+    {
+      "flow": "F9",
+      "run": "5a8a5021-1388-486f-974f-19f983f26a48",
+      "status": "PASS",
+      "cleanupComplete": true,
+      "evidence": "flows/F9.json"
+    },
+    {
+      "flow": "F10",
+      "run": "46da0bc1-7c91-4efe-b781-18ea397a81d5",
+      "status": "PASS",
+      "cleanupComplete": true,
+      "evidence": "flows/F10.json"
+    },
+    {
+      "flow": "F19",
+      "run": "f61f67ce-0ecb-4b9a-b3bd-126fd2045f21",
+      "status": "PASS",
+      "cleanupComplete": true,
+      "evidence": "flows/F19.json"
+    },
+    {
+      "flow": "F21",
+      "run": "47ea63fc-28e6-4690-995c-29bc814ae90f",
+      "status": "PASS",
+      "cleanupComplete": true,
+      "evidence": "flows/F21.json"
+    }
+  ],
+  "browserSuites": {
+    "editor": {
+      "tests": 6,
+      "pass": 6
+    },
+    "library": {
+      "tests": 6,
+      "pass": 6
+    },
+    "teacher": {
+      "tests": 7,
+      "pass": 7
+    },
+    "frame": {
+      "tests": 4,
+      "pass": 4
+    }
+  },
+  "safe": {
+    "tests": 502,
+    "pass": 502
+  },
+  "cleanupFiles": [
+    "cleanup.json",
+    "library/cleanup.json",
+    "teacher/cleanup.json",
+    "frame/cleanup.json"
+  ]
+}

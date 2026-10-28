@@ -1,0 +1,52 @@
+
+> exam-craft@0.1.0 test:library
+> node --import tsx scripts/pilot-run.cjs --library
+
+Pilot guard: installed browser; isolatedTest confirmed; exact test database selected.
+TAP version 13
+# Subtest: merged library: folders, scoped views, creation location, permissions and phone
+    # Subtest: one flat menu, folder cards plus root files, no lost invited exams
+    ok 1 - one flat menu, folder cards plus root files, no lost invited exams
+      ---
+      duration_ms: 946.6735
+      type: 'test'
+      ...
+    # Subtest: folders and old links share the same paged screen; star/recent remain scoped
+    ok 2 - folders and old links share the same paged screen; star/recent remain scoped
+      ---
+      duration_ms: 4416.541
+      type: 'test'
+      ...
+    # Subtest: new manual, AI-proposed and imported files keep creation location; owner checks remain
+    ok 3 - new manual, AI-proposed and imported files keep creation location; owner checks remain
+      ---
+      duration_ms: 8929.5695
+      type: 'test'
+      ...
+    # Subtest: deleted creation folder keeps draft and offers an explicit root save
+    ok 4 - deleted creation folder keeps draft and offers an explicit root save
+      ---
+      duration_ms: 674.2977
+      type: 'test'
+      ...
+    # Subtest: desktop, phone portrait/landscape, themes, flat menu and folder CRUD errors
+    ok 5 - desktop, phone portrait/landscape, themes, flat menu and folder CRUD errors
+      ---
+      duration_ms: 6790.761
+      type: 'test'
+      ...
+    1..5
+ok 1 - merged library: folders, scoped views, creation location, permissions and phone
+  ---
+  duration_ms: 25212.9111
+  type: 'test'
+  ...
+1..1
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 26708.2634

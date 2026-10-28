@@ -1,0 +1,20 @@
+{
+  "run": "94d7f5f1-ca52-4728-9a71-7080c658c5e7",
+  "sourceSha256": "481d0bae85278244dacb73efaba2a113ea745c68ee11bb2b5fa27d6fa5ae338f",
+  "buildId": "CEkZxGWVgnpGSncaO-7sK",
+  "browserVersion": "156.0.8078.48",
+  "browserExecutable": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  "requestedFlow": "F2",
+  "checkedAt": "2026-10-28T03:58:18.983Z",
+  "environment": "isolatedTest localhost3117 / examcraft_test_20261022",
+  "realAiCalls": false,
+  "results": [
+    {
+      "id": "F2",
+      "status": "FAIL",
+      "durationMs": 5829,
+      "cleanupComplete": true,
+      "error": "locator.fill: Error: strict mode violation: getByLabel('Lời giải', { exact: true }) resolved to 2 elements:\n    1) <textarea rows=\"4\" aria-label=\"Lời giải\" class=\"border rounded p-2 w-full bg-transparent text-sm\"></textarea> aka getByRole('textbox', { name: 'Lời giải' })\n    2) <button type=\"button\" aria-pressed=\"false\" aria-label=\"Lời giải\" class=\"app-button-secondary shrink-0 min-h-9 px-3 text-xs\">Lời giải</button> aka getByRole('button', { name: 'Lời giải', exact: true })\n\nCall log:\n\u001b[2m  - waiting for getByLabel('Lời giải', { exact: true })\u001b[22m\n"
+    }
+  ]
+}
