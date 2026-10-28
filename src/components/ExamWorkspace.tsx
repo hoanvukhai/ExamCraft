@@ -276,9 +276,8 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         onUpdateTitle={handleUpdateTitle}
         onShare={() => reviewBefore(() => { if (canPublish) setIsShareModalOpen(true); else setCollaborationOpen(true); })}
       >
-        <button type="button" aria-label="Thông tin và thiết lập đề" onClick={() => openSettings('info')} className="app-button-secondary text-xs px-2 min-h-9 max-w-44 truncate hidden @min-[700px]:block">{subjectLabel(exam.metadata.subject)} {exam.metadata.grade} · {exam.metadata.durationMinutes ?? 0}′ · {scoredQuestions.reduce((sum, q) => sum + (q.points ?? 0), 0)}đ</button>
-        <EditorSaveStatus state={saveState}>{true && (
-        <div role="status" className="flex flex-wrap gap-2 text-sm">
+        <button type="button" aria-label="Thông tin và thiết lập đề" onClick={() => openSettings('info')} className="app-button-secondary text-xs px-2 min-h-9 max-w-44 truncate hidden @min-[700px]:block">{subjectLabel(exam.metadata.subject)} {exam.metadata.grade} · {exam.metadata.durationMinutes ? exam.metadata.durationMinutes + '′' : 'chưa đặt giờ'} · {scoredQuestions.reduce((sum, q) => sum + (q.points ?? 0), 0)}đ</button>
+        <EditorSaveStatus state={saveState}>        <div role="status" className="flex flex-wrap gap-2 text-sm">
           {manualDraftMessage && <p role="alert">{manualDraftMessage}</p>}
           <span className="mr-1">{saveState === 'loading' ? 'Đang mở đề…' : saveState === 'saving' ? 'Đang lưu…' : saveState === 'dirty' ? 'Có thay đổi đang chờ lưu' : saveState === 'offline' ? 'Mất kết nối — đang giữ bản nháp trên máy' : saveState === 'saved' ? saveMessage || 'Đã lưu trên máy chủ' : saveMessage || 'Chưa lưu được đề'}</span>
           {saveState !== 'loading' && saveState !== 'saving' && <button onClick={() => void handleSaveCurrentExam()} className="app-button-secondary min-h-9 px-3 text-xs">Thử lưu lại</button>}
@@ -287,7 +286,6 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
           {saveState === 'conflict' && <button onClick={() => void saveCopy()} className="app-button-secondary min-h-9 px-3 text-xs">Lưu bản nháp thành đề mới</button>}
           {saveState === 'conflict' && ready && exam.serverId && <button onClick={() => void openLatest()} className="app-button-secondary min-h-9 px-3 text-xs">Mở bản máy chủ, giữ riêng nháp</button>}
         </div>
-      )}
 
         </EditorSaveStatus>
         <button type="button" className="app-button-secondary text-xs min-h-9 px-2 shrink-0" aria-label="Rà soát đề" onClick={() => { setPendingReviewAction(null); setReviewOpen(true); }}>{reviewed.issues.length ? '⚠ ' + reviewed.issues.length : '✓'}<span className="hidden @min-[500px]:inline"> {reviewed.issues.length ? 'cần xem' : 'Rà soát'}</span></button>

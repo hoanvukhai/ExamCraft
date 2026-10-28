@@ -76,11 +76,11 @@ test('Vietnamese typography: full glyphs, paper zoom, phone scrolling, math and 
     await t.test('true 60/100/150 percent zoom, readable phone controls and reachable left/right edges', async () => {
       for (const [width, height] of [[1440, 1000], [375, 812], [320, 740], [568, 320]]) {
         await page.setViewportSize({ width, height });
-        if (width < 1024) await page.getByRole('button', { name: 'Xem trang in A4', exact: true }).click();
+        if (width < 1024) await page.getByRole('navigation', { name: 'Chuyển vùng soạn' }).getByRole('button', { name: 'Xem đề', exact: true }).click();
         await paper.waitFor({ state: 'visible' });
         assert.ok(await page.locator('.a4-scroll-area').evaluate(e => e.clientHeight >= 100), 'paper remains usable in phone landscape');
         for (const percent of [60, 100, 150]) {
-          await preview.getByTitle('Khôi phục chuẩn 100%', { exact: true }).click();
+          await preview.getByLabel('Kiểu thu phóng').selectOption('100');
           const control = percent < 100 ? 'Thu nhỏ' : 'Phóng to';
           for (let i = 0; i < Math.abs(percent - 100) / 10; i++) await preview.getByTitle(control, { exact: true }).click();
           assert.equal(await paper.evaluate(e => Number(getComputedStyle(e).zoom)), percent / 100);
@@ -102,23 +102,23 @@ test('Vietnamese typography: full glyphs, paper zoom, phone scrolling, math and 
           }
           evidence.push({ width, height, percent, geometry });
         }
-        await preview.getByTitle('Vừa chiều ngang', { exact: true }).click();
+        await preview.getByLabel('Kiểu thu phóng').selectOption('fit');
         assert.equal(await page.locator('.a4-scroll-area').evaluate(e => e.scrollWidth <= e.clientWidth + 1), true, 'fit paper has no sideways scrolling');
       }
     });
     await t.test('matrix accents, print at full scale and Word font/content stay correct', async () => {
       await page.setViewportSize({ width: 1440, height: 1000 });
-      await preview.getByRole('button', { name: 'Ma trận & Đặc tả', exact: true }).click();
+      await preview.getByRole('button', { name: 'Ma trận', exact: true }).click();
       await paper.getByRole('columnheader', { name: 'Chủ đề', exact: true }).first().waitFor();
       await page.evaluate(() => document.fonts.ready);
       const fonts = await platformFonts(page, '.a4-paper th');
       assert.equal(fonts.length, 1); assert.match(fonts[0].familyName, /Times New Roman|Noto Serif/);
-      await preview.getByTitle('Khôi phục chuẩn 100%', { exact: true }).click();
+      await preview.getByLabel('Kiểu thu phóng').selectOption('100');
       await page.screenshot({ path: `${report}/matrix-100.png`, fullPage: false });
-      await preview.getByTitle('Vừa chiều ngang', { exact: true }).click();
+      await preview.getByLabel('Kiểu thu phóng').selectOption('fit');
       await page.locator('.a4-scroll-area').screenshot({ path: `${report}/matrix-fit.png` });
       await preview.getByRole('button', { name: 'Đề', exact: true }).click();
-      const [download] = await Promise.all([page.waitForEvent('download'), preview.getByRole('button', { name: 'Tải file Word (.docx)', exact: true }).click()]);
+      const [download] = await Promise.all([page.waitForEvent('download'), (async () => { await page.getByRole('button', { name: 'Xuất', exact: true }).click(); await page.getByRole('menuitem', { name: 'Word – đề', exact: true }).click(); const proceed = page.getByRole('button', { name: 'Đã xem, tiếp tục', exact: true }); if (await proceed.isVisible({ timeout: 1500 }).catch(() => false)) await proceed.click(); })()]);
       const path = await download.path(); assert.ok(path);
       const zip = await JSZip.loadAsync(fs.readFileSync(path));
       const xml = await zip.file('word/document.xml')!.async('string');

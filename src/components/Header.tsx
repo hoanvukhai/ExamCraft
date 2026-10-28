@@ -55,7 +55,7 @@ export const Header: React.FC<HeaderProps> = ({ children, canEdit = true, examTi
 
       </div>
       {children}
-      {canEdit && onShare && <button type="button" onClick={onShare} title="Tạo link cho học sinh làm bài hoặc chia sẻ đề cho đồng nghiệp" className="app-button-primary flex items-center gap-1.5 min-h-9 px-3 rounded-lg text-xs font-semibold cursor-pointer shrink-0"><Share2 className="w-3.5 h-3.5" /><span className="hidden md:inline">Giao bài</span><span className="md:hidden">Giao bài</span></button>}
+      {canEdit && onShare && <button type="button" onClick={onShare} title="Tạo link cho học sinh làm bài hoặc chia sẻ đề cho đồng nghiệp" className="app-button-primary flex items-center gap-1.5 min-h-9 px-3 rounded-lg text-xs font-semibold cursor-pointer shrink-0"><Share2 className="w-3.5 h-3.5" /><span>Giao bài</span></button>}
     </header>
   );
 };

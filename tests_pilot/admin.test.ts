@@ -128,21 +128,21 @@ test('admin: current data, access, confirmations and phone navigation', { timeou
     await t.test('key dialog and editor menu show usage without a daily cap or fabricated remaining quota', async () => {
       await page.goto(origin + '/'); await page.getByTitle('Quản lý Google Gemini API Key', { exact: true }).filter({ visible: true }).click();
       const keys = page.getByRole('dialog', { name: 'Khóa AI của bạn', exact: true });
-      await keys.getByText(/ExamCraft không đặt giới hạn AI theo ngày/).waitFor();
+      await keys.getByText(/ExamCraft không đặt giới hạn AI theo ngày/).waitFor(); await keys.getByText(/Thành công hôm nay/).waitFor();
       assert.equal(await keys.getByText(/Giới hạn trong ứng dụng hôm nay/).count(), 0);
       await page.screenshot({ path: `${report}/key-usage-375.png`, fullPage: false });
       await keys.getByRole('button', { name: 'Đóng', exact: true }).click();
       const exam = await db.exam.findFirstOrThrow({ where: { ownerId: ids[0] } });
       await page.goto(origin + '/editor/' + exam.id);
       await page.getByRole('button', { name: 'Mở menu tài khoản', exact: true }).click();
-      const menu = page.getByRole('region', { name: 'Tài khoản và khóa AI', exact: true });
-      await menu.getByText(/Thành công hôm nay:/).waitFor();
+      const menu = page.getByRole('region', { name: 'Tài khoản', exact: true });
+      await menu.getByText('Đăng xuất').waitFor();
       assert.equal(/Còn lại:\s*\d|\/\s*100\s*lượt/.test(await menu.innerText()), false);
       await page.screenshot({ path: `${report}/editor-usage-375.png`, fullPage: false });
     });
     await t.test('one secretary drawer replaces the old promotional popup', async () => {
-      await page.goto(origin + '/'); await page.getByTitle('Mở Thư ký AI trợ lý riêng của Thầy/Cô').filter({ visible: true }).click();
-      await page.getByRole('heading', { name: 'Thư Ký Số & Trợ Lý Giáo Viên', exact: true }).waitFor();
+      await page.goto(origin + '/'); await page.getByTitle('Hỏi AI · Hỏi đáp, không sửa đề').filter({ visible: true }).click();
+      await page.getByRole('heading', { name: 'Hỏi AI', exact: true }).waitFor();
       assert.equal(await page.getByText('BETA / ĐANG HUẤN LUYỆN', { exact: true }).count(), 0);
       await page.screenshot({ path: `${report}/secretary-375.png`, fullPage: false });
     });
