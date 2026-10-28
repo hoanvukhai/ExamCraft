@@ -1,5 +1,6 @@
 'use client';
 
+import { ExamLibraryModal } from './ExamLibraryModal';
 import { LibraryFolders } from './LibraryFolders';
 import { SearchField } from '@/components/workspace/ui';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -106,6 +107,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
 
   // Modals & Popups
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
+  const [libraryOpen, setLibraryOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
   // Thao tác với đề thi
@@ -353,6 +355,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
 
   return (
     <>
+      <ExamLibraryModal ownerId={currentUser.id} isOpen={libraryOpen} onClose={() => setLibraryOpen(false)} onLoadExam={value => router.push('/editor/' + value.id)} />
       {/* ─────────────────────────────────────────────────────────────
           1. HEADER TRÊN CÙNG (Google App Bar Style)
       ───────────────────────────────────────────────────────────── */}
@@ -370,7 +373,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
           {currentView !== 'trash' && <>
             <header className="flex flex-wrap items-start justify-between gap-3 mb-5">
               <div><h1 className="text-2xl font-semibold">{selectedFolderId ? currentFolder?.name || 'Thư mục' : 'Thư mục và đề thi'}</h1><p className="text-sm text-[var(--ui-text-secondary)] mt-1">{selectedFolderId ? 'Thư mục con và đề tại vị trí này.' : 'Sắp xếp đề theo môn học, học kỳ, dự án hoặc cách riêng của bạn.'}</p></div>
-              <div className="flex flex-wrap gap-2 text-sm"><button type="button" disabled={!!folderUnavailable} onClick={() => handleOpenEditor()} className="app-button-primary min-h-10 px-4 inline-flex items-center gap-2 disabled:opacity-40"><Plus size={16} />Tạo đề</button><button type="button" disabled={!!folderUnavailable} onClick={() => setIsGenerateModalOpen(true)} className="app-button-secondary min-h-10 px-3 inline-flex items-center gap-2 disabled:opacity-40"><Sparkles size={16} />AI soạn đề</button><button type="button" disabled={!!folderUnavailable} onClick={() => setIsImportModalOpen(true)} className="app-button-secondary min-h-10 px-3 inline-flex items-center gap-2 disabled:opacity-40"><Upload size={16} />Nhập Word / ảnh</button></div>
+              <div className="flex flex-wrap gap-2 text-sm"><button type="button" className="app-button-secondary min-h-10 px-3" onClick={() => setLibraryOpen(true)}>Sao lưu · Nhập kho cũ</button><button type="button" disabled={!!folderUnavailable} onClick={() => handleOpenEditor()} className="app-button-primary min-h-10 px-4 inline-flex items-center gap-2 disabled:opacity-40"><Plus size={16} />Tạo đề</button><button type="button" disabled={!!folderUnavailable} onClick={() => setIsGenerateModalOpen(true)} className="app-button-secondary min-h-10 px-3 inline-flex items-center gap-2 disabled:opacity-40"><Sparkles size={16} />AI soạn đề</button><button type="button" disabled={!!folderUnavailable} onClick={() => setIsImportModalOpen(true)} className="app-button-secondary min-h-10 px-3 inline-flex items-center gap-2 disabled:opacity-40"><Upload size={16} />Nhập Word / ảnh</button></div>
             </header>
             <nav aria-label="Chế độ kho đề" className="flex flex-wrap gap-2 mb-4 text-sm">{([{ key: 'all', label: 'Tất cả' }, { key: 'recent', label: 'Đã sửa gần đây' }, { key: 'starred', label: 'Gắn sao' }] as const).map(view => <button key={view.key} type="button" aria-pressed={currentView === view.key} onClick={() => setCurrentView(view.key)} className={(currentView === view.key ? 'app-button-tonal' : 'app-button-secondary') + ' min-h-10 px-3'}>{view.label}</button>)}</nav>
             <LibraryFolders folderId={selectedFolderId} showCards={currentView === 'all' && !searchQuery.trim() && selectedSubject === 'all' && selectedGrade === 'all'} />

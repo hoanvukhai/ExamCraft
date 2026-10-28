@@ -7,7 +7,7 @@ import { dbExportDatabaseToJson } from '@/lib/db';
 import { portableExamBackup } from '@/lib/portable-backup';
 import { BACKUP_FILE_MAX_BYTES, parseBackupText, splitBackupFiles } from '@/lib/backup-files';
 
-interface Props { isOpen: boolean; onClose: () => void; onLoadExam: (exam: Exam) => void; currentExam: Exam; ownerId: string }
+interface Props { isOpen: boolean; onClose: () => void; onLoadExam: (exam: Exam) => void; currentExam?: Exam; ownerId: string }
 interface Summary { permissions?: Exam['access']; id: string; title: string; subject: string; grade: number; version: number }
 interface ImportReport { dryRun: boolean; errorCount: number; results: { kind: string; index: number; status: string; error?: string; canImportCopy?: boolean; copy?: boolean }[]; message: string }
 type Backup = { exams: unknown[]; questions: unknown[] };

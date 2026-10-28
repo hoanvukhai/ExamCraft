@@ -7,7 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { Exam, Question } from '@/types/exam';
 import { Header } from '@/components/Header';
 import { useWorkspace } from '@/components/workspace/WorkspaceContext';
-import { EditorToolbar } from '@/components/EditorToolbar';
+import { EditorToolbar, type ExportView } from '@/components/EditorToolbar';
 import { QuestionCard } from '@/components/QuestionCard';
 import { accountFetch } from '@/lib/account-fetch';
 import { applyQuestionManualSubmission, hasPendingQuestionDrafts, questionDraftSourceStamp, retireSavedQuestionDrafts } from '@/lib/question-draft';
@@ -106,7 +106,6 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
   const [isShuffleModalOpen, setIsShuffleModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
-  const [isLibraryModalOpen, setIsLibraryModalOpen] = useState(false);
   const [settingsTab, setSettingsTab] = useState<SettingsTab>('info');
   const openSettings = (tab: SettingsTab = 'info') => { setSettingsTab(tab); setSettingsOpen(true); };
   const [isQuestionBankModalOpen, setIsQuestionBankModalOpen] = useState(false);
@@ -114,6 +113,13 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   const [isResultsModalOpen, setIsResultsModalOpen] = useState(false);
 
 
+  const [assignmentState, setAssignmentState] = useState({ id: '', has: false });
+  useEffect(() => {
+    if (!exam.serverId || exam.access?.canManage === false) return;
+    let live = true;
+    void accountFetch(currentUser.id, '/api/assignments?examId=' + encodeURIComponent(exam.serverId)).then(async response => { if (!response.ok) return; const data = await response.json(); if (live) { const rows = data.assignments ?? []; setAssignmentState({ id: exam.id, has: rows.length > 0 }); setSubmissionCount(rows.reduce((total: number, row: { _count?: { attempts?: number } }) => total + (row._count?.attempts ?? 0), 0)); } }).catch(() => {});
+    return () => { live = false; };
+  }, [currentUser.id, exam.id, exam.serverId, exam.access?.canManage, isShareModalOpen]);
   // Đổi tên đề thi inline Google Docs style
   const handleUpdateTitle = (newTitle: string) => {
     setExam((prev) => ({
@@ -257,13 +263,13 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   };
 
   // Xuất file Word trực tiếp từ menu
-  const handleExportWord = async () => {
+  const handleExportWord = async (view: ExportView = 'exam') => {
     try {
-      const blob = await exportExamToDocx(await prepareExportFigures(exam), true);
+      const blob = await exportExamToDocx(await prepareExportFigures(exam), view !== 'exam', view === 'matrix', view);
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${exam.metadata.title.replace(/\s+/g, '_')}_${exam.metadata.examCode || 'DeThi'}.docx`;
+      a.download = `${exam.metadata.title.replace(/\s+/g, '_')}_${exam.metadata.examCode || 'DeThi'}_${view}.docx`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -305,12 +311,12 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       </Header>
 
       <EditorToolbar
-        canEdit={canEdit} ready={ready} hasQuestions={exam.questions.length > 0} hasServerExam={Boolean(exam.serverId)}
+        canEdit={canEdit} ready={ready} hasQuestions={exam.questions.length > 0} hasServerExam={Boolean(exam.serverId)} hasAssignments={assignmentState.id === exam.id && assignmentState.has}
         copilotOpen={isCopilotOpen} onCopilot={() => withAi(() => setIsCopilotOpen(open => !open))}
         access={exam.access} submissionCount={submissionCount}
-        onGenerate={() => withAi(() => setIsGenerateModalOpen(true))} onImport={() => setIsImportModalOpen(true)} onBank={() => setIsQuestionBankModalOpen(true)}
-        onHeaderSettings={() => openSettings('info')} onShuffle={() => setIsShuffleModalOpen(true)} onLibrary={() => setIsLibraryModalOpen(true)}
-        onExportWord={() => reviewBefore(() => void handleExportWord())} onPrint={() => reviewBefore(() => window.print())} onPresent={() => setPresentationOpen(true)}
+        onGenerate={() => { if (exam.questions.length && !window.confirm('Sinh bản nháp đề AI mới? Chỉ thay đề sau khi bạn duyệt đề xuất; bản hiện tại vẫn được giữ.')) return; withAi(() => setIsGenerateModalOpen(true)); }} onImport={() => setIsImportModalOpen(true)} onBank={() => setIsQuestionBankModalOpen(true)}
+        onSettings={() => openSettings('info')} onAdd={handleAddQuestion} onShuffle={() => setIsShuffleModalOpen(true)}
+        onExportWord={view => reviewBefore(() => void handleExportWord(view))} onPrint={() => reviewBefore(() => window.print())} onPresent={() => setPresentationOpen(true)}
         onCollaborate={() => setCollaborationOpen(true)} onResults={() => setIsResultsModalOpen(true)}
       />
 
@@ -568,14 +574,6 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
           }));
         }}
         apiKey=""
-      />
-
-      <ExamLibraryModal
-        ownerId={currentUser.id}
-        isOpen={isLibraryModalOpen}
-        onClose={() => setIsLibraryModalOpen(false)}
-        onLoadExam={(loadedExam) => { window.location.assign(`/editor/${loadedExam.id}`); }}
-        currentExam={exam}
       />
 
       <QuestionBankModal ownerId={currentUser.id} key={`bank:${currentUser.id}`}
