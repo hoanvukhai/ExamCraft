@@ -90,7 +90,6 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   const { copilotOpen: isCopilotOpen, setCopilotOpen: setIsCopilotOpen } = useWorkspace();
   const [copilotCommand, setCopilotCommand] = useState<string>('');
   const [mobileTab, setMobileTab] = useState<'editor' | 'preview'>('editor');
-  const [isMatrixTabActive, setIsMatrixTabActive] = useState(false);
 
   // Selected questions for batch operations
   const [selectedQuestionIds, setSelectedQuestionIds] = useState<string[]>([]);
@@ -280,9 +279,9 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       <EditorToolbar
         canEdit={canEdit} ready={ready} hasQuestions={exam.questions.length > 0} hasServerExam={Boolean(exam.serverId)}
         copilotOpen={isCopilotOpen} onCopilot={() => setIsCopilotOpen(open => !open)}
-        access={exam.access} submissionCount={submissionCount} matrixActive={isMatrixTabActive}
+        access={exam.access} submissionCount={submissionCount}
         onGenerate={() => setIsGenerateModalOpen(true)} onImport={() => setIsImportModalOpen(true)} onBank={() => setIsQuestionBankModalOpen(true)}
-        onHeaderSettings={() => setIsHeaderModalOpen(true)} onShuffle={() => setIsShuffleModalOpen(true)} onMatrix={() => setIsMatrixTabActive(!isMatrixTabActive)} onLibrary={() => setIsLibraryModalOpen(true)}
+        onHeaderSettings={() => setIsHeaderModalOpen(true)} onShuffle={() => setIsShuffleModalOpen(true)} onLibrary={() => setIsLibraryModalOpen(true)}
         onExportWord={handleExportWord} onPrint={() => window.print()} onPresent={() => setPresentationOpen(true)}
         onCollaborate={() => setCollaborationOpen(true)} onResults={() => setIsResultsModalOpen(true)}
       />
@@ -369,7 +368,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
               <div className="bg-white dark:bg-[#202124] p-4 rounded-2xl border border-[#dadce0] dark:border-[#3c4043] shadow-xs flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <h2 className="font-bold text-[#202124] dark:text-[#e3e3e3] text-sm sm:text-base flex items-center gap-2">
-                    <span>Ngân Hàng Câu Hỏi Trong Đề</span>
+                    <span>Câu hỏi</span>
                     <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043]">
                       {exam.questions.length} câu
                     </span>
@@ -396,15 +395,6 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                       </span>
                     </button>
                   )}
-
-                  <button
-                    onClick={handleSaveCurrentExam}
-                    title="Lưu các thay đổi lên máy chủ"
-                    className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium text-[#3c4043] dark:text-[#e3e3e3] bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] rounded-lg transition-colors cursor-pointer shadow-2xs"
-                  >
-                    {isCloudSaved ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Save className="w-3.5 h-3.5 text-[#5f6368] dark:text-[#9aa0a6]" />}
-                    <span>{isCloudSaving ? 'Đang lưu…' : 'Lưu đề'}</span>
-                  </button>
 
                   <button
                     onClick={handleAddQuestion}

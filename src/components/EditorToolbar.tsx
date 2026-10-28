@@ -27,10 +27,10 @@ function ToolMenu({ label, Icon, items }: { label: string; Icon: Icon; items: Me
 
 interface Props {
   canEdit: boolean; ready: boolean; hasQuestions: boolean; hasServerExam: boolean;
-  access?: Exam['access']; submissionCount: number; matrixActive: boolean;
+  access?: Exam['access']; submissionCount: number;
   copilotOpen: boolean; onCopilot: () => void;
   onGenerate: () => void; onImport: () => void; onBank: () => void;
-  onHeaderSettings: () => void; onShuffle: () => void; onMatrix: () => void; onLibrary: () => void;
+  onHeaderSettings: () => void; onShuffle: () => void; onLibrary: () => void;
   onExportWord: () => void; onPrint: () => void; onPresent: () => void;
   onCollaborate: () => void; onResults: () => void;
 }
@@ -48,7 +48,6 @@ export function EditorToolbar(p: Props) {
       <ToolMenu label="Đề thi" Icon={Settings2} items={[
         { label: 'Tiêu đề trường thi', title: 'Cài đặt Sở GD&ĐT, Trường THPT, thời gian, mã đề', onClick: p.onHeaderSettings },
         { label: 'Trộn 4 mã đề', title: 'Trộn đề thành 4 mã đề kèm ma trận đáp án', onClick: p.onShuffle },
-        { label: p.matrixActive ? 'Ẩn ma trận của đề' : 'Ma trận của đề', title: 'Xem phân bố câu hỏi và điểm của đề đang soạn', onClick: p.onMatrix },
         { label: 'Sao lưu · Nhập kho cũ', title: 'Sao lưu đề kèm ảnh và nhập kho cũ', onClick: p.onLibrary },
       ]} />
     </>}
