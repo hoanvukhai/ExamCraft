@@ -7,7 +7,7 @@ import bcrypt from 'bcryptjs';
 import { requireTestDatabase } from './helpers/test-database';
 
 test('imported bank saves are private, nonshareable and idempotent after a lost receipt', { timeout: 60000 }, async t => {
-  const origin = 'http://127.0.0.1:3117';
+  const origin = process.env.EXAMCRAFT_TEST_ORIGIN ?? 'http://127.0.0.1:3117';
   assert.equal((await (await fetch(origin + '/api/health')).json()).isolatedTest, true);
   const db = new PrismaClient({ datasources: { db: { url: requireTestDatabase() } } });
   const ownerId = 'bank_receipt_' + randomUUID(), password = 'fixture-' + randomUUID();
@@ -32,5 +32,5 @@ test('imported bank saves are private, nonshareable and idempotent after a lost 
   const enabled = await fetch(origin + '/api/questions/' + id, { method: 'PATCH', headers: { Origin: origin, Cookie: cookie, 'Content-Type': 'application/json' }, body: JSON.stringify({ baseVersion: row.version, shareable: true }) });
   assert.equal(enabled.status, 200); const optedIn = (await enabled.json()).question;
   assert.equal(optedIn.shareable, true); assert.equal(optedIn.visibility, 'PRIVATE');
-  writeQaReport('qa/rebuild-2026-10-25/s2-s4-http-bank.json', JSON.stringify({ status: 'PASS', private: true, shareable: false, retryCount: 2, questions: 1, passages: 1, revisions: 1, changedBodyStatus: 409, realAiCalls: false }, null, 2));
+  writeQaReport((process.env.HTTP_REPORT_DIR ?? 'qa/rebuild-2026-10-25') + '/s2-s4-http-bank.json', JSON.stringify({ status: 'PASS', private: true, shareable: false, retryCount: 2, questions: 1, passages: 1, revisions: 1, changedBodyStatus: 409, realAiCalls: false }, null, 2));
 });

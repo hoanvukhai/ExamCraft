@@ -8,7 +8,7 @@ import bcrypt from 'bcryptjs';
 import { requireTestDatabase } from './helpers/test-database';
 
 const db = new PrismaClient({ datasources: { db: { url: requireTestDatabase() } }, log: [] });
-const origin = 'http://127.0.0.1:3117';
+const origin = process.env.EXAMCRAFT_TEST_ORIGIN ?? 'http://127.0.0.1:3117';
 async function request(path: string, method = 'GET', body?: unknown, cookie = '') {
   const response = await fetch(origin + path, { method, headers: { Origin: origin, ...(cookie ? { Cookie: cookie } : {}), ...(body === undefined ? {} : { 'Content-Type': 'application/json' }) }, body: body === undefined ? undefined : JSON.stringify(body) });
   return { status: response.status, data: await response.json().catch(() => ({})) as Record<string, any>, cookie: response.headers.getSetCookie().map(value => value.split(';')[0]).join('; ') }; // eslint-disable-line @typescript-eslint/no-explicit-any -- loose JSON in a test helper
@@ -24,9 +24,9 @@ test('an administrator hands a key to chosen teachers: they can use it but never
       await db.userApiKey.deleteMany({ where: { userId: { in: all } } });
       await db.auditLog.deleteMany({ where: { actorId: { in: all } } });
       await db.user.deleteMany({ where: { id: { in: all } } });
-      const directory = `qa/rebuild-${new Date().toISOString().slice(0, 10)}`;
+      const directory = process.env.HTTP_REPORT_DIR ?? `qa/rebuild-${new Date().toISOString().slice(0, 10)}`;
       fs.mkdirSync(directory, { recursive: true });
-      writeQaReport(`${directory}/http_admin_keys.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 4 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117', realAiCalls: false }, null, 2));
+      writeQaReport(`${directory}/http_admin_keys.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 4 ? 'PASS' : 'INCOMPLETE', environment: 'isolated ' + origin, realAiCalls: false }, null, 2));
     } finally { await db.$disconnect(); }
   });
   const password = 'fixture-' + run, hash = await bcrypt.hash(password, 10), cookies: Record<string, string> = {};

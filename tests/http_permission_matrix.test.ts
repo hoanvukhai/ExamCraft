@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import { requireTestDatabase } from './helpers/test-database';
 
 const db = new PrismaClient({ datasources: { db: { url: requireTestDatabase() } }, log: [] });
-const origin = 'http://127.0.0.1:3117';
+const origin = process.env.EXAMCRAFT_TEST_ORIGIN ?? 'http://127.0.0.1:3117';
 async function request(path: string, method = 'GET', body?: unknown, cookie = '') {
   const response = await fetch(origin + path, { method, headers: { Origin: origin, ...(cookie ? { Cookie: cookie } : {}), ...(body === undefined ? {} : { 'Content-Type': 'application/json' }) }, body: body === undefined ? undefined : JSON.stringify(body) });
   return { status: response.status, data: await response.json().catch(() => ({})), cookie: response.headers.getSetCookie().map(value => value.split(';')[0]).join('; ') };
@@ -27,9 +27,9 @@ test('share permission matrix is decided by the server for every operation', { t
       await db.question.deleteMany({ where: { ownerId: { in: all } } });
       await db.auditLog.deleteMany({ where: { actorId: { in: all } } });
       await db.user.deleteMany({ where: { id: { in: all } } });
-      const directory = `qa/rebuild-${new Date().toISOString().slice(0, 10)}`;
+      const directory = process.env.HTTP_REPORT_DIR ?? `qa/rebuild-${new Date().toISOString().slice(0, 10)}`;
       fs.mkdirSync(directory, { recursive: true });
-      writeQaReport(`${directory}/http_permission_matrix.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 6 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117', realAiCalls: false }, null, 2));
+      writeQaReport(`${directory}/http_permission_matrix.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 6 ? 'PASS' : 'INCOMPLETE', environment: 'isolated ' + origin, realAiCalls: false }, null, 2));
     } finally { await db.$disconnect(); }
   });
   const password = 'fixture-' + randomUUID(), hash = await bcrypt.hash(password, 10), cookies = {} as Record<typeof names[number], string>;

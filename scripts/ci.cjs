@@ -5,6 +5,12 @@
  * or the real AI service (the test server is pointed at a local imitation of the provider).
  */
 const { spawn, spawnSync } = require('node:child_process');
+const { ciServerTarget } = require('./ci-server-target.cjs');
+const target = ciServerTarget();
+process.env.EXAMCRAFT_TEST_ORIGIN = target.origin;
+process.env.EXAMCRAFT_TEST_PORT = target.port;
+process.env.EXAMCRAFT_TEST_HOST = '127.0.0.1';
+process.env.EXAMCRAFT_REAL_AI = '0';
 
 const quick = process.argv.includes('--quick');
 const results = [];
@@ -27,7 +33,7 @@ function finish(message) {
   process.exit(message.startsWith('FAILED') ? 1 : 0);
 }
 async function health() {
-  try { const response = await fetch('http://127.0.0.1:3117/api/health', { signal: AbortSignal.timeout(3000) }); return response.ok ? await response.json() : null; } catch { return null; }
+  try { const response = await fetch(target.origin + '/api/health', { signal: AbortSignal.timeout(3000) }); return response.ok ? await response.json() : null; } catch { return null; }
 }
 
 (async () => {
@@ -35,11 +41,11 @@ async function health() {
   step('Lint', npm, ['run', 'lint']);
   step('Safe tests (no database, no AI)', npm, ['test']);
   if (quick) finish('All quick checks passed');
-  if (await health()) finish('FAILED at: a server is already running on port 3117; stop it so the tests cannot hit an old build');
+  if (await health()) finish('FAILED at: a server is already running on the selected test port; no server was stopped');
   step('Production build', npm, ['run', 'build'], { env: { ...process.env, NEXT_BUILD_CPUS: process.env.NEXT_BUILD_CPUS ?? '1', NODE_OPTIONS: process.env.NODE_OPTIONS ?? '--max-old-space-size=1024' } });
 
   console.log('\n=== Starting the isolated test server ===');
-  const server = spawn(node, ['scripts/test-server.cjs', '--production'], { stdio: 'ignore' });
+  const server = spawn(node, ['--import', 'tsx', 'scripts/test-server.cjs', '--production'], { stdio: 'ignore' });
   const stop = () => { try { if (process.platform === 'win32') spawnSync('taskkill', ['/PID', String(server.pid), '/T', '/F'], { stdio: 'ignore' }); else server.kill('SIGTERM'); } catch { /* already gone */ } };
   process.on('exit', stop);
   let up = null;

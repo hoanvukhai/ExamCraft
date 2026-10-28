@@ -7,6 +7,7 @@ import { PrismaClient, type Prisma } from '@prisma/client';
 import fs from 'node:fs';
 import { requireTestDatabase } from './helpers/test-database';
 import type { Exam } from '../src/types/exam';
+import { moveOutlineNode, outlineNodes, removeOutlineNode } from '../src/lib/exam-outline';
 import { encodeGradeHistoryCursor } from '../src/lib/grade-history-pagination';
 import knowledgeFixture from './fixtures/knowledge-package.json';
 import { parseKnowledgePackage, emptyKnowledgeScope } from '../src/lib/knowledge-package';
@@ -15,7 +16,7 @@ import { createExamPlan, compareExamPlan } from '../src/lib/exam-plan';
 import { captureTemplateSnapshot, applyPersonalTemplate, templateDocumentStamp, parseTemplateList, parseOpenedTemplate, parseSavedTemplate } from '../src/lib/exam-template';
 
 const database = requireTestDatabase();
-const origin = 'http://127.0.0.1:3117';
+const origin = process.env.EXAMCRAFT_TEST_ORIGIN ?? 'http://127.0.0.1:3117';
 const prisma = new PrismaClient({ datasources: { db: { url: database } }, log: [] });
 const cookies = (response: Response) => response.headers.getSetCookie().map(cookie => cookie.split(';')[0]).join('; ');
 async function request(path: string, method = 'GET', body?: unknown, cookie = '', requestOrigin = origin) {
@@ -42,9 +43,9 @@ test('HTTP workflows on the isolated local server', { timeout: 120000 }, async t
       await prisma.auditLog.deleteMany({ where: { actorId: { in: ids } } });
       await prisma.aiUsageLog.deleteMany({ where: { userId: { in: ids } } });
       await prisma.user.deleteMany({ where: { id: { in: ids } } });
-      const reportDirectory = `qa/rebuild-${new Date().toISOString().slice(0, 10)}`;
+      const reportDirectory = process.env.HTTP_REPORT_DIR ?? `qa/rebuild-${new Date().toISOString().slice(0, 10)}`;
       fs.mkdirSync(reportDirectory, { recursive: true });
-      writeQaReport(`${reportDirectory}/http_workflows.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 16 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117', realAiCalls: false }, null, 2));
+      writeQaReport(`${reportDirectory}/http_workflows.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 16 ? 'PASS' : 'INCOMPLETE', environment: 'isolated ' + origin, realAiCalls: false }, null, 2));
     } finally { await prisma.$disconnect(); }
   });
   const passwordHash = await bcrypt.hash(password, 10);
@@ -238,8 +239,11 @@ test('HTTP workflows on the isolated local server', { timeout: 120000 }, async t
     assert.equal(created.status, 200);
     const document = created.data.document as Exam, path = `/api/exams/${document.id}`;
     assert.equal((await request(`${path}/collaborators`, 'POST', { email: emails[1], role: 'EDITOR' }, owner)).status, 200);
-    const reordered = { ...document, questions: [...document.questions].reverse() };
-    const removed = { ...document, questions: [{ ...document.questions[0], content: 'Editor changed content', step_by_step_solution: 'Editor private solution' }] };
+    const lastNode = outlineNodes(document.outline!).find(node => node.questionId === document.questions.at(-1)!.id)!;
+    const reordered = moveOutlineNode(document, lastNode.id, { parentId: null, afterId: null });
+    const remaining = removeOutlineNode(document, lastNode.id, false);
+    const removed = { ...remaining, questions: remaining.questions.map(q => ({ ...q,
+      content: 'Editor changed content', step_by_step_solution: 'Editor private solution' })) };
     const results = await Promise.all([request(path, 'PATCH', { document: reordered, baseVersion: document.version }, owner), request(path, 'PATCH', { document: removed, baseVersion: document.version }, other)]);
     assert.deepEqual(results.map(r => r.status).sort(), [200, 409]);
     const winner = results.findIndex(r => r.status === 200), saved = results[winner].data.document as Exam;
@@ -425,7 +429,10 @@ test('HTTP workflows on the isolated local server', { timeout: 120000 }, async t
     assert.equal(assigned.status, 200, assigned.data.error);
     assignmentId = assigned.data.assignment.id; publicId = assigned.data.assignment.publicId;
     const snapshotBefore = (await prisma.assignment.findUniqueOrThrow({ where: { id: assignmentId } })).snapshot;
-    const saved = await request(`/api/exams/${id}`, 'PATCH', { document: { ...current, questions: [] }, baseVersion: current.version }, owner);
+    const invalidClear = await request(`/api/exams/${id}`, 'PATCH', { document: { ...current, questions: [] }, baseVersion: current.version }, owner);
+    assert.equal(invalidClear.status, 400, 'Question references cannot be left behind in the outline');
+    assert.deepEqual((await request(`/api/exams/${id}`, 'GET', undefined, owner)).data.document, current);
+    const saved = await request(`/api/exams/${id}`, 'PATCH', { document: { ...current, questions: [], outline: [] }, baseVersion: current.version }, owner);
     assert.equal(saved.status, 200); current = saved.data.document;
     assert.deepEqual((await prisma.assignment.findUniqueOrThrow({ where: { id: assignmentId } })).snapshot, snapshotBefore);
     const publicAssignment = await request('/api/public/assignments/' + publicId);

@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import { requireTestDatabase } from './helpers/test-database';
 
 const db = new PrismaClient({ datasources: { db: { url: requireTestDatabase() } }, log: [] });
-const origin = 'http://127.0.0.1:3117';
+const origin = process.env.EXAMCRAFT_TEST_ORIGIN ?? 'http://127.0.0.1:3117';
 async function request(path: string, method = 'GET', body?: unknown, cookie = '') {
   const response = await fetch(origin + path, { method, headers: { Origin: origin, ...(cookie ? { Cookie: cookie } : {}), ...(body === undefined ? {} : { 'Content-Type': 'application/json' }) }, body: body === undefined ? undefined : JSON.stringify(body) });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- loose JSON response in a test helper
@@ -26,9 +26,9 @@ test('the personal library lists, filters, stars, trashes, restores and keeps co
       await db.question.deleteMany({ where: { ownerId: { in: ids } } });
       await db.auditLog.deleteMany({ where: { actorId: { in: ids } } });
       await db.user.deleteMany({ where: { id: { in: ids } } });
-      const directory = `qa/rebuild-${new Date().toISOString().slice(0, 10)}`;
+      const directory = process.env.HTTP_REPORT_DIR ?? `qa/rebuild-${new Date().toISOString().slice(0, 10)}`;
       fs.mkdirSync(directory, { recursive: true });
-      writeQaReport(`${directory}/http_library.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 4 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117', realAiCalls: false }, null, 2));
+      writeQaReport(`${directory}/http_library.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 4 ? 'PASS' : 'INCOMPLETE', environment: 'isolated ' + origin, realAiCalls: false }, null, 2));
     } finally { await db.$disconnect(); }
   });
   const password = 'fixture-' + randomUUID(), hash = await bcrypt.hash(password, 10), cookies: Record<string, string> = {};

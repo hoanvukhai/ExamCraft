@@ -13,7 +13,7 @@ import { normalizeExamDocument } from '../src/lib/exam-document';
 // AI routes talk to a local imitation of the provider (the isolated test server is started with GOOGLE_GEMINI_BASE_URL pointing here).
 // Nothing in this file reaches the real service.
 const db = new PrismaClient({ datasources: { db: { url: requireTestDatabase() } }, log: [] });
-const origin = 'http://127.0.0.1:3117';
+const origin = process.env.EXAMCRAFT_TEST_ORIGIN ?? 'http://127.0.0.1:3117';
 type Seen = { method: string; path: string; key: string; body: string };
 const seen: Seen[] = [];
 let behave: (key: string) => { status: number; body: unknown; delayMs?: number } = () => ({ status: 200, body: {} });
@@ -49,9 +49,9 @@ test('AI routes use only the caller key, count usage per key id, fail honestly a
       await db.userApiKey.deleteMany({ where: { userId: { in: all } } });
       await db.auditLog.deleteMany({ where: { actorId: { in: all } } });
       await db.user.deleteMany({ where: { id: { in: all } } });
-      const directory = `qa/rebuild-${new Date().toISOString().slice(0, 10)}`;
+      const directory = process.env.HTTP_REPORT_DIR ?? `qa/rebuild-${new Date().toISOString().slice(0, 10)}`;
       fs.mkdirSync(directory, { recursive: true });
-      writeQaReport(`${directory}/http_ai_mock.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 16 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117 with a local provider imitation on 3118', realAiCalls: false }, null, 2));
+      writeQaReport(`${directory}/http_ai_mock.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 16 ? 'PASS' : 'INCOMPLETE', environment: 'isolated ' + origin + ' with a local provider imitation on 3118', realAiCalls: false }, null, 2));
     } finally { await db.$disconnect(); }
   });
   const cookies: Record<string, string> = {};

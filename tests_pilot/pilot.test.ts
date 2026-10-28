@@ -12,6 +12,7 @@ import { chromium, type Browser, type Page } from 'playwright-core';
 import { requireTestDatabase } from '../tests/helpers/test-database';
 import { loginBucket } from '../src/lib/auth-security';
 import type { Exam } from '../src/types/exam';
+import { legacyOutline, outlineNodes } from '../src/lib/exam-outline';
 
 const origin = process.env.EXAMCRAFT_TEST_ORIGIN ?? 'http://127.0.0.1:3117';
 const dbUrl = requireTestDatabase();
@@ -165,7 +166,7 @@ async function flow(id: string, action: (f: Fixture) => Promise<void>, firstPass
   finally { if (f) { try { await f.cleanup(); cleanupComplete = true; } catch (e) { error ??= e; } } }
   const message = error instanceof Error ? error.message.replaceAll(f?.password ?? '\0', '[fixture-password]') : error ? 'Unknown pilot failure' : undefined;
   results.push({ id, status: error ? 'FAIL' : 'PASS', durationMs: Date.now() - start, cleanupComplete, ...(message ? { error: message } : {}) });
-  fs.mkdirSync(reportDir, { recursive: true }); const evidence=JSON.stringify({ run, sourceSha256, buildId, browserVersion, browserExecutable: process.env.PILOT_BROWSER_PATH, requestedFlow: process.env.PILOT_FLOW ?? 'F1-F7,F9-F24', checkedAt: new Date().toISOString(), environment: 'isolatedTest localhost3117 / examcraft_test_20261022', realAiCalls: false, results }, null, 2);
+  fs.mkdirSync(reportDir, { recursive: true }); const evidence=JSON.stringify({ run, sourceSha256, buildId, browserVersion, browserExecutable: process.env.PILOT_BROWSER_PATH, requestedFlow: process.env.PILOT_FLOW ?? 'F1-F7,F9-F24', checkedAt: new Date().toISOString(), environment: 'isolatedTest ' + origin + ' / examcraft_test_20261022', realAiCalls: false, results }, null, 2);
   writeQaReport(`${reportDir}/pilot-results.json`,evidence);writeQaReport(`${reportDir}/pilot-run-${run}.json`,evidence);
   if (error) throw Error(`${id}: ${message}`);
 }
@@ -174,7 +175,7 @@ test('F1 first login, password change and library', { timeout: 90000 }, () => fl
   await login(f.page, f.emails[0], f.password);
   await f.page.getByPlaceholder('Nhập mật khẩu mới').fill(f.password + '-changed'); await f.page.getByPlaceholder('Nhập lại mật khẩu mới').fill(f.password + '-changed');
   await click(f.page, /Đổi mật khẩu.*|Cập nhật.*|Lưu mật khẩu.*/);
-  await f.page.waitForURL(origin + '/'); await f.page.getByText('Soạn đề trống mới', { exact: true }).waitFor();
+  await f.page.waitForURL(origin + '/'); await f.page.getByRole('heading', { name: 'Thư mục và đề thi', exact: true }).waitFor();
   assert.equal((await f.db.user.findUniqueOrThrow({ where: { id: f.ids[0] } })).mustChangePassword, false);
 }, true));
 
@@ -195,6 +196,16 @@ test('F2 author seven types, image, passage, zero, title and reopen', { timeout:
   await f.page.getByRole('button', { name: 'Tạo đề', exact: true }).click();
   await f.page.getByTitle('Nhấn để đổi tên đề thi').click();
   const titleInput = f.page.locator('header input').first(); await titleInput.fill('Pilot Toán 6 tự soạn'); await titleInput.press('Enter');
+  // Create a real material group through the new outline menu before authoring Q1.
+  const canvas = f.page.getByRole('region', { name: 'Dàn ý đề', exact: true });
+  await canvas.getByRole('button', { name: '+ Thêm phần', exact: true }).click();
+  await canvas.getByLabel(/^Tiêu đề /).fill('Phần đọc');
+  await canvas.getByRole('button', { name: 'Xong', exact: true }).click();
+  await canvas.getByRole('button', { name: 'Thêm vào Phần đọc', exact: true }).click();
+  await f.page.getByRole('menuitem', { name: 'Ngữ liệu (nhóm mới)', exact: true }).click();
+  await canvas.getByLabel('Tên ngữ liệu 1', { exact: true }).fill('Ngữ liệu thử');
+  await canvas.getByLabel('Nội dung ngữ liệu 1', { exact: true }).fill('Lan đọc sách ở thư viện.');
+  await canvas.getByRole('button', { name: 'Xong', exact: true }).click();
   for (const [index, type] of types.entries()) {
     await click(f.page, index === 0 ? 'Thêm câu hỏi mới' : 'Thêm câu hỏi');
     await f.page.getByRole('region', {name:'Soạn câu mới',exact:true}).waitFor();
@@ -223,11 +234,6 @@ test('F2 author seven types, image, passage, zero, title and reopen', { timeout:
     assert.equal(await f.page.getByRole('menuitem', { name: 'Lưu bản sao vào ngân hàng', exact: true }).isDisabled(), true); await f.page.keyboard.press('Escape');
     await f.page.getByRole('button',{name:'Đóng, giữ nháp',exact:true}).click();
   }
-  await openDetails(f.page,'Thêm / sửa phần và nội dung dùng chung'); await click(f.page,'Thêm ngữ liệu');
-  await openDetails(f.page,'Ngữ liệu 1');
-  await f.page.getByLabel('Tên ngữ liệu 1').fill('Ngữ liệu thử'); await f.page.getByLabel('Nội dung ngữ liệu 1').fill('Lan đọc sách ở thư viện.');
-  await openDetails(f.page,'Phần / nội dung dùng chung của câu 1');
-  await f.page.getByLabel('Ngữ liệu của câu 1').selectOption({ label: 'Ngữ liệu thử' });
   const bankSaved = f.page.waitForResponse(r => r.url().endsWith('/api/questions') && r.request().method() === 'POST');
   await f.page.getByRole('button',{name:'Thao tác câu 1',exact:true}).click(); await f.page.getByRole('menuitem',{name:'Lưu bản sao vào ngân hàng',exact:true}).click();
   { const bankResponse = await bankSaved; assert.equal(bankResponse.status(), 200, 'POST /api/questions status ' + bankResponse.status()); } // this endpoint answers 200 with { success, question }, not 201
@@ -247,6 +253,10 @@ test('F2 author seven types, image, passage, zero, title and reopen', { timeout:
   const exam = await f.db.exam.findFirstOrThrow({ where: { ownerId: f.ids[0] } });
   await f.page.goto(origin + '/'); await openExam(f,exam.id);
   const saved = (await f.api('/api/exams/'+exam.id)).document as Exam;
+  assert.equal(saved.outline?.[0].kind, 'part');
+  assert.equal(saved.outline?.[0].children?.[0].kind, 'group');
+  assert.equal(saved.questions[0].passageId, saved.passages?.[0].id);
+  assert.equal(saved.questions[0].sectionId, saved.outline?.[0].id);
   assert.deepEqual(saved.questions.map(q=>q.type),types); assert.equal(saved.questions[0].points,0); assert.equal(saved.questions[0].figures?.length,1); assert.equal(saved.passages?.[0].content,'Lan đọc sách ở thư viện.');
   await f.page.getByText('PILOT Q7 ordering', { exact: true }).filter({visible:true}).first().waitFor();
 }));
@@ -291,7 +301,7 @@ test('F3 answer views, shuffle, Word and print', { timeout: 120000 }, () => flow
   await click(f.page,'Song song'); await f.page.getByRole('heading',{name:'ĐỀ VÀ ĐÁP ÁN SONG SONG',exact:true}).waitFor();
   const rows=f.page.getByRole('heading',{name:'ĐỀ VÀ ĐÁP ÁN SONG SONG',exact:true}).locator('..').locator('.question-item'); assert.equal(await rows.count(),7);
   for(let i=0;i<7;i++){ const row=rows.nth(i);assert.equal(await row.locator(':scope > div').count(),2);assert.ok((await row.innerText()).includes('PILOT Q'+(i+1)));assert.ok((await row.innerText()).includes(solution)); }
-  const passage = f.page.locator('[data-parallel-passage="p1"]');
+  const passage = f.page.locator('.a4-paper [data-outline-block]').filter({ hasText: 'Lan đọc sách ở thư viện.' });
   assert.equal(await passage.count(),1); assert.ok((await passage.innerText()).includes('Lan đọc sách ở thư viện.'));
   const [parallelDownload] = await Promise.all([f.page.waitForEvent('download'), exportTool(f.page, 'Word – đề song song')]);
   const parallelPath = await parallelDownload.path(); assert.ok(parallelPath);
@@ -312,8 +322,11 @@ test('F3 answer views, shuffle, Word and print', { timeout: 120000 }, () => flow
   const literaryId = (await f.api('/api/exams','POST',{document:literary})).exam.id;
   await openExam(f,literaryId); await click(f.page,'Song song');
   await f.page.getByRole('heading',{name:'ĐỀ VÀ ĐÁP ÁN SONG SONG',exact:true}).waitFor();
-  assert.equal(await f.page.locator('[data-parallel-passage]').count(),1);
-  assert.ok((await f.page.locator('[data-parallel-passage]').innerText()).includes('Con sông quê tôi'));
+  const literaryPassage = f.page.locator('.a4-paper [data-outline-block]').filter({ hasText: 'Con sông quê tôi' });
+  const expectedGroups = outlineNodes(legacyOutline(literary)).filter(node => node.kind === 'group');
+  assert.equal(expectedGroups.length, 2, 'The source shares material across two different parts');
+  assert.equal(await literaryPassage.count(), expectedGroups.length);
+  for (const block of await literaryPassage.all()) assert.ok((await block.innerText()).includes('Con sông quê tôi'));
   assert.equal(await f.page.getByRole('heading',{name:'ĐỀ VÀ ĐÁP ÁN SONG SONG',exact:true}).locator('..').locator('.question-item').count(),literary.questions.length);
 }));
 
@@ -559,6 +572,7 @@ test('F14 two teachers edit the same exam at once: the first save wins, the othe
   const rename = async (page: Page, value: string) => { await editable(page).waitFor(); await titleOf(page).click(); const input = page.locator('header input').first(); await input.fill(value); await input.press('Enter'); };
   // The second teacher loses the connection, edits, and the first teacher saves in the meantime.
   await peerContext.setOffline(true); await rename(peer, 'Bản của đồng nghiệp');
+  await peer.getByLabel('Trạng thái lưu', { exact: true }).click();
   await peer.getByText('Mất kết nối — đang giữ bản nháp trên máy', { exact: true }).waitFor();
   await rename(f.page, 'Bản của chủ đề');
   await waitUntil(async () => (await f.db.exam.findUniqueOrThrow({ where: { id } })).title === 'Bản của chủ đề', 'The owner save did not reach the server');
@@ -628,7 +642,7 @@ test('F16 main pages have named controls and a student can answer, move and subm
   const audit = async (page: Page, where: string) => { const r = await unnamedControls(page); for (const item of r.bad) findings.push(`${where}: ${item}`); if (r.positive) findings.push(`${where}: ${r.positive} positive tabindex`); };
   await audit(gp, 'login');
   await authenticated(f); const examId = await seedExam(f); const asg = await assignment(f, examId);
-  await f.page.getByRole('button', { name: /Tạo đề mới|Đề mới/ }).first().waitFor().catch(() => {}); await f.page.waitForLoadState('networkidle'); await audit(f.page, 'library');
+  await f.page.getByRole('heading', { name: 'Thư mục và đề thi', exact: true }).waitFor(); await f.page.waitForLoadState('networkidle'); await audit(f.page, 'library');
   await openExam(f, examId); await f.page.waitForLoadState('networkidle'); await audit(f.page, 'editor');
   await f.page.goto(origin + '/teacher/assignments/' + asg.id); await f.page.getByText('Bảng điểm & Bài nộp').waitFor(); await audit(f.page, 'teacher assignment');
   // 2. Keyboard-only student.
@@ -663,7 +677,7 @@ test('F17 pasting an exam as text with no AI key still gives a usable preview th
   await authenticated(f); const id = await seedExam(f); await openExam(f, id);
   // What the server answers when the teacher has no key: the dialog must fall back to the built-in parser.
   await f.page.route('**/api/parse-exam-text', route => route.fulfill({ status: 400, contentType: 'application/json', body: JSON.stringify({ success: false, error: 'Hãy thêm hoặc bật khóa Gemini của bạn trong mục Khóa AI.' }) }));
-  await f.page.getByTitle('Bóc tách câu hỏi từ file Word / Ảnh chụp đưa thêm vào đề').click();
+  await addSource(f.page, 'Nhập Word/Ảnh');
   await click(f.page, 'Dán văn bản thô (AI Parser)');
   const text = 'ĐỀ KIỂM TRA 15 PHÚT\nThời gian: 15 phút\n\nCâu 1: Thủ đô của Việt Nam là gì?\nA. Hà Nội\nB. Huế\nC. Đà Nẵng\nD. Cần Thơ\nĐáp án: B\n\nCâu 2: Xét các mệnh đề sau:\na) Số 2 là số nguyên tố. (Đ)\nb) Số 9 là số nguyên tố. (S)\nc) Số 0 là số tự nhiên. (Đ)\nd) Số 1 là số nguyên tố. (S)\n\nCâu 3: Tính 15 + 27.';
   await f.page.getByPlaceholder(/^Dán đoạn văn bản đề thi thô/).fill(text);
@@ -790,7 +804,7 @@ test('F19 library search, starred, recent, trash, restore and safe controls', { 
 test('F20 import preview corrections survive import, save and reopen', { timeout: 180000 }, () => flow('F20', async f => {
   await authenticated(f); const id = await seedExam(f); await openExam(f, id);
   await f.page.route('**/api/parse-exam-text', route => route.fulfill({ status: 400, contentType: 'application/json', body: JSON.stringify({ success: false, error: 'Fixture: use built-in text parser' }) }));
-  await f.page.getByTitle('Bóc tách câu hỏi từ file Word / Ảnh chụp đưa thêm vào đề').click();
+  await addSource(f.page, 'Nhập Word/Ảnh');
   await click(f.page, 'Dán văn bản thô (AI Parser)');
   const sample = fs.readFileSync('docs/huong-dan/DE_MAU_DE_KIEM_TAY.md', 'utf8').split('```text')[1].split('```')[0];
   await f.page.getByPlaceholder(/^Dán đoạn văn bản đề thi thô/).fill(sample + '\nCâu 6: Câu chưa có đáp án để rà lại.');
@@ -867,13 +881,17 @@ test('F22 cancel slow AI import and generation without applying or saving result
     await authenticated(f); const id = await seedExam(f); await openExam(f, id);
     await f.db.user.update({ where: { id: f.ids[0] }, data: { aiDailyLimit: 10 } });
     await f.api('/api/user/keys', 'POST', { apiKey: 'pilot-cancel-key-0123456789', label: 'Cancel fixture' });
-    await f.page.getByTitle('Bóc tách câu hỏi từ file Word / Ảnh chụp đưa thêm vào đề').click(); await click(f.page, 'Dán văn bản thô (AI Parser)');
+    // The fixture adds its fake key through HTTP; reload to refresh the same key state the UI normally updates.
+    const keysLoaded = f.page.waitForResponse(response => response.url().endsWith('/api/user/keys') && response.request().method() === 'GET');
+    await f.page.reload();
+    assert.ok((await (await keysLoaded).json()).keys.some((key: { isActive: boolean }) => key.isActive));
+    await addSource(f.page, 'Nhập Word/Ảnh'); await click(f.page, 'Dán văn bản thô (AI Parser)');
     await f.page.getByPlaceholder(/^Dán đoạn văn bản đề thi thô/).fill('Câu 1: Tính hai cộng hai.'); await click(f.page, 'Bắt đầu phân rã thành câu hỏi');
     await waitUntil(async () => mock.keys.length === 1, 'Import waits at provider'); await click(f.page, 'Hủy yêu cầu AI');
     await f.page.getByText('Đã hủy yêu cầu. Chưa thêm câu hỏi nào vào đề.', { exact: true }).waitFor(); assert.equal(await f.page.getByTestId('import-preview-question').count(), 0);
     assert.equal(await f.page.getByRole('button', { name: 'Bắt đầu phân rã thành câu hỏi', exact: true }).isEnabled(), true);
     await click(f.page, 'Đóng');
-    await f.page.getByTitle('Tạo bản nháp đề để giáo viên kiểm tra và chỉnh sửa').click();
+    await addSource(f.page, 'Sinh bằng AI');
     await f.page.getByPlaceholder('Nhập phần kiến thức muốn soạn; có thể dán yêu cầu cần đạt đã kiểm tra.').fill('Phép cộng số tự nhiên'); await click(f.page, 'Tạo bản nháp');
     await waitUntil(async () => mock.keys.length === 2, 'Generation waits at provider'); await click(f.page, 'Hủy yêu cầu AI');
     await f.page.getByText('Đã hủy yêu cầu. Chưa áp dụng bản nháp nào.', { exact: true }).waitFor(); assert.equal(await f.page.getByRole('button', { name: 'Tạo bản nháp', exact: true }).isEnabled(), true);
@@ -893,9 +911,17 @@ test('F23 manual edits, undo redo and a retried bank save preserve links without
   const q = (await f.api('/api/exams/' + id)).document.questions[0]; assert.equal(q.correct_answer, 'B'); assert.equal(q.passageId, 'p1'); assert.equal(q.status, 'draft'); assert.equal(q.verifiedBy, 'none');
   let dropped = false; const bankBodies: Record<string, unknown>[] = [];
   await f.page.route('**/api/questions', async route => { if (route.request().method() === 'POST') bankBodies.push(route.request().postDataJSON()); if (route.request().method() === 'POST' && !dropped) { dropped = true; await route.fetch(); await route.abort('failed'); } else await route.continue(); });
-  const card = f.page.locator('div.group').filter({ has: f.page.getByText('F23 EDITED', { exact: true }) }).last();
-  const bank = card.getByRole('button', { name: 'Lưu bản sao vào ngân hàng', exact: true }); await bank.click();
-  await waitUntil(async () => dropped && await bank.count() === 1 && await bank.isEnabled(), 'Lost receipt leaves retry available'); await bank.click();
+  const card = f.page.locator('#editor-question-q1');
+  const actions = card.getByRole('button', { name: 'Thao tác câu 1', exact: true });
+  const saveBank = async () => {
+    await actions.click();
+    const item = f.page.getByRole('menuitem', { name: 'Lưu bản sao vào ngân hàng', exact: true });
+    await waitUntil(async () => item.isEnabled(), 'Bank save remains available after a lost receipt');
+    await item.click();
+  };
+  await saveBank();
+  await waitUntil(async () => dropped && await actions.isEnabled(), 'Lost receipt leaves retry available');
+  await saveBank();
   await f.page.getByText('Đã lưu bản sao riêng vào ngân hàng', { exact: true }).first().waitFor();
   if (bankBodies.length > 1) { const diff = (a: unknown, b: unknown, prefix = ''): string[] => a && b && typeof a === 'object' && typeof b === 'object' ? [...new Set([...Object.keys(a), ...Object.keys(b)])].flatMap(key => diff((a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key], prefix + '.' + key)) : JSON.stringify(a) === JSON.stringify(b) ? [] : [prefix]; console.log('F23 retry changed fields', diff(bankBodies[0], bankBodies[1])); }
   assert.equal(await f.db.question.count({ where: { ownerId: f.ids[0], id: { startsWith: 'q_save_' } } }), 1);

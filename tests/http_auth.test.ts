@@ -9,7 +9,7 @@ import { requireTestDatabase } from './helpers/test-database';
 import { loginBucket } from '../src/lib/auth-security';
 
 const db = new PrismaClient({ datasources: { db: { url: requireTestDatabase() } }, log: [] });
-const origin = 'http://127.0.0.1:3117';
+const origin = process.env.EXAMCRAFT_TEST_ORIGIN ?? 'http://127.0.0.1:3117';
 async function request(path: string, method = 'GET', body?: unknown, cookie = '', requestOrigin = origin) {
   const response = await fetch(origin + path, { method, headers: { Origin: requestOrigin, ...(cookie ? { Cookie: cookie } : {}), ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}) }, body: body === undefined ? undefined : JSON.stringify(body), signal: AbortSignal.timeout(30000) });
   return { status: response.status, data: await response.json(), cookie: response.headers.getSetCookie().map(c => c.split(';')[0]).join('; ') };
@@ -24,9 +24,9 @@ test('authentication revocation and limits on isolated local HTTP server', { tim
     try {
       await db.auditLog.deleteMany({ where: { OR: [{ actorId: { in: ids } }, { targetId: { in: [...ids, ...emails.map(loginBucket)] } }] } });
       await db.user.deleteMany({ where: { id: { in: ids } } });
-      const reportDirectory = `qa/rebuild-${new Date().toISOString().slice(0, 10)}`;
+      const reportDirectory = process.env.HTTP_REPORT_DIR ?? `qa/rebuild-${new Date().toISOString().slice(0, 10)}`;
       fs.mkdirSync(reportDirectory, { recursive: true });
-      writeQaReport(`${reportDirectory}/http_auth.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, status: checks.length === 5 ? 'PASS' : 'INCOMPLETE', cleanupComplete: true, environment: 'isolated localhost:3117', realAiCalls: false }, null, 2));
+      writeQaReport(`${reportDirectory}/http_auth.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, status: checks.length === 5 ? 'PASS' : 'INCOMPLETE', cleanupComplete: true, environment: 'isolated ' + origin, realAiCalls: false }, null, 2));
     } finally { await db.$disconnect(); }
   });
   const passwordHash = await bcrypt.hash(passwords[0], 10);

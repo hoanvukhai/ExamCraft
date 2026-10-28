@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import { requireTestDatabase } from './helpers/test-database';
 
 const db = new PrismaClient({ datasources: { db: { url: requireTestDatabase() } }, log: [] });
-const origin = 'http://127.0.0.1:3117';
+const origin = process.env.EXAMCRAFT_TEST_ORIGIN ?? 'http://127.0.0.1:3117';
 async function request(path: string, method = 'GET', body?: unknown, cookie = '') {
   const response = await fetch(origin + path, { method, headers: { Origin: origin, ...(cookie ? { Cookie: cookie } : {}), ...(body === undefined ? {} : { 'Content-Type': 'application/json' }) }, body: body === undefined ? undefined : JSON.stringify(body) });
   return { status: response.status, data: await response.json().catch(() => ({})), cookie: response.headers.getSetCookie().map(value => value.split(';')[0]).join('; ') };
@@ -24,9 +24,9 @@ test('two people editing different questions never lose work, and history can re
       await db.question.deleteMany({ where: { ownerId } });
       await db.auditLog.deleteMany({ where: { actorId: { in: [ownerId, editorId] } } });
       await db.user.deleteMany({ where: { id: { in: [ownerId, editorId] } } });
-      const directory = `qa/rebuild-${new Date().toISOString().slice(0, 10)}`;
+      const directory = process.env.HTTP_REPORT_DIR ?? `qa/rebuild-${new Date().toISOString().slice(0, 10)}`;
       fs.mkdirSync(directory, { recursive: true });
-      writeQaReport(`${directory}/http_collab_restore.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 3 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117', realAiCalls: false }, null, 2));
+      writeQaReport(`${directory}/http_collab_restore.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 3 ? 'PASS' : 'INCOMPLETE', environment: 'isolated ' + origin, realAiCalls: false }, null, 2));
     } finally { await db.$disconnect(); }
   });
   const password = 'fixture-' + randomUUID(), hash = await bcrypt.hash(password, 10);

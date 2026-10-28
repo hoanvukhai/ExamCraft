@@ -9,7 +9,7 @@ import { requireTestDatabase } from './helpers/test-database';
 
 // The 20 cases come from qa/ai-review/GEMINI_REGRADE_CASES.md; every score below was worked out by hand there.
 const db = new PrismaClient({ datasources: { db: { url: requireTestDatabase() } }, log: [] });
-const origin = 'http://127.0.0.1:3117';
+const origin = process.env.EXAMCRAFT_TEST_ORIGIN ?? 'http://127.0.0.1:3117';
 async function request(path: string, method = 'GET', body?: unknown, cookie = '') {
   const response = await fetch(origin + path, { method, headers: { Origin: origin, ...(cookie ? { Cookie: cookie } : {}), ...(body === undefined ? {} : { 'Content-Type': 'application/json' }) }, body: body === undefined ? undefined : JSON.stringify(body) });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- loose JSON response in a test helper
@@ -27,9 +27,9 @@ test('regrade: the twenty hand-worked cases', { timeout: 280000 }, async t => {
       await db.question.deleteMany({ where: { ownerId: uid } });
       await db.auditLog.deleteMany({ where: { actorId: uid } });
       await db.user.deleteMany({ where: { id: uid } });
-      const directory = `qa/rebuild-${new Date().toISOString().slice(0, 10)}`;
+      const directory = process.env.HTTP_REPORT_DIR ?? `qa/rebuild-${new Date().toISOString().slice(0, 10)}`;
       fs.mkdirSync(directory, { recursive: true });
-      writeQaReport(`${directory}/http_regrade_cases.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 20 ? 'PASS' : 'INCOMPLETE', environment: 'isolated localhost:3117', realAiCalls: false }, null, 2));
+      writeQaReport(`${directory}/http_regrade_cases.json`, JSON.stringify({ checkedAt: new Date().toISOString(), checks, cleanupComplete: true, status: checks.length === 20 ? 'PASS' : 'INCOMPLETE', environment: 'isolated ' + origin, realAiCalls: false }, null, 2));
     } finally { await db.$disconnect(); }
   });
   await db.user.create({ data: { id: uid, email: uid + '@example.invalid', name: 'Cases fixture', passwordHash: await bcrypt.hash('fixture-' + run, 10), mustChangePassword: false, aiDailyLimit: 0 } });
