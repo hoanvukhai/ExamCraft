@@ -54,7 +54,7 @@ function RailButtons({ variant, row }: { variant: WorkspaceVariant; row: boolean
   return <>
     <AccountMenu row={row} />
     {!row && <span aria-hidden className="w-6 h-px bg-[var(--ui-border)]" />}
-    {!admin && <RailButton title="Mở Thư ký AI trợ lý riêng của Thầy/Cô" label="Hỏi đáp với Trợ lý AI" pressed={assistantOpen} onClick={toggleAssistant}><Bot className="w-5 h-5" /></RailButton>}
+    {!admin && <RailButton title="Hỏi AI · Hỏi đáp, không sửa đề" label="Hỏi đáp với Trợ lý AI" pressed={assistantOpen} onClick={toggleAssistant}><Bot className="w-5 h-5" /></RailButton>}
     {!admin && <RailButton title="Bộ não AI Sư Phạm: Xem và dạy các phong cách ra đề cho AI" label="Ghi chú riêng cho AI" onClick={openAiNotes}><Brain className="w-5 h-5" /></RailButton>}
     <RailButton title="Quản lý Google Gemini API Key" label="Quản lý khóa AI" onClick={openKeys}><Key className="w-5 h-5" /><span className={`absolute top-1.5 right-1.5 w-2 h-2 rounded-full ring-2 ring-[var(--ui-surface)] ${dot}`} /></RailButton>
     <div className={row ? '' : 'mt-auto'}><RailButton title="Đổi giao diện Sáng / Tối" label={`Chuyển sang giao diện ${theme === 'dark' ? 'Sáng' : 'Tối'}`} onClick={toggleTheme}>{theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}</RailButton></div>

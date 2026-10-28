@@ -137,7 +137,7 @@ export const TeacherAiSecretaryDrawer: React.FC<TeacherAiSecretaryDrawerProps> =
           <div>
             <div className="flex items-center gap-1.5">
               <h3 className="font-bold text-xs sm:text-sm text-[#202124] dark:text-white">
-                Thư Ký Số & Trợ Lý Giáo Viên
+                Hỏi AI
               </h3>
               <span className="w-2 h-2 rounded-full bg-[var(--ui-text-secondary)] " />
             </div>

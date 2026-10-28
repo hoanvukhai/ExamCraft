@@ -40,8 +40,9 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
     let cancelled = false;
     const id = requestedId && requestedId !== 'new' ? requestedId : 'new';
     // A successful create replaces the URL before Next updates the route props.
-    // Removing ?folder must not initialize a second, blank new document.
-    if (ready.current && activeOwner.current === ownerId && (current.current.serverId === id || (id === 'new' && current.current.serverId && pathname === `/editor/${current.current.serverId}`))) {
+    // Both a new draft and a recovery copy must retain their acknowledged ID
+    // while the URL updates before the server route props catch up.
+    if (ready.current && activeOwner.current === ownerId && (current.current.serverId === id || (current.current.serverId && pathname === `/editor/${current.current.serverId}`))) {
       queueMicrotask(() => { if (!cancelled) setLoadedKey(`${ownerId}/${requestedId ?? 'new'}`); });
       return () => { cancelled = true; };
     }
@@ -111,6 +112,7 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
           } catch { setMessage('Đề đã lưu; hãy giữ tab và tải nháp câu vì bộ nhớ máy chưa xác nhận được bản nháp.'); }
         }
         current.current = next; savedEdits.current = revision; setValue(next);
+        if (stillCurrent) setRecoveredDraft(false);
         let cacheWritten = false;
         try { writeDraft(localStorage, savingOwner, saved.id, next, !stillCurrent, writerId); cacheWritten = true; }
         catch { setMessage('Đề đã lưu trên máy chủ. Bộ nhớ nháp trên máy đang đầy hoặc bị chặn.'); }

@@ -25,7 +25,7 @@ export const Header: React.FC<HeaderProps> = ({ children, canEdit = true, examTi
   };
 
   return (
-    <header className="app-bar no-print h-12 bg-[var(--ui-surface)] border-b shrink-0 z-30 px-3 sm:px-5 flex items-center justify-between gap-3">
+    <header className="app-bar no-print h-12 bg-[var(--ui-surface)] border-b shrink-0 z-30 px-2 sm:px-3 flex items-center justify-between gap-2">
       <div className="flex items-center gap-2 min-w-0 flex-1 max-w-xl">
         {isEditingTitle ? (
           <input

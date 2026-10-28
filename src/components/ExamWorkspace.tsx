@@ -38,6 +38,7 @@ import { EditorReview } from '@/components/editor/EditorReview';
 import { reviewExam } from '@/lib/exam-review';
 import { PhonePreview } from '@/components/editor/PhonePreview';
 import { EditorQuestionList, EditorQuestionHeading } from '@/components/editor/EditorQuestionList';
+import { EditorSaveStatus } from '@/components/editor/EditorSaveStatus';
 import { EditorStart } from '@/components/editor/EditorStart';
 import { EditorPending } from '@/components/editor/EditorPending';
 
@@ -76,7 +77,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   const reviewed = reviewExam(exam);
   const reviewBefore = (action: () => void) => { if (reviewed.issues.length) { setPendingReviewAction(() => action); setReviewOpen(true); } else action(); };
   const [keyReminder, setKeyReminder] = useState(false);
-  const withAi = (action: () => void) => { if (!hasActiveKey) setKeyReminder(true); else action(); };
+  const withAi = (action: () => void) => { if (!canEdit) return; if (!hasActiveKey) setKeyReminder(true); else action(); };
   // Layout states
   const { settingsOpen, setSettingsOpen, copilotOpen: isCopilotOpen, setCopilotOpen: setIsCopilotOpen } = useWorkspace();
   const [copilotCommand, setCopilotCommand] = useState<string>('');
@@ -275,12 +276,11 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         onUpdateTitle={handleUpdateTitle}
         onShare={() => reviewBefore(() => { if (canPublish) setIsShareModalOpen(true); else setCollaborationOpen(true); })}
       >
-        <button type="button" aria-label="Thông tin và thiết lập đề" onClick={() => openSettings('info')} className="app-button-secondary text-xs px-2 min-h-9 max-w-44 truncate hidden md:block">{subjectLabel(exam.metadata.subject)} {exam.metadata.grade} · {exam.metadata.durationMinutes ?? 0}′ · {scoredQuestions.reduce((sum, q) => sum + (q.points ?? 0), 0)}đ</button>
-        <details className="no-print shrink-0"><summary title="Lưu các thay đổi lên máy chủ" className="cursor-pointer text-xs list-none min-h-9 flex items-center gap-1" aria-label="Trạng thái lưu"><span className={saveState === 'saved' ? 'text-emerald-600' : ['error','conflict','offline'].includes(saveState) ? 'text-amber-600' : ''}>●</span><span className="hidden sm:inline">{saveState === 'saved' ? 'Đã lưu' : saveState === 'saving' ? 'Đang lưu…' : saveState === 'dirty' ? 'Đang chờ lưu' : 'Cần xử lý lưu'}</span></summary>
-      {true && (
-        <div role="status" className="app-menu fixed left-3 right-3 sm:left-auto sm:right-20 top-14 z-40 max-w-xl p-4 border rounded-xl bg-[var(--ui-surface)] flex flex-wrap gap-2 text-sm shadow-lg">
+        <button type="button" aria-label="Thông tin và thiết lập đề" onClick={() => openSettings('info')} className="app-button-secondary text-xs px-2 min-h-9 max-w-44 truncate hidden @min-[700px]:block">{subjectLabel(exam.metadata.subject)} {exam.metadata.grade} · {exam.metadata.durationMinutes ?? 0}′ · {scoredQuestions.reduce((sum, q) => sum + (q.points ?? 0), 0)}đ</button>
+        <EditorSaveStatus state={saveState}>{true && (
+        <div role="status" className="flex flex-wrap gap-2 text-sm">
           {manualDraftMessage && <p role="alert">{manualDraftMessage}</p>}
-          <span className="mr-1">{saveState === 'loading' ? 'Đang mở đề…' : saveState === 'saving' ? 'Đang lưu…' : saveState === 'dirty' ? 'Có thay đổi đang chờ lưu' : saveState === 'offline' ? 'Mất kết nối — đang giữ bản nháp trên máy' : saveMessage || 'Chưa lưu được đề'}</span>
+          <span className="mr-1">{saveState === 'loading' ? 'Đang mở đề…' : saveState === 'saving' ? 'Đang lưu…' : saveState === 'dirty' ? 'Có thay đổi đang chờ lưu' : saveState === 'offline' ? 'Mất kết nối — đang giữ bản nháp trên máy' : saveState === 'saved' ? saveMessage || 'Đã lưu trên máy chủ' : saveMessage || 'Chưa lưu được đề'}</span>
           {saveState !== 'loading' && saveState !== 'saving' && <button onClick={() => void handleSaveCurrentExam()} className="app-button-secondary min-h-9 px-3 text-xs">Thử lưu lại</button>}
           {folderUnavailable && ready && !exam.serverId && exam.creationFolderId && <button onClick={() => { setExam(value => ({ ...value, creationFolderId: null })); void save(); }} className="app-button-secondary min-h-9 px-3 text-xs">Lưu bản nháp ở ngoài thư mục</button>}
           <button onClick={downloadDraft} className="app-button-secondary min-h-9 px-3 text-xs">Tải bản nháp</button>
@@ -289,8 +289,8 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         </div>
       )}
 
-        </details>
-        <button type="button" className="app-button-secondary text-xs min-h-9 px-2 shrink-0" aria-label="Rà soát đề" onClick={() => { setPendingReviewAction(null); setReviewOpen(true); }}>{reviewed.issues.length ? '⚠ ' + reviewed.issues.length + ' cần xem' : '✓ Rà soát'}</button>
+        </EditorSaveStatus>
+        <button type="button" className="app-button-secondary text-xs min-h-9 px-2 shrink-0" aria-label="Rà soát đề" onClick={() => { setPendingReviewAction(null); setReviewOpen(true); }}>{reviewed.issues.length ? '⚠ ' + reviewed.issues.length : '✓'}<span className="hidden @min-[500px]:inline"> {reviewed.issues.length ? 'cần xem' : 'Rà soát'}</span></button>
       </Header>
 
       <EditorToolbar
@@ -299,7 +299,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         access={exam.access} submissionCount={submissionCount}
         onGenerate={() => { if (exam.questions.length && !window.confirm('Sinh bản nháp đề AI mới? Chỉ thay đề sau khi bạn duyệt đề xuất; bản hiện tại vẫn được giữ.')) return; withAi(() => setIsGenerateModalOpen(true)); }} onImport={() => setIsImportModalOpen(true)} onBank={() => setIsQuestionBankModalOpen(true)}
         onSettings={() => openSettings('info')} onAdd={handleAddQuestion} onShuffle={() => setIsShuffleModalOpen(true)}
-        onExportWord={view => reviewBefore(() => void handleExportWord(view))} onPrint={() => reviewBefore(() => window.print())} onPresent={() => setPresentationOpen(true)}
+        onExportWord={view => reviewBefore(() => void handleExportWord(view))} onPrint={() => reviewBefore(() => window.print())} onPresent={() => reviewBefore(() => setPresentationOpen(true))}
         onCollaborate={() => setCollaborationOpen(true)} onResults={() => setIsResultsModalOpen(true)}
       />
 
@@ -308,7 +308,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
 
       <nav aria-label="Chuyển vùng soạn" className="no-print @min-[900px]:hidden shrink-0 sticky top-0 z-20 flex gap-2 p-2 border-b bg-[var(--ui-surface)]">{(['editor','preview'] as const).map(tab => <button type="button" key={tab} aria-pressed={mobileTab === tab} className={(mobileTab === tab ? 'app-button-tonal' : 'app-button-secondary') + ' min-h-10 px-4 flex-1 text-sm'} onClick={() => { if (mobileTab === 'editor') editorScrollTop.current = editorScroll.current?.scrollTop ?? 0; setMobileTab(tab); requestAnimationFrame(() => { if (editorScroll.current) editorScroll.current.scrollTop = tab === 'editor' ? editorScrollTop.current : 0; }); }}>{tab === 'editor' ? 'Soạn câu' : 'Xem đề'}</button>)}</nav>
       <PhonePreview exam={exam} open={phonePreview} onClose={() => setPhonePreview(false)} />
-      {mobileTab === 'editor' && !selectedQuestionIds.length && <button type="button" className="no-print sm:hidden fixed bottom-4 right-4 z-30 app-button-primary rounded-full px-4 min-h-11 shadow-lg" onClick={() => setPhonePreview(true)}>Xem đề</button>}
+      {mobileTab === 'editor' && !selectedQuestionIds.length && <button type="button" className="no-print sm:hidden fixed bottom-4 right-4 z-30 app-button-primary rounded-full px-4 min-h-11 shadow-lg" aria-label="Xem đề toàn màn hình" onClick={() => setPhonePreview(true)}>Xem đề</button>}
       {!ready && <div className="p-4">{saveMessage || 'Đang tải nội dung. Vui lòng chờ trước khi sửa.'}</div>}
       {/* 3-ZONE ARCHITECTURE: LEFT RAIL + INDEPENDENT SCROLL WORKSPACE + RIGHT COMPANION RAIL */}
       <div className="print-flow flex-1 flex overflow-hidden min-h-0 relative">
@@ -320,13 +320,14 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
           {/* KHU VỰC CHÍNH SPLIT PANE: DANH SÁCH CÂU HỎI & A4 PREVIEW */}
           <main className="grid grid-cols-1 @min-[900px]:grid-cols-12 gap-6 items-start pb-8">
             {/* CỘT TRÁI: DANH SÁCH CÂU HỎI (6 Cột trên màn hình lớn) */}
-            <fieldset disabled={!canEdit}
+            <div
               className={`no-print min-w-0 @min-[900px]:col-span-6 space-y-4 ${
                 mobileTab === 'preview' ? 'hidden @min-[900px]:block' : 'block'
               }`}
             >
-              {recoveredDraft && <div role="status" className="border rounded p-3 text-sm">Đang mở nháp trên máy của đề này. <button type="button" className="underline" onClick={dismissRecoveredDraft}>Tiếp tục với nháp</button>{exam.serverId && <button type="button" className="underline ml-3" onClick={() => void openLatest().then(value => { if (value) dismissRecoveredDraft(); })}>Mở bản máy chủ, cất riêng nháp</button>}</div>}
+              {recoveredDraft && saveState !== 'saved' && <div role="status" className="border rounded p-3 text-sm">Đang mở nháp trên máy của đề này. <button type="button" className="underline" onClick={dismissRecoveredDraft}>Tiếp tục với nháp</button>{exam.serverId && <button type="button" className="underline ml-3" onClick={() => void openLatest().then(value => { if (value) dismissRecoveredDraft(); })}>Mở bản máy chủ, cất riêng nháp</button>}</div>}
               <EditorPending ownerId={currentUser.id} exam={exam} onCopilot={() => setIsCopilotOpen(true)} />
+              <fieldset disabled={!canEdit} className="space-y-4 min-w-0">
               {/* Thanh tiêu đề & Tác vụ danh sách câu hỏi */}
               <EditorQuestionHeading exam={exam} points={scoredQuestions.reduce((total, q) => total + (q.points ?? 0), 0)}>
                 <div className="flex items-center gap-2">
@@ -355,7 +356,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
               {/* Danh sách các câu hỏi dạng thẻ Block Card */}
               <div className="space-y-3.5">
                 <EditorQuestionList exam={exam} renderQuestion={(q, idx) => (
-                  <QuestionCard withAi={withAi} ownerId={currentUser.id}
+                  <QuestionCard selectionActive={selectedQuestionIds.length > 0} withAi={withAi} ownerId={currentUser.id}
                     displayPoints={scoredQuestions[idx]?.points}
                     hidePassage passage={exam.passages?.find(p => p.id === q.passageId)}
                     numericScore={requiresNumericScore(exam.metadata.assessmentMode)}
@@ -387,7 +388,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
 
               {/* Thanh tác vụ hàng loạt nổi cố định ở dưới (Floating Batch Action Bar) */}
               {selectedQuestionIds.length > 0 && (
-                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-[#202124]/95 dark:bg-[var(--ui-surface)]/95 backdrop-blur-md text-white px-5 py-3 rounded-full shadow-xs border border-[var(--ui-border)]/30 dark:border-[var(--ui-border)] flex items-center gap-3 animate-in fade-in slide-in-from-bottom-5">
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-[var(--ui-accent)] backdrop-blur-md text-[var(--ui-on-primary)] px-5 py-3 rounded-full shadow-xs border border-[var(--ui-border)]/30 dark:border-[var(--ui-border)] flex items-center gap-3 animate-in fade-in slide-in-from-bottom-5">
                   <span className="text-xs font-bold text-[#e3e3e3] bg-[#292a2d] px-2.5 py-1 rounded-full border border-[#3c4043]">
                     Đã chọn {selectedQuestionIds.length} câu
                   </span>
@@ -427,7 +428,8 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                   </button>
                 </div>
               )}
-            </fieldset>
+              </fieldset>
+            </div>
 
             {/* CỘT PHẢI: KHUNG XEM TRƯỚC BẢN IN A4 (6 Cột trên màn hình lớn) */}
             <section

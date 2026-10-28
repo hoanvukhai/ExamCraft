@@ -1,3 +1,4 @@
+import { saveEditor } from './editor-ui';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -9,7 +10,7 @@ import { requireTestDatabase } from '../tests/helpers/test-database';
 import { loginBucket } from '../src/lib/auth-security';
 
 const origin = process.env.EXAMCRAFT_TEST_ORIGIN || 'http://127.0.0.1:3117';
-const report = 'qa/rebuild-2026-10-28/library-merge';
+const report = process.env.LIBRARY_REPORT_DIR || 'qa/rebuild-2026-10-28/library-merge';
 test('merged library: folders, scoped views, creation location, permissions and phone', { timeout: 240000 }, async t => {
   const url = requireTestDatabase();
   assert.equal(new URL(url).pathname, '/examcraft_test_20261022');
@@ -86,7 +87,7 @@ test('merged library: folders, scoped views, creation location, permissions and 
     const saveCreated = async (folderId: string | null) => {
       const beforeCreate = await db.exam.count({ where: { ownerId: ids[0] } });
       const saved = page.waitForResponse(response => response.url().endsWith('/api/exams') && response.request().method() === 'POST');
-      await page.getByTitle('Lưu các thay đổi lên máy chủ', { exact: true }).filter({ visible: true }).first().click();
+      await saveEditor(page);
       const response = await saved; assert.equal(response.ok(), true);
       assert.equal(response.request().postDataJSON().folderId ?? null, folderId);
       const data = await response.json();
@@ -132,10 +133,11 @@ test('merged library: folders, scoped views, creation location, permissions and 
       await page.getByTitle('Lưu các thay đổi lên máy chủ', { exact: true }).filter({ visible: true }).first().waitFor();
       await api('/api/folders/' + temporary.id, 'DELETE');
       const failed = page.waitForResponse(r => r.url().endsWith('/api/exams') && r.request().method() === 'POST');
-      await page.getByTitle('Lưu các thay đổi lên máy chủ', { exact: true }).filter({ visible: true }).first().click();
+      await saveEditor(page);
       const failure = await failed;
       assert.equal(failure.request().postDataJSON().folderId, temporary.id, 'new draft must retain the deleted destination');
       assert.equal(failure.status(), 403);
+      if (await page.getByLabel('Trạng thái lưu', { exact: true }).getAttribute('aria-expanded') !== 'true') await page.getByLabel('Trạng thái lưu', { exact: true }).click();
       const response = page.waitForResponse(r => r.url().endsWith('/api/exams') && r.request().method() === 'POST');
       await page.getByRole('button', { name: 'Lưu bản nháp ở ngoài thư mục', exact: true }).click();
       const saved = await response; assert.equal(saved.ok(), true);

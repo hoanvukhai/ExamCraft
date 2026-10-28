@@ -8,22 +8,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useWorkspace } from '@/components/workspace/WorkspaceContext';
 import { useConfirmAction } from './ConfirmAction';
 import { subjectLabel, teacherErrorMessage } from '@/lib/teacher-ui';
-import {
-  Sparkles,
-  Plus,
-  Folder,
-  FileText,
-  Star,
-  Trash2,
-  RotateCcw,
-  Download,
-  Edit3,
-  Copy,
-  LayoutGrid,
-  List,
-  Upload,
-  X
-} from 'lucide-react';
+import { Sparkles, Plus, Folder, FileText, Star, Trash2, RotateCcw, Download, Edit3, Copy, LayoutGrid, List, Upload, X } from 'lucide-react';
 import { GenerateModal } from '@/components/GenerateModal';
 import { ImportModal } from '@/components/ImportModal';
 import { exportExamToDocx } from '@/lib/docx-export';
@@ -32,7 +17,7 @@ import { Exam } from '@/types/exam';
 import { loadExam, persistExam } from '@/lib/exam-client';
 import { writeDraft } from '@/lib/exam-draft';
 import { accountFetch } from '@/lib/account-fetch';
-import { LocalDraftsPanel } from '@/components/LocalDraftsPanel';
+import { AccountRecovery } from '@/components/editor/AccountRecovery';
 import { getCatalogSubjects } from '@/lib/education-catalog';
 
 interface ExamSummary {
@@ -368,8 +353,8 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
 
         {/* VÙNG GIỮA: NỘI DUNG CHÍNH (CANVAS QUẢN LÝ ĐỀ THI) */}
         <main className="app-page px-4 sm:px-6 py-5 min-w-0">
-          {currentView !== 'trash' && <LocalDraftsPanel ownerId={currentUser.id} />}
-          {location.get('choose') === 'assign' && currentView !== 'trash' && <p role="status" className="border rounded-lg p-3 mb-4 text-sm">Chọn một đề để mở, rồi bấm “Chia sẻ &amp; Thi Online” để giao cho học sinh.</p>}
+          {currentView !== 'trash' && <AccountRecovery ownerId={currentUser.id} />}
+          {location.get('choose') === 'assign' && currentView !== 'trash' && <p role="status" className="border rounded-lg p-3 mb-4 text-sm">Chọn một đề để mở, rồi bấm “Giao bài” để giao cho học sinh.</p>}
           {currentView !== 'trash' && <>
             <header className="flex flex-wrap items-start justify-between gap-3 mb-5">
               <div><h1 className="text-2xl font-semibold">{selectedFolderId ? currentFolder?.name || 'Thư mục' : 'Thư mục và đề thi'}</h1><p className="text-sm text-[var(--ui-text-secondary)] mt-1">{selectedFolderId ? 'Thư mục con và đề tại vị trí này.' : 'Sắp xếp đề theo môn học, học kỳ, dự án hoặc cách riêng của bạn.'}</p></div>

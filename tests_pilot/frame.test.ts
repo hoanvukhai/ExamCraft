@@ -9,7 +9,7 @@ import { requireTestDatabase } from '../tests/helpers/test-database';
 import { loginBucket } from '../src/lib/auth-security';
 
 const origin = process.env.EXAMCRAFT_TEST_ORIGIN || 'http://127.0.0.1:3117';
-const report = 'qa/rebuild-2026-10-28/frame-panels';
+const report = process.env.FRAME_REPORT_DIR || 'qa/rebuild-2026-10-28/frame-panels';
 
 test('frame: persistent menu, document toolbar and non-overlapping assistant panels', { timeout: 180000 }, async t => {
   const url = requireTestDatabase();
@@ -30,6 +30,7 @@ test('frame: persistent menu, document toolbar and non-overlapping assistant pan
   try {
     await db.user.create({ data: { id, email, name: 'Giáo viên thử thanh bên', role: 'TEACHER', passwordHash: await bcrypt.hash(password, 10), isActive: true, mustChangePassword: false } });
     const login = await context.request.post(origin + '/api/auth/login', { headers: { Origin: origin }, data: { email, password } }); assert.ok(login.ok());
+    const keyAdded = await context.request.post(origin + '/api/user/keys', { headers: { Origin: origin }, data: { apiKey: 'frame-fake-gemini-key-01234567890123456789', label: 'Local fixture' } }); assert.ok(keyAdded.ok());
     const now = new Date().toISOString();
     const created = await context.request.post(origin + '/api/exams', { headers: { Origin: origin }, data: { document: { id: randomUUID(), metadata: { title: 'Đề kiểm thanh bên', schoolName: '', departmentName: '', subject: 'toan', grade: 6 }, questions: [], createdAt: now, updatedAt: now } } });
     assert.ok(created.ok()); examId = (await created.json()).exam.id;
@@ -108,6 +109,7 @@ test('frame: persistent menu, document toolbar and non-overlapping assistant pan
     await browser.close();
     await db.exam.deleteMany({ where: { ownerId: id } }); await db.question.deleteMany({ where: { ownerId: id } });
     await db.auditLog.deleteMany({ where: { OR: [{ actorId: id }, { targetType: 'LoginBucket', targetId: loginBucket(email) }] } });
+    await db.userApiKey.deleteMany({ where: { userId: id } });
     await db.user.deleteMany({ where: { id } }); assert.equal(await db.user.count({ where: { id } }), 0);
     fs.writeFileSync(report + '/cleanup.json', JSON.stringify({ removedFixtureUser: true, unchangedExamBeforeCleanup: true, buildId: fs.readFileSync('.next/BUILD_ID', 'utf8').trim() }, null, 2));
     await db.$disconnect();

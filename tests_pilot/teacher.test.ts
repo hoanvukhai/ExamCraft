@@ -1,3 +1,4 @@
+import { saveEditor, addSource } from './editor-ui';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
@@ -153,13 +154,13 @@ test('teacher management: trash, bank, class context, routes and mobile', { time
     });
     await t.test('editor picker inserts complete shared question and saves/reopens it', async () => {
       await page.goto(origin + '/editor/' + examIds[1]); await page.getByTitle('Lưu các thay đổi lên máy chủ').first().waitFor();
-      await page.getByTitle('Chọn câu hỏi từ Ngân hàng chèn vào đề', { exact: true }).click();
+      await addSource(page, 'Từ ngân hàng');
       const picker = page.getByRole('dialog', { name: 'Chọn câu từ ngân hàng', exact: true });
       await picker.getByRole('button', { name: 'Dùng chung nội bộ', exact: true }).click(); await picker.getByLabel('Tìm nội dung', { exact: true }).fill(prefix + '_00');
       await picker.getByText('1 câu phù hợp · Trang 1 / 1', { exact: true }).waitFor();
       await picker.getByRole('button', { name: 'Thêm vào đề', exact: true }).click(); await picker.getByLabel('Đóng ngân hàng câu hỏi', { exact: true }).click();
-      await page.getByTitle('Lưu các thay đổi lên máy chủ').first().click();
-      await page.getByText('Đã lưu trên máy chủ', { exact: false }).first().waitFor();
+      await saveEditor(page);
+      await page.getByLabel('Trạng thái lưu', { exact: true }).getByText('Đã lưu', { exact: true }).waitFor();
       const data = await api('/api/exams/' + examIds[1]);
       const added = data.document.questions.find((q: { content: string }) => q.content.includes(prefix + '_00'));
       assert.ok(added); assert.equal(added.type, 'multiple_choice'); assert.equal(added.choices.length, 2); assert.equal(added.correct_answer, 'A'); assert.equal(added.step_by_step_solution, 'Lời giải được giữ');

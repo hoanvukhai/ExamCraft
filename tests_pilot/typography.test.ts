@@ -117,7 +117,7 @@ test('Vietnamese typography: full glyphs, paper zoom, phone scrolling, math and 
       await page.screenshot({ path: `${report}/matrix-100.png`, fullPage: false });
       await preview.getByTitle('Vừa chiều ngang', { exact: true }).click();
       await page.locator('.a4-scroll-area').screenshot({ path: `${report}/matrix-fit.png` });
-      await preview.getByRole('button', { name: 'Đề thi in ấn', exact: true }).click();
+      await preview.getByRole('button', { name: 'Đề', exact: true }).click();
       const [download] = await Promise.all([page.waitForEvent('download'), preview.getByRole('button', { name: 'Tải file Word (.docx)', exact: true }).click()]);
       const path = await download.path(); assert.ok(path);
       const zip = await JSZip.loadAsync(fs.readFileSync(path));

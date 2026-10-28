@@ -66,7 +66,7 @@ export function resolveHeaderLines(exam: Exam) {
   const bound: Record<typeof HEADER_BINDINGS[number], string> = {
     schoolName: metadata.schoolName ?? '', departmentName: metadata.departmentName ?? '', title: metadata.title ?? '',
     examCode: metadata.examCode ? `Mã đề: ${metadata.examCode}` : '', academicYear: metadata.academicYear ? `Năm học: ${metadata.academicYear}` : '', semester: metadata.semester ?? '',
-    subjectGrade: `Môn: ${subject} · Lớp ${metadata.grade}`, durationScore: `Thời gian làm bài: ${metadata.durationMinutes} phút · ${score}`, notes: metadata.notes ?? '',
+    subjectGrade: `Môn: ${subject} · Lớp ${metadata.grade}`, durationScore: `${typeof metadata.durationMinutes === 'number' && Number.isFinite(metadata.durationMinutes) ? 'Thời gian làm bài: ' + metadata.durationMinutes + ' phút' : 'Chưa đặt thời gian làm bài'} · ${score}`, notes: metadata.notes ?? '',
   };
   return layout.lines.filter(line => !line.hidden).map(line => ({ id: line.id, area: line.area, align: line.align, text: line.binding ? line.override ?? bound[line.binding] : line.text ?? '', bold: !!line.binding && ['schoolName', 'departmentName', 'title', 'examCode', 'subjectGrade'].includes(line.binding), italic: line.binding === 'notes' || line.binding === 'durationScore' })).filter(line => explicit || line.text !== '');
 }

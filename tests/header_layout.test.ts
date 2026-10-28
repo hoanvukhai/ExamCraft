@@ -13,6 +13,13 @@ function fixture(): Exam {
   return { id: 'header-test', metadata: { title: 'INTERNAL_TITLE', schoolName: 'SCHOOL_ORIGINAL', departmentName: '', subject: 'toan', grade: 6, durationMinutes: 15, academicYear: '', notes: '' }, questions: [{ id: 'q', type: 'essay', content: 'PROMPT_PUBLIC', difficulty: 'thong_hieu', points: 0, correct_answer: 'ANSWER_PRIVATE', step_by_step_solution: 'SOLUTION_PRIVATE' }], createdAt: '', updatedAt: '' };
 }
 const submit = (exam: Exam, patch: HeaderSubmission['patch']): HeaderSubmission => ({ documentId: exam.id, base: headerEditableSnapshot(exam.metadata), patch });
+test('missing duration is readable in preview and Word without assigning a new duration', async () => {
+  const exam = fixture(); delete (exam.metadata as Partial<Exam['metadata']>).durationMinutes;
+  const before = JSON.stringify(exam);
+  assert.ok(resolveHeaderLines(exam).some(line => line.text.includes('Chưa đặt thời gian làm bài')));
+  assert.ok((await word(exam)).includes('Chưa đặt thời gian làm bài'));
+  assert.equal(JSON.stringify(exam), before);
+});
 async function word(exam: Exam) {
   const blob = await exportExamToDocx(exam, true, false, 'exam');
   const zip = await JSZip.loadAsync(await blob.arrayBuffer());

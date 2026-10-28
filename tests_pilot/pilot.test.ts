@@ -1,3 +1,4 @@
+import { saveEditor, addSource, acceptReview, exportTool } from './editor-ui';
 import test from 'node:test';
 import { writeQaReport } from '../tests/helpers/qa-report';
 import http from 'node:http';
@@ -46,12 +47,21 @@ async function waitUntil(check: () => Promise<boolean>, message: string, timeout
   throw Error(message);
 }
 async function openDetails(page: Page, summary: string) { await page.locator('summary', { hasText: summary }).first().evaluate(el => { (el.parentElement as HTMLDetailsElement).open = true; }); }
-async function openTool(page: Page, label: 'Xuất' | 'Đề thi') { await page.getByRole('button', { name: label, exact: true }).click(); }
+async function openTool(page: Page, label: 'Xuất' | 'Đề thi') { await page.getByRole('button', { name: label === 'Đề thi' ? 'Xuất' : label, exact: true }).filter({ visible: true }).click(); }
 async function menuLink(page: Page, name: string) {
   if (name === 'Đề quan trọng (Gắn sao)' || name === 'Đã sửa gần đây') { await page.getByRole('navigation', { name: 'Chế độ kho đề' }).getByRole('button', { name: name === 'Đã sửa gần đây' ? name : 'Gắn sao', exact: true }).click(); return; }
   await page.getByRole('navigation', { name: 'Không gian giáo viên' }).getByRole('link', { name: name === 'Tất cả đề thi' ? 'Kho đề' : name, exact: true }).filter({ visible: true }).click();
 }
-async function click(page: Page, name: string | RegExp) { await page.getByRole('button', { name, exact: typeof name === 'string' }).click(); }
+async function click(page: Page, name: string | RegExp) {
+  const labels: Record<string,string> = { 'Thêm câu hỏi': '+ Thêm câu hỏi', 'Cùng soạn · Góp ý · Lịch sử': 'Cùng soạn', 'Bảng đáp án & Barem': 'Đáp án', 'Hướng dẫn giải': 'Lời giải', 'Đề thi in ấn': 'Đề', 'Ma trận & Đặc tả': 'Ma trận', 'Chia sẻ & Thi Online': 'Giao bài', 'Chia sẻ & Thi online': 'Giao bài' };
+  if (name === 'Ngân hàng câu hỏi') { await addSource(page, 'Từ ngân hàng'); return; }
+  if (name === 'Nhập đề (Word/Ảnh)') { await addSource(page, 'Nhập Word/Ảnh'); return; }
+  if (name === 'Sinh đề AI Mới') { await addSource(page, 'Sinh bằng AI'); return; }
+  if (name === 'Song song') { await page.getByLabel('Bố cục song song', { exact: true }).check(); return; }
+  if (name === 'Thêm câu hỏi mới') { await addSource(page, 'Tự soạn câu mới'); return; }
+  await page.getByRole('button', { name: typeof name === 'string' ? labels[name] ?? name : name, exact: typeof name === 'string' }).click();
+  await acceptReview(page);
+}
 async function login(page: Page, email: string, password: string) {
   // The effect's session lookup proves hydration; SSR form controls alone do not.
   const hydrated = page.waitForResponse(r => r.url().endsWith('/api/auth/me') && r.request().method() === 'GET');
@@ -180,13 +190,14 @@ test('F2 author seven types, image, passage, zero, title and reopen', { timeout:
     await createGate;
     await route.fulfill({ response });
   });
-  await f.page.getByText('Soạn đề trống mới', { exact: true }).click();
+  await f.page.getByRole('button', { name: 'Tạo đề', exact: true }).click();
   await f.page.getByTitle('Nhấn để đổi tên đề thi').click();
   const titleInput = f.page.locator('header input').first(); await titleInput.fill('Pilot Toán 6 tự soạn'); await titleInput.press('Enter');
   for (const [index, type] of types.entries()) {
     await click(f.page, index === 0 ? 'Thêm câu hỏi mới' : 'Thêm câu hỏi');
     await f.page.getByTitle('Sửa nội dung câu hỏi thủ công', { exact: true }).last().click();
-    assert.equal(await f.page.getByRole('button', { name: 'Lưu bản sao vào ngân hàng', exact: true }).last().isDisabled(), true);
+    await f.page.getByRole('button', { name: 'Thao tác câu ' + (index + 1), exact: true }).click();
+    assert.equal(await f.page.getByRole('menuitem', { name: 'Lưu bản sao vào ngân hàng', exact: true }).isDisabled(), true); await f.page.keyboard.press('Escape');
     await f.page.getByLabel('Dạng câu', { exact: true }).selectOption(type);
     await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).fill(`PILOT Q${index + 1} ${type}`);
     if (index === 0) {
@@ -205,14 +216,14 @@ test('F2 author seven types, image, passage, zero, title and reopen', { timeout:
     if (['short_answer','fill_blank'].includes(type)) await f.page.getByLabel('Đáp án chính', { exact: true }).fill('2');
     if (type === 'matching') { for (let i=1;i<=2;i++) { await click(f.page,'Thêm cặp'); await f.page.getByLabel('Vế trái '+i).fill('Vế '+i); await f.page.getByLabel('Vế phải '+i).fill(String(i)); } }
     if (type === 'ordering') await f.page.getByLabel('Thứ tự đúng', { exact: true }).fill('Bước đầu\nBước sau');
-    await f.page.getByLabel('Lời giải', { exact: true }).fill(solution); await click(f.page,'Áp dụng câu vào đề');
+    await f.page.getByRole('textbox', { name: 'Lời giải', exact: true }).fill(solution); await click(f.page,'Áp dụng câu vào đề');
     await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).waitFor({ state: 'hidden' });
   }
-  await f.page.getByText('Phần của đề và ngữ liệu dùng chung',{ exact: true }).click(); await click(f.page,'Thêm ngữ liệu');
+  await f.page.getByRole('button',{name:'Thiết lập đề',exact:true}).click(); await f.page.getByRole('button',{name:'Phần & ngữ liệu',exact:true}).click(); await click(f.page,'Thêm ngữ liệu');
   await f.page.getByLabel('Tên ngữ liệu 1').fill('Ngữ liệu thử'); await f.page.getByLabel('Nội dung ngữ liệu 1').fill('Lan đọc sách ở thư viện.');
   await f.page.getByLabel('Ngữ liệu của câu 1').selectOption({ label: 'Ngữ liệu thử' });
   const bankSaved = f.page.waitForResponse(r => r.url().endsWith('/api/questions') && r.request().method() === 'POST');
-  await f.page.getByRole('button', { name: 'Lưu bản sao vào ngân hàng', exact: true }).first().click();
+  await f.page.getByRole('button',{name:'Đóng thiết lập đề',exact:true}).click(); await f.page.getByRole('button',{name:'Thao tác câu 1',exact:true}).click(); await f.page.getByRole('menuitem',{name:'Lưu bản sao vào ngân hàng',exact:true}).click();
   { const bankResponse = await bankSaved; assert.equal(bankResponse.status(), 200, 'POST /api/questions status ' + bankResponse.status()); } // this endpoint answers 200 with { success, question }, not 201
   await f.page.getByText('Đã lưu bản sao riêng vào ngân hàng', { exact: true }).waitFor();
   const bankRows = await f.db.question.findMany({ where: { ownerId: f.ids[0], NOT: { tags: { has: '__workspace_only' } } }, include: { passage: true } });
@@ -220,12 +231,12 @@ test('F2 author seven types, image, passage, zero, title and reopen', { timeout:
   assert.equal(bankRows[0].content, 'PILOT Q1 multiple_choice');
   assert.equal(Number(bankRows[0].points), 0);
   assert.equal(bankRows[0].passage?.content, 'Lan đọc sách ở thư viện.');
-  await openDetails(f.page, 'Mẫu cá nhân và nguồn tham khảo');
+  await f.page.getByRole('button',{name:'Thiết lập đề',exact:true}).click(); await f.page.getByRole('button',{name:'Mẫu',exact:true}).click(); await openDetails(f.page, 'Mẫu cá nhân và nguồn tham khảo');
   await openDetails(f.page, 'Lưu cấu hình đề hiện tại thành mẫu riêng');
   await f.page.getByLabel('Tên bản mẫu riêng', { exact: true }).fill('Mẫu pilot riêng');
   const templateSaved = f.page.waitForResponse(r=>r.url().endsWith('/api/templates') && r.request().method()==='POST');
   await click(f.page,'Lưu bản mẫu riêng'); { const templateResponse = await templateSaved; assert.equal(templateResponse.status(), 201, 'POST /api/templates status ' + templateResponse.status() + ' ' + (await templateResponse.text()).slice(0, 160)); }
-  await f.page.getByTitle('Lưu các thay đổi lên máy chủ').click();
+  await saveEditor(f.page);
   await waitUntil(async () => { const rows = await f.db.exam.findMany({ where: { ownerId: f.ids[0] } }); return rows.some(r => r.title === 'Pilot Toán 6 tự soạn' && JSON.stringify(r.metadata).includes('PILOT Q7')); }, 'All seven questions not saved');
   const exam = await f.db.exam.findFirstOrThrow({ where: { ownerId: f.ids[0] } });
   await f.page.goto(origin + '/'); await openExam(f,exam.id);
@@ -236,11 +247,12 @@ test('F2 author seven types, image, passage, zero, title and reopen', { timeout:
 
 test('F3 answer views, shuffle, Word and print', { timeout: 120000 }, () => flow('F3', async f => {
   await authenticated(f); await openExam(f,await seedExam(f,'ngu_van'));
-  const review = f.page.locator('details').filter({ has: f.page.locator('summary', { hasText: 'Rà soát đề' }) });
-  await review.locator('summary').click();
+  await f.page.getByRole('button', { name: 'Rà soát đề', exact: true }).click();
+  const review = f.page.getByRole('dialog', { name: 'Rà soát đề', exact: true });
   assert.ok((await review.innerText()).includes('Tổng điểm: 6,00'));
   assert.ok(!(await review.innerText()).includes(solution));
-  await openTool(f.page, 'Xuất'); await f.page.getByRole('menuitem', { name: 'Trình chiếu', exact: true }).click();
+  await review.getByRole('button', { name: 'Đóng', exact: true }).click();
+  await openTool(f.page, 'Xuất'); await f.page.getByRole('menuitem', { name: 'Trình chiếu', exact: true }).click(); await acceptReview(f.page);
   const presentation = f.page.getByRole('dialog', { name: 'Trình chiếu đề' });
   await presentation.waitFor();
   assert.ok(!(await presentation.innerText()).includes(solution));
@@ -260,13 +272,13 @@ test('F3 answer views, shuffle, Word and print', { timeout: 120000 }, () => flow
   await presentation.waitFor({ state: 'detached' });
   await click(f.page,'Bảng đáp án & Barem'); await f.page.getByText('Chấp nhận: 2', { exact: true }).first().waitFor();
   await click(f.page,'Hướng dẫn giải'); await f.page.getByText(solution, { exact: true }).first().waitFor(); await click(f.page,'Đề thi in ấn');
-  await openTool(f.page,'Xuất'); const [downloaded] = await Promise.all([f.page.waitForEvent('download',{timeout:60000}),f.page.getByTitle('Tải file Word (.docx) chuẩn công thức OMML').click()]); const file = await downloaded.path(); assert.ok(file); const bytes=fs.readFileSync(file); assert.equal(bytes.subarray(0,2).toString(),'PK'); assert.ok(bytes.length>2000);
+  await openTool(f.page,'Xuất'); const [downloaded] = await Promise.all([f.page.waitForEvent('download',{timeout:60000}),f.page.getByRole('menuitem', { name: 'Word – đề', exact: true }).click().then(() => acceptReview(f.page))]); const file = await downloaded.path(); assert.ok(file); const bytes=fs.readFileSync(file); assert.equal(bytes.subarray(0,2).toString(),'PK'); assert.ok(bytes.length>2000);
   const zip = await JSZip.loadAsync(bytes); const xml = await zip.file('word/document.xml')!.async('string');
   for (let i=1;i<=7;i++) assert.ok(xml.includes('PILOT Q'+i), 'Word missing question '+i);
   assert.ok(Object.keys(zip.files).some(n=>n.startsWith('word/media/')), 'Word missing image');
   await f.page.evaluate(()=>{(window as unknown as {pilotPrinted:number}).pilotPrinted=0;window.print=()=>{(window as unknown as {pilotPrinted:number}).pilotPrinted++;};});
-  await openTool(f.page,'Xuất'); await f.page.getByTitle('In đề thi hoặc xuất ra PDF').click(); assert.equal(await f.page.evaluate(()=>(window as unknown as {pilotPrinted:number}).pilotPrinted),1);
-  await openTool(f.page,'Đề thi'); await f.page.getByTitle('Trộn đề thành 4 mã đề kèm ma trận đáp án').click(); await f.page.getByRole('heading',{name:/Trộn Đề Thi/}).waitFor(); assert.ok((await f.page.locator('body').innerText()).includes('101'));
+  await openTool(f.page,'Xuất'); await f.page.getByRole('menuitem', { name: 'In / PDF', exact: true }).click(); await acceptReview(f.page); assert.equal(await f.page.evaluate(()=>(window as unknown as {pilotPrinted:number}).pilotPrinted),1);
+  await openTool(f.page,'Đề thi'); await f.page.getByRole('menuitem',{name:'Trộn mã đề…',exact:true}).click(); await f.page.getByRole('heading',{name:/Trộn Đề Thi/}).waitFor(); assert.ok((await f.page.locator('body').innerText()).includes('101'));
   const buttons=f.page.getByTitle('Tải file Word của mã này'); assert.equal(await buttons.count(),4);
   for(let i=0;i<4;i++){ console.log('F3 variant '+i+' download requested'); const [d]=await Promise.all([f.page.waitForEvent('download',{timeout:20000}),buttons.nth(i).click()]); console.log('F3 variant '+i+' downloaded'); const filepath=await d.path(); assert.ok(filepath);const z=await JSZip.loadAsync(fs.readFileSync(filepath));const x=await z.file('word/document.xml')!.async('string'); for(let q=1;q<=7;q++)assert.ok(x.includes('PILOT Q'+q));assert.ok(Object.keys(z.files).some(n=>n.startsWith('word/media/'))); }
   await click(f.page,'Đóng cửa sổ');
@@ -275,7 +287,7 @@ test('F3 answer views, shuffle, Word and print', { timeout: 120000 }, () => flow
   for(let i=0;i<7;i++){ const row=rows.nth(i);assert.equal(await row.locator(':scope > div').count(),2);assert.ok((await row.innerText()).includes('PILOT Q'+(i+1)));assert.ok((await row.innerText()).includes(solution)); }
   const passage = f.page.locator('[data-parallel-passage="p1"]');
   assert.equal(await passage.count(),1); assert.ok((await passage.innerText()).includes('Lan đọc sách ở thư viện.'));
-  const [parallelDownload] = await Promise.all([f.page.waitForEvent('download'), f.page.getByRole('button', { name: 'Tải file Word (.docx)', exact: true }).click()]);
+  const [parallelDownload] = await Promise.all([f.page.waitForEvent('download'), exportTool(f.page, 'Word – đề song song')]);
   const parallelPath = await parallelDownload.path(); assert.ok(parallelPath);
   const parallelZip = await JSZip.loadAsync(fs.readFileSync(parallelPath));
   const parallelXml = await parallelZip.file('word/document.xml')!.async('string');
@@ -346,7 +358,7 @@ test('F5 assign link with and without class and inspect frozen policies', { time
   await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).fill('SOURCE_CHANGED_AFTER_ASSIGN');
   await click(f.page, 'Áp dụng câu vào đề');
   await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).waitFor({ state: 'hidden' });
-  await f.page.getByTitle('Lưu các thay đổi lên máy chủ').click();
+  await saveEditor(f.page);
   await waitUntil(async () => JSON.stringify((await f.db.exam.findUniqueOrThrow({ where: { id } })).metadata).includes('SOURCE_CHANGED_AFTER_ASSIGN'), 'Source edit must be saved');
   for (const row of frozen) assert.equal(JSON.stringify((await f.db.assignment.findUniqueOrThrow({ where: { id: row.id } })).snapshot), row.snapshot);
   const classAssignment = rows.find(row => row.groupId === group.id)!;
@@ -402,6 +414,8 @@ test('F9 offline edits reconnect safely and preserve a conflicting draft as a se
   };
   const baseline = await f.db.exam.findUniqueOrThrow({where:{id}});
   await f.owner.setOffline(true); await rename('Pilot offline giữ nháp');
+  if (await f.page.getByLabel('Trạng thái lưu', {exact:true}).getAttribute('aria-expanded') !== 'true') await f.page.getByLabel('Trạng thái lưu', {exact:true}).click();
+  if (await f.page.getByLabel('Trạng thái lưu', {exact:true}).getAttribute('aria-expanded') !== 'true') await f.page.getByLabel('Trạng thái lưu', {exact:true}).click();
   await f.page.getByText('Mất kết nối — đang giữ bản nháp trên máy',{exact:true}).waitFor();
   assert.equal((await f.db.exam.findUniqueOrThrow({where:{id}})).version,baseline.version);
   assert.ok(await f.page.evaluate(()=>Object.values(localStorage).some(value=>value.includes('Pilot offline giữ nháp'))));
@@ -409,6 +423,7 @@ test('F9 offline edits reconnect safely and preserve a conflicting draft as a se
   await waitUntil(async()=>(await f.db.exam.findUniqueOrThrow({where:{id}})).title==='Pilot offline giữ nháp','Reconnect did not save offline edit');
   await f.page.reload(); await f.page.getByTitle('Nhấn để đổi tên đề thi').filter({hasText:'Pilot offline giữ nháp'}).waitFor();
   await f.owner.setOffline(true); await rename('Pilot offline cần giữ riêng');
+  if (await f.page.getByLabel('Trạng thái lưu', {exact:true}).getAttribute('aria-expanded') !== 'true') await f.page.getByLabel('Trạng thái lưu', {exact:true}).click();
   await f.page.getByText('Mất kết nối — đang giữ bản nháp trên máy',{exact:true}).waitFor();
   const remote=(await f.api('/api/exams/'+id)).document as Exam;
   remote.metadata.title='Pilot bản mới từ phiên khác';
@@ -422,6 +437,12 @@ test('F9 offline edits reconnect safely and preserve a conflicting draft as a se
   await waitUntil(async()=>await f.db.exam.count({where:{ownerId:f.ids[0],title:'Pilot offline cần giữ riêng (Bản sao phục hồi)'}})===1,'Conflicting draft copy was not saved');
   assert.equal((await f.db.exam.findUniqueOrThrow({where:{id}})).title,'Pilot bản mới từ phiên khác');
   assert.equal(await f.db.exam.count({where:{ownerId:f.ids[0]}}),2);
+  const copy = await f.db.exam.findFirstOrThrow({ where: { ownerId: f.ids[0], title: 'Pilot offline cần giữ riêng (Bản sao phục hồi)' } });
+  await f.page.waitForURL(origin + '/editor/' + copy.id);
+  await waitUntil(async () => (await f.page.getByTitle('Nhấn để đổi tên đề thi').innerText()).includes('(Bản sao phục hồi)'), 'Recovery copy URL must keep the copied document open');
+  await rename('Pilot chỉ sửa bản phục hồi'); await saveEditor(f.page);
+  await waitUntil(async () => (await f.db.exam.findUniqueOrThrow({ where: { id: copy.id } })).title === 'Pilot chỉ sửa bản phục hồi', 'Further edits must save to the recovery copy');
+  assert.equal((await f.db.exam.findUniqueOrThrow({ where: { id } })).version, remoteVersion, 'Recovery-copy edits must not change the source exam');
 }));
 
 test('F10 switching accounts in one browser keeps a local draft private to its owner and recoverable', { timeout: 150000 }, () => flow('F10', async f => {
@@ -454,6 +475,7 @@ test('F11 a reload that fails with no network loses nothing and the draft reache
   await f.page.locator('button[title="Nhấn để đổi tên đề thi"]:not([disabled])').waitFor();
   await f.owner.setOffline(true);
   await f.page.getByTitle('Nhấn để đổi tên đề thi').click(); const input = f.page.locator('header input').first(); await input.fill(offlineTitle); await input.press('Enter');
+  if (await f.page.getByLabel('Trạng thái lưu', {exact:true}).getAttribute('aria-expanded') !== 'true') await f.page.getByLabel('Trạng thái lưu', {exact:true}).click();
   await f.page.getByText('Mất kết nối — đang giữ bản nháp trên máy', { exact: true }).waitFor();
   // The app has no offline shell, so a full reload cannot render; the draft on this machine must survive the failed attempt.
   await f.page.reload({ waitUntil: 'domcontentloaded' }).catch(() => {});
@@ -643,7 +665,7 @@ test('F17 pasting an exam as text with no AI key still gives a usable preview th
   await f.page.getByText('Kết quả bóc tách (3 câu hỏi)').waitFor();
   await f.page.getByText(/Bóc tách cơ bản 3 câu hỏi/).waitFor();
   await click(f.page, 'Thêm 3 câu hỏi vào Đề thi hiện tại');
-  await f.page.getByTitle('Lưu các thay đổi lên máy chủ').first().click();
+  await saveEditor(f.page);
   await waitUntil(async () => (await f.db.examQuestion.count({ where: { examId: id } })) === 10, 'The three imported questions were not saved into the exam', 30000);
   const questions = (await f.api('/api/exams/' + id)).document.questions as { content: string; type: string; correct_answer?: string; choices?: unknown[]; sub_questions?: { isCorrect?: boolean }[] }[];
   const mc = questions.find(q => q.content.startsWith('Thủ đô'))!; assert.equal(mc.type, 'multiple_choice'); assert.equal(mc.correct_answer, 'B'); assert.equal(mc.choices?.length, 4);
@@ -655,7 +677,7 @@ test('F17 pasting an exam as text with no AI key still gives a usable preview th
 test('F18 the presentation moves with the arrow keys, hides the answer until asked, resizes, and never changes the exam', { timeout: 150000 }, () => flow('F18', async f => {
   await authenticated(f); const id = await seedExam(f); await openExam(f, id);
   const before = await f.db.exam.findUniqueOrThrow({ where: { id } });
-  await openTool(f.page, 'Xuất'); await f.page.getByRole('menuitem', { name: 'Trình chiếu', exact: true }).click();
+  await openTool(f.page, 'Xuất'); await f.page.getByRole('menuitem', { name: 'Trình chiếu', exact: true }).click(); await acceptReview(f.page);
   const dialog = f.page.getByRole('dialog', { name: 'Trình chiếu đề' }); await dialog.waitFor();
   const header = () => dialog.locator('strong').first().innerText();
   const shows = async (n: number) => waitUntil(async () => new RegExp(`Câu ${n}/7`).test(await header()), `the presentation shows question ${n}`, 5000);
@@ -747,8 +769,8 @@ test('F19 library search, starred, recent, trash, restore and safe controls', { 
   checked.push('bank-management-page-without-editor-actions');
   await openClose(f.page.getByRole('button', { name: 'AI soạn đề', exact: true }), 'generate-open-only');
   await openClose(f.page.getByRole('button', { name: 'Nhập Word / ảnh', exact: true }), 'import-open-only');
-  await f.page.getByTitle('Mở Thư ký AI trợ lý riêng của Thầy/Cô', { exact: true }).filter({ visible: true }).click();
-  await f.page.getByRole('heading', { name: 'Thư Ký Số & Trợ Lý Giáo Viên', exact: true }).waitFor();
+  await f.page.getByRole('button', { name: 'Hỏi đáp với Trợ lý AI', exact: true }).filter({ visible: true }).click();
+  await f.page.getByRole('heading', { name: 'Hỏi AI', exact: true }).waitFor();
   await f.page.getByRole('button', { name: 'Đóng hỏi đáp AI', exact: true }).click(); checked.push('secretary-open-close-only-no-ai-call');
   await f.page.getByRole('button', { name: 'Tạo đề', exact: true }).click();
   await f.page.getByTitle('Lưu các thay đổi lên máy chủ').first().waitFor();
@@ -776,7 +798,7 @@ test('F20 import preview corrections survive import, save and reopen', { timeout
   await cards.first().getByLabel('Đáp án câu nhập', { exact: true }).selectOption('A');
   await cards.first().getByRole('button', { name: 'Xong', exact: true }).click();
   await click(f.page, 'Thêm 6 câu hỏi vào Đề thi hiện tại');
-  await f.page.getByTitle('Lưu các thay đổi lên máy chủ').first().click();
+  await saveEditor(f.page);
   await waitUntil(async () => (await f.db.examQuestion.count({ where: { examId: id } })) === 13, 'Imported preview changes must be saved');
   const row = await f.db.question.findFirstOrThrow({ where: { ownerId: f.ids[0], content: 'F20 nội dung đã sửa' } });
   assert.equal((row.payload as { correct?: string }).correct, 'A');
@@ -815,14 +837,14 @@ test('F21 collaborator Copilot uses its own key and preserves the owner concurre
     assert.deepEqual(mock.keys, ['pilot-editor-key-0123456789']);
     await f.page.getByTitle('Sửa nội dung câu hỏi thủ công', { exact: true }).first().click();
     await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).fill('F21 OWNER NEW CONTENT'); await click(f.page, 'Áp dụng câu vào đề');
-    await f.page.getByTitle('Lưu các thay đổi lên máy chủ').first().click();
+    await saveEditor(f.page);
     await waitUntil(async () => (await f.api('/api/exams/' + id)).document.questions[0].content === 'F21 OWNER NEW CONTENT', 'Owner edit must persist before provider responds');
     const aiQuestion = { ...document().questions[0], content: 'F21 AI PROPOSAL' };
     mock.respond({ type: 'action', action: 'modify_single_question', targetQuestionIndex: 1, targetQuestionId: 'q1', explanation: 'F21 proposal', modifiedQuestion: aiQuestion });
     const proposal = b.getByRole('region', { name: 'Đề xuất AI chưa áp dụng' });
     await b.getByText('F21 proposal', { exact: true }).waitFor();
     const apply = b.getByRole('button', { name: 'Áp dụng', exact: true });
-    if (await apply.isEnabled()) { await apply.click(); await b.getByTitle('Lưu các thay đổi lên máy chủ').first().click(); await b.getByText('Lưu bản nháp thành đề mới', { exact: true }).waitFor(); }
+    if (await apply.isEnabled()) { await apply.click(); await saveEditor(b); if (await b.getByLabel('Trạng thái lưu', {exact:true}).getAttribute('aria-expanded') !== 'true') await b.getByLabel('Trạng thái lưu', {exact:true}).click(); await b.getByText('Lưu bản nháp thành đề mới', { exact: true }).waitFor(); }
     else { await b.getByText(/Chưa áp dụng để giữ bản mới/).waitFor(); }
     const current = (await f.api('/api/exams/' + id)).document; assert.equal(current.questions[0].content, 'F21 OWNER NEW CONTENT');
     assert.ok(!(await b.locator('body').innerText()).includes('pilot-editor-key-0123456789'));
@@ -860,7 +882,7 @@ test('F23 manual edits, undo redo and a retried bank save preserve links without
   await f.page.getByTitle('Sửa nội dung câu hỏi thủ công', { exact: true }).first().click(); await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).fill('F23 EDITED'); await f.page.getByLabel('Đáp án lựa chọn').selectOption('B'); await click(f.page, 'Áp dụng câu vào đề');
   await f.page.getByRole('button', { name: /^Hoàn tác \(/ }).first().click(); await f.page.getByText('PILOT Q1 multiple_choice', { exact: true }).first().waitFor();
   await f.page.getByRole('button', { name: /^Làm lại câu \(/ }).first().click(); await f.page.getByText('F23 EDITED', { exact: true }).first().waitFor();
-  await f.page.getByTitle('Lưu các thay đổi lên máy chủ').first().click();
+  await saveEditor(f.page);
   await waitUntil(async () => (await f.api('/api/exams/' + id)).document.questions[0].content === 'F23 EDITED', 'Redo snapshot persisted');
   const q = (await f.api('/api/exams/' + id)).document.questions[0]; assert.equal(q.correct_answer, 'B'); assert.equal(q.passageId, 'p1'); assert.equal(q.status, 'draft'); assert.equal(q.verifiedBy, 'none');
   let dropped = false; const bankBodies: Record<string, unknown>[] = [];

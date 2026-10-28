@@ -23,6 +23,7 @@ import { questionValueStamp, type QuestionManualSubmission } from '@/lib/questio
 import { confirmedUndoHistory, prepareQuestionUndo, type QuestionUndoEntry } from '@/lib/question-commands';
 
 interface QuestionCardProps {
+  selectionActive?: boolean;
   hidePassage?: boolean;
   withAi?: (action: () => void) => void;
   ownerId: string;
@@ -50,6 +51,7 @@ interface QuestionCardProps {
 }
 
 export const QuestionCard: React.FC<QuestionCardProps> = ({
+  selectionActive = false,
   hidePassage = false,
   withAi = action => action(),
   ownerId,
@@ -239,7 +241,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
   };
 
   return (
-    <div className={`bg-[var(--ui-surface)] dark:bg-[var(--ui-surface)] rounded-2xl border transition-all duration-200 overflow-hidden relative group ${
+    <div className={`@container min-w-0 bg-[var(--ui-surface)] dark:bg-[var(--ui-surface)] rounded-2xl border transition-all duration-200 overflow-hidden relative group ${
       isSelected
         ? 'border-[var(--ui-border)] dark:border-[#e3e3e3] ring-2 ring-[#e3e3e3]/30 shadow-xs'
         : 'border-[var(--ui-border)] dark:border-[var(--ui-border)] shadow-xs hover:shadow-xs'
@@ -254,7 +256,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
 
       {/* Header của thẻ câu hỏi */}
       <div className="bg-[#f8f9fa] dark:bg-[var(--ui-surface-variant)]/60 px-4 py-2.5 border-b border-[var(--ui-border)] dark:border-[var(--ui-border)] flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 min-w-0">
           {onToggleSelect && (
             <input
               type="checkbox"
@@ -262,10 +264,10 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
               onChange={() => onToggleSelect(question.id)}
               title="Chọn câu hỏi này để gộp câu hoặc thao tác hàng loạt"
               aria-label={'Chọn câu ' + (index + 1)}
-              className={'w-4 h-4 rounded lg:opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus:opacity-100 ' + (isSelected ? '!opacity-100 ' : '') + 'text-[var(--ui-accent)] focus:ring-[var(--ui-accent)] border-[var(--ui-border)] cursor-pointer'}
+              className={'w-4 h-4 rounded lg:opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus:opacity-100 ' + (isSelected || selectionActive ? '!opacity-100 ' : '') + 'text-[var(--ui-accent)] focus:ring-[var(--ui-accent)] border-[var(--ui-border)] cursor-pointer'}
             />
           )}
-          <span className="w-7 h-7 rounded-full bg-[#202124] text-white dark:bg-[#303134] dark:text-[var(--ui-text-primary)] dark:border dark:border-[var(--ui-border)] font-bold text-xs flex items-center justify-center shadow-2xs">
+          <span className="w-7 h-7 rounded-full bg-[var(--ui-accent)] text-[var(--ui-on-primary)] dark:bg-[var(--ui-surface-variant)] dark:text-[var(--ui-text-primary)] dark:border dark:border-[var(--ui-border)] font-bold text-xs flex items-center justify-center shadow-2xs">
             {index + 1}
           </span>
           {getTypeBadge(question.type)}
@@ -343,7 +345,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
             </button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 font-sans">
+          <div className="grid grid-cols-1 @min-[500px]:grid-cols-2 gap-2 pt-1 font-sans">
             <div className="p-2.5 bg-[var(--ui-surface)] dark:bg-[var(--ui-surface-variant)] rounded-xl border border-[var(--ui-border)] dark:border-[var(--ui-border)]">
               <span className="text-[var(--ui-text-secondary)] dark:text-[var(--ui-text-secondary)] font-semibold block text-[11px]">Đáp án hiện tại trong đề:</span>
               <span className="text-[var(--ui-text-primary)] dark:text-[var(--ui-text-primary)] font-bold font-mono text-sm">{question.correct_answer || 'Chưa thiết lập'}</span>
@@ -406,13 +408,13 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
 
         {/* PHƯƠNG ÁN LỰA CHỌN (Multiple Choice) */}
         {!isEditing && question.choices && question.choices.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
+          <div className="grid grid-cols-1 @min-[500px]:grid-cols-2 gap-2 pt-2">
             {question.choices.map((c) => {
               const isCorrect = c.key === question.correct_answer;
               return (
                 <div
                   key={c.key}
-                  className={`p-2.5 rounded-xl border flex items-baseline gap-2 transition-all ${
+                  className={`min-w-0 break-words p-2.5 rounded-xl border flex items-baseline gap-2 transition-all ${
                     isCorrect
                       ? 'bg-[#e6f4ea] dark:bg-[#0f291e] border-[#ceead6] dark:border-[#1e4a34] text-[#137333] dark:text-[#5bb98c] font-medium'
                       : 'bg-[#f8f9fa] dark:bg-[#242424] border-[var(--ui-border)] dark:border-[var(--ui-border)] text-[var(--ui-text-primary)] dark:text-[var(--ui-text-primary)]'
