@@ -202,6 +202,14 @@ export function syncOutline(
   };
 }
 
+/** For screens: a stored outline that no longer matches the questions (stale local draft, older client) is rebuilt from the question order instead of crashing the page. Saving paths keep using the strict syncOutline. */
+export function viewSyncedOutline(exam: Exam): Exam {
+  try {
+    return syncOutline(exam);
+  } catch {
+    return syncOutline({ ...exam, outline: undefined });
+  }
+}
 export function findOutlineList(nodes: OutlineNode[], parentId: string | null): OutlineNode[] | undefined {
   if (parentId === null) return nodes;
   return outlineNodes(nodes).find((node) => node.id === parentId)?.children;
@@ -379,7 +387,12 @@ export function outlineEntries(exam: Exam): OutlineEntry[] {
 }
 
 /** Keep legacy journal stamps valid when the outline only represents the unchanged legacy document. */
+/** Node ids differ between a freshly inserted outline and one derived from a legacy exam; compare the shape only. */
+function outlineShape(nodes: OutlineNode[]): string {
+  const strip = (list: OutlineNode[]): unknown[] => list.map((node) => { const { children, ...rest } = node; const { id, ...shape } = rest; void id; return { ...shape, ...(children ? { children: strip(children) } : {}) }; });
+  return JSON.stringify(strip(nodes));
+}
 export function structuralStampFields(exam: Exam): { outline?: OutlineNode[] } {
-  if (!exam.outline || JSON.stringify(exam.outline) === JSON.stringify(legacyOutline(exam))) return {};
+  if (!exam.outline || outlineShape(exam.outline) === outlineShape(legacyOutline(exam))) return {};
   return { outline: exam.outline };
 }

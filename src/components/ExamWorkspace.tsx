@@ -445,11 +445,13 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         frameworkId={exam.metadata.cognitiveFrameworkId}
         knowledgePackage={exam.metadata.knowledgePackage}
         knowledgeScope={exam.metadata.knowledgeScope}
-        onSave={(submission) =>
-          setExam((previous) =>
-            appendManualQuestion(previous, submission, currentUser.id, newQuestion, newQuestionPoint),
-          )
-        }
+        onSave={(submission) => {
+          const add = (previous: typeof exam) =>
+            appendManualQuestion(previous, submission, currentUser.id, newQuestion, newQuestionPoint);
+          setExam(add);
+          // The composer closes as soon as the question is in the exam; waiting for the saved copy let it reopen from the stale draft.
+          if (add(exam) !== exam) setNewQuestion(null);
+        }}
         onApplied={() => setNewQuestion(null)}
         onCancel={() => setNewQuestion(null)}
       />

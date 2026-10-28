@@ -1,4 +1,4 @@
-import { syncOutline } from './exam-outline';
+import { viewSyncedOutline } from './exam-outline';
 import type { Exam } from '@/types/exam';
 import { requiresNumericScore } from './education-catalog';
 
@@ -9,7 +9,7 @@ const points = (value: unknown) =>
 
 /** Freeze only a chosen section/grade-subject template; unresolved points must be handled explicitly by the caller. */
 export function freezeExamScoring(exam: Exam, sectionInput?: unknown) {
-  exam = exam.outline ? syncOutline(exam) : exam;
+  exam = exam.outline ? viewSyncedOutline(exam) : exam;
   const provided = sectionInput ?? (exam as Exam & { sections?: unknown }).sections;
   const sections = Array.isArray(provided) ? provided.map(object) : [];
   const missing: string[] = [];

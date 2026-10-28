@@ -1,5 +1,5 @@
 import type { Exam, OutlineNode, Passage, Question } from '@/types/exam';
-import { outlineEntries, outlineNumber, syncOutline } from './exam-outline';
+import { outlineEntries, outlineNumber, viewSyncedOutline } from './exam-outline';
 
 export interface StructureBlock {
   id: string;
@@ -10,7 +10,7 @@ export interface StructureBlock {
   missingPassageId?: string;
 }
 export function outlineView(exam: Exam) {
-  const synchronized = syncOutline(exam);
+  const synchronized = viewSyncedOutline(exam);
   const before = new Map<string, StructureBlock[]>();
   const numbers = new Map<string, number>();
   let pending: StructureBlock[] = [];
