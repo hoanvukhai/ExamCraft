@@ -1,3 +1,4 @@
+import { structuralStampFields } from './exam-outline';
 import type { Exam, Question } from '@/types/exam';
 import { normalizeQuestion } from './exam-document';
 
@@ -40,7 +41,7 @@ export function resumeQuestionDraft(value: QuestionDraft, current: Question, sou
 }
 export function questionDraftSourceStamp(exam: Exam) {
   const m = exam.metadata;
-  return JSON.stringify({ subject: m.subject, grade: m.grade, mode: m.assessmentMode, framework: m.cognitiveFrameworkId, package: m.knowledgePackage, scope: m.knowledgeScope, sections: exam.sections, passages: exam.passages });
+  return JSON.stringify({ subject: m.subject, grade: m.grade, mode: m.assessmentMode, framework: m.cognitiveFrameworkId, package: m.knowledgePackage, scope: m.knowledgeScope, sections: exam.sections, passages: exam.passages, ...structuralStampFields(exam) });
 }
 export function parseQuestionDraft(raw: string, ownerId: string, documentId: string): QuestionDraft {
   if (new TextEncoder().encode(raw).length > maxBytes) throw Error('Nháp vượt giới hạn đọc an toàn.');

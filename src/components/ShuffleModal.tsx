@@ -21,8 +21,9 @@ export const ShuffleModal: React.FC<ShuffleModalProps> = ({
   onSelectVariant,
 }) => {
   const [numVariants, setNumVariants] = useState<number>(4);
+  const [shuffleGroups, setShuffleGroups] = useState(true);
   const [reshuffle, setReshuffle] = useState(0);
-  const variants = React.useMemo<ShuffledExamVariant[]>(() => isOpen ? generateShuffledExams(baseExam, numVariants, 101) : [], [isOpen, baseExam, numVariants, reshuffle]);
+  const variants = React.useMemo<ShuffledExamVariant[]>(() => isOpen ? generateShuffledExams(baseExam, numVariants, 101, 123456789 + reshuffle, { shuffleGroups }) : [], [isOpen, baseExam, numVariants, reshuffle, shuffleGroups]);
   const [copiedMatrix, setCopiedMatrix] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState('');
@@ -89,6 +90,10 @@ export const ShuffleModal: React.FC<ShuffleModalProps> = ({
           </button>
         </div>
 
+        {baseExam.outline && <label className="text-sm flex items-center gap-2 py-2">
+          <input type="checkbox" checked={shuffleGroups} onChange={event => setShuffleGroups(event.target.checked)} />
+          Đổi thứ tự nhóm trong từng phần
+        </label>}
         {/* Cấu hình trộn */}
         <div className="py-3.5 flex flex-wrap items-center justify-between gap-3 bg-[#f8f9fa] dark:bg-[#292a2d]/60 px-4 rounded-xl my-4 border border-[#dadce0] dark:border-[#3c4043]">
           <div className="flex items-center gap-2">

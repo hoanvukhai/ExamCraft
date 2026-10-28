@@ -1,3 +1,4 @@
+import { outlineNodes, syncOutline } from './exam-outline';
 import type { Exam, Figure } from '@/types/exam';
 import { requiresNumericScore } from './education-catalog';
 import { freezeExamScoring } from './snapshot-scoring';
@@ -38,6 +39,22 @@ export function reviewExam(exam: Exam) {
     if (!passage.content.trim() && !passage.figures?.length) add('empty-passage', passage.title || 'Ngữ liệu', 'Ngữ liệu chưa có nội dung hoặc hình.');
     if (passage.figureIds?.some(id => !passage.figures?.some(f => f.id === id))) add('figure-link', passage.title || 'Ngữ liệu', 'Có mã hình chưa có dữ liệu hình đi kèm.');
   }
+  if (exam.outline) {
+    try {
+      exam = syncOutline(exam);
+      for (const node of outlineNodes(exam.outline!)) {
+        if (node.kind === 'part' && !outlineNodes(node.children ?? []).some(child => child.kind === 'question')) {
+          add('empty-part', node.title || 'Phần', 'Phần này chưa có câu hỏi.', 'review');
+        }
+        if (node.kind === 'group' && !node.children?.length) {
+          add('empty-group', node.title || 'Nhóm câu', 'Nhóm này chưa có câu hỏi.', 'review');
+        }
+      }
+    } catch {
+      add('outline', 'Đề', 'Dàn ý chưa hợp lệ; cần kiểm lại vị trí các câu.');
+      exam = { ...exam, outline: undefined };
+    }
+  }
   const numeric = requiresNumericScore(exam.metadata.assessmentMode);
   const scoring = freezeExamScoring(exam);
   let knownPointsHundredths = 0, pointsComplete = Boolean(exam.questions.length);
@@ -47,6 +64,21 @@ export function reviewExam(exam: Exam) {
     if (q.passageId && !exam.passages?.some(p => p.id === q.passageId)) add('passage-link', location, 'Không tìm thấy ngữ liệu được liên kết.');
     if (q.sectionId && !exam.sections?.some(s => s.id === q.sectionId)) add('section-link', location, 'Không tìm thấy phần chứa câu này.');
     figures(q.figures, location);
+    if (q.parts?.length) {
+      unique(q.parts.map(part => part.id), location, 'Mã ý');
+      q.parts.forEach((part, i) => {
+        const where = location + ' · ý ' + (part.label || i + 1);
+        if (!part.content.trim()) add('part-content', where, 'Ý này chưa có nội dung.');
+        if (numeric && part.points === undefined) add('part-points', where, 'Ý này chưa có điểm.', 'review');
+        if (!part.answer?.trim() && !part.solution?.trim() && !part.rubric?.length) {
+          add('part-answer', where, 'Ý này chưa có đáp án hoặc hướng dẫn chấm.', 'review');
+        }
+      });
+      if (numeric && q.points !== undefined && q.parts.every(part => part.points !== undefined)) {
+        const total = q.parts.reduce((sum, part) => sum + (part.points ?? 0), 0);
+        if (Math.abs(total - q.points) > 0.000001) add('part-total', location, 'Tổng điểm các ý khác điểm của câu.', 'review');
+      }
+    }
     if (numeric) {
       const points = scoring.questions[index].points;
       try {
@@ -66,7 +98,7 @@ export function reviewExam(exam: Exam) {
       if (!parts.length || parts.some(p => !p.content.trim())) add('subquestions', location, 'Các ý đúng/sai cần có nội dung.');
       if (numeric && parts.some(p => typeof p.isCorrect !== 'boolean')) add('answer', location, 'Có ý chưa chọn Đúng hoặc Sai.');
     } else if (q.type === 'short_answer' || q.type === 'fill_blank') {
-      if (numeric && !q.correct_answer?.trim() && !q.accepted_answers?.some(a => a.trim())) add('answer', location, 'Chưa có đáp án chấp nhận; hãy bổ sung hoặc chuẩn bị chấm tay.', 'review');
+      if (numeric && !q.parts?.length && !q.correct_answer?.trim() && !q.accepted_answers?.some(a => a.trim())) add('answer', location, 'Chưa có đáp án chấp nhận; hãy bổ sung hoặc chuẩn bị chấm tay.', 'review');
     } else if (q.type === 'matching') {
       const pairs = q.matchingPairs ?? [];
       unique(pairs.map(p => p.id), location, 'Mã cặp ghép');
@@ -74,7 +106,7 @@ export function reviewExam(exam: Exam) {
     } else if (q.type === 'ordering') {
       if ((q.correctOrder?.length ?? 0) < 2 || q.correctOrder?.some(item => !item.trim())) add('ordering', location, 'Cần ít nhất hai mục có nội dung theo thứ tự đúng.');
     } else if (q.type === 'essay') {
-      if ((numeric || exam.metadata.assessmentMode === 'rubric') && !q.rubric?.length && !q.step_by_step_solution?.trim()) add('manual-guide', location, 'Chưa có hướng dẫn chấm hoặc tiêu chí chấm.', 'review');
+      if ((numeric || exam.metadata.assessmentMode === 'rubric') && !q.parts?.length && !q.rubric?.length && !q.step_by_step_solution?.trim()) add('manual-guide', location, 'Chưa có hướng dẫn chấm hoặc tiêu chí chấm.', 'review');
     } else add('type', location, 'Dạng câu chưa được hỗ trợ.');
     if (q.rubric?.some(r => !r.criterion.trim() || !Number.isFinite(r.maxPoints) || r.maxPoints < 0)) add('rubric', location, 'Tiêu chí chấm cần nội dung và điểm không âm.');
   });

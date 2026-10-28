@@ -1,0 +1,40 @@
+TAP version 13
+# Subtest: seeded shuffling keeps parts fixed, group children together/in order, and source unchanged
+ok 1 - seeded shuffling keeps parts fixed, group children together/in order, and source unchanged
+  ---
+  duration_ms: 11.9929
+  type: 'test'
+  ...
+# Subtest: student attempt layout carries its outline; old stored order and old grades remain unchanged
+ok 2 - student attempt layout carries its outline; old stored order and old grades remain unchanged
+  ---
+  duration_ms: 5.3527
+  type: 'test'
+  ...
+# Subtest: template captures only the empty outline skeleton; copy gets fresh part IDs and deterministic acknowledgement
+ok 3 - template captures only the empty outline skeleton; copy gets fresh part IDs and deterministic acknowledgement
+  ---
+  duration_ms: 20.1728
+  type: 'test'
+  ...
+# Subtest: unchanged legacy outline keeps old journal stamps; actual structure changes invalidate them
+ok 4 - unchanged legacy outline keeps old journal stamps; actual structure changes invalidate them
+  ---
+  duration_ms: 1.0026
+  type: 'test'
+  ...
+# Subtest: review identifies empty containers and incomplete/mismatched sub-items
+ok 5 - review identifies empty containers and incomplete/mismatched sub-items
+  ---
+  duration_ms: 2.235
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 826.3218

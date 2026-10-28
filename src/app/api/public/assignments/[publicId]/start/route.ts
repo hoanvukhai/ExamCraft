@@ -1,3 +1,4 @@
+import type { Prisma } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import crypto from 'node:crypto';
@@ -67,7 +68,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pub
           const attempt = await tx.attempt.create({ data: {
             assignmentId: assignment.id, studentId: student.id, attemptNo: (previous[0]?.attemptNo ?? 0) + 1,
             startedAt: now, deadlineAt: attemptDeadline(now, assignment.durationMinutes, assignment.closesAt),
-            variantSeed, layout, draft: {},
+            variantSeed, layout: layout as unknown as Prisma.InputJsonValue, draft: {},
           } });
           attemptSessionToken(attempt); // Refuse to commit a new attempt if the session key is missing.
           return { attempt, studentName: student.displayName, resumed: false, snapshot: assignment.snapshot };

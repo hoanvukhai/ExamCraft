@@ -1,3 +1,4 @@
+import { structuralStampFields } from './exam-outline';
 import { z } from 'zod';
 import { wrapBareLatex } from './bare-latex';
 import { normalizeMathDelimiters } from './math-delimiters';
@@ -6,7 +7,7 @@ import { knowledgePackageSchema, knowledgeScopeSchema, parseKnowledgePackage, kn
 import type { Exam } from '@/types/exam';
 
 export function generationDocumentStamp(exam: Exam): string {
-  return JSON.stringify({ id: exam.id, metadata: exam.metadata, questions: exam.questions, passages: exam.passages, sections: exam.sections }, (_key, value) => value && typeof value === 'object' && !Array.isArray(value) ? Object.fromEntries(Object.entries(value).sort(([a], [b]) => a.localeCompare(b))) : value);
+  return JSON.stringify({ id: exam.id, metadata: exam.metadata, questions: exam.questions, passages: exam.passages, sections: exam.sections, ...structuralStampFields(exam) }, (_key, value) => value && typeof value === 'object' && !Array.isArray(value) ? Object.fromEntries(Object.entries(value).sort(([a], [b]) => a.localeCompare(b))) : value);
 }
 
 export function applyGeneratedDraft(previous: Exam, generated: Exam, baseStamp: string): Exam {

@@ -1,5 +1,7 @@
+import type { Exam } from '@/types/exam';
+import { shuffleOutline } from './outline-operations';
+import { legacyOutline, validateOutline } from './exam-outline';
 import { asObject, sanitizeSnapshotForStudent } from './public-exam';
-import { shuffleQuestionUnits } from './question-order';
 
 function shuffled<T>(values: T[], random: () => number) {
   const result = [...values];
@@ -16,8 +18,10 @@ export function createAttemptLayout(snapshot: unknown, seed: number, shuffleQues
   const random = () => { state = (Math.imul(state, 1664525) + 1013904223) >>> 0; return state / 4294967296; };
   const exam = sanitizeSnapshotForStudent(snapshot);
   // Sections keep their order and the questions of one passage stay together; only the blocks inside a section move.
-  const questions = shuffleQuestions ? shuffleQuestionUnits(exam.questions, random) : exam.questions;
+  const structured = shuffleQuestions ? shuffleOutline(exam as unknown as Exam, random) : undefined;
+  const questions = structured ? structured.questions as unknown as typeof exam.questions : exam.questions;
   return {
+    outline: structured?.outline ?? exam.outline,
     questionOrder: questions.map(q => String(q.id)),
     choiceOrder: Object.fromEntries(questions.map(q => [String(q.id),
       (shuffleChoices ? shuffled(q.choices, random) : q.choices).map(c => String(c.key)),
@@ -39,5 +43,8 @@ export function examForAttempt(snapshot: unknown, layoutValue: unknown) {
     const choices = [...q.choices].sort((a, b) => ids.indexOf(a.key) - ids.indexOf(b.key));
     return { ...q, choices, payload: { ...q.payload, choices } };
   });
-  return { ...exam, questions };
+  const outline = layout.outline !== undefined
+    ? validateOutline(layout.outline, questions as unknown as Exam['questions'])
+    : legacyOutline({ ...exam, questions } as unknown as Exam);
+  return { ...exam, questions, outline };
 }

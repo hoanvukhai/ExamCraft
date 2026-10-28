@@ -1,3 +1,7 @@
+import { outlineNodes, syncOutline, validateOutline, legacyOutline } from './exam-outline';
+import { outlineSkeleton, copyOutlineSkeleton } from './outline-operations';
+import { publicOutline } from './outline-view';
+import { structuralStampFields } from './exam-outline';
 import { z } from 'zod';
 import type { Exam, ExamMetadata } from '@/types/exam';
 import { headerLayoutSchema, sameHeaderValue } from './header-layout';
@@ -6,9 +10,20 @@ import { examPlanSchema, PLAN_TYPES } from './exam-plan';
 const id = z.string().trim().min(1).max(200), text = z.string().max(2000);
 export const templateSourceSchema = z.object({ title: z.string().trim().min(1).max(500), url: z.url().max(4000).refine(value => /^https?:\/\//i.test(value), 'Nguồn cần URL http hoặc https').optional(), version: z.string().max(200).optional(), effectiveFrom: z.iso.date().optional(), effectiveTo: z.iso.date().optional(), rights: z.enum(['unknown', 'link_only', 'permission', 'open']).default('unknown') }).strict().refine(source => !source.effectiveFrom || !source.effectiveTo || source.effectiveFrom <= source.effectiveTo, 'Ngày nguồn chưa hợp lệ.');
 const sectionSchema = z.object({ id, name: z.string().min(1).max(500), title: text.optional(), label: text.optional(), type: z.enum(PLAN_TYPES).optional(), pointsPerQuestion: z.number().finite().min(0).max(1000000).optional(), progressiveScoring: z.array(z.number().finite().min(0).max(1000000)).max(100).optional(), questionCount: z.number().int().min(0).max(1000).optional(), totalPoints: z.number().finite().min(0).max(1000000).optional(), instruction: text.optional() }).strict();
+const templateOutlineSchema = z.unknown().transform((value, context) => {
+  try {
+    const nodes = validateOutline(value, []);
+    if (outlineNodes(nodes).some(node => node.passageId !== undefined)) throw Error('Mẫu dàn ý không lưu ngữ liệu.');
+    return publicOutline(nodes);
+  } catch {
+    context.addIssue({ code: 'custom', message: 'Dàn ý mẫu cần đúng cấp, không có câu hoặc liên kết ngữ liệu.' });
+    return z.NEVER;
+  }
+});
 export const templateSnapshotSchema = z.object({
   headerFields: z.object({ schoolName: text.optional(), departmentName: text.optional(), title: z.string().max(500).refine(value => !!value.trim()).optional(), examCode: text.optional(), academicYear: text.optional(), semester: text.optional(), notes: text.optional(), headerLayout: headerLayoutSchema.nullable().optional() }).strict(),
   assessmentContext: z.object({ subject: z.string().min(1).max(100), grade: z.number().int().min(1).max(12).optional(), assessmentMode: z.enum(['scored', 'comment_only', 'rubric', 'survey']).optional(), cognitiveFrameworkId: id.nullable().optional(), durationMinutes: z.number().finite().min(0).max(1440).optional() }).strict(),
+  outline: templateOutlineSchema.optional(),
   examPlan: examPlanSchema.optional(), sections: z.array(sectionSchema).max(100),
 }).strict().refine(snapshot => new Set(snapshot.sections.map(section => section.id)).size === snapshot.sections.length, 'Mã phần của mẫu bị trùng.');
 export type TemplateSnapshot = z.infer<typeof templateSnapshotSchema>;
@@ -56,8 +71,9 @@ export function parseSavedTemplate(data: unknown): TemplateSummary & { name: str
 }
 export function parseTemplateSnapshot(input: unknown): TemplateSnapshot { return templateSnapshotSchema.parse(input); }
 export function captureTemplateSnapshot(exam: Exam): TemplateSnapshot {
+  exam = exam.outline ? syncOutline(exam) : exam;
   const m = exam.metadata;
-  return parseTemplateSnapshot({ headerFields: { schoolName: m.schoolName, departmentName: m.departmentName, title: m.title, examCode: m.examCode ?? '', academicYear: m.academicYear ?? '', semester: m.semester ?? '', notes: m.notes ?? '', headerLayout: m.headerLayout ?? null }, assessmentContext: { subject: m.subject, grade: m.grade, assessmentMode: m.assessmentMode ?? 'scored', cognitiveFrameworkId: m.cognitiveFrameworkId ?? null, durationMinutes: m.durationMinutes }, examPlan: m.examPlan, sections: exam.sections ?? [] });
+  return parseTemplateSnapshot({ headerFields: { schoolName: m.schoolName, departmentName: m.departmentName, title: m.title, examCode: m.examCode ?? '', academicYear: m.academicYear ?? '', semester: m.semester ?? '', notes: m.notes ?? '', headerLayout: m.headerLayout ?? null }, assessmentContext: { subject: m.subject, grade: m.grade, assessmentMode: m.assessmentMode ?? 'scored', cognitiveFrameworkId: m.cognitiveFrameworkId ?? null, durationMinutes: m.durationMinutes }, examPlan: m.examPlan, sections: exam.sections ?? [], outline: outlineSkeleton(exam) });
 }
 export function legacyTemplateSnapshot(subject: string, sections: unknown): TemplateSnapshot {
   if (!Array.isArray(sections)) throw Error('Mẫu cũ chưa đọc được cấu trúc phần.');
@@ -74,7 +90,7 @@ export type TemplateApplyOptions = z.infer<typeof templateApplyOptionsSchema>;
 export const templateApplicationSchema = z.object({ formatVersion: z.literal(1), source: z.object({ id, revision: id, name: z.string().max(500), category: z.enum(['personal', 'system_unreviewed', 'legacy_unreviewed']) }).strict(), snapshot: templateSnapshotSchema, appliedOptions: templateApplyOptionsSchema, appliedAt: z.iso.datetime() }).strict();
 export type TemplateApplication = z.infer<typeof templateApplicationSchema>;
 export function templateDocumentStamp(exam: Exam) {
-  return JSON.stringify({ id: exam.id, metadata: exam.metadata, sections: exam.sections, questions: exam.questions }, (_key, value) => value && typeof value === 'object' && !Array.isArray(value) ? Object.fromEntries(Object.entries(value).sort(([a], [b]) => a.localeCompare(b))) : value);
+  return JSON.stringify({ id: exam.id, metadata: exam.metadata, sections: exam.sections, questions: exam.questions, ...structuralStampFields(exam) }, (_key, value) => value && typeof value === 'object' && !Array.isArray(value) ? Object.fromEntries(Object.entries(value).sort(([a], [b]) => a.localeCompare(b))) : value);
 }
 export function templateSourceDateLabel(source: TemplateEnvelope['sources'][number]) {
   return `Khoảng ngày tự khai: từ ${source.effectiveFrom ?? 'chưa ghi'} đến ${source.effectiveTo ?? 'chưa ghi'}.`;
@@ -125,7 +141,15 @@ export function applyPersonalTemplate(previous: Exam, template: PersonalTemplate
   const applySections = checked.sections && previous.questions.length === 0;
   if (applySections && (sectionIds.length !== snapshot.sections.length || new Set(sectionIds).size !== sectionIds.length || sectionIds.some(value => !value || snapshot.sections.some(section => section.id === value) || previous.sections?.some(section => section.id === value)))) throw Error('Các phần sao chép cần mã mới riêng.');
   metadata.templateApplication = templateApplicationSchema.parse({ formatVersion: 1, source: { id: template.id, revision: template.revision, name: template.name, category: template.category }, snapshot, appliedOptions: { ...checked, plan: checked.plan && snapshot.examPlan !== undefined, sections: applySections }, appliedAt });
-  return { ...previous, metadata, ...(applySections ? { sections: snapshot.sections.map((section, index) => ({ ...section, id: sectionIds[index] })) } : {}) };
+  const next = { ...previous, metadata,
+    ...(applySections ? { sections: snapshot.sections.map((section, index) => ({ ...section, id: section.id === 'workspace' ? 'workspace' : sectionIds[index] })) } : {}),
+  };
+  if (!applySections) return next;
+  const sectionMap = new Map(snapshot.sections.map((section, i) => [section.id, section.id === 'workspace' ? 'workspace' : sectionIds[i]]));
+  const outline = snapshot.outline
+    ? copyOutlineSkeleton(snapshot.outline, sectionMap, appliedAt)
+    : legacyOutline({ ...next, outline: undefined });
+  return syncOutline(next, outline);
 }
 export function templateDeviations(exam: Exam): string[] {
   const application = exam.metadata.templateApplication;

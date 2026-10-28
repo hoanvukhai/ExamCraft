@@ -121,7 +121,10 @@ export function syncOutline(exam: Exam, input: unknown = exam.outline === undefi
       if (node.kind === 'part') {
         const id = sectionId(node), original = exam.sections?.find(section => section.id === id);
         if (!usedSections.has(id)) {
-          sections.push({ ...original, id, name: node.title ?? original?.name ?? '', title: node.title ?? original?.title });
+          const oldTitle = original?.title ?? original?.label ?? original?.name;
+          sections.push(original && oldTitle === node.title ? copy(original) : {
+            ...original, id, name: node.title ?? original?.name ?? '', title: node.title ?? original?.title,
+          });
           usedSections.add(id);
         }
         visit(node.children!, id);
@@ -140,7 +143,17 @@ export function syncOutline(exam: Exam, input: unknown = exam.outline === undefi
   // The hidden legacy workspace can carry an explicitly chosen scoring configuration.
   const workspace = exam.sections?.find(section => section.id === 'workspace');
   if (workspace) sections.push(copy(workspace));
-  return { ...exam, outline, questions, ...(exam.sections !== undefined || sections.length ? { sections } : {}) };
+  const sectionMap = new Map(sections.map(section => [section.id, section]));
+  const orderedSections = (exam.sections ?? []).flatMap(section => {
+    const item = sectionMap.get(section.id);
+    if (!item) return [];
+    sectionMap.delete(section.id);
+    return [item];
+  });
+  orderedSections.push(...sectionMap.values());
+  return { ...exam, outline, questions,
+    ...(exam.sections !== undefined || orderedSections.length ? { sections: orderedSections } : {}),
+  };
 }
 
 export function findOutlineList(nodes: OutlineNode[], parentId: string | null): OutlineNode[] | undefined {
@@ -256,4 +269,10 @@ export function outlineEntries(exam: Exam): OutlineEntry[] {
   };
   visit(nodes, 0);
   return entries;
+}
+
+/** Keep legacy journal stamps valid when the outline only represents the unchanged legacy document. */
+export function structuralStampFields(exam: Exam): { outline?: OutlineNode[] } {
+  if (!exam.outline || JSON.stringify(exam.outline) === JSON.stringify(legacyOutline(exam))) return {};
+  return { outline: exam.outline };
 }

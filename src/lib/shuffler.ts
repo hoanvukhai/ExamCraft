@@ -1,3 +1,4 @@
+import { shuffleOutline } from './outline-operations';
 import { Exam, Question, ShuffledExamVariant, ChoiceItem } from '@/types/exam';
 import { matchingDefinition, orderingDefinition } from './structured-question';
 import { shuffleQuestionUnits } from './question-order';
@@ -92,7 +93,8 @@ export function generateShuffledExams(
   baseExam: Exam,
   count: number = 4,
   startCode: number = 101,
-  baseSeed?: number
+  baseSeed?: number,
+  options: { shuffleGroups?: boolean } = {}
 ): ShuffledExamVariant[] {
   const variants: ShuffledExamVariant[] = [];
 
@@ -124,7 +126,10 @@ export function generateShuffledExams(
 
     // Exams with sections or shared passages keep their sections in order; inside a section the questions are shuffled,
     // and the questions of one passage move together as a block.
-    const allShuffledQuestions = baseExam.passages?.length || baseExam.questions.some(q => q.passageId || q.sectionId)
+    const structured = baseExam.outline ? shuffleOutline(baseExam, randomFn, options.shuffleGroups !== false) : undefined;
+    const allShuffledQuestions = structured
+      ? structured.questions.map(q => q.type === 'multiple_choice' ? shuffleMultipleChoiceQuestion(q, randomFn) : q)
+      : baseExam.passages?.length || baseExam.questions.some(q => q.passageId || q.sectionId)
       ? shuffleQuestionUnits(baseExam.questions, randomFn).map(q => q.type === 'multiple_choice' ? shuffleMultipleChoiceQuestion(q, randomFn) : q)
       : reorderedQuestions;
 
@@ -161,6 +166,7 @@ export function generateShuffledExams(
         examCode: code,
       },
       questions: allShuffledQuestions,
+      ...(structured ? { outline: structured.outline, sections: structured.sections } : {}),
     };
 
     variants.push({
