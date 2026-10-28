@@ -1,0 +1,14 @@
+{
+  "testDbVerified": true,
+  "start": "2026-10-28T09:03:39.964Z",
+  "end": "2026-10-28T09:04:39.955Z",
+  "rows": [
+    {
+      "id": "frame_25645c68-9637-4e03-9d6c-c354b25a380d",
+      "createdAt": "2026-10-28T09:03:43.001Z"
+    }
+  ],
+  "removed": 1,
+  "cleanupComplete": true,
+  "fixtureOnly": true
+}

@@ -1,0 +1,36 @@
+{
+  "state": "WAITING_REVIEW",
+  "codeCommit": "5d1fec3",
+  "buildId": "n4qu6eyMIwfEAbaa-jL4c",
+  "checkedAt": "2026-10-28T09:17:00.375Z",
+  "productionBuild": "PASS",
+  "lint": "PASS",
+  "safe": {
+    "passed": 505,
+    "failed": 0
+  },
+  "editorBrowser": {
+    "passed": 9,
+    "failed": 0,
+    "cleanupComplete": true
+  },
+  "flows": [
+    {
+      "id": "F2",
+      "status": "PASS",
+      "cleanupComplete": true,
+      "evidence": "F2.json"
+    },
+    {
+      "id": "F9",
+      "status": "PASS",
+      "cleanupComplete": true,
+      "evidence": "F9.json"
+    }
+  ],
+  "testDb": "examcraft_test_20261022",
+  "mainDatabaseWrites": false,
+  "realProviderCalls": false,
+  "physicalPhoneTested": false,
+  "scope": "Grouping content, optional requirements and template menu; existing save/restore/permissions preserved"
+}

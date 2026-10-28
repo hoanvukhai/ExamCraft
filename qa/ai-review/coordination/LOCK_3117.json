@@ -1,8 +1,8 @@
 {
   "holder": "USER",
-  "note": "Inline editor ready for Claude/owner review; isolated test, real AI off; do not overwrite build",
-  "buildId": "ucY69eYtmeyzDyE2Gi0DM",
+  "note": "Editor grouping ready for Claude/owner review; isolated test, real AI off; do not overwrite build",
+  "buildId": "n4qu6eyMIwfEAbaa-jL4c",
   "port": 3117,
-  "since_utc": "2026-10-28T08:38:26.577Z",
-  "codeCommit": "27af86a"
+  "since_utc": "2026-10-28T09:17:00.381Z",
+  "codeCommit": "5d1fec3"
 }

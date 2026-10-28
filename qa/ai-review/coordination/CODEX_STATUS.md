@@ -1,15 +1,15 @@
 # CODEX status
 
-task_id: OWNER-EDITOR-INLINE-PREVIEW-20261028
+task_id: OWNER-EDITOR-GROUPING-20261028
 state: WAITING_REVIEW
 updated: 28/10/2026, Asia/Bangkok
 branch/worktree: rebuild/2026-10-local, F:/Workspace/Zazz/ExamCraft
-commit mã + kiểm: 27af86a; giữ sửa Claude 52099b3
+commit mã + kiểm: 5d1fec3; giữ sửa Claude 52099b3 và đợt inline 27af86a
 
-Đã bỏ bước hướng dẫn đánh số và đường vào mẫu/ma trận lặp; thiết lập trong cột trái, xem thử thông tin ngay bên phải; tiêu đề nội dung gọn. Thêm câu là vùng nháp riêng, xác nhận mới chèn, hủy/tải lại vẫn mở lại nháp bằng Tự soạn. Giữ biểu mẫu khi đổi thẻ, quyền, nháp, nguồn ngữ liệu, chống ghi đè và các sửa mới của Claude.
+Đã gom theo yêu cầu chủ dự án: phần/ngữ liệu và liên kết nằm tại nội dung câu; sửa ngữ liệu tại nhóm; phạm vi/khung nhận thức/ma trận trong Yêu cầu ra đề tùy chọn; mẫu từ menu công cụ. Bỏ dãy thẻ thiết lập cũ, giữ xem trước thông tin trực tiếp và nháp câu mới.
 
-Đã kiểm production build/TypeScript, lint, hồi quy SAFE, trình duyệt sáng/tối và điện thoại mô phỏng, luồng tạo các dạng câu và khôi phục bản sao. Bằng chứng và giới hạn: [báo cáo](../../rebuild-2026-10-28/editor-inline/BAO_CAO.md). Chỉ DB thử đã guard, không DB chính/provider thật/schema mới. Không đóng CV hay sửa hồ sơ02/checklist/ASSIGNMENTS/BATCH_REVIEWS.
+Đã kiểm production build/TypeScript, lint, SAFE, trình duyệt sáng/tối và điện thoại mô phỏng, tạo các dạng câu/ảnh/nguồn/mẫu và khôi phục bản sao. Báo cáo/bằng chứng/giới hạn: [báo cáo](../../rebuild-2026-10-28/editor-grouping/BAO_CAO.md). Test chỉ DB thử đã guard, không DB chính/provider thật/schema mới. Lượt kiểm bị ngắt đã dọn đúng fixture riêng.
 
-Bản thử: http://127.0.0.1:3117, build ucY69eYtmeyzDyE2Gi0DM; LOCK_3117=USER. Bước kế: Claude duyệt mã/bằng chứng; chủ dự án xem cảm ứng/bàn phím ảo trên điện thoại thật. Thông tin chưa Áp dụng giữ trong phiên biểu mẫu, chưa có cam kết phục hồi sau tải lại; nháp câu dùng nhật ký sẵn có.
+Bản thử: http://127.0.0.1:3117, build n4qu6eyMIwfEAbaa-jL4c; LOCK_3117=USER. Bước kế: Claude duyệt; chủ dự án xem giao diện và cảm ứng/bàn phím ảo trên máy thật. Các giới hạn chuyên môn, Word desktop và nháp thông tin chưa áp dụng vẫn giữ.
 
-Giữ ngoài commit: các tệp QA25 chưa theo dõi có sẵn, scratch/, tmp/. Không push/reset/clean.
+Không tự đóng CV/sửa hồ sơ02/checklist/ASSIGNMENTS/BATCH_REVIEWS. Giữ ngoài commit các tệp QA25 chưa theo dõi có sẵn, scratch/, tmp/. Không push/reset/clean.

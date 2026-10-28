@@ -1,0 +1,116 @@
+
+> exam-craft@0.1.0 test:editor
+> node --import tsx scripts/pilot-run.cjs --editor
+
+Pilot guard: installed browser; isolatedTest confirmed; exact test database selected.
+TAP version 13
+# Subtest: editor P0-P8: settings recovery review exports and narrow screens
+    # Subtest: empty starter, live info preview, optional requirements and template menu
+    ok 1 - empty starter, live info preview, optional requirements and template menu
+      ---
+      duration_ms: 6326.5584
+      type: 'test'
+      ...
+    # Subtest: new question stays separate, cancel/reopen keeps draft and confirmation inserts exactly once
+    ok 2 - new question stays separate, cancel/reopen keeps draft and confirmation inserts exactly once
+      ---
+      duration_ms: 2545.2342
+      type: 'test'
+      ...
+    # Subtest: rich document keeps passages; review jumps to a question and explicit Word views differ
+    not ok 3 - rich document keeps passages; review jumps to a question and explicit Word views differ
+      ---
+      duration_ms: 692.8217
+      type: 'test'
+      location: 'F:\\Workspace\\Zazz\\ExamCraft\\tests_pilot\\editor.test.ts:2:11116'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        
+        2 !== 1
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 1
+      actual: 2
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (F:\Workspace\Zazz\ExamCraft\tests_pilot\editor.test.ts:120:14)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (F:\Workspace\Zazz\ExamCraft\tests_pilot\editor.test.ts:113:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: content groups and inline shared passage preserve links, source and question order
+    ok 4 - content groups and inline shared passage preserve links, source and question order
+      ---
+      duration_ms: 1559.5328
+      type: 'test'
+      ...
+    # Subtest: requirements keep unsaved scope and plan when collapsed and save without changing questions
+    not ok 5 - requirements keep unsaved scope and plan when collapsed and save without changing questions
+      ---
+      duration_ms: 30394.2946
+      type: 'test'
+      location: 'F:\\Workspace\\Zazz\\ExamCraft\\tests_pilot\\editor.test.ts:2:16044'
+      failureType: 'testCodeFailure'
+      error: |-
+        locator.inputValue: Timeout 30000ms exceeded.
+        Call log:
+        [2m  - waiting for getByLabel('Yêu cầu ra đề', { exact: true }).getByLabel('Giới hạn phương pháp / điều chưa học (mỗi dòng một yêu cầu)', { exact: true })[22m
+        
+      code: 'ERR_TEST_FAILURE'
+      name: 'TimeoutError'
+      stack: |-
+        TestContext.<anonymous> (F:\Workspace\Zazz\ExamCraft\tests_pilot\editor.test.ts:165:34)
+        async TestContext.<anonymous> (F:\Workspace\Zazz\ExamCraft\tests_pilot\editor.test.ts:156:5)
+      ...
+    # Subtest: question drafts remain discoverable and save failures keep retry/download controls
+    ok 6 - question drafts remain discoverable and save failures keep retry/download controls
+      ---
+      duration_ms: 2710.8911
+      type: 'test'
+      ...
+    # Subtest: all question menus, keyboard access, and narrow toolbar fit with settings
+    ok 7 - all question menus, keyboard access, and narrow toolbar fit with settings
+      ---
+      duration_ms: 12782.2202
+      type: 'test'
+      ...
+    # Subtest: losing edit access still allows downloading the pending local question
+    not ok 8 - losing edit access still allows downloading the pending local question
+      ---
+      duration_ms: 31547.6486
+      type: 'test'
+      location: 'F:\\Workspace\\Zazz\\ExamCraft\\tests_pilot\\editor.test.ts:2:24807'
+      failureType: 'testCodeFailure'
+      error: |-
+        locator.isDisabled: Timeout 30000ms exceeded.
+        Call log:
+        [2m  - waiting for getByLabel('Yêu cầu ra đề', { exact: true }).getByLabel('Khung mức nhận thức', { exact: true })[22m
+        
+      code: 'ERR_TEST_FAILURE'
+      name: 'TimeoutError'
+      stack: |-
+        TestContext.<anonymous> (F:\Workspace\Zazz\ExamCraft\tests_pilot\editor.test.ts:249:119)
+        async TestContext.<anonymous> (F:\Workspace\Zazz\ExamCraft\tests_pilot\editor.test.ts:238:5)
+      ...
+    1..8
+not ok 1 - editor P0-P8: settings recovery review exports and narrow screens
+  ---
+  duration_ms: 90907.677
+  type: 'test'
+  location: 'F:\\Workspace\\Zazz\\ExamCraft\\tests_pilot\\editor.test.ts:2:1587'
+  failureType: 'subtestsFailed'
+  error: '3 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 9
+# suites 0
+# pass 5
+# fail 4
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 91933.2398
