@@ -37,6 +37,7 @@ import { ExamPresentation } from '@/components/ExamPresentation';
 import { EditorReview } from '@/components/editor/EditorReview';
 import { reviewExam } from '@/lib/exam-review';
 import { PhonePreview } from '@/components/editor/PhonePreview';
+import { EditorStart } from '@/components/editor/EditorStart';
 import { EditorPending } from '@/components/editor/EditorPending';
 import { KnowledgeScopeEditor } from '@/components/KnowledgeScopeEditor';
 import { ExamPlanEditor } from '@/components/ExamPlanEditor';
@@ -379,13 +380,6 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                     </button>
                   )}
 
-                  <button
-                    onClick={handleAddQuestion}
-                    className="flex items-center gap-1.5 px-4 py-1.5 text-xs font-medium text-white bg-[#202124] hover:bg-[#303134] dark:bg-[#292a2d] dark:text-[#e3e3e3] dark:hover:bg-[#303134] dark:border dark:border-[#3c4043] rounded-lg transition-all shadow-xs cursor-pointer"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Thêm câu hỏi</span>
-                  </button>
                 </div>
               </div>
 
@@ -418,33 +412,8 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                   /></div>
                 ))}
 
-                {exam.questions.length === 0 && (
-                  <div className="p-12 text-center bg-white dark:bg-[#202124] rounded-2xl border border-dashed border-[#dadce0] dark:border-[#3c4043]">
-                    <div className="w-12 h-12 rounded-xl bg-[#f1f3f4] dark:bg-[#292a2d] flex items-center justify-center mx-auto mb-3 text-[#5f6368] dark:text-[#9aa0a6]">
-                      <BookMarked className="w-6 h-6" />
-                    </div>
-                    <h3 className="font-bold text-[#202124] dark:text-[#e3e3e3] text-sm mb-1">Đề thi đang trống (Chưa có câu hỏi nào)</h3>
-                    <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] mb-5 max-w-sm mx-auto">
-                      Thầy/Cô có thể bắt đầu tạo đề bằng cách nhờ AI sinh tự động theo ma trận hoặc tự thêm các câu hỏi thủ công.
-                    </p>
-                    <div className="flex items-center justify-center gap-3">
-                      <button
-                        onClick={() => setIsGenerateModalOpen(true)}
-                        className="px-4 py-2 app-button-primary text-white rounded-lg text-xs font-semibold shadow-xs cursor-pointer flex items-center gap-1.5 transition-colors"
-                      >
-                        <Sparkles className="w-3.5 h-3.5" />
-                        <span>Sinh đề bằng AI</span>
-                      </button>
-                      <button
-                        onClick={handleAddQuestion}
-                        className="px-4 py-2 bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] hover:bg-[#f8f9fa] dark:hover:bg-[#303134] text-[#3c4043] dark:text-[#e3e3e3] rounded-lg text-xs font-semibold shadow-2xs cursor-pointer flex items-center gap-1.5 transition-colors"
-                      >
-                        <Plus className="w-3.5 h-3.5" />
-                        <span>Thêm câu hỏi mới</span>
-                      </button>
-                    </div>
-                  </div>
-                )}
+                {exam.questions.length === 0 && <EditorStart exam={exam} hasKey={hasActiveKey} onSettings={openSettings} onAdd={handleAddQuestion} onBank={() => setIsQuestionBankModalOpen(true)} onImport={() => setIsImportModalOpen(true)} onGenerate={() => withAi(() => setIsGenerateModalOpen(true))} />}
+                {exam.questions.length > 0 && <button type="button" className="app-button-secondary w-full min-h-11" onClick={handleAddQuestion}>+ Thêm câu hỏi</button>}
               </div>
 
               {/* Thanh tác vụ hàng loạt nổi cố định ở dưới (Floating Batch Action Bar) */}
