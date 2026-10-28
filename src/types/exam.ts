@@ -107,6 +107,7 @@ export interface OutlineNode {
 
 export interface Question {
   parts?: QuestionPart[];
+  partsNumbering?: 'letters' | 'decimal' | 'roman';
   id: string;
   cognitiveLevel?: string;
   learningOutcome?: string;

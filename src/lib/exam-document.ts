@@ -61,6 +61,7 @@ export function normalizeQuestion(input: unknown, index = 0): Question {
     accepted_answers: field('accepted_answers', [payload, 'accepted_answers'], [editor, 'accepted_answers']),
     rubric: field('rubric', [payload, 'rubric'], [editor, 'rubric']),
     parts: field('parts', [editor, 'parts']),
+    partsNumbering: field('partsNumbering', [editor, 'partsNumbering']),
     step_by_step_solution: field('step_by_step_solution', [q, 'solution'], [editor, 'step_by_step_solution']) ?? '',
     // A canonical DB null means removed, not "reuse the older editor payload".
     figures: figures(Object.hasOwn(q, 'figures') ? q.figures : editor.figures),
@@ -91,6 +92,7 @@ export function normalizeQuestion(input: unknown, index = 0): Question {
   if (result.correctOrder != null && (!Array.isArray(result.correctOrder) || result.correctOrder.length > 100 || result.correctOrder.some(item => typeof item !== 'string'))) fail('thứ tự đúng phải là danh sách văn bản');
   const rubric = validateList(result.rubric, 'tiêu chí');
   if (rubric.some(row => typeof row.criterion !== 'string' || typeof row.maxPoints !== 'number' || !Number.isFinite(row.maxPoints) || row.maxPoints < 0)) fail('tiêu chí hoặc điểm tối đa không hợp lệ');
+  if (result.partsNumbering !== undefined && !['letters', 'decimal', 'roman'].includes(result.partsNumbering)) fail('kiểu đánh số ý chưa hợp lệ');
   const parts = validateList(result.parts, 'ý của câu');
   if (parts.length && !['essay', 'short_answer'].includes(result.type)) fail('ý riêng chỉ dùng cho tự luận hoặc trả lời ngắn');
   if (parts.length > 100 || parts.some(part => typeof part.id !== 'string' || !part.id.trim() ||

@@ -3,9 +3,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Exam, Figure } from '@/types/exam';
 import { MathRenderer } from './MathRenderer';
+import { outlineView } from '@/lib/outline-view';
+import { StructureBlocks, QuestionParts } from '@/components/editor/StructureBlocks';
 import { FigureView } from './FigureView';
 
-import { parallelAnswer, parallelRows } from '@/lib/parallel-view';
+import { parallelAnswer } from '@/lib/parallel-view';
 
 import { formatPointsString, calculateExamTotalPoints } from '@/lib/scoring';
 import { getSubjectConfig } from '@/lib/subject-config';
@@ -47,7 +49,9 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
     observer.observe(area); return () => observer.disconnect();
   }, []);
 
-  const { metadata, questions, passages } = exam;
+  const { metadata } = exam;
+  const structure = outlineView(exam);
+  const questions = structure.questions;
   const subjectConfig = getSubjectConfig(metadata.subject, metadata.grade);
 
   const matrixData = computeExamMatrix(exam);
@@ -83,21 +87,8 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
                 <span>Lớp: ......... SBD: ..........</span>
               </div>
 
-              {/* Ngữ liệu đọc hiểu chung nếu có */}
-              {passages && passages.length > 0 && (
-                <div className="space-y-3 pb-2">
-                  {passages.map((p) => (
-                    <div key={p.id} className="p-3 bg-[#f8f9fa] border border-[#dadce0] rounded-lg text-[11pt]">
-                      <div className="font-bold text-black mb-1">{p.title || 'NGỮ LIỆU ĐỌC HIỂU:'}</div>
-                      <div className="italic text-[#202124] leading-relaxed whitespace-pre-line">{p.content}</div>
-                      {p.figures?.map(renderPreviewFigure)}
-                      {p.source && <div className="text-right text-[10pt] text-[#5f6368] mt-1">({p.source})</div>}
-                    </div>
-                  ))}
-                </div>
-              )}
-
               {/* Nội dung đề thi */}
+              {questions.length === 0 && <StructureBlocks blocks={structure.trailing} light />}
               {questions.length === 0 ? (
                 <div className="py-24 text-center text-[#5f6368] italic text-[11pt]">
                   (Đề thi hiện chưa có câu hỏi nào. Hãy bấm &quot;Thêm câu hỏi&quot; hoặc &quot;Sinh đề AI Mới&quot; ở bảng bên trái để bắt đầu soạn đề.)
@@ -106,17 +97,18 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
                 <>
                   <div className="space-y-4">
                     {questions.map((q, index) => <div key={q.id} className="question-item text-[12pt]">
-                      {q.sectionId && questions[index - 1]?.sectionId !== q.sectionId && <h3 className="font-bold my-3">{exam.sections?.find(s => s.id === q.sectionId)?.title ?? exam.sections?.find(s => s.id === q.sectionId)?.label ?? exam.sections?.find(s => s.id === q.sectionId)?.name}</h3>}
-                      <p className="leading-relaxed"><b>Câu {index + 1}:</b> {numericScore && q.points !== undefined && <span className="italic">({formatPointsString(q.points)}) </span>}<MathRenderer content={q.content} inline /></p>
-                      {q.passageId && <p className="italic text-[10pt]">Theo ngữ liệu: {passages?.find(p => p.id === q.passageId)?.title ?? q.passageId}</p>}
+                      <StructureBlocks blocks={structure.before.get(q.id)} light />
+                      <p className="leading-relaxed"><b>Câu {structure.numbers.get(q.id) ?? index + 1}:</b> {numericScore && q.points !== undefined && <span className="italic">({formatPointsString(q.points)}) </span>}<MathRenderer content={q.content} inline /></p>
                       {q.choices && q.type === 'multiple_choice' && <div className="grid grid-cols-2 gap-3 pl-4 py-2">{q.choices.map(choice => <p key={choice.key}><b>{choice.key}.</b> <MathRenderer content={choice.text} inline /></p>)}</div>}
                       {q.sub_questions && q.type === 'true_false_group' && <div className="pl-4 space-y-1">{q.sub_questions.map(sub => <p key={sub.key}><b>{sub.key})</b> <MathRenderer content={sub.content} inline /> <span className="whitespace-nowrap">□ Đúng □ Sai</span></p>)}</div>}
+                      <QuestionParts question={q} number={structure.numbers.get(q.id)} />
                       {renderStructuredPrompt(q)}
                       {q.figures?.map(renderPreviewFigure)}
                       {['short_answer', 'fill_blank'].includes(q.type) && <p className="mt-2">Trả lời: ................................................................................</p>}
                     </div>)}
                   </div>
 
+                  <StructureBlocks blocks={structure.trailing} light />
                   {headerLines.filter(line => line.area === 'footer').map(line => <div key={line.id} data-header-line={line.id} className={`text-[11pt] whitespace-pre-wrap break-words ${line.bold ? 'font-bold' : ''} ${line.italic ? 'italic' : ''}`} style={{ textAlign: line.align, minHeight: '1.2em' }}>{line.text}</div>)}
                   {/* Chân trang đề thi */}
                   <div className="text-center text-[12pt] font-bold pt-8 border-t border-black mt-8">
@@ -141,18 +133,11 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
               ) : (
                 <div className="border border-black">
                   <div className="grid grid-cols-2 border-b border-black font-bold text-center text-[11pt]"><div className="p-2 border-r border-black">ĐỀ</div><div className="p-2">ĐÁP ÁN VÀ HƯỚNG DẪN</div></div>
-                  {parallelRows(questions, passages).map(row => {
-                    if (row.kind === 'passage') return <div key={'passage-' + row.passage.id} data-parallel-passage={row.passage.id} className="parallel-passage border-b border-black p-2 text-[11pt] break-inside-avoid">
-                      <div className="font-bold mb-1">{row.passage.title || 'NGỮ LIỆU ĐỌC HIỂU:'}</div>
-                      <div className="italic leading-relaxed whitespace-pre-line">{row.passage.content}</div>
-                      {row.passage.figures?.map(renderPreviewFigure)}
-                      {row.passage.source && <div className="text-right text-[10pt] mt-1">({row.passage.source})</div>}
-                    </div>;
-                    const { question: q, index } = row;
+                  {questions.map((q, index) => {
                     const answer = parallelAnswer(q);
-                    return <div key={q.id} className="question-item grid grid-cols-2 border-b border-black last:border-b-0 break-inside-avoid">
+                    return <React.Fragment key={q.id}><StructureBlocks blocks={structure.before.get(q.id)} light /><div className="question-item grid grid-cols-2 border-b border-black last:border-b-0 break-inside-avoid">
                       <div className="p-2 border-r border-black text-[11pt]">
-                        <p className="leading-relaxed"><b>Câu {index + 1}:</b> {numericScore && q.points !== undefined && <span className="italic">({formatPointsString(q.points)}) </span>}<MathRenderer content={q.content} /></p>
+                        <p className="leading-relaxed"><b>Câu {structure.numbers.get(q.id) ?? index + 1}:</b> {numericScore && q.points !== undefined && <span className="italic">({formatPointsString(q.points)}) </span>}<MathRenderer content={q.content} /></p>
                         {q.choices && q.type === 'multiple_choice' && <div className="pl-3 py-1">{q.choices.map(choice => <p key={choice.key}><b>{choice.key}.</b> <MathRenderer content={choice.text} inline /></p>)}</div>}
                         {q.sub_questions && q.type === 'true_false_group' && <div className="pl-3 space-y-1">{q.sub_questions.map(sub => <p key={sub.key}><b>{sub.key})</b> <MathRenderer content={sub.content} inline /></p>)}</div>}
                         {renderStructuredPrompt(q)}
@@ -161,9 +146,9 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
                       <div className="p-2 text-[11pt]">
                         <p className="font-bold text-emerald-800">{answer.headline}</p>
                         {answer.details.map((line, i) => <p key={i} className="text-[10pt]">{line}</p>)}
-                        {answer.solution && <div className="mt-1 text-[10.5pt] leading-relaxed"><MathRenderer content={answer.solution} /></div>}
+                        <QuestionParts question={q} number={structure.numbers.get(q.id)} reveal="solutions" />{answer.solution && <div className="mt-1 text-[10.5pt] leading-relaxed"><MathRenderer content={answer.solution} /></div>}
                       </div>
-                    </div>;
+                    </div></React.Fragment>;
                   })}
                 </div>
               )}
@@ -175,9 +160,9 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
             <p className="text-center">{metadata.title}{metadata.examCode ? ' — Mã đề: ' + metadata.examCode : ''}</p>
             <p>{numericScore ? 'Tổng điểm đã cấu hình: ' + totalPoints : 'Không tính điểm'}</p>
             {metadata.assessmentMode !== 'survey' && questions.map((q, index) => <section key={q.id} className="question-item border-b pb-3">
-              <p><b>Câu {index + 1}:</b> {q.type === 'true_false_group' ? q.sub_questions?.map(sub => sub.key + ') ' + (sub.isCorrect === undefined ? 'Chưa có đáp án' : sub.isCorrect ? 'Đúng' : 'Sai')).join('; ') : q.type === 'matching' ? q.matchingPairs?.map(pair => pair.left + ' → ' + pair.right).join('; ') || q.correct_answer || 'Chưa thiết lập cặp đúng' : q.type === 'ordering' ? q.correctOrder?.join(' → ') || q.correct_answer || 'Chưa thiết lập thứ tự đúng' : q.correct_answer || (q.type === 'essay' ? 'Giáo viên đánh giá theo tiêu chí' : 'Chưa đặt đáp án')}</p>
+              <StructureBlocks blocks={structure.before.get(q.id)} light /><p><b>Câu {structure.numbers.get(q.id) ?? index + 1}:</b> {q.type === 'true_false_group' ? q.sub_questions?.map(sub => sub.key + ') ' + (sub.isCorrect === undefined ? 'Chưa có đáp án' : sub.isCorrect ? 'Đúng' : 'Sai')).join('; ') : q.type === 'matching' ? q.matchingPairs?.map(pair => pair.left + ' → ' + pair.right).join('; ') || q.correct_answer || 'Chưa thiết lập cặp đúng' : q.type === 'ordering' ? q.correctOrder?.join(' → ') || q.correct_answer || 'Chưa thiết lập thứ tự đúng' : q.correct_answer || (q.type === 'essay' ? 'Giáo viên đánh giá theo tiêu chí' : 'Chưa đặt đáp án')}</p>
               {q.accepted_answers?.filter(Boolean).length ? <p>Chấp nhận: {q.accepted_answers.filter(Boolean).join('; ')}</p> : null}
-              {q.rubric?.map((row, i) => <p key={i}>• {row.criterion}{numericScore ? ': ' + row.maxPoints + ' điểm' : ''}</p>)}
+              <QuestionParts question={q} number={structure.numbers.get(q.id)} reveal="answers" />{q.rubric?.map((row, i) => <p key={i}>• {row.criterion}{numericScore ? ': ' + row.maxPoints + ' điểm' : ''}</p>)}
             </section>)}
           </div>}
 
@@ -197,8 +182,8 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
                 <div className="space-y-6">
                   {questions.map((q, idx) => (
                     <div key={q.id} className="question-item pb-4 border-b border-[#dadce0] last:border-b-0">
-                      <div className="font-bold text-[12pt] text-[#202124]">
-                        Câu {idx + 1}: {' '}
+                      <StructureBlocks blocks={structure.before.get(q.id)} light /><div className="font-bold text-[12pt] text-[#202124]">
+                        Câu {structure.numbers.get(q.id) ?? idx + 1}: {' '}
                         {q.type === 'multiple_choice' && (
                           <span className="text-emerald-700">Đáp án đúng là {q.correct_answer ?? 'Chưa có đáp án'}</span>
                         )}
@@ -222,6 +207,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
                         </div>
                       )}
                       <div className="text-[12pt] text-[#202124] leading-relaxed pl-4">
+                        <QuestionParts question={q} number={structure.numbers.get(q.id)} reveal="solutions" />
                         <MathRenderer content={q.step_by_step_solution || 'Chưa có lời giải'} />
                       </div>
                     </div>
@@ -231,6 +217,8 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
             </div>
           )}
 
+          {(viewMode === 'answers' || viewMode === 'solutions' || viewMode === 'parallel') &&
+            <StructureBlocks blocks={structure.trailing} light />}
           {/* VIEW: MA TRẬN & BẢN ĐẶC TẢ THEO CV 7991 */}
           {viewMode === 'matrix' && (
             <div className="space-y-6 text-[10pt]">

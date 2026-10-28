@@ -6,6 +6,13 @@ const object = (value: unknown): Record<string, unknown> => value && typeof valu
 export function studentResponseText(question: unknown, response: unknown): string {
   if (response === null || response === undefined || response === '') return 'Chưa trả lời';
   const q = object(question), type = String(q.type).toUpperCase();
+  if (Array.isArray(q.parts) && q.parts.length && typeof response === 'object' && !Array.isArray(response)) {
+    return q.parts.map((value, index) => {
+      const part = object(value), label = part.label || String.fromCharCode(97 + index);
+      const answer = object(response)[String(part.id)];
+      return label + ') ' + (typeof answer === 'string' && answer.trim() ? answer : 'Chưa trả lời');
+    }).join('; ');
+  }
   if (type === 'MATCHING' && typeof response === 'object' && !Array.isArray(response)) {
     const display = matchingDisplay(q);
     if (display) return display.left.map(left => left.text + ' → ' + (display.right.find(right => right.key === object(response)[left.key])?.text ?? 'Chưa chọn')).join('; ');

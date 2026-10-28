@@ -24,7 +24,10 @@ export function gradeSnapshot(snapshotValue: unknown, responses: Record<string, 
     let maxPoints = Number.isFinite(configuredPoints) ? configuredPoints : 0;
     let isCorrect: boolean | null = null;
     let earned = 0;
-    if (type === 'MULTIPLE_CHOICE') {
+    if (Array.isArray(q.parts) && q.parts.length && ['ESSAY', 'SHORT_ANSWER'].includes(type)) {
+      // Structured sub-items are explicitly teacher-graded; never compare an object to a legacy scalar key.
+      isCorrect = null;
+    } else if (type === 'MULTIPLE_CHOICE') {
       const correct = payload.correct ?? payload.correct_answer ?? q.correct_answer;
       if (typeof correct === 'string' && correct.trim()) {
         isCorrect = typeof response === 'string' && response.trim().toUpperCase() === correct.trim().toUpperCase();

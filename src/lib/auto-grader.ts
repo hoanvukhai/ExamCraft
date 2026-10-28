@@ -13,7 +13,7 @@ export function gradeStudentExam(exam: Exam, studentAnswers: Record<string, unkn
   const { questions: prepared, sections } = freezeExamScoring(exam);
   const grade = gradeSnapshot({ ...exam, sections, questions: prepared }, studentAnswers);
   const details = grade.gradedAnswers.map((answer, i) => {
-    const q = prepared[i];
+    const q = prepared.find(question => question.id === answer.questionKey)!;
     const solution = solutionForQuestion(q);
     const correctAnswer = q.type === 'true_false_group' ? Object.fromEntries((q.sub_questions ?? []).filter(sub => typeof sub.isCorrect === 'boolean').map(sub => [sub.key, sub.isCorrect])) :
       q.type === 'matching' ? q.matchingPairs ?? null : q.type === 'ordering' ? q.correctOrder ?? null : solution.correct ?? null;

@@ -1,3 +1,4 @@
+import { outlineView, questionPartLabel, type StructureBlock } from './outline-view';
 import {
   Document,
   Paragraph,
@@ -162,7 +163,7 @@ export function renderContentBlocksForWord(
     out.push(new Table({
       width: { size: 100, type: WidthType.PERCENTAGE },
       rows: [
-        new TableRow({ tableHeader: true, cantSplit: true, children: block.header.map((value, c) => cell(value, 'center', true)) }),
+        new TableRow({ tableHeader: true, cantSplit: true, children: block.header.map(value => cell(value, 'center', true)) }),
         ...block.rows.map(row => new TableRow({ cantSplit: true, children: row.map((value, c) => cell(value, block.align[c], false)) })),
       ],
     }));
@@ -401,7 +402,8 @@ export async function exportExamToDocx(
   includeMatrix: boolean = true,
   view: 'all' | 'exam' | 'answers' | 'solutions' | 'matrix' | 'parallel' = 'all'
 ): Promise<Blob> {
-  const { metadata, questions } = exam;
+  const structure = outlineView(exam);
+  const questions = structure.questions;
 
   const headerLines = resolveHeaderLines(exam);
   const headerParagraph = (line: ReturnType<typeof resolveHeaderLines>[number]) => new Paragraph({
@@ -508,45 +510,28 @@ export async function exportExamToDocx(
     new Paragraph({ spacing: { before: 150, after: 100 } }),
   );
 
-  const passageStart = docChildren.length;
-  // In các ngữ liệu chung (Passages) nếu có
-  if (exam.passages && exam.passages.length > 0) {
-    for (const p of exam.passages) {
-      docChildren.push(
-        new Paragraph({
-          spacing: { before: 200, after: 80 },
-          children: [
-            new TextRun({
-              text: p.title ? `NGỮ LIỆU: ${p.title}` : 'ĐỌC NGỮ LIỆU SAU ĐÂY:',
-              bold: true,
-              size: 22,
-              font: 'Times New Roman',
-            }),
-          ],
-        }),
-        ...renderContentBlocksForWord(p.content, { indent: { left: 300, right: 300 }, spacing: { after: 160 } }, { fontSize: 20, italics: true })
-      );
-      docChildren.push(...renderFiguresForDocx(p.figures));
-      if (p.source) docChildren.push(new Paragraph({ children: [new TextRun({ text: p.source, italics: true, size: 20 })] }));
+  const structureBlocks = (blocks: StructureBlock[] = []): (Paragraph | Table)[] => blocks.flatMap(block => {
+    const output: (Paragraph | Table)[] = [];
+    if (block.title) output.push(...renderContentBlocksForWord(block.title,
+      { spacing: { before: 160, after: 80 } }, { fontSize: 23 }));
+    if (block.instructions) output.push(...renderContentBlocksForWord(block.instructions, {}, { fontSize: 22 }));
+    if (block.missingPassageId) output.push(new Paragraph('Chưa tìm thấy nội dung dùng chung: ' + block.missingPassageId));
+    if (block.passage) {
+      const passage = block.passage;
+      if (passage.title) output.push(new Paragraph({ children: [new TextRun({ text: passage.title, bold: true })] }));
+      output.push(...renderContentBlocksForWord(passage.content, {}, { fontSize: 22 }));
+      output.push(...renderFiguresForDocx(passage.figures));
+      if (passage.source) output.push(new Paragraph({ children: [new TextRun({ text: passage.source, italics: true })] }));
     }
-  }
-
-  const passageBlocks = docChildren.slice(passageStart);
-  // Follow the editor's ordering so answer numbers and shared passages remain linked.
-  const sections = (exam as Exam & { sections?: { id: string; title?: string; label?: string; name?: string }[] }).sections ?? [];
-  let previousSection: string | undefined;
+    return output;
+  });
+  const parallelPrefixes: (Paragraph | Table)[][] = [];
   questions.forEach((q, index) => {
+    const prefix = structureBlocks(structure.before.get(q.id));
+    parallelPrefixes.push(prefix);
+    docChildren.push(...prefix);
     const blockStart = docChildren.length;
-    if (q.sectionId && q.sectionId !== previousSection) {
-      const section = sections.find(section => section.id === q.sectionId);
-      if (section?.title || section?.label || section?.name) docChildren.push(new Paragraph({ children: [new TextRun({ text: section.title ?? section.label ?? section.name!, bold: true, size: 23 })], spacing: { before: 200, after: 100 } }));
-      previousSection = q.sectionId;
-    }
-    docChildren.push(...renderContentBlocksForWord(q.content, { spacing: { before: 140, after: 80 } }, { fontSize: 22 }, [new TextRun({ text: 'Câu ' + (index + 1) + ': ', bold: true, size: 22 })]));
-    if (q.passageId) {
-      const passage = exam.passages?.find(p => p.id === q.passageId);
-      docChildren.push(new Paragraph({ children: [new TextRun({ text: passage ? 'Theo ngữ liệu: ' + (passage.title ?? passage.id) : '[Thiếu ngữ liệu liên kết: ' + q.passageId + ']', italics: true, size: 20 })] }));
-    }
+    docChildren.push(...renderContentBlocksForWord(q.content, { spacing: { before: 140, after: 80 } }, { fontSize: 22 }, [new TextRun({ text: 'Câu ' + (structure.numbers.get(q.id) ?? index + 1) + ': ', bold: true, size: 22 })]));
     if (q.type === 'multiple_choice') q.choices?.forEach(choice => docChildren.push(new Paragraph({ indent: { left: 300 }, children: [new TextRun({ text: choice.key + '. ', bold: true, size: 22 }), ...renderLatexRunsForWord(choice.text, { fontSize: 22 })] })));
     if (q.type === 'true_false_group') q.sub_questions?.forEach(sub => docChildren.push(new Paragraph({ indent: { left: 300 }, children: [new TextRun({ text: sub.key + ') ', bold: true, size: 22 }), ...renderLatexRunsForWord(sub.content, { fontSize: 22 }), new TextRun({ text: '    □ Đúng    □ Sai', size: 20 })] })));
     if (q.type === 'matching') {
@@ -563,9 +548,16 @@ export async function exportExamToDocx(
     }
     if (['short_answer', 'fill_blank', 'ordering', 'matching'].includes(q.type)) docChildren.push(new Paragraph('Trả lời: ................................................................................'));
     docChildren.push(...renderFiguresForDocx(q.figures, view === 'parallel'));
+    q.parts?.forEach((part, i) => {
+      const label = questionPartLabel(q, i, structure.numbers.get(q.id));
+      docChildren.push(...renderContentBlocksForWord(part.content, { indent: { left: 300 } }, { fontSize: 22 }, [
+        new TextRun({ text: label + ') ' + (part.points !== undefined ? '(' + part.points + ' điểm) ' : ''), bold: true }),
+      ]));
+    });
     parallelQuestions.push(docChildren.slice(blockStart));
   });
 
+  docChildren.push(...structureBlocks(structure.trailing));
   docChildren.push(...headerLines.filter(line => line.area === 'footer').map(headerParagraph));
 
   // Cuối đề thi
@@ -607,6 +599,7 @@ export async function exportExamToDocx(
 
     questions.forEach((q, idx) => {
       const answerStart = docChildren.length;
+      if (view !== 'parallel') docChildren.push(...structureBlocks(structure.before.get(q.id)));
       let answerLabel = '';
       if (q.type === 'multiple_choice') {
         answerLabel = `Đáp án đúng: ${q.correct_answer || 'Chưa đặt đáp án'}`;
@@ -630,7 +623,7 @@ export async function exportExamToDocx(
           spacing: { before: 160, after: 40 },
           children: [
             new TextRun({
-              text: `Câu ${idx + 1}: `,
+              text: `Câu ${structure.numbers.get(q.id) ?? idx + 1}: `,
               bold: true,
               font: 'Times New Roman',
               size: 22,
@@ -728,9 +721,18 @@ export async function exportExamToDocx(
       if (q.step_by_step_solution && view !== 'answers') {
         docChildren.push(...renderContentBlocksForWord(q.step_by_step_solution, { indent: { left: 400 }, spacing: { after: 120 } }, { fontSize: 20 }));
       }
+      q.parts?.forEach((part, i) => {
+        docChildren.push(...renderContentBlocksForWord(
+          questionPartLabel(q, i, structure.numbers.get(q.id)) + ') ' + (part.answer || 'Chưa có đáp án'), {}, { fontSize: 20 },
+        ));
+        for (const row of part.rubric ?? []) docChildren.push(new Paragraph(row.criterion + ': ' + row.maxPoints + ' điểm'));
+        if (view !== 'answers' && part.solution) docChildren.push(...renderContentBlocksForWord(part.solution, {}, { fontSize: 20 }));
+      });
       parallelAnswers.push(docChildren.slice(answerStart));
     });
   }
+
+  if (view === 'answers' || view === 'solutions') docChildren.push(...structureBlocks(structure.trailing));
 
   if (view === 'parallel') {
     const label = (text: string) => new Paragraph({ children: [new TextRun({ text, bold: true, font: 'Times New Roman', size: 22 })] });
@@ -738,10 +740,18 @@ export async function exportExamToDocx(
     // Reuse exactly the same question/answer renderers; remove their sequential
     // copies. Shared passages stay full width once, outside the two-column table.
     docChildren.splice(questionBodyStart, docChildren.length - questionBodyStart,
-      ...headerBlocks, label('ĐỀ VÀ ĐÁP ÁN SONG SONG'), ...passageBlocks,
+      ...headerBlocks, label('ĐỀ VÀ ĐÁP ÁN SONG SONG'),
       new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [
         new TableRow({ tableHeader: true, children: [cell([label('Đề bài')]), cell([label('Đáp án / hướng dẫn chấm')])] }),
-        ...parallelQuestions.map((blocks, index) => new TableRow({ children: [cell(blocks), cell(parallelAnswers[index] ?? [new Paragraph('Không kèm đáp án trong lần xuất này.')])] })),
+        ...parallelQuestions.flatMap((blocks, index) => [
+          ...(parallelPrefixes[index]?.length ? [new TableRow({ children: [new TableCell({
+            columnSpan: 2, children: parallelPrefixes[index],
+          })] })] : []),
+          new TableRow({ children: [cell(blocks), cell(parallelAnswers[index] ?? [new Paragraph('Không kèm đáp án')])] }),
+        ]),
+        ...(structure.trailing.length ? [new TableRow({ children: [new TableCell({
+          columnSpan: 2, children: structureBlocks(structure.trailing),
+        })] })] : []),
       ] }),
       ...headerLines.filter(line => line.area === 'footer').map(headerParagraph));
   }

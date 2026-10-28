@@ -40,9 +40,10 @@ async function open(blob: Blob) {
 const visibleText = (xml: string) => [...xml.matchAll(/<w:t[^>]*>([^<]*)<\/w:t>/g)].map(match => match[1]).join(' ');
 const mathText = (xml: string) => [...xml.matchAll(/<m:t[^>]*>([^<]*)<\/m:t>/g)].map(match => match[1]).join(' ');
 
-test('a 120-question exam exports to Word in order, with passages once, images present and formulas converted', async () => {
+test('a 120-question exam exports to Word in order, with passages once per separated group, images present and formulas converted', async () => {
   const started = Date.now();
-  const blob = await exportExamToDocx(longExam(), false, false);
+  const exam = longExam();
+  const blob = await exportExamToDocx(exam, false, false);
   const { zip, document } = await open(blob);
   assert.ok(Date.now() - started < 30000, 'export finishes in a reasonable time');
   assert.ok(blob.size < 8_000_000, 'the file is not absurdly large');
@@ -53,7 +54,7 @@ test('a 120-question exam exports to Word in order, with passages once, images p
     assert.equal(document.split(marker).length - 1, 1, `${marker} appears exactly once`);
     const at = document.indexOf(marker); assert.ok(at > previous, `${marker} is in editor order`); previous = at;
   }
-  for (let i = 0; i < PASSAGES; i++) assert.equal(document.split(`PASSAGE_BODY_${i}`).length - 1, 1, `passage ${i} printed once for all its questions`);
+  for (let i = 0; i < PASSAGES; i++) assert.equal(document.split(`PASSAGE_BODY_${i}`).length - 1, exam.questions.filter(q => q.passageId === 'p' + i).length, `passage ${i} printed once per separated legacy group`);
   assert.ok(!document.includes('SOLUTION_'), 'the question-only export carries no solution');
   const images = Object.keys(zip.files).filter(name => name.startsWith('word/media/'));
   assert.ok(images.length >= 1, 'figures are embedded');
@@ -79,5 +80,5 @@ test('solution and parallel exports keep every answer next to its own question',
     const answer = parallel.indexOf(`SOLUTION_${String(i).padStart(3, '0')}`, start);
     assert.ok(start >= 0 && answer > start && answer < next, `question ${i} and its answer share a row`);
   }
-  for (let i = 0; i < PASSAGES; i++) assert.equal(parallel.split(`PASSAGE_BODY_${i}`).length - 1, 1, `parallel passage ${i} once`);
+  for (let i = 0; i < PASSAGES; i++) assert.equal(parallel.split(`PASSAGE_BODY_${i}`).length - 1, exam.questions.filter(q => q.passageId === 'p' + i).length, `parallel passage ${i} once per separated legacy group`);
 });

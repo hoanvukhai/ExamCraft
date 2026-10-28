@@ -1,3 +1,6 @@
+import type { Exam, OutlineNode, Question } from '@/types/exam';
+import { legacyOutline, outlineNodes, validateOutline } from './exam-outline';
+import { publicOutline } from './outline-view';
 import { compileMathExpression, safePlotRange } from './math-expression';
 import { matchingDefinition, orderingDefinition, matchingDisplay, orderingDisplay } from './structured-question';
 
@@ -39,6 +42,8 @@ export function publicQuestion(value: unknown): Data & { choices: Data[]; sub_qu
   return {
     ...pick(q, ['id', 'sectionId', 'position', 'type', 'difficulty', 'content', 'points', 'passageId']),
     type: typeof q.type === 'string' ? q.type.toUpperCase() : '',
+    parts: list(q.parts).map(part => pick(part, ['id', 'label', 'content', 'points'])),
+    ...pick(q, ['partsNumbering']),
     choices, sub_questions: subQuestions,
     matching: matchingDisplay(q),
     ordering: orderingDisplay(q),
@@ -57,12 +62,22 @@ export function snapshotQuestions(value: unknown): Data[] {
     const q = asObject(raw);
     if (typeof q.id === 'string' && !unique.has(q.id)) unique.set(q.id, q);
   }
-  return [...unique.values()];
+  const questions = [...unique.values()];
+  if (snapshot.outline !== undefined) {
+    const outline = validateOutline(snapshot.outline, questions as unknown as Question[]);
+    return outlineNodes(outline).filter(node => node.kind === 'question').map(node => unique.get(node.questionId!)!);
+  }
+  return questions;
 }
 
 export function sanitizeSnapshotForStudent(value: unknown) {
   const snapshot = asObject(value);
+  const questions = snapshotQuestions(snapshot);
+  const outline: OutlineNode[] = snapshot.outline !== undefined
+    ? validateOutline(snapshot.outline, questions as unknown as Question[])
+    : legacyOutline({ ...snapshot, questions, sections: list(snapshot.sections) } as unknown as Exam);
   return {
+    outline: publicOutline(outline),
     ...pick(snapshot, ['id', 'title', 'subject', 'grade', 'durationMinutes', 'createdAt', 'updatedAt']),
     metadata: pick(snapshot.metadata, ['title', 'subject', 'grade', 'durationMinutes', 'schoolName', 'departmentName', 'examCode', 'academicYear', 'semester', 'notes', 'assessmentMode', 'cognitiveFrameworkId', 'sourcePackageId', 'language', 'languageRole', 'locality', 'curriculumVersion']),
     sections: list(snapshot.sections).map(section => ({
@@ -83,6 +98,7 @@ export function solutionForQuestion(value: unknown) {
     id: q.id,
     correct: payload.correct ?? payload.correct_answer ?? q.correct_answer,
     sub_questions: list(payload.sub_questions ?? q.sub_questions).map(sub => pick(sub, ['key', 'content', 'isCorrect', 'explanation'])),
+    parts: list(q.parts).map(part => ({ ...pick(part, ['id', 'label', 'answer', 'solution']), rubric: list(asObject(part).rubric).map(row => pick(row, ['criterion', 'maxPoints'])) })),
     solution: q.solution ?? q.step_by_step_solution ?? '',
     matchingPairs: list(q.matchingPairs ?? payload.matchingPairs).map(pair => pick(pair, ['id', 'left', 'right'])),
     correctOrder: list(q.correctOrder ?? payload.correctOrder).filter(value => typeof value === 'string'),
@@ -97,6 +113,11 @@ export function validateResponses(value: unknown, snapshot: unknown): value is D
     const question = questions.get(key);
     if (!question) return false;
     if (response === null) return true;
+    if (Array.isArray(question.parts) && question.parts.length) {
+      const ids = new Set(question.parts.map(part => asObject(part).id));
+      return !!response && typeof response === 'object' && !Array.isArray(response) &&
+        Object.entries(response).every(([id, answer]) => ids.has(id) && typeof answer === 'string');
+    }
     const type = String(question.type).toUpperCase();
     const ordering = orderingDefinition(question);
     if (type === 'ORDERING' && ordering) return Array.isArray(response) && response.length <= ordering.display.items.length &&

@@ -1,10 +1,13 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef, use, useLayoutEffect, useSyncExternalStore } from 'react';
+import React, { useState, useEffect, useCallback, useRef, use, useLayoutEffect, useSyncExternalStore, useEffectEvent } from 'react';
 import Link from 'next/link';
 import { MathRenderer } from '@/components/MathRenderer';
 import { VariationTable, VariationTableData } from '@/components/VariationTable';
 import { FunctionPlot, FunctionPlotData } from '@/components/FunctionPlot';
+import { outlineView, questionPartLabel } from '@/lib/outline-view';
+import { StructureBlocks, QuestionParts } from '@/components/editor/StructureBlocks';
+import type { Exam, OutlineNode, Question as AuthorQuestion, QuestionPart } from '@/types/exam';
 import type { Figure } from '@/types/exam';
 import {
   Clock,
@@ -25,6 +28,8 @@ import { StudentDraftRecovery } from '@/components/StudentDraftRecovery';
 import { withStudentRequestTimeout } from '@/lib/student-network';
 
 interface Question {
+  parts?: QuestionPart[];
+  partsNumbering?: AuthorQuestion['partsNumbering'];
   id: string;
   sectionId?: string;
   passageId?: string;
@@ -132,11 +137,14 @@ function StudentExamContent({
 }) {
   const { publicId } = use(params);
 
+  const submitTimedOut = useEffectEvent(() => { void handleFinalSubmit(true); });
+
   // Trạng thái chung
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [assignment, setAssignment] = useState<AssignmentData | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
+  const [outline, setOutline] = useState<OutlineNode[] | undefined>();
   const [sections, setSections] = useState<Section[]>([]);
   const [passages, setPassages] = useState<Array<{ id: string; title?: string; content: string }>>([]);
 
@@ -200,7 +208,7 @@ function StudentExamContent({
         setCanStartAnother(Boolean(data.canStartAnother));
         setQuestions(data.exam?.questions || []);
         setSections(data.exam?.sections || []);
-        setPassages(data.exam?.passages || []);
+        setPassages(data.exam?.passages || []); setOutline(data.exam?.outline);
         if (data.myAttempt?.status === 'SUBMITTED') {
           const resultResponse = await fetch('/api/public/attempts/' + data.myAttempt.id + '/submit');
           const result = await resultResponse.json();
@@ -267,7 +275,7 @@ function StudentExamContent({
       setSaveError(null); setSubmitError(null); setSubmitNotice(null); setLastSaved(null); setIsSaving(false);
       setAttempt(data.attempt);
       setCanStartAnother(data.attempt.attemptNo < assignment.maxAttempts);
-      if (data.exam) { setQuestions(data.exam.questions || []); setSections(data.exam.sections || []); setPassages(data.exam.passages || []); }
+      if (data.exam) { setQuestions(data.exam.questions || []); setSections(data.exam.sections || []); setPassages(data.exam.passages || []); setOutline(data.exam.outline); }
       // Answers typed on this browser but never acknowledged by the server (tab closed, power loss) come back here.
       const stored = readStudentJournals(() => localStorage, data.attempt.id);
       const outcome = reconcileStudentJournals(stored.entries, data.attempt.draft || {}, data.attempt.draftRevision);
@@ -376,7 +384,7 @@ function StudentExamContent({
   // 4. Đồng hồ đếm ngược (Countdown Timer)
   useEffect(() => {
     if (timeLeft === null || submitResult) return;
-    if (timeLeft <= 0) { handleFinalSubmit(true); return; }
+    if (timeLeft <= 0) { submitTimedOut(); return; }
 
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
@@ -482,11 +490,19 @@ function StudentExamContent({
   }
 
   // Tính số câu đã hoàn thành
+  const structure = outlineView({
+    id: 'student-view', metadata: {}, questions, sections, passages, outline, createdAt: '', updatedAt: '',
+  } as unknown as Exam);
+  const answeredParts = (question: Question, response: unknown) => !!question.parts?.length &&
+    !!response && typeof response === 'object' && question.parts.every(part =>
+      typeof (response as Record<string, unknown>)[part.id] === 'string' &&
+      String((response as Record<string, unknown>)[part.id]).trim());
   const answeredCount = questions.reduce((acc, q) => {
     const ans = answers[q.id];
     if (!ans) return acc;
     if (q.type === 'ORDERING' && Array.isArray(ans) && ans.length) return acc + 1;
     if (q.type === 'MATCHING' && typeof ans === 'object' && !Array.isArray(ans) && Object.values(ans).some(value => typeof value === 'string' && value)) return acc + 1;
+    if (answeredParts(q, ans)) return acc + 1;
     if (q.type === 'MULTIPLE_CHOICE' && typeof ans === 'string' && ans.trim()) return acc + 1;
     if (['SHORT_ANSWER', 'FILL_BLANK', 'ESSAY', 'MATCHING', 'ORDERING'].includes(q.type) && typeof ans === 'string' && ans.trim()) return acc + 1;
     if (q.type === 'TRUE_FALSE_GROUP' && typeof ans === 'object') {
@@ -642,6 +658,7 @@ function StudentExamContent({
 
                       <div className="text-sm text-[#202124] dark:text-[#e3e3e3]">
                         <MathRenderer content={q.content} />
+                  <QuestionParts question={q as unknown as AuthorQuestion} number={structure.numbers.get(q.id)} />
                       </div>
 
                       <div className="text-xs space-y-1.5 pt-3 border-t border-[#dadce0] dark:border-[#3c4043]">
@@ -873,7 +890,7 @@ function StudentExamContent({
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <span className="w-8 h-8 rounded-full bg-[#f1f3f4] dark:bg-[#292a2d] border border-[#3c4043]/30 dark:border-[#e3e3e3]/30 text-[#3c4043] dark:text-[#e3e3e3] flex items-center justify-center font-bold text-sm">
-                      {index + 1}
+                      {structure.numbers.get(q.id) ?? index + 1}
                     </span>
                     <span className="text-xs font-semibold text-[#5f6368] dark:text-[#9aa0a6] uppercase tracking-wider">
                       {q.type === 'MULTIPLE_CHOICE'
@@ -888,7 +905,7 @@ function StudentExamContent({
                   {(assignment.assessmentMode === undefined || assignment.assessmentMode === 'scored') && q.points !== undefined && <span className="text-xs text-[#5f6368] dark:text-[#9aa0a6] font-medium">{q.points} điểm</span>}
                 </div>
 
-                {q.passageId && passages.some(p => p.id === q.passageId) && <div className="mb-4 border rounded-xl p-4 bg-neutral-50/30"><h3 className="font-semibold text-sm mb-2">{passages.find(p => p.id === q.passageId)?.title || 'Ngữ liệu dùng chung'}</h3><MathRenderer content={passages.find(p => p.id === q.passageId)?.content || ''} /></div>}
+                <StructureBlocks blocks={structure.before.get(q.id)} />
                 {/* Nội dung câu hỏi KaTeX */}
                 <div className="text-sm md:text-base text-[#202124] dark:text-[#e3e3e3] leading-relaxed mb-4">
                   <MathRenderer content={q.content} />
@@ -990,10 +1007,24 @@ function StudentExamContent({
                   </div>
                 )}
 
+                {!!q.parts?.length && <div className="space-y-3 mt-3">{q.parts.map((part, i) => {
+                  const value = currentAns && typeof currentAns === 'object' ? currentAns as Record<string, unknown> : {};
+                  const label = questionPartLabel(q as unknown as AuthorQuestion, i, structure.numbers.get(q.id));
+                  return <label key={part.id} className="block text-sm">Trả lời ý {label}
+                    <textarea aria-label={'Trả lời ý ' + label + ' câu ' + (index + 1)} rows={3}
+                      className="w-full min-w-0 border rounded-lg p-2 bg-transparent mt-1"
+                      value={typeof value[part.id] === 'string' ? String(value[part.id]) : ''}
+                      onChange={event => { const text = event.target.value; setAnswers(current => {
+                        const old = current[q.id];
+                        const previous = old && typeof old === 'object' && !Array.isArray(old) ? old : {};
+                        return { ...current, [q.id]: { ...previous, [part.id]: text } };
+                      }); }} />
+                  </label>;
+                })}</div>}
                 {(q.matching || q.ordering) && <StructuredAnswer question={q} value={currentAns} onChange={value => setAnswers(current => ({ ...current, [q.id]: value }))} />}
-                {(q.type === 'ESSAY' || q.type === 'MATCHING' && !q.matching || q.type === 'ORDERING' && !q.ordering) && <label className="block text-sm mt-4">Trình bày câu trả lời (giáo viên sẽ chấm)<textarea value={typeof currentAns === 'string' ? currentAns : ''} onChange={e => handleShortAnswerChange(q.id, e.target.value)} rows={6} className="block w-full border rounded-xl p-3 mt-2 bg-transparent" /></label>}
+                {!q.parts?.length && (q.type === 'ESSAY' || q.type === 'MATCHING' && !q.matching || q.type === 'ORDERING' && !q.ordering) && <label className="block text-sm mt-4">Trình bày câu trả lời (giáo viên sẽ chấm)<textarea value={typeof currentAns === 'string' ? currentAns : ''} onChange={e => handleShortAnswerChange(q.id, e.target.value)} rows={6} className="block w-full border rounded-xl p-3 mt-2 bg-transparent" /></label>}
                 {/* DẠNG 3: TRẢ LỜI NGẮN (SHORT_ANSWER) */}
-                {(q.type === 'SHORT_ANSWER' || q.type === 'FILL_BLANK') && (
+                {!q.parts?.length && (q.type === 'SHORT_ANSWER' || q.type === 'FILL_BLANK') && (
                   <div className="mt-4">
                     <label className="block text-xs text-[#5f6368] dark:text-[#9aa0a6] mb-2">Điền câu trả lời hoặc số:</label>
                     <input
@@ -1023,7 +1054,7 @@ function StudentExamContent({
             <div className="grid grid-cols-5 gap-2 max-h-80 overflow-y-auto pr-1">
               {questions.map((q, idx) => {
                 const ans = answers[q.id];
-                let isFilled = q.type === 'ORDERING' && Array.isArray(ans) && ans.length > 0 || q.type === 'MATCHING' && ans && typeof ans === 'object' && !Array.isArray(ans) && Object.values(ans).some(value => typeof value === 'string' && value);
+                let isFilled = answeredParts(q, ans) || q.type === 'ORDERING' && Array.isArray(ans) && ans.length > 0 || q.type === 'MATCHING' && ans && typeof ans === 'object' && !Array.isArray(ans) && Object.values(ans).some(value => typeof value === 'string' && value);
                 if (q.type === 'MULTIPLE_CHOICE' && ans) isFilled = true;
                 if (['SHORT_ANSWER', 'FILL_BLANK', 'ESSAY', 'MATCHING', 'ORDERING'].includes(q.type) && typeof ans === 'string' && ans.trim()) isFilled = true;
                 if (q.type === 'TRUE_FALSE_GROUP' && ans !== null && typeof ans === 'object' && Object.keys(ans).length > 0)

@@ -9,6 +9,8 @@ export type AnswerChange = { correctAnswer?: string; acceptedAnswers?: string[] 
 
 /** Types whose points depend only on a stored answer key, so a corrected key can be re-applied to stored responses. */
 const REGRADABLE = new Set(['MULTIPLE_CHOICE', 'SHORT_ANSWER', 'FILL_BLANK']);
+const scalarRegradable = (question: Data) => REGRADABLE.has(String(question.type).toUpperCase()) &&
+  !(Array.isArray(question.parts) && question.parts.length);
 const list = (value: unknown): unknown[] => Array.isArray(value) ? value : [];
 
 /** Reads the key the same way gradeSnapshot does, so what is shown is what is graded. */
@@ -24,7 +26,7 @@ export function readAnswerKey(question: Data): AnswerKey {
 
 export function regradableQuestions(snapshot: unknown) {
   // `number` is the position in the whole exam, the same number the teacher sees when grading.
-  return snapshotQuestions(snapshot).map((question, index) => ({ question, number: index + 1 })).filter(({ question }) => REGRADABLE.has(String(question.type).toUpperCase())).map(({ question, number }) => ({
+  return snapshotQuestions(snapshot).map((question, index) => ({ question, number: index + 1 })).filter(({ question }) => scalarRegradable(question)).map(({ question, number }) => ({
     number, id: String(question.id), type: String(question.type).toUpperCase(), content: String(question.content ?? ''), key: readAnswerKey(question),
     choiceKeys: list(question.choices ?? asObject(question.payload).choices).map(choice => String(asObject(choice).key ?? '')).filter(Boolean),
   }));
@@ -61,7 +63,7 @@ export function applyAnswerCorrection(snapshotValue: unknown, questionKey: strin
   const question = snapshotQuestions(snapshot).find(item => String(item.id) === questionKey);
   if (!question) throw new ApiError(404, 'Câu hỏi không có trong bản đề đã giao');
   const type = String(question.type).toUpperCase();
-  if (!REGRADABLE.has(type)) throw new ApiError(422, 'Chỉ sửa đáp án và chấm lại tự động cho câu trắc nghiệm một đáp án, trả lời ngắn và điền khuyết. Câu khác hãy chấm tay.', 'REGRADE_TYPE_UNSUPPORTED');
+  if (!scalarRegradable(question)) throw new ApiError(422, 'Chỉ sửa đáp án và chấm lại tự động cho câu trắc nghiệm một đáp án, trả lời ngắn và điền khuyết. Câu khác hãy chấm tay.', 'REGRADE_TYPE_UNSUPPORTED');
   const before = readAnswerKey(question);
   let after: AnswerKey;
   if (type === 'MULTIPLE_CHOICE') {
