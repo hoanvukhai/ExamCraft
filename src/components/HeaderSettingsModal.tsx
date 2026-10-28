@@ -1,21 +1,21 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { ExamMetadata } from '@/types/exam';
 import { getCatalogSubjects, COGNITIVE_FRAMEWORKS } from '@/lib/education-catalog';
 import { defaultHeaderLayout, headerEditableSnapshot, headerPatch, headerSubmissionApplied, headerSubmissionConflict, sameHeaderValue, validateHeaderSubmission, type HeaderSnapshot, type HeaderSubmission, type HeaderLayout } from '@/lib/header-layout';
 
 export interface HeaderSettingsModalProps {
-  embedded?: boolean; isOpen: boolean; onClose: () => void; metadata: ExamMetadata; documentId: string; ownerId: string;
+  embedded?: boolean; onPreview?: (submission: HeaderSubmission | null) => void; isOpen: boolean; onClose: () => void; metadata: ExamMetadata; documentId: string; ownerId: string;
   onSaveMetadata: (submission: HeaderSubmission) => void;
 }
-const field = 'w-full border rounded p-2 bg-transparent text-sm';
+const field = 'min-w-0 w-full border rounded p-2 bg-transparent text-sm';
 const labels = { schoolName: 'Đơn vị chủ quản', departmentName: 'Trường / tổ chuyên môn', title: 'Tên đề', examCode: 'Mã đề', academicYear: 'Năm học', semester: 'Học kỳ', notes: 'Ghi chú cuối đề', subjectGrade: 'Môn và lớp', durationScore: 'Thời gian và tổng điểm' };
 
 export function HeaderSettingsModal(props: HeaderSettingsModalProps) {
   return props.isOpen ? <HeaderForm key={`${props.ownerId}:${props.documentId}`} {...props} /> : null;
 }
-export function HeaderForm({ metadata, documentId, onClose, onSaveMetadata, embedded }: HeaderSettingsModalProps) {
+export function HeaderForm({ metadata, documentId, onClose, onSaveMetadata, embedded, onPreview }: HeaderSettingsModalProps) {
   const [base, setBase] = useState(() => headerEditableSnapshot(metadata));
   const [form, setForm] = useState(() => headerEditableSnapshot(metadata));
   const [submitted, setSubmitted] = useState<HeaderSubmission | null>(null), [error, setError] = useState('');
@@ -23,6 +23,15 @@ export function HeaderForm({ metadata, documentId, onClose, onSaveMetadata, embe
   const displayForm = applied ? headerEditableSnapshot(metadata) : form;
   const submission: HeaderSubmission = { documentId, base, patch: headerPatch(base, form) };
   const conflict = Object.keys(submission.patch).length > 0 && headerSubmissionConflict(metadata, submission) && !applied;
+  const previewKey = JSON.stringify(submission);
+  useEffect(() => {
+    if (!onPreview) return;
+    try { validateHeaderSubmission(submission); onPreview(conflict || applied ? null : submission); }
+    catch { onPreview(null); }
+    // The serialized value tracks the complete editable draft, without a callback loop.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [previewKey, conflict, applied, onPreview]);
+  useEffect(() => () => onPreview?.(null), [onPreview]);
   const subjects = getCatalogSubjects(displayForm.grade), frameworks = COGNITIVE_FRAMEWORKS.filter(item => item.grades.includes(displayForm.grade));
   const validSubject = subjects.some(item => item.key === displayForm.subject), validFramework = !displayForm.cognitiveFrameworkId || frameworks.some(item => item.id === displayForm.cognitiveFrameworkId);
   const change = (patch: Partial<HeaderSnapshot>) => {
@@ -41,10 +50,11 @@ export function HeaderForm({ metadata, documentId, onClose, onSaveMetadata, embe
       setSubmitted(submission); onSaveMetadata(submission); setError('');
     } catch (cause) { setError(cause instanceof Error && cause.name !== 'ZodError' ? cause.message : 'Kiểm tra tên đề, số phút và bố cục tối đa 30 dòng.'); }
   };
-  return <div className={embedded ? 'contents' : 'fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4'}><div role={embedded ? undefined : 'dialog'} aria-modal={embedded ? undefined : true} aria-label="Tùy chỉnh tiêu đề" className="app-dialog bg-[var(--ui-surface)] dark:bg-[var(--ui-surface)] rounded-xl w-full max-w-2xl max-h-[90vh] overflow-auto p-5 space-y-3">
-    <div className="app-dialog-header flex justify-between gap-3"><h2 className="font-semibold">Tiêu đề và bố cục in</h2><button type="button" onClick={onClose}>Đóng</button></div>
+  return <div className={embedded ? 'contents' : 'fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4'}><div role={embedded ? undefined : 'dialog'} aria-modal={embedded ? undefined : true} aria-label="Tùy chỉnh tiêu đề" className={'bg-[var(--ui-surface)] rounded-xl w-full min-w-0 space-y-3 ' + (embedded ? 'p-1' : 'app-dialog max-w-2xl max-h-[90vh] overflow-auto p-5')}>
+    {!embedded && <div className="app-dialog-header flex justify-between gap-3"><h2 className="font-semibold">Tiêu đề và bố cục in</h2><button type="button" onClick={onClose}>Đóng</button></div>}
+    {onPreview && <p role="note" className="text-xs">Bản xem trước phản ánh thay đổi hợp lệ đang nhập. Bấm Áp dụng để lưu vào đề; Đóng vẫn giữ bản đang nhập trong phiên này.</p>}
     <p className="text-xs">Chỉ áp dụng các trường bạn sửa. Thay đổi phạm vi hoặc kế hoạch mới hơn được giữ. Đổi môn/lớp không tự đổi bộ kiến thức, kế hoạch hay khung mức.</p>
-    <div className="grid grid-cols-2 gap-3">
+    <div className="grid grid-cols-1 @min-[400px]:grid-cols-2 gap-3">
       <label className="text-sm">Lớp<select className={field} aria-label="Lớp của đề" value={displayForm.grade} onChange={event => change({ grade: Number(event.target.value) })}>{Array.from({ length: 12 }, (_, index) => <option key={index + 1} value={index + 1}>Lớp {index + 1}</option>)}</select></label>
       <label className="text-sm">Môn<select className={field} aria-label="Môn của đề" value={displayForm.subject} onChange={event => change({ subject: event.target.value as ExamMetadata['subject'] })}>{!validSubject && <option value={displayForm.subject}>Môn cũ cần chọn lại: {displayForm.subject}</option>}{subjects.map(item => <option key={item.key} value={item.key}>{item.label}</option>)}</select></label>
       <label className="text-sm">Cách đánh giá<select className={field} aria-label="Cách đánh giá" value={displayForm.assessmentMode ?? 'scored'} onChange={event => change({ assessmentMode: event.target.value as ExamMetadata['assessmentMode'] })}><option value="scored">Có điểm</option><option value="comment_only">Nhận xét</option><option value="rubric">Theo tiêu chí</option><option value="survey">Khảo sát không chấm điểm</option></select></label>
@@ -52,7 +62,7 @@ export function HeaderForm({ metadata, documentId, onClose, onSaveMetadata, embe
     </div>
     {(!validSubject || !validFramework) && <p role="alert" className="text-sm text-amber-700">Môn hoặc khung cũ không phù hợp lớp đang chọn. Hãy chọn lại rõ ràng; gói và kế hoạch được giữ để rà soát.</p>}
     {(metadata.knowledgePackage || metadata.examPlan) && (displayForm.grade !== base.grade || displayForm.subject !== base.subject || displayForm.assessmentMode !== base.assessmentMode || displayForm.cognitiveFrameworkId !== base.cognitiveFrameworkId) && <p className="text-xs text-amber-700">Ngữ cảnh đánh giá đã đổi; kiểm cảnh báo ở gói kiến thức và kế hoạch sau khi áp dụng.</p>}
-    <div className="grid grid-cols-2 gap-3">{(['schoolName', 'departmentName', 'title', 'examCode', 'academicYear', 'semester', 'notes'] as const).map(key => <label key={key} className={`text-sm ${key === 'title' || key === 'notes' ? 'col-span-2' : ''}`}>{labels[key]}<input className={field} aria-label={labels[key]} value={displayForm[key] ?? ''} onChange={event => change({ [key]: event.target.value })} /></label>)}<label className="text-sm">Thời lượng (phút)<input className={field} aria-label="Thời lượng" type="number" min={0} max={1440} value={Number.isNaN(displayForm.durationMinutes) ? '' : displayForm.durationMinutes} onChange={event => change({ durationMinutes: event.target.value === '' ? Number.NaN : Number(event.target.value) })} /></label></div>
+    <div className="grid grid-cols-1 @min-[400px]:grid-cols-2 gap-3">{(['schoolName', 'departmentName', 'title', 'examCode', 'academicYear', 'semester', 'notes'] as const).map(key => <label key={key} className={`text-sm ${key === 'title' || key === 'notes' ? '@min-[400px]:col-span-2' : ''}`}>{labels[key]}<input className={field} aria-label={labels[key]} value={displayForm[key] ?? ''} onChange={event => change({ [key]: event.target.value })} /></label>)}<label className="text-sm">Thời lượng (phút)<input className={field} aria-label="Thời lượng" type="number" min={0} max={1440} value={Number.isNaN(displayForm.durationMinutes) ? '' : displayForm.durationMinutes} onChange={event => change({ durationMinutes: event.target.value === '' ? Number.NaN : Number(event.target.value) })} /></label></div>
     <details className="border rounded p-3"><summary className="cursor-pointer font-medium text-sm">Dòng in, vị trí và căn chỉnh</summary>
       <p className="text-xs my-2">Ẩn dòng sẽ bỏ dòng khi in; ghi đè bằng chuỗi rỗng vẫn chừa một dòng trống. Bỏ ghi đè để dùng dữ liệu đề. Tên đề để quản lý luôn cần có, kể cả khi ẩn tên trên bản in.</p>
       {layout.lines.map((line, index) => <fieldset key={line.id} className="border rounded p-2 my-2 text-xs"><legend>{index + 1}. {line.binding ? labels[line.binding] : 'Dòng riêng'}</legend>

@@ -2,12 +2,16 @@
 
 import { applyCopilotSubmission } from '@/lib/copilot-submission';
 
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Question } from '@/types/exam';
 import { Header } from '@/components/Header';
 import { useWorkspace } from '@/components/workspace/WorkspaceContext';
 import { EditorToolbar, type ExportView } from '@/components/EditorToolbar';
+import { QuestionEditor } from '@/components/QuestionEditor';
+import { previewHeaderDraft, appendManualQuestion } from '@/lib/editor-draft-preview';
+import type { HeaderSubmission } from '@/lib/header-layout';
+import { listQuestionDrafts } from '@/lib/question-draft';
 import { QuestionCard } from '@/components/QuestionCard';
 import { accountFetch } from '@/lib/account-fetch';
 import { applyQuestionManualSubmission, hasPendingQuestionDrafts, questionDraftSourceStamp, retireSavedQuestionDrafts } from '@/lib/question-draft';
@@ -93,7 +97,20 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   const [isShuffleModalOpen, setIsShuffleModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [settingsTab, setSettingsTab] = useState<SettingsTab>('info');
-  const openSettings = (tab: SettingsTab = 'info') => { setSettingsTab(tab); setSettingsOpen(true); };
+  const [headerDraft, setHeaderDraft] = useState<HeaderSubmission | null>(null);
+  const updateHeaderPreview = useCallback((draft: HeaderSubmission | null) => setHeaderDraft(draft), []);
+  const previewExam = settingsOpen && settingsTab === 'info' ? previewHeaderDraft(exam, headerDraft) : exam;
+  const settingsAnchor = useRef<HTMLDivElement>(null), addAnchor = useRef<HTMLDivElement>(null);
+  const [newQuestion, setNewQuestion] = useState<Question | null>(null);
+  const sessionScope = currentUser.id + ':' + editorSessionKey;
+  const [draftSession, setDraftSession] = useState(sessionScope);
+  if (draftSession !== sessionScope) {
+    setDraftSession(sessionScope); setNewQuestion(null); setHeaderDraft(null);
+  }
+  const openSettings = (tab: SettingsTab = 'info') => {
+    setSettingsTab(tab); setSettingsOpen(true); setMobileTab('editor');
+    requestAnimationFrame(() => settingsAnchor.current?.scrollIntoView({ block: 'start', behavior: 'smooth' }));
+  };
   const [isQuestionBankModalOpen, setIsQuestionBankModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isResultsModalOpen, setIsResultsModalOpen] = useState(false);
@@ -145,20 +162,15 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
 
   // Thêm câu hỏi thủ công
   const handleAddQuestion = () => {
-    const newQ: Question = {
-      id: `q_manual_${Date.now()}`,
-      type: 'multiple_choice',
-      difficulty: 'thong_hieu',
-      content: 'Nhập nội dung câu hỏi tại đây.',
-      choices: [{ key: 'A', text: '' }, { key: 'B', text: '' }, { key: 'C', text: '' }, { key: 'D', text: '' }],
-      step_by_step_solution: '',
+    if (!canEdit) return;
+    const recovered = listQuestionDrafts(currentUser.id, exam.id).find(entry => entry.value?.questionId.startsWith('q_new_') && !exam.questions.some(question => question.id === entry.value?.questionId));
+    const seed: Question = recovered?.value?.baseQuestion ?? {
+      id: 'q_new_' + crypto.randomUUID(), type: 'multiple_choice', difficulty: 'thong_hieu',
+      content: '', choices: [{ key: 'A', text: '' }, { key: 'B', text: '' }, { key: 'C', text: '' }, { key: 'D', text: '' }],
+      subject: exam.metadata.subject, grade: exam.metadata.grade, step_by_step_solution: '',
     };
-
-    setExam((prev) => ({
-      ...prev,
-      questions: [...prev.questions, newQ],
-      updatedAt: new Date().toISOString(),
-    }));
+    setNewQuestion(seed); setMobileTab('editor');
+    requestAnimationFrame(() => addAnchor.current?.scrollIntoView({ block: 'start', behavior: 'smooth' }));
   };
 
   // Chọn/bỏ chọn câu hỏi
@@ -305,7 +317,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
 
 
       <nav aria-label="Chuyển vùng soạn" className="no-print @min-[900px]:hidden shrink-0 sticky top-0 z-20 flex gap-2 p-2 border-b bg-[var(--ui-surface)]">{(['editor','preview'] as const).map(tab => <button type="button" key={tab} aria-pressed={mobileTab === tab} className={(mobileTab === tab ? 'app-button-tonal' : 'app-button-secondary') + ' min-h-10 px-4 flex-1 text-sm'} onClick={() => { if (mobileTab === 'editor') editorScrollTop.current = editorScroll.current?.scrollTop ?? 0; setMobileTab(tab); requestAnimationFrame(() => { if (editorScroll.current) editorScroll.current.scrollTop = tab === 'editor' ? editorScrollTop.current : 0; }); }}>{tab === 'editor' ? 'Soạn câu' : 'Xem đề'}</button>)}</nav>
-      <PhonePreview exam={exam} open={phonePreview} onClose={() => setPhonePreview(false)} />
+      <PhonePreview exam={previewExam} open={phonePreview} onClose={() => setPhonePreview(false)} />
       {mobileTab === 'editor' && !selectedQuestionIds.length && <button type="button" className="no-print sm:hidden fixed bottom-4 right-4 z-30 app-button-primary rounded-full px-4 min-h-11 shadow-lg" aria-label="Xem đề toàn màn hình" onClick={() => setPhonePreview(true)}>Xem đề</button>}
       {!ready && <div className="p-4">{saveMessage || 'Đang tải nội dung. Vui lòng chờ trước khi sửa.'}</div>}
       {/* 3-ZONE ARCHITECTURE: LEFT RAIL + INDEPENDENT SCROLL WORKSPACE + RIGHT COMPANION RAIL */}
@@ -325,6 +337,10 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
             >
               {recoveredDraft && saveState !== 'saved' && <div role="status" className="border rounded p-3 text-sm">Đang mở nháp trên máy của đề này. <button type="button" className="underline" onClick={dismissRecoveredDraft}>Tiếp tục với nháp</button>{exam.serverId && <button type="button" className="underline ml-3" onClick={() => void openLatest().then(value => { if (value) dismissRecoveredDraft(); })}>Mở bản máy chủ, cất riêng nháp</button>}</div>}
               <EditorPending ownerId={currentUser.id} exam={exam} onCopilot={() => setIsCopilotOpen(true)} />
+              <div ref={settingsAnchor} className="scroll-mt-16">
+                <section className="border rounded-xl p-4 bg-[var(--ui-surface)] flex flex-wrap items-center justify-between gap-2" aria-label="Thông tin chung của đề"><div><h2 className="font-semibold text-sm">Thông tin đề</h2><p className="text-xs text-[var(--ui-text-secondary)]">{subjectLabel(exam.metadata.subject)} · Lớp {exam.metadata.grade}{exam.metadata.durationMinutes ? ' · ' + exam.metadata.durationMinutes + ' phút' : ''}</p></div><button type="button" className="app-button-secondary min-h-10 px-3 text-sm" onClick={() => settingsOpen ? setSettingsOpen(false) : openSettings('info')}>{settingsOpen ? 'Thu gọn' : 'Chỉnh thông tin'}</button></section>
+                <EditorSettings key={`${currentUser.id}:${editorSessionKey}`} ownerId={currentUser.id} exam={exam} canEdit={canEdit} hasActiveKey={hasActiveKey} onChange={setExam} isOpen={settingsOpen} tab={settingsTab} onTab={setSettingsTab} onPreview={updateHeaderPreview} onClose={() => setSettingsOpen(false)} />
+              </div>
               <fieldset disabled={!canEdit} className="space-y-4 min-w-0">
               {/* Thanh tiêu đề & Tác vụ danh sách câu hỏi */}
               <EditorQuestionHeading exam={exam} points={scoredQuestions.reduce((total, q) => total + (q.points ?? 0), 0)}>
@@ -351,6 +367,9 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
 
 
 
+              <div ref={addAnchor} className="scroll-mt-16">
+              {newQuestion && <section aria-label="Soạn câu mới" className="rounded-xl border p-4 space-y-3 bg-[var(--ui-surface)]"><h3 className="font-semibold">Thêm câu hỏi</h3><QuestionEditor key={currentUser.id + ':' + editorSessionKey + ':' + newQuestion.id} creating ownerId={currentUser.id} documentId={exam.id} sourceStamp={manualSourceStamp} question={exam.questions.find(q => q.id === newQuestion.id) ?? newQuestion} frameworkId={exam.metadata.cognitiveFrameworkId} knowledgePackage={exam.metadata.knowledgePackage} knowledgeScope={exam.metadata.knowledgeScope} onSave={submission => setExam(previous => appendManualQuestion(previous, submission, currentUser.id, newQuestion))} onApplied={() => setNewQuestion(null)} onCancel={() => setNewQuestion(null)} /></section>}
+              </div>
               {/* Danh sách các câu hỏi dạng thẻ Block Card */}
               <div className="space-y-3.5">
                 <EditorQuestionList exam={exam} renderQuestion={(q, idx) => (
@@ -380,7 +399,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                   />
                 )} />
 
-                {exam.questions.length === 0 && <EditorStart exam={exam} hasKey={hasActiveKey} onSettings={openSettings} onAdd={handleAddQuestion} onBank={() => setIsQuestionBankModalOpen(true)} onImport={() => setIsImportModalOpen(true)} onGenerate={() => withAi(() => setIsGenerateModalOpen(true))} />}
+                {exam.questions.length === 0 && !newQuestion && <EditorStart hasKey={hasActiveKey} onAdd={handleAddQuestion} onBank={() => setIsQuestionBankModalOpen(true)} onImport={() => setIsImportModalOpen(true)} onGenerate={() => withAi(() => setIsGenerateModalOpen(true))} />}
                 {exam.questions.length > 0 && <button type="button" className="app-button-secondary w-full min-h-11" onClick={handleAddQuestion}>+ Thêm câu hỏi</button>}
               </div>
 
@@ -435,13 +454,13 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                 mobileTab === 'editor' ? 'hidden @min-[900px]:block' : 'block'
               } print:!block print:!static print:!h-auto print:!w-full print:!overflow-visible`}
             >
-              <A4Preview exam={exam} />
+              {previewExam !== exam && <p role="status" className="text-xs p-2 border rounded">Đang xem thử thông tin chưa áp dụng.</p>}
+              <A4Preview exam={previewExam} />
             </section>
           </main>
         </div>
 
         {/* ZONE 3: THANH MENU DỌC BÊN PHẢI (GOOGLE GEMINI COMPANION RAIL) */}
-        <EditorSettings key={`${currentUser.id}:${editorSessionKey}`} ownerId={currentUser.id} exam={exam} canEdit={canEdit} hasActiveKey={hasActiveKey} onChange={setExam} isOpen={settingsOpen} tab={settingsTab} onTab={setSettingsTab} onClose={() => setSettingsOpen(false)} />
         {canEdit && <RightCompanionRail
           key={`${currentUser.id}:${exam.id}`}
           ownerId={currentUser.id}

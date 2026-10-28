@@ -11,7 +11,7 @@ import { requireTestDatabase } from '../tests/helpers/test-database';
 import { loginBucket } from '../src/lib/auth-security';
 
 const origin = process.env.EXAMCRAFT_TEST_ORIGIN || 'http://127.0.0.1:3117';
-const report = 'qa/rebuild-2026-10-28/editor-redesign';
+const report = process.env.EDITOR_REPORT_DIR || 'qa/rebuild-2026-10-28/editor-inline';
 
 test('editor P0-P8: settings recovery review exports and narrow screens', { timeout: 180000 }, async t => {
   const url = requireTestDatabase();
@@ -38,7 +38,7 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
     const poll = async (check: () => Promise<boolean>) => { const end = Date.now() + 15000; while (Date.now() < end) { if (await check()) return; await new Promise(resolve => setTimeout(resolve,100)); } assert.fail('expected saved state'); };
     await t.test('empty starter, single save entry, BYOK reminder and five settings tabs', async () => {
       await page.goto(origin + '/editor/' + examId);
-      await page.getByRole('region', { name: 'Bắt đầu soạn đề', exact: true }).waitFor();
+      await page.getByRole('region', { name: 'Thêm nội dung đề', exact: true }).waitFor();
       assert.equal(await page.getByText('Bản nháp chưa lưu trên máy này', { exact: true }).count(), 0);
       assert.equal(await page.getByRole('button', { name: 'Lưu đề', exact: true }).count(), 0);
       await edit().click(); await page.getByRole('dialog', { name: 'Cần khóa AI', exact: true }).waitFor();
@@ -46,6 +46,18 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
       await page.getByRole('button', { name: 'Thiết lập đề', exact: true }).click();
       const settings = page.getByRole('complementary', { name: 'Thiết lập đề', exact: true }); await settings.waitFor();
       await settings.getByLabel('Ghi chú cuối đề', { exact: true }).fill('Ghi chú còn khi đổi thẻ');
+      await page.getByText('Đang xem thử thông tin chưa áp dụng.', {exact:true}).waitFor();
+      assert.equal(JSON.stringify((await db.exam.findUniqueOrThrow({where:{id:examId}})).metadata).includes('Ghi chú còn khi đổi thẻ'),false);
+      assert.equal(await page.locator('.a4-preview-section').getByText('Ghi chú còn khi đổi thẻ',{exact:true}).count(),1);
+      const panelBox=await settings.boundingBox(), previewBox=await page.locator('.a4-preview-section').boundingBox();
+      assert.ok(panelBox && previewBox && panelBox.x < previewBox.x);
+      await page.setViewportSize({width:375,height:812});
+      await page.getByRole('navigation',{name:'Chuyển vùng soạn',exact:true}).getByRole('button',{name:'Xem đề',exact:true}).click();
+      await page.locator('.a4-preview-section').getByText('Ghi chú còn khi đổi thẻ',{exact:true}).waitFor();
+      await fitting(); await page.screenshot({path:report+'/live-preview-375.png'});
+      await page.getByRole('navigation',{name:'Chuyển vùng soạn',exact:true}).getByRole('button',{name:'Soạn câu',exact:true}).click();
+      assert.equal(await settings.getByLabel('Ghi chú cuối đề',{exact:true}).inputValue(),'Ghi chú còn khi đổi thẻ');
+      await page.setViewportSize({width:1440,height:1000});
       for (const label of ['Phần & ngữ liệu','Ma trận','Phạm vi kiến thức','Mẫu','Thông tin']) await settings.getByRole('button', { name: label, exact: true }).click();
       assert.equal(await settings.getByLabel('Ghi chú cuối đề', { exact: true }).inputValue(), 'Ghi chú còn khi đổi thẻ');
       await settings.getByRole('button', { name: 'Áp dụng các trường đã sửa', exact: true }).click();
@@ -63,6 +75,28 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
         await page.getByTitle('Nhấn để đổi tên đề thi').waitFor(); await page.waitForTimeout(220);
         await page.screenshot({ path: report + '/empty-' + width + '-' + (dark?'dark':'light') + '.png' });
       }
+    });
+    await t.test('new question stays separate, cancel/reopen keeps draft and confirmation inserts exactly once', async () => {
+      await page.setViewportSize({width:1440,height:1000});
+      await page.getByRole('button',{name:'Tự soạn',exact:true}).click();
+      const composer=page.getByRole('region',{name:'Soạn câu mới',exact:true}); await composer.waitFor();
+      await composer.getByLabel('Nội dung câu hỏi',{exact:true}).fill('NEW_QUESTION_SEPARATE');
+      assert.equal((await context.request.get(origin+'/api/exams/'+examId).then(r=>r.json())).document.questions.length,0);
+      await composer.getByRole('button',{name:'Hủy thêm, giữ nháp',exact:true}).click();
+      await page.reload();
+      await page.getByRole('region',{name:'Thêm nội dung đề',exact:true}).waitFor();
+      await page.getByRole('button',{name:'Tự soạn',exact:true}).click();
+      assert.equal(await composer.getByLabel('Nội dung câu hỏi',{exact:true}).inputValue(),'NEW_QUESTION_SEPARATE');
+      for (const width of [320,375]) {
+        await page.setViewportSize({width,height:812}); await fitting();
+        assert.equal(await composer.evaluate(el=>el.scrollWidth<=el.clientWidth+1),true,'new question form fits inside phone column');
+      }
+      await page.screenshot({path:report+'/new-question-375.png'});
+      await composer.getByLabel('Dạng câu',{exact:true}).selectOption('essay');
+      await composer.getByRole('button',{name:'Thêm vào đề',exact:true}).click();
+      await composer.waitFor({state:'hidden'});
+      await poll(async()=> (await context.request.get(origin+'/api/exams/'+examId).then(r=>r.json())).document.questions.length===1);
+      await page.getByRole('region',{name:'Thông tin chung của đề',exact:true}).waitFor();
     });
     await t.test('rich document keeps passages; review jumps to a question and explicit Word views differ', async () => {
       await page.setViewportSize({ width:1440,height:1000 });
@@ -124,7 +158,7 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
         const boxes=await toolbar.locator('button').filter({visible:true}).evaluateAll(items=>items.map(el=>el.getBoundingClientRect().top)); assert.ok(Math.max(...boxes)-Math.min(...boxes)<2);
         await page.waitForTimeout(220); await page.screenshot({path:report+'/rich-'+width+'-'+(dark?'dark':'light')+'.png'});
         await page.getByRole('button',{name:'Thiết lập đề',exact:true}).click();
-        const panel=page.getByRole(width>=1024?'complementary':'dialog',{name:'Thiết lập đề',exact:true}); await panel.waitFor();
+        const panel=page.getByRole('complementary',{name:'Thiết lập đề',exact:true}); await panel.waitFor();
         await fitting(); await page.screenshot({path:report+'/settings-'+width+'-'+(dark?'dark':'light')+'.png'});
         await panel.getByRole('button',{name:'Đóng thiết lập đề',exact:true}).click();
         if(width<640){ const scroll=page.locator('.print-flow.overflow-y-auto'); await scroll.evaluate(el=>el.scrollTop=150); const before=await scroll.evaluate(el=>el.scrollTop); await page.getByRole('button',{name:'Xem đề toàn màn hình',exact:true}).click(); const full=page.getByRole('dialog',{name:'Xem đề toàn màn hình',exact:true}); await full.waitFor(); await full.getByRole('button',{name:'Đóng xem đề',exact:true}).click(); assert.equal(await scroll.evaluate(el=>el.scrollTop),before); }

@@ -10,9 +10,9 @@ import { listQuestionDrafts, questionValueStamp, resumeQuestionDraft, writeQuest
 import { normalizeQuestion } from '@/lib/exam-document';
 
 const types: [QuestionType, string][] = [['multiple_choice', 'Lựa chọn'], ['true_false_group', 'Đúng / Sai'], ['short_answer', 'Trả lời ngắn'], ['essay', 'Tự luận / thực hành'], ['fill_blank', 'Điền khuyết'], ['matching', 'Ghép nối'], ['ordering', 'Sắp xếp']];
-const field = 'border rounded p-2 w-full bg-transparent text-sm';
+const field = 'min-w-0 border rounded p-2 w-full bg-transparent text-sm';
 
-export function QuestionEditor({ ownerId, documentId, sourceStamp, question, frameworkId, knowledgePackage, knowledgeScope, onSave, onApplied, onCancel }: { ownerId: string; documentId: string; sourceStamp: string; question: Question; frameworkId?: string; knowledgePackage?: KnowledgePackage; knowledgeScope?: KnowledgeScope; onSave: (value: QuestionManualSubmission) => void; onApplied: (previous: Question) => void; onCancel: () => void }) {
+export function QuestionEditor({ ownerId, documentId, sourceStamp, question, frameworkId, knowledgePackage, knowledgeScope, onSave, onApplied, onCancel, creating = false }: { creating?: boolean; ownerId: string; documentId: string; sourceStamp: string; question: Question; frameworkId?: string; knowledgePackage?: KnowledgePackage; knowledgeScope?: KnowledgeScope; onSave: (value: QuestionManualSubmission) => void; onApplied: (previous: Question) => void; onCancel: () => void }) {
   const fresh = () => {
     const recovered = listQuestionDrafts(ownerId, documentId).find(entry => entry.value?.questionId === question.id);
     const restored = recovered?.value ? resumeQuestionDraft(recovered.value, question, sourceStamp) : null;
@@ -56,7 +56,7 @@ export function QuestionEditor({ ownerId, documentId, sourceStamp, question, fra
     setDraft(bindQuestionKnowledge(draft, knowledgePackage, kind === 'knowledgeIds' ? next : draft.knowledgeIds ?? [], kind === 'outcomeIds' ? next : draft.outcomeIds ?? []));
   };
   return <div className="space-y-3">
-    <p className="text-xs">Nháp từng câu được giữ riêng trên máy. Bấm Áp dụng câu rồi lưu đề để lưu nội dung này trên máy chủ; đóng bảng sửa vẫn giữ nháp.</p>
+    <p className="text-xs">{creating ? 'Nháp được giữ riêng trên máy. Bấm Thêm vào đề để đưa câu vào danh sách và tự lưu; Hủy thêm vẫn giữ nháp.' : 'Nháp từng câu được giữ riêng trên máy. Bấm Áp dụng câu để đưa thay đổi vào đề và tự lưu; đóng bảng sửa vẫn giữ nháp.'}</p>
     {editor.recovered && <p role="status" className="text-xs">Đã mở lại nháp câu chưa áp dụng. Các bản nháp khác vẫn có trong bảng Nháp câu hỏi.</p>}
     {warning && <p role="alert" className="text-xs text-amber-700">{warning}</p>}
     {stale && <div role="alert" className="border rounded p-2 text-sm text-amber-700"><p>Câu hỏi hoặc cấu hình liên quan đã đổi. Chưa áp dụng để tránh ghi đè bản mới; nội dung nháp vẫn giữ trong bảng sửa này. Kiểm bản lưu ở Nháp câu hỏi trước khi rời trang.</p><details><summary>Xem câu hiện tại để đối chiếu</summary><p>{question.content}</p><p>{question.step_by_step_solution}</p></details></div>}
@@ -108,6 +108,6 @@ export function QuestionEditor({ ownerId, documentId, sourceStamp, question, fra
       </> : <p className="text-xs">Có thể tự mô tả yêu cầu bằng chữ. Muốn gắn mã, hãy chọn gói trong mục Kiến thức và phạm vi ra đề.</p>}
       {framework && <label className="block text-sm">{framework.label}<select aria-label="Mức nhận thức" className={field} value={draft.cognitiveLevel ?? ''} onChange={e => update({ cognitiveLevel: e.target.value || undefined })}><option value="">Chưa gắn mức</option>{framework.levels.map(level => <option key={level.id} value={level.id}>{level.label}</option>)}</select></label>}
     </div></details>
-    <div className="flex flex-wrap gap-3 justify-end"><button type="button" onClick={onCancel}>Đóng, giữ nháp</button><button type="button" disabled={stale || acknowledged} className="px-4 py-2 rounded app-button-primary text-white disabled:opacity-50" onClick={submit}>Áp dụng câu vào đề</button></div>
+    <div className="flex flex-wrap gap-3 justify-end"><button type="button" onClick={onCancel}>{creating ? 'Hủy thêm, giữ nháp' : 'Đóng, giữ nháp'}</button><button type="button" disabled={stale || acknowledged} className="px-4 py-2 rounded app-button-primary text-white disabled:opacity-50" onClick={submit}>{creating ? 'Thêm vào đề' : 'Áp dụng câu vào đề'}</button></div>
   </div>;
 }

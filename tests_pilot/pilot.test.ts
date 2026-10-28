@@ -195,9 +195,7 @@ test('F2 author seven types, image, passage, zero, title and reopen', { timeout:
   const titleInput = f.page.locator('header input').first(); await titleInput.fill('Pilot Toán 6 tự soạn'); await titleInput.press('Enter');
   for (const [index, type] of types.entries()) {
     await click(f.page, index === 0 ? 'Thêm câu hỏi mới' : 'Thêm câu hỏi');
-    await f.page.getByTitle('Sửa nội dung câu hỏi thủ công', { exact: true }).last().click();
-    await f.page.getByRole('button', { name: 'Thao tác câu ' + (index + 1), exact: true }).click();
-    assert.equal(await f.page.getByRole('menuitem', { name: 'Lưu bản sao vào ngân hàng', exact: true }).isDisabled(), true); await f.page.keyboard.press('Escape');
+    await f.page.getByRole('region', {name:'Soạn câu mới',exact:true}).waitFor();
     await f.page.getByLabel('Dạng câu', { exact: true }).selectOption(type);
     await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).fill(`PILOT Q${index + 1} ${type}`);
     if (index === 0) {
@@ -216,8 +214,12 @@ test('F2 author seven types, image, passage, zero, title and reopen', { timeout:
     if (['short_answer','fill_blank'].includes(type)) await f.page.getByLabel('Đáp án chính', { exact: true }).fill('2');
     if (type === 'matching') { for (let i=1;i<=2;i++) { await click(f.page,'Thêm cặp'); await f.page.getByLabel('Vế trái '+i).fill('Vế '+i); await f.page.getByLabel('Vế phải '+i).fill(String(i)); } }
     if (type === 'ordering') await f.page.getByLabel('Thứ tự đúng', { exact: true }).fill('Bước đầu\nBước sau');
-    await f.page.getByRole('textbox', { name: 'Lời giải', exact: true }).fill(solution); await click(f.page,'Áp dụng câu vào đề');
+    await f.page.getByRole('textbox', { name: 'Lời giải', exact: true }).fill(solution); await click(f.page,'Thêm vào đề');
     await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).waitFor({ state: 'hidden' });
+    await f.page.getByTitle('Sửa nội dung câu hỏi thủ công', { exact: true }).last().click();
+    await f.page.getByRole('button', { name: 'Thao tác câu ' + (index + 1), exact: true }).click();
+    assert.equal(await f.page.getByRole('menuitem', { name: 'Lưu bản sao vào ngân hàng', exact: true }).isDisabled(), true); await f.page.keyboard.press('Escape');
+    await f.page.getByRole('button',{name:'Đóng, giữ nháp',exact:true}).click();
   }
   await f.page.getByRole('button',{name:'Thiết lập đề',exact:true}).click(); await f.page.getByRole('button',{name:'Phần & ngữ liệu',exact:true}).click(); await click(f.page,'Thêm ngữ liệu');
   await f.page.getByLabel('Tên ngữ liệu 1').fill('Ngữ liệu thử'); await f.page.getByLabel('Nội dung ngữ liệu 1').fill('Lan đọc sách ở thư viện.');
