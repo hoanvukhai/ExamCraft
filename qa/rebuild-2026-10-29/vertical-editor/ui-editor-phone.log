@@ -1,0 +1,76 @@
+
+> exam-craft@0.1.0 test:editor
+> node --import tsx scripts/pilot-run.cjs --editor
+
+Pilot guard: installed browser; isolatedTest confirmed; exact test database selected.
+TAP version 13
+# Subtest: editor P0-P8: settings recovery review exports and narrow screens
+    # Subtest: empty starter, live info preview, optional requirements and template menu
+    ok 1 - empty starter, live info preview, optional requirements and template menu
+      ---
+      duration_ms: 4817.1393
+      type: 'test'
+      ...
+    # Subtest: new question stays separate, cancel/reopen keeps draft and confirmation inserts exactly once
+    ok 2 - new question stays separate, cancel/reopen keeps draft and confirmation inserts exactly once
+      ---
+      duration_ms: 2159.2466
+      type: 'test'
+      ...
+    # Subtest: rich document keeps passages; review jumps to a question and explicit Word views differ
+    ok 3 - rich document keeps passages; review jumps to a question and explicit Word views differ
+      ---
+      duration_ms: 1812.5444
+      type: 'test'
+      ...
+    # Subtest: content groups and inline shared passage preserve links, source and question order
+    ok 4 - content groups and inline shared passage preserve links, source and question order
+      ---
+      duration_ms: 4354.1039
+      type: 'test'
+      ...
+    # Subtest: requirements keep unsaved scope and plan when collapsed and save without changing questions
+    ok 5 - requirements keep unsaved scope and plan when collapsed and save without changing questions
+      ---
+      duration_ms: 3105.0485
+      type: 'test'
+      ...
+    # Subtest: question drafts remain discoverable and save failures keep retry/download controls
+    ok 6 - question drafts remain discoverable and save failures keep retry/download controls
+      ---
+      duration_ms: 2445.8868
+      type: 'test'
+      ...
+    # Subtest: all question menus, keyboard access, and narrow toolbar fit with settings
+    ok 7 - all question menus, keyboard access, and narrow toolbar fit with settings
+      ---
+      duration_ms: 7460.8567
+      type: 'test'
+      ...
+    # Subtest: losing edit access still allows downloading the pending local question
+    ok 8 - losing edit access still allows downloading the pending local question
+      ---
+      duration_ms: 1175.2641
+      type: 'test'
+      ...
+    # Subtest: removing an insertion part keeps the unsaved composer and does not insert a stale question
+    ok 9 - removing an insertion part keeps the unsaved composer and does not insert a stale question
+      ---
+      duration_ms: 667.7179
+      type: 'test'
+      ...
+    1..9
+ok 1 - editor P0-P8: settings recovery review exports and narrow screens
+  ---
+  duration_ms: 30087.2716
+  type: 'test'
+  ...
+1..1
+# tests 10
+# suites 0
+# pass 10
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 30954.0067

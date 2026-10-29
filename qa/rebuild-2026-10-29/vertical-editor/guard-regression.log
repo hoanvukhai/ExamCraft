@@ -1,0 +1,244 @@
+TAP version 13
+# Subtest: undo/redo edit preserves figures/zero and creates higher question versions, never restores verified status
+ok 1 - undo/redo edit preserves figures/zero and creates higher question versions, never restores verified status
+  ---
+  duration_ms: 58.1546
+  type: 'test'
+  ...
+# Subtest: two accepts, two undos and two redos update chain stamps; add/remove never duplicate question IDs
+ok 2 - two accepts, two undos and two redos update chain stamps; add/remove never duplicate question IDs
+  ---
+  duration_ms: 13.9343
+  type: 'test'
+  ...
+# Subtest: undo delete restores the exact ID/body at a new version and redo removes only that row
+ok 3 - undo delete restores the exact ID/body at a new version and redo removes only that row
+  ---
+  duration_ms: 1.6808
+  type: 'test'
+  ...
+# Subtest: newer edits, context, permission, account and updater races refuse travel; duplicate confirmation is harmless
+ok 4 - newer edits, context, permission, account and updater races refuse travel; duplicate confirmation is harmless
+  ---
+  duration_ms: 2.7311
+  type: 'test'
+  ...
+# Subtest: copilot base captures full question order and context without sharing mutable source
+ok 5 - copilot base captures full question order and context without sharing mutable source
+  ---
+  duration_ms: 25.5839
+  type: 'test'
+  ...
+# Subtest: modify pins points and links, clears old answer body, resets verification and preserves other question
+ok 6 - modify pins points and links, clears old answer body, resets verification and preserves other question
+  ---
+  duration_ms: 4.1034
+  type: 'test'
+  ...
+# Subtest: handler and parent updater both refuse account/doc/context/order or any newer question edits
+ok 7 - handler and parent updater both refuse account/doc/context/order or any newer question edits
+  ---
+  duration_ms: 2.7157
+  type: 'test'
+  ...
+# Subtest: add uses a fresh ID and document subject/grade, has no automatic points or foreign links
+ok 8 - add uses a fresh ID and document subject/grade, has no automatic points or foreign links
+  ---
+  duration_ms: 21.8319
+  type: 'test'
+  ...
+# Subtest: delete requires explicit target; unsupported/incomplete actions and malformed candidates stay unapplied
+ok 9 - delete requires explicit target; unsupported/incomplete actions and malformed candidates stay unapplied
+  ---
+  duration_ms: 5.1339
+  type: 'test'
+  ...
+# Subtest: header preview is isolated, rejects invalid/stale drafts, and preserves unrelated newer values
+ok 10 - header preview is isolated, rejects invalid/stale drafts, and preserves unrelated newer values
+  ---
+  duration_ms: 4.2794
+  type: 'test'
+  ...
+# Subtest: new question confirmation checks account, document, source, seed, permission and duplicate ID
+ok 11 - new question confirmation checks account, document, source, seed, permission and duplicate ID
+  ---
+  duration_ms: 24.4789
+  type: 'test'
+  ...
+# Subtest: empty editor has one unnamed part and an insertion point without creating data or showing starter cards
+ok 12 - empty editor has one unnamed part and an insertion point without creating data or showing starter cards
+  ---
+  duration_ms: 15.0275
+  type: 'test'
+  ...
+# Subtest: implicit legacy part keeps scores, configurations, question IDs and pending proposal stamps
+ok 13 - implicit legacy part keeps scores, configurations, question IDs and pending proposal stamps
+  ---
+  duration_ms: 12.0295
+  type: 'test'
+  ...
+# Subtest: root runs and existing named/empty parts preserve order and do not merge teacher structure
+ok 14 - root runs and existing named/empty parts preserve order and do not merge teacher structure
+  ---
+  duration_ms: 0.5194
+  type: 'test'
+  ...
+# Subtest: empty part title suppresses only the heading, including automatic numbering; instructions and material stay
+ok 15 - empty part title suppresses only the heading, including automatic numbering; instructions and material stay
+  ---
+  duration_ms: 2.4221
+  type: 'test'
+  ...
+# Subtest: template skeleton retains neutral scoring link and imported parts insert as root siblings
+ok 16 - template skeleton retains neutral scoring link and imported parts insert as root siblings
+  ---
+  duration_ms: 0.9096
+  type: 'test'
+  ...
+# Subtest: legacy scoring parts expose insertion without mutating the source
+ok 17 - legacy scoring parts expose insertion without mutating the source
+  ---
+  duration_ms: 0.6848
+  type: 'test'
+  ...
+# Subtest: deleting the implicit part never revives a removed composer target
+ok 18 - deleting the implicit part never revives a removed composer target
+  ---
+  duration_ms: 0.5887
+  type: 'test'
+  ...
+# Subtest: source guards accept reordered JSON keys but reject changed values, array order and scope
+ok 19 - source guards accept reordered JSON keys but reject changed values, array order and scope
+  ---
+  duration_ms: 1.207
+  type: 'test'
+  ...
+# Subtest: captured full base is independent from later caller mutation and canonical key order is immaterial
+ok 20 - captured full base is independent from later caller mutation and canonical key order is immaterial
+  ---
+  duration_ms: 35.0343
+  type: 'test'
+  ...
+# Subtest: acceptance rejects every changed identity/context/full-question tuple, including answer and figure-only edits
+ok 21 - acceptance rejects every changed identity/context/full-question tuple, including answer and figure-only edits
+  ---
+  duration_ms: 1.5075
+  type: 'test'
+  ...
+# Subtest: accepted candidate pins IDs, subject/grade, links and zero points; resets review/version and keeps omitted figures/rubric/unknown
+ok 22 - accepted candidate pins IDs, subject/grade, links and zero points; resets review/version and keeps omitted figures/rubric/unknown
+  ---
+  duration_ms: 3.2238
+  type: 'test'
+  ...
+# Subtest: new candidate body never inherits old MC/short answers, pairs or ordering even through legacy aliases
+ok 23 - new candidate body never inherits old MC/short answers, pairs or ordering even through legacy aliases
+  ---
+  duration_ms: 4.8645
+  type: 'test'
+  ...
+# Subtest: invalid provider body is rejected rather than repaired by retaining the base question body
+ok 24 - invalid provider body is rejected rather than repaired by retaining the base question body
+  ---
+  duration_ms: 9.0148
+  type: 'test'
+  ...
+# Subtest: parent updater rechecks newer edits, source/account and permissions after the accept handler
+ok 25 - parent updater rechecks newer edits, source/account and permissions after the accept handler
+  ---
+  duration_ms: 3.7774
+  type: 'test'
+  ...
+# Subtest: move and duplicate use latest question values while stale order/document/permission is rejected
+ok 26 - move and duplicate use latest question values while stale order/document/permission is rejected
+  ---
+  duration_ms: 2.6803
+  type: 'test'
+  ...
+# Subtest: undo rejects another writer or changed context and is guarded again inside the current-exam updater
+ok 27 - undo rejects another writer or changed context and is guarded again inside the current-exam updater
+  ---
+  duration_ms: 24.2282
+  type: 'test'
+  ...
+# Subtest: undo history is not consumed before acknowledgement; chained undo rebases only its expected after-stamp
+ok 28 - undo history is not consumed before acknowledgement; chained undo rebases only its expected after-stamp
+  ---
+  duration_ms: 0.8782
+  type: 'test'
+  ...
+# Subtest: first create ACK copies question journals within owner and keeps sources and newer targets
+ok 29 - first create ACK copies question journals within owner and keeps sources and newer targets
+  ---
+  duration_ms: 6.2176
+  type: 'test'
+  ...
+# Subtest: manual submission guards owner, document, edit permission, full question and source baseline
+ok 30 - manual submission guards owner, document, edit permission, full question and source baseline
+  ---
+  duration_ms: 26.7835
+  type: 'test'
+  ...
+# Subtest: writer journals survive independently; owner/document boundaries and malformed records are enforced
+ok 31 - writer journals survive independently; owner/document boundaries and malformed records are enforced
+  ---
+  duration_ms: 2.5238
+  type: 'test'
+  ...
+# Subtest: late acknowledgement cannot retire a newer draft revision
+ok 32 - late acknowledgement cannot retire a newer draft revision
+  ---
+  duration_ms: 1.001
+  type: 'test'
+  ...
+# Subtest: applying an edited recovery must not retire the different draft of another writer
+ok 33 - applying an edited recovery must not retire the different draft of another writer
+  ---
+  duration_ms: 1.0241
+  type: 'test'
+  ...
+# Subtest: applied drafts stay durable until server confirmation and cleanup only retires matching content/context
+ok 34 - applied drafts stay durable until server confirmation and cleanup only retires matching content/context
+  ---
+  duration_ms: 2.3783
+  type: 'test'
+  ...
+# Subtest: reopening an applied but unacknowledged journal takes the current baseline without retiring the source
+ok 35 - reopening an applied but unacknowledged journal takes the current baseline without retiring the source
+  ---
+  duration_ms: 2.2124
+  type: 'test'
+  ...
+# Subtest: account recovery index keeps old-document drafts discoverable after a server ID changes
+ok 36 - account recovery index keeps old-document drafts discoverable after a server ID changes
+  ---
+  duration_ms: 3.5919
+  type: 'test'
+  ...
+# Subtest: quota preserves a memory-only draft and cannot erase an older durable copy
+ok 37 - quota preserves a memory-only draft and cannot erase an older durable copy
+  ---
+  duration_ms: 1.3537
+  type: 'test'
+  ...
+# Subtest: invalid numeric draft is retained for download and cannot masquerade as valid zero/null
+ok 38 - invalid numeric draft is retained for download and cannot masquerade as valid zero/null
+  ---
+  duration_ms: 32.2586
+  type: 'test'
+  ...
+# Subtest: archive preserves raw malformed sources and refuses stale revisions or storage failure
+ok 39 - archive preserves raw malformed sources and refuses stale revisions or storage failure
+  ---
+  duration_ms: 7.7145
+  type: 'test'
+  ...
+1..39
+# tests 39
+# suites 0
+# pass 39
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1572.6557

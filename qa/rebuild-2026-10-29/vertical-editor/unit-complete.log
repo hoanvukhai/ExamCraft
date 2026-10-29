@@ -1,0 +1,64 @@
+TAP version 13
+# Subtest: empty editor has one unnamed part and an insertion point without creating data or showing starter cards
+ok 1 - empty editor has one unnamed part and an insertion point without creating data or showing starter cards
+  ---
+  duration_ms: 16.3814
+  type: 'test'
+  ...
+# Subtest: implicit legacy part keeps scores, configurations, question IDs and pending proposal stamps
+ok 2 - implicit legacy part keeps scores, configurations, question IDs and pending proposal stamps
+  ---
+  duration_ms: 35.5662
+  type: 'test'
+  ...
+# Subtest: root runs and existing named/empty parts preserve order and do not merge teacher structure
+ok 3 - root runs and existing named/empty parts preserve order and do not merge teacher structure
+  ---
+  duration_ms: 0.5075
+  type: 'test'
+  ...
+# Subtest: empty part title suppresses only the heading, including automatic numbering; instructions and material stay
+ok 4 - empty part title suppresses only the heading, including automatic numbering; instructions and material stay
+  ---
+  duration_ms: 1.9922
+  type: 'test'
+  ...
+# Subtest: template skeleton retains neutral scoring link and imported parts insert as root siblings
+ok 5 - template skeleton retains neutral scoring link and imported parts insert as root siblings
+  ---
+  duration_ms: 0.795
+  type: 'test'
+  ...
+# Subtest: legacy scoring parts expose insertion without mutating the source
+ok 6 - legacy scoring parts expose insertion without mutating the source
+  ---
+  duration_ms: 0.651
+  type: 'test'
+  ...
+# Subtest: deleting the implicit part never revives a removed composer target
+ok 7 - deleting the implicit part never revives a removed composer target
+  ---
+  duration_ms: 0.5472
+  type: 'test'
+  ...
+# Subtest: source guards accept reordered JSON keys but reject changed values, array order and scope
+ok 8 - source guards accept reordered JSON keys but reject changed values, array order and scope
+  ---
+  duration_ms: 1.228
+  type: 'test'
+  ...
+# Subtest: unnamed scoring parts survive template capture and Word export without an invented heading
+ok 9 - unnamed scoring parts survive template capture and Word export without an invented heading
+  ---
+  duration_ms: 272.4327
+  type: 'test'
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 9
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1727.4916

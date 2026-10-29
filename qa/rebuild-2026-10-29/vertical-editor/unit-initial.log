@@ -1,0 +1,155 @@
+TAP version 13
+# Subtest: empty editor has one unnamed part and an insertion point without creating data or showing starter cards
+ok 1 - empty editor has one unnamed part and an insertion point without creating data or showing starter cards
+  ---
+  duration_ms: 24.0664
+  type: 'test'
+  ...
+# Subtest: implicit legacy part keeps scores, configurations, question IDs and pending proposal stamps
+not ok 2 - implicit legacy part keeps scores, configurations, question IDs and pending proposal stamps
+  ---
+  duration_ms: 7.408
+  type: 'test'
+  location: 'F:\\Workspace\\Zazz\\ExamCraft\\tmp\\verify-ui\\tests\\editor_parts.test.tsx:2:3346'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+      [
+        {
+          content: 'a',
+          difficulty: 'thong_hieu',
+          id: 'a',
+          points: 0,
+          pointsConfigured: true,
+    +     sectionId: 'old-default',
+    -     sectionId: undefined,
+          step_by_step_solution: 'Private a',
+          type: 'essay'
+        },
+        {
+          content: 'b',
+          difficulty: 'thong_hieu',
+          id: 'b',
+    +     points: 2,
+    +     pointsConfigured: true,
+    +     sectionId: 'old-default',
+    -     points: undefined,
+    -     pointsConfigured: false,
+    -     sectionId: undefined,
+          step_by_step_solution: 'Private b',
+          type: 'essay'
+        }
+      ]
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0:
+      id: 'a'
+      content: 'a'
+      type: 'essay'
+      difficulty: 'thong_hieu'
+      step_by_step_solution: 'Private a'
+      points: 0
+      pointsConfigured: true
+    1:
+      id: 'b'
+      content: 'b'
+      type: 'essay'
+      difficulty: 'thong_hieu'
+      step_by_step_solution: 'Private b'
+      pointsConfigured: false
+  actual:
+    0:
+      id: 'a'
+      content: 'a'
+      type: 'essay'
+      difficulty: 'thong_hieu'
+      step_by_step_solution: 'Private a'
+      points: 0
+      pointsConfigured: true
+      sectionId: 'old-default'
+    1:
+      id: 'b'
+      content: 'b'
+      type: 'essay'
+      difficulty: 'thong_hieu'
+      step_by_step_solution: 'Private b'
+      points: 2
+      pointsConfigured: true
+      sectionId: 'old-default'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (F:\Workspace\Zazz\ExamCraft\tmp\verify-ui\tests\editor_parts.test.tsx:40:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: root runs and existing named/empty parts preserve order and do not merge teacher structure
+ok 3 - root runs and existing named/empty parts preserve order and do not merge teacher structure
+  ---
+  duration_ms: 0.9445
+  type: 'test'
+  ...
+# Subtest: empty part title suppresses only the heading, including automatic numbering; instructions and material stay
+ok 4 - empty part title suppresses only the heading, including automatic numbering; instructions and material stay
+  ---
+  duration_ms: 3.1884
+  type: 'test'
+  ...
+# Subtest: template skeleton retains neutral scoring link and imported parts insert as root siblings
+ok 5 - template skeleton retains neutral scoring link and imported parts insert as root siblings
+  ---
+  duration_ms: 1.3863
+  type: 'test'
+  ...
+# Subtest: outline canvas shows empty part and a single composer between selected questions without writes
+ok 6 - outline canvas shows empty part and a single composer between selected questions without writes
+  ---
+  duration_ms: 30.6986
+  type: 'test'
+  ...
+# Subtest: node editing and question commands keep hierarchy; dissolving a part retains questions
+ok 7 - node editing and question commands keep hierarchy; dissolving a part retains questions
+  ---
+  duration_ms: 3.3203
+  type: 'test'
+  ...
+# Subtest: compatibility adapter removes deleted leaves and places a merged question where the first removed leaf was
+ok 8 - compatibility adapter removes deleted leaves and places a merged question where the first removed leaf was
+  ---
+  duration_ms: 1.4578
+  type: 'test'
+  ...
+# Subtest: question parts editor preserves explicit zero and answer/solution inputs; no save is run on render
+ok 9 - question parts editor preserves explicit zero and answer/solution inputs; no save is run on render
+  ---
+  duration_ms: 3.9861
+  type: 'test'
+  ...
+# Subtest: stale outline is tolerated only for viewing, preserving source bytes, question order, zero and private answers
+ok 10 - stale outline is tolerated only for viewing, preserving source bytes, question order, zero and private answers
+  ---
+  duration_ms: 4.1638
+  type: 'test'
+  ...
+# Subtest: node IDs alone do not stale legacy drafts, but material, titles and empty parts remain meaningful
+ok 11 - node IDs alone do not stale legacy drafts, but material, titles and empty parts remain meaningful
+  ---
+  duration_ms: 0.8853
+  type: 'test'
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 10
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1775.0589

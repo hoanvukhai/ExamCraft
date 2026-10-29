@@ -1,0 +1,60 @@
+{
+  "sameText": false,
+  "sameValues": true,
+  "base": {
+    "subject": "toan",
+    "grade": 6,
+    "passages": [
+      {
+        "id": "b0c11d5c-4e0f-4445-b338-cd78524db214",
+        "title": "Ngữ liệu thử",
+        "content": "Lan đọc sách ở thư viện."
+      }
+    ],
+    "outline": [
+      {
+        "id": "editor-part:0",
+        "kind": "part",
+        "title": "Phần đọc",
+        "sectionId": null,
+        "children": [
+          {
+            "id": "42b3bf85-b07c-4ad4-80b8-9365ee8240c5",
+            "kind": "group",
+            "title": "",
+            "children": [],
+            "passageId": "b0c11d5c-4e0f-4445-b338-cd78524db214"
+          }
+        ]
+      }
+    ]
+  },
+  "current": {
+    "subject": "toan",
+    "grade": 6,
+    "passages": [
+      {
+        "id": "b0c11d5c-4e0f-4445-b338-cd78524db214",
+        "title": "Ngữ liệu thử",
+        "content": "Lan đọc sách ở thư viện."
+      }
+    ],
+    "outline": [
+      {
+        "id": "editor-part:0",
+        "kind": "part",
+        "title": "Phần đọc",
+        "children": [
+          {
+            "id": "42b3bf85-b07c-4ad4-80b8-9365ee8240c5",
+            "kind": "group",
+            "title": "",
+            "children": [],
+            "passageId": "b0c11d5c-4e0f-4445-b338-cd78524db214"
+          }
+        ],
+        "sectionId": null
+      }
+    ]
+  }
+}
