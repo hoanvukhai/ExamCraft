@@ -1,0 +1,95 @@
+{
+  "status": "PASS",
+  "baseCommit": "f598d1f",
+  "codeCommits": [
+    "3bd2585",
+    "f65e192"
+  ],
+  "branch": "codex/editor-structure-verify",
+  "buildId": "AWUHXYIxceX9dvvajJFDr",
+  "origin": "http://127.0.0.1:3122",
+  "database": "examcraft_test_20261022",
+  "realAiCalls": false,
+  "ci": "CI-verified.log",
+  "safeTests": 533,
+  "httpTests": 118,
+  "pilotFlows": 24,
+  "pilotCleanupComplete": true,
+  "ui": {
+    "editor": {
+      "tests": 10,
+      "pass": 10,
+      "fail": 0,
+      "log": "UI-checked-editor.log",
+      "cleanup": {
+        "removedFixtureUser": true,
+        "fixtureOnly": true,
+        "buildId": "AWUHXYIxceX9dvvajJFDr"
+      }
+    },
+    "frame": {
+      "tests": 4,
+      "pass": 4,
+      "fail": 0,
+      "log": "UI-checked-frame.log",
+      "cleanup": {
+        "removedFixtureUser": true,
+        "unchangedExamBeforeCleanup": true,
+        "buildId": "AWUHXYIxceX9dvvajJFDr"
+      }
+    },
+    "library": {
+      "tests": 6,
+      "pass": 6,
+      "fail": 0,
+      "log": "UI-checked-library.log",
+      "cleanup": {
+        "removedFixtureUsers": true,
+        "buildId": "AWUHXYIxceX9dvvajJFDr"
+      }
+    },
+    "teacher": {
+      "tests": 7,
+      "pass": 7,
+      "fail": 0,
+      "log": "UI-verified-teacher.log",
+      "cleanup": {
+        "removedTaskUsers": true,
+        "buildId": "AWUHXYIxceX9dvvajJFDr"
+      }
+    },
+    "admin": {
+      "tests": 11,
+      "pass": 11,
+      "fail": 0,
+      "log": "UI-verified-admin.log",
+      "cleanup": {
+        "removedTaskUsers": true,
+        "ids": [
+          "admin_ui_24360aef-5f92-4e09-b17f-3a1d83806ca2_0",
+          "admin_ui_24360aef-5f92-4e09-b17f-3a1d83806ca2_1",
+          "admin_ui_24360aef-5f92-4e09-b17f-3a1d83806ca2_2"
+        ],
+        "buildId": "AWUHXYIxceX9dvvajJFDr"
+      }
+    },
+    "typography": {
+      "tests": 4,
+      "pass": 4,
+      "fail": 0,
+      "log": "UI-verified-typography.log",
+      "cleanup": {
+        "removedTaskUser": true,
+        "buildId": "AWUHXYIxceX9dvvajJFDr"
+      }
+    }
+  },
+  "limitations": [
+    "No physical phone test",
+    "No Microsoft Word or paper visual approval",
+    "No full line-by-line audit of inherited S0-S7",
+    "Not merged or pushed"
+  ],
+  "testCommit": "08da910",
+  "finalState": "WAITING_REVIEW"
+}

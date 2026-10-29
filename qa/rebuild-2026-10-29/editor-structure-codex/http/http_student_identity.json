@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-10-28T18:48:10.349Z",
+  "checks": [
+    "pin-and-membership",
+    "personal-link",
+    "issue-pins",
+    "old-share-links",
+    "concurrent-submit"
+  ],
+  "cleanupComplete": true,
+  "status": "PASS",
+  "environment": "isolated http://127.0.0.1:3122",
+  "realAiCalls": false
+}

@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-10-28T18:48:01.702Z",
+  "checks": [
+    "preview-and-refusals",
+    "apply-and-history",
+    "history-and-idempotence",
+    "later-attempts-and-privacy",
+    "short-answer-key",
+    "in-progress-untouched"
+  ],
+  "cleanupComplete": true,
+  "status": "PASS",
+  "environment": "isolated http://127.0.0.1:3122",
+  "realAiCalls": false
+}

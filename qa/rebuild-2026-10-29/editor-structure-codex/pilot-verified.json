@@ -1,0 +1,157 @@
+{
+  "run": "6e998ce5-45a7-4a8f-9775-ab7587e7cfd6",
+  "sourceSha256": "d47fbf8ead11b646ae50ab6147535b7509a7be314edf9fcc527ff984162eeb58",
+  "buildId": "AWUHXYIxceX9dvvajJFDr",
+  "browserVersion": "156.0.8078.48",
+  "browserExecutable": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  "requestedFlow": "F1-F7,F9-F24",
+  "checkedAt": "2026-10-28T18:52:59.886Z",
+  "environment": "isolatedTest http://127.0.0.1:3122 / examcraft_test_20261022",
+  "realAiCalls": false,
+  "results": [
+    {
+      "id": "F1",
+      "status": "PASS",
+      "durationMs": 3986,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F2",
+      "status": "PASS",
+      "durationMs": 9125,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F3",
+      "status": "PASS",
+      "durationMs": 5260,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F4",
+      "status": "PASS",
+      "durationMs": 8475,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F5",
+      "status": "PASS",
+      "durationMs": 74908,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F6",
+      "status": "PASS",
+      "durationMs": 18738,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F7",
+      "status": "PASS",
+      "durationMs": 19278,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F9",
+      "status": "PASS",
+      "durationMs": 8609,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F10",
+      "status": "PASS",
+      "durationMs": 9235,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F11",
+      "status": "PASS",
+      "durationMs": 5315,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F12",
+      "status": "PASS",
+      "durationMs": 18712,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F13",
+      "status": "PASS",
+      "durationMs": 19956,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F14",
+      "status": "PASS",
+      "durationMs": 7552,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F15",
+      "status": "PASS",
+      "durationMs": 3515,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F16",
+      "status": "PASS",
+      "durationMs": 19776,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F17",
+      "status": "PASS",
+      "durationMs": 3322,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F18",
+      "status": "PASS",
+      "durationMs": 4800,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F19",
+      "status": "PASS",
+      "durationMs": 13058,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F20",
+      "status": "PASS",
+      "durationMs": 3865,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F21",
+      "status": "PASS",
+      "durationMs": 4303,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F22",
+      "status": "PASS",
+      "durationMs": 3459,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F23",
+      "status": "PASS",
+      "durationMs": 4256,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F24",
+      "status": "PASS",
+      "durationMs": 6249,
+      "cleanupComplete": true
+    },
+    {
+      "id": "F25",
+      "status": "PASS",
+      "durationMs": 5164,
+      "cleanupComplete": true
+    }
+  ]
+}

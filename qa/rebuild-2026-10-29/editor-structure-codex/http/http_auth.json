@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-10-28T18:47:52.731Z",
+  "checks": [
+    "http-forced-password-and-origin",
+    "http-password-revokes-other-sessions",
+    "http-logout-revokes-cookie",
+    "http-admin-reset-disable-revocation",
+    "http-durable-account-rate-limit"
+  ],
+  "status": "PASS",
+  "cleanupComplete": true,
+  "environment": "isolated http://127.0.0.1:3122",
+  "realAiCalls": false
+}
