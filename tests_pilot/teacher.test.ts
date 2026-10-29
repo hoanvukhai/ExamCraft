@@ -212,9 +212,11 @@ test('teacher management: trash, bank, class context, routes and mobile', { time
         await page.evaluate(() => document.fonts.ready);
         if (route === '/') { await card('Đề giao diện 0').waitFor(); await page.getByTitle('Chế độ xem danh sách', { exact: true }).filter({ visible: true }).click(); }
         assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true, `${route} ${width} ${dark}`);
-        for (const input of await page.locator('main select, main input').all()) if (await input.isVisible()) {
-          const box = await input.boundingBox(); assert.ok(box && box.x >= -1 && box.x + box.width <= width + 1, `field must fit ${route} ${width}`);
-        }
+        // Read visibility and bounds in one DOM snapshot: async lists can replace indexed locators between awaits.
+        const fields = await page.locator('main select, main input').evaluateAll(inputs => inputs
+          .filter(input => input.getClientRects().length > 0 && getComputedStyle(input).visibility !== 'hidden')
+          .map(input => { const box = input.getBoundingClientRect(); return { x: box.x, width: box.width }; }));
+        for (const box of fields) assert.ok(box.x >= -1 && box.x + box.width <= width + 1, `field must fit ${route} ${width}`);
         await page.screenshot({ path: `${report}/${route === '/' ? 'library' : route.includes('trash') ? 'trash' : route.split('/').at(-1)}-${width}-${dark ? 'dark' : 'light'}.png`, fullPage: false });
         if (route === '/' && width < 640) {
           await page.locator('.app-exam-table').scrollIntoViewIfNeeded();
