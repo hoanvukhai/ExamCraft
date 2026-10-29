@@ -48,10 +48,9 @@ import { EditorQuestionHeading } from '@/components/editor/EditorQuestionHeading
 import { EditorSaveStatus } from '@/components/editor/EditorSaveStatus';
 import { EditorTemplate } from '@/components/editor/EditorRequirements';
 import { captureInsertion, insertQuestionBatch, type InsertionTarget } from '@/lib/outline-insertion';
-import { legacyOutline } from '@/lib/exam-outline';
+import { editorInsertionPoint, importedPartPoint } from '@/lib/editor-parts';
 import { OutlineEditor, type QuestionSource } from '@/components/editor/OutlineEditor';
 import { type InsertPoint } from '@/lib/exam-outline';
-import { EditorStart } from '@/components/editor/EditorStart';
 import { EditorPending } from '@/components/editor/EditorPending';
 
 import { generationDocumentStamp } from '@/lib/generation-plan';
@@ -140,8 +139,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   const addAnchor = useRef<HTMLDivElement>(null);
   const [selectedPoint, setSelectedPoint] = useState<InsertPoint | null>(null);
   const [newQuestionPoint, setNewQuestionPoint] = useState<InsertPoint | undefined>();
-  const insertionPoint = (): InsertPoint =>
-    selectedPoint ?? { parentId: null, afterId: (exam.outline ?? legacyOutline(exam)).at(-1)?.id ?? null };
+  const insertionPoint = (): InsertPoint => editorInsertionPoint(exam, selectedPoint);
   const [newQuestion, setNewQuestion] = useState<Question | null>(null);
   const sessionScope = currentUser.id + ':' + editorSessionKey;
   const [draftSession, setDraftSession] = useState(sessionScope);
@@ -161,7 +159,6 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isResultsModalOpen, setIsResultsModalOpen] = useState(false);
   const sourceTarget = useRef<InsertionTarget | null>(null);
-  const [sourceAllowsParts, setSourceAllowsParts] = useState(true);
   const [modalSession, setModalSession] = useState(sessionScope);
   if (modalSession !== sessionScope) {
     setModalSession(sessionScope);
@@ -175,7 +172,6 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     if (!canEdit) return;
     const open = () => {
       sourceTarget.current = captureInsertion(exam, currentUser.id, point);
-      setSourceAllowsParts(!point.parentId);
       if (source === 'generate') setIsGenerateModalOpen(true);
       else if (source === 'import') setIsImportModalOpen(true);
       else setIsQuestionBankModalOpen(true);
@@ -194,11 +190,24 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       throw Error('Vị trí thêm câu đã đổi; bản xem trước được giữ.');
     let continuation = target;
     const applied = setExam((previous) => {
-      const result = insertQuestionBatch(previous, currentUser.id, target, questions, passages, parts);
+      const acceptedTarget = parts?.length
+        ? { ...target, point: importedPartPoint(previous, target.point) }
+        : target;
+      const result = insertQuestionBatch(
+        previous,
+        currentUser.id,
+        acceptedTarget,
+        questions,
+        passages,
+        parts,
+      );
       continuation = result.target;
       return result.exam;
     });
-    if (applied) sourceTarget.current = continuation;
+    if (applied) {
+      sourceTarget.current = continuation;
+      setSelectedPoint(continuation.point);
+    }
     return applied;
   };
 
@@ -777,16 +786,6 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                       />
                     )}
                   />
-
-                  {exam.questions.length === 0 && !newQuestion && (
-                    <EditorStart
-                      hasKey={hasActiveKey}
-                      onAdd={handleAddQuestion}
-                      onBank={() => openSource('bank')}
-                      onImport={() => openSource('import')}
-                      onGenerate={() => openSource('generate')}
-                    />
-                  )}
                 </div>
 
                 {/* Thanh tác vụ hàng loạt nổi cố định ở dưới (Floating Batch Action Bar) */}
@@ -980,7 +979,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         context={{ subject: exam.metadata.subject, grade: exam.metadata.grade }}
         isOpen={isImportModalOpen}
         onClose={() => setIsImportModalOpen(false)}
-        allowParts={sourceAllowsParts}
+        allowParts
         onImportQuestions={(questions, context) =>
           acceptSource(questions, context.passages, undefined, context.parts)
         }

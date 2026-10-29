@@ -1,7 +1,8 @@
 'use client';
+import { withEditorParts } from '@/lib/editor-parts';
 import { reconcileQuestionOutline } from '@/lib/exam-outline';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import type { Exam } from '@/types/exam';
 import { loadExam, persistExam, SaveExamError, isExamAccessError } from '@/lib/exam-client';
@@ -52,10 +53,12 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
     (value: React.SetStateAction<Exam>) => {
       if (!ready.current || activeOwner.current !== ownerId || current.current.access?.canEdit === false)
         return false;
-      const candidate = typeof value === 'function' ? value(current.current) : value;
+      const base = withEditorParts(current.current);
+      const candidate = typeof value === 'function' ? value(base) : value;
+      if (candidate === base) return false;
       let next: Exam;
       try {
-        next = reconcileQuestionOutline(current.current, candidate);
+        next = withEditorParts(reconcileQuestionOutline(base, candidate));
       } catch {
         setMessage('Chưa áp dụng được thay đổi dàn ý. Nội dung đang soạn vẫn được giữ.');
         return false;
@@ -500,8 +503,9 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
     [ownerId, writerId],
   );
 
+  const editorExam = useMemo(() => withEditorParts(exam), [exam]);
   return {
-    exam,
+    exam: editorExam,
     editorSessionKey,
     setExam,
     save,

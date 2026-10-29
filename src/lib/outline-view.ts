@@ -24,9 +24,7 @@ export function outlineView(exam: Exam) {
       pending.push({
         id: node.id,
         kind: node.kind as 'part' | 'group',
-        title: [label, node.title || (node.kind === 'part' ? 'Phần chưa đặt tên' : '')]
-          .filter(Boolean)
-          .join('. '),
+        title: [label, node.title?.trim()].filter(Boolean).join('. '),
         instructions: node.instructions,
         passage:
           node.kind === 'group' ? exam.passages?.find((passage) => passage.id === node.passageId) : undefined,

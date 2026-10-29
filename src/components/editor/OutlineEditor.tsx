@@ -1,12 +1,13 @@
 'use client';
 import { useState, type ReactNode } from 'react';
-import { Plus, MoreHorizontal } from 'lucide-react';
+import { Plus, MoreHorizontal, ChevronDown } from 'lucide-react';
 import type { Exam, OutlineNode, Question } from '@/types/exam';
 import { ToolMenu, type MenuItem } from '@/components/EditorToolbar';
 import { PassageFields } from './PassageFields';
 import { MathRenderer } from '@/components/MathRenderer';
 import { FigureView } from '@/components/FigureView';
 import { EditorDialog } from './EditorDialog';
+import { withEditorParts } from '@/lib/editor-parts';
 import {
   outlineEntries,
   outlineNodes,
@@ -14,8 +15,8 @@ import {
   moveOutlineNode,
   outlineStamp,
   removeOutlineNode,
-  legacyOutline,
   findOutlineList,
+  viewSyncedOutline,
   type InsertPoint,
 } from '@/lib/exam-outline';
 import { nudgeOutlineNode, outlineLocation, patchOutlineNode } from '@/lib/outline-editing';
@@ -43,170 +44,110 @@ interface Props {
   composerPoint?: InsertPoint;
   composer?: ReactNode;
 }
-const button = 'app-button-secondary rounded px-3 min-h-10 text-sm';
-const field = 'w-full min-w-0 border rounded p-2 bg-transparent text-sm';
+const button = 'app-button-secondary rounded-lg px-3 min-h-9 text-sm';
+const field = 'w-full min-w-0 border rounded-lg p-2 bg-transparent text-sm';
 const samePoint = (a?: InsertPoint, b?: InsertPoint) =>
   !!a && !!b && a.parentId === b.parentId && (a.afterId ?? null) === (b.afterId ?? null);
 
-function ContainerFields({ exam, node, onChange }: Pick<Props, 'exam' | 'onChange'> & { node: OutlineNode }) {
-  const patch = (value: Parameters<typeof patchOutlineNode>[2]) =>
-    onChange((previous) => patchOutlineNode(previous, node.id, value));
-  const passage = exam.passages?.find((item) => item.id === node.passageId);
-  return (
-    <div className="space-y-3 my-3" aria-label={'Sửa ' + (node.kind === 'part' ? 'phần' : 'nhóm')}>
-      <label className="block text-sm">
-        Tiêu đề
-        <input
-          className={field}
-          aria-label={'Tiêu đề ' + node.id}
-          value={node.title ?? ''}
-          onChange={(event) => patch({ title: event.target.value })}
-        />
-      </label>
-      <label className="block text-sm">
-        Lời dặn / lời dẫn
-        <textarea
-          className={field}
-          rows={3}
-          aria-label={'Lời dẫn ' + node.id}
-          value={node.instructions ?? ''}
-          onChange={(event) => patch({ instructions: event.target.value })}
-        />
-      </label>
-      <label className="block text-sm">
-        Đánh số
-        <select
-          className={field}
-          aria-label={'Đánh số ' + node.id}
-          value={node.numbering ?? 'none'}
-          onChange={(event) => patch({ numbering: event.target.value as OutlineNode['numbering'] })}
-        >
-          <option value="none">Không thêm số</option>
-          <option value="decimal">1, 2, 3</option>
-          {node.kind === 'part' && (
-            <>
-              <option value="roman">I, II, III</option>
-              <option value="letters">A, B, C</option>
-            </>
-          )}
-        </select>
-      </label>
-      {node.kind === 'part' && (
-        <label className="block text-sm">
-          Đánh số câu trong phần
-          <select
-            className={field}
-            aria-label={'Đánh số câu ' + node.id}
-            value={node.questionNumbering ?? 'continuous'}
-            onChange={(event) =>
-              patch({ questionNumbering: event.target.value as OutlineNode['questionNumbering'] })
-            }
-          >
-            <option value="continuous">Tiếp nối phần trước</option>
-            <option value="restart">Bắt đầu lại từ câu 1</option>
-          </select>
-        </label>
-      )}
-      {node.kind === 'group' &&
-        (passage ? (
-          <PassageFields
-            exam={exam}
-            passage={passage}
-            index={exam.passages!.indexOf(passage)}
-            onChange={onChange}
-          />
-        ) : (
-          <button
-            type="button"
-            className={button}
-            onClick={() => {
-              const passageId = node.passageId ?? crypto.randomUUID();
-              onChange((previous) =>
-                previous.access?.canEdit === false
-                  ? previous
-                  : patchOutlineNode(
-                      {
-                        ...previous,
-                        passages: [...(previous.passages ?? []), { id: passageId, title: '', content: '' }],
-                      },
-                      node.id,
-                      { passageId },
-                    ),
-              );
-            }}
-          >
-            Thêm đoạn văn / hình / dữ liệu
-          </button>
-        ))}
-    </div>
-  );
-}
-
 export function OutlineEditor(p: Props) {
+  const display = withEditorParts(viewSyncedOutline(p.exam));
+  const outline = display.outline!;
+  const entries = new Map(outlineEntries(display).map((entry) => [entry.node.id, entry]));
+  const parts = outline.filter((node) => node.kind === 'part');
   const [editing, setEditing] = useState<string | null>(null);
+  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  const [options, setOptions] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<{ id: string; stamp: string; keep: boolean } | null>(null);
   const [reuse, setReuse] = useState<InsertPoint | null>(null),
     [passageId, setPassageId] = useState('');
   const [message, setMessage] = useState('');
-  const outline = p.exam.outline ?? legacyOutline(p.exam);
-  const entries = outlineEntries(p.exam),
-    entriesById = new Map(entries.map((entry) => [entry.node.id, entry]));
-  const points = new Map(
-    freezeExamScoring(p.exam).questions.map((question) => [question.id, question.points]),
-  );
-  const parts = outlineNodes(outline).filter((node) => node.kind === 'part');
+  const scores = new Map(freezeExamScoring(display).questions.map((q) => [q.id, q.points]));
+  const labelFor = (node: OutlineNode) =>
+    node.title?.trim() ||
+    (node.kind === 'part'
+      ? 'phần không tên ' + (parts.findIndex((part) => part.id === node.id) + 1)
+      : display.passages?.find((passage) => passage.id === node.passageId)?.title || 'nội dung dùng chung');
   const apply = (update: (exam: Exam) => Exam) => {
     if (!p.canEdit) return;
     try {
-      p.onChange(update);
+      p.onChange((previous) => update(withEditorParts(previous)));
       setMessage('');
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Chưa thực hiện được. Nội dung vẫn được giữ.');
+      setMessage(error instanceof Error ? error.message : 'Chưa áp dụng được. Nội dung vẫn được giữ.');
     }
   };
-  const addContainer = (point: InsertPoint, kind: 'part' | 'group', existingPassage?: string) => {
+  const patch = (id: string, value: Parameters<typeof patchOutlineNode>[2]) =>
+    apply((previous) => patchOutlineNode(previous, id, value));
+  const toggle = (id: string) =>
+    setCollapsed((previous) => {
+      const next = new Set(previous);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  const add = (point: InsertPoint, kind: 'part' | 'group', existing?: string) => {
     const id = crypto.randomUUID(),
-      sourceId = kind === 'group' ? (existingPassage ?? crypto.randomUUID()) : undefined;
+      materialId = kind === 'group' ? (existing ?? crypto.randomUUID()) : undefined;
     const node: OutlineNode = {
       id,
       kind,
-      title: kind === 'part' ? 'Phần mới' : '',
+      title: '',
       children: [],
-      ...(sourceId ? { passageId: sourceId } : {}),
+      ...(materialId ? { passageId: materialId } : {}),
     };
     apply((previous) =>
-      previous.access?.canEdit === false
-        ? previous
-        : insertOutlineNodes(
-            {
-              ...previous,
-              ...(sourceId && !existingPassage
-                ? { passages: [...(previous.passages ?? []), { id: sourceId, title: '', content: '' }] }
-                : {}),
-            },
-            point,
-            [node],
-          ),
+      insertOutlineNodes(
+        {
+          ...previous,
+          ...(materialId && !existing
+            ? {
+                passages: [...(previous.passages ?? []), { id: materialId, title: '', content: '' }],
+              }
+            : {}),
+        },
+        point,
+        [node],
+      ),
     );
-    setEditing(id);
+    if (kind === 'group') setEditing(id);
     p.onPoint({ parentId: id, afterId: null });
   };
-  const source = (point: InsertPoint, type: QuestionSource) => {
-    p.onPoint(point);
-    p.onSource(point, type);
-  };
-  const insertion = (point: InsertPoint, label: string) => {
-    const parent = point.parentId && outlineNodes(outline).find((node) => node.id === point.parentId);
+  const insert = (point: InsertPoint, label: string, compact = false) => {
+    const parent = outlineNodes(outline).find((node) => node.id === point.parentId);
     const items: MenuItem[] = [
-      { label: 'Câu tự soạn', onClick: () => source(point, 'manual') },
-      { label: 'Từ ngân hàng', onClick: () => source(point, 'bank') },
-      { label: 'Nhập Word/Ảnh', onClick: () => source(point, 'import') },
-      { label: 'Sinh bằng AI', onClick: () => source(point, 'generate') },
-      ...(parent && parent.kind === 'group'
+      {
+        label: 'Câu tự soạn',
+        onClick: () => {
+          p.onPoint(point);
+          p.onSource(point, 'manual');
+        },
+      },
+      {
+        label: 'Từ ngân hàng',
+        onClick: () => {
+          p.onPoint(point);
+          p.onSource(point, 'bank');
+        },
+      },
+      {
+        label: 'Nhập Word/Ảnh',
+        onClick: () => {
+          p.onPoint(point);
+          p.onSource(point, 'import');
+        },
+      },
+      {
+        label: 'Sinh bằng AI',
+        onClick: () => {
+          p.onPoint(point);
+          p.onSource(point, 'generate');
+        },
+      },
+      ...(parent?.kind === 'group'
         ? []
         : [
-            { label: 'Ngữ liệu (nhóm mới)', onClick: () => addContainer(point, 'group') },
-            ...(p.exam.passages?.length
+            { label: 'Nội dung dùng chung', onClick: () => add(point, 'group') },
+            ...(display.passages?.length
               ? [
                   {
                     label: 'Dùng nội dung chung đã có',
@@ -218,175 +159,222 @@ export function OutlineEditor(p: Props) {
                 ]
               : []),
           ]),
-      ...(point.parentId === null ? [{ label: 'Phần mới', onClick: () => addContainer(point, 'part') }] : []),
     ];
     return (
       <div
-        key={String(point.parentId) + ':' + String(point.afterId)}
-        className="py-2 min-w-0"
+        key={point.parentId + ':' + point.afterId}
+        className="py-1 min-w-0"
         data-insert-parent={point.parentId ?? 'root'}
         data-insert-after={point.afterId ?? 'start'}
       >
-        <ToolMenu label={label} Icon={Plus} items={items} />
+        <ToolMenu label={label} compact={compact} Icon={Plus} items={items} />
         {samePoint(point, p.composerPoint) && p.composer}
       </div>
     );
   };
-  const renderList = (nodes: OutlineNode[], parentId: string | null, title: string): ReactNode => (
+  const render = (nodes: OutlineNode[], parentId: string | null): ReactNode => (
     <>
       {nodes.map((node, index) => {
-        const entry = entriesById.get(node.id)!;
-        const location = outlineLocation(outline, node.id)!;
+        const entry = entries.get(node.id)!;
         const before = { parentId, afterId: nodes[index - 1]?.id ?? null };
-        const between =
-          (index > 0 && node.kind === 'question' && nodes[index - 1].kind === 'question') ||
-          samePoint(before, p.composerPoint);
+        const leading = parentId ? insert(before, 'Thêm tại đây', true) : null;
         if (node.kind === 'question') {
-          const question = p.exam.questions.find((item) => item.id === node.questionId);
-          if (!question) return null;
-          const global = p.exam.questions.indexOf(question);
-          const moveItems: MenuItem[] = [
-            {
-              label: 'Chuyển ra gốc đề',
+          const q = display.questions.find((question) => question.id === node.questionId);
+          if (!q) return null;
+          const position = display.questions.indexOf(q);
+          const moveItems: MenuItem[] = parts.map((part) => ({
+            label: 'Chuyển sang ' + labelFor(part),
+            onClick: () =>
+              apply((previous) => {
+                const destination = outlineNodes(previous.outline!).find((item) => item.id === part.id);
+                return moveOutlineNode(previous, node.id, {
+                  parentId: part.id,
+                  afterId: destination?.children?.at(-1)?.id ?? null,
+                });
+              }),
+          }));
+          for (const group of outlineNodes(outline).filter(
+            (item) => item.kind === 'group' && item.id !== parentId,
+          )) {
+            const material = display.passages?.find((item) => item.id === group.passageId);
+            const name = material?.title || group.title || material?.content.slice(0, 32) || 'nội dung chung';
+            moveItems.push({
+              label: 'Đưa vào ' + name,
               onClick: () =>
-                apply((previous) =>
-                  moveOutlineNode(previous, node.id, {
-                    parentId: null,
-                    afterId: previous.outline?.at(-1)?.id ?? null,
-                  }),
-                ),
-            },
-            ...parts.map((part) => ({
-              label: 'Chuyển sang ' + (part.title || 'Phần chưa đặt tên'),
-              onClick: () =>
-                apply((previous) =>
-                  moveOutlineNode(previous, node.id, {
-                    parentId: part.id,
-                    afterId:
-                      outlineNodes(previous.outline ?? [])
-                        .find((item) => item.id === part.id)
-                        ?.children?.at(-1)?.id ?? null,
-                  }),
-                ),
-            })),
-          ];
+                apply((previous) => {
+                  const destination = outlineNodes(previous.outline!).find((item) => item.id === group.id);
+                  return moveOutlineNode(previous, node.id, {
+                    parentId: group.id,
+                    afterId: destination?.children?.at(-1)?.id ?? null,
+                  });
+                }),
+            });
+          }
           return (
-            <div
-              key={node.id}
-              id={'editor-question-' + question.id}
-              tabIndex={-1}
-              className="scroll-mt-16 min-w-0"
-            >
-              {between && insertion(before, 'Thêm giữa hai câu')}
-              {p.renderQuestion(question, global, entry.number ?? global + 1, {
-                first: location.index === 0,
-                last: location.index === location.siblings.length - 1,
+            <div key={node.id} id={'editor-question-' + q.id} tabIndex={-1} className="scroll-mt-16 min-w-0">
+              {leading}
+              {p.renderQuestion(q, position, entry.number ?? position + 1, {
+                first: index === 0,
+                last: index === nodes.length - 1,
                 moveItems,
               })}
             </div>
           );
         }
-        const passage = p.exam.passages?.find((item) => item.id === node.passageId);
+        const label = labelFor(node),
+          hidden = collapsed.has(node.id),
+          location = outlineLocation(outline, node.id)!;
+        const material = display.passages?.find((item) => item.id === node.passageId);
         const members = outlineNodes(node.children ?? []).filter((item) => item.kind === 'question');
-        const known = members.every((item) => points.get(item.questionId!) !== undefined);
-        const total = members.reduce((sum, item) => sum + (points.get(item.questionId!) ?? 0), 0);
-        const label =
-          [entry.label, node.title].filter(Boolean).join('. ') ||
-          (node.kind === 'part' ? 'Phần mới' : 'Nhóm câu');
-        const isEditing = editing === node.id;
-        const menu: MenuItem[] = [
-          { label: 'Sửa tiêu đề và lời dẫn', onClick: () => setEditing(node.id) },
+        const points = members.reduce((sum, item) => sum + (scores.get(item.questionId!) ?? 0), 0);
+        const items: MenuItem[] = [
+          ...(node.kind === 'part'
+            ? [{ label: 'Lời dẫn và đánh số', onClick: () => setOptions(node.id) }]
+            : [{ label: 'Sửa nội dung chung', onClick: () => setEditing(node.id) }]),
           {
             label: 'Di chuyển lên',
             disabled: location.index === 0,
-            onClick: () => apply((exam) => nudgeOutlineNode(exam, node.id, 'up')),
+            onClick: () => apply((previous) => nudgeOutlineNode(previous, node.id, 'up')),
           },
           {
             label: 'Di chuyển xuống',
             disabled: location.index === location.siblings.length - 1,
-            onClick: () => apply((exam) => nudgeOutlineNode(exam, node.id, 'down')),
+            onClick: () => apply((previous) => nudgeOutlineNode(previous, node.id, 'down')),
           },
           {
-            label: node.kind === 'part' ? 'Xóa phần' : 'Xóa nhóm',
+            label: node.kind === 'part' ? 'Xóa phần' : 'Xóa nội dung chung',
             onClick: () =>
-              setDeleting({
-                id: node.id,
-                stamp: outlineStamp(p.exam),
-                keep: true,
-              }),
+              setDeleting({ id: node.id, stamp: outlineStamp(withEditorParts(p.exam)), keep: true }),
           },
         ];
         return (
           <div key={node.id} className="min-w-0">
-            {samePoint(before, p.composerPoint) && insertion(before, 'Thêm tại đây')}
-            <section data-outline-node={node.id} className="border rounded-xl p-3 min-w-0 space-y-3">
-              <header className="flex flex-wrap gap-2 items-center justify-between">
+            {leading}
+            <section
+              data-outline-node={node.id}
+              data-outline-kind={node.kind}
+              className={
+                node.kind === 'part' ? 'min-w-0 py-3 space-y-2' : 'min-w-0 border-l-2 pl-3 py-2 space-y-2'
+              }
+            >
+              <header className="flex items-center gap-2 min-w-0">
                 <button
                   type="button"
-                  className="text-left font-semibold break-words min-h-10"
-                  onClick={() => {
-                    setEditing(isEditing ? null : node.id);
-                    p.onPoint({ parentId: node.id, afterId: node.children?.at(-1)?.id ?? null });
-                  }}
+                  aria-expanded={!hidden}
+                  aria-label={(hidden ? 'Mở ' : 'Thu gọn ') + label}
+                  className="shrink-0 min-h-9 px-1"
+                  onClick={() => toggle(node.id)}
                 >
-                  {label}
+                  <ChevronDown aria-hidden className={'w-4 h-4 ' + (hidden ? '-rotate-90' : '')} />
                 </button>
-                <span className="text-xs text-[var(--ui-text-secondary)]">
-                  {members.length} câu
-                  {members.length > 0 &&
-                    known &&
-                    requiresNumericScore(p.exam.metadata.assessmentMode) &&
-                    ' · ' + Math.round(total * 100) / 100 + ' điểm'}
-                </span>
-                <ToolMenu label={'Thao tác ' + label} compact Icon={MoreHorizontal} items={menu} />
+                {node.kind === 'part' ? (
+                  <input
+                    aria-label={'Tên phần ' + (parts.indexOf(node) + 1)}
+                    placeholder="Tên phần — có thể để trống"
+                    value={node.title ?? ''}
+                    disabled={!p.canEdit}
+                    className="min-w-0 flex-1 bg-transparent rounded px-1 py-2 font-semibold placeholder:font-normal placeholder:text-[var(--ui-text-secondary)]"
+                    onFocus={() =>
+                      p.onPoint({ parentId: node.id, afterId: node.children?.at(-1)?.id ?? null })
+                    }
+                    onChange={(event) => patch(node.id, { title: event.target.value })}
+                  />
+                ) : (
+                  <span className="min-w-0 flex-1 text-sm font-medium truncate">
+                    {material?.title || node.title || 'Nội dung dùng chung'}
+                  </span>
+                )}
+                {members.length > 0 && (
+                  <span className="text-xs text-[var(--ui-text-secondary)] shrink-0">
+                    {members.length} câu
+                    {requiresNumericScore(display.metadata.assessmentMode) &&
+                    members.every((item) => scores.get(item.questionId!) !== undefined)
+                      ? ' · ' + Math.round(points * 100) / 100 + 'đ'
+                      : ''}
+                  </span>
+                )}
+                <ToolMenu label={'Thao tác ' + label} compact Icon={MoreHorizontal} items={items} />
               </header>
-              {isEditing ? (
-                <>
-                  <ContainerFields exam={p.exam} node={node} onChange={p.onChange} />
-                  <button type="button" className={button} onClick={() => setEditing(null)}>
-                    Xong
-                  </button>
-                </>
-              ) : (
-                <>
-                  {node.instructions && <MathRenderer content={node.instructions} />}
-                  {passage && (
-                    <div className="border rounded p-3 text-sm space-y-2">
-                      {passage.title && <h4 className="font-medium">{passage.title}</h4>}
-                      <MathRenderer content={passage.content} />
-                      {passage.figures?.map((figure) => (
-                        <FigureView key={figure.id} figure={figure} />
-                      ))}
-                      {passage.source && <p className="text-xs italic">{passage.source}</p>}
-                      <button type="button" className="underline" onClick={() => setEditing(node.id)}>
+              <div hidden={hidden} className="min-w-0 space-y-2">
+                {node.instructions && <MathRenderer content={node.instructions} />}
+                {node.kind === 'group' &&
+                  (editing === node.id ? (
+                    <div className="space-y-2">
+                      {!material && (
+                        <button
+                          type="button"
+                          className={button}
+                          onClick={() =>
+                            apply((previous) => {
+                              const id = node.passageId || crypto.randomUUID();
+                              return patchOutlineNode(
+                                {
+                                  ...previous,
+                                  passages: [...(previous.passages ?? []), { id, title: '', content: '' }],
+                                },
+                                node.id,
+                                { passageId: id },
+                              );
+                            })
+                          }
+                        >
+                          Thêm nội dung dẫn
+                        </button>
+                      )}
+                      {material && (
+                        <PassageFields
+                          exam={display}
+                          passage={material}
+                          index={display.passages!.indexOf(material)}
+                          onChange={(update) =>
+                            apply((previous) => (typeof update === 'function' ? update(previous) : update))
+                          }
+                        />
+                      )}
+                      <button type="button" className={button} onClick={() => setEditing(null)}>
+                        Xong
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-2 text-sm">
+                      {material ? (
+                        <>
+                          <MathRenderer content={material.content} />
+                          {material.figures?.map((figure) => (
+                            <FigureView key={figure.id} figure={figure} />
+                          ))}
+                          {material.source && <p className="text-xs italic">{material.source}</p>}
+                        </>
+                      ) : (
+                        <p>Chưa có nội dung dẫn.</p>
+                      )}
+                      <button type="button" className="text-xs underline" onClick={() => setEditing(node.id)}>
                         Sửa nội dung chung
                       </button>
                     </div>
-                  )}
-                </>
-              )}
-              <div
-                className={node.kind === 'group' ? 'pl-2 border-l min-w-0 space-y-3' : 'space-y-3 min-w-0'}
-              >
-                {renderList(node.children ?? [], node.id, label)}
+                  ))}
+                {render(node.children ?? [], node.id)}
               </div>
             </section>
           </div>
         );
       })}
-      {(parentId !== null || nodes.length > 0 || p.composer) &&
-        insertion(
+      {parentId &&
+        insert(
           { parentId, afterId: nodes.at(-1)?.id ?? null },
-          parentId ? 'Thêm vào ' + title : 'Thêm vào cuối đề',
+          nodes.length
+            ? 'Thêm vào ' + labelFor(outlineNodes(outline).find((node) => node.id === parentId)!)
+            : 'Thêm nội dung',
         )}
     </>
   );
-  const composerList = p.composerPoint && findOutlineList(outline, p.composerPoint.parentId);
+  const selectedList = p.composerPoint && findOutlineList(outline, p.composerPoint.parentId);
   const composerExists =
-    composerList &&
-    (p.composerPoint?.afterId == null || composerList.some((node) => node.id === p.composerPoint!.afterId));
+    selectedList &&
+    (p.composerPoint?.afterId == null || selectedList.some((n) => n.id === p.composerPoint?.afterId));
+  const selectedOptions = outlineNodes(outline).find((node) => node.id === options);
   return (
-    <section aria-label="Dàn ý đề" className="min-w-0 space-y-3">
+    <section aria-label="Dàn ý đề" className="min-w-0 divide-y">
       {message && (
         <p role="alert" className="text-sm">
           {message}
@@ -398,24 +386,60 @@ export function OutlineEditor(p: Props) {
           {p.composer}
         </div>
       )}
-      <fieldset disabled={!p.canEdit} className="min-w-0 space-y-3">
-        {renderList(outline, null, 'đề')}
-        <button
-          type="button"
-          className={button}
-          onClick={() =>
-            addContainer(
-              {
-                parentId: null,
-                afterId: outline.at(-1)?.id ?? null,
-              },
-              'part',
-            )
-          }
-        >
-          + Thêm phần
-        </button>
-      </fieldset>
+      {render(outline, null)}
+      <button
+        type="button"
+        className="min-h-10 px-2 text-xs text-[var(--ui-text-secondary)]"
+        disabled={!p.canEdit}
+        onClick={() => add({ parentId: null, afterId: outline.at(-1)?.id ?? null }, 'part')}
+      >
+        + Thêm phần
+      </button>
+      {selectedOptions && (
+        <EditorDialog title="Lời dẫn và đánh số" onClose={() => setOptions(null)}>
+          <fieldset disabled={!p.canEdit} className="space-y-3">
+            <label className="block text-sm">
+              Lời dẫn của phần
+              <textarea
+                className={field}
+                rows={3}
+                value={selectedOptions.instructions ?? ''}
+                onChange={(event) => patch(selectedOptions.id, { instructions: event.target.value })}
+              />
+            </label>
+            <label className="block text-sm">
+              Đánh số phần
+              <select
+                className={field}
+                value={selectedOptions.numbering ?? 'none'}
+                onChange={(event) =>
+                  patch(selectedOptions.id, { numbering: event.target.value as OutlineNode['numbering'] })
+                }
+              >
+                <option value="none">Không thêm số</option>
+                <option value="roman">I, II, III</option>
+                <option value="letters">A, B, C</option>
+                <option value="decimal">1, 2, 3</option>
+              </select>
+            </label>
+            <label className="block text-sm">
+              Đánh số câu
+              <select
+                className={field}
+                value={selectedOptions.questionNumbering ?? 'continuous'}
+                onChange={(event) =>
+                  patch(selectedOptions.id, {
+                    questionNumbering: event.target.value as OutlineNode['questionNumbering'],
+                  })
+                }
+              >
+                <option value="continuous">Tiếp nối phần trước</option>
+                <option value="restart">Bắt đầu lại từ câu 1</option>
+              </select>
+            </label>
+          </fieldset>
+        </EditorDialog>
+      )}
       {deleting && (
         <EditorDialog title="Xóa mục trong đề" onClose={() => setDeleting(null)}>
           <label className="flex gap-2 text-sm my-4">
@@ -431,15 +455,28 @@ export function OutlineEditor(p: Props) {
             className={button}
             disabled={!p.canEdit}
             onClick={() => {
-              if (outlineStamp(p.exam) !== deleting.stamp) {
+              if (outlineStamp(withEditorParts(p.exam)) !== deleting.stamp) {
                 setMessage('Dàn ý vừa thay đổi. Hãy kiểm lại trước khi xóa.');
                 return;
               }
-              apply((exam) =>
-                outlineStamp(exam) === deleting.stamp
-                  ? removeOutlineNode(exam, deleting.id, deleting.keep)
-                  : exam,
-              );
+              apply((previous) => {
+                if (outlineStamp(previous) !== deleting.stamp) return previous;
+                // Dissolving a part must not discard implicit scoring configured on that part.
+                const frozen = new Map(freezeExamScoring(previous).questions.map((q) => [q.id, q.points]));
+                const target = outlineNodes(previous.outline!).find((node) => node.id === deleting.id);
+                const affected = new Set(outlineNodes(target ? [target] : []).map((node) => node.questionId));
+                const prepared = deleting.keep
+                  ? {
+                      ...previous,
+                      questions: previous.questions.map((q) =>
+                        affected.has(q.id) && q.points === undefined && frozen.get(q.id) !== undefined
+                          ? { ...q, points: frozen.get(q.id) }
+                          : q,
+                      ),
+                    }
+                  : previous;
+                return withEditorParts(removeOutlineNode(prepared, deleting.id, deleting.keep), deleting.id);
+              });
               setDeleting(null);
             }}
           >
@@ -457,9 +494,9 @@ export function OutlineEditor(p: Props) {
               onChange={(event) => setPassageId(event.target.value)}
             >
               <option value="">Chọn một nội dung</option>
-              {p.exam.passages?.map((item, index) => (
+              {display.passages?.map((item, index) => (
                 <option key={item.id} value={item.id}>
-                  {item.title || 'Ngữ liệu ' + (index + 1)}
+                  {item.title || 'Nội dung ' + (index + 1)}
                 </option>
               ))}
             </select>
@@ -469,8 +506,8 @@ export function OutlineEditor(p: Props) {
             className={button + ' mt-3'}
             disabled={!p.canEdit || !passageId}
             onClick={() => {
-              if (!p.exam.passages?.some((item) => item.id === passageId)) return;
-              addContainer(reuse, 'group', passageId);
+              if (!display.passages?.some((item) => item.id === passageId)) return;
+              add(reuse, 'group', passageId);
               setReuse(null);
             }}
           >

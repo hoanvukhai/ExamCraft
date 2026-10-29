@@ -44,7 +44,9 @@ export function outlineSkeleton(exam: Exam): OutlineNode[] {
         {
           ...container,
           id: 'skeleton:' + index++,
-          ...(node.kind === 'part' ? { sectionId: node.sectionId ?? node.id } : {}),
+          ...(node.kind === 'part'
+            ? { sectionId: node.sectionId === null ? null : (node.sectionId ?? node.id) }
+            : {}),
           children: prune(node.children ?? []),
         },
       ];
@@ -64,7 +66,9 @@ export function copyOutlineSkeleton(
       return {
         ...node,
         id: `template:${token}:${counter++}`,
-        ...(node.kind === 'part' ? { sectionId: sectionMap.get(section) ?? section } : {}),
+        ...(node.kind === 'part'
+          ? { sectionId: node.sectionId === null ? null : (sectionMap.get(section) ?? section) }
+          : {}),
         children: visit(node.children ?? []),
       };
     });

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { Question } from '@/types/exam';
 import { MathRenderer } from './MathRenderer';
 import { prepareQuestionAiSubmission, questionAiBaseMatches, type QuestionAiBase } from '@/lib/question-ai-review';
-import { questionValueStamp, type QuestionManualSubmission } from '@/lib/question-draft';
+import { sameQuestionSourceStamp, questionValueStamp, type QuestionManualSubmission } from '@/lib/question-draft';
 
 export function QuestionAiReview({ base, candidate, ownerId, documentId, sourceStamp, question, onSubmit, onApplied, onDiscard }: {
   base: QuestionAiBase; candidate: Question; ownerId: string; documentId: string; sourceStamp: string; question: Question;
@@ -13,7 +13,7 @@ export function QuestionAiReview({ base, candidate, ownerId, documentId, sourceS
   const [attempt, setAttempt] = useState<QuestionManualSubmission | null>(null);
   const [message, setMessage] = useState('');
   const appliedToken = useRef<string | null>(null);
-  const acknowledged = !!attempt && ownerId === base.ownerId && documentId === base.documentId && sourceStamp === base.sourceStamp && questionValueStamp(question) === questionValueStamp(attempt.value);
+  const acknowledged = !!attempt && ownerId === base.ownerId && documentId === base.documentId && sameQuestionSourceStamp(sourceStamp, base.sourceStamp) && questionValueStamp(question) === questionValueStamp(attempt.value);
   const stale = !acknowledged && !questionAiBaseMatches(base, ownerId, documentId, sourceStamp, question);
   useEffect(() => {
     if (acknowledged && attempt && appliedToken.current !== attempt.token) {

@@ -1,7 +1,7 @@
 import { outlineLocation, nudgeOutlineNode } from './outline-editing';
 import { outlineNodes, insertOutlineNodes } from './exam-outline';
 import type { Exam, Question } from '@/types/exam';
-import { questionValueStamp, type QuestionManualSubmission } from './question-draft';
+import { sameQuestionSourceStamp, questionValueStamp, type QuestionManualSubmission } from './question-draft';
 
 export interface QuestionUndoEntry {
   before: Question;
@@ -18,7 +18,7 @@ export function prepareQuestionUndo(
   if (
     question.id !== entry.before.id ||
     questionValueStamp(question) !== entry.afterStamp ||
-    sourceStamp !== entry.sourceStamp
+    !sameQuestionSourceStamp(sourceStamp, entry.sourceStamp)
   )
     return null;
   return {

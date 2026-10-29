@@ -1,6 +1,6 @@
 import type { Question } from '@/types/exam';
 import { normalizeQuestion } from './exam-document';
-import { questionValueStamp, type QuestionManualSubmission } from './question-draft';
+import { sameQuestionSourceStamp, questionValueStamp, type QuestionManualSubmission } from './question-draft';
 
 export interface QuestionAiBase {
   ownerId: string;
@@ -14,7 +14,7 @@ export function captureQuestionAiBase(ownerId: string, documentId: string, sourc
 }
 
 export function questionAiBaseMatches(base: QuestionAiBase, ownerId: string, documentId: string, sourceStamp: string, question: Question): boolean {
-  return base.ownerId === ownerId && base.documentId === documentId && base.sourceStamp === sourceStamp
+  return base.ownerId === ownerId && base.documentId === documentId && sameQuestionSourceStamp(base.sourceStamp, sourceStamp)
     && questionValueStamp(base.question) === questionValueStamp(question);
 }
 

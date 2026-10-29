@@ -291,8 +291,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
               {questions.length === 0 && <StructureBlocks blocks={structure.trailing} light />}
               {questions.length === 0 ? (
                 <div className="py-24 text-center text-[#5f6368] italic text-[11pt]">
-                  (Đề thi hiện chưa có câu hỏi nào. Hãy bấm &quot;Thêm câu hỏi&quot; hoặc &quot;Sinh đề AI
-                  Mới&quot; ở bảng bên trái để bắt đầu soạn đề.)
+                  Đề chưa có câu hỏi. Dùng menu &quot;Thêm&quot; hoặc dấu ＋ trong vùng soạn để bắt đầu.
                 </div>
               ) : (
                 <>

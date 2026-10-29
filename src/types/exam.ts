@@ -100,7 +100,7 @@ export interface OutlineNode {
   instructions?: string;
   numbering?: 'none' | 'roman' | 'letters' | 'decimal';
   questionNumbering?: 'continuous' | 'restart';
-  sectionId?: string;
+  sectionId?: string | null;
   passageId?: string;
   questionId?: string;
   children?: OutlineNode[];

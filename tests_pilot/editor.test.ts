@@ -1,6 +1,6 @@
 import test from 'node:test';
 import JSZip from 'jszip';
-import { exportTool, toggleTheme } from './editor-ui';
+import { addSource, exportTool, toggleTheme } from './editor-ui';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { randomUUID } from 'node:crypto';
@@ -38,7 +38,10 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
     const poll = async (check: () => Promise<boolean>) => { const end = Date.now() + 15000; while (Date.now() < end) { if (await check()) return; await new Promise(resolve => setTimeout(resolve,100)); } assert.fail('expected saved state'); };
     await t.test('empty starter, live info preview, optional requirements and template menu', async () => {
       await page.goto(origin + '/editor/' + examId);
-      await page.getByRole('region', { name: 'Thêm nội dung đề', exact: true }).waitFor();
+      await page.getByLabel('Tên phần 1', {exact:true}).waitFor();
+      assert.equal(await page.getByRole('region', {name:'Thêm nội dung đề',exact:true}).count(),0);
+      assert.equal(await page.getByRole('button', {name:'Tự soạn',exact:true}).count(),0);
+      assert.equal(await page.getByLabel('Tên phần 1',{exact:true}).inputValue(),'');
       assert.equal(await page.getByText('Bản nháp chưa lưu trên máy này', { exact: true }).count(), 0);
       assert.equal(await page.getByRole('button', { name: 'Lưu đề', exact: true }).count(), 0);
       await edit().click(); await page.getByRole('dialog', { name: 'Cần khóa AI', exact: true }).waitFor();
@@ -82,14 +85,14 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
     });
     await t.test('new question stays separate, cancel/reopen keeps draft and confirmation inserts exactly once', async () => {
       await page.setViewportSize({width:1440,height:1000});
-      await page.getByRole('button',{name:'Tự soạn',exact:true}).click();
+      await addSource(page, 'Tự soạn câu mới');
       const composer=page.getByRole('region',{name:'Soạn câu mới',exact:true}); await composer.waitFor();
       await composer.getByLabel('Nội dung câu hỏi',{exact:true}).fill('NEW_QUESTION_SEPARATE');
       assert.equal((await context.request.get(origin+'/api/exams/'+examId).then(r=>r.json())).document.questions.length,0);
       await composer.getByRole('button',{name:'Hủy thêm, giữ nháp',exact:true}).click({timeout:6000});
       await page.reload();
-      await page.getByRole('button',{name:'Tự soạn',exact:true}).waitFor();
-      await page.getByRole('button',{name:'Tự soạn',exact:true}).click();
+      await page.getByLabel('Tên phần 1',{exact:true}).waitFor();
+      await addSource(page, 'Tự soạn câu mới');
       assert.equal(await composer.getByLabel('Nội dung câu hỏi',{exact:true}).inputValue(),'NEW_QUESTION_SEPARATE');
       for (const width of [320,375]) {
         await page.setViewportSize({width,height:812}); await fitting();
@@ -116,7 +119,7 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
       for (const label of ['Word – đề','Word – đáp án/barem','Word – lời giải','Word – ma trận']) {
         const download = page.waitForEvent('download'); await exportTool(page,label); const file=await download; const path=await file.path(); assert.ok(path);
         const zip=await JSZip.loadAsync(fs.readFileSync(path)); const xml=await zip.file('word/document.xml')!.async('string');
-        if(label==='Word – đề') {assert.ok(xml.includes('QUESTION_ONE'));assert.ok(xml.includes('NGU_LIEU_PRESERVED'));assert.ok(!xml.includes('PRIVATE_EXPLANATION_ONE'));}
+        if(label==='Word – đề') {assert.ok(xml.includes('QUESTION_ONE'));assert.ok(xml.includes('NGU_LIEU_PRESERVED'));assert.ok(!xml.includes('PRIVATE_EXPLANATION_ONE'));assert.ok(!xml.includes('Phần chưa đặt tên'));assert.ok(!xml.includes('Tên phần — có thể để trống'));}
         if(label==='Word – lời giải') assert.ok(xml.includes('PRIVATE_EXPLANATION_ONE'));
         if(label==='Word – đáp án/barem') assert.ok(xml.includes('ĐÁP ÁN') || xml.includes('Đáp án'));
         if(label==='Word – ma trận') { assert.ok(xml.includes('BẢNG PHÂN BỔ CÂU HỎI')); assert.ok(xml.includes('<w:tbl')); assert.ok(!xml.includes('QUESTION_ONE')); }
@@ -125,14 +128,15 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
     await t.test('content groups and inline shared passage preserve links, source and question order', async () => {
       const loaded=await context.request.get(origin+'/api/exams/'+examId).then(r=>r.json());
       const order=loaded.document.questions.map((q:{id:string})=>q.id);
-      await page.getByRole('button',{name:'+ Thêm phần',exact:true}).click();
-      await page.getByRole('button',{name:/^Thao tác Phần mới/}).first().click();
-      await page.getByRole('menuitem',{name:'Sửa tiêu đề và lời dẫn',exact:true}).click();
-      await page.getByLabel(/^Tiêu đề /).first().fill('PHAN_NOI_DUNG');
-      await page.getByRole('button',{name:'Thêm phần',exact:true}).count();
-      await page.locator('.a4-preview-section').getByText('PHAN_NOI_DUNG').filter({visible:true}).first().waitFor();
+      await page.getByLabel('Tên phần 1',{exact:true}).fill('PHAN_NOI_DUNG');
+      await page.locator('.a4-preview-section').getByText('PHAN_NOI_DUNG',{exact:true}).filter({visible:true}).waitFor();
+      await page.getByLabel('Tên phần 1',{exact:true}).fill('');
+      await poll(async()=>await page.locator('.a4-preview-section').getByText('PHAN_NOI_DUNG',{exact:true}).count()===0);
       const shared=page.getByRole('region',{name:'Dàn ý đề',exact:true});
-      await shared.getByText('Sửa nội dung chung',{exact:true}).first().click();
+      await shared.getByRole('button',{name:'Thu gọn phần không tên 1',exact:true}).click();
+      assert.equal(await shared.getByText('NGU_LIEU_PRESERVED',{exact:true}).isVisible(),false);
+      await shared.getByRole('button',{name:'Mở phần không tên 1',exact:true}).click();
+      await shared.getByRole('button',{name:'Sửa nội dung chung',exact:true}).first().click();
       await shared.getByLabel('Nội dung ngữ liệu 1',{exact:true}).fill('NGU_LIEU_PRESERVED_REVISED');
       await poll(async()=>JSON.stringify((await db.exam.findUniqueOrThrow({where:{id:examId}})).metadata).includes('NGU_LIEU_PRESERVED_REVISED'));
       const saved=await context.request.get(origin+'/api/exams/'+examId).then(r=>r.json());
@@ -140,7 +144,36 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
       assert.ok(saved.document.questions.every((q:{passageId:string})=>q.passageId==='p1'));
       assert.equal(saved.document.passages[0].source,'SOURCE_LOCAL_DOCUMENT');
       assert.equal(saved.document.questions[0].points,0);
-      assert.ok(JSON.stringify(saved.document.sections).includes('PHAN_NOI_DUNG'));
+      assert.equal(saved.document.outline[0].title,'');
+      assert.equal(saved.document.outline[0].sectionId,null);
+      await shared.getByRole('button',{name:'+ Thêm phần',exact:true}).click();
+      await shared.getByLabel('Tên phần 2',{exact:true}).fill('MOVE_TARGET');
+      const questionTwo=page.locator('#editor-question-q2');
+      await questionTwo.getByRole('button',{name:'Thao tác câu 2',exact:true}).click();
+      await page.getByRole('menuitem',{name:'Chuyển sang MOVE_TARGET',exact:true}).click();
+      await poll(async()=>{
+        const doc=(await context.request.get(origin+'/api/exams/'+examId).then(r=>r.json())).document;
+        return !!doc.outline[1] && doc.questions[1].sectionId===doc.outline[1].id && !doc.questions[1].passageId;
+      });
+      await questionTwo.getByRole('button',{name:'Thao tác câu 2',exact:true}).click();
+      await page.getByRole('menuitem',{name:'Đưa vào Bài đọc dùng chung',exact:true}).click();
+      await poll(async()=>{
+        const doc=(await context.request.get(origin+'/api/exams/'+examId).then(r=>r.json())).document;
+        return doc.questions[1].passageId==='p1' && !doc.questions[1].sectionId;
+      });
+      await shared.getByLabel('Tên phần 2',{exact:true}).fill('');
+      assert.equal(await shared.getByLabel('Tên phần 2',{exact:true}).inputValue(),'');
+      await page.getByRole('button',{name:'Thêm công cụ',exact:true}).filter({visible:true}).click();
+      await page.getByRole('menuitem',{name:'Dùng mẫu / lưu thành mẫu',exact:true}).click();
+      await openFold('Lưu cấu hình đề hiện tại thành mẫu riêng');
+      await page.getByLabel('Tên bản mẫu riêng',{exact:true}).fill('UNNAMED_PART_TEMPLATE');
+      const templateResponse=page.waitForResponse(response=>response.url().endsWith('/api/templates') && response.request().method()==='POST');
+      await page.getByRole('button',{name:'Lưu bản mẫu riêng',exact:true}).click();
+      assert.equal((await templateResponse).status(),201,'an unnamed scoring part must still save as a template');
+      assert.equal(await db.examTemplate.count({where:{ownerId:id}}),1);
+      await page.getByRole('button',{name:'Đóng mẫu',exact:true}).click();
+
+
     });
     await t.test('requirements keep unsaved scope and plan when collapsed and save without changing questions', async () => {
       await page.setViewportSize({width:1440,height:1000});
@@ -213,6 +246,12 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
       await first.getByRole('checkbox', {name:'Chọn câu 1',exact:true}).uncheck();
       for(const [width,height] of [[1440,1000],[1024,800],[375,812],[320,740],[568,320]]) for(const dark of [false,true]) {
         await page.setViewportSize({width,height}); if(await page.evaluate(()=>document.documentElement.classList.contains('dark'))!==dark)await toggleTheme(page);
+        const switcher=page.getByRole('navigation',{name:'Chuyển vùng soạn',exact:true});
+        if(await switcher.isVisible()) await switcher.getByRole('button',{name:'Soạn câu',exact:true}).click();
+        const tree=page.getByRole('region',{name:'Dàn ý đề',exact:true});
+        assert.equal(await tree.isVisible(),true);
+        assert.equal(await tree.evaluate(el=>el.scrollWidth<=el.clientWidth+1),true,'vertical content fits its column');
+
         await fitting();
         const toolbar=page.getByRole('toolbar',{name:'Công cụ soạn đề',exact:true});
         const boxes=await toolbar.locator('button').filter({visible:true}).evaluateAll(items=>items.map(el=>el.getBoundingClientRect().top)); assert.ok(Math.max(...boxes)-Math.min(...boxes)<2);
@@ -222,6 +261,7 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
             .every(button => { const rect = button.getBoundingClientRect();
               return rect.left >= bounds.left - 1 && rect.right <= bounds.right + 1; });
         }), true, 'Every visible toolbar button fits, including the final menu at 320px');
+        await tree.evaluate(el=>el.scrollIntoView({block:'start'}));
         await page.waitForTimeout(220); await page.screenshot({path:report+'/rich-'+width+'-'+(dark?'dark':'light')+'.png'});
         await page.getByRole('button',{name: 'Thông tin đề',exact:true}).click();
         const panel=page.getByRole('complementary',{name: 'Thông tin đề',exact:true}); await panel.waitFor();
@@ -256,13 +296,12 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
       assert.ok(response.ok()); const guardId = (await response.json()).exam.id;
       await page.goto(origin + '/editor/' + guardId);
       const tree = page.getByRole('region', { name: 'Dàn ý đề', exact: true });
-      await tree.getByRole('button', { name: '+ Thêm phần', exact: true }).click();
-      await tree.getByRole('button', { name: 'Xong', exact: true }).click();
-      await tree.getByRole('button', { name: 'Thêm vào Phần mới', exact: true }).click();
+      await tree.getByLabel('Tên phần 1',{exact:true}).fill('TEMP_PART');
+      await tree.locator('[data-outline-kind=part]').last().getByRole('button', { name: 'Thêm nội dung', exact: true }).click();
       await page.getByRole('menuitem', { name: 'Câu tự soạn', exact: true }).click();
       const composer = page.getByRole('region', { name: 'Soạn câu mới', exact: true });
       await composer.getByLabel('Nội dung câu hỏi', { exact: true }).fill('KEEP_STALE_COMPOSER');
-      await tree.getByRole('button', { name: 'Thao tác Phần mới', exact: true }).click();
+      await tree.getByRole('button', { name: 'Thao tác TEMP_PART', exact: true }).click();
       await page.getByRole('menuitem', { name: 'Xóa phần', exact: true }).click();
       await page.getByRole('dialog', { name: 'Xóa mục trong đề', exact: true })
         .getByRole('button', { name: 'Bỏ mục, giữ câu', exact: true }).click();
@@ -273,6 +312,7 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
   } finally {
     await browser.close();
     await db.exam.deleteMany({ where: { ownerId: id } }); await db.question.deleteMany({ where: { ownerId: id } });
+    await db.examTemplate.deleteMany({where:{ownerId:id}});
     await db.auditLog.deleteMany({ where: { OR: [{ actorId: id }, { targetType: 'LoginBucket', targetId: loginBucket(email) }] } });
     await db.user.deleteMany({ where: { id } }); assert.equal(await db.user.count({ where: { id } }), 0);
     fs.writeFileSync(report + '/cleanup.json', JSON.stringify({ removedFixtureUser: true, fixtureOnly: true, buildId: fs.readFileSync('.next/BUILD_ID', 'utf8').trim() }, null, 2));

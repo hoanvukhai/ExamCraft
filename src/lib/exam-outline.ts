@@ -8,7 +8,8 @@ export class OutlineError extends Error {
 }
 export type InsertPoint = { parentId: string | null; afterId?: string | null };
 const copy = <T>(value: T): T => structuredClone(value);
-const sectionId = (node: OutlineNode) => node.sectionId ?? node.id;
+// A null scoring link is an implicit visual part: keep the legacy question scoring context.
+const sectionId = (node: OutlineNode) => (node.sectionId === null ? undefined : (node.sectionId ?? node.id));
 
 /** Legacy runs stay in their original order, even when parts were interleaved. */
 export function legacyOutline(exam: Exam): OutlineNode[] {
@@ -99,6 +100,7 @@ export function validateOutline(input: unknown, questions: Question[]): OutlineN
         throw new OutlineError('Chỉ được chia Phần → Nhóm → Câu.');
       }
       for (const key of ['title', 'instructions', 'sectionId', 'passageId'] as const) {
+        if (key === 'sectionId' && node.kind === 'part' && node[key] === null) continue;
         if (node[key] !== undefined && (typeof node[key] !== 'string' || node[key]!.length > 50000)) {
           throw new OutlineError('Tiêu đề, lời dẫn hoặc liên kết không hợp lệ.');
         }
@@ -156,7 +158,7 @@ export function syncOutline(
       if (node.kind === 'part') {
         const id = sectionId(node),
           original = exam.sections?.find((section) => section.id === id);
-        if (!usedSections.has(id)) {
+        if (id !== undefined && !usedSections.has(id)) {
           const oldTitle = original?.title ?? original?.label ?? original?.name;
           sections.push(
             original && oldTitle === node.title
@@ -183,6 +185,11 @@ export function syncOutline(
     }
   };
   visit(outline);
+  if (outlineNodes(outline).some((node) => node.kind === 'part' && node.sectionId === null)) {
+    for (const section of exam.sections ?? []) {
+      if (section.id !== 'workspace' && !usedSections.has(section.id)) sections.push(copy(section));
+    }
+  }
   // The hidden legacy workspace can carry an explicitly chosen scoring configuration.
   const workspace = exam.sections?.find((section) => section.id === 'workspace');
   if (workspace) sections.push(copy(workspace));
@@ -375,7 +382,8 @@ export function outlineEntries(exam: Exam): OutlineEntry[] {
   const visit = (list: OutlineNode[], depth: number) => {
     const counts = { part: 0, group: 0, question: 0 };
     for (const node of list) {
-      const label = outlineNumber(counts[node.kind]++, node.numbering);
+      const unnamedPart = node.kind === 'part' && !node.title?.trim();
+      const label = unnamedPart ? '' : outlineNumber(counts[node.kind]++, node.numbering);
       if (node.kind === 'part' && node.questionNumbering === 'restart') number = 0;
       const question = node.kind === 'question' ? byId.get(node.questionId!) : undefined;
       entries.push({ node, depth, label, question, ...(question ? { number: ++number } : {}) });
@@ -389,10 +397,40 @@ export function outlineEntries(exam: Exam): OutlineEntry[] {
 /** Keep legacy journal stamps valid when the outline only represents the unchanged legacy document. */
 /** Node ids differ between a freshly inserted outline and one derived from a legacy exam; compare the shape only. */
 function outlineShape(nodes: OutlineNode[]): string {
-  const strip = (list: OutlineNode[]): unknown[] => list.map((node) => { const { children, ...rest } = node; const { id, ...shape } = rest; void id; return { ...shape, ...(children ? { children: strip(children) } : {}) }; });
+  const strip = (list: OutlineNode[]): unknown[] =>
+    list.flatMap((node) => {
+      if (
+        node.kind === 'part' &&
+        node.sectionId === null &&
+        !node.title?.trim() &&
+        !node.instructions &&
+        (!node.numbering || node.numbering === 'none') &&
+        (!node.questionNumbering || node.questionNumbering === 'continuous')
+      ) {
+        return strip(node.children ?? []);
+      }
+      const { children, id, ...shape } = node;
+      void id;
+      return [{ ...shape, ...(children ? { children: strip(children) } : {}) }];
+    });
   return JSON.stringify(strip(nodes));
 }
 export function structuralStampFields(exam: Exam): { outline?: OutlineNode[] } {
   if (!exam.outline || outlineShape(exam.outline) === outlineShape(legacyOutline(exam))) return {};
-  return { outline: exam.outline };
+  const unwrap = (nodes: OutlineNode[]): OutlineNode[] =>
+    nodes.flatMap((node) => {
+      const children = node.children ? unwrap(node.children) : undefined;
+      if (
+        node.kind === 'part' &&
+        node.sectionId === null &&
+        !node.title?.trim() &&
+        !node.instructions &&
+        (!node.numbering || node.numbering === 'none') &&
+        (!node.questionNumbering || node.questionNumbering === 'continuous')
+      ) {
+        return children ?? [];
+      }
+      return [{ ...node, ...(children ? { children } : {}) }];
+    });
+  return { outline: unwrap(exam.outline) };
 }

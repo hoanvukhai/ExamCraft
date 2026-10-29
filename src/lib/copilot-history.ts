@@ -1,6 +1,6 @@
 import type { Exam, Question } from '@/types/exam';
 import { captureCopilotBase, copilotQuestionsStamp, type CopilotSubmission } from './copilot-submission';
-import { questionDraftSourceStamp } from './question-draft';
+import { sameQuestionSourceStamp, questionDraftSourceStamp } from './question-draft';
 import { normalizeQuestion } from './exam-document';
 
 export interface CopilotHistoryEntry { id: string; ownerId: string; documentId: string; sourceStamp: string; before: Question[]; after: Question[] }
@@ -12,7 +12,7 @@ export function appendCopilotHistory(history: CopilotHistory, submission: Copilo
 }
 const bodyStamp = (question: Question) => copilotQuestionsStamp([{ ...question, version: undefined, status: undefined, verifiedBy: undefined }]);
 export function prepareCopilotTravel(entry: CopilotHistoryEntry, direction: 'undo' | 'redo', ownerId: string, exam: Exam): CopilotSubmission | null {
-  if (exam.access?.canEdit === false || entry.ownerId !== ownerId || entry.documentId !== exam.id || entry.sourceStamp !== questionDraftSourceStamp(exam)) return null;
+  if (exam.access?.canEdit === false || entry.ownerId !== ownerId || entry.documentId !== exam.id || !sameQuestionSourceStamp(entry.sourceStamp, questionDraftSourceStamp(exam))) return null;
   const expected = direction === 'undo' ? entry.after : entry.before, target = direction === 'undo' ? entry.before : entry.after;
   if (copilotQuestionsStamp(exam.questions) !== copilotQuestionsStamp(expected)) return null;
   try {
@@ -29,7 +29,7 @@ export function prepareCopilotTravel(entry: CopilotHistoryEntry, direction: 'und
 export function confirmCopilotTravel(history: CopilotHistory, entryId: string, direction: 'undo' | 'redo', submission: CopilotSubmission): CopilotHistory {
   const source = direction === 'undo' ? history.undo : history.redo, entry = source.at(-1);
   if (!entry || entry.id !== entryId) return history;
-  if (entry.ownerId !== submission.base.ownerId || entry.documentId !== submission.base.documentId || entry.sourceStamp !== submission.base.sourceStamp || copilotQuestionsStamp(direction === 'undo' ? entry.after : entry.before) !== copilotQuestionsStamp(submission.base.questions)) return history;
+  if (entry.ownerId !== submission.base.ownerId || entry.documentId !== submission.base.documentId || !sameQuestionSourceStamp(entry.sourceStamp, submission.base.sourceStamp) || copilotQuestionsStamp(direction === 'undo' ? entry.after : entry.before) !== copilotQuestionsStamp(submission.base.questions)) return history;
   const remaining = source.slice(0, -1).map(value => structuredClone(value));
   if (remaining.length) {
     const last = remaining[remaining.length - 1];

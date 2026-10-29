@@ -60,7 +60,7 @@ async function click(page: Page, name: string | RegExp) {
   if (name === 'Sinh đề AI Mới') { await addSource(page, 'Sinh bằng AI'); return; }
   if (name === 'Song song') { await page.getByLabel('Bố cục song song', { exact: true }).check(); return; }
   if (name === 'Thêm câu hỏi mới') { await addSource(page, 'Tự soạn câu mới'); return; }
-  if (name === 'Thêm câu hỏi') { await page.getByRole('button', { name: 'Thêm vào cuối đề', exact: true }).click(); await page.getByRole('menuitem', { name: 'Câu tự soạn', exact: true }).click(); return; }
+  if (name === 'Thêm câu hỏi') { await page.locator('[data-outline-kind=part]').last().getByRole('button', { name: 'Thêm vào Phần đọc', exact: true }).click(); await page.getByRole('menuitem', { name: 'Câu tự soạn', exact: true }).click(); return; }
   if (name === 'Cùng soạn · Góp ý · Lịch sử') { await page.getByRole('button', { name: 'Thêm công cụ', exact: true }).filter({ visible: true }).click(); await page.getByRole('menuitem', { name: 'Cùng soạn', exact: true }).click(); return; }
   await page.getByRole('button', { name: typeof name === 'string' ? labels[name] ?? name : name, exact: typeof name === 'string' }).click();
   await acceptReview(page);
@@ -198,11 +198,9 @@ test('F2 author seven types, image, passage, zero, title and reopen', { timeout:
   const titleInput = f.page.locator('header input').first(); await titleInput.fill('Pilot Toán 6 tự soạn'); await titleInput.press('Enter');
   // Create a real material group through the new outline menu before authoring Q1.
   const canvas = f.page.getByRole('region', { name: 'Dàn ý đề', exact: true });
-  await canvas.getByRole('button', { name: '+ Thêm phần', exact: true }).click();
-  await canvas.getByLabel(/^Tiêu đề /).fill('Phần đọc');
-  await canvas.getByRole('button', { name: 'Xong', exact: true }).click();
-  await canvas.getByRole('button', { name: 'Thêm vào Phần đọc', exact: true }).click();
-  await f.page.getByRole('menuitem', { name: 'Ngữ liệu (nhóm mới)', exact: true }).click();
+  await canvas.getByLabel('Tên phần 1',{exact:true}).fill('Phần đọc');
+  await canvas.getByRole('button', { name: 'Thêm nội dung', exact: true }).click();
+  await f.page.getByRole('menuitem', { name: 'Nội dung dùng chung', exact: true }).click();
   await canvas.getByLabel('Tên ngữ liệu 1', { exact: true }).fill('Ngữ liệu thử');
   await canvas.getByLabel('Nội dung ngữ liệu 1', { exact: true }).fill('Lan đọc sách ở thư viện.');
   await canvas.getByRole('button', { name: 'Xong', exact: true }).click();
@@ -227,7 +225,8 @@ test('F2 author seven types, image, passage, zero, title and reopen', { timeout:
     if (['short_answer','fill_blank'].includes(type)) await f.page.getByLabel('Đáp án chính', { exact: true }).fill('2');
     if (type === 'matching') { for (let i=1;i<=2;i++) { await click(f.page,'Thêm cặp'); await f.page.getByLabel('Vế trái '+i).fill('Vế '+i); await f.page.getByLabel('Vế phải '+i).fill(String(i)); } }
     if (type === 'ordering') await f.page.getByLabel('Thứ tự đúng', { exact: true }).fill('Bước đầu\nBước sau');
-    await f.page.getByRole('textbox', { name: 'Lời giải', exact: true }).fill(solution); await click(f.page,'Thêm vào đề');
+    await f.page.getByRole('textbox', { name: 'Lời giải', exact: true }).fill(solution);
+    await click(f.page,'Thêm vào đề');
     await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).waitFor({ state: 'hidden' });
     await f.page.getByTitle('Sửa nội dung câu hỏi thủ công', { exact: true }).last().click();
     await f.page.getByRole('button', { name: 'Thao tác câu ' + (index + 1), exact: true }).click();
@@ -256,7 +255,8 @@ test('F2 author seven types, image, passage, zero, title and reopen', { timeout:
   assert.equal(saved.outline?.[0].kind, 'part');
   assert.equal(saved.outline?.[0].children?.[0].kind, 'group');
   assert.equal(saved.questions[0].passageId, saved.passages?.[0].id);
-  assert.equal(saved.questions[0].sectionId, saved.outline?.[0].id);
+  assert.equal(saved.outline?.[0].sectionId,null);
+  assert.equal(saved.questions[0].sectionId,undefined);
   assert.deepEqual(saved.questions.map(q=>q.type),types); assert.equal(saved.questions[0].points,0); assert.equal(saved.questions[0].figures?.length,1); assert.equal(saved.passages?.[0].content,'Lan đọc sách ở thư viện.');
   await f.page.getByText('PILOT Q7 ordering', { exact: true }).filter({visible:true}).first().waitFor();
 }));

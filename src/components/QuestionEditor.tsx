@@ -8,6 +8,7 @@ import { FigureEditor } from './FigureEditor';
 import type { KnowledgePackage, KnowledgeScope } from '@/lib/knowledge-package';
 import { bindQuestionKnowledge, reviewQuestionKnowledge } from '@/lib/question-knowledge';
 import {
+  sameQuestionSourceStamp,
   listQuestionDrafts,
   questionValueStamp,
   resumeQuestionDraft,
@@ -83,7 +84,7 @@ export function QuestionEditor({
   const stale =
     !acknowledged &&
     (questionValueStamp(question) !== questionValueStamp(editor.record.baseQuestion) ||
-      sourceStamp !== editor.record.baseSourceStamp);
+      !sameQuestionSourceStamp(sourceStamp, editor.record.baseSourceStamp));
   useEffect(() => {
     if (acknowledged && attempt && appliedToken.current !== attempt.token) {
       appliedToken.current = attempt.token;

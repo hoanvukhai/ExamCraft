@@ -1,7 +1,7 @@
 import type { Exam, Question } from '@/types/exam';
 import { normalizeQuestion } from './exam-document';
 import { captureQuestionAiBase, prepareQuestionAiSubmission } from './question-ai-review';
-import { questionDraftSourceStamp } from './question-draft';
+import { sameQuestionSourceStamp, questionDraftSourceStamp } from './question-draft';
 
 export interface CopilotBase {
   ownerId: string;
@@ -29,7 +29,7 @@ export function captureCopilotBase(ownerId: string, exam: Exam): CopilotBase {
   return { ownerId, documentId: exam.id, sourceStamp: questionDraftSourceStamp(exam), questions: structuredClone(exam.questions) };
 }
 export function copilotBaseMatches(base: CopilotBase, ownerId: string, exam: Exam): boolean {
-  return base.ownerId === ownerId && base.documentId === exam.id && base.sourceStamp === questionDraftSourceStamp(exam)
+  return base.ownerId === ownerId && base.documentId === exam.id && sameQuestionSourceStamp(base.sourceStamp, questionDraftSourceStamp(exam))
     && copilotQuestionsStamp(base.questions) === copilotQuestionsStamp(exam.questions);
 }
 function validatedQuestions(questions: Question[]): Question[] {

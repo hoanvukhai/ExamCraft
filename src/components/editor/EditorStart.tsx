@@ -1,4 +1,0 @@
-'use client';
-export function EditorStart({ hasKey, onAdd, onBank, onImport, onGenerate }: { hasKey: boolean; onAdd: () => void; onBank: () => void; onImport: () => void; onGenerate: () => void }) {
-  return <section aria-label="Thêm nội dung đề" className="rounded-xl border p-4 bg-[var(--ui-surface)] space-y-3"><p className="text-sm text-[var(--ui-text-secondary)]">Chưa có câu hỏi. Chọn cách thêm nội dung vào đề.</p><div className="grid grid-cols-1 min-[380px]:grid-cols-2 gap-3">{[{ name: 'Tự soạn', action: onAdd }, { name: 'Từ ngân hàng', action: onBank }, { name: 'Nhập Word/Ảnh', action: onImport }, { name: 'Sinh bằng AI', action: onGenerate }].map(item => <button key={item.name} type="button" onClick={item.action} className="app-button-secondary min-h-14 p-3 text-left rounded-xl text-sm"><strong>{item.name}</strong>{item.name === 'Sinh bằng AI' && !hasKey && <span className="block text-xs mt-1">Cần khóa AI cá nhân</span>}</button>)}</div></section>;
-}

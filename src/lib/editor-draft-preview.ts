@@ -3,6 +3,7 @@ import type { Exam, Question } from '@/types/exam';
 import { applyHeaderSubmission, type HeaderSubmission } from './header-layout';
 import { normalizeQuestion } from './exam-document';
 import {
+  sameQuestionSourceStamp,
   questionDraftSourceStamp,
   questionValueStamp,
   type QuestionManualSubmission,
@@ -24,7 +25,7 @@ export function appendManualQuestion(
     exam.access?.canEdit === false ||
     submission.ownerId !== ownerId ||
     submission.documentId !== exam.id ||
-    submission.baseSourceStamp !== questionDraftSourceStamp(exam) ||
+    !sameQuestionSourceStamp(submission.baseSourceStamp, questionDraftSourceStamp(exam)) ||
     submission.questionId !== seed.id ||
     submission.value.id !== seed.id ||
     submission.baseStamp !== questionValueStamp(seed) ||

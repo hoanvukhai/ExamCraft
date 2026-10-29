@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { Exam } from '@/types/exam';
 import { AiProposalPreview } from './AiProposalPreview';
 import { copilotBaseMatches, copilotQuestionsStamp, prepareCopilotSubmission, type CopilotActionResult, type CopilotBase, type CopilotSubmission } from '@/lib/copilot-submission';
-import { questionDraftSourceStamp } from '@/lib/question-draft';
+import { sameQuestionSourceStamp, questionDraftSourceStamp } from '@/lib/question-draft';
 
 export function CopilotProposalReview({ base, result, ownerId, exam, onSubmit, onApplied, onDiscard }: {
   base: CopilotBase; result: CopilotActionResult; ownerId: string; exam: Exam;
@@ -13,7 +13,7 @@ export function CopilotProposalReview({ base, result, ownerId, exam, onSubmit, o
   const [attempt, setAttempt] = useState<CopilotSubmission | null>(null);
   const [message, setMessage] = useState('');
   const applied = useRef<string | null>(null);
-  const acknowledged = !!attempt && ownerId === base.ownerId && exam.id === base.documentId && questionDraftSourceStamp(exam) === base.sourceStamp && copilotQuestionsStamp(exam.questions) === copilotQuestionsStamp(attempt.questions);
+  const acknowledged = !!attempt && ownerId === base.ownerId && exam.id === base.documentId && sameQuestionSourceStamp(questionDraftSourceStamp(exam), base.sourceStamp) && copilotQuestionsStamp(exam.questions) === copilotQuestionsStamp(attempt.questions);
   const stale = !acknowledged && !copilotBaseMatches(base, ownerId, exam);
   const preview = result.modifiedQuestion ? { ...result.modifiedQuestion, points: result.action === 'modify_single_question' ? base.questions.find(question => question.id === result.targetQuestionId)?.points : undefined } : undefined;
   useEffect(() => {

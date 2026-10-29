@@ -8,27 +8,29 @@ import { FigureView } from '@/components/FigureView';
 export function StructureBlocks({ blocks, light = false }: { blocks?: StructureBlock[]; light?: boolean }) {
   return (
     <>
-      {blocks?.map((block) => (
-        <section key={block.id} data-outline-block={block.id} className="my-3 space-y-2 break-inside-avoid">
-          {block.title && (
-            <h3 className="font-bold">
-              <MathRenderer content={block.title} inline />
-            </h3>
-          )}
-          {block.instructions && <MathRenderer content={block.instructions} />}
-          {block.missingPassageId && <p>Chưa tìm thấy nội dung dùng chung: {block.missingPassageId}</p>}
-          {block.passage && (
-            <div className="border rounded-lg p-3 text-sm space-y-2">
-              {block.passage.title && <h4 className="font-semibold">{block.passage.title}</h4>}
-              <MathRenderer content={block.passage.content} />
-              {block.passage.figures?.map((figure) => (
-                <FigureView key={figure.id} figure={figure} forceLight={light} />
-              ))}
-              {block.passage.source && <p className="text-xs italic">{block.passage.source}</p>}
-            </div>
-          )}
-        </section>
-      ))}
+      {blocks
+        ?.filter((block) => block.title || block.instructions || block.passage || block.missingPassageId)
+        .map((block) => (
+          <section key={block.id} data-outline-block={block.id} className="my-3 space-y-2 break-inside-avoid">
+            {block.title && (
+              <h3 className="font-bold">
+                <MathRenderer content={block.title} inline />
+              </h3>
+            )}
+            {block.instructions && <MathRenderer content={block.instructions} />}
+            {block.missingPassageId && <p>Chưa tìm thấy nội dung dùng chung: {block.missingPassageId}</p>}
+            {block.passage && (
+              <div className="border rounded-lg p-3 text-sm space-y-2">
+                {block.passage.title && <h4 className="font-semibold">{block.passage.title}</h4>}
+                <MathRenderer content={block.passage.content} />
+                {block.passage.figures?.map((figure) => (
+                  <FigureView key={figure.id} figure={figure} forceLight={light} />
+                ))}
+                {block.passage.source && <p className="text-xs italic">{block.passage.source}</p>}
+              </div>
+            )}
+          </section>
+        ))}
     </>
   );
 }

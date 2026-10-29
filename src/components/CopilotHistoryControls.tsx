@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { Exam } from '@/types/exam';
 import { copilotQuestionsStamp, type CopilotSubmission } from '@/lib/copilot-submission';
 import { prepareCopilotTravel, type CopilotHistory } from '@/lib/copilot-history';
-import { questionDraftSourceStamp } from '@/lib/question-draft';
+import { sameQuestionSourceStamp, questionDraftSourceStamp } from '@/lib/question-draft';
 
 export function CopilotHistoryControls({ history, ownerId, exam, disabled, onSubmit, onConfirmed }: {
   history: CopilotHistory; ownerId: string; exam: Exam; disabled: boolean; onSubmit: (submission: CopilotSubmission) => void;
@@ -11,7 +11,7 @@ export function CopilotHistoryControls({ history, ownerId, exam, disabled, onSub
 }) {
   const [attempt, setAttempt] = useState<{ entryId: string; direction: 'undo' | 'redo'; submission: CopilotSubmission } | null>(null), [message, setMessage] = useState('');
   const acknowledgedToken = useRef<string | null>(null);
-  const acknowledged = !!attempt && attempt.submission.base.ownerId === ownerId && attempt.submission.base.documentId === exam.id && attempt.submission.base.sourceStamp === questionDraftSourceStamp(exam) && copilotQuestionsStamp(attempt.submission.questions) === copilotQuestionsStamp(exam.questions);
+  const acknowledged = !!attempt && attempt.submission.base.ownerId === ownerId && attempt.submission.base.documentId === exam.id && sameQuestionSourceStamp(attempt.submission.base.sourceStamp, questionDraftSourceStamp(exam)) && copilotQuestionsStamp(attempt.submission.questions) === copilotQuestionsStamp(exam.questions);
   useEffect(() => {
     if (acknowledged && attempt && acknowledgedToken.current !== attempt.submission.token) { acknowledgedToken.current = attempt.submission.token; onConfirmed(attempt.entryId, attempt.direction, attempt.submission); }
   }, [acknowledged, attempt, onConfirmed]);

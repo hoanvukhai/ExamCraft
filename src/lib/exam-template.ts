@@ -30,7 +30,8 @@ export const templateSourceSchema = z
 const sectionSchema = z
   .object({
     id,
-    name: z.string().min(1).max(500),
+    // A part may intentionally have no printed heading.
+    name: z.string().max(500),
     title: text.optional(),
     label: text.optional(),
     type: z.enum(PLAN_TYPES).optional(),

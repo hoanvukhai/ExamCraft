@@ -52,12 +52,24 @@ export const questionDraftKey = (
   draft: Pick<QuestionDraft, 'ownerId' | 'documentId' | 'questionId' | 'journalId'>,
 ) =>
   `${scopePrefix(draft.ownerId, draft.documentId)}${encodeURIComponent(draft.questionId)}:${encodeURIComponent(draft.journalId)}`;
-export function questionValueStamp(question: Question) {
-  return JSON.stringify(question, (_key, item) =>
+function canonicalStamp(value: unknown) {
+  return JSON.stringify(value, (_key, item) =>
     item && typeof item === 'object' && !Array.isArray(item)
       ? Object.fromEntries(Object.entries(item).sort(([a], [b]) => a.localeCompare(b)))
       : item,
   );
+}
+/** Object key order can change during a JSON/database round trip; array order and all values stay strict. */
+export function sameQuestionSourceStamp(left: string, right: string): boolean {
+  if (left === right) return true;
+  try {
+    return canonicalStamp(JSON.parse(left)) === canonicalStamp(JSON.parse(right));
+  } catch {
+    return false;
+  }
+}
+export function questionValueStamp(question: Question) {
+  return canonicalStamp(question);
 }
 export function questionDraftSatisfiedBy(entry: QuestionDraftEntry, applied: Question) {
   return (
@@ -72,7 +84,7 @@ export function questionDraftSatisfiedBy(entry: QuestionDraftEntry, applied: Que
 }
 export function resumeQuestionDraft(value: QuestionDraft, current: Question, sourceStamp: string) {
   const entry = { key: questionDraftKey(value), raw: '', value };
-  const alreadyApplied = value.baseSourceStamp === sourceStamp && questionDraftSatisfiedBy(entry, current);
+  const alreadyApplied = sameQuestionSourceStamp(value.baseSourceStamp, sourceStamp) && questionDraftSatisfiedBy(entry, current);
   const record = structuredClone(value);
   if (alreadyApplied) {
     record.baseQuestion = structuredClone(current);
@@ -246,7 +258,7 @@ export function questionDraftMatchesDocument(entry: QuestionDraftEntry, exam: Ex
   if (
     !entry.value ||
     entry.value.documentId !== exam.id ||
-    entry.value.baseSourceStamp !== questionDraftSourceStamp(exam)
+    !sameQuestionSourceStamp(entry.value.baseSourceStamp, questionDraftSourceStamp(exam))
   )
     return false;
   const question = exam.questions.find((value) => value.id === entry.value!.questionId);
@@ -306,7 +318,7 @@ export function applyQuestionManualSubmission(
     submission.ownerId !== ownerId ||
     submission.documentId !== previous.id ||
     previous.access?.canEdit === false ||
-    questionDraftSourceStamp(previous) !== submission.baseSourceStamp
+    !sameQuestionSourceStamp(questionDraftSourceStamp(previous), submission.baseSourceStamp)
   )
     return previous;
   const index = previous.questions.findIndex((question) => question.id === submission.questionId);
