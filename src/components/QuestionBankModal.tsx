@@ -22,6 +22,8 @@ interface Props {
   onInsertQuestion: (q: Question, passage?: Passage) => void | boolean;
   allowInsert?: boolean;
   pageMode?: boolean;
+  /** Docked in the editor's left panel instead of floating over the page. */
+  panel?: boolean;
 }
 type Item = BankQuestion & { author?: { id: string; name: string }; shareable?: boolean };
 const field = 'teacher-field w-full min-h-10 rounded-lg border bg-[var(--ui-surface)] px-3 py-2 text-sm';
@@ -53,6 +55,7 @@ function QuestionBankContent({
   onInsertQuestion,
   allowInsert = true,
   pageMode = false,
+  panel: docked = false,
 }: Props) {
   const [tab, setTab] = useBankField<'personal' | 'shared'>('tab', 'personal', pageMode);
   const [search, setSearch] = useBankField<string>('search', '', pageMode),
@@ -219,7 +222,13 @@ function QuestionBankContent({
   const filters = search || subject !== 'all' || grade !== 'all' || type !== 'all' || difficulty !== 'all';
   return (
     <div
-      className={pageMode ? '' : 'fixed inset-0 z-50 bg-black/60 p-3 sm:p-4 flex items-center justify-center'}
+      className={
+        docked
+          ? '@container h-full min-h-0 flex flex-col'
+          : pageMode
+            ? ''
+            : 'fixed inset-0 z-50 bg-black/60 p-3 sm:p-4 flex items-center justify-center'
+      }
     >
       {pageMode && (
         <PageHeader
@@ -229,12 +238,12 @@ function QuestionBankContent({
       )}
       <section
         ref={panel}
-        role={pageMode ? undefined : 'dialog'}
-        aria-modal={pageMode ? undefined : true}
+        role={pageMode ? undefined : docked ? 'region' : 'dialog'}
+        aria-modal={pageMode || docked ? undefined : true}
         aria-label={pageMode ? undefined : 'Chọn câu từ ngân hàng'}
-        className={`w-full ${pageMode ? '' : 'bg-[var(--ui-surface)] text-[var(--foreground)] border rounded-xl max-w-5xl max-h-[92dvh] flex flex-col overflow-hidden'}`}
+        className={`w-full ${docked ? 'flex-1 min-h-0 flex flex-col' : pageMode ? '' : 'bg-[var(--ui-surface)] text-[var(--foreground)] border rounded-xl max-w-5xl max-h-[92dvh] flex flex-col overflow-hidden'}`}
       >
-        {!pageMode && (
+        {!pageMode && !docked && (
           <header className="p-4 sm:p-6 border-b flex flex-wrap items-start justify-between gap-3">
             <div>
               {pageMode ? (
@@ -265,7 +274,15 @@ function QuestionBankContent({
             )}
           </header>
         )}
-        <div className={pageMode ? 'space-y-4' : 'p-4 sm:p-6 space-y-4 overflow-auto min-h-0'}>
+        <div
+          className={
+            docked
+              ? 'p-3 space-y-4 overflow-auto min-h-0 flex-1'
+              : pageMode
+                ? 'space-y-4'
+                : 'p-4 sm:p-6 space-y-4 overflow-auto min-h-0'
+          }
+        >
           {confirmation}
           {notice && (
             <p role="status" className="border rounded-lg p-3 text-sm">
@@ -294,7 +311,9 @@ function QuestionBankContent({
               className={
                 pageMode
                   ? 'flex flex-wrap gap-3 [&>label]:min-w-44 [&>label]:flex-1'
-                  : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3'
+                  : docked
+                    ? 'grid grid-cols-1 @min-[520px]:grid-cols-2 gap-3'
+                    : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3'
               }
             >
               <label className="text-sm">

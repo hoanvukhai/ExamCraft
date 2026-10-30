@@ -60,9 +60,11 @@ function renderStructuredPrompt(question: Exam['questions'][number]) {
 
 interface A4PreviewProps {
   exam: Exam;
+  /** Extra controls for the bar under the sheet (for example the slideshow button). */
+  barExtra?: React.ReactNode;
 }
 
-export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
+export const A4Preview: React.FC<A4PreviewProps> = ({ exam, barExtra }) => {
   const [viewMode, setViewMode] = useState<'exam' | 'parallel' | 'answers' | 'solutions' | 'matrix'>('exam');
   // null follows the available width; explicit percentages are actual paper zoom.
   const [zoom, setZoom] = useState<number | null>(null);
@@ -99,11 +101,10 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
   return (
     <div
       className={
-        'a4-preview-container flex flex-col h-full min-h-[32rem] bg-[var(--ui-surface-variant)] rounded-2xl border ' +
-        'border-[var(--ui-border)] overflow-hidden shadow-xs'
+        'a4-preview-container flex flex-col h-full min-h-0 bg-[var(--ui-surface-variant)] overflow-hidden'
       }
     >
-      <div className="no-print shrink-0 border-b p-2 space-y-2 bg-[var(--ui-surface)]">
+      <div className="no-print order-last shrink-0 border-t px-2 py-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 bg-[var(--ui-surface)]">
         <nav aria-label="Các bản xem trước" className="flex flex-nowrap overflow-x-auto gap-1">
           {(
             [
@@ -129,7 +130,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
             </button>
           ))}
         </nav>
-        <div className="flex items-center gap-2 text-xs flex-wrap">
+        <div className="flex items-center gap-2 text-xs flex-wrap ml-auto">
           {(viewMode === 'exam' || viewMode === 'parallel') && (
             <label className="inline-flex gap-1 items-center">
               <input
@@ -141,7 +142,8 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
               Song song
             </label>
           )}
-          <div className="ml-auto flex items-center gap-1">
+          {barExtra}
+          <div className="flex items-center gap-1">
             <button
               type="button"
               aria-label="Thu nhỏ"

@@ -1,4 +1,4 @@
-import { saveEditor, addSource, acceptReview, exportTool } from './editor-ui';
+import { saveEditor, addSource, acceptReview, exportTool, openAccount, openAssistant, openCopilot, questionCommandAt, questionMenuItemAt } from './editor-ui';
 import test from 'node:test';
 import { writeQaReport } from '../tests/helpers/qa-report';
 import http from 'node:http';
@@ -50,6 +50,13 @@ async function waitUntil(check: () => Promise<boolean>, message: string, timeout
 async function openDetails(page: Page, summary: string) { await page.locator('summary', { hasText: summary }).first().evaluate(el => { (el.parentElement as HTMLDetailsElement).open = true; }); }
 async function openTool(page: Page, label: 'Xuất' | 'Đề thi') { await page.getByRole('button', { name: label === 'Đề thi' ? 'Xuất' : label, exact: true }).filter({ visible: true }).click(); }
 async function menuLink(page: Page, name: string) {
+  // The editor has no page menu of its own; its menu button leads back to the same places.
+  const appMenu = page.getByRole('button', { name: 'Menu ứng dụng', exact: true }).filter({ visible: true });
+  if (await appMenu.count()) {
+    await appMenu.click();
+    await page.getByRole('menuitem', { name: name === 'Tất cả đề thi' ? 'Về Kho đề' : name, exact: true }).click();
+    return;
+  }
   if (name === 'Đề quan trọng (Gắn sao)' || name === 'Đã sửa gần đây') { await page.getByRole('navigation', { name: 'Chế độ kho đề' }).getByRole('button', { name: name === 'Đã sửa gần đây' ? name : 'Gắn sao', exact: true }).click(); return; }
   await page.getByRole('navigation', { name: 'Không gian giáo viên' }).getByRole('link', { name: name === 'Tất cả đề thi' ? 'Kho đề' : name, exact: true }).filter({ visible: true }).click();
 }
@@ -61,7 +68,7 @@ async function click(page: Page, name: string | RegExp) {
   if (name === 'Song song') { await page.getByLabel('Bố cục song song', { exact: true }).check(); return; }
   if (name === 'Thêm câu hỏi mới') { await addSource(page, 'Tự soạn câu mới'); return; }
   if (name === 'Thêm câu hỏi') { await page.locator('[data-outline-kind=part]').last().getByRole('button', { name: 'Thêm vào Phần đọc', exact: true }).click(); await page.getByRole('menuitem', { name: 'Câu tự soạn', exact: true }).click(); return; }
-  if (name === 'Cùng soạn · Góp ý · Lịch sử') { await page.getByRole('button', { name: 'Thêm công cụ', exact: true }).filter({ visible: true }).click(); await page.getByRole('menuitem', { name: 'Cùng soạn', exact: true }).click(); return; }
+  if (name === 'Cùng soạn · Góp ý · Lịch sử') { await page.getByRole('button', { name: 'Mời cùng soạn', exact: true }).filter({ visible: true }).click(); return; }
   await page.getByRole('button', { name: typeof name === 'string' ? labels[name] ?? name : name, exact: typeof name === 'string' }).click();
   await acceptReview(page);
 }
@@ -217,8 +224,8 @@ test('F2 author seven types, image, passage, zero, title and reopen', { timeout:
     }
     await f.page.getByLabel('Điểm câu', { exact: true }).fill(index === 0 ? '0' : '1');
     if (type === 'multiple_choice') { for (const key of ['A','B','C','D']) await f.page.getByLabel('Phương án ' + key, { exact: true }).fill(key === 'A' ? 'Hai' : key); await f.page.getByLabel('Đáp án lựa chọn').selectOption('A');
-      await f.page.getByText('Hình và đồ thị (0)', { exact: true }).click();
-      await f.page.getByLabel('Thêm ảnh', { exact: false }).setInputFiles({ name: 'pilot.png', mimeType: 'image/png', buffer: image });
+      await f.page.getByText('Hình và đồ thị (0)', { exact: true }).last().click();
+      await f.page.getByLabel('Thêm ảnh', { exact: false }).last().setInputFiles({ name: 'pilot.png', mimeType: 'image/png', buffer: image });
       await f.page.getByLabel('Chú thích hình 1').fill('Ảnh thử');
     }
     if (type === 'true_false_group') { await click(f.page,'Thêm ý'); await f.page.getByLabel('Nội dung ý a').fill('Hai lớn hơn một'); await f.page.getByLabel('Đáp án ý a').selectOption('true'); }
@@ -228,13 +235,13 @@ test('F2 author seven types, image, passage, zero, title and reopen', { timeout:
     await f.page.getByRole('textbox', { name: 'Lời giải', exact: true }).fill(solution);
     await click(f.page,'Thêm vào đề');
     await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).waitFor({ state: 'hidden' });
-    await f.page.getByTitle('Sửa nội dung câu hỏi thủ công', { exact: true }).last().click();
-    await f.page.getByRole('button', { name: 'Thao tác câu ' + (index + 1), exact: true }).click();
+    await questionCommandAt(f.page, index, 'Chỉnh nội dung');
+    await f.page.getByRole('toolbar', { name: 'Công cụ soạn đề' }).getByRole('button', { name: 'Khác', exact: true }).click();
     assert.equal(await f.page.getByRole('menuitem', { name: 'Lưu bản sao vào ngân hàng', exact: true }).isDisabled(), true); await f.page.keyboard.press('Escape');
     await f.page.getByRole('button',{name:'Đóng, giữ nháp',exact:true}).click();
   }
   const bankSaved = f.page.waitForResponse(r => r.url().endsWith('/api/questions') && r.request().method() === 'POST');
-  await f.page.getByRole('button',{name:'Thao tác câu 1',exact:true}).click(); await f.page.getByRole('menuitem',{name:'Lưu bản sao vào ngân hàng',exact:true}).click();
+  await questionCommandAt(f.page, 0, 'Lưu bản sao vào ngân hàng');
   { const bankResponse = await bankSaved; assert.equal(bankResponse.status(), 200, 'POST /api/questions status ' + bankResponse.status()); } // this endpoint answers 200 with { success, question }, not 201
   await f.page.getByText('Đã lưu bản sao riêng vào ngân hàng', { exact: true }).waitFor();
   const bankRows = await f.db.question.findMany({ where: { ownerId: f.ids[0], NOT: { tags: { has: '__workspace_only' } } }, include: { passage: true } });
@@ -373,7 +380,7 @@ test('F5 assign link with and without class and inspect frozen policies', { time
   // Editing the source after assignment must not rewrite either frozen snapshot.
   const frozen = rows.map(row => ({ id: row.id, snapshot: JSON.stringify(row.snapshot) }));
   await openExam(f, id);
-  await f.page.getByTitle('Sửa nội dung câu hỏi thủ công', { exact: true }).first().click();
+  await questionCommandAt(f.page, 0, 'Chỉnh nội dung');
   await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).fill('SOURCE_CHANGED_AFTER_ASSIGN');
   await click(f.page, 'Áp dụng câu vào đề');
   await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).waitFor({ state: 'hidden' });
@@ -851,11 +858,11 @@ test('F21 collaborator Copilot uses its own key and preserves the owner concurre
     const context = await f.context(), b = await context.newPage(); await login(b, f.emails[1], f.password); await b.waitForURL(origin + '/');
     await f.api('/api/user/keys', 'POST', { apiKey: 'pilot-editor-key-0123456789', label: 'Editor fixture' }, context);
     await b.goto(origin + '/editor/' + id);
-    await b.getByRole('button', { name: 'Sửa đề bằng Trợ lý AI', exact: true }).click();
+    await openCopilot(b);
     await b.locator('#right-copilot-input').fill('Sửa nội dung câu 1 thành câu thử F21'); await b.locator('#right-copilot-input').press('Enter');
     await waitUntil(async () => mock.keys.length === 1, 'Collaborator request must reach local provider');
     assert.deepEqual(mock.keys, ['pilot-editor-key-0123456789']);
-    await f.page.getByTitle('Sửa nội dung câu hỏi thủ công', { exact: true }).first().click();
+    await questionCommandAt(f.page, 0, 'Chỉnh nội dung');
     await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).fill('F21 OWNER NEW CONTENT'); await click(f.page, 'Áp dụng câu vào đề');
     await saveEditor(f.page);
     await waitUntil(async () => (await f.api('/api/exams/' + id)).document.questions[0].content === 'F21 OWNER NEW CONTENT', 'Owner edit must persist before provider responds');
@@ -903,7 +910,7 @@ test('F22 cancel slow AI import and generation without applying or saving result
 
 test('F23 manual edits, undo redo and a retried bank save preserve links without duplicates', { timeout: 180000 }, () => flow('F23', async f => {
   await authenticated(f); const id = await seedExam(f); await openExam(f, id);
-  await f.page.getByTitle('Sửa nội dung câu hỏi thủ công', { exact: true }).first().click(); await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).fill('F23 EDITED'); await f.page.getByLabel('Đáp án lựa chọn').selectOption('B'); await click(f.page, 'Áp dụng câu vào đề');
+  await questionCommandAt(f.page, 0, 'Chỉnh nội dung'); await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).fill('F23 EDITED'); await f.page.getByLabel('Đáp án lựa chọn').selectOption('B'); await click(f.page, 'Áp dụng câu vào đề');
   await f.page.getByRole('button', { name: /^Hoàn tác \(/ }).first().click(); await f.page.getByText('PILOT Q1 multiple_choice', { exact: true }).first().waitFor();
   await f.page.getByRole('button', { name: /^Làm lại câu \(/ }).first().click(); await f.page.getByText('F23 EDITED', { exact: true }).first().waitFor();
   await saveEditor(f.page);
@@ -911,16 +918,13 @@ test('F23 manual edits, undo redo and a retried bank save preserve links without
   const q = (await f.api('/api/exams/' + id)).document.questions[0]; assert.equal(q.correct_answer, 'B'); assert.equal(q.passageId, 'p1'); assert.equal(q.status, 'draft'); assert.equal(q.verifiedBy, 'none');
   let dropped = false; const bankBodies: Record<string, unknown>[] = [];
   await f.page.route('**/api/questions', async route => { if (route.request().method() === 'POST') bankBodies.push(route.request().postDataJSON()); if (route.request().method() === 'POST' && !dropped) { dropped = true; await route.fetch(); await route.abort('failed'); } else await route.continue(); });
-  const card = f.page.locator('#editor-question-q1');
-  const actions = card.getByRole('button', { name: 'Thao tác câu 1', exact: true });
   const saveBank = async () => {
-    await actions.click();
-    const item = f.page.getByRole('menuitem', { name: 'Lưu bản sao vào ngân hàng', exact: true });
+    const item = await questionMenuItemAt(f.page, 0, 'Lưu bản sao vào ngân hàng');
     await waitUntil(async () => item.isEnabled(), 'Bank save remains available after a lost receipt');
     await item.click();
   };
   await saveBank();
-  await waitUntil(async () => dropped && await actions.isEnabled(), 'Lost receipt leaves retry available');
+  await waitUntil(async () => dropped, 'Lost receipt leaves retry available');
   await saveBank();
   await f.page.getByText('Đã lưu bản sao riêng vào ngân hàng', { exact: true }).first().waitFor();
   if (bankBodies.length > 1) { const diff = (a: unknown, b: unknown, prefix = ''): string[] => a && b && typeof a === 'object' && typeof b === 'object' ? [...new Set([...Object.keys(a), ...Object.keys(b)])].flatMap(key => diff((a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key], prefix + '.' + key)) : JSON.stringify(a) === JSON.stringify(b) ? [] : [prefix]; console.log('F23 retry changed fields', diff(bankBodies[0], bankBodies[1])); }
@@ -977,7 +981,7 @@ test('F24 comment resolution respects roles and private notes download as readab
 
   await panel.getByRole('button', { name: 'Đóng', exact: true }).click();
   const secret = 'pilot-f24-canary-key-0123456789'; await f.api('/api/user/keys', 'POST', { apiKey: secret, label: 'F24 fixture only' });
-  await f.page.getByTitle('Bộ não AI Sư Phạm: Xem và dạy các phong cách ra đề cho AI').filter({ visible: true }).click(); await click(f.page, 'Dạy AI quy tắc mới');
+  await openAccount(f.page); await f.page.getByTitle('Bộ não AI Sư Phạm: Xem và dạy các phong cách ra đề cho AI').filter({ visible: true }).click(); await click(f.page, 'Dạy AI quy tắc mới');
   await f.page.getByPlaceholder('Ví dụ: Không cho thử ngược nghiệm Casio').fill('F24 PRIVATE MANUAL NOTE');
   await f.page.getByPlaceholder(/^Ví dụ: Khi ra câu hỏi phương trình/).fill('F24 chỉ là ghi chú thử do giáo viên nhập.'); await click(f.page, 'Lưu ghi chú');
   await waitUntil(async () => await f.db.teacherAiMemory.count({ where: { userId: f.ids[0], title: 'F24 PRIVATE MANUAL NOTE' } }) === 1, 'Manual note must persist before export');

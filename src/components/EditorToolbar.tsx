@@ -1,9 +1,8 @@
 'use client';
 import { useEffect, useRef, useState, type ComponentType } from 'react';
 import { createPortal } from 'react-dom';
-import { ChevronDown, FileDown, Sparkles, Plus, MoreHorizontal } from 'lucide-react';
-import { ContextSelectionToolbar, useEditorTarget } from './editor/EditorSelection';
-import type { Exam } from '@/types/exam';
+import { ChevronDown, Sparkles, Plus } from 'lucide-react';
+import { ContextSelectionToolbar } from './editor/EditorSelection';
 export type ExportView = 'exam' | 'answers' | 'solutions' | 'matrix' | 'parallel';
 type Icon = ComponentType<{ className?: string }>;
 export interface MenuItem {
@@ -13,7 +12,7 @@ export interface MenuItem {
   disabled?: boolean;
 }
 const button =
-  'app-button-secondary shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 min-h-9 px-2.5 rounded-lg text-xs ' +
+  'app-button-secondary shrink-0 !whitespace-nowrap inline-flex items-center gap-1.5 min-h-9 px-2.5 rounded-lg text-xs ' +
   'font-medium cursor-pointer disabled:opacity-40';
 export function ToolMenu({
   label,
@@ -29,7 +28,11 @@ export function ToolMenu({
   className?: string;
 }) {
   const [open, setOpen] = useState(false),
-    [where, setWhere] = useState({ top: 0, left: 0 });
+    [where, setWhere] = useState<{
+      top?: number;
+      bottom?: number;
+      left: number;
+    }>({ left: 0 });
   const trigger = useRef<HTMLButtonElement>(null),
     menu = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -44,7 +47,11 @@ export function ToolMenu({
     const permissions = new MutationObserver(() => {
       if (trigger.current?.matches(':disabled')) setOpen(false);
     });
-    if (fieldset) permissions.observe(fieldset, { attributes: true, attributeFilter: ['disabled'] });
+    if (fieldset)
+      permissions.observe(fieldset, {
+        attributes: true,
+        attributeFilter: ['disabled'],
+      });
     document.addEventListener('mousedown', away);
     window.addEventListener('resize', dismiss);
     return () => {
@@ -64,10 +71,16 @@ export function ToolMenu({
         aria-expanded={open}
         onClick={() => {
           const rect = trigger.current!.getBoundingClientRect();
-          setWhere({
-            top: Math.max(8, Math.min(rect.bottom + 4, innerHeight - 330)),
-            left: Math.max(8, Math.min(rect.left, innerWidth - 256)),
-          });
+          const left = Math.max(8, Math.min(rect.left, innerWidth - 256));
+          // A trigger in the lower half (the phone tool row) opens its menu upward.
+          setWhere(
+            rect.top > innerHeight * 0.55
+              ? { bottom: innerHeight - rect.top + 4, left }
+              : {
+                  top: Math.max(8, Math.min(rect.bottom + 4, innerHeight - 330)),
+                  left,
+                },
+          );
           setOpen((value) => !value);
         }}
         className={className || button}
@@ -131,70 +144,27 @@ export function ToolMenu({
 }
 interface Props {
   canEdit: boolean;
-  ready: boolean;
-  hasQuestions: boolean;
-  hasServerExam: boolean;
-  hasAssignments: boolean;
-  access?: Exam['access'];
-  submissionCount: number;
   copilotOpen: boolean;
   onCopilot: () => void;
+  onAssistant: () => void;
   onAdd: () => void;
-  onGenerate: () => void;
-  onImport: () => void;
   onBank: () => void;
+  onImport: () => void;
+  onGenerate: () => void;
+  onAddPart: () => void;
   onSettings: () => void;
-  onShuffle: () => void;
-  onExportWord: (view: ExportView) => void;
-  onPrint: () => void;
-  onPresent: () => void;
-  onReview: () => void;
-  onCollaborate: () => void;
-  onResults: () => void;
-  onTemplate: () => void;
 }
+
+/** The one tool row: two fixed anchors (add content, AI) and then the tools of whatever is selected. It never gets a second row. */
 export function EditorToolbar(p: Props) {
-  const target = useEditorTarget();
-  const outputs: MenuItem[] = (
-    [
-      ['exam', 'Word – đề'],
-      ['answers', 'Word – đáp án/barem'],
-      ['solutions', 'Word – lời giải'],
-      ['matrix', 'Word – ma trận'],
-      ['parallel', 'Word – đề song song'],
-    ] as const
-  ).map(([view, label]) => ({ label, onClick: () => p.onExportWord(view) }));
-  outputs.push(
-    { label: 'In / PDF', onClick: p.onPrint },
-    { label: 'Trình chiếu', onClick: p.onPresent, disabled: !p.ready || !p.hasQuestions },
-  );
-  if (p.canEdit) outputs.push({ label: 'Trộn mã đề…', onClick: p.onShuffle });
-  const templates: MenuItem[] = p.canEdit
-    ? [{ label: 'Dùng mẫu / lưu thành mẫu', onClick: p.onTemplate }]
-    : [];
-  const secondary: MenuItem[] = [
-    ...(p.canEdit ? [{ label: 'Thông tin đề', onClick: p.onSettings }, { label: 'Thêm câu mới', onClick: p.onAdd }, { label: 'Từ ngân hàng', onClick: p.onBank }, { label: 'Nhập Word/Ảnh', onClick: p.onImport }] : []),
-    { label: 'Rà soát đề', onClick: p.onReview },
-    ...templates,
-    ...(p.hasAssignments ? [{ label: `Kết quả (${p.submissionCount})`, onClick: p.onResults }] : []),
-    ...(p.hasServerExam ? [{ label: 'Cùng soạn', onClick: p.onCollaborate }] : []),
-  ];
-  const badge =
-    p.access && !p.access.canManage
-      ? p.access.canEdit
-        ? 'Được mời sửa'
-        : p.access.canComment
-          ? 'Xem và góp ý'
-          : 'Chỉ xem'
-      : null;
   return (
-    <div className="@container no-print shrink-0 border-b border-[var(--ui-border)]/50 bg-[var(--ui-surface)]">
+    <div className="@container no-print shrink-0 border-b border-[var(--ui-border)]/60 bg-[var(--ui-surface)] order-last lg:order-none">
       <div
         role="toolbar"
         aria-label="Công cụ soạn đề"
-        className="px-2 sm:px-4 py-1.5 flex flex-nowrap items-center gap-1.5 min-w-0"
+        className="px-2 sm:px-3 h-12 flex flex-nowrap items-center gap-1.5 min-w-0 overflow-x-auto"
       >
-        {p.canEdit && !target && (
+        {p.canEdit && (
           <>
             <ToolMenu
               label="Thêm"
@@ -204,33 +174,26 @@ export function EditorToolbar(p: Props) {
                 { label: 'Từ ngân hàng', onClick: p.onBank },
                 { label: 'Nhập Word/Ảnh', onClick: p.onImport },
                 { label: 'Sinh bằng AI', onClick: p.onGenerate },
+                { label: 'Phần mới', onClick: p.onAddPart },
               ]}
             />
-            <button
-              type="button"
-              aria-label="Sửa đề bằng Trợ lý AI"
-              title="Sửa bằng AI"
-              aria-pressed={p.copilotOpen}
-              className={button}
-              onClick={p.onCopilot}
-            >
-              <Sparkles className="w-4 h-4" />
-              <span className="hidden @min-[500px]:inline">Sửa bằng AI</span>
-            </button>
+            <ToolMenu
+              label="AI"
+              Icon={Sparkles}
+              items={[
+                {
+                  label: 'Sửa đề bằng Trợ lý AI',
+                  title: p.copilotOpen ? 'Đóng bảng Trợ lý AI' : 'Mở bảng Trợ lý AI',
+                  onClick: p.onCopilot,
+                },
+                { label: 'Hỏi AI (không sửa đề)', onClick: p.onAssistant },
+              ]}
+            />
+            <span aria-hidden className="w-px h-6 bg-[var(--ui-border)] shrink-0" />
           </>
         )}
-        <div className="ml-auto hidden @min-[600px]:block">
-          <ToolMenu label="Xuất" Icon={FileDown} items={outputs} />
-        </div>
-        <div className="@min-[600px]:hidden ml-auto">
-          <ToolMenu label="Thêm công cụ" compact Icon={MoreHorizontal} items={[...outputs, ...secondary]} />
-        </div>
-        <div className="hidden @min-[600px]:block">
-          <ToolMenu label="Thêm công cụ" compact Icon={MoreHorizontal} items={secondary} />
-        </div>
-        {badge && <span className="hidden @min-[1100px]:inline text-xs text-[var(--ui-text-secondary)]">{badge}</span>}
+        <ContextSelectionToolbar canEdit={p.canEdit} onSettings={p.onSettings} />
       </div>
-      <ContextSelectionToolbar canEdit={p.canEdit} />
     </div>
   );
 }

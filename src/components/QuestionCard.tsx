@@ -825,11 +825,6 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
             <span className="sr-only">{question.content}</span>
             <div className="flex items-center justify-between text-[11px] font-semibold text-[var(--ui-text-secondary)]">
               <span>Nội dung câu hỏi:</span>
-              {!isLocked && (
-                <span className="text-[10px] text-slate-400 font-normal">
-                  Gõ nội dung / công thức LaTeX. Xem bản in chuẩn ở khung bên phải.
-                </span>
-              )}
             </div>
             <button type="button" data-editor-field="Nội dung câu" className="min-w-0 grow text-left rounded px-2 py-1 hover:bg-[var(--ui-surface-variant)]" onClick={() => setIsEditing(true)}><MathRenderer content={contentDraft} /></button>
           </div>
@@ -866,11 +861,6 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
           <div className="space-y-1.5 pt-1">
             <div className="text-[11px] font-semibold text-[var(--ui-text-secondary)] uppercase tracking-wider flex items-center justify-between">
               <span>Các phương án lựa chọn:</span>
-              {!isLocked && (
-                <span className="text-[10px] text-slate-400 font-normal">
-                  Chọn phương án rồi đặt đáp án trên thanh công cụ
-                </span>
-              )}
             </div>
             <div className="grid grid-cols-1 @min-[500px]:grid-cols-2 gap-2">
               {choicesDraft.map((c) => {

@@ -16,7 +16,7 @@ type Props = {
   isOpen: boolean;
   onClose: () => void;
   onPreview: (submission: HeaderSubmission | null) => void;
-  preview: ReactNode;
+  preview?: ReactNode;
 };
 const tabs = [
   ['general', 'Thông tin chung'],
@@ -128,10 +128,12 @@ export function EditorSettings(p: Props) {
           </section>
         </fieldset>
       )}
-      <details className="border-t min-w-0 p-3 @min-[900px]:hidden" open>
-        <summary className="cursor-pointer text-sm">Xem thử thay đổi</summary>
-        {p.isOpen && p.preview}
-      </details>
+      {p.preview && (
+        <details className="border-t min-w-0 p-3 @min-[900px]:hidden" open>
+          <summary className="cursor-pointer text-sm">Xem thử thay đổi</summary>
+          {p.isOpen && p.preview}
+        </details>
+      )}
     </aside>
   );
 }

@@ -25,6 +25,8 @@ interface Props {
   replacesDocument?: boolean;
   appendQuestions?: boolean;
   planningHint?: string;
+  /** Docked in the editor's left panel instead of floating over the page. */
+  panel?: boolean;
 }
 const inputClass =
   'block w-full rounded-xl border border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#292a2d] p-2.5 text-sm mt-1';
@@ -40,6 +42,7 @@ export const GenerateModal: React.FC<Props> = ({
   replacesDocument = false,
   appendQuestions = false,
   planningHint,
+  panel = false,
 }) => {
   const [subject, setSubject] = useState<Subject>(context?.subject ?? 'toan');
   const [grade, setGrade] = useState(context?.grade ?? 6);
@@ -234,19 +237,27 @@ export const GenerateModal: React.FC<Props> = ({
     }
   };
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 p-4 flex items-center justify-center">
+    <div
+      className={
+        panel ? '@container h-full min-h-0' : 'fixed inset-0 z-50 bg-black/60 p-4 flex items-center justify-center'
+      }
+    >
       <section
-        role="dialog"
-        aria-modal="true"
+        role={panel ? 'region' : 'dialog'}
+        aria-modal={panel ? undefined : 'true'}
         aria-label="Soạn bản nháp với AI"
-        className="app-dialog w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl p-6 bg-white dark:bg-[#202124] text-[#202124] dark:text-[#e3e3e3] space-y-4"
+        className={
+          panel
+            ? 'h-full overflow-y-auto p-3 space-y-4'
+            : 'app-dialog w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl p-6 bg-white dark:bg-[#202124] text-[#202124] dark:text-[#e3e3e3] space-y-4'
+        }
       >
         {isLoading && (
           <button type="button" onClick={cancel}>
             Hủy yêu cầu AI
           </button>
         )}
-        <header className="app-dialog-header flex items-center justify-between">
+        <header className={panel ? 'hidden' : 'app-dialog-header flex items-center justify-between'}>
           <h2 className="font-bold text-lg">Soạn bản nháp với AI</h2>
           <button onClick={close} aria-label="Đóng">
             <X />
@@ -428,7 +439,7 @@ export const GenerateModal: React.FC<Props> = ({
             </button>
           )}
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className={panel ? 'grid grid-cols-2 @min-[520px]:grid-cols-4 gap-3' : 'grid grid-cols-2 sm:grid-cols-4 gap-3'}>
           {(
             [
               { key: 'multiple_choice', label: 'Trắc nghiệm' },
@@ -452,7 +463,7 @@ export const GenerateModal: React.FC<Props> = ({
         </div>
         <details className="border rounded-xl p-3 text-sm">
           <summary className="cursor-pointer">Thêm dạng câu: điền khuyết, ghép nối, sắp xếp</summary>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3">
+          <div className={panel ? 'grid grid-cols-1 @min-[520px]:grid-cols-3 gap-3 mt-3' : 'grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3'}>
             {(
               [
                 { key: 'fill_blank', label: 'Điền khuyết' },

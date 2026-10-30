@@ -176,7 +176,7 @@ export function OutlineEditor(p: Props) {
           className={
             compact
               ? 'h-5 w-5 rounded-full text-slate-400 hover:text-slate-800 hover:bg-slate-200 dark:hover:bg-neutral-700 opacity-0 group-hover/insert:opacity-70 hover:!opacity-100 transition-all cursor-pointer flex items-center justify-center p-0'
-              : 'w-full py-2.5 px-4 rounded-xl border border-dashed border-slate-300 hover:border-[var(--ui-primary)] dark:border-[#35363a] dark:hover:border-[var(--ui-primary)] text-xs font-medium text-slate-600 dark:text-neutral-400 hover:text-[var(--ui-text-primary)] flex items-center justify-center gap-2 transition-all cursor-pointer hover:bg-slate-50 dark:hover:bg-neutral-800/40'
+              : 'w-full py-2.5 px-4 rounded-xl border border-dashed border-slate-300 hover:border-[var(--ui-primary)] dark:hover:border-[var(--ui-primary)] text-xs font-medium text-slate-600 dark:text-neutral-400 hover:text-[var(--ui-text-primary)] flex items-center justify-center gap-2 transition-all cursor-pointer hover:bg-slate-50 dark:hover:bg-neutral-800/40'
           }
         />
         {samePoint(point, p.composerPoint) && p.composer}
@@ -420,7 +420,7 @@ export function OutlineEditor(p: Props) {
       {render(outline, null)}
       <button
         type="button"
-        className="w-full py-2.5 px-4 rounded-xl border border-dashed border-[var(--ui-border)] hover:border-[var(--ui-primary)] dark:border-[#35363a] dark:hover:border-[var(--ui-primary)] text-xs font-medium text-[var(--ui-text-secondary)] hover:text-[var(--ui-text-primary)] flex items-center justify-center gap-2 transition-all cursor-pointer hover:bg-[var(--ui-surface-variant)]/40"
+        className="w-full py-2.5 px-4 rounded-xl border border-dashed border-[var(--ui-border)] hover:border-[var(--ui-primary)] dark:hover:border-[var(--ui-primary)] text-xs font-medium text-[var(--ui-text-secondary)] hover:text-[var(--ui-text-primary)] flex items-center justify-center gap-2 transition-all cursor-pointer hover:bg-[var(--ui-surface-variant)]/40"
         disabled={!p.canEdit}
         onClick={() => add({ parentId: null, afterId: outline.at(-1)?.id ?? null }, 'part')}
       >

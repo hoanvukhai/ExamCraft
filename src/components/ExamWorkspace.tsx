@@ -6,10 +6,12 @@ import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation';
 import { Question } from '@/types/exam';
 import { Header } from '@/components/Header';
-import { EditorPhoneActions } from '@/components/workspace/WorkspaceRail';
 import { useWorkspace } from '@/components/workspace/WorkspaceContext';
 import { EditorSelectionProvider } from '@/components/editor/EditorSelection';
 import { EditorToolbar, type ExportView } from '@/components/EditorToolbar';
+import { AccountMenu, AppMenu, ExportMenu, MoreMenu } from '@/components/editor/EditorMenus';
+import { EditorRail, ResizablePanel, useStoredWidth, type RailItem } from '@/components/editor/EditorPanels';
+import { describeInsertion } from '@/lib/insertion-label';
 import { QuestionEditor } from '@/components/QuestionEditor';
 import { previewHeaderDraft, appendManualQuestion } from '@/lib/editor-draft-preview';
 import type { HeaderSubmission } from '@/lib/header-layout';
@@ -50,11 +52,45 @@ import { EditorTemplate } from '@/components/editor/EditorRequirements';
 import { captureInsertion, insertQuestionBatch, type InsertionTarget } from '@/lib/outline-insertion';
 import { editorInsertionPoint, importedPartPoint } from '@/lib/editor-parts';
 import { OutlineEditor, type QuestionSource } from '@/components/editor/OutlineEditor';
-import { type InsertPoint } from '@/lib/exam-outline';
+import { insertOutlineNodes, viewSyncedOutline, type InsertPoint } from '@/lib/exam-outline';
 import { EditorPending } from '@/components/editor/EditorPending';
 
 import { generationDocumentStamp } from '@/lib/generation-plan';
-import { Trash2, Link2, CheckSquare, Square, X, FileText, SlidersHorizontal } from 'lucide-react';
+import {
+  Trash2,
+  Link2,
+  CheckSquare,
+  Square,
+  X,
+  Database,
+  Eye,
+  FileUp,
+  LayoutTemplate,
+  ListTree,
+  PencilLine,
+  Presentation,
+  SlidersHorizontal,
+  Sparkles,
+  Users,
+} from 'lucide-react';
+
+type LeftTab = 'content' | 'info' | 'template' | 'bank' | 'import' | 'generate';
+const railItems: RailItem<LeftTab>[] = [
+  { id: 'content', label: 'Nội dung', Icon: ListTree },
+  { id: 'info', label: 'Thông tin', Icon: SlidersHorizontal },
+  { id: 'template', label: 'Mẫu', Icon: LayoutTemplate },
+  { id: 'bank', label: 'Ngân hàng', Icon: Database },
+  { id: 'import', label: 'Nhập đề', Icon: FileUp },
+  { id: 'generate', label: 'AI tạo câu', Icon: Sparkles },
+];
+const panelTitles: Record<LeftTab, string> = {
+  content: 'Nội dung đề',
+  info: 'Thông tin đề',
+  template: 'Mẫu',
+  bank: 'Ngân hàng câu hỏi',
+  import: 'Nhập đề từ Word hoặc ảnh',
+  generate: 'Sinh câu bằng AI',
+};
 
 interface ExamWorkspaceProps {
   currentUser: {
@@ -113,29 +149,24 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     else action();
   };
   // Layout states
-  const {
-    settingsOpen,
-    setSettingsOpen,
-    copilotOpen: isCopilotOpen,
-    setCopilotOpen: setIsCopilotOpen,
-  } = useWorkspace();
+  const { copilotOpen: isCopilotOpen, setCopilotOpen: setIsCopilotOpen, toggleAssistant } = useWorkspace();
   const [copilotCommand, setCopilotCommand] = useState<string>('');
-  const editorScroll = useRef<HTMLDivElement>(null),
-    editorScrollTop = useRef(0);
   const [mobileTab, setMobileTab] = useState<'editor' | 'preview'>('editor');
+  const [leftTab, setLeftTab] = useState<LeftTab>('content');
+  const [leftOpen, setLeftOpen] = useState(true);
+  // Source panels keep what was typed while another tab is shown; they reset when they are closed or finished.
+  const [mounted, setMounted] = useState<Partial<Record<LeftTab, boolean>>>({});
+  const [leftWidth, setLeftWidth] = useStoredWidth('examcraft_editor_left', 440, 320, 720);
+  const [rightWidth, setRightWidth] = useStoredWidth('examcraft_editor_right', 380, 300, 560);
 
   // Selected questions for batch operations
   const [selectedQuestionIds, setSelectedQuestionIds] = useState<string[]>([]);
 
-  // Modals
-  const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
   const [isShuffleModalOpen, setIsShuffleModalOpen] = useState(false);
-  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
-  const [templateOpen, setTemplateOpen] = useState(false);
-  const templateAnchor = useRef<HTMLDivElement>(null);
   const [headerDraft, setHeaderDraft] = useState<HeaderSubmission | null>(null);
   const updateHeaderPreview = useCallback((draft: HeaderSubmission | null) => setHeaderDraft(draft), []);
-  const previewExam = settingsOpen && headerDraft ? previewHeaderDraft(exam, headerDraft) : exam;
+  const infoOpen = leftOpen && leftTab === 'info';
+  const previewExam = infoOpen && headerDraft ? previewHeaderDraft(exam, headerDraft) : exam;
   const addAnchor = useRef<HTMLDivElement>(null);
   const [selectedPoint, setSelectedPoint] = useState<InsertPoint | null>(null);
   const [newQuestionPoint, setNewQuestionPoint] = useState<InsertPoint | undefined>();
@@ -147,24 +178,37 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     setDraftSession(sessionScope);
     setNewQuestion(null);
     setHeaderDraft(null);
-    setTemplateOpen(false);
+    setMounted({});
+    setLeftTab('content');
     setSelectedPoint(null);
     setNewQuestionPoint(undefined);
   }
-  const openSettings = () => {
-    setSettingsOpen(true);
+  const showTab = (tab: LeftTab) => {
+    setLeftTab(tab);
+    setLeftOpen(true);
     setMobileTab('editor');
+    if (tab === 'bank' || tab === 'import' || tab === 'generate')
+      setMounted((previous) => ({ ...previous, [tab]: true }));
   };
-  const [isQuestionBankModalOpen, setIsQuestionBankModalOpen] = useState(false);
+  const closeTab = (tab: LeftTab) => {
+    setMounted((previous) => ({ ...previous, [tab]: false }));
+    setLeftTab((current) => (current === tab ? 'content' : current));
+  };
+  const pressRail = (tab: LeftTab) => {
+    if (leftOpen && leftTab === tab) setLeftOpen(false);
+    else {
+      if (tab === 'bank' || tab === 'import' || tab === 'generate')
+        openSource(tab === 'generate' ? 'generate' : tab);
+      else showTab(tab);
+    }
+  };
+  const openSettings = () => showTab('info');
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isResultsModalOpen, setIsResultsModalOpen] = useState(false);
   const sourceTarget = useRef<InsertionTarget | null>(null);
   const [modalSession, setModalSession] = useState(sessionScope);
   if (modalSession !== sessionScope) {
     setModalSession(sessionScope);
-    setIsGenerateModalOpen(false);
-    setIsImportModalOpen(false);
-    setIsQuestionBankModalOpen(false);
     setReviewOpen(false);
     setPendingReviewAction(null);
   }
@@ -172,9 +216,8 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     if (!canEdit) return;
     const open = () => {
       sourceTarget.current = captureInsertion(exam, currentUser.id, point);
-      if (source === 'generate') setIsGenerateModalOpen(true);
-      else if (source === 'import') setIsImportModalOpen(true);
-      else setIsQuestionBankModalOpen(true);
+      setSelectedPoint(point);
+      showTab(source === 'generate' ? 'generate' : source === 'import' ? 'import' : 'bank');
     };
     if (source === 'generate') withAi(open);
     else open();
@@ -211,7 +254,10 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     return applied;
   };
 
-  const [assignmentState, setAssignmentState] = useState({ id: '', has: false });
+  const [assignmentState, setAssignmentState] = useState({
+    id: '',
+    has: false,
+  });
   useEffect(() => {
     if (!exam.serverId || exam.access?.canManage === false) return;
     let live = true;
@@ -310,7 +356,7 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     setNewQuestionPoint(target);
     setSelectedPoint(target);
     setNewQuestion(seed);
-    setMobileTab('editor');
+    showTab('content');
     requestAnimationFrame(() => addAnchor.current?.scrollIntoView({ block: 'start', behavior: 'smooth' }));
   };
 
@@ -465,6 +511,47 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       />
     </section>
   );
+  const sourceTab = leftTab === 'bank' || leftTab === 'import' || leftTab === 'generate';
+  const addPart = () => {
+    showTab('content');
+    setExam((previous) =>
+      insertOutlineNodes(
+        previous,
+        {
+          parentId: null,
+          afterId: viewSyncedOutline(previous).outline?.at(-1)?.id ?? null,
+        },
+        [{ id: crypto.randomUUID(), kind: 'part', title: '', children: [] }],
+      ),
+    );
+  };
+  const addManual = (point?: InsertPoint) => {
+    showTab('content');
+    handleAddQuestion(point);
+  };
+  const tabTitle = panelTitles[leftTab];
+  const exportProps = {
+    canEdit,
+    ready,
+    hasQuestions: exam.questions.length > 0,
+    onExportWord: (view: ExportView) => reviewBefore(() => void handleExportWord(view)),
+    onPrint: () => reviewBefore(() => window.print()),
+    onPresent: () => reviewBefore(() => setPresentationOpen(true)),
+    onShuffle: () => setIsShuffleModalOpen(true),
+  };
+  const moreProps = {
+    canEdit,
+    hasServerExam: Boolean(exam.serverId),
+    hasAssignments: assignmentState.id === exam.id && assignmentState.has,
+    submissionCount,
+    onReview: () => {
+      setPendingReviewAction(null);
+      setReviewOpen(true);
+    },
+    onTemplate: () => showTab('template'),
+    onCollaborate: () => setCollaborationOpen(true),
+    onResults: () => setIsResultsModalOpen(true),
+  };
   return (
     <div className="print-flow @container flex-1 min-h-0 w-full overflow-hidden flex flex-col bg-[var(--background)] text-[var(--foreground)]">
       {reviewOpen && (
@@ -481,7 +568,7 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
           }
           onQuestion={(id) => {
             setReviewOpen(false);
-            setMobileTab('editor');
+            showTab('content');
             setTimeout(() => {
               const node = document.getElementById('editor-question-' + id);
               node?.scrollIntoView({ block: 'center' });
@@ -520,9 +607,8 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
           </div>
         </div>
       )}
-      {/* HEADER: TÊN ĐỀ & TRẠNG THÁI LƯU LIỀN KỀ */}
       <Header
-        leading={<EditorPhoneActions />}
+        leading={<AppMenu />}
         canEdit={canEdit}
         examTitle={exam.metadata.title}
         onUpdateTitle={handleUpdateTitle}
@@ -532,9 +618,56 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
             else setCollaborationOpen(true);
           })
         }
+        actions={
+          <>
+            <nav aria-label="Chuyển vùng soạn" className="lg:hidden flex gap-1">
+              {(['editor', 'preview'] as const).map((tab) => (
+                <button
+                  type="button"
+                  key={tab}
+                  aria-pressed={mobileTab === tab}
+                  className={
+                    (mobileTab === tab ? 'app-button-tonal' : 'app-button-secondary') +
+                    ' min-h-9 min-w-9 px-2 sm:px-2.5 text-xs whitespace-nowrap inline-flex items-center justify-center'
+                  }
+                  aria-label={tab === 'editor' ? 'Soạn câu' : 'Xem đề'}
+                  onClick={() => setMobileTab(tab)}
+                >
+                  {tab === 'editor' ? (
+                    <PencilLine className="w-4 h-4 sm:hidden" />
+                  ) : (
+                    <Eye className="w-4 h-4 sm:hidden" />
+                  )}
+                  <span className="max-sm:hidden">{tab === 'editor' ? 'Soạn câu' : 'Xem đề'}</span>
+                </button>
+              ))}
+            </nav>
+            {exam.serverId && (
+              <button
+                type="button"
+                aria-label="Mời cùng soạn"
+                title="Mời đồng nghiệp cùng soạn, góp ý và xem lịch sử"
+                className="app-button-secondary hidden sm:inline-flex items-center gap-1.5 min-h-9 px-3 rounded-lg text-xs font-medium cursor-pointer"
+                onClick={() => setCollaborationOpen(true)}
+              >
+                <Users className="w-4 h-4" />
+                <span className="max-md:hidden">Mời</span>
+              </button>
+            )}
+            <span className="hidden sm:block">
+              <ExportMenu {...exportProps} />
+            </span>
+            <span className="sm:hidden">
+              <MoreMenu {...moreProps} phone={exportProps} />
+            </span>
+            <span className="hidden sm:block">
+              <MoreMenu {...moreProps} />
+            </span>
+          </>
+        }
+        trailing={<AccountMenu />}
       >
         <EditorSaveStatus state={saveState}>
-          {' '}
           <div role="status" className="flex flex-wrap items-center gap-2 text-xs">
             {manualDraftMessage && <p role="alert">{manualDraftMessage}</p>}
             <span className="mr-1">
@@ -578,7 +711,10 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
               </button>
             )}
             {saveState === 'conflict' && ready && exam.serverId && (
-              <button onClick={() => void openLatest()} className="app-button-secondary min-h-8 px-2.5 text-xs">
+              <button
+                onClick={() => void openLatest()}
+                className="app-button-secondary min-h-8 px-2.5 text-xs"
+              >
                 Mở bản máy chủ, giữ riêng nháp
               </button>
             )}
@@ -588,80 +724,159 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
 
       <EditorToolbar
         canEdit={canEdit}
-        ready={ready}
-        hasQuestions={exam.questions.length > 0}
-        hasServerExam={Boolean(exam.serverId)}
-        hasAssignments={assignmentState.id === exam.id && assignmentState.has}
         copilotOpen={isCopilotOpen}
         onCopilot={() => withAi(() => setIsCopilotOpen((open) => !open))}
-        access={exam.access}
-        submissionCount={submissionCount}
-        onGenerate={() => openSource('generate')}
-        onImport={() => openSource('import')}
+        onAssistant={toggleAssistant}
+        onAdd={addManual}
         onBank={() => openSource('bank')}
-        onTemplate={() => {
-          setTemplateOpen(true);
-          setMobileTab('editor');
-          requestAnimationFrame(() =>
-            templateAnchor.current?.scrollIntoView({ block: 'start', behavior: 'smooth' }),
-          );
-        }}
-        onSettings={() => openSettings()}
-        onAdd={handleAddQuestion}
-        onShuffle={() => setIsShuffleModalOpen(true)}
-        onExportWord={(view) => reviewBefore(() => void handleExportWord(view))}
-        onPrint={() => reviewBefore(() => window.print())}
-        onPresent={() => reviewBefore(() => setPresentationOpen(true))}
-        onReview={() => {
-          setPendingReviewAction(null);
-          setReviewOpen(true);
-        }}
-        onCollaborate={() => setCollaborationOpen(true)}
-        onResults={() => setIsResultsModalOpen(true)}
+        onImport={() => openSource('import')}
+        onGenerate={() => openSource('generate')}
+        onAddPart={addPart}
+        onSettings={openSettings}
       />
-
-      <nav
-        aria-label="Chuyển vùng soạn"
-        className="no-print @min-[900px]:hidden shrink-0 sticky top-0 z-20 flex gap-2 p-2 border-b bg-[var(--ui-surface)]"
-      >
-        {(['editor', 'preview'] as const).map((tab) => (
-          <button
-            type="button"
-            key={tab}
-            aria-pressed={mobileTab === tab}
-            className={
-              (mobileTab === tab ? 'app-button-tonal' : 'app-button-secondary') +
-              ' min-h-10 px-4 flex-1 text-sm'
-            }
-            onClick={() => {
-              if (mobileTab === 'editor') editorScrollTop.current = editorScroll.current?.scrollTop ?? 0;
-              setMobileTab(tab);
-              requestAnimationFrame(() => {
-                if (editorScroll.current)
-                  editorScroll.current.scrollTop = tab === 'editor' ? editorScrollTop.current : 0;
-              });
-            }}
-          >
-            {tab === 'editor' ? 'Soạn câu' : 'Xem đề'}
-          </button>
-        ))}
-      </nav>
       {!ready && <div className="p-4">{saveMessage || 'Đang tải nội dung. Vui lòng chờ trước khi sửa.'}</div>}
-      {/* 3-ZONE ARCHITECTURE: LEFT RAIL + INDEPENDENT SCROLL WORKSPACE + RIGHT COMPANION RAIL */}
       <div className="print-flow flex-1 flex overflow-hidden min-h-0 relative">
-        {/* ZONE 2: VÙNG NỘI DUNG CHÍNH (CANVAS CHỦ ĐẠO MÀU TRẮNG GOOGLE, CUỘN ĐỘC LẬP) */}
-        <div
-          ref={editorScroll}
-          className="print-flow @container flex-1 h-full overflow-y-auto px-4 sm:px-6 py-5 min-w-0"
+        <EditorRail items={railItems} tab={leftTab} open={leftOpen} onTab={pressRail} />
+
+        <ResizablePanel
+          side="left"
+          label="Bảng nội dung và tài nguyên"
+          width={leftWidth}
+          onWidth={setLeftWidth}
+          min={320}
+          max={720}
+          className={`${mobileTab === 'editor' ? 'flex' : 'hidden'} ${leftOpen ? 'lg:flex' : 'lg:hidden'}`}
         >
-          {/* KHU VỰC CHÍNH SPLIT PANE: DANH SÁCH CÂU HỎI & A4 PREVIEW */}
-          <main className="grid grid-cols-1 @min-[900px]:grid-cols-12 gap-6 items-start pb-8">
-            {/* CỘT TRÁI: DANH SÁCH CÂU HỎI (6 Cột trên màn hình lớn) */}
-            <div
-              className={`no-print min-w-0 @min-[900px]:col-span-6 space-y-4 ${
-                mobileTab === 'preview' ? 'hidden @min-[900px]:block' : 'block'
-              }`}
-            >
+          <div
+            className="lg:hidden shrink-0 flex gap-1 overflow-x-auto p-2 border-b"
+            role="group"
+            aria-label="Chọn bảng"
+          >
+            {railItems.map(({ id, label }) => (
+              <button
+                key={id}
+                type="button"
+                aria-pressed={leftTab === id}
+                className={
+                  (leftTab === id ? 'app-button-tonal' : 'app-button-secondary') +
+                  ' min-h-9 px-3 text-xs whitespace-nowrap shrink-0'
+                }
+                onClick={() =>
+                  id === 'bank' || id === 'import' || id === 'generate' ? openSource(id) : showTab(id)
+                }
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          {sourceTab && (
+            <div className="shrink-0 flex items-center gap-2 px-3 py-2 border-b text-sm">
+              <h2 className="font-semibold">{tabTitle}</h2>
+              <span className="text-xs text-[var(--ui-text-secondary)] truncate">
+                · thêm vào {describeInsertion(exam, insertionPoint())}
+              </span>
+              <button
+                type="button"
+                aria-label={'Đóng ' + tabTitle.toLowerCase()}
+                className="ml-auto p-1.5 rounded-lg hover:bg-[var(--ui-surface-variant)] cursor-pointer"
+                onClick={() => closeTab(leftTab)}
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            <div className={leftTab === 'info' ? 'block p-3' : 'hidden'}>
+              <EditorSettings
+                key={sessionScope}
+                ownerId={currentUser.id}
+                exam={exam}
+                canEdit={canEdit}
+                hasActiveKey={hasActiveKey}
+                onChange={setExam}
+                isOpen={infoOpen}
+                onPreview={updateHeaderPreview}
+                onClose={() => setLeftTab('content')}
+                preview={null}
+              />
+            </div>
+            <div className={leftTab === 'template' ? 'block p-3' : 'hidden'}>
+              <EditorTemplate
+                key={currentUser.id + ':' + editorSessionKey}
+                ownerId={currentUser.id}
+                exam={exam}
+                canEdit={canEdit}
+                onChange={setExam}
+                open={leftOpen && leftTab === 'template'}
+                onClose={() => setLeftTab('content')}
+              />
+            </div>
+            {mounted.bank && (
+              <div className={leftTab === 'bank' ? 'h-full' : 'hidden'}>
+                <QuestionBankModal
+                  panel
+                  ownerId={currentUser.id}
+                  key={`bank:${currentUser.id}`}
+                  isOpen
+                  onClose={() => closeTab('bank')}
+                  onInsertQuestion={(q, passage) => {
+                    const question = { ...q } as BankQuestion;
+                    delete question.passage;
+                    delete question.passageUnavailable;
+                    const inserted: Question = {
+                      ...question,
+                      id: crypto.randomUUID(),
+                    };
+                    return acceptSource([inserted], passage ? [passage] : []);
+                  }}
+                />
+              </div>
+            )}
+            {mounted.import && (
+              <div className={leftTab === 'import' ? 'h-full' : 'hidden'}>
+                <ImportModal
+                  panel
+                  ownerId={currentUser.id}
+                  documentId={exam.id}
+                  context={{
+                    subject: exam.metadata.subject,
+                    grade: exam.metadata.grade,
+                  }}
+                  isOpen
+                  onClose={() => closeTab('import')}
+                  allowParts
+                  onImportQuestions={(questions, context) =>
+                    acceptSource(questions, context.passages, undefined, context.parts)
+                  }
+                  apiKey=""
+                />
+              </div>
+            )}
+            {mounted.generate && (
+              <div className={leftTab === 'generate' ? 'h-full' : 'hidden'}>
+                <GenerateModal
+                  panel
+                  key={sessionScope}
+                  context={exam.metadata}
+                  documentStamp={generationDocumentStamp(exam)}
+                  expectedUserId={currentUser.id}
+                  appendQuestions
+                  planningHint={
+                    exam.metadata.examPlan
+                      ? 'Ma trận giáo viên đang dùng (chỉ là gợi ý cho các câu thêm): ' +
+                        JSON.stringify(exam.metadata.examPlan)
+                      : undefined
+                  }
+                  isOpen
+                  onClose={() => closeTab('generate')}
+                  onExamGenerated={(newExam, baseStamp) =>
+                    acceptSource(newExam.questions, newExam.passages, baseStamp)
+                  }
+                  apiKey=""
+                />
+              </div>
+            )}
+            <div className={`p-3 space-y-3 min-w-0 ${leftTab === 'content' ? 'block' : 'hidden'}`}>
               {recoveredDraft && saveState !== 'saved' && (
                 <div role="status" className="border rounded p-3 text-sm">
                   Đang mở nháp trên máy của đề này.{' '}
@@ -684,205 +899,104 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                 </div>
               )}
               <EditorPending ownerId={currentUser.id} exam={exam} onCopilot={() => setIsCopilotOpen(true)} />
-              <div ref={templateAnchor} className="scroll-mt-16">
-                <EditorTemplate
-                  key={currentUser.id + ':' + editorSessionKey}
-                  ownerId={currentUser.id}
-                  exam={exam}
-                  canEdit={canEdit}
-                  onChange={setExam}
-                  open={templateOpen}
-                  onClose={() => setTemplateOpen(false)}
-                />
-              </div>
-              {/* Cụm 2 nút chuyển đổi: Nội dung đề vs Thông tin đề (Thiết kế phẳng, không lồng khối) */}
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--ui-border)] pb-0">
-                <div
-                  aria-label="Vùng soạn thảo"
-                  className="flex items-center gap-6 text-xs"
-                >
-                  <button
-                    type="button"
-                    id="tab-exam-content"
-                    aria-label="Nội dung đề"
-                    aria-pressed={!settingsOpen}
-                    onClick={() => setSettingsOpen(false)}
-                    className={`flex items-center gap-2 pb-2.5 pt-1 border-b-2 font-medium transition-all cursor-pointer ${
-                      !settingsOpen
-                        ? 'border-[var(--ui-primary)] text-[var(--ui-text-primary)] font-semibold'
-                        : 'border-transparent text-[var(--ui-text-secondary)] hover:text-[var(--ui-text-primary)]'
-                    }`}
-                  >
-                    <FileText className="w-4 h-4" />
-                    <span>Nội dung đề</span>
-                    {exam.questions.length > 0 && (
-                      <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-[var(--ui-surface-variant)] text-[var(--ui-text-secondary)] font-normal">
-                        {exam.questions.length}
-                      </span>
-                    )}
-                  </button>
-                  <button
-                    type="button"
-                    id="tab-exam-settings"
-                    aria-label="Thông tin đề"
-                    title="Thông tin đề"
-                    aria-pressed={settingsOpen}
-                    onClick={() => openSettings()}
-                    className={`flex items-center gap-2 pb-2.5 pt-1 border-b-2 font-medium transition-all cursor-pointer ${
-                      settingsOpen
-                        ? 'border-[var(--ui-primary)] text-[var(--ui-text-primary)] font-semibold'
-                        : 'border-transparent text-[var(--ui-text-secondary)] hover:text-[var(--ui-text-primary)]'
-                    }`}
-                  >
-                    <SlidersHorizontal className="w-4 h-4" />
-                    <span>Thông tin đề</span>
-                  </button>
-                </div>
-
-                {settingsOpen ? (
-                  <span className="text-xs text-[var(--ui-text-secondary)] hidden sm:flex items-center gap-1.5 pb-2">
-                    <span>✨ Sửa & xem trước song song trên A4</span>
-                  </span>
-                ) : (
+              <fieldset disabled={!canEdit} id="panel-exam-content" className="space-y-3 min-w-0">
+                <div className="flex items-center justify-between gap-3 text-xs">
                   <div className="flex items-center gap-2">
+                    <h2 className="text-sm font-semibold">Nội dung đề</h2>
                     {exam.questions.length > 0 && (
-                      <span className="text-xs text-[var(--ui-text-secondary)]">
+                      <span className="text-[var(--ui-text-secondary)]">
+                        {exam.questions.length} câu ·{' '}
                         {['comment_only', 'survey'].includes(exam.metadata.assessmentMode ?? '')
-                          ? 'Không chấm điểm số'
-                          : `Tổng: ${scoredQuestions.reduce((total, q) => total + (q.points ?? 0), 0)}đ`}
+                          ? 'không chấm điểm số'
+                          : `${scoredQuestions.reduce((total, q) => total + (q.points ?? 0), 0)}đ`}
                       </span>
-                    )}
-                    {exam.questions.length > 0 && (
-                      <button
-                        onClick={handleSelectAll}
-                        title={
-                          selectedQuestionIds.length === exam.questions.length
-                            ? 'Bỏ chọn tất cả'
-                            : 'Chọn tất cả câu hỏi'
-                        }
-                        className={
-                          'flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-[var(--ui-text-primary)] ' +
-                          'dark:text-[var(--ui-text-primary)] bg-[var(--ui-surface)] dark:bg-[var(--ui-surface-variant)] border ' +
-                          'border-[var(--ui-border)] dark:border-[var(--ui-border)] hover:bg-[var(--ui-surface-variant)] dark:hover:bg-[#303134] ' +
-                          'rounded-lg transition-colors cursor-pointer shadow-2xs'
-                        }
-                      >
-                        {selectedQuestionIds.length === exam.questions.length && exam.questions.length > 0 ? (
-                          <CheckSquare className="w-3.5 h-3.5 text-[var(--ui-text-primary)] dark:text-[var(--ui-text-primary)]" />
-                        ) : (
-                          <Square className="w-3.5 h-3.5 text-[var(--ui-text-secondary)] dark:text-[var(--ui-text-secondary)]" />
-                        )}
-                        <span className="hidden sm:inline">
-                          {selectedQuestionIds.length === exam.questions.length ? 'Bỏ chọn' : 'Chọn tất cả'}
-                        </span>
-                      </button>
                     )}
                   </div>
-                )}
-              </div>
-
-              <div
-                id="panel-exam-settings"
-                role="tabpanel"
-                aria-labelledby="tab-exam-settings"
-                className={settingsOpen ? 'block' : 'hidden'}
-              >
-                <EditorSettings
-                  key={sessionScope}
-                  ownerId={currentUser.id}
+                  {exam.questions.length > 0 && (
+                    <button
+                      onClick={handleSelectAll}
+                      title={
+                        selectedQuestionIds.length === exam.questions.length
+                          ? 'Bỏ chọn tất cả'
+                          : 'Chọn tất cả câu hỏi'
+                      }
+                      className="app-button-secondary flex items-center gap-1.5 px-2.5 min-h-8 text-xs rounded-lg cursor-pointer"
+                    >
+                      {selectedQuestionIds.length === exam.questions.length && exam.questions.length > 0 ? (
+                        <CheckSquare className="w-3.5 h-3.5" />
+                      ) : (
+                        <Square className="w-3.5 h-3.5" />
+                      )}
+                      <span>
+                        {selectedQuestionIds.length === exam.questions.length ? 'Bỏ chọn' : 'Chọn tất cả'}
+                      </span>
+                    </button>
+                  )}
+                </div>
+                <OutlineEditor
+                  key={currentUser.id + ':' + editorSessionKey}
                   exam={exam}
                   canEdit={canEdit}
-                  hasActiveKey={hasActiveKey}
                   onChange={setExam}
-                  isOpen={settingsOpen}
-                  onPreview={updateHeaderPreview}
-                  onClose={() => setSettingsOpen(false)}
-                  preview={<A4Preview exam={previewExam} />}
+                  onPoint={setSelectedPoint}
+                  onSource={(point, source: QuestionSource) => {
+                    setSelectedPoint(point);
+                    if (source === 'manual') addManual(point);
+                    else openSource(source, point);
+                  }}
+                  composerPoint={newQuestionPoint}
+                  composer={composer}
+                  renderQuestion={(q, idx, number, controls) => (
+                    <QuestionCard
+                      displayNumber={number}
+                      extraItems={controls.moveItems}
+                      selectionActive={selectedQuestionIds.length > 0}
+                      withAi={withAi}
+                      ownerId={currentUser.id}
+                      displayPoints={scoredQuestions[idx]?.points}
+                      hidePassage
+                      passage={exam.passages?.find((passage) => passage.id === q.passageId)}
+                      numericScore={requiresNumericScore(exam.metadata.assessmentMode)}
+                      cognitiveFrameworkId={exam.metadata.cognitiveFrameworkId}
+                      knowledgePackage={exam.metadata.knowledgePackage}
+                      knowledgeScope={exam.metadata.knowledgeScope}
+                      key={`${currentUser.id}:${editorSessionKey}:${q.id}`}
+                      documentId={exam.id}
+                      sourceStamp={manualSourceStamp}
+                      onManualSave={(submission) =>
+                        setExam((previous) =>
+                          applyQuestionManualSubmission(previous, submission, currentUser.id),
+                        )
+                      }
+                      index={idx}
+                      question={{
+                        ...q,
+                        subject: q.subject ?? exam.metadata.subject,
+                        grade: q.grade ?? exam.metadata.grade,
+                      }}
+                      onDelete={handleDeleteQuestion}
+                      apiKey=""
+                      onMoveUp={() => handleMoveQuestion(idx, 'up')}
+                      onMoveDown={() => handleMoveQuestion(idx, 'down')}
+                      onDuplicate={() => handleDuplicateQuestion(idx)}
+                      isFirst={controls.first}
+                      isLast={controls.last}
+                      isSelected={selectedQuestionIds.includes(q.id)}
+                      onToggleSelect={handleToggleSelectQuestion}
+                      onAskAiAboutQuestion={handleAskAiAboutQuestion}
+                    />
+                  )}
                 />
-              </div>
-
-              <fieldset
-                disabled={!canEdit}
-                id="panel-exam-content"
-                role="tabpanel"
-                aria-labelledby="tab-exam-content"
-                className={`space-y-4 min-w-0 ${!settingsOpen ? 'block' : 'hidden'}`}
-              >
-
-                {/* Danh sách các câu hỏi dạng thẻ Block Card */}
-                <div className="space-y-3.5">
-                  <OutlineEditor
-                    key={currentUser.id + ':' + editorSessionKey}
-                    exam={exam}
-                    canEdit={canEdit}
-                    onChange={setExam}
-                    onPoint={setSelectedPoint}
-                    onSource={(point, source: QuestionSource) => {
-                      setSelectedPoint(point);
-                      if (source === 'manual') handleAddQuestion(point);
-                      else openSource(source, point);
-                    }}
-                    composerPoint={newQuestionPoint}
-                    composer={composer}
-                    renderQuestion={(q, idx, number, controls) => (
-                      <QuestionCard
-                        displayNumber={number}
-                        extraItems={controls.moveItems}
-                        selectionActive={selectedQuestionIds.length > 0}
-                        withAi={withAi}
-                        ownerId={currentUser.id}
-                        displayPoints={scoredQuestions[idx]?.points}
-                        hidePassage
-                        passage={exam.passages?.find((p) => p.id === q.passageId)}
-                        numericScore={requiresNumericScore(exam.metadata.assessmentMode)}
-                        cognitiveFrameworkId={exam.metadata.cognitiveFrameworkId}
-                        knowledgePackage={exam.metadata.knowledgePackage}
-                        knowledgeScope={exam.metadata.knowledgeScope}
-                        key={`${currentUser.id}:${editorSessionKey}:${q.id}`}
-                        documentId={exam.id}
-                        sourceStamp={manualSourceStamp}
-                        onManualSave={(submission) =>
-                          setExam((previous) =>
-                            applyQuestionManualSubmission(previous, submission, currentUser.id),
-                          )
-                        }
-                        index={idx}
-                        question={{
-                          ...q,
-                          subject: q.subject ?? exam.metadata.subject,
-                          grade: q.grade ?? exam.metadata.grade,
-                        }}
-                        onDelete={handleDeleteQuestion}
-                        apiKey=""
-                        onMoveUp={() => handleMoveQuestion(idx, 'up')}
-                        onMoveDown={() => handleMoveQuestion(idx, 'down')}
-                        onDuplicate={() => handleDuplicateQuestion(idx)}
-                        isFirst={controls.first}
-                        isLast={controls.last}
-                        isSelected={selectedQuestionIds.includes(q.id)}
-                        onToggleSelect={handleToggleSelectQuestion}
-                        onAskAiAboutQuestion={handleAskAiAboutQuestion}
-                      />
-                    )}
-                  />
-                </div>
-
-                {/* Thanh tác vụ hàng loạt nổi cố định ở dưới (Floating Batch Action Bar) */}
                 {selectedQuestionIds.length > 0 && (
                   <div
                     className={
-                      'fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-[var(--ui-accent)] backdrop-blur-md text-[var(--ui-on-primary)] px-5 ' +
-                      'py-3 rounded-full shadow-xs border border-[var(--ui-border)]/30 dark:border-[var(--ui-border)] flex items-center gap-3 ' +
-                      'animate-in fade-in slide-in-from-bottom-5'
+                      'fixed bottom-16 lg:bottom-6 left-1/2 -translate-x-1/2 z-40 bg-[var(--ui-accent)] text-[var(--ui-on-primary)] px-4 ' +
+                      'py-2.5 rounded-full shadow-lg border border-[var(--ui-border)]/30 flex items-center gap-3'
                     }
                   >
-                    <span className="text-xs font-bold text-[#e3e3e3] bg-[#292a2d] px-2.5 py-1 rounded-full border border-[#3c4043]">
+                    <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-black/20">
                       Đã chọn {selectedQuestionIds.length} câu
                     </span>
-
-                    <div className="h-4 w-px bg-[#3c4043]" />
-
-                    {/* Nút Gộp câu */}
                     <button
                       onClick={handleMergeSelected}
                       disabled={selectedQuestionIds.length < 2}
@@ -891,35 +1005,23 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                           ? 'Chọn ít nhất 2 câu để gộp thành 1 câu tự luận'
                           : 'Gộp các câu đã chọn thành 1 câu tự luận tổng hợp có nhiều ý a, b, c...'
                       }
-                      className={
-                        'flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg app-button-primary disabled:opacity-40 ' +
-                        'disabled:cursor-not-allowed transition-all shadow-xs cursor-pointer'
-                      }
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg app-button-primary disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                     >
                       <Link2 className="w-3.5 h-3.5" />
                       <span>Gộp thành 1 câu tự luận</span>
                     </button>
-
-                    {/* Nút Xóa các câu đã chọn */}
                     <button
                       onClick={handleBatchDelete}
                       title="Xóa các câu hỏi đã chọn"
-                      className={
-                        'flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-rose-600 hover:bg-rose-500 text-white ' +
-                        'transition-all shadow-xs cursor-pointer'
-                      }
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-rose-600 hover:bg-rose-500 text-white cursor-pointer"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                       <span>Xóa ({selectedQuestionIds.length})</span>
                     </button>
-
-                    <div className="h-4 w-px bg-[#3c4043]" />
-
-                    {/* Nút Hủy chọn */}
                     <button
                       onClick={() => setSelectedQuestionIds([])}
                       title="Hủy chọn tất cả"
-                      className="p-1.5 text-[#9aa0a6] hover:text-[#e3e3e3] rounded-lg hover:bg-[#303134] transition-colors cursor-pointer"
+                      className="p-1.5 rounded-lg hover:bg-black/20 cursor-pointer"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -927,41 +1029,64 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                 )}
               </fieldset>
             </div>
+          </div>
+        </ResizablePanel>
 
-            {/* CỘT PHẢI: KHUNG XEM TRƯỚC BẢN IN A4 (6 Cột trên màn hình lớn) */}
-            <section
-              className={`a4-preview-section @min-[900px]:col-span-6 sticky top-0 h-[calc(100vh-6rem)] ${
-                mobileTab === 'editor' ? 'hidden @min-[900px]:block' : 'block'
-              } print:!block print:!static print:!h-auto print:!w-full print:!overflow-visible`}
-            >
-              {previewExam !== exam && (
-                <p role="status" className="text-xs p-2 border rounded">
-                  Đang xem thử thông tin chưa áp dụng.
-                </p>
-              )}
-              <A4Preview exam={previewExam} />
-            </section>
-          </main>
-        </div>
-
-        {/* ZONE 3: THANH MENU DỌC BÊN PHẢI (GOOGLE GEMINI COMPANION RAIL) */}
-        {canEdit && (
-          <RightCompanionRail
-            key={`${currentUser.id}:${exam.id}`}
-            ownerId={currentUser.id}
-            onSubmitCopilot={(submission) =>
-              setExam((previous) => applyCopilotSubmission(previous, submission, currentUser.id))
+        <section
+          aria-label="Tờ đề"
+          className={`a4-preview-section min-w-0 flex-1 min-h-0 flex-col ${
+            mobileTab === 'preview' ? 'flex' : 'hidden'
+          } lg:flex print:!block print:!static print:!h-auto print:!w-full print:!overflow-visible`}
+        >
+          {previewExam !== exam && (
+            <p role="status" className="no-print text-xs px-3 py-1.5 border-b bg-[var(--ui-surface)]">
+              Đang xem thử thông tin chưa áp dụng.
+            </p>
+          )}
+          <A4Preview
+            exam={previewExam}
+            barExtra={
+              <button
+                type="button"
+                className="app-button-secondary inline-flex items-center gap-1.5 min-h-9 px-3 text-xs rounded-lg cursor-pointer disabled:opacity-40"
+                disabled={!ready || exam.questions.length === 0}
+                onClick={() => reviewBefore(() => setPresentationOpen(true))}
+              >
+                <Presentation className="w-4 h-4" />
+                <span>Trình chiếu</span>
+              </button>
             }
-            isExpanded={isCopilotOpen && canEdit}
-            onClose={() => setIsCopilotOpen(false)}
-            exam={exam}
-            selectedQuestionIds={selectedQuestionIds}
-            externalCommand={copilotCommand}
           />
+        </section>
+
+        {canEdit && (
+          <ResizablePanel
+            side="right"
+            label="Bảng Trợ lý AI"
+            width={rightWidth}
+            onWidth={setRightWidth}
+            min={300}
+            max={560}
+            className={`${
+              isCopilotOpen ? 'flex' : 'hidden'
+            } max-lg:fixed max-lg:inset-x-0 max-lg:bottom-0 max-lg:top-12 max-lg:z-40`}
+          >
+            <RightCompanionRail
+              key={`${currentUser.id}:${exam.id}`}
+              ownerId={currentUser.id}
+              onSubmitCopilot={(submission) =>
+                setExam((previous) => applyCopilotSubmission(previous, submission, currentUser.id))
+              }
+              isExpanded={isCopilotOpen}
+              onClose={() => setIsCopilotOpen(false)}
+              exam={exam}
+              selectedQuestionIds={selectedQuestionIds}
+              externalCommand={copilotCommand}
+            />
+          </ResizablePanel>
         )}
       </div>
 
-      {/* CÁC MODALS NGHIỆP VỤ */}
       {presentationOpen && <ExamPresentation exam={exam} onClose={() => setPresentationOpen(false)} />}
       {collaborationOpen && exam.serverId && (
         <div
@@ -970,7 +1095,7 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
           aria-label="Cộng tác và lịch sử"
           className="fixed inset-0 z-50 bg-black/50 p-4 flex items-center justify-center"
         >
-          <div className="app-dialog w-full max-w-3xl max-h-[90vh] overflow-auto bg-[var(--ui-surface)] dark:bg-[var(--ui-surface)] rounded-xl p-5">
+          <div className="app-dialog w-full max-w-3xl max-h-[90vh] overflow-auto bg-[var(--ui-surface)] rounded-xl p-5">
             <button
               type="button"
               className="float-right px-3 py-2"
@@ -1001,28 +1126,6 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         </div>
       )}
 
-      {isGenerateModalOpen && (
-        <GenerateModal
-          key={sessionScope}
-          context={exam.metadata}
-          documentStamp={isGenerateModalOpen ? generationDocumentStamp(exam) : ''}
-          expectedUserId={currentUser.id}
-          appendQuestions
-          planningHint={
-            exam.metadata.examPlan
-              ? 'Ma trận giáo viên đang dùng (chỉ là gợi ý cho các câu thêm): ' +
-                JSON.stringify(exam.metadata.examPlan)
-              : undefined
-          }
-          isOpen={isGenerateModalOpen}
-          onClose={() => setIsGenerateModalOpen(false)}
-          onExamGenerated={(newExam, baseStamp) =>
-            acceptSource(newExam.questions, newExam.passages, baseStamp)
-          }
-          apiKey=""
-        />
-      )}
-
       <ShuffleModal
         isOpen={isShuffleModalOpen}
         onClose={() => setIsShuffleModalOpen(false)}
@@ -1036,36 +1139,6 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
             access: previous.access,
           }))
         }
-      />
-
-      <ImportModal
-        ownerId={currentUser.id}
-        documentId={exam.id}
-        context={{ subject: exam.metadata.subject, grade: exam.metadata.grade }}
-        isOpen={isImportModalOpen}
-        onClose={() => setIsImportModalOpen(false)}
-        allowParts
-        onImportQuestions={(questions, context) =>
-          acceptSource(questions, context.passages, undefined, context.parts)
-        }
-        apiKey=""
-      />
-
-      <QuestionBankModal
-        ownerId={currentUser.id}
-        key={`bank:${currentUser.id}`}
-        isOpen={isQuestionBankModalOpen}
-        onClose={() => setIsQuestionBankModalOpen(false)}
-        onInsertQuestion={(q, passage) => {
-          const question = { ...q } as BankQuestion;
-          delete question.passage;
-          delete question.passageUnavailable;
-          const newQuestion: Question = {
-            ...question,
-            id: crypto.randomUUID(),
-          };
-          return acceptSource([newQuestion], passage ? [passage] : []);
-        }}
       />
 
       <ShareModal
@@ -1093,9 +1166,10 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   );
 };
 
-
 export const ExamWorkspace: React.FC<ExamWorkspaceProps> = (props) => (
-  <EditorSelectionProvider key={props.currentUser.id + ":" + props.examId}><ExamWorkspaceContent {...props} /></EditorSelectionProvider>
+  <EditorSelectionProvider key={props.currentUser.id + ':' + props.examId}>
+    <ExamWorkspaceContent {...props} />
+  </EditorSelectionProvider>
 );
 
 export default ExamWorkspace;

@@ -1,4 +1,4 @@
-import { toggleTheme, openAccount, railClick } from './editor-ui';
+import { toggleTheme, openAccount, openAssistant, openCopilot } from './editor-ui';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -23,8 +23,7 @@ test('frame: persistent menu, document toolbar and non-overlapping assistant pan
   const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } }), page = await context.newPage();
   const assistant = () => page.getByRole('complementary', { name: 'Hỏi đáp với Trợ lý AI', exact: true });
   const menu = () => page.getByRole('complementary', { name: 'Menu', exact: true });
-  const toggleChat = () => page.getByRole('button', { name: 'Hỏi đáp với Trợ lý AI', exact: true }).filter({ visible: true });
-  const edit = () => page.getByRole('toolbar', { name: 'Công cụ soạn đề', exact: true }).getByRole('button', { name: 'Sửa đề bằng Trợ lý AI', exact: true });
+  const edit = () => ({ click: () => openCopilot(page), waitFor: () => page.getByRole('toolbar', { name: 'Công cụ soạn đề', exact: true }).waitFor() });
   const fitting = async () => assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true);
   fs.mkdirSync(report, { recursive: true });
   let examId = '';
@@ -37,30 +36,31 @@ test('frame: persistent menu, document toolbar and non-overlapping assistant pan
     assert.ok(created.ok()); examId = (await created.json()).exam.id;
     const baseline = await db.exam.findUniqueOrThrow({ where: { id: examId } });
 
-    await t.test('left menu keeps its state across library/editor and pushes the content', async () => {
+    await t.test('page menu keeps its state across pages; the editor hides it and brings its own menus', async () => {
       await page.goto(origin + '/'); await page.getByRole('heading', { name: 'Thư mục và đề thi', exact: true }).waitFor();
-      await page.goto(origin + '/editor/' + examId); await edit().waitFor();
-      await page.getByRole('button', { name: 'Thu gọn menu', exact: true }).waitFor();
-      const wide = await page.locator('.workspace-column').boundingBox(); assert.ok(wide && wide.x >= 250);
       await page.getByRole('button', { name: 'Thu gọn menu', exact: true }).click();
       await page.waitForFunction(() => document.querySelector('.workspace-column')!.getBoundingClientRect().x < 65);
-      await page.getByRole('navigation', { name: 'Không gian giáo viên' }).getByRole('link', { name: 'Kho đề', exact: true }).click();
+      await page.getByRole('navigation', { name: 'Không gian giáo viên' }).getByRole('link', { name: 'Ngân hàng câu hỏi', exact: true }).click();
       await page.getByRole('button', { name: 'Mở rộng menu', exact: true }).waitFor();
-      await page.goto(origin + '/editor/' + examId); await edit().waitFor();
       await page.getByRole('button', { name: 'Mở rộng menu', exact: true }).click();
       await page.waitForFunction(() => document.querySelector('.workspace-column')!.getBoundingClientRect().x >= 250);
-      const box = await menu().boundingBox(), content = await page.locator('.workspace-column').boundingBox();
-      assert.ok(box && content && box.x + box.width <= content.x + 1);
-      assert.equal(await page.getByRole('complementary', { name: 'Tài khoản và trợ lý' }).getByRole('button', { name: 'Sửa đề bằng Trợ lý AI' }).count(), 0);
+      await page.goto(origin + '/editor/' + examId); await edit().waitFor();
+      assert.equal(await menu().count(), 0);
+      assert.equal(await page.getByRole('complementary', { name: 'Tài khoản và trợ lý' }).count(), 0);
+      await page.getByRole('button', { name: 'Menu ứng dụng', exact: true }).click();
+      await page.getByRole('menuitem', { name: 'Về Kho đề', exact: true }).click();
+      await page.getByRole('heading', { name: 'Thư mục và đề thi', exact: true }).waitFor();
+      await page.goto(origin + '/editor/' + examId); await edit().waitFor();
     });
-    await t.test('one key/notes entry, chat docks, panels are exclusive and keep typed input', async () => {
-      await page.getByRole('button', { name: 'Mở menu tài khoản', exact: true }).filter({ visible: true }).click();
+    await t.test('one key/notes entry in the account menu, chat docks, panels are exclusive and keep typed input', async () => {
+      await openAccount(page);
       const account = page.getByRole('region', { name: 'Tài khoản', exact: true }); await account.waitFor();
-      assert.equal(await account.getByRole('button', { name: /Khóa|Ghi chú/ }).count(), 0);
+      assert.equal(await account.getByRole('button', { name: 'Quản lý khóa AI', exact: true }).count(), 1);
+      assert.equal(await account.getByRole('button', { name: 'Ghi chú riêng cho AI', exact: true }).count(), 1);
       await account.getByRole('button', { name: 'Đăng xuất', exact: true }).waitFor();
       await page.locator('div.fixed.inset-0.z-40').click({ position: { x: 400, y: 400 } });
       const before = await page.locator('.workspace-column').boundingBox();
-      await toggleChat().click(); await assistant().waitFor();
+      await openAssistant(page); await assistant().waitFor();
       const center = await page.locator('.workspace-column').boundingBox(), dock = await assistant().boundingBox();
       assert.ok(before && center && dock && before.width - center.width >= 380 && center.x + center.width <= dock.x + 1);
       assert.equal(await assistant().getByRole('button', { name: /Xem hồ sơ|^Xem$|Ghi chú|Khóa/ }).count(), 0);
@@ -68,7 +68,7 @@ test('frame: persistent menu, document toolbar and non-overlapping assistant pan
       await assistant().getByPlaceholder(/^Hỏi Thư ký AI/).fill('Nháp hỏi đáp vẫn được giữ');
       await edit().click(); await page.locator('#right-copilot-input').waitFor(); assert.equal(await assistant().count(), 0);
       await page.locator('#right-copilot-input').fill('Nháp lệnh sửa đề vẫn được giữ');
-      await toggleChat().click(); await assistant().waitFor(); assert.equal(await page.locator('#right-copilot-input').isVisible(), false);
+      await openAssistant(page); await assistant().waitFor(); assert.equal(await page.locator('#right-copilot-input').isVisible(), false);
       assert.equal(await assistant().getByPlaceholder(/^Hỏi Thư ký AI/).inputValue(), 'Nháp hỏi đáp vẫn được giữ');
       await page.screenshot({ path: report + '/editor-chat-1440.png' });
       await edit().click(); await page.locator('#right-copilot-input').waitFor();
@@ -84,8 +84,8 @@ test('frame: persistent menu, document toolbar and non-overlapping assistant pan
           await openAccount(page);
           const account = page.getByRole('region', { name: 'Tài khoản', exact: true }); await account.waitFor();
           const accountBox = await account.boundingBox(); assert.ok(accountBox && accountBox.x >= 0 && accountBox.x + accountBox.width <= width);
-          await page.keyboard.press('Escape'); await account.waitFor({ state: 'hidden' }); { const closeApp = page.getByRole('button', { name: 'Đóng menu ứng dụng', exact: true }); if (await closeApp.count()) await closeApp.dispatchEvent('click'); }
-          await railClick(page, 'Hỏi đáp với Trợ lý AI');
+          await page.keyboard.press('Escape'); await account.waitFor({ state: 'hidden' });
+          await openAssistant(page);
           const panel = page.getByRole(width >= 1024 ? 'complementary' : 'dialog', { name: 'Hỏi đáp với Trợ lý AI', exact: true }); await panel.waitFor();
           if (width < 1024) {
             assert.equal(await panel.getAttribute('aria-modal'), 'true');
@@ -95,7 +95,7 @@ test('frame: persistent menu, document toolbar and non-overlapping assistant pan
           await fitting(); await page.screenshot({ path: `${report}/chat-${width}-${dark ? 'dark' : 'light'}.png` });
           await panel.getByRole('button', { name: 'Đóng hỏi đáp AI', exact: true }).press('Escape');
           await panel.waitFor({ state: 'hidden' });
-          await edit().scrollIntoViewIfNeeded(); await edit().click();
+          await openCopilot(page);
           const copilot = page.getByRole(width >= 1024 ? 'complementary' : 'dialog', { name: 'Trợ lý và công cụ nhanh', exact: true }); await copilot.waitFor();
           await fitting(); await page.screenshot({ path: `${report}/copilot-${width}-${dark ? 'dark' : 'light'}.png` });
           await copilot.getByRole('button', { name: 'Đóng trợ lý sửa đề', exact: true }).press('Escape');

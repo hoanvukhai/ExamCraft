@@ -140,8 +140,8 @@ export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
   return (
     <aside ref={panelRef} role={modal && isExpanded ? 'dialog' : undefined} aria-modal={modal && isExpanded || undefined}
       aria-label="Trợ lý và công cụ nhanh"
-      className={`no-print select-none shrink-0 transition-all duration-300 ease-in-out flex-col justify-between border-l border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#17181a] z-40 lg:z-auto h-full overflow-hidden ${
-        isExpanded ? 'fixed inset-0 flex w-full lg:relative lg:inset-auto lg:w-96 shadow-xs' : 'hidden'
+      className={`no-print select-none flex-col justify-between bg-[var(--ui-surface)] h-full w-full overflow-hidden ${
+        isExpanded ? 'flex' : 'hidden'
       }`}
     >
       {proposalJournal.notice && <p role="status" className={isExpanded ? 'p-3 text-sm' : 'hidden'}>{proposalJournal.notice}</p>}

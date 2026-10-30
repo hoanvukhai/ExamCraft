@@ -155,10 +155,10 @@ test('teacher management: trash, bank, class context, routes and mobile', { time
     await t.test('editor picker inserts complete shared question and saves/reopens it', async () => {
       await page.goto(origin + '/editor/' + examIds[1]); await page.getByTitle('Lưu các thay đổi lên máy chủ').first().waitFor();
       await addSource(page, 'Từ ngân hàng');
-      const picker = page.getByRole('dialog', { name: 'Chọn câu từ ngân hàng', exact: true });
+      const picker = page.getByRole('region', { name: 'Chọn câu từ ngân hàng', exact: true });
       await picker.getByRole('button', { name: 'Dùng chung nội bộ', exact: true }).click(); await picker.getByLabel('Tìm nội dung', { exact: true }).fill(prefix + '_00');
       await picker.getByText('1 câu phù hợp · Trang 1 / 1', { exact: true }).waitFor();
-      await picker.getByRole('button', { name: 'Thêm vào đề', exact: true }).click(); await picker.getByLabel('Đóng ngân hàng câu hỏi', { exact: true }).click();
+      await picker.getByRole('button', { name: 'Thêm vào đề', exact: true }).click(); await page.getByRole('button', { name: 'Đóng ngân hàng câu hỏi', exact: true }).click();
       await saveEditor(page);
       await page.getByLabel('Trạng thái lưu', { exact: true }).getByText('Đã lưu', { exact: true }).waitFor();
       const data = await api('/api/exams/' + examIds[1]);

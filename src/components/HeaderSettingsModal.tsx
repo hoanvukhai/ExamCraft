@@ -28,7 +28,7 @@ export interface HeaderSettingsModalProps {
   onSaveMetadata: (submission: HeaderSubmission) => void;
 }
 const field =
-  'min-w-0 w-full border border-[var(--ui-border)] dark:border-[#3c4043] rounded-lg p-2.5 bg-[var(--ui-surface)] dark:bg-[#202124] text-[var(--ui-text-primary)] text-xs focus:outline-none focus:ring-2 focus:ring-[var(--ui-primary)]/20 focus:border-[var(--ui-primary)] transition-all';
+  'min-w-0 w-full border border-[var(--ui-border)] rounded-lg p-2.5 bg-[var(--ui-surface)] text-[var(--ui-text-primary)] text-xs focus:outline-none focus:ring-2 focus:ring-[var(--ui-primary)]/20 focus:border-[var(--ui-primary)] transition-all';
 const labels = {
   schoolName: 'Đơn vị chủ quản',
   departmentName: 'Trường / tổ chuyên môn',

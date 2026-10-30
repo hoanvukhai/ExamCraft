@@ -39,6 +39,8 @@ interface ImportModalProps {
   context?: { subject: Subject; grade: number };
   apiKey: string;
   allowParts?: boolean;
+  /** Docked in the editor's left panel instead of floating over the page. */
+  panel?: boolean;
 }
 
 type ImportSourceType = 'image' | 'word' | 'text' | 'latex';
@@ -55,6 +57,7 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
   apiKey,
   context,
   allowParts = true,
+  panel = false,
 }) => {
   const [importGrade, setImportGrade] = useState(context?.grade ?? 0);
   const [importSubject, setImportSubject] = useState<Subject | ''>(context?.subject ?? '');
@@ -425,16 +428,30 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5">
+    <div
+      className={
+        panel
+          ? '@container h-full min-h-0 flex flex-col'
+          : 'fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5'
+      }
+    >
       <div
         className={
-          'app-dialog bg-white dark:bg-[#202124] rounded-2xl max-w-6xl w-full p-5 sm:p-6 shadow-xs border border-[#dadce0] ' +
-          'dark:border-[#3c4043] relative max-h-[92vh] flex flex-col text-[#202124] dark:text-[#e3e3e3] animate-in fade-in ' +
-          'zoom-in-95 duration-150'
+          panel
+            ? 'flex-1 min-h-0 flex flex-col p-3 overflow-auto text-[var(--foreground)]'
+            : 'app-dialog bg-white dark:bg-[#202124] rounded-2xl max-w-6xl w-full p-5 sm:p-6 shadow-xs border border-[#dadce0] ' +
+              'dark:border-[#3c4043] relative max-h-[92vh] flex flex-col text-[#202124] dark:text-[#e3e3e3] animate-in fade-in ' +
+              'zoom-in-95 duration-150'
         }
       >
         {/* Header */}
-        <div className="app-dialog-header flex items-center justify-between pb-3 border-b border-[#dadce0] dark:border-[#3c4043]">
+        <div
+          className={
+            panel
+              ? 'hidden'
+              : 'app-dialog-header flex items-center justify-between pb-3 border-b border-[#dadce0] dark:border-[#3c4043]'
+          }
+        >
           <div className="flex items-center gap-3">
             <div
               className={
@@ -571,7 +588,13 @@ const ImportModalContent: React.FC<ImportModalProps> = ({
         </div>
 
         {/* Màn hình chia 2 cột: Trái (Nguồn gốc) | Phải (Kết quả AI bóc tách) */}
-        <div className="grow overflow-hidden grid grid-cols-1 md:grid-cols-2 gap-4 py-3 min-h-[380px]">
+        <div
+          className={
+            panel
+              ? 'grow grid grid-cols-1 @min-[720px]:grid-cols-2 gap-4 py-3'
+              : 'grow overflow-hidden grid grid-cols-1 md:grid-cols-2 gap-4 py-3 min-h-[380px]'
+          }
+        >
           {/* CỘT TRÁI: KHUNG NGUỒN GỐC */}
           <div className="flex flex-col h-full bg-[#f8f9fa] dark:bg-[#17181a] border border-[#dadce0] dark:border-[#3c4043] rounded-xl p-3.5 overflow-hidden">
             <div className="flex items-center justify-between pb-2 border-b border-[#dadce0] dark:border-[#3c4043]">
