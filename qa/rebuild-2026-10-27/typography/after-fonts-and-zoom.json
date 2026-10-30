@@ -436,10 +436,10 @@
     "height": 1000,
     "percent": 60,
     "geometry": {
-      "left": 73.890625,
+      "left": 242.890625,
       "paper": 476.21875,
-      "width": 624,
-      "scroll": 624
+      "width": 962,
+      "scroll": 962
     }
   },
   {
@@ -447,10 +447,10 @@
     "height": 1000,
     "percent": 100,
     "geometry": {
-      "left": 32,
+      "left": 84.15625,
       "paper": 793.6875,
-      "width": 624,
-      "scroll": 858
+      "width": 962,
+      "scroll": 962
     }
   },
   {
@@ -460,7 +460,7 @@
     "geometry": {
       "left": 32,
       "paper": 1190.546875,
-      "width": 624,
+      "width": 962,
       "scroll": 1255
     }
   },
@@ -471,7 +471,7 @@
     "geometry": {
       "left": 16,
       "paper": 476.21875,
-      "width": 341,
+      "width": 369,
       "scroll": 508
     }
   },
@@ -482,7 +482,7 @@
     "geometry": {
       "left": 16,
       "paper": 793.6875,
-      "width": 341,
+      "width": 369,
       "scroll": 826
     }
   },
@@ -493,7 +493,7 @@
     "geometry": {
       "left": 16,
       "paper": 1190.546875,
-      "width": 341,
+      "width": 369,
       "scroll": 1223
     }
   },
@@ -504,7 +504,7 @@
     "geometry": {
       "left": 16,
       "paper": 476.21875,
-      "width": 286,
+      "width": 314,
       "scroll": 508
     }
   },
@@ -515,7 +515,7 @@
     "geometry": {
       "left": 16,
       "paper": 793.6875,
-      "width": 286,
+      "width": 314,
       "scroll": 826
     }
   },
@@ -526,7 +526,7 @@
     "geometry": {
       "left": 16,
       "paper": 1190.546875,
-      "width": 286,
+      "width": 314,
       "scroll": 1223
     }
   },
@@ -535,10 +535,10 @@
     "height": 320,
     "percent": 60,
     "geometry": {
-      "left": 28.890625,
+      "left": 42.890625,
       "paper": 476.21875,
-      "width": 534,
-      "scroll": 534
+      "width": 562,
+      "scroll": 562
     }
   },
   {
@@ -548,7 +548,7 @@
     "geometry": {
       "left": 16,
       "paper": 793.6875,
-      "width": 534,
+      "width": 562,
       "scroll": 826
     }
   },
@@ -559,7 +559,7 @@
     "geometry": {
       "left": 16,
       "paper": 1190.546875,
-      "width": 534,
+      "width": 562,
       "scroll": 1223
     }
   }

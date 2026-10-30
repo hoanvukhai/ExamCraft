@@ -76,7 +76,6 @@ test('Vietnamese typography: full glyphs, paper zoom, phone scrolling, math and 
     await t.test('true 60/100/150 percent zoom, readable phone controls and reachable left/right edges', async () => {
       for (const [width, height] of [[1440, 1000], [375, 812], [320, 740], [568, 320]]) {
         await page.setViewportSize({ width, height });
-        if (width < 1024) await page.getByRole('navigation', { name: 'Chuyển vùng soạn' }).getByRole('button', { name: 'Xem đề', exact: true }).click();
         await paper.waitFor({ state: 'visible' });
         assert.ok(await page.locator('.a4-scroll-area').evaluate(e => e.clientHeight >= 100), 'paper remains usable in phone landscape');
         for (const percent of [60, 100, 150]) {
