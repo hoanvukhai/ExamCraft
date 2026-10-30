@@ -4,6 +4,8 @@ Claude viết theo trao đổi với chủ dự án ngày 30/10. **Thay toàn b�
 
 Tài liệu này dùng cho Codex/Gemini làm theo từng giai đoạn ở mục 21. Mã yêu cầu dạng `[TS-x]` để dẫn chiếu trong báo cáo.
 
+> **31/10/2026:** bản 2 (`qa/rebuild-2026-10-31/editor-v2/DAC_TA_TRANG_SOAN_V2.md`) thay các mục 3, 4, 5, 6, 9, 10, 11, 12, 14, 16, 20, 21 của tài liệu này. Các mục 7, 8, 18, 19, 23 vẫn dùng.
+
 ---
 
 ## 0. Tóm tắt các quyết định
