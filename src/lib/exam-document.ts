@@ -328,6 +328,8 @@ export function normalizeExamDocument(input: unknown): Exam {
       );
     }
   }
+  if (metadata.choiceColumns !== undefined && ![1, 2, 4, 'auto'].includes(metadata.choiceColumns as 'auto'))
+    delete document.metadata.choiceColumns;
   if (metadata.examKind !== undefined && !(String(metadata.examKind) in EXAM_KINDS))
     delete document.metadata.examKind;
   if (metadata.examPlan !== undefined) {

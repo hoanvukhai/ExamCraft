@@ -161,6 +161,8 @@ export interface ExamMetadata {
   headerLayout?: HeaderLayout;
   /** Student line, closing lines and footer (page numbers). Absent = the original fixed layout. */
   printLayout?: PrintLayout;
+  /** Columns for multiple-choice options on the sheet and in Word. Absent = the original layout. */
+  choiceColumns?: 'auto' | 1 | 2 | 4;
   examKind?: 'regular' | 'midterm' | 'final' | 'survey' | 'mock' | 'gifted' | 'other';
   examPlan?: ExamPlan;
   knowledgePackage?: KnowledgePackage;

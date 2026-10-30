@@ -22,7 +22,7 @@ import { matchingDisplay, orderingDisplay } from './structured-question';
 import { splitContentBlocks } from './markdown-table';
 import { examPlanOutput } from './exam-plan-output';
 import { resolveHeaderLines } from './header-layout';
-import { resolvePrintLayout, type ResolvedBlock } from './print-layout';
+import { resolvePrintLayout, choiceColumnCount, type ResolvedBlock } from './print-layout';
 import type { VariationTableData } from '@/components/VariationTable';
 import { latexToMath } from './latex-math';
 import { splitFormat } from './rich-text';
@@ -835,7 +835,42 @@ export async function exportExamToDocx(
         }),
       ]),
     );
-    if (q.type === 'multiple_choice')
+    const columns =
+      q.type === 'multiple_choice' && exam.metadata.choiceColumns !== undefined && view !== 'parallel'
+        ? choiceColumnCount(q.choices ?? [], exam.metadata.choiceColumns)
+        : 1;
+    if (q.type === 'multiple_choice' && columns > 1) {
+      const choices = q.choices ?? [];
+      docChildren.push(
+        new Table({
+          width: { size: 100, type: WidthType.PERCENTAGE },
+          borders: noBorders,
+          rows: Array.from(
+            { length: globalThis.Math.ceil(choices.length / columns) },
+            (_, row) =>
+              new TableRow({
+                children: Array.from({ length: columns }, (_, column) => {
+                  const choice = choices[row * columns + column];
+                  return new TableCell({
+                    width: { size: 100 / columns, type: WidthType.PERCENTAGE },
+                    children: choice
+                      ? [
+                          new Paragraph({
+                            children: [
+                              new TextRun({ text: choice.key + '. ', bold: true, size: 22 }),
+                              ...renderLatexRunsForWord(choice.text, { fontSize: 22 }),
+                            ],
+                          }),
+                          ...renderFiguresForDocx(choice.figures),
+                        ]
+                      : [new Paragraph('')],
+                  });
+                }),
+              }),
+          ),
+        }),
+      );
+    } else if (q.type === 'multiple_choice')
       q.choices?.forEach((choice) =>
         docChildren.push(
           new Paragraph({

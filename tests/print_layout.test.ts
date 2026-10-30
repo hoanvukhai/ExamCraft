@@ -2,7 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import JSZip from 'jszip';
 import { exportExamToDocx } from '../src/lib/docx-export';
-import { fillPrintText, PRINT_PRESETS, resolvePrintLayout, parsePrintLayout } from '../src/lib/print-layout';
+import {
+  choiceColumnCount,
+  fillPrintText,
+  PRINT_PRESETS,
+  resolvePrintLayout,
+  parsePrintLayout,
+} from '../src/lib/print-layout';
 import { normalizeExamDocument } from '../src/lib/exam-document';
 import { validateOutline } from '../src/lib/exam-outline';
 import type { Exam } from '../src/types/exam';
@@ -129,4 +135,35 @@ test('a part set to start on a new page breaks the page in Word, and only parts 
   const bad = structuredClone(exam);
   bad.outline![0].children![0].startOnNewPage = true;
   assert.throws(() => validateOutline(bad.outline!, bad.questions));
+});
+
+test('option columns: auto follows the length of the options, and Word lays them out in a table only when asked', async () => {
+  const short = ['1', '2', '3', '4'].map((text) => ({ text }));
+  assert.equal(choiceColumnCount(short, 'auto'), 4);
+  assert.equal(
+    choiceColumnCount(
+      ['Một câu vừa phải dài', 'b', 'c', 'd'].map((text) => ({ text })),
+      'auto',
+    ),
+    2,
+  );
+  assert.equal(choiceColumnCount([{ text: 'x'.repeat(60) }, { text: 'b' }], 'auto'), 1);
+  assert.equal(choiceColumnCount([{ text: 'a', figures: [{}] }], 'auto'), 1);
+  assert.equal(choiceColumnCount(short, 2), 2);
+  const withChoices = (extra: Record<string, unknown>) => {
+    const exam = base(extra);
+    exam.questions = [
+      {
+        ...exam.questions[0],
+        type: 'multiple_choice',
+        choices: ['A', 'B', 'C', 'D'].map((key, i) => ({ key, text: String(i + 1) })),
+        correct_answer: 'A',
+      },
+    ] as Exam['questions'];
+    return exam;
+  };
+  const legacy = (await parts(withChoices({}))).body;
+  const columns = (await parts(withChoices({ choiceColumns: 4 }))).body;
+  const rows = (xml: string) => (xml.match(/<w:tr>/g) ?? []).length;
+  assert.equal(rows(columns), rows(legacy) + 1, 'four options fit one extra table row');
 });

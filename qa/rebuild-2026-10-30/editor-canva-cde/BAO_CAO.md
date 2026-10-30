@@ -19,6 +19,10 @@ Nhánh `claude/editor-canva-a`. DB thử `examcraft_test_20261022`, không AI th
 | Đường ngắt trang | Nét đứt "Hết trang n" mỗi 297mm trên tờ đề; dải nút "Đến trang n" và tổng số trang ở thanh dưới |
 | Số trang chân trang | Dùng số trang đo theo chiều cao tờ |
 
+## Từ B: cột phương án
+
+`metadata.choiceColumns` (Như cũ / Tự chọn / 1 / 2 / 4 cột) chọn trong Mẫu → Bố cục in. Tự chọn: 4 cột khi 4 phương án ngắn, 2 khi vừa, 1 khi dài hoặc có hình/công thức khối. Áp dụng cho bản xem và Word (bảng); không chọn thì giữ đúng bố cục cũ.
+
 ## E. Rà soát và góp ý ở lề
 
 | Việc | Kết quả |
@@ -36,6 +40,6 @@ Nhánh `claude/editor-canva-a`. DB thử `examcraft_test_20261022`, không AI th
 
 ## Kiểm
 
-- SAFE 557/557 (thêm `rich_text.test.ts` 3 ca, `print_layout.test.ts` 7 ca). Kiểu, lint 0 lỗi, ratchet màu 2508.
+- SAFE 558/558 (thêm `rich_text.test.ts` 3 ca, `print_layout.test.ts` 7 ca). Kiểu, lint 0 lỗi, ratchet màu 2508.
 - Trình duyệt: editor 12/12 (thêm ca: đề dài có đường ngắt + nút trang, bấm đúp mở Chi tiết, In đậm → thẻ `<b>` → in đậm trên tờ, không hiện thẻ), frame 4/4, teacher 7/7, library 6/6, admin 11/11, typography 4/4, pilot 24/24.
 - Chưa: mở Word thật; điện thoại thật.

@@ -93,6 +93,30 @@ export function EditorPrint({ exam, canEdit, onChange }: Props) {
         </select>
       </label>
 
+      <label className="block space-y-1">
+        <span className="text-xs font-semibold">Cột phương án trắc nghiệm</span>
+        <select
+          className="teacher-field w-full"
+          disabled={!canEdit}
+          value={String(exam.metadata.choiceColumns ?? '')}
+          onChange={(event) => {
+            const raw = event.target.value;
+            onChange((prev) => {
+              const metadata = { ...prev.metadata };
+              if (!raw) delete metadata.choiceColumns;
+              else metadata.choiceColumns = raw === 'auto' ? 'auto' : (Number(raw) as 1 | 2 | 4);
+              return { ...prev, metadata, updatedAt: new Date().toISOString() };
+            });
+          }}
+        >
+          <option value="">Như cũ (Word mỗi phương án một dòng)</option>
+          <option value="auto">Tự chọn theo độ dài</option>
+          <option value="1">1 cột</option>
+          <option value="2">2 cột</option>
+          <option value="4">4 cột</option>
+        </select>
+      </label>
+
       <div className="space-y-2">
         <p className="text-xs font-semibold">Mẫu bố cục</p>
         <p className="text-xs text-[var(--ui-text-secondary)]">

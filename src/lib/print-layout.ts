@@ -316,3 +316,18 @@ export function segmentsToText(segments: Segment[], page = 1, pages = 1): string
     .map((s) => (typeof s === 'string' ? s : String(s.page === 'current' ? page : pages)))
     .join('');
 }
+
+/**
+ * How many columns the options of one multiple-choice question take. "auto" picks 4 when every option is short,
+ * 2 when they are medium, and 1 when any is long or carries a figure.
+ */
+export function choiceColumnCount(
+  choices: { text: string; figures?: unknown[] }[],
+  setting: 'auto' | 1 | 2 | 4,
+): 1 | 2 | 4 {
+  if (setting !== 'auto') return setting;
+  if (!choices.length || choices.some((choice) => choice.figures?.length || /[$][$]|\n/.test(choice.text)))
+    return 1;
+  const longest = Math.max(...choices.map((choice) => choice.text.length));
+  return choices.length === 4 && longest <= 14 ? 4 : longest <= 40 ? 2 : 1;
+}

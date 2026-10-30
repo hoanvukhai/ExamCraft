@@ -17,7 +17,7 @@ import { matchingDisplay, orderingDisplay } from '@/lib/structured-question';
 import { computeExamMatrix, computeExamSpecification } from '@/lib/matrix-spec-generator';
 import { examPlanOutput } from '@/lib/exam-plan-output';
 import { resolveHeaderLines } from '@/lib/header-layout';
-import { resolvePrintLayout, segmentsToText, type ResolvedBlock } from '@/lib/print-layout';
+import { resolvePrintLayout, segmentsToText, choiceColumnCount, type ResolvedBlock } from '@/lib/print-layout';
 
 const renderPreviewFigure = (figure: Figure) => <FigureView key={figure.id} figure={figure} forceLight />;
 
@@ -492,7 +492,12 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
                           <MathRenderer content={q.content} inline />
                         </p>
                         {q.choices && q.type === 'multiple_choice' && (
-                          <div className="grid grid-cols-2 gap-3 pl-4 py-2">
+                          <div
+                            className="grid gap-3 pl-4 py-2"
+                            style={{
+                              gridTemplateColumns: `repeat(${metadata.choiceColumns === undefined ? 2 : choiceColumnCount(q.choices, metadata.choiceColumns)}, minmax(0, 1fr))`,
+                            }}
+                          >
                             {q.choices.map((choice) => (
                               <div key={choice.key}>
                                 <b>{choice.key}.</b> <MathRenderer content={choice.text} inline />
