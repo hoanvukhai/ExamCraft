@@ -68,7 +68,9 @@ export function EditorAiPanel({
       </div>
       <div className={active === 'chat' ? 'flex min-h-0 flex-1 flex-col' : 'hidden'}>{chat}</div>
       <div className={active === 'generate' ? 'min-h-0 flex-1 overflow-auto' : 'hidden'}>{generate}</div>
-      {verify && <div className={active === 'verify' ? 'min-h-0 flex-1 overflow-auto p-3' : 'hidden'}>{verify}</div>}
+      {verify && (
+        <div className={active === 'verify' ? 'min-h-0 flex-1 overflow-auto p-3' : 'hidden'}>{verify}</div>
+      )}
     </div>
   );
 }

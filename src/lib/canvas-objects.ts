@@ -49,7 +49,11 @@ export function parseCode(code: string | null | undefined): CanvasObject {
     const split = rest.lastIndexOf(':');
     const parent = rest.slice(0, split);
     const after = rest.slice(split + 1);
-    return { kind: 'insert', parent: parent === 'root' ? null : parent, after: after === 'start' ? null : after };
+    return {
+      kind: 'insert',
+      parent: parent === 'root' ? null : parent,
+      after: after === 'start' ? null : after,
+    };
   }
   if (kind === 'figure') {
     const split = rest.lastIndexOf(':');
@@ -82,7 +86,9 @@ export function locateNode(outline: OutlineNode[], id: string): Located | undefi
 
 export function nodeOfQuestion(exam: Exam, questionId: string): Located | undefined {
   const outline = displayOutline(exam);
-  const node = outlineNodes(outline).find((item) => item.kind === 'question' && item.questionId === questionId);
+  const node = outlineNodes(outline).find(
+    (item) => item.kind === 'question' && item.questionId === questionId,
+  );
   return node && locateNode(outline, node.id);
 }
 
@@ -101,7 +107,8 @@ export function selectionChain(exam: Exam, code: string): ChainStep[] {
   const labelOfNode = (node: OutlineNode) => {
     const entry = entries.get(node.id);
     const title = node.title?.trim();
-    if (node.kind === 'part') return ['Phần', entry?.label, title && !entry?.label ? title : ''].filter(Boolean).join(' ') || 'Phần';
+    if (node.kind === 'part')
+      return ['Phần', entry?.label, title && !entry?.label ? title : ''].filter(Boolean).join(' ') || 'Phần';
     const material = exam.passages?.find((passage) => passage.id === node.passageId);
     return `Ngữ liệu${material?.title?.trim() || title ? ' ' + (material?.title?.trim() || title) : ''}`;
   };
@@ -130,14 +137,23 @@ export function selectionChain(exam: Exam, code: string): ChainStep[] {
     case 'print':
       steps.push({
         code,
-        label: { header: 'Đầu trang', student: 'Dòng thí sinh', intro: 'Lời dặn', end: 'Cuối đề', footer: 'Chân trang' }[object.zone],
+        label: {
+          header: 'Đầu trang',
+          student: 'Dòng thí sinh',
+          intro: 'Lời dặn',
+          end: 'Cuối đề',
+          footer: 'Chân trang',
+        }[object.zone],
       });
       break;
     case 'part':
     case 'group': {
       pushAncestors(object.id);
       const located = locateNode(outline, object.id);
-      steps.push({ code, label: located ? labelOfNode(located.node) : object.kind === 'part' ? 'Phần' : 'Ngữ liệu' });
+      steps.push({
+        code,
+        label: located ? labelOfNode(located.node) : object.kind === 'part' ? 'Phần' : 'Ngữ liệu',
+      });
       break;
     }
     case 'question':
@@ -152,7 +168,8 @@ export function selectionChain(exam: Exam, code: string): ChainStep[] {
       if (object.kind === 'figure') {
         const index = question?.figures?.findIndex((figure) => figure.id === object.id) ?? -1;
         steps.push({ code, label: index >= 0 ? `Hình ${index + 1}` : 'Hình' });
-      } else if (object.kind === 'choice') steps.push({ code, label: `Phương án ${choiceKeyLabel(object.key)}` });
+      } else if (object.kind === 'choice')
+        steps.push({ code, label: `Phương án ${choiceKeyLabel(object.key)}` });
       else if (object.kind === 'statement') steps.push({ code, label: `Mệnh đề ${object.key}` });
       else if (object.kind === 'item') {
         const index = question?.parts?.findIndex((part) => part.id === object.key) ?? -1;
@@ -315,7 +332,11 @@ export function firstChildCode(exam: Exam, code: string): string | undefined {
   const object = parseCode(code);
   if (object.kind === 'part' || object.kind === 'group') {
     const node = locateNode(displayOutline(exam), object.id)?.node.children?.[0];
-    return node ? (node.kind === 'question' ? `question:${node.questionId}` : `${node.kind}:${node.id}`) : undefined;
+    return node
+      ? node.kind === 'question'
+        ? `question:${node.questionId}`
+        : `${node.kind}:${node.id}`
+      : undefined;
   }
   if (object.kind === 'question') {
     const question = exam.questions.find((item) => item.id === object.id);

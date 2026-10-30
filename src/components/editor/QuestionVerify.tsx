@@ -32,7 +32,8 @@ export function QuestionVerify({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [verification, setVerification] = useState<{ base: QuestionAiBase; result: Result } | null>(null);
-  const current = verification && questionAiBaseMatches(verification.base, ownerId, documentId, sourceStamp, question);
+  const current =
+    verification && questionAiBaseMatches(verification.base, ownerId, documentId, sourceStamp, question);
   const result = verification && current ? verification.result : null;
   const run = async () => {
     const base = captureQuestionAiBase(ownerId, documentId, sourceStamp, question);
@@ -84,7 +85,8 @@ export function QuestionVerify({
       )}
       {verification && !current && (
         <p role="alert" className="text-xs text-amber-700">
-          Câu hoặc phạm vi đã đổi từ khi thẩm định. Kết quả cũ không dùng cho bản hiện tại; hãy thẩm định lại khi cần.
+          Câu hoặc phạm vi đã đổi từ khi thẩm định. Kết quả cũ không dùng cho bản hiện tại; hãy thẩm định lại
+          khi cần.
         </p>
       )}
       {result && (

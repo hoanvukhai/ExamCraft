@@ -7,7 +7,7 @@ import { normalizeExamDocument } from '../src/lib/exam-document';
 import { reconcileQuestionOutline, removeOutlineNode } from '../src/lib/exam-outline';
 import { patchOutlineNode, nudgeOutlineNode } from '../src/lib/outline-editing';
 import { applyQuestionOrderCommand } from '../src/lib/question-commands';
-import { OutlineEditor } from '../src/components/editor/OutlineEditor';
+import { EditorOutline } from '../src/components/editor/EditorOutline';
 import { QuestionPartsEditor } from '../src/components/editor/QuestionPartsEditor';
 function fixture(): Exam {
   return normalizeExamDocument({
@@ -44,27 +44,30 @@ function fixture(): Exam {
     ],
   });
 }
-test('outline canvas shows empty part and a single composer between selected questions without writes', () => {
+test('the outline lists the empty part and keeps the question order, without writes', () => {
   const exam = fixture(),
     before = JSON.stringify(exam);
   const html = renderToStaticMarkup(
-    <OutlineEditor
+    <EditorOutline
       exam={exam}
+      selectedCode="question:a"
+      ticked={['b']}
       canEdit
-      onChange={() => {
+      issueCounts={{}}
+      commentCounts={{}}
+      onSelect={() => {
         throw Error('No render writes');
       }}
-      onPoint={() => {}}
-      onSource={() => {}}
-      composerPoint={{ parentId: 'p', afterId: 'a-node' }}
-      composer={<p>COMPOSER_MARKER</p>}
-      renderQuestion={(question) => <p>{question.content}</p>}
+      onTick={() => {}}
+      onMove={() => {
+        throw Error('No render writes');
+      }}
     />,
   );
   assert.ok(html.includes('EMPTY_PART'));
-  assert.equal(html.split('COMPOSER_MARKER').length - 1, 1);
-  assert.ok(html.indexOf('QUESTION_a') < html.indexOf('COMPOSER_MARKER'));
-  assert.ok(html.indexOf('COMPOSER_MARKER') < html.indexOf('QUESTION_b'));
+  assert.ok(html.includes('PART_LABEL'));
+  assert.ok(html.indexOf('QUESTION_a') < html.indexOf('QUESTION_b'));
+  assert.ok(html.indexOf('PART_LABEL') < html.indexOf('EMPTY_PART'));
   assert.equal(JSON.stringify(exam), before);
 });
 test('node editing and question commands keep hierarchy; dissolving a part retains questions', () => {

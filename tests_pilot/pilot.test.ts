@@ -1,4 +1,4 @@
-import { saveEditor, addSource, acceptReview, exportTool, openAccount, openAssistant, openCopilot, questionCommandAt, questionMenuItemAt } from './editor-ui';
+import { saveEditor, addSource, acceptReview, exportTool, openAccount, openCopilot, questionCommandAt, questionMenuItemAt } from './editor-ui';
 import test from 'node:test';
 import { writeQaReport } from '../tests/helpers/qa-report';
 import http from 'node:http';
@@ -203,24 +203,27 @@ test('F2 author seven types, image, passage, zero, title and reopen', { timeout:
   await f.page.getByRole('button', { name: 'Tạo đề', exact: true }).click();
   await f.page.getByTitle('Nhấn để đổi tên đề thi').click();
   const titleInput = f.page.locator('header input').first(); await titleInput.fill('Pilot Toán 6 tự soạn'); await titleInput.press('Enter');
-  // Create a real material group through the new outline menu before authoring Q1.
-  const canvas = f.page.getByRole('region', { name: 'Dàn ý đề', exact: true });
-  await canvas.getByLabel('Tên phần 1',{exact:true}).fill('Phần đọc');
-  await canvas.getByRole('button', { name: 'Thêm nội dung', exact: true }).click();
-  await f.page.getByRole('menuitem', { name: 'Nội dung dùng chung', exact: true }).click();
-  await canvas.getByLabel('Tên ngữ liệu 1', { exact: true }).fill('Ngữ liệu thử');
-  await canvas.getByLabel('Nội dung ngữ liệu 1', { exact: true }).fill('Lan đọc sách ở thư viện.');
-  await canvas.getByRole('button', { name: 'Xong', exact: true }).click();
+  // The part and its shared passage are chosen in the outline and on the sheet; questions are added at the selection.
+  const sheet = f.page.locator('.a4-preview-section');
+  await f.page.getByRole('button', { name: 'Dàn ý', exact: true }).click();
+  await f.page.getByRole('region', { name: 'Dàn ý đề', exact: true }).locator('[data-outline-row]').first().click();
+  await f.page.getByLabel('Tên phần', { exact: true }).fill('Phần đọc');
+  await f.page.getByRole('navigation', { name: 'Đang chọn', exact: true }).getByRole('button', { name: 'Toàn đề', exact: true }).click();
+  await addSource(f.page, 'Ngữ liệu');
+  await f.page.getByLabel('Tên ngữ liệu 1', { exact: true }).fill('Ngữ liệu thử');
+  await f.page.getByLabel('Nội dung ngữ liệu 1', { exact: true }).fill('Lan đọc sách ở thư viện.');
+  await sheet.getByText('Lan đọc sách ở thư viện.', { exact: true }).waitFor();
+  const kindLabel: Record<string, string> = { multiple_choice: 'Tự soạn câu mới', true_false_group: 'Câu đúng/sai', short_answer: 'Câu trả lời ngắn', essay: 'Câu tự luận', fill_blank: 'Câu điền khuyết', matching: 'Câu ghép nối', ordering: 'Câu sắp xếp' };
   for (const [index, type] of types.entries()) {
-    await click(f.page, index === 0 ? 'Thêm câu hỏi mới' : 'Thêm câu hỏi');
-    await f.page.getByRole('region', {name:'Soạn câu mới',exact:true}).waitFor();
-    await f.page.getByLabel('Dạng câu', { exact: true }).selectOption(type);
+    await addSource(f.page, kindLabel[type]);
+    await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).waitFor();
+    assert.equal(await f.page.getByLabel('Dạng câu', { exact: true }).inputValue(), type);
     await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).fill(`PILOT Q${index + 1} ${type}`);
     if (index === 0) {
       await waitUntil(async () => heldCreate, 'First create request must be held');
       releaseCreate();
       await waitUntil(async () => /\/editor\/(?!new(?:\?|$))[^/?]+/.test(new URL(f.page.url()).pathname), 'Creation ACK should select server document');
-      assert.equal(await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).inputValue(), 'PILOT Q1 multiple_choice', 'Creation ACK must not close/reset a dirty question form');
+      assert.equal(await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).inputValue(), 'PILOT Q1 multiple_choice', 'Creation ACK must not reset a question being typed');
     }
     await f.page.getByLabel('Điểm câu', { exact: true }).fill(index === 0 ? '0' : '1');
     if (type === 'multiple_choice') { for (const key of ['A','B','C','D']) await f.page.getByLabel('Phương án ' + key, { exact: true }).fill(key === 'A' ? 'Hai' : key); await f.page.getByLabel('Đáp án lựa chọn').selectOption('A');
@@ -228,28 +231,25 @@ test('F2 author seven types, image, passage, zero, title and reopen', { timeout:
       await f.page.getByLabel('Thêm ảnh', { exact: false }).last().setInputFiles({ name: 'pilot.png', mimeType: 'image/png', buffer: image });
       await f.page.getByLabel('Chú thích hình 1').fill('Ảnh thử');
     }
-    if (type === 'true_false_group') { await click(f.page,'Thêm ý'); await f.page.getByLabel('Nội dung ý a').fill('Hai lớn hơn một'); await f.page.getByLabel('Đáp án ý a').selectOption('true'); }
+    if (type === 'true_false_group') { await f.page.getByLabel('Nội dung ý a').fill('Hai lớn hơn một'); await f.page.getByLabel('Đáp án ý a').selectOption('true'); }
     if (['short_answer','fill_blank'].includes(type)) await f.page.getByLabel('Đáp án chính', { exact: true }).fill('2');
-    if (type === 'matching') { for (let i=1;i<=2;i++) { await click(f.page,'Thêm cặp'); await f.page.getByLabel('Vế trái '+i).fill('Vế '+i); await f.page.getByLabel('Vế phải '+i).fill(String(i)); } }
+    if (type === 'matching') { for (let i=1;i<=2;i++) { await f.page.getByLabel('Vế trái '+i).fill('Vế '+i); await f.page.getByLabel('Vế phải '+i).fill(String(i)); } }
     if (type === 'ordering') await f.page.getByLabel('Thứ tự đúng', { exact: true }).fill('Bước đầu\nBước sau');
     await f.page.getByRole('textbox', { name: 'Lời giải', exact: true }).fill(solution);
-    await click(f.page,'Thêm vào đề');
-    await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).waitFor({ state: 'hidden' });
-    await questionCommandAt(f.page, index, 'Chỉnh nội dung');
-    await f.page.getByRole('toolbar', { name: 'Công cụ soạn đề' }).getByRole('button', { name: 'Khác', exact: true }).click();
-    assert.equal(await f.page.getByRole('menuitem', { name: 'Lưu bản sao vào ngân hàng', exact: true }).isDisabled(), true); await f.page.keyboard.press('Escape');
-    await f.page.getByRole('button',{name:'Đóng, giữ nháp',exact:true}).click();
+    // Changes apply by themselves: wait until the sheet shows this question.
+    await sheet.getByText(`PILOT Q${index + 1} ${type}`, { exact: false }).first().waitFor();
+    await waitUntil(async () => (await f.page.getByText('Đang lưu thay đổi…').count()) === 0, 'The question form should finish applying');
   }
   const bankSaved = f.page.waitForResponse(r => r.url().endsWith('/api/questions') && r.request().method() === 'POST');
   await questionCommandAt(f.page, 0, 'Lưu bản sao vào ngân hàng');
   { const bankResponse = await bankSaved; assert.equal(bankResponse.status(), 200, 'POST /api/questions status ' + bankResponse.status()); } // this endpoint answers 200 with { success, question }, not 201
-  await f.page.getByText('Đã lưu bản sao riêng vào ngân hàng', { exact: true }).waitFor();
+  await f.page.getByText('Đã lưu bản sao riêng vào ngân hàng', { exact: false }).waitFor();
   const bankRows = await f.db.question.findMany({ where: { ownerId: f.ids[0], NOT: { tags: { has: '__workspace_only' } } }, include: { passage: true } });
   assert.equal(bankRows.length, 1);
   assert.equal(bankRows[0].content, 'PILOT Q1 multiple_choice');
   assert.equal(Number(bankRows[0].points), 0);
   assert.equal(bankRows[0].passage?.content, 'Lan đọc sách ở thư viện.');
-  await f.page.getByRole('button',{name:'Thêm công cụ',exact:true}).filter({visible:true}).click(); await f.page.getByRole('menuitem',{name:'Dùng mẫu / lưu thành mẫu',exact:true}).click(); await openDetails(f.page, 'Mẫu cá nhân và nguồn tham khảo');
+  await f.page.getByRole('button',{name:'Mẫu',exact:true}).click(); await openDetails(f.page, 'Mẫu cá nhân và nguồn tham khảo');
   await openDetails(f.page, 'Lưu cấu hình đề hiện tại thành mẫu riêng');
   await f.page.getByLabel('Tên bản mẫu riêng', { exact: true }).fill('Mẫu pilot riêng');
   const templateSaved = f.page.waitForResponse(r=>r.url().endsWith('/api/templates') && r.request().method()==='POST');
@@ -270,7 +270,7 @@ test('F2 author seven types, image, passage, zero, title and reopen', { timeout:
 
 test('F3 answer views, shuffle, Word and print', { timeout: 120000 }, () => flow('F3', async f => {
   await authenticated(f); await openExam(f,await seedExam(f,'ngu_van'));
-  await f.page.getByRole('button', { name: 'Thêm công cụ', exact: true }).filter({ visible: true }).click(); await f.page.getByRole('menuitem', { name: 'Rà soát đề', exact: true }).click();
+  await openTool(f.page, 'Xuất'); await f.page.getByRole('menuitem', { name: /^(Rà soát đề|Đề còn [0-9]+ mục cần xem)$/ }).click();
   const review = f.page.getByRole('region', { name: 'Rà soát đề', exact: true });
   assert.ok((await review.innerText()).includes('Tổng điểm: 6,00'));
   assert.ok(!(await review.innerText()).includes(solution));
@@ -382,8 +382,7 @@ test('F5 assign link with and without class and inspect frozen policies', { time
   await openExam(f, id);
   await questionCommandAt(f.page, 0, 'Chỉnh nội dung');
   await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).fill('SOURCE_CHANGED_AFTER_ASSIGN');
-  await click(f.page, 'Áp dụng câu vào đề');
-  await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).waitFor({ state: 'hidden' });
+  await f.page.locator('.a4-preview-section').getByText('SOURCE_CHANGED_AFTER_ASSIGN', { exact: false }).first().waitFor();
   await saveEditor(f.page);
   await waitUntil(async () => JSON.stringify((await f.db.exam.findUniqueOrThrow({ where: { id } })).metadata).includes('SOURCE_CHANGED_AFTER_ASSIGN'), 'Source edit must be saved');
   for (const row of frozen) assert.equal(JSON.stringify((await f.db.assignment.findUniqueOrThrow({ where: { id: row.id } })).snapshot), row.snapshot);
@@ -863,14 +862,14 @@ test('F21 collaborator Copilot uses its own key and preserves the owner concurre
     await waitUntil(async () => mock.keys.length === 1, 'Collaborator request must reach local provider');
     assert.deepEqual(mock.keys, ['pilot-editor-key-0123456789']);
     await questionCommandAt(f.page, 0, 'Chỉnh nội dung');
-    await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).fill('F21 OWNER NEW CONTENT'); await click(f.page, 'Áp dụng câu vào đề');
+    await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).fill('F21 OWNER NEW CONTENT'); await f.page.locator('.a4-preview-section').getByText('F21 OWNER NEW CONTENT', { exact: false }).first().waitFor();
     await saveEditor(f.page);
     await waitUntil(async () => (await f.api('/api/exams/' + id)).document.questions[0].content === 'F21 OWNER NEW CONTENT', 'Owner edit must persist before provider responds');
     const aiQuestion = { ...document().questions[0], content: 'F21 AI PROPOSAL' };
     mock.respond({ type: 'action', action: 'modify_single_question', targetQuestionIndex: 1, targetQuestionId: 'q1', explanation: 'F21 proposal', modifiedQuestion: aiQuestion });
     const proposal = b.getByRole('region', { name: 'Đề xuất AI chưa áp dụng' });
     await b.getByText('F21 proposal', { exact: true }).waitFor();
-    const apply = b.getByRole('button', { name: 'Áp dụng', exact: true });
+    const apply = b.getByRole('region', { name: 'Bảng AI', exact: true }).getByRole('button', { name: 'Áp dụng', exact: true });
     if (await apply.isEnabled()) { await apply.click(); await saveEditor(b); if (await b.getByLabel('Trạng thái lưu', {exact:true}).getAttribute('aria-expanded') !== 'true') await b.getByLabel('Trạng thái lưu', {exact:true}).click(); await b.getByText('Lưu bản nháp thành đề mới', { exact: true }).waitFor(); }
     else { await b.getByText(/Chưa áp dụng để giữ bản mới/).waitFor(); }
     const current = (await f.api('/api/exams/' + id)).document; assert.equal(current.questions[0].content, 'F21 OWNER NEW CONTENT');
@@ -910,9 +909,9 @@ test('F22 cancel slow AI import and generation without applying or saving result
 
 test('F23 manual edits, undo redo and a retried bank save preserve links without duplicates', { timeout: 180000 }, () => flow('F23', async f => {
   await authenticated(f); const id = await seedExam(f); await openExam(f, id);
-  await questionCommandAt(f.page, 0, 'Chỉnh nội dung'); await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).fill('F23 EDITED'); await f.page.getByLabel('Đáp án lựa chọn').selectOption('B'); await click(f.page, 'Áp dụng câu vào đề');
-  await f.page.getByRole('button', { name: /^Hoàn tác \(/ }).first().click(); await f.page.getByText('PILOT Q1 multiple_choice', { exact: true }).first().waitFor();
-  await f.page.getByRole('button', { name: /^Làm lại câu \(/ }).first().click(); await f.page.getByText('F23 EDITED', { exact: true }).first().waitFor();
+  await questionCommandAt(f.page, 0, 'Chỉnh nội dung'); await f.page.getByLabel('Nội dung câu hỏi', { exact: true }).fill('F23 EDITED'); await f.page.getByLabel('Đáp án lựa chọn').selectOption('B'); await f.page.locator('.a4-preview-section').getByText('F23 EDITED', { exact: false }).first().waitFor(); await waitUntil(async () => (await f.page.getByText('Đang lưu thay đổi…').count()) === 0, 'The form should finish applying');
+  await f.page.getByRole('button', { name: 'Hoàn tác', exact: true }).click(); await f.page.locator('.a4-preview-section').getByText('PILOT Q1 multiple_choice', { exact: false }).first().waitFor();
+  await f.page.getByRole('button', { name: 'Làm lại', exact: true }).click(); await f.page.locator('.a4-preview-section').getByText('F23 EDITED', { exact: false }).first().waitFor();
   await saveEditor(f.page);
   await waitUntil(async () => (await f.api('/api/exams/' + id)).document.questions[0].content === 'F23 EDITED', 'Redo snapshot persisted');
   const q = (await f.api('/api/exams/' + id)).document.questions[0]; assert.equal(q.correct_answer, 'B'); assert.equal(q.passageId, 'p1'); assert.equal(q.status, 'draft'); assert.equal(q.verifiedBy, 'none');
@@ -926,7 +925,7 @@ test('F23 manual edits, undo redo and a retried bank save preserve links without
   await saveBank();
   await waitUntil(async () => dropped, 'Lost receipt leaves retry available');
   await saveBank();
-  await f.page.getByText('Đã lưu bản sao riêng vào ngân hàng', { exact: true }).first().waitFor();
+  await f.page.getByText('Đã lưu bản sao riêng vào ngân hàng', { exact: false }).first().waitFor();
   if (bankBodies.length > 1) { const diff = (a: unknown, b: unknown, prefix = ''): string[] => a && b && typeof a === 'object' && typeof b === 'object' ? [...new Set([...Object.keys(a), ...Object.keys(b)])].flatMap(key => diff((a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key], prefix + '.' + key)) : JSON.stringify(a) === JSON.stringify(b) ? [] : [prefix]; console.log('F23 retry changed fields', diff(bankBodies[0], bankBodies[1])); }
   assert.equal(await f.db.question.count({ where: { ownerId: f.ids[0], id: { startsWith: 'q_save_' } } }), 1);
 }));

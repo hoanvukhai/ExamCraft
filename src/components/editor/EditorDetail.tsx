@@ -47,8 +47,14 @@ function Heading({ children, note }: { children: React.ReactNode; note?: string 
   );
 }
 
-function PartForm({ exam, node, canEdit, onStructure }: { exam: Exam; node: OutlineNode; canEdit: boolean } & Pick<Props, 'onStructure'>) {
-  const patch = (value: Parameters<typeof patchOutlineNode>[2]) => onStructure((previous) => patchOutlineNode(previous, node.id, value));
+function PartForm({
+  exam,
+  node,
+  canEdit,
+  onStructure,
+}: { exam: Exam; node: OutlineNode; canEdit: boolean } & Pick<Props, 'onStructure'>) {
+  const patch = (value: Parameters<typeof patchOutlineNode>[2]) =>
+    onStructure((previous) => patchOutlineNode(previous, node.id, value));
   const view = viewSyncedOutline(exam);
   const scores = new Map(freezeExamScoring(view).questions.map((q) => [q.id, q.points]));
   const members = outlineNodes(node.children ?? []).filter((item) => item.kind === 'question');
@@ -101,7 +107,9 @@ function PartForm({ exam, node, canEdit, onStructure }: { exam: Exam; node: Outl
           aria-label="Đánh số câu"
           className={field}
           value={node.questionNumbering ?? 'continuous'}
-          onChange={(event) => patch({ questionNumbering: event.target.value as OutlineNode['questionNumbering'] })}
+          onChange={(event) =>
+            patch({ questionNumbering: event.target.value as OutlineNode['questionNumbering'] })
+          }
         >
           <option value="continuous">Tiếp nối phần trước</option>
           <option value="restart">Bắt đầu lại từ câu 1</option>
@@ -120,7 +128,13 @@ function PartForm({ exam, node, canEdit, onStructure }: { exam: Exam; node: Outl
   );
 }
 
-function GroupForm({ exam, node, canEdit, onChange, onStructure }: { exam: Exam; node: OutlineNode; canEdit: boolean } & Pick<Props, 'onChange' | 'onStructure'>) {
+function GroupForm({
+  exam,
+  node,
+  canEdit,
+  onChange,
+  onStructure,
+}: { exam: Exam; node: OutlineNode; canEdit: boolean } & Pick<Props, 'onChange' | 'onStructure'>) {
   const material = exam.passages?.find((item) => item.id === node.passageId);
   const members = outlineNodes(node.children ?? []).filter((item) => item.kind === 'question');
   const usedBy = outlineNodes(displayOutline(exam)).filter(
@@ -128,7 +142,9 @@ function GroupForm({ exam, node, canEdit, onChange, onStructure }: { exam: Exam;
   ).length;
   return (
     <fieldset disabled={!canEdit} className="space-y-3 min-w-0">
-      <Heading note={`${members.length} câu dùng chung nội dung này${usedBy > 1 ? ` · đang dùng cho ${usedBy} nhóm` : ''}`}>
+      <Heading
+        note={`${members.length} câu dùng chung nội dung này${usedBy > 1 ? ` · đang dùng cho ${usedBy} nhóm` : ''}`}
+      >
         Ngữ liệu
       </Heading>
       {material ? (
@@ -185,7 +201,13 @@ export function EditorDetail(p: Props) {
       return object.kind === 'part' ? (
         <PartForm exam={p.exam} node={located.node} canEdit={p.canEdit} onStructure={p.onStructure} />
       ) : (
-        <GroupForm exam={p.exam} node={located.node} canEdit={p.canEdit} onChange={p.onChange} onStructure={p.onStructure} />
+        <GroupForm
+          exam={p.exam}
+          node={located.node}
+          canEdit={p.canEdit}
+          onChange={p.onChange}
+          onStructure={p.onStructure}
+        />
       );
     }
     case 'insert': {
@@ -222,7 +244,15 @@ export function EditorDetail(p: Props) {
                 : 'Dòng in dưới tiêu đề và cuối đề.'
             }
           >
-            {{ header: 'Đầu trang', student: 'Dòng thí sinh', intro: 'Lời dặn đầu đề', end: 'Cuối đề', footer: 'Chân trang' }[object.zone]}
+            {
+              {
+                header: 'Đầu trang',
+                student: 'Dòng thí sinh',
+                intro: 'Lời dặn đầu đề',
+                end: 'Cuối đề',
+                footer: 'Chân trang',
+              }[object.zone]
+            }
           </Heading>
           {object.zone === 'header' ? (
             <EditorSettings
@@ -270,7 +300,9 @@ export function EditorDetail(p: Props) {
       const question = p.exam.questions.find((item) => item.id === questionId);
       if (!question) return <p className="text-sm">Câu này không còn trong đề.</p>;
       const located = nodeOfQuestion(p.exam, question.id);
-      const number = located && outlineEntries(viewSyncedOutline(p.exam)).find((entry) => entry.node.id === located.node.id)?.number;
+      const number =
+        located &&
+        outlineEntries(viewSyncedOutline(p.exam)).find((entry) => entry.node.id === located.node.id)?.number;
       const display: Question = {
         ...question,
         subject: question.subject ?? p.exam.metadata.subject,

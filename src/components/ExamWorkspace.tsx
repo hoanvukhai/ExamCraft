@@ -9,7 +9,13 @@ import type { Exam } from '@/types/exam';
 import { Header } from '@/components/Header';
 import { useWorkspace } from '@/components/workspace/WorkspaceContext';
 import { EditorSelectionProvider } from '@/components/editor/EditorSelection';
-import { EditorToolbar, ToolMenu, type ExportView, type MenuItem, type ToolCommand } from '@/components/EditorToolbar';
+import {
+  EditorToolbar,
+  ToolMenu,
+  type ExportView,
+  type MenuItem,
+  type ToolCommand,
+} from '@/components/EditorToolbar';
 import { AccountMenu, AppMenu, ExportMenu, MoreMenu } from '@/components/editor/EditorMenus';
 import { EditorRail, ResizablePanel, useStoredWidth, type RailItem } from '@/components/editor/EditorPanels';
 import { describeInsertion } from '@/lib/insertion-label';
@@ -188,7 +194,6 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     const change = makeChange(before, exam);
     if (!change) return;
     // Typing in one field is many edits; they become one step.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setHistory((value) => ({
       undo: [...value.undo.slice(0, -1), ...mergeChange(value.undo.at(-1), change)].slice(-HISTORY_LIMIT),
       redo: [],
@@ -198,7 +203,8 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     const stack = history[direction];
     const entry = stack.at(-1);
     if (!entry || !canEdit) return;
-    const step: Change = direction === 'undo' ? entry : { ...entry, before: entry.after, after: entry.before };
+    const step: Change =
+      direction === 'undo' ? entry : { ...entry, before: entry.after, after: entry.before };
     const result = revertChange(exam, step);
     if (result.changed) {
       localEdit.current = false;
@@ -333,7 +339,10 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     blankIds.current.delete(leaving);
     const question = exam.questions.find((item) => item.id === leaving);
     if (question && isPristine(question) && canEdit) {
-      setExam((previous) => ({ ...previous, questions: previous.questions.filter((item) => item.id !== leaving) }));
+      setExam((previous) => ({
+        ...previous,
+        questions: previous.questions.filter((item) => item.id !== leaving),
+      }));
       say('Đã bỏ câu trống. Bấm Hoàn tác nếu cần lấy lại.');
     }
   };
@@ -347,10 +356,9 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         return clean.includes(code) ? clean.filter((item) => item !== code) || [EXAM_CODE] : [...clean, code];
       });
     } else if (how === 'range' && kind === 'question') {
-      const ids = displayOutline(exam)
-        .flatMap(function walk(node): string[] {
-          return node.kind === 'question' ? [node.questionId!] : (node.children ?? []).flatMap(walk);
-        });
+      const ids = displayOutline(exam).flatMap(function walk(node): string[] {
+        return node.kind === 'question' ? [node.questionId!] : (node.children ?? []).flatMap(walk);
+      });
       const from = ids.indexOf(questionOf(rawCode) ?? '');
       const to = ids.indexOf(questionOf(code)!);
       if (from >= 0 && to >= 0) {
@@ -408,7 +416,9 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       setExam((previous) => update(withEditorParts(previous)));
       setStructureMessage('');
     } catch (error) {
-      setStructureMessage(error instanceof Error ? error.message : 'Chưa áp dụng được. Nội dung vẫn được giữ.');
+      setStructureMessage(
+        error instanceof Error ? error.message : 'Chưa áp dụng được. Nội dung vẫn được giữ.',
+      );
     }
   };
   const openSource = (source: QuestionSource, point: InsertPoint = insertionFor(exam, selectedCode)) => {
@@ -438,7 +448,14 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       const acceptedTarget = parts?.length
         ? { ...target, point: importedPartPoint(previous, target.point) }
         : target;
-      const result = insertQuestionBatch(previous, currentUser.id, acceptedTarget, questions, passages, parts);
+      const result = insertQuestionBatch(
+        previous,
+        currentUser.id,
+        acceptedTarget,
+        questions,
+        passages,
+        parts,
+      );
       continuation = result.target;
       return result.exam;
     });
@@ -453,7 +470,8 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     const question = blankQuestion(exam, type);
     const node = { id: 'question:' + question.id, kind: 'question' as const, questionId: question.id };
     try {
-      if (!setExam((previous) => insertOutlineNodes(withEditorParts(previous), point, [node], [question]))) return;
+      if (!setExam((previous) => insertOutlineNodes(withEditorParts(previous), point, [node], [question])))
+        return;
     } catch (error) {
       setStructureMessage(error instanceof Error ? error.message : 'Chưa thêm được câu.');
       return;
@@ -466,11 +484,9 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   };
   const insertPart = (point: InsertPoint) =>
     applyStructure((previous) =>
-      insertOutlineNodes(
-        previous,
-        { parentId: null, afterId: parentCodeAnchor(point) },
-        [{ id: crypto.randomUUID(), kind: 'part', title: '', children: [] }],
-      ),
+      insertOutlineNodes(previous, { parentId: null, afterId: parentCodeAnchor(point) }, [
+        { id: crypto.randomUUID(), kind: 'part', title: '', children: [] },
+      ]),
     );
   /** A new part always sits at the top level: after the part that holds the insertion point. */
   const parentCodeAnchor = (point: InsertPoint): string | null => {
@@ -487,7 +503,9 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       insertOutlineNodes(
         {
           ...previous,
-          ...(passageId ? {} : { passages: [...(previous.passages ?? []), { id: material, title: '', content: '' }] }),
+          ...(passageId
+            ? {}
+            : { passages: [...(previous.passages ?? []), { id: material, title: '', content: '' }] }),
         },
         point,
         [{ id, kind: 'group', title: '', passageId: material, children: [] }],
@@ -498,15 +516,22 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   const pageBreakAt = (point: InsertPoint) => {
     // The break belongs to the block after the point: set on the part or group that follows it, else on a new part.
     const outline = displayOutline(exam);
-    const list = point.parentId ? outlineNodes(outline).find((node) => node.id === point.parentId)?.children : outline;
+    const list = point.parentId
+      ? outlineNodes(outline).find((node) => node.id === point.parentId)?.children
+      : outline;
     const index = point.afterId ? (list?.findIndex((node) => node.id === point.afterId) ?? -1) + 1 : 0;
     const next = list?.[index];
     if (next && next.kind !== 'question')
       applyStructure((previous) =>
         previous.outline
-          ? { ...previous, outline: structuredClone(previous.outline).map(function mark(node): typeof node {
-              return node.id === next.id ? { ...node, startOnNewPage: true } : { ...node, ...(node.children ? { children: node.children.map(mark) } : {}) };
-            }) }
+          ? {
+              ...previous,
+              outline: structuredClone(previous.outline).map(function mark(node): typeof node {
+                return node.id === next.id
+                  ? { ...node, startOnNewPage: true }
+                  : { ...node, ...(node.children ? { children: node.children.map(mark) } : {}) };
+              }),
+            }
           : previous,
       );
     else say('Đặt "Bắt đầu ở trang mới" ở phần hoặc ngữ liệu đứng sau chỗ này.');
@@ -550,21 +575,41 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   const addRow = (question: Question) => {
     const next = (keys: string[], pool: string) => pool.split('').find((key) => !keys.includes(key));
     if (question.type === 'multiple_choice') {
-      const key = next((question.choices ?? []).map((choice) => choice.key), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
-      if (key) editQuestion(question.id, (value) => ({ ...value, choices: [...(value.choices ?? []), { key, text: '' }] }));
+      const key = next(
+        (question.choices ?? []).map((choice) => choice.key),
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+      );
+      if (key)
+        editQuestion(question.id, (value) => ({
+          ...value,
+          choices: [...(value.choices ?? []), { key, text: '' }],
+        }));
       if (key) setPicked([`choice:${question.id}:${key}`]);
     } else if (question.type === 'true_false_group') {
-      const key = next((question.sub_questions ?? []).map((item) => item.key), 'abcdefghijklmnopqrstuvwxyz');
-      if (key) editQuestion(question.id, (value) => ({ ...value, sub_questions: [...(value.sub_questions ?? []), { key, content: '' }] }));
+      const key = next(
+        (question.sub_questions ?? []).map((item) => item.key),
+        'abcdefghijklmnopqrstuvwxyz',
+      );
+      if (key)
+        editQuestion(question.id, (value) => ({
+          ...value,
+          sub_questions: [...(value.sub_questions ?? []), { key, content: '' }],
+        }));
       if (key) setPicked([`statement:${question.id}:${key}`]);
     } else if (question.type === 'matching') {
       const id = crypto.randomUUID();
-      editQuestion(question.id, (value) => ({ ...value, matchingPairs: [...(value.matchingPairs ?? []), { id, left: '', right: '' }] }));
+      editQuestion(question.id, (value) => ({
+        ...value,
+        matchingPairs: [...(value.matchingPairs ?? []), { id, left: '', right: '' }],
+      }));
     } else if (question.type === 'ordering') {
       editQuestion(question.id, (value) => ({ ...value, correctOrder: [...(value.correctOrder ?? []), ''] }));
     } else if (question.type === 'essay' || question.type === 'short_answer') {
       const id = crypto.randomUUID();
-      editQuestion(question.id, (value) => ({ ...value, parts: [...(value.parts ?? []), { id, content: '' }] }));
+      editQuestion(question.id, (value) => ({
+        ...value,
+        parts: [...(value.parts ?? []), { id, content: '' }],
+      }));
       setPicked([`item:${question.id}:${id}`]);
     }
   };
@@ -576,7 +621,9 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       label: kind.label,
       onClick: () => insertBlank(point, kind.type),
     }));
-    const inQuestion = ['question', 'choice', 'statement', 'item', 'pair', 'order', 'figure'].includes(object.kind);
+    const inQuestion = ['question', 'choice', 'statement', 'item', 'pair', 'order', 'figure'].includes(
+      object.kind,
+    );
     const question = inQuestion ? exam.questions.find((item) => item.id === questionOf(code)) : undefined;
     const rowLabel: Partial<Record<Question['type'], string>> = {
       multiple_choice: 'Phương án mới',
@@ -586,13 +633,16 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       matching: 'Cặp ghép mới',
       ordering: 'Mục mới',
     };
-    const inGroup = object.kind !== 'part' && nodeOfQuestion(exam, questionOf(code) ?? '')?.parent?.kind === 'group';
+    const inGroup =
+      object.kind !== 'part' && nodeOfQuestion(exam, questionOf(code) ?? '')?.parent?.kind === 'group';
     return [
       ...(question && rowLabel[question.type]
         ? [{ label: rowLabel[question.type]!, disabled: !!question.locked, onClick: () => addRow(question) }]
         : []),
       ...items,
-      ...(inGroup && object.kind === 'group' ? [] : [{ label: 'Ngữ liệu', onClick: () => insertGroup(point) }]),
+      ...(inGroup && object.kind === 'group'
+        ? []
+        : [{ label: 'Ngữ liệu', onClick: () => insertGroup(point) }]),
       ...reusablePassages.map((passage, index) => ({
         label: `Dùng lại ngữ liệu: ${passage.title?.trim() || `Nội dung ${index + 1}`}`.slice(0, 48),
         onClick: () => insertGroup(point, passage.id),
@@ -678,9 +728,14 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       return;
     }
     const message =
-      ids.length === 1 ? 'Xóa câu đang chọn khỏi đề?' : `Bạn có chắc chắn muốn xóa ${ids.length} câu hỏi đã chọn?`;
+      ids.length === 1
+        ? 'Xóa câu đang chọn khỏi đề?'
+        : `Bạn có chắc chắn muốn xóa ${ids.length} câu hỏi đã chọn?`;
     if (!window.confirm(message)) return;
-    setExam((previous) => ({ ...previous, questions: previous.questions.filter((question) => !ids.includes(question.id)) }));
+    setExam((previous) => ({
+      ...previous,
+      questions: previous.questions.filter((question) => !ids.includes(question.id)),
+    }));
     setPicked([EXAM_CODE]);
   };
   const moveQuestion = (id: string, direction: 'up' | 'down') => {
@@ -729,19 +784,29 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       for (const id of questionIds) {
         const node = outlineNodes(result.outline ?? []).find((item) => item.questionId === id);
         const target = outlineNodes(result.outline ?? []).find((item) => item.id === parentId);
-        if (node && target) result = moveOutlineNode(result, node.id, { parentId, afterId: target.children?.at(-1)?.id ?? null });
+        if (node && target)
+          result = moveOutlineNode(result, node.id, {
+            parentId,
+            afterId: target.children?.at(-1)?.id ?? null,
+          });
       }
       return result;
     });
   };
   const removeNode = (id: string, keep: boolean) => {
-    const target = displayOutline(exam).length ? outlineNodes(displayOutline(exam)).find((node) => node.id === id) : undefined;
+    const target = displayOutline(exam).length
+      ? outlineNodes(displayOutline(exam)).find((node) => node.id === id)
+      : undefined;
     const members = outlineNodes(target ? [target] : []).filter((node) => node.kind === 'question');
     if (!keep && members.some((node) => exam.questions.find((q) => q.id === node.questionId)?.locked)) {
       say('Có câu đang khóa trong mục này. Mở khóa trước khi xóa.');
       return;
     }
-    if (!window.confirm(keep ? 'Bỏ mục này nhưng giữ các câu bên trong?' : `Xóa mục này và ${members.length} câu bên trong?`))
+    if (
+      !window.confirm(
+        keep ? 'Bỏ mục này nhưng giữ các câu bên trong?' : `Xóa mục này và ${members.length} câu bên trong?`,
+      )
+    )
       return;
     applyStructure((previous) => {
       const frozen = new Map(freezeExamScoring(previous).questions.map((q) => [q.id, q.points]));
@@ -772,7 +837,10 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         `**Bài toán tổng hợp:**\n` +
         chosen.map((q, idx) => `**Ý ${alphabet[idx] || idx + 1})** ${q.content}`).join('\n\n'),
       step_by_step_solution: chosen
-        .map((q, idx) => `**Hướng dẫn giải ý ${alphabet[idx] || idx + 1}:**\n${q.step_by_step_solution || 'Đang cập nhật'}`)
+        .map(
+          (q, idx) =>
+            `**Hướng dẫn giải ý ${alphabet[idx] || idx + 1}:**\n${q.step_by_step_solution || 'Đang cập nhật'}`,
+        )
         .join('\n\n'),
       tags: ['Cau_hoi_tong_hop', 'Tu_luan'],
     };
@@ -827,12 +895,30 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       case 'group': {
         const location = outlineLocation(displayOutline(exam), object.id);
         return [
-          { label: 'Lên', disabled: !location || location.index === 0, onClick: () => applyStructure((p) => nudgeOutlineNode(p, object.id, 'up')) },
-          { label: 'Xuống', disabled: !location || location.index === location.siblings.length - 1, onClick: () => applyStructure((p) => nudgeOutlineNode(p, object.id, 'down')) },
-          { label: 'Nhân bản', onClick: () => applyStructure((p) => duplicateOutlineNode(p, object.id, () => crypto.randomUUID())) },
+          {
+            label: 'Lên',
+            disabled: !location || location.index === 0,
+            onClick: () => applyStructure((p) => nudgeOutlineNode(p, object.id, 'up')),
+          },
+          {
+            label: 'Xuống',
+            disabled: !location || location.index === location.siblings.length - 1,
+            onClick: () => applyStructure((p) => nudgeOutlineNode(p, object.id, 'down')),
+          },
+          {
+            label: 'Nhân bản',
+            onClick: () =>
+              applyStructure((p) => duplicateOutlineNode(p, object.id, () => crypto.randomUUID())),
+          },
           ask(),
-          { label: object.kind === 'part' ? 'Bỏ phần, giữ câu' : 'Bỏ nhóm, giữ câu', onClick: () => removeNode(object.id, true) },
-          { label: object.kind === 'part' ? 'Xóa phần và câu' : 'Xóa nhóm và câu', onClick: () => removeNode(object.id, false) },
+          {
+            label: object.kind === 'part' ? 'Bỏ phần, giữ câu' : 'Bỏ nhóm, giữ câu',
+            onClick: () => removeNode(object.id, true),
+          },
+          {
+            label: object.kind === 'part' ? 'Xóa phần và câu' : 'Xóa nhóm và câu',
+            onClick: () => removeNode(object.id, false),
+          },
         ];
       }
       case 'question': {
@@ -841,12 +927,27 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         const node = nodeOfQuestion(exam, question.id);
         const locked = !!question.locked;
         return [
-          { label: 'Lên', disabled: locked || !node || node.index === 0, onClick: () => moveQuestion(question.id, 'up') },
-          { label: 'Xuống', disabled: locked || !node || node.index === node.siblings.length - 1, onClick: () => moveQuestion(question.id, 'down') },
+          {
+            label: 'Lên',
+            disabled: locked || !node || node.index === 0,
+            onClick: () => moveQuestion(question.id, 'up'),
+          },
+          {
+            label: 'Xuống',
+            disabled: locked || !node || node.index === node.siblings.length - 1,
+            onClick: () => moveQuestion(question.id, 'down'),
+          },
           { label: 'Nhân bản', onClick: () => duplicateQuestion(question.id) },
           { label: locked ? 'Mở khóa' : 'Khóa', onClick: () => toggleLock([question.id]) },
           ask(question.id),
-          { label: 'Hỏi AI về câu này', onClick: () => withAi(() => { setCopilotCommand(`Đổi số liệu hoặc nâng cấp câu ${(exam.questions.indexOf(question)) + 1}`); openAi('chat'); }) },
+          {
+            label: 'Hỏi AI về câu này',
+            onClick: () =>
+              withAi(() => {
+                setCopilotCommand(`Đổi số liệu hoặc nâng cấp câu ${exam.questions.indexOf(question) + 1}`);
+                openAi('chat');
+              }),
+          },
           ...displayOutline(exam)
             .filter((part) => part.kind === 'part' && part.id !== node?.parent?.id)
             .map((part) => ({
@@ -858,8 +959,13 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
             .filter((item) => item.kind === 'group' && item.id !== node?.parent?.id)
             .map((group) => {
               const material = exam.passages?.find((item) => item.id === group.passageId);
-              const name = material?.title || group.title || material?.content.slice(0, 32) || 'nội dung chung';
-              return { label: `Đưa vào ${name}`, disabled: locked, onClick: () => moveInto([question.id], group.id) };
+              const name =
+                material?.title || group.title || material?.content.slice(0, 32) || 'nội dung chung';
+              return {
+                label: `Đưa vào ${name}`,
+                disabled: locked,
+                onClick: () => moveInto([question.id], group.id),
+              };
             }),
           { label: 'Lưu bản sao vào ngân hàng', onClick: () => void saveToBank(question) },
           { label: 'Xóa câu', disabled: locked, onClick: () => removeQuestions([question.id]) },
@@ -870,30 +976,95 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         if (!question) return [];
         const choice = question.choices?.find((item) => item.key === object.key);
         return [
-          { label: 'Đặt là đáp án đúng', disabled: !!question.locked || question.correct_answer === object.key, onClick: () => editQuestion(question.id, (value) => ({ ...value, correct_answer: object.key })) },
-          { label: choice?.pinned ? 'Bỏ ghim vị trí' : 'Ghim vị trí', disabled: !!question.locked, onClick: () => editQuestion(question.id, (value) => ({ ...value, choices: value.choices?.map((item) => item.key === object.key ? { ...item, pinned: !item.pinned } : item) })) },
-          { label: 'Xóa phương án', disabled: !!question.locked, onClick: () => { editQuestion(question.id, (value) => ({ ...value, choices: value.choices?.filter((item) => item.key !== object.key), correct_answer: value.correct_answer === object.key ? undefined : value.correct_answer })); setPicked([`question:${question.id}`]); } },
+          {
+            label: 'Đặt là đáp án đúng',
+            disabled: !!question.locked || question.correct_answer === object.key,
+            onClick: () => editQuestion(question.id, (value) => ({ ...value, correct_answer: object.key })),
+          },
+          {
+            label: choice?.pinned ? 'Bỏ ghim vị trí' : 'Ghim vị trí',
+            disabled: !!question.locked,
+            onClick: () =>
+              editQuestion(question.id, (value) => ({
+                ...value,
+                choices: value.choices?.map((item) =>
+                  item.key === object.key ? { ...item, pinned: !item.pinned } : item,
+                ),
+              })),
+          },
+          {
+            label: 'Xóa phương án',
+            disabled: !!question.locked,
+            onClick: () => {
+              editQuestion(question.id, (value) => ({
+                ...value,
+                choices: value.choices?.filter((item) => item.key !== object.key),
+                correct_answer: value.correct_answer === object.key ? undefined : value.correct_answer,
+              }));
+              setPicked([`question:${question.id}`]);
+            },
+          },
         ];
       }
       case 'statement': {
         const question = exam.questions.find((item) => item.id === object.question);
         if (!question) return [];
-        const setTruth = (isCorrect: boolean) => editQuestion(question.id, (value) => ({ ...value, sub_questions: value.sub_questions?.map((item) => item.key === object.key ? { ...item, isCorrect } : item) }));
+        const setTruth = (isCorrect: boolean) =>
+          editQuestion(question.id, (value) => ({
+            ...value,
+            sub_questions: value.sub_questions?.map((item) =>
+              item.key === object.key ? { ...item, isCorrect } : item,
+            ),
+          }));
         return [
           { label: 'Đúng', disabled: !!question.locked, onClick: () => setTruth(true) },
           { label: 'Sai', disabled: !!question.locked, onClick: () => setTruth(false) },
-          { label: 'Xóa mệnh đề', disabled: !!question.locked, onClick: () => { editQuestion(question.id, (value) => ({ ...value, sub_questions: value.sub_questions?.filter((item) => item.key !== object.key) })); setPicked([`question:${question.id}`]); } },
+          {
+            label: 'Xóa mệnh đề',
+            disabled: !!question.locked,
+            onClick: () => {
+              editQuestion(question.id, (value) => ({
+                ...value,
+                sub_questions: value.sub_questions?.filter((item) => item.key !== object.key),
+              }));
+              setPicked([`question:${question.id}`]);
+            },
+          },
         ];
       }
       case 'item': {
         const question = exam.questions.find((item) => item.id === object.question);
         if (!question) return [];
-        return [{ label: 'Xóa ý', disabled: !!question.locked, onClick: () => { editQuestion(question.id, (value) => ({ ...value, parts: value.parts?.filter((part) => part.id !== object.key) })); setPicked([`question:${question.id}`]); } }];
+        return [
+          {
+            label: 'Xóa ý',
+            disabled: !!question.locked,
+            onClick: () => {
+              editQuestion(question.id, (value) => ({
+                ...value,
+                parts: value.parts?.filter((part) => part.id !== object.key),
+              }));
+              setPicked([`question:${question.id}`]);
+            },
+          },
+        ];
       }
       case 'figure': {
         const question = exam.questions.find((item) => item.id === object.question);
         if (!question) return [];
-        return [{ label: 'Xóa hình', disabled: !!question.locked, onClick: () => { editQuestion(question.id, (value) => ({ ...value, figures: value.figures?.filter((figure) => figure.id !== object.id) })); setPicked([`question:${question.id}`]); } }];
+        return [
+          {
+            label: 'Xóa hình',
+            disabled: !!question.locked,
+            onClick: () => {
+              editQuestion(question.id, (value) => ({
+                ...value,
+                figures: value.figures?.filter((figure) => figure.id !== object.id),
+              }));
+              setPicked([`question:${question.id}`]);
+            },
+          },
+        ];
       }
       default:
         return [];
@@ -923,20 +1094,27 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       event.preventDefault();
       const object = parseCode(code);
       if (object.kind === 'question') duplicateQuestion(object.id);
-      else if (object.kind === 'part' || object.kind === 'group') applyStructure((p) => duplicateOutlineNode(p, object.id, () => crypto.randomUUID()));
+      else if (object.kind === 'part' || object.kind === 'group')
+        applyStructure((p) => duplicateOutlineNode(p, object.id, () => crypto.randomUUID()));
     } else if (event.altKey && (key === 'ArrowUp' || key === 'ArrowDown')) {
       event.preventDefault();
       const object = parseCode(code);
       const direction = key === 'ArrowUp' ? 'up' : 'down';
       if (object.kind === 'question') moveQuestion(object.id, direction);
-      else if (object.kind === 'part' || object.kind === 'group') applyStructure((p) => nudgeOutlineNode(p, object.id, direction));
+      else if (object.kind === 'part' || object.kind === 'group')
+        applyStructure((p) => nudgeOutlineNode(p, object.id, direction));
     } else if (key === 'ArrowDown') go(neighbourCode(exam, code, 1));
     else if (key === 'ArrowUp') go(neighbourCode(exam, code, -1));
     else if (key === 'ArrowRight') go(firstChildCode(exam, code));
-    else if (key === 'ArrowLeft' || key === 'Escape') go(code === EXAM_CODE ? undefined : parentCode(exam, code));
+    else if (key === 'ArrowLeft' || key === 'Escape')
+      go(code === EXAM_CODE ? undefined : parentCode(exam, code));
     else if (key === 'Enter') {
       event.preventDefault();
-      document.querySelector<HTMLElement>('[aria-label="Bảng nội dung và tài nguyên"] [data-format-field], [aria-label="Bảng nội dung và tài nguyên"] input, [aria-label="Bảng nội dung và tài nguyên"] textarea')?.focus();
+      document
+        .querySelector<HTMLElement>(
+          '[aria-label="Bảng nội dung và tài nguyên"] [data-format-field], [aria-label="Bảng nội dung và tài nguyên"] input, [aria-label="Bảng nội dung và tài nguyên"] textarea',
+        )
+        ?.focus();
     } else if (key === 'Delete' || key === 'Backspace') {
       const object = parseCode(code);
       if (object.kind === 'question') removeQuestions([object.id]);
@@ -984,8 +1162,11 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         : selectedCode === EXAM_CODE
           ? 'Toàn đề'
           : (chain.at(-1)?.label ?? 'Toàn đề');
-  const single = pickedQuestionIds.length === 1 ? exam.questions.find((q) => q.id === pickedQuestionIds[0]) : undefined;
-  const aiQuestion = single ?? (questionOf(selectedCode) ? exam.questions.find((q) => q.id === questionOf(selectedCode)) : undefined);
+  const single =
+    pickedQuestionIds.length === 1 ? exam.questions.find((q) => q.id === pickedQuestionIds[0]) : undefined;
+  const aiQuestion =
+    single ??
+    (questionOf(selectedCode) ? exam.questions.find((q) => q.id === questionOf(selectedCode)) : undefined);
 
   const rightTabs: { id: RightTab; label: string; open: boolean }[] = [
     { id: 'ai', label: 'AI', open: canEdit && isCopilotOpen },
@@ -1146,7 +1327,10 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
               </button>
             )}
             {saveState === 'conflict' && ready && exam.serverId && (
-              <button onClick={() => void openLatest()} className="app-button-secondary min-h-8 px-2.5 text-xs">
+              <button
+                onClick={() => void openLatest()}
+                className="app-button-secondary min-h-8 px-2.5 text-xs"
+              >
                 Mở bản máy chủ, giữ riêng nháp
               </button>
             )}
@@ -1158,7 +1342,9 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         canEdit={canEdit}
         addItems={addItemsFor(selectedCode)}
         aiOpen={isCopilotOpen}
-        onAi={() => withAi(() => (isCopilotOpen && rightTab === 'ai' ? setIsCopilotOpen(false) : openAi('chat')))}
+        onAi={() =>
+          withAi(() => (isCopilotOpen && rightTab === 'ai' ? setIsCopilotOpen(false) : openAi('chat')))
+        }
         steps={chain}
         onStep={(code) => select(code)}
         commands={commandsFor()}
@@ -1181,22 +1367,35 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
           min={320}
           max={720}
           className={`${leftOpen ? 'lg:flex' : 'lg:hidden'} ${
-            phonePanel ? 'max-lg:flex max-lg:fixed max-lg:inset-x-0 max-lg:bottom-0 max-lg:top-12 max-lg:z-40' : 'max-lg:hidden'
+            phonePanel
+              ? 'max-lg:flex max-lg:fixed max-lg:inset-x-0 max-lg:bottom-0 max-lg:top-12 max-lg:z-40'
+              : 'max-lg:hidden'
           }`}
         >
-          <div className="lg:hidden shrink-0 flex gap-1 overflow-x-auto p-2 border-b" role="group" aria-label="Chọn bảng">
+          <div
+            className="lg:hidden shrink-0 flex gap-1 overflow-x-auto p-2 border-b"
+            role="group"
+            aria-label="Chọn bảng"
+          >
             {railItems.map(({ id, label }) => (
               <button
                 key={id}
                 type="button"
                 aria-pressed={leftTab === id}
-                className={(leftTab === id ? 'app-button-tonal' : 'app-button-secondary') + ' min-h-9 px-3 text-xs whitespace-nowrap shrink-0'}
+                className={
+                  (leftTab === id ? 'app-button-tonal' : 'app-button-secondary') +
+                  ' min-h-9 px-3 text-xs whitespace-nowrap shrink-0'
+                }
                 onClick={() => (id === 'bank' || id === 'import' ? openSource(id) : showTab(id))}
               >
                 {label}
               </button>
             ))}
-            <button type="button" className="app-button-secondary min-h-9 px-3 text-xs ml-auto shrink-0" onClick={() => setPhonePanel(false)}>
+            <button
+              type="button"
+              className="app-button-secondary min-h-9 px-3 text-xs ml-auto shrink-0"
+              onClick={() => setPhonePanel(false)}
+            >
               Đóng
             </button>
           </div>
@@ -1217,7 +1416,10 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
             </div>
           )}
           <div className="flex-1 min-h-0 overflow-y-auto">
-            <div className={leftTab === 'detail' ? 'block p-3 space-y-3 min-w-0' : 'hidden'} data-detail-panel>
+            <div
+              className={leftTab === 'detail' ? 'block p-3 space-y-3 min-w-0' : 'hidden'}
+              data-detail-panel
+            >
               {recoveredDraft && saveState !== 'saved' && (
                 <div role="status" className="border rounded p-3 text-sm">
                   Đang mở nháp trên máy của đề này.{' '}
@@ -1252,7 +1454,9 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
               <div className={pickedQuestionIds.length <= 1 && examDetail ? 'block' : 'hidden'}>
                 <EditorDetail {...detailProps} code={EXAM_CODE} />
               </div>
-              {pickedQuestionIds.length <= 1 && !examDetail && <EditorDetail {...detailProps} code={selectedCode} />}
+              {pickedQuestionIds.length <= 1 && !examDetail && (
+                <EditorDetail {...detailProps} code={selectedCode} />
+              )}
             </div>
             <div className={leftTab === 'template' ? 'block p-3 space-y-6' : 'hidden'}>
               <EditorPrint exam={exam} canEdit={canEdit} onChange={setExam} />
@@ -1276,7 +1480,9 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                 commentCounts={commentCounts}
                 onSelect={(code) => select(code)}
                 onTick={tick}
-                onMove={(nodeId, point) => applyStructure((previous) => moveOutlineNode(previous, nodeId, point))}
+                onMove={(nodeId, point) =>
+                  applyStructure((previous) => moveOutlineNode(previous, nodeId, point))
+                }
               />
             </div>
             {mounted.bank && (
@@ -1354,7 +1560,11 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
           className={`${activeRight ? 'flex' : 'hidden'} max-lg:fixed max-lg:inset-x-0 max-lg:bottom-0 max-lg:top-12 max-lg:z-40`}
         >
           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-            <div role="tablist" aria-label="Bảng bên phải" className="no-print flex shrink-0 gap-1 border-b border-[var(--ui-border)]/60 p-1.5 overflow-x-auto">
+            <div
+              role="tablist"
+              aria-label="Bảng bên phải"
+              className="no-print flex shrink-0 gap-1 border-b border-[var(--ui-border)]/60 p-1.5 overflow-x-auto"
+            >
               {shownRight.map((tab) => (
                 <span key={tab.id} className="inline-flex shrink-0 items-center">
                   <button
@@ -1397,7 +1607,9 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                       isExpanded={isCopilotOpen && activeRight?.id === 'ai' && aiTab === 'chat'}
                       onClose={() => setIsCopilotOpen(false)}
                       exam={exam}
-                      selectedQuestionIds={pickedQuestionIds.length ? pickedQuestionIds : aiQuestion ? [aiQuestion.id] : []}
+                      selectedQuestionIds={
+                        pickedQuestionIds.length ? pickedQuestionIds : aiQuestion ? [aiQuestion.id] : []
+                      }
                       externalCommand={copilotCommand}
                     />
                   }
@@ -1421,7 +1633,9 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                           setMounted((previous) => ({ ...previous, generate: false }));
                           setAiTab('chat');
                         }}
-                        onExamGenerated={(newExam, baseStamp) => acceptSource(newExam.questions, newExam.passages, baseStamp)}
+                        onExamGenerated={(newExam, baseStamp) =>
+                          acceptSource(newExam.questions, newExam.passages, baseStamp)
+                        }
                         apiKey=""
                       />
                     ) : (
@@ -1441,7 +1655,11 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                     aiQuestion ? (
                       <QuestionVerify
                         key={aiQuestion.id}
-                        question={{ ...aiQuestion, subject: aiQuestion.subject ?? exam.metadata.subject, grade: aiQuestion.grade ?? exam.metadata.grade }}
+                        question={{
+                          ...aiQuestion,
+                          subject: aiQuestion.subject ?? exam.metadata.subject,
+                          grade: aiQuestion.grade ?? exam.metadata.grade,
+                        }}
                         ownerId={currentUser.id}
                         documentId={exam.id}
                         sourceStamp={manualSourceStamp}

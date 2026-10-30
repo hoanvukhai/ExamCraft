@@ -194,7 +194,12 @@ export function EditorToolbar(p: Props) {
           </>
         )}
         {p.onPanel && (
-          <button type="button" aria-label="Bảng chi tiết" onClick={p.onPanel} className={button + ' lg:hidden'}>
+          <button
+            type="button"
+            aria-label="Bảng chi tiết"
+            onClick={p.onPanel}
+            className={button + ' lg:hidden'}
+          >
             Bảng
           </button>
         )}
@@ -208,7 +213,9 @@ export function EditorToolbar(p: Props) {
                 onClick={() => p.onStep(step.code)}
                 className={
                   'max-w-40 truncate rounded-lg px-1.5 min-h-9 !whitespace-nowrap cursor-pointer ' +
-                  (index === last ? 'font-semibold' : 'text-[var(--ui-text-secondary)] hover:bg-[var(--ui-surface-variant)]')
+                  (index === last
+                    ? 'font-semibold'
+                    : 'text-[var(--ui-text-secondary)] hover:bg-[var(--ui-surface-variant)]')
                 }
               >
                 {step.label}

@@ -13,8 +13,6 @@ import {
   type Dispatch,
   type SetStateAction,
 } from 'react';
-import { ToolMenu } from '../EditorToolbar';
-import { MoreHorizontal } from 'lucide-react';
 
 export type ContextCommand = {
   label: string;
@@ -89,89 +87,6 @@ export function useEditorActor(id: string, label: string, commands: (field?: str
 
 const noSubscribe = () => () => {};
 const zeroSnapshot = () => 0;
-/** The part of the tool row that follows the selection: a path (whole exam › question 2 › option B) and that object's commands, on the same line. */
-export function ContextSelectionToolbar({
-  canEdit,
-  onSettings,
-}: {
-  canEdit: boolean;
-  onSettings: () => void;
-}) {
-  const context = useContext(Selection);
-  useSyncExternalStore(context?.subscribe ?? noSubscribe, context?.snapshot ?? zeroSnapshot, zeroSnapshot);
-  const target = context?.target;
-  const actor = target ? context.actors.get(target.id) : undefined;
-  const liveLabel = actor?.label ?? target?.label ?? '';
-  const commands = target ? (actor?.current(target.field) ?? []) : [];
-  const run = (index: number, label: string) => {
-    if (!target) return;
-    const live = context.actors.get(target.id)?.current(target.field)[index];
-    if (canEdit && live && !live.disabled && live.label === label) live.run();
-  };
-  const inline = commands.slice(0, 3);
-  return (
-    <div className="flex min-w-0 items-center gap-1.5 text-xs" aria-label="Công cụ vùng chọn">
-      <button
-        type="button"
-        className={'rounded-lg px-2 min-h-9 shrink-0 !whitespace-nowrap ' + (target ? 'app-button-secondary' : 'font-semibold')}
-        onClick={() => context?.select(null)}
-        aria-label="Toàn đề"
-      >
-        Toàn đề
-      </button>
-      {!target && (
-        <button
-          type="button"
-          className="app-button-secondary rounded-lg px-3 min-h-9 shrink-0 !whitespace-nowrap"
-          onClick={onSettings}
-          disabled={!canEdit}
-        >
-          Thông tin đề
-        </button>
-      )}
-      {target && (
-        <>
-          <span aria-hidden>›</span>
-          <span
-            role="status"
-            className="max-w-48 truncate shrink-0"
-            title={liveLabel + (target.field ? ` › ${target.field}` : '')}
-          >
-            {liveLabel}
-            {target.field ? ` › ${target.field}` : ''}
-          </span>
-          <span aria-hidden className="w-px h-6 bg-[var(--ui-border)] shrink-0" />
-          <div className="flex items-center gap-1.5" role="group" aria-label={'Thao tác ' + liveLabel}>
-            {inline.map((command, index) => (
-              <button
-                key={command.label}
-                type="button"
-                className="app-button-secondary rounded-lg px-3 min-h-9 text-xs !whitespace-nowrap"
-                disabled={!canEdit || command.disabled}
-                onClick={() => run(index, command.label)}
-              >
-                {command.label}
-              </button>
-            ))}
-            {commands.length > inline.length && (
-              <ToolMenu
-                key={String(canEdit)}
-                label="Khác"
-                Icon={MoreHorizontal}
-                items={commands.slice(inline.length).map((command, offset) => ({
-                  label: command.label,
-                  disabled: !canEdit || command.disabled,
-                  onClick: () => run(offset + inline.length, command.label),
-                }))}
-              />
-            )}
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
-
 /** The commands of the text field the cursor is in (bold, italic, formula…), live, for the tool row. */
 export function useFieldCommands() {
   const context = useContext(Selection);

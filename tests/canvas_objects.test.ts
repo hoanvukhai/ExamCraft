@@ -13,29 +13,82 @@ import {
 import type { Exam } from '../src/types/exam';
 
 const q = (id: string, extra: Record<string, unknown> = {}) => ({
-  id, type: 'multiple_choice', difficulty: 'thong_hieu', content: id,
-  choices: [{ key: 'A', text: '1' }, { key: 'B', text: '2' }], correct_answer: 'A', ...extra,
+  id,
+  type: 'multiple_choice',
+  difficulty: 'thong_hieu',
+  content: id,
+  choices: [
+    { key: 'A', text: '1' },
+    { key: 'B', text: '2' },
+  ],
+  correct_answer: 'A',
+  ...extra,
 });
 const exam = (): Exam =>
   ({
-    id: 'x', createdAt: '2026', updatedAt: '2026',
-    metadata: { title: 't', subject: 'toan', grade: 9, durationMinutes: 45, schoolName: '', departmentName: '' },
+    id: 'x',
+    createdAt: '2026',
+    updatedAt: '2026',
+    metadata: {
+      title: 't',
+      subject: 'toan',
+      grade: 9,
+      durationMinutes: 45,
+      schoolName: '',
+      departmentName: '',
+    },
     passages: [{ id: 'p1', title: 'Văn bản 1', content: 'nội dung' }],
-    questions: [q('q1'), q('q2'), q('q3', { type: 'essay', parts: [{ id: 'pa', content: 'a' }, { id: 'pb', content: 'b' }] })],
+    questions: [
+      q('q1'),
+      q('q2'),
+      q('q3', {
+        type: 'essay',
+        parts: [
+          { id: 'pa', content: 'a' },
+          { id: 'pb', content: 'b' },
+        ],
+      }),
+    ],
     outline: [
-      { id: 'part1', kind: 'part', title: 'TRẮC NGHIỆM', numbering: 'roman', children: [
-        { id: 'g1', kind: 'group', passageId: 'p1', children: [
-          { id: 'n1', kind: 'question', questionId: 'q1' }, { id: 'n2', kind: 'question', questionId: 'q2' } ] } ] },
-      { id: 'part2', kind: 'part', title: 'TỰ LUẬN', numbering: 'roman', children: [{ id: 'n3', kind: 'question', questionId: 'q3' }] },
+      {
+        id: 'part1',
+        kind: 'part',
+        title: 'TRẮC NGHIỆM',
+        numbering: 'roman',
+        children: [
+          {
+            id: 'g1',
+            kind: 'group',
+            passageId: 'p1',
+            children: [
+              { id: 'n1', kind: 'question', questionId: 'q1' },
+              { id: 'n2', kind: 'question', questionId: 'q2' },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'part2',
+        kind: 'part',
+        title: 'TỰ LUẬN',
+        numbering: 'roman',
+        children: [{ id: 'n3', kind: 'question', questionId: 'q3' }],
+      },
     ],
   }) as unknown as Exam;
 
 test('codes round trip, including ids that contain colons', () => {
   const objects = [
-    { kind: 'exam' }, { kind: 'part', id: 'part1' }, { kind: 'group', id: 'legacy-group:1:p1' },
-    { kind: 'question', id: 'legacy-question:q1' }, { kind: 'choice', question: 'a:b', key: 'B' },
-    { kind: 'figure', question: 'q1', id: 'f1' }, { kind: 'insert', parent: null, after: 'n1' },
-    { kind: 'insert', parent: 'part1', after: null }, { kind: 'print', zone: 'footer', id: 'foot-page' }, { kind: 'print', zone: 'student' },
+    { kind: 'exam' },
+    { kind: 'part', id: 'part1' },
+    { kind: 'group', id: 'legacy-group:1:p1' },
+    { kind: 'question', id: 'legacy-question:q1' },
+    { kind: 'choice', question: 'a:b', key: 'B' },
+    { kind: 'figure', question: 'q1', id: 'f1' },
+    { kind: 'insert', parent: null, after: 'n1' },
+    { kind: 'insert', parent: 'part1', after: null },
+    { kind: 'print', zone: 'footer', id: 'foot-page' },
+    { kind: 'print', zone: 'student' },
   ] as const;
   for (const object of objects) assert.deepEqual(parseCode(codeOf(object)), object);
   assert.deepEqual(parseCode(''), { kind: 'exam' });
@@ -44,10 +97,24 @@ test('codes round trip, including ids that contain colons', () => {
 
 test('the chain names every level and each step can be selected', () => {
   const e = exam();
-  assert.deepEqual(selectionChain(e, 'exam').map((s) => s.label), ['Toàn đề']);
-  assert.deepEqual(selectionChain(e, 'question:q2').map((s) => s.label), ['Toàn đề', 'Phần I', 'Ngữ liệu Văn bản 1', 'Câu 2']);
-  assert.deepEqual(selectionChain(e, 'choice:q2:B').map((s) => s.label).slice(-2), ['Câu 2', 'Phương án B']);
-  assert.deepEqual(selectionChain(e, 'item:q3:pb').map((s) => s.label), ['Toàn đề', 'Phần II', 'Câu 3', 'Ý b']);
+  assert.deepEqual(
+    selectionChain(e, 'exam').map((s) => s.label),
+    ['Toàn đề'],
+  );
+  assert.deepEqual(
+    selectionChain(e, 'question:q2').map((s) => s.label),
+    ['Toàn đề', 'Phần I', 'Ngữ liệu Văn bản 1', 'Câu 2'],
+  );
+  assert.deepEqual(
+    selectionChain(e, 'choice:q2:B')
+      .map((s) => s.label)
+      .slice(-2),
+    ['Câu 2', 'Phương án B'],
+  );
+  assert.deepEqual(
+    selectionChain(e, 'item:q3:pb').map((s) => s.label),
+    ['Toàn đề', 'Phần II', 'Câu 3', 'Ý b'],
+  );
   assert.equal(parentCode(e, 'choice:q2:B'), 'question:q2');
   assert.equal(parentCode(e, 'question:q2'), 'group:g1');
   assert.equal(parentCode(e, 'part:part1'), 'exam');

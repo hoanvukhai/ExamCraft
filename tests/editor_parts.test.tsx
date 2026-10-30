@@ -15,7 +15,7 @@ import { sameQuestionSourceStamp, applyQuestionManualSubmission, questionValueSt
 import { patchOutlineNode } from '../src/lib/outline-editing';
 import { outlineView } from '../src/lib/outline-view';
 import { outlineSkeleton, copyOutlineSkeleton } from '../src/lib/outline-operations';
-import { OutlineEditor } from '../src/components/editor/OutlineEditor';
+import { EditorOutline } from '../src/components/editor/EditorOutline';
 import { StructureBlocks } from '../src/components/editor/StructureBlocks';
 function fixture(): Exam {
   return {
@@ -47,19 +47,23 @@ test('empty editor has one unnamed part and an insertion point without creating 
   assert.equal(exam.outline![0].title, '');
   assert.deepEqual(editorInsertionPoint(source), { parentId: exam.outline![0].id, afterId: null });
   const html = renderToStaticMarkup(
-    <OutlineEditor
+    <EditorOutline
       exam={source}
+      selectedCode="exam"
+      ticked={[]}
       canEdit
-      onChange={() => {
+      issueCounts={{}}
+      commentCounts={{}}
+      onSelect={() => {
         throw Error('render writes');
       }}
-      onSource={() => {}}
-      onPoint={() => {}}
-      renderQuestion={(q) => <p>{q.content}</p>}
+      onTick={() => {}}
+      onMove={() => {
+        throw Error('render writes');
+      }}
     />,
   );
-  assert.ok(html.includes('Tên phần — có thể để trống'));
-  assert.ok(html.includes('Thêm nội dung'));
+  assert.ok(html.includes('Phần'), 'the one unnamed part is listed');
   assert.ok(!html.includes('Tự soạn'));
   assert.ok(!html.includes('Thêm / sửa phần'));
   assert.equal(JSON.stringify(source), before);

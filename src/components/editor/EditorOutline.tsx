@@ -49,14 +49,24 @@ export function EditorOutline(p: Props) {
     }
     return (node.children ?? []).some(matches);
   };
-  const drop = (target: OutlineNode, siblings: OutlineNode[], parentId: string | null, event: React.DragEvent) => {
+  const drop = (
+    target: OutlineNode,
+    siblings: OutlineNode[],
+    parentId: string | null,
+    event: React.DragEvent,
+  ) => {
     event.preventDefault();
     const moving = dragging;
     setDragging(null);
     if (!moving || moving === target.id || !p.canEdit) return;
     const half = (event.currentTarget as HTMLElement).getBoundingClientRect();
     const before = event.clientY < half.top + half.height / 2;
-    if (target.kind !== 'question' && (target.children?.length ?? 0) >= 0 && target.kind === 'part' && !before) {
+    if (
+      target.kind !== 'question' &&
+      (target.children?.length ?? 0) >= 0 &&
+      target.kind === 'part' &&
+      !before
+    ) {
       // Dropped on the lower half of a part title: it becomes the first thing inside that part.
       p.onMove(moving, { parentId: target.id, afterId: null });
       return;
@@ -64,12 +74,16 @@ export function EditorOutline(p: Props) {
     const index = siblings.findIndex((item) => item.id === target.id);
     p.onMove(moving, { parentId, afterId: before ? (siblings[index - 1]?.id ?? null) : target.id });
   };
-  const row = (node: OutlineNode, siblings: OutlineNode[], parentId: string | null, depth: number): React.ReactNode => {
+  const row = (
+    node: OutlineNode,
+    siblings: OutlineNode[],
+    parentId: string | null,
+    depth: number,
+  ): React.ReactNode => {
     if (!matches(node)) return null;
     const entry = entries.get(node.id);
     const question = entry?.question;
-    const code =
-      node.kind === 'question' ? `question:${node.questionId}` : `${node.kind}:${node.id}`;
+    const code = node.kind === 'question' ? `question:${node.questionId}` : `${node.kind}:${node.id}`;
     const selected = p.selectedCode === code;
     const title = node.title?.trim();
     const material = p.exam.passages?.find((passage) => passage.id === node.passageId);
@@ -149,7 +163,8 @@ export function EditorOutline(p: Props) {
               aria-pressed={filter === key}
               onClick={() => setFilter(key)}
               className={
-                (filter === key ? 'app-button-tonal' : 'app-button-secondary') + ' min-h-8 rounded-lg px-2.5 text-xs'
+                (filter === key ? 'app-button-tonal' : 'app-button-secondary') +
+                ' min-h-8 rounded-lg px-2.5 text-xs'
               }
             >
               {label}
@@ -159,7 +174,9 @@ export function EditorOutline(p: Props) {
       </header>
       <ul>{outline.map((node) => row(node, outline, null, 0))}</ul>
       {p.canEdit && (
-        <p className="text-xs text-[var(--ui-text-secondary)]">Kéo một dòng để đổi chỗ. Bấm một dòng để chọn trên tờ đề.</p>
+        <p className="text-xs text-[var(--ui-text-secondary)]">
+          Kéo một dòng để đổi chỗ. Bấm một dòng để chọn trên tờ đề.
+        </p>
       )}
     </section>
   );

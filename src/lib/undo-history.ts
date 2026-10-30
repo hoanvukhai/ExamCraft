@@ -20,7 +20,8 @@ export type ExamDiff = {
 };
 
 export function diffExam(before: Exam, after: Exam): ExamDiff {
-  const ids = <T extends { id: string }>(list: T[] | undefined) => new Map((list ?? []).map((item) => [item.id, item]));
+  const ids = <T extends { id: string }>(list: T[] | undefined) =>
+    new Map((list ?? []).map((item) => [item.id, item]));
   const changed = <T extends { id: string }>(a: T[] | undefined, b: T[] | undefined) => {
     const left = ids(a),
       right = ids(b);
@@ -28,13 +29,22 @@ export function diffExam(before: Exam, after: Exam): ExamDiff {
   };
   const keys = new Set([...Object.keys(before.metadata), ...Object.keys(after.metadata)]);
   const metaKeys = [...keys].filter(
-    (key) => !same((before.metadata as unknown as Record<string, unknown>)[key], (after.metadata as unknown as Record<string, unknown>)[key]),
+    (key) =>
+      !same(
+        (before.metadata as unknown as Record<string, unknown>)[key],
+        (after.metadata as unknown as Record<string, unknown>)[key],
+      ),
   );
   return {
     questions: changed(before.questions, after.questions),
     passages: changed(before.passages, after.passages),
     metadata: metaKeys,
-    outline: !same(before.outline, after.outline) || !same(before.questions.map((q) => q.id), after.questions.map((q) => q.id)),
+    outline:
+      !same(before.outline, after.outline) ||
+      !same(
+        before.questions.map((q) => q.id),
+        after.questions.map((q) => q.id),
+      ),
   };
 }
 
@@ -64,7 +74,8 @@ export type Reverted = { exam: Exam; skipped: string[]; changed: boolean };
 export function revertChange(current: Exam, change: Change): Reverted {
   const diff = diffExam(change.before, change.after);
   const skipped: string[] = [];
-  const pick = <T extends { id: string }>(list: T[] | undefined, id: string) => (list ?? []).find((item) => item.id === id);
+  const pick = <T extends { id: string }>(list: T[] | undefined, id: string) =>
+    (list ?? []).find((item) => item.id === id);
 
   const apply = (withStructure: boolean): Exam => {
     let questions = [...current.questions];
@@ -77,7 +88,8 @@ export function revertChange(current: Exam, change: Change): Reverted {
         became = pick(change.after.questions, id),
         now = questions.find((item) => item.id === id);
       if (was && became) {
-        if (now && same(now, became)) questions = questions.map((item) => (item.id === id ? (was as Question) : item));
+        if (now && same(now, became))
+          questions = questions.map((item) => (item.id === id ? (was as Question) : item));
         else if (!withStructure) continue;
         else skipped.push('câu đã được sửa tiếp');
       } else if (became && !was) {
@@ -112,7 +124,13 @@ export function revertChange(current: Exam, change: Change): Reverted {
       if (same(current.outline, change.after.outline)) outline = change.before.outline;
       else skipped.push('thứ tự và cấu trúc đã đổi sau đó');
     }
-    return { ...current, questions, passages, metadata: metadata as unknown as Exam['metadata'], outline } as Exam;
+    return {
+      ...current,
+      questions,
+      passages,
+      metadata: metadata as unknown as Exam['metadata'],
+      outline,
+    } as Exam;
   };
 
   let result: Exam;
