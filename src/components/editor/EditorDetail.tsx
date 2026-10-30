@@ -210,6 +210,7 @@ export function EditorDetail(p: Props) {
     }
     case 'print': {
       const focus = object.zone === 'header' ? undefined : object.zone;
+      // Header lines come from the exam details, which the workspace keeps mounted.
       return (
         <div className="space-y-4">
           <Heading

@@ -852,6 +852,13 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
               disabled: locked,
               onClick: () => moveInto([question.id], part.id),
             })),
+          ...outlineNodes(displayOutline(exam))
+            .filter((item) => item.kind === 'group' && item.id !== node?.parent?.id)
+            .map((group) => {
+              const material = exam.passages?.find((item) => item.id === group.passageId);
+              const name = material?.title || group.title || material?.content.slice(0, 32) || 'nội dung chung';
+              return { label: `Đưa vào ${name}`, disabled: locked, onClick: () => moveInto([question.id], group.id) };
+            }),
           { label: 'Lưu bản sao vào ngân hàng', onClick: () => void saveToBank(question) },
           { label: 'Xóa câu', disabled: locked, onClick: () => removeQuestions([question.id]) },
         ];
@@ -937,8 +944,22 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
 
   // ----- Layout
   const chain = selectionChain(exam, selectedCode);
-  const detailInfoOpen =
-    leftOpen && leftTab === 'detail' && (selectedCode === EXAM_CODE || selectedCode.startsWith('print:header'));
+  const examDetail = selectedCode === EXAM_CODE || selectedCode.startsWith('print:header');
+  const detailInfoOpen = leftOpen && leftTab === 'detail' && examDetail;
+  const detailProps = {
+    exam,
+    canEdit,
+    ownerId: currentUser.id,
+    sessionScope,
+    hasActiveKey,
+    sourceStamp: manualSourceStamp,
+    onChange: setExam,
+    onStructure: applyStructure,
+    onPreview: updateHeaderPreview,
+    addItems: addItemsFor,
+    onManualSave: (submission: Parameters<typeof applyQuestionManualSubmission>[1]) =>
+      setExam((previous) => applyQuestionManualSubmission(previous, submission, currentUser.id)),
+  };
   const previewExam = detailInfoOpen && headerDraft ? previewHeaderDraft(exam, headerDraft) : exam;
   const sourceTab = leftTab === 'bank' || leftTab === 'import';
   const exportProps = {
@@ -1223,24 +1244,12 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                     Dùng hàng công cụ để gộp, khóa, chuyển phần hoặc xóa các câu này.
                   </p>
                 </div>
-              ) : (
-                <EditorDetail
-                  exam={exam}
-                  code={selectedCode}
-                  canEdit={canEdit}
-                  ownerId={currentUser.id}
-                  sessionScope={sessionScope}
-                  hasActiveKey={hasActiveKey}
-                  sourceStamp={manualSourceStamp}
-                  onChange={setExam}
-                  onStructure={applyStructure}
-                  onPreview={updateHeaderPreview}
-                  addItems={addItemsFor}
-                  onManualSave={(submission) =>
-                    setExam((previous) => applyQuestionManualSubmission(previous, submission, currentUser.id))
-                  }
-                />
-              )}
+              ) : null}
+              {/* The exam details stay mounted: what was typed in "Thông tin đề" survives a look at another object. */}
+              <div className={pickedQuestionIds.length <= 1 && examDetail ? 'block' : 'hidden'}>
+                <EditorDetail {...detailProps} code={EXAM_CODE} />
+              </div>
+              {pickedQuestionIds.length <= 1 && !examDetail && <EditorDetail {...detailProps} code={selectedCode} />}
             </div>
             <div className={leftTab === 'template' ? 'block p-3 space-y-6' : 'hidden'}>
               <EditorPrint exam={exam} canEdit={canEdit} onChange={setExam} />
