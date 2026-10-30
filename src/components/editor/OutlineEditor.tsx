@@ -3,6 +3,7 @@ import { useState, type ReactNode } from 'react';
 import { Plus, MoreHorizontal, ChevronDown } from 'lucide-react';
 import type { Exam, OutlineNode, Question } from '@/types/exam';
 import { ToolMenu, type MenuItem } from '@/components/EditorToolbar';
+import { EditorNodeScope } from './EditorSelection';
 import { PassageFields } from './PassageFields';
 import { MathRenderer } from '@/components/MathRenderer';
 import { FigureView } from '@/components/FigureView';
@@ -163,11 +164,21 @@ export function OutlineEditor(p: Props) {
     return (
       <div
         key={point.parentId + ':' + point.afterId}
-        className="py-1 min-w-0"
+        className={compact ? 'group/insert py-0.5 min-w-0 flex items-center justify-center -my-1 relative z-10' : 'py-1.5 min-w-0'}
         data-insert-parent={point.parentId ?? 'root'}
         data-insert-after={point.afterId ?? 'start'}
       >
-        <ToolMenu label={label} compact={compact} Icon={Plus} items={items} />
+        <ToolMenu
+          label={label}
+          compact={compact}
+          Icon={Plus}
+          items={items}
+          className={
+            compact
+              ? 'h-5 w-5 rounded-full text-slate-400 hover:text-slate-800 hover:bg-slate-200 dark:hover:bg-neutral-700 opacity-0 group-hover/insert:opacity-70 hover:!opacity-100 transition-all cursor-pointer flex items-center justify-center p-0'
+              : 'w-full py-2.5 px-4 rounded-xl border border-dashed border-slate-300 hover:border-[var(--ui-primary)] dark:border-[#35363a] dark:hover:border-[var(--ui-primary)] text-xs font-medium text-slate-600 dark:text-neutral-400 hover:text-[var(--ui-text-primary)] flex items-center justify-center gap-2 transition-all cursor-pointer hover:bg-slate-50 dark:hover:bg-neutral-800/40'
+          }
+        />
         {samePoint(point, p.composerPoint) && p.composer}
       </div>
     );
@@ -216,7 +227,13 @@ export function OutlineEditor(p: Props) {
               {p.renderQuestion(q, position, entry.number ?? position + 1, {
                 first: index === 0,
                 last: index === nodes.length - 1,
-                moveItems,
+                moveItems: [
+                  ...(['manual', 'bank', 'import', 'generate'] as const).map((source, sourceIndex) => ({
+                    label: ['Thêm câu sau câu này', 'Lấy ngân hàng sau câu này', 'Nhập Word/Ảnh sau câu này', 'Sinh AI sau câu này'][sourceIndex],
+                    onClick: () => p.onSource({ parentId, afterId: node.id }, source),
+                  })),
+                  ...moveItems,
+                ],
               })}
             </div>
           );
@@ -228,6 +245,10 @@ export function OutlineEditor(p: Props) {
         const members = outlineNodes(node.children ?? []).filter((item) => item.kind === 'question');
         const points = members.reduce((sum, item) => sum + (scores.get(item.questionId!) ?? 0), 0);
         const items: MenuItem[] = [
+          ...(['manual', 'bank', 'import', 'generate'] as const).map((source, sourceIndex) => ({
+            label: ['Thêm câu vào đây', 'Lấy câu từ ngân hàng', 'Nhập Word/Ảnh vào đây', 'Sinh AI vào đây'][sourceIndex],
+            onClick: () => p.onSource({ parentId: node.id, afterId: node.children?.at(-1)?.id ?? null }, source),
+          })),
           ...(node.kind === 'part'
             ? [{ label: 'Lời dẫn và đánh số', onClick: () => setOptions(node.id) }]
             : [{ label: 'Sửa nội dung chung', onClick: () => setEditing(node.id) }]),
@@ -250,30 +271,40 @@ export function OutlineEditor(p: Props) {
         return (
           <div key={node.id} className="min-w-0">
             {leading}
-            <section
+            <EditorNodeScope
+              id={node.id}
+              label={label}
+              commands={items.map((item) => ({ label: item.label, run: item.onClick, disabled: !p.canEdit || item.disabled }))}
               data-outline-node={node.id}
               data-outline-kind={node.kind}
               className={
-                node.kind === 'part' ? 'min-w-0 py-3 space-y-2' : 'min-w-0 border-l-2 pl-3 py-2 space-y-2'
+                node.kind === 'part'
+                  ? 'min-w-0 pt-2 pb-1 space-y-3'
+                  : 'min-w-0 border-l-2 border-[var(--ui-border)] pl-3 py-2 space-y-2'
               }
             >
-              <header className="flex items-center gap-2 min-w-0">
+              <header className="flex items-center gap-2 min-w-0 pb-1.5 border-b border-[var(--ui-border)]/60">
                 <button
                   type="button"
                   aria-expanded={!hidden}
                   aria-label={(hidden ? 'Mở ' : 'Thu gọn ') + label}
-                  className="shrink-0 min-h-9 px-1"
+                  className="shrink-0 p-1 rounded-lg text-[var(--ui-text-secondary)] hover:text-[var(--ui-text-primary)] hover:bg-[var(--ui-surface-variant)] transition-all cursor-pointer"
                   onClick={() => toggle(node.id)}
                 >
-                  <ChevronDown aria-hidden className={'w-4 h-4 ' + (hidden ? '-rotate-90' : '')} />
+                  <ChevronDown aria-hidden className={'w-4 h-4 transition-transform ' + (hidden ? '-rotate-90' : '')} />
                 </button>
+                {node.kind === 'part' && (
+                  <span className="shrink-0 px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-[var(--ui-surface-variant)] text-[var(--ui-text-secondary)]">
+                    Phần {parts.indexOf(node) + 1}
+                  </span>
+                )}
                 {node.kind === 'part' ? (
                   <input
                     aria-label={'Tên phần ' + (parts.indexOf(node) + 1)}
                     placeholder="Tên phần — có thể để trống"
                     value={node.title ?? ''}
                     disabled={!p.canEdit}
-                    className="min-w-0 flex-1 bg-transparent rounded px-1 py-2 font-semibold placeholder:font-normal placeholder:text-[var(--ui-text-secondary)]"
+                    className="min-w-0 flex-1 bg-transparent hover:bg-[var(--ui-surface-variant)]/40 focus:bg-transparent rounded-lg px-2.5 py-1 font-semibold text-sm text-[var(--ui-text-primary)] placeholder:font-normal placeholder:text-[var(--ui-text-secondary)] border border-transparent hover:border-[var(--ui-border)] focus:border-[var(--ui-primary)] focus:outline-none transition-all"
                     onFocus={() =>
                       p.onPoint({ parentId: node.id, afterId: node.children?.at(-1)?.id ?? null })
                     }
@@ -355,7 +386,7 @@ export function OutlineEditor(p: Props) {
                   ))}
                 {render(node.children ?? [], node.id)}
               </div>
-            </section>
+            </EditorNodeScope>
           </div>
         );
       })}
@@ -374,7 +405,7 @@ export function OutlineEditor(p: Props) {
     (p.composerPoint?.afterId == null || selectedList.some((n) => n.id === p.composerPoint?.afterId));
   const selectedOptions = outlineNodes(outline).find((node) => node.id === options);
   return (
-    <section aria-label="Dàn ý đề" className="min-w-0 divide-y">
+    <section aria-label="Dàn ý đề" className="min-w-0 space-y-3.5">
       {message && (
         <p role="alert" className="text-sm">
           {message}
@@ -389,7 +420,7 @@ export function OutlineEditor(p: Props) {
       {render(outline, null)}
       <button
         type="button"
-        className="min-h-10 px-2 text-xs text-[var(--ui-text-secondary)]"
+        className="w-full py-2.5 px-4 rounded-xl border border-dashed border-[var(--ui-border)] hover:border-[var(--ui-primary)] dark:border-[#35363a] dark:hover:border-[var(--ui-primary)] text-xs font-medium text-[var(--ui-text-secondary)] hover:text-[var(--ui-text-primary)] flex items-center justify-center gap-2 transition-all cursor-pointer hover:bg-[var(--ui-surface-variant)]/40"
         disabled={!p.canEdit}
         onClick={() => add({ parentId: null, afterId: outline.at(-1)?.id ?? null }, 'part')}
       >

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { Question, QuestionType } from '@/types/exam';
 import { getCognitiveFramework } from '@/lib/education-catalog';
 import { QuestionPartsEditor } from './editor/QuestionPartsEditor';
+import { useEditorActor } from './editor/EditorSelection';
 import { FigureEditor } from './FigureEditor';
 import type { KnowledgePackage, KnowledgeScope } from '@/lib/knowledge-package';
 import { bindQuestionKnowledge, reviewQuestionKnowledge } from '@/lib/question-knowledge';
@@ -33,6 +34,7 @@ export function QuestionEditor({
   ownerId,
   documentId,
   sourceStamp,
+  initialChoiceKey,
   question,
   frameworkId,
   knowledgePackage,
@@ -46,6 +48,7 @@ export function QuestionEditor({
   ownerId: string;
   documentId: string;
   sourceStamp: string;
+  initialChoiceKey?: string;
   question: Question;
   frameworkId?: string;
   knowledgePackage?: KnowledgePackage;
@@ -120,6 +123,7 @@ export function QuestionEditor({
     if (stale) return;
     const value: Question = {
       ...draft,
+      ...(['short_answer', 'fill_blank'].includes(draft.type) ? { accepted_answers: [...new Set([...(draft.correct_answer?.trim() ? [draft.correct_answer.trim()] : []), ...(draft.accepted_answers ?? [])])] } : {}),
       status: 'draft',
       verifiedBy: 'none',
       version: (editor.record.baseQuestion.version ?? 1) + 1,
@@ -141,6 +145,33 @@ export function QuestionEditor({
       value,
     });
   };
+  const textRange = useRef<{ node: HTMLInputElement | HTMLTextAreaElement; start: number; end: number; text: string; field: string } | null>(null);
+  const insertMath = (kind: 'formula' | 'sup' | 'sub') => {
+    const range = textRange.current;
+    if (!range || !range.node.isConnected || range.node.value !== range.text || stale) return;
+    const selected = range.text.slice(range.start, range.end);
+    const inserted = kind === 'formula' ? `$${selected || 'x'}$` : `$${selected || 'x'}${kind === 'sup' ? '^' : '_'}{${kind === 'sup' ? '2' : '1'}}$`;
+    const text = range.text.slice(0, range.start) + inserted + range.text.slice(range.end);
+    if (range.field === 'content') update({ content: text });
+    else if (range.field === 'solution') update({ step_by_step_solution: text });
+    else if (range.field.startsWith('choice:')) update({ choices: draft.choices?.map(c => c.key === range.field.slice(7) ? { ...c, text } : c) });
+    else if (range.field.startsWith('sub:')) update({ sub_questions: draft.sub_questions?.map(c => c.key === range.field.slice(4) ? { ...c, content: text } : c) });
+    requestAnimationFrame(() => { if (range.node.isConnected) { range.node.focus(); range.node.setSelectionRange(range.start + inserted.length, range.start + inserted.length); } });
+  };
+  const draftActor = useEditorActor(question.id + ':draft', 'Bản đang sửa của câu', () => [
+    { label: 'Chèn công thức', disabled: stale || !textRange.current, run: () => insertMath('formula') },
+    { label: 'Chỉ số trên', disabled: stale || !textRange.current, run: () => insertMath('sup') },
+    { label: 'Chỉ số dưới', disabled: stale || !textRange.current, run: () => insertMath('sub') },
+    { label: 'Áp dụng câu', disabled: stale, run: submit },
+    { label: 'Đóng sửa, giữ nháp', run: onCancel },
+  ]);
+  const rememberText = (node: EventTarget) => {
+    if (!(node instanceof HTMLInputElement || node instanceof HTMLTextAreaElement)) return;
+    const field = node.dataset.formatField;
+    if (!field || node.selectionStart === null) return;
+    textRange.current = { node, field, start: node.selectionStart, end: node.selectionEnd ?? node.selectionStart, text: node.value };
+    draftActor.choose(node.getAttribute('aria-label') || node.labels?.[0]?.textContent?.trim() || 'Văn bản');
+  };
   const framework = getCognitiveFramework(frameworkId);
   const knowledgeReview = reviewQuestionKnowledge(draft, knowledgePackage, knowledgeScope);
   const toggleLink = (kind: 'knowledgeIds' | 'outcomeIds', id: string, selected: boolean) => {
@@ -158,7 +189,7 @@ export function QuestionEditor({
     );
   };
   return (
-    <div className="space-y-3">
+    <div className="space-y-3" onFocusCapture={e => rememberText(e.target)} onSelectCapture={e => rememberText(e.target)}>
       <p className="text-xs">
         {creating
           ? 'Nháp được giữ riêng trên máy. Bấm Thêm vào đề để đưa câu vào danh sách và tự lưu; Hủy thêm vẫn giữ nháp.'
@@ -224,7 +255,7 @@ export function QuestionEditor({
       <label className="block text-sm">
         Nội dung câu hỏi
         <textarea
-          aria-label="Nội dung câu hỏi"
+          aria-label="Nội dung câu hỏi" data-format-field="content"
           rows={4}
           className={field}
           value={draft.content}
@@ -235,13 +266,13 @@ export function QuestionEditor({
         <fieldset className="space-y-2">
           <legend>Các phương án</legend>
           {(draft.choices ?? []).map((choice, index) => (
-            <div key={choice.key} className="flex gap-2 items-center">
+            <div key={choice.key} data-editor-field={`Phương án ${choice.key}`} className="border rounded-lg p-2 space-y-2"><div className="flex flex-wrap gap-2 items-center">
               <label className="sr-only" htmlFor={`choice-${question.id}-${choice.key}`}>
                 Phương án {choice.key}
               </label>
               <span>{choice.key}</span>
               <input
-                id={`choice-${question.id}-${choice.key}`}
+                id={`choice-${question.id}-${choice.key}`} data-format-field={`choice:${choice.key}`}
                 className={field}
                 value={choice.text}
                 onChange={(e) =>
@@ -275,7 +306,7 @@ export function QuestionEditor({
                 />{' '}
                 Giữ vị trí
               </label>
-            </div>
+            </div><div aria-label={`Hình trong phương án ${choice.key}`}><FigureEditor key={choice.key + ':' + (initialChoiceKey === choice.key)} initialOpen={initialChoiceKey === choice.key} figures={choice.figures ?? []} onChange={figures => update({ choices: draft.choices!.map((c, i) => i === index ? { ...c, figures } : c) })} /></div></div>
           ))}
           <button
             type="button"
@@ -374,7 +405,7 @@ export function QuestionEditor({
               aria-label="Đáp án chính"
               className={field}
               value={draft.correct_answer ?? ''}
-              onChange={(e) => update({ correct_answer: e.target.value || undefined })}
+              onChange={(e) => update({ correct_answer: e.target.value || undefined, accepted_answers: (draft.accepted_answers ?? []).filter(value => value !== draft.correct_answer) })}
             />
           </label>
           <label className="block text-sm">

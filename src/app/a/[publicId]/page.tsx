@@ -11,6 +11,7 @@ import React, {
   useEffectEvent,
 } from 'react';
 import Link from 'next/link';
+import { FigureView } from '@/components/FigureView';
 import { MathRenderer } from '@/components/MathRenderer';
 import { VariationTable, VariationTableData } from '@/components/VariationTable';
 import { FunctionPlot, FunctionPlotData } from '@/components/FunctionPlot';
@@ -66,7 +67,7 @@ interface Question {
   matching?: { left: { key: string; text: string }[]; right: { key: string; text: string }[] };
   ordering?: { items: { key: string; text: string }[] };
   payload?: {
-    choices?: Array<{ key: string; text: string }>;
+    choices?: Array<{ key: string; text: string; figures?: Figure[] }>;
     sub_questions?: Array<{ key: string; content: string }>;
   };
   points?: number;
@@ -1467,7 +1468,7 @@ function StudentExamContent({ params }: { params: Promise<{ publicId: string }> 
                             {c.key}
                           </span>
                           <div className="text-sm">
-                            <MathRenderer content={c.text} inline />
+                            <MathRenderer content={c.text} inline />{c.figures?.map(figure => <FigureView key={figure.id} figure={figure} />)}
                           </div>
                         </button>
                       );

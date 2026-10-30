@@ -126,7 +126,7 @@ export function ExamPresentation({ exam: sourceExam, onClose }: { exam: Exam; on
                 key={c.key}
                 className={`border rounded p-4 ${showAnswer && c.key === question.correct_answer ? 'bg-emerald-100 border-emerald-600' : ''}`}
               >
-                <b>{c.key}.</b> <MathRenderer content={c.text} inline />
+                <b>{c.key}.</b> <MathRenderer content={c.text} inline />{c.figures?.map(figure => <FigureView key={figure.id} figure={figure} />)}
               </div>
             ))}
           </div>

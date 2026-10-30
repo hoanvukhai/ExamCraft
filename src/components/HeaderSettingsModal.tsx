@@ -27,7 +27,8 @@ export interface HeaderSettingsModalProps {
   ownerId: string;
   onSaveMetadata: (submission: HeaderSubmission) => void;
 }
-const field = 'min-w-0 w-full border rounded p-2 bg-transparent text-sm';
+const field =
+  'min-w-0 w-full border border-[var(--ui-border)] dark:border-[#3c4043] rounded-lg p-2.5 bg-[var(--ui-surface)] dark:bg-[#202124] text-[var(--ui-text-primary)] text-xs focus:outline-none focus:ring-2 focus:ring-[var(--ui-primary)]/20 focus:border-[var(--ui-primary)] transition-all';
 const labels = {
   schoolName: 'Đơn vị chủ quản',
   departmentName: 'Trường / tổ chuyên môn',
@@ -153,84 +154,132 @@ export function HeaderForm({
             tự đổi bộ kiến thức, kế hoạch hay khung mức.
           </p>
         )}
-        <div className="grid grid-cols-1 @min-[400px]:grid-cols-2 gap-3">
-          <label className="text-sm">
-            Lớp
-            <select
-              className={field}
-              aria-label="Lớp của đề"
-              value={displayForm.grade}
-              onChange={(event) => change({ grade: Number(event.target.value) })}
-            >
-              {Array.from({ length: 12 }, (_, index) => (
-                <option key={index + 1} value={index + 1}>
-                  Lớp {index + 1}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="text-sm">
-            Môn
-            <select
-              className={field}
-              aria-label="Môn của đề"
-              value={displayForm.subject}
-              onChange={(event) => change({ subject: event.target.value as ExamMetadata['subject'] })}
-            >
-              {!validSubject && (
-                <option value={displayForm.subject}>Môn cũ cần chọn lại: {displayForm.subject}</option>
-              )}
-              {subjects.map((item) => (
-                <option key={item.key} value={item.key}>
-                  {item.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="text-sm">
-            Cách đánh giá
-            <select
-              className={field}
-              aria-label="Cách đánh giá"
-              value={displayForm.assessmentMode ?? 'scored'}
-              onChange={(event) =>
-                change({ assessmentMode: event.target.value as ExamMetadata['assessmentMode'] })
-              }
-            >
-              <option value="scored">Có điểm</option>
-              <option value="comment_only">Nhận xét</option>
-              <option value="rubric">Theo tiêu chí</option>
-              <option value="survey">Khảo sát không chấm điểm</option>
-            </select>
-          </label>
-          {(!embedded || showFramework) && (
-            <label className="text-sm">
-              Khung mức nhận thức
-              <select
+        {/* Phần 1: Cơ quan & Đơn vị chủ quản */}
+        <div className="space-y-3 pt-1">
+          <div className="pb-1 border-b border-[var(--ui-border)]/60">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--ui-text-secondary)]">
+              Đơn vị tổ chức & Cơ quan
+            </span>
+          </div>
+          <div className="grid grid-cols-1 @min-[400px]:grid-cols-2 gap-3">
+            <label className="text-xs font-medium text-[var(--ui-text-secondary)] space-y-1 block">
+              <span>{labels.schoolName}</span>
+              <input
                 className={field}
-                aria-label="Khung mức nhận thức"
-                value={displayForm.cognitiveFrameworkId ?? ''}
-                onChange={(event) => change({ cognitiveFrameworkId: event.target.value || undefined })}
-              >
-                <option value="">Chưa chọn khung</option>
-                {!validFramework && (
-                  <option value={displayForm.cognitiveFrameworkId}>
-                    Khung cũ cần chọn lại: {displayForm.cognitiveFrameworkId}
-                  </option>
-                )}
-                {frameworks.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.label}
-                  </option>
-                ))}
-              </select>
+                aria-label={labels.schoolName}
+                placeholder="VD: Sở Giáo dục và Đào tạo..."
+                value={displayForm.schoolName ?? ''}
+                onChange={(event) => change({ schoolName: event.target.value })}
+              />
             </label>
-          )}
+            <label className="text-xs font-medium text-[var(--ui-text-secondary)] space-y-1 block">
+              <span>{labels.departmentName}</span>
+              <input
+                className={field}
+                aria-label={labels.departmentName}
+                placeholder="VD: Trường THPT Chu Văn An / Tổ Toán..."
+                value={displayForm.departmentName ?? ''}
+                onChange={(event) => change({ departmentName: event.target.value })}
+              />
+            </label>
+          </div>
         </div>
+
+        {/* Phần 2: Thông tin đề thi & Phân môn */}
+        <div className="space-y-3 pt-2">
+          <div className="pb-1 border-b border-[var(--ui-border)]/60">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--ui-text-secondary)]">
+              Thông tin đề thi & Môn học
+            </span>
+          </div>
+          <div className="space-y-3">
+            <label className="text-xs font-medium text-[var(--ui-text-secondary)] space-y-1 block">
+              <span>{labels.title}</span>
+              <input
+                className={field}
+                aria-label={labels.title}
+                placeholder="VD: ĐỀ KIỂM TRA HỌC KỲ I..."
+                value={displayForm.title ?? ''}
+                onChange={(event) => change({ title: event.target.value })}
+              />
+            </label>
+
+            <div className="grid grid-cols-1 @min-[400px]:grid-cols-2 gap-3">
+              <label className="text-xs font-medium text-[var(--ui-text-secondary)] space-y-1 block">
+                <span>Lớp</span>
+                <select
+                  className={field}
+                  aria-label="Lớp của đề"
+                  value={displayForm.grade}
+                  onChange={(event) => change({ grade: Number(event.target.value) })}
+                >
+                  {Array.from({ length: 12 }, (_, index) => (
+                    <option key={index + 1} value={index + 1}>
+                      Lớp {index + 1}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="text-xs font-medium text-[var(--ui-text-secondary)] space-y-1 block">
+                <span>Môn</span>
+                <select
+                  className={field}
+                  aria-label="Môn của đề"
+                  value={displayForm.subject}
+                  onChange={(event) => change({ subject: event.target.value as ExamMetadata['subject'] })}
+                >
+                  {!validSubject && (
+                    <option value={displayForm.subject}>Môn cũ cần chọn lại: {displayForm.subject}</option>
+                  )}
+                  {subjects.map((item) => (
+                    <option key={item.key} value={item.key}>
+                      {item.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+
+            <div className="grid grid-cols-1 @min-[400px]:grid-cols-3 gap-3">
+              <label className="text-xs font-medium text-[var(--ui-text-secondary)] space-y-1 block">
+                <span>{labels.examCode}</span>
+                <input
+                  className={field}
+                  aria-label={labels.examCode}
+                  placeholder="VD: 101, 102..."
+                  value={displayForm.examCode ?? ''}
+                  onChange={(event) => change({ examCode: event.target.value })}
+                />
+              </label>
+              <label className="text-xs font-medium text-[var(--ui-text-secondary)] space-y-1 block">
+                <span>{labels.academicYear}</span>
+                <input
+                  className={field}
+                  aria-label={labels.academicYear}
+                  placeholder="VD: 2026 - 2027"
+                  value={displayForm.academicYear ?? ''}
+                  onChange={(event) => change({ academicYear: event.target.value })}
+                />
+              </label>
+              <label className="text-xs font-medium text-[var(--ui-text-secondary)] space-y-1 block">
+                <span>{labels.semester}</span>
+                <input
+                  className={field}
+                  aria-label={labels.semester}
+                  placeholder="VD: Học kỳ I"
+                  value={displayForm.semester ?? ''}
+                  onChange={(event) => change({ semester: event.target.value })}
+                />
+              </label>
+            </div>
+          </div>
+        </div>
+
+        {/* Cảnh báo ngữ cảnh nếu có */}
         {(!validSubject || !validFramework) && (
-          <p role="alert" className="text-sm text-amber-700">
-            Môn hoặc khung cũ không phù hợp lớp đang chọn. Hãy chọn lại rõ ràng; gói và kế hoạch được giữ để
-            rà soát.
+          <p role="alert" className="text-xs text-amber-700 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 p-2.5 rounded-lg">
+            Môn hoặc khung cũ không phù hợp lớp đang chọn. Hãy chọn lại rõ ràng; gói và kế hoạch được giữ để rà soát.
           </p>
         )}
         {(metadata.knowledgePackage || metadata.examPlan) &&
@@ -238,54 +287,89 @@ export function HeaderForm({
             displayForm.subject !== base.subject ||
             displayForm.assessmentMode !== base.assessmentMode ||
             displayForm.cognitiveFrameworkId !== base.cognitiveFrameworkId) && (
-            <p className="text-xs text-amber-700">
+            <p className="text-xs text-amber-700 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 p-2.5 rounded-lg">
               Ngữ cảnh đánh giá đã đổi; kiểm cảnh báo ở gói kiến thức và kế hoạch sau khi áp dụng.
             </p>
           )}
-        <div className="grid grid-cols-1 @min-[400px]:grid-cols-2 gap-3">
-          {(
-            [
-              'schoolName',
-              'departmentName',
-              'title',
-              'examCode',
-              'academicYear',
-              'semester',
-              'notes',
-            ] as const
-          ).map((key) => (
-            <label
-              key={key}
-              className={`text-sm ${key === 'title' || key === 'notes' ? '@min-[400px]:col-span-2' : ''}`}
-            >
-              {labels[key]}
+
+        {/* Phần 3: Đánh giá & Định dạng thi */}
+        <div className="space-y-3 pt-2">
+          <div className="pb-1 border-b border-[var(--ui-border)]/60">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--ui-text-secondary)]">
+              Cấu hình thi & Đánh giá
+            </span>
+          </div>
+          <div className="grid grid-cols-1 @min-[400px]:grid-cols-2 gap-3">
+            <label className="text-xs font-medium text-[var(--ui-text-secondary)] space-y-1 block">
+              <span>Thời lượng (phút)</span>
               <input
                 className={field}
-                aria-label={labels[key]}
-                value={displayForm[key] ?? ''}
-                onChange={(event) => change({ [key]: event.target.value })}
+                aria-label="Thời lượng"
+                type="number"
+                min={0}
+                max={1440}
+                placeholder="VD: 45, 60, 90..."
+                value={Number.isNaN(displayForm.durationMinutes) ? '' : displayForm.durationMinutes}
+                onChange={(event) =>
+                  change({
+                    durationMinutes: event.target.value === '' ? Number.NaN : Number(event.target.value),
+                  })
+                }
               />
             </label>
-          ))}
-          <label className="text-sm">
-            Thời lượng (phút)
-            <input
-              className={field}
-              aria-label="Thời lượng"
-              type="number"
-              min={0}
-              max={1440}
-              value={Number.isNaN(displayForm.durationMinutes) ? '' : displayForm.durationMinutes}
-              onChange={(event) =>
-                change({
-                  durationMinutes: event.target.value === '' ? Number.NaN : Number(event.target.value),
-                })
-              }
-            />
-          </label>
+            <label className="text-xs font-medium text-[var(--ui-text-secondary)] space-y-1 block">
+              <span>Cách đánh giá</span>
+              <select
+                className={field}
+                aria-label="Cách đánh giá"
+                value={displayForm.assessmentMode ?? 'scored'}
+                onChange={(event) =>
+                  change({ assessmentMode: event.target.value as ExamMetadata['assessmentMode'] })
+                }
+              >
+                <option value="scored">Có điểm</option>
+                <option value="comment_only">Nhận xét</option>
+                <option value="rubric">Theo tiêu chí</option>
+                <option value="survey">Khảo sát không chấm điểm</option>
+              </select>
+            </label>
+            {(!embedded || showFramework) && (
+              <label className="text-xs font-medium text-[var(--ui-text-secondary)] space-y-1 block @min-[400px]:col-span-2">
+                <span>Khung mức nhận thức</span>
+                <select
+                  className={field}
+                  aria-label="Khung mức nhận thức"
+                  value={displayForm.cognitiveFrameworkId ?? ''}
+                  onChange={(event) => change({ cognitiveFrameworkId: event.target.value || undefined })}
+                >
+                  <option value="">Chưa chọn khung</option>
+                  {!validFramework && (
+                    <option value={displayForm.cognitiveFrameworkId}>
+                      Khung cũ cần chọn lại: {displayForm.cognitiveFrameworkId}
+                    </option>
+                  )}
+                  {frameworks.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+            <label className="text-xs font-medium text-[var(--ui-text-secondary)] space-y-1 block @min-[400px]:col-span-2">
+              <span>{labels.notes}</span>
+              <input
+                className={field}
+                aria-label={labels.notes}
+                placeholder="VD: Cán bộ coi thi không giải thích gì thêm..."
+                value={displayForm.notes ?? ''}
+                onChange={(event) => change({ notes: event.target.value })}
+              />
+            </label>
+          </div>
         </div>
-        <details className="border rounded p-3">
-          <summary className="cursor-pointer font-medium text-sm">Dòng in, vị trí và căn chỉnh</summary>
+        <details className="border-t border-[var(--ui-border)]/60 pt-3">
+          <summary className="cursor-pointer font-medium text-xs text-[var(--ui-text-secondary)] hover:text-[var(--ui-text-primary)]">Dòng in, vị trí và căn chỉnh nâng cao</summary>
           <p className="text-xs my-2">
             Ẩn dòng sẽ bỏ dòng khi in; ghi đè bằng chuỗi rỗng vẫn chừa một dòng trống. Bỏ ghi đè để dùng dữ
             liệu đề. Tên đề để quản lý luôn cần có, kể cả khi ẩn tên trên bản in.
@@ -436,17 +520,21 @@ export function HeaderForm({
             {error}
           </p>
         )}
-        <div className="flex gap-4">
+        <div className="flex items-center gap-3 pt-2">
           <button
             type="button"
-            className="app-button-primary text-white rounded px-3 py-2 text-sm disabled:opacity-50"
+            className="app-button-primary text-white rounded-lg px-4 py-2 text-xs font-semibold shadow-xs hover:shadow-sm disabled:opacity-40 transition-all cursor-pointer"
             disabled={applied || !Object.keys(submission.patch).length}
             onClick={submit}
           >
             Áp dụng
           </button>
           {!embedded && (
-            <button type="button" onClick={onClose}>
+            <button
+              type="button"
+              className="text-xs text-[var(--ui-text-secondary)] hover:text-[var(--ui-text-primary)] hover:underline"
+              onClick={onClose}
+            >
               Đóng, giữ bản soạn hiện tại
             </button>
           )}

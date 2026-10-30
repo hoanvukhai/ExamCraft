@@ -147,6 +147,7 @@ export function normalizeQuestion(input: unknown, index = 0): Question {
     new Set(choices.map((c) => c.key)).size !== choices.length
   )
     fail('nhãn phương án bị trùng hoặc thiếu nội dung');
+  if (result.choices) result.choices = choices.map(c => ({ ...c, ...(c.figures != null ? { figures: figures(c.figures) } : {}) })) as unknown as Question['choices'];
   const subs = validateList(result.sub_questions, 'ý đúng/sai');
   if (
     subs.some(

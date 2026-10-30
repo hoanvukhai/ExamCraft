@@ -1,0 +1,13 @@
+{
+  "isolatedTest": true,
+  "sqlTargetConfirmed": true,
+  "selectionDoesNotMarkAnswer": true,
+  "markAndSave": true,
+  "optionImageSaveReload": true,
+  "mobile": [
+    375,
+    320
+  ],
+  "menuFits": true,
+  "errors": []
+}

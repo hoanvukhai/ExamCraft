@@ -67,6 +67,7 @@ function shuffleMultipleChoiceQuestion(question: Question, randomFn: () => numbe
   // Gán lại các nhãn A, B, C, D
   const standardKeys = ['A', 'B', 'C', 'D'];
   const newChoices: ChoiceItem[] = shuffledTexts.map((text, idx) => ({
+    ...question.choices!.find(choice => choice.text === text)!,
     key: standardKeys[idx] || String.fromCharCode(65 + idx),
     text,
   }));

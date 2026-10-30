@@ -10,6 +10,7 @@ interface HeaderProps {
   examTitle: string;
   onUpdateTitle: (newTitle: string) => void;
   onShare?: () => void;
+  toolbar?: ReactNode;
 }
 
 /** The document bar of the editor: the exam name, the save state and the share button. Account, assistant and theme live in the frame's right rail. */
@@ -20,6 +21,7 @@ export const Header: React.FC<HeaderProps> = ({
   examTitle,
   onUpdateTitle,
   onShare,
+  toolbar,
 }) => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [titleDraft, setTitleDraft] = useState({ source: examTitle, value: examTitle });
@@ -33,9 +35,9 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="app-bar no-print h-12 bg-[var(--ui-surface)] border-b shrink-0 z-30 px-2 sm:px-3 flex items-center justify-between gap-2">
-      {leading}
-      <div className="flex items-center gap-2 min-w-0 flex-1 max-w-xl">
+    <header className="app-bar no-print min-h-12 bg-[var(--ui-surface)] border-b border-[var(--ui-border)]/60 shrink-0 z-30 px-3 sm:px-4 py-1.5 flex flex-wrap items-center justify-between gap-2.5">
+      <div className="flex items-center gap-2.5 min-w-0 max-w-xl">
+        {leading}
         {isEditingTitle ? (
           <input
             type="text"
@@ -70,19 +72,23 @@ export const Header: React.FC<HeaderProps> = ({
             <Edit3 className="w-3.5 h-3.5 text-[var(--ui-text-secondary)] opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
           </button>
         )}
+        {children}
       </div>
-      {children}
-      {canEdit && onShare && (
-        <button
-          type="button"
-          onClick={onShare}
-          title="Tạo link cho học sinh làm bài hoặc chia sẻ đề cho đồng nghiệp"
-          className="app-button-primary flex items-center gap-1.5 min-h-9 px-3 rounded-lg text-xs font-semibold cursor-pointer shrink-0"
-        >
-          <Share2 className="w-3.5 h-3.5" />
-          <span>Giao bài</span>
-        </button>
-      )}
+
+      <div className="flex items-center gap-2 ml-auto">
+        {toolbar}
+        {canEdit && onShare && (
+          <button
+            type="button"
+            onClick={onShare}
+            title="Tạo link cho học sinh làm bài hoặc chia sẻ đề cho đồng nghiệp"
+            className="app-button-primary flex items-center gap-1.5 min-h-9 px-3 rounded-lg text-xs font-semibold cursor-pointer shrink-0 shadow-2xs"
+          >
+            <Share2 className="w-3.5 h-3.5" />
+            <span>Giao bài</span>
+          </button>
+        )}
+      </div>
     </header>
   );
 };

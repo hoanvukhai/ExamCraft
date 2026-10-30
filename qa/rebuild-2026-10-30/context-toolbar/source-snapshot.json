@@ -1,0 +1,90 @@
+{
+  "source": "F:/Workspace/Zazz/ExamCraft",
+  "buildId": "7d6hZiPiwEhS5O-3wwKLp",
+  "files": [
+    {
+      "file": "package.json",
+      "sha256": "a691d15f8859d350f8804a534f669c1bf9a9ceb71a6f6d283baa4c4bb3c9fa64"
+    },
+    {
+      "file": "src/components/editor/EditorSelection.tsx",
+      "sha256": "6cea17a1d0061ee4f163bff431c1514f8304d0ef16a3356250e352121fa49010"
+    },
+    {
+      "file": "src/components/EditorToolbar.tsx",
+      "sha256": "12ae0588400f2a1bc83a192e4505db5759a044329c0ded0e08fca897073475eb"
+    },
+    {
+      "file": "src/components/ExamWorkspace.tsx",
+      "sha256": "9e28306477bceb1de9cc54a4d1995c9a98579a0dfa4b53d88e8e9233b5b86bdf"
+    },
+    {
+      "file": "src/components/QuestionCard.tsx",
+      "sha256": "a70fa738f8610da35583dfb8baecad0b1088c619b67db9e39b4ac4711b9b12c9"
+    },
+    {
+      "file": "src/components/QuestionEditor.tsx",
+      "sha256": "d1d62657c74f74d4bf6f138238a6be42f13811500c113d1ff054865f1a274418"
+    },
+    {
+      "file": "src/components/FigureEditor.tsx",
+      "sha256": "ab0461c931989b7c4b8d86209ebcb4b09aa19ddaf414d0bea31fbae5afa52a54"
+    },
+    {
+      "file": "src/components/A4Preview.tsx",
+      "sha256": "87e883f2c5bff3831ddb175a7048957081e611371b367cb34ff99c07d8a37030"
+    },
+    {
+      "file": "src/components/ExamPresentation.tsx",
+      "sha256": "b396e847f1d47a755b7d376043cd33aabd840ff69660737450e86ebe26e81c94"
+    },
+    {
+      "file": "src/components/QuestionBankModal.tsx",
+      "sha256": "91e24046894a9c90661d28f1820828045a818b6be174b1cc9cf1e83282153ebc"
+    },
+    {
+      "file": "src/components/editor/OutlineEditor.tsx",
+      "sha256": "164d7f14b3cc64a05b338ed67bd75ae9ab4ad6fd1db5ab4756e80113621b9b59"
+    },
+    {
+      "file": "src/app/a/[publicId]/page.tsx",
+      "sha256": "318d3ee940b4d47119a86b17cd275069b2ddb0be74c970c0a6e64e364e80814e"
+    },
+    {
+      "file": "src/types/exam.ts",
+      "sha256": "8c4b70480797136a0557faca7723e277423b2a60975b577af442e52b1d5d3dbb"
+    },
+    {
+      "file": "src/lib/exam-document.ts",
+      "sha256": "02e09efe3dd05d695b10dd30c4bab22c1d3d940714de0ce5bedd243973dcecc5"
+    },
+    {
+      "file": "src/lib/export-figures.ts",
+      "sha256": "5a2f78d9ee032c32373c210caad33fdbe0e6be8e580588922fb69c0e097921a8"
+    },
+    {
+      "file": "src/lib/public-exam.ts",
+      "sha256": "57e349531d26938b63321fbbdc62864fc176c2a2be60139616f82dd52ae28d10"
+    },
+    {
+      "file": "src/lib/docx-export.ts",
+      "sha256": "00ecaa012d18385cf1e8a18c0729da70a4070c290f305fcaa9d6f8fff3fcace2"
+    },
+    {
+      "file": "src/lib/shuffler.ts",
+      "sha256": "878b29c3262aae3359f4cef59f6670f70f4c6f0d370b966faf896bcf464103ae"
+    },
+    {
+      "file": "src/lib/scoped-question-edit.ts",
+      "sha256": "6bb7ebfff804aa7c42ceea89ebad9f9ef3bd31311aba31f5bc4628d1b821a2cf"
+    },
+    {
+      "file": "tests/option_media.test.ts",
+      "sha256": "96766c40cd437a781100d60d6e65d7f317604d465fe5c1f71bd8747c2f744ff8"
+    },
+    {
+      "file": "tests/scoped_question_edit.test.ts",
+      "sha256": "39ee26c9baebdfcd6120d3904d3ace9fa1bf6a6e690dce1e51befd0119464f7c"
+    }
+  ]
+}

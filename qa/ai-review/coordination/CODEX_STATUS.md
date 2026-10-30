@@ -1,15 +1,13 @@
 # CODEX status
 
-task_id: EDITOR-VERTICAL-20261029
+task_id: UX-CONTEXT-TOOLBAR-FINAL-20261030
 state: WAITING_REVIEW
-base_commit: d92fcb9
-commit_gan_nhat: 768988d
-code_commit: 768988d
-branch: codex/editor-structure-verify
-worktree: F:/Workspace/Zazz/ExamCraft/tmp/verify-ui
+branch: rebuild/2026-10-local
+commit_gan_nhat: 8fa5fd0 (đợt sửa hiện tại chưa commit)
+worktree: F:/Workspace/Zazz/ExamCraft
 
-Đang làm: không còn phần mã/kiểm thử treo của yêu cầu này; bản thử riêng đang mở ở http://127.0.0.1:3122.
-Đã xong: vùng soạn dọc thay hai khối cũ; phần mặc định không tên, tên trống không in; chèn tại chỗ và đưa câu vào nhóm dùng chung; bảo toàn đề cũ/điểm/nháp; sửa nháp bị coi là cũ chỉ do thứ tự trường JSON; lưu mẫu phần không tên và hướng dẫn đề trống theo menu mới.
-Kiểm đã chạy: CI đầy đủ, kiểm logic bổ sung và bản dựng/giao diện cuối, gồm màn hình hẹp sáng/tối, Word, quyền và lỗi lưu; kết quả và giới hạn xem qa/rebuild-2026-10-29/vertical-editor/BAO_CAO.md. Không gọi AI thật. Chưa kiểm điện thoại thật/Word/in giấy thực tế.
-Bước kế: người dùng xem sản phẩm ở 3122, Claude duyệt tích hợp. Chưa push/gộp, không tự đóng CV hoặc sửa checklist/hồ sơ do Claude giữ.
-Tệp giữ: toàn bộ ảnh/log bẩn có sẵn của Claude và bằng chứng các đợt trước; đề thật, DB chính, schema và bí mật không đổi. Không tác động mã/build/cổng 3117 của nhánh chính.
+Đã xong: thanh công cụ theo vùng chọn, ảnh riêng phương án qua lưu/xem/học sinh/Word/trộn, AI chỉ sửa trường được chọn, công thức theo vùng chữ, sửa văn bản dùng chung nhật ký nháp, xử lý đáp số thập phân; sửa nhảy bố cục và menu vượt màn hình.
+Đã kiểm: SAFE, TypeScript, lint các tệp thay đổi, production build; Chrome bộ soạn thật và trang production với dữ liệu giả trên DB thử đã xác nhận bằng health/SQL. Kiểm màn hình hẹp, chế độ tối, nháp, xung đột, đáp án và ảnh lưu/tải lại. Bằng chứng/số liệu/giới hạn ở qa/rebuild-2026-10-30/context-toolbar/BAO_CAO_HOAN_THIEN.md; source snapshot kèm build ID. Không provider thật/DB chính/điện thoại vật lý.
+Đang làm: không còn code/build/test treo của đợt này. Máy chủ production thử được giữ ở http://127.0.0.1:3122 từ F gốc; đã thay máy chủ dev cũ, không phải tmp/verify-ui trong launcher so sánh cũ.
+Bước kế: chủ dự án thử bản đã dựng và phản hồi. Các mở rộng kiểu dàn trang tự do, font/cắt ảnh/vẽ mới, ảnh lời giải và nhập Word thực tế xem giới hạn trong báo cáo; không coi đã nghiệm thu mọi chức năng tương lai hoặc cả dự án.
+Tệp giữ: giữ sửa có sẵn; không reset/push/gộp hay đổi schema/bí mật. Fixture riêng đã dọn; không xóa dữ liệu khác. Checklist03/hồ sơ02 do Claude giữ không sửa, không tự đóng CV. Bản trước sửa và lịch sử vá của đợt ở checkout báo cáo C; không chạy lại script vá lịch sử để đè nguồn mới.
