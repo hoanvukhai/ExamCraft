@@ -25,6 +25,7 @@ import { resolveHeaderLines } from './header-layout';
 import { resolvePrintLayout, type ResolvedBlock } from './print-layout';
 import type { VariationTableData } from '@/components/VariationTable';
 import { latexToMath } from './latex-math';
+import { splitFormat } from './rich-text';
 
 /**
  * Xóa bỏ ký hiệu LaTeX thô hoặc làm sạch chuẩn xác để hiển thị trong Word
@@ -223,16 +224,21 @@ export function renderLatexRunsForWord(
   const font = options?.font || 'Times New Roman';
   // Word ignores a raw newline inside a run; each line break must be an explicit break so poems, code and multi-line stems keep their lines.
   const textRuns = (text: string) =>
-    text.split(/\r?\n/).map(
-      (line, index) =>
-        new TextRun({
-          text: line,
-          ...(index > 0 ? { break: 1 } : {}),
-          font,
-          size: fontSize,
-          bold: options?.bold,
-          italics: options?.italics,
-        }),
+    splitFormat(text).flatMap((run) =>
+      run.text.split(/\r?\n/).map(
+        (line, index) =>
+          new TextRun({
+            text: line,
+            ...(index > 0 ? { break: 1 } : {}),
+            font,
+            size: fontSize,
+            bold: options?.bold || run.flags.b,
+            italics: options?.italics || run.flags.i,
+            ...(run.flags.u ? { underline: {} } : {}),
+            ...(run.flags.sup ? { superScript: true } : {}),
+            ...(run.flags.sub ? { subScript: true } : {}),
+          }),
+      ),
     );
 
   // Biểu thức tách chuỗi: tìm các đoạn $$...$$ hoặc $...$
@@ -794,10 +800,11 @@ export async function exportExamToDocx(
         output.push(
           ...renderContentBlocksForWord(
             block.title,
-            { spacing: { before: 160, after: 80 } },
+            { spacing: { before: 160, after: 80 }, ...(block.pageBreak ? { pageBreakBefore: true } : {}) },
             { fontSize: 23 },
           ),
         );
+      else if (block.pageBreak) output.push(new Paragraph({ pageBreakBefore: true }));
       if (block.instructions)
         output.push(...renderContentBlocksForWord(block.instructions, {}, { fontSize: 22 }));
       if (block.missingPassageId)

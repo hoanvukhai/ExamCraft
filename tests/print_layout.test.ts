@@ -4,6 +4,7 @@ import JSZip from 'jszip';
 import { exportExamToDocx } from '../src/lib/docx-export';
 import { fillPrintText, PRINT_PRESETS, resolvePrintLayout, parsePrintLayout } from '../src/lib/print-layout';
 import { normalizeExamDocument } from '../src/lib/exam-document';
+import { validateOutline } from '../src/lib/exam-outline';
 import type { Exam } from '../src/types/exam';
 
 const base = (extra: Record<string, unknown> = {}): Exam =>
@@ -103,4 +104,29 @@ test('the document check rejects a bad layout and drops an unknown exam kind', (
     metadata: { ...(raw.metadata as object), examKind: 'lạ' },
   }) as Exam;
   assert.equal(kind.metadata.examKind, undefined);
+});
+
+test('a part set to start on a new page breaks the page in Word, and only parts and groups may carry the flag', async () => {
+  const exam = base();
+  exam.outline = [
+    {
+      id: 'p1',
+      kind: 'part',
+      title: 'PHẦN MỘT',
+      children: [{ id: 'n1', kind: 'question', questionId: 'q' }],
+    },
+    { id: 'p2', kind: 'part', title: 'PHẦN HAI', startOnNewPage: true, children: [] },
+  ];
+  const { body } = await parts(exam);
+  const first = body.indexOf('PHẦN MỘT'),
+    second = body.indexOf('PHẦN HAI');
+  assert.ok(first > 0 && second > first);
+  assert.ok(
+    /<w:pageBreakBefore\/>/.test(body.slice(body.lastIndexOf('<w:p>', second), second)),
+    'the second part starts a page',
+  );
+  assert.ok(!/<w:pageBreakBefore\/>/.test(body.slice(body.lastIndexOf('<w:p>', first), first)));
+  const bad = structuredClone(exam);
+  bad.outline![0].children![0].startOnNewPage = true;
+  assert.throws(() => validateOutline(bad.outline!, bad.questions));
 });

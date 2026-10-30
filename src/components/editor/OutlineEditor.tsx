@@ -468,6 +468,14 @@ export function OutlineEditor(p: Props) {
                 <option value="restart">Bắt đầu lại từ câu 1</option>
               </select>
             </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={!!selectedOptions.startOnNewPage}
+                onChange={(event) => patch(selectedOptions.id, { startOnNewPage: event.target.checked || undefined })}
+              />
+              Bắt đầu ở trang mới
+            </label>
           </fieldset>
         </EditorDialog>
       )}

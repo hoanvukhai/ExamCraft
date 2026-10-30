@@ -105,6 +105,13 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
   const report = detail?.report;
   const detailSlot = detail?.slot ?? null;
   useEffect(() => {
+    const open = (event: Event) => {
+      if ((event as CustomEvent<{ id: string }>).detail?.id === question.id) setIsEditing(true);
+    };
+    window.addEventListener('examcraft:edit-question', open);
+    return () => window.removeEventListener('examcraft:edit-question', open);
+  }, [question.id]);
+  useEffect(() => {
     report?.(question.id, isEditing);
     return () => report?.(question.id, false);
   }, [report, question.id, isEditing]);

@@ -23,7 +23,7 @@ export function patchOutlineNode(
   exam: Exam,
   id: string,
   patch: Partial<
-    Pick<OutlineNode, 'title' | 'instructions' | 'numbering' | 'questionNumbering' | 'passageId'>
+    Pick<OutlineNode, 'title' | 'instructions' | 'numbering' | 'questionNumbering' | 'passageId' | 'startOnNewPage'>
   >,
 ): Exam {
   if (exam.access?.canEdit === false) return exam;

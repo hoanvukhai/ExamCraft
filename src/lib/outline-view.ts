@@ -8,6 +8,7 @@ export interface StructureBlock {
   instructions?: string;
   passage?: Passage;
   missingPassageId?: string;
+  pageBreak?: boolean;
 }
 export function outlineView(exam: Exam) {
   const synchronized = viewSyncedOutline(exam);
@@ -26,6 +27,7 @@ export function outlineView(exam: Exam) {
         kind: node.kind as 'part' | 'group',
         title: [label, node.title?.trim()].filter(Boolean).join('. '),
         instructions: node.instructions,
+        ...(node.startOnNewPage ? { pageBreak: true } : {}),
         passage:
           node.kind === 'group' ? exam.passages?.find((passage) => passage.id === node.passageId) : undefined,
         missingPassageId:

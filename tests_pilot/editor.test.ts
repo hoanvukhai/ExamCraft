@@ -91,7 +91,7 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
       const sheet = page.locator('.a4-preview-section');
       await sheet.getByText('Họ và tên thí sinh:').first().waitFor();
       assert.equal(await sheet.locator('[data-print-zone="footer"]').count(), 0);
-      await sheet.locator('[data-header-line="header-subjectGrade"]').click();
+      await sheet.locator('[data-header-line="header-subjectGrade"]').first().click();
       await poll(async () => (await page.evaluate(() => document.activeElement?.getAttribute('aria-label'))) === 'Môn của đề');
       const fields = await page.locator('aside[aria-label="Thông tin đề"] [aria-label="Tên đề"], aside[aria-label="Thông tin đề"] [aria-label="Đơn vị chủ quản"]').evaluateAll(els => els.map(el => el.getAttribute('aria-label')));
       assert.deepEqual(fields, ['Tên đề', 'Đơn vị chủ quản'], 'basic fields come before print-only fields');
@@ -328,6 +328,28 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
       assert.equal(await composer.getByLabel('Nội dung câu hỏi', { exact: true }).inputValue(), 'KEEP_STALE_COMPOSER');
       assert.equal(await composer.getByRole('button', { name: 'Thêm vào đề', exact: true }).isDisabled(), true);
       assert.equal((await context.request.get(origin + '/api/exams/' + guardId).then(r => r.json())).document.questions.length, 0);
+    });
+    await t.test('formatting tags: bold from the tool row shows on the sheet; a double click on the sheet opens the detail panel; long exams get page lines', async () => {
+      await page.setViewportSize({width:1440,height:1000});
+      const now2 = new Date().toISOString();
+      const questions = Array.from({ length: 24 }, (_, i) => ({ id: 'fq' + (i + 1), type: 'short_answer', difficulty: 'thong_hieu', content: 'Nội dung câu số ' + (i + 1) + ' khá dài để chiếm chỗ trên trang giấy. '.repeat(3), correct_answer: '1', accepted_answers: ['1'], step_by_step_solution: '', points: 0.25 }));
+      const made = await context.request.post(origin + '/api/exams', { headers: { Origin: origin }, data: { document: { id: randomUUID(), metadata: { title: 'Đề định dạng', schoolName: '', departmentName: '', subject: 'toan', grade: 6 }, questions, createdAt: now2, updatedAt: now2 } } });
+      assert.ok(made.ok()); const formatId = (await made.json()).exam.id;
+      await page.goto(origin + '/editor/' + formatId);
+      const sheet = page.locator('.a4-preview-section');
+      await sheet.locator('[data-page-line="1"]').first().waitFor();
+      await page.getByRole('button', { name: 'Đến trang 2', exact: true }).click();
+      await sheet.locator('[data-question-id="fq1"]').dblclick();
+      const detail = page.getByRole('region', { name: 'Chi tiết câu', exact: true }); await detail.waitFor();
+      const content = detail.getByLabel('Nội dung câu hỏi', { exact: true });
+      await content.fill('Câu KHÔNG đúng');
+      await content.evaluate((el: HTMLTextAreaElement) => { el.focus(); el.setSelectionRange(4, 9); el.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true })); });
+      await page.getByRole('toolbar', { name: 'Công cụ soạn đề', exact: true }).getByRole('button', { name: 'In đậm', exact: true }).click();
+      assert.equal(await content.inputValue(), 'Câu <b>KHÔNG</b> đúng');
+      await detail.getByRole('button', { name: 'Áp dụng câu vào đề', exact: true }).click();
+      await sheet.locator('[data-question-id="fq1"] b', { hasText: 'KHÔNG' }).waitFor();
+      assert.equal(await sheet.getByText('<b>', { exact: false }).count(), 0);
+      await db.exam.deleteMany({ where: { id: formatId } });
     });
   } finally {
     await browser.close();

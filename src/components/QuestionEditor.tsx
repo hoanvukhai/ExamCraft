@@ -18,6 +18,7 @@ import {
   type QuestionManualSubmission,
 } from '@/lib/question-draft';
 import { normalizeQuestion } from '@/lib/exam-document';
+import { toggleFormat, type FormatTag } from '@/lib/rich-text';
 
 const types: [QuestionType, string][] = [
   ['multiple_choice', 'Lựa chọn'],
@@ -158,8 +159,24 @@ export function QuestionEditor({
     else if (range.field.startsWith('sub:')) update({ sub_questions: draft.sub_questions?.map(c => c.key === range.field.slice(4) ? { ...c, content: text } : c) });
     requestAnimationFrame(() => { if (range.node.isConnected) { range.node.focus(); range.node.setSelectionRange(range.start + inserted.length, range.start + inserted.length); } });
   };
+  // Bold, italic, underline and sub/superscript wrap the selected words in tags the sheet, Word and students all read.
+  const formatText = (tag: FormatTag) => {
+    const range = textRange.current;
+    if (!range || !range.node.isConnected || range.node.value !== range.text || stale || range.start === range.end) return;
+    const next = toggleFormat(range.text, range.start, range.end, tag);
+    const text = next.value;
+    if (range.field === 'content') update({ content: text });
+    else if (range.field === 'solution') update({ step_by_step_solution: text });
+    else if (range.field.startsWith('choice:')) update({ choices: draft.choices?.map(c => c.key === range.field.slice(7) ? { ...c, text } : c) });
+    else if (range.field.startsWith('sub:')) update({ sub_questions: draft.sub_questions?.map(c => c.key === range.field.slice(4) ? { ...c, content: text } : c) });
+    requestAnimationFrame(() => { if (range.node.isConnected) { range.node.focus(); range.node.setSelectionRange(next.start, next.end); } });
+  };
+  const hasSelection = () => !!textRange.current && textRange.current.start !== textRange.current.end;
   const draftActor = useEditorActor(question.id + ':draft', 'Bản đang sửa của câu', () => [
     { label: 'Chèn công thức', disabled: stale || !textRange.current, run: () => insertMath('formula') },
+    { label: 'In đậm', disabled: stale || !hasSelection(), run: () => formatText('b') },
+    { label: 'In nghiêng', disabled: stale || !hasSelection(), run: () => formatText('i') },
+    { label: 'Gạch chân', disabled: stale || !hasSelection(), run: () => formatText('u') },
     { label: 'Chỉ số trên', disabled: stale || !textRange.current, run: () => insertMath('sup') },
     { label: 'Chỉ số dưới', disabled: stale || !textRange.current, run: () => insertMath('sub') },
     { label: 'Áp dụng câu', disabled: stale, run: submit },

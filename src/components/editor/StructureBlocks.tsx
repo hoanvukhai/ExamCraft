@@ -9,9 +9,16 @@ export function StructureBlocks({ blocks, light = false }: { blocks?: StructureB
   return (
     <>
       {blocks
-        ?.filter((block) => block.title || block.instructions || block.passage || block.missingPassageId)
+        ?.filter(
+          (block) => block.title || block.instructions || block.passage || block.missingPassageId || block.pageBreak,
+        )
         .map((block) => (
-          <section key={block.id} data-outline-block={block.id} className="my-3 space-y-2 break-inside-avoid">
+          <section
+            key={block.id}
+            data-outline-block={block.id}
+            data-page-break={block.pageBreak ? 'true' : undefined}
+            className={`my-3 space-y-2 break-inside-avoid ${block.pageBreak ? 'break-before-page' : ''}`}
+          >
             {block.title && (
               <h3 className="font-bold">
                 <MathRenderer content={block.title} inline />

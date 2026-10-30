@@ -67,6 +67,13 @@ interface A4PreviewProps {
   onPrintBlock?: () => void;
   /** Called with the header line's id when one is clicked while editing, to jump to its field. */
   onHeaderLine?: (id: string) => void;
+  /** A question on the sheet was clicked (select it) or double-clicked (edit it). */
+  onQuestion?: (id: string, edit: boolean) => void;
+  /** Questions with review findings (left margin mark) and with open comments (right margin bubble). */
+  issueCounts?: Record<string, number>;
+  commentCounts?: Record<string, number>;
+  onIssues?: (id: string) => void;
+  onComments?: (id: string) => void;
 }
 
 const A4_HEIGHT_PX = 1123;
@@ -98,7 +105,17 @@ function PrintBlocks({
   );
 }
 
-export const A4Preview: React.FC<A4PreviewProps> = ({ exam, barExtra, onPrintBlock, onHeaderLine }) => {
+export const A4Preview: React.FC<A4PreviewProps> = ({
+  exam,
+  barExtra,
+  onPrintBlock,
+  onHeaderLine,
+  onQuestion,
+  issueCounts,
+  commentCounts,
+  onIssues,
+  onComments,
+}) => {
   const [viewMode, setViewMode] = useState<'exam' | 'parallel' | 'answers' | 'solutions' | 'matrix'>('exam');
   // null follows the available width; explicit percentages are actual paper zoom.
   const [zoom, setZoom] = useState<number | null>(null);
@@ -121,12 +138,21 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam, barExtra, onPrintBlo
   useEffect(() => {
     const node = paper.current;
     if (!node) return;
-    const measure = () => setPageCount(Math.max(1, Math.ceil((node.offsetHeight - 2) / A4_HEIGHT_PX)));
+    const measure = () => {
+      // A part or group set to start on a new page is pushed down to the next page line.
+      const breaks = [...node.querySelectorAll<HTMLElement>('[data-page-break="true"]')];
+      breaks.forEach((block) => (block.style.marginTop = ''));
+      for (const block of breaks) {
+        const into = block.offsetTop % A4_HEIGHT_PX;
+        if (block.offsetTop > 0 && into > 2) block.style.marginTop = `calc(0.75rem + ${A4_HEIGHT_PX - into}px)`;
+      }
+      setPageCount(Math.max(1, Math.ceil((node.offsetHeight - 2) / A4_HEIGHT_PX)));
+    };
     measure();
     const observer = new ResizeObserver(measure);
     observer.observe(node);
     return () => observer.disconnect();
-  }, []);
+  }, [exam, viewMode]);
 
   const print = resolvePrintLayout(exam);
   const { metadata } = exam;
@@ -188,6 +214,33 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam, barExtra, onPrintBlo
               />
               Song song
             </label>
+          )}
+          {viewMode === 'exam' && (
+            <nav aria-label="Các trang (ước lượng)" className="flex items-center gap-1">
+              <span className="text-[var(--ui-text-secondary)]">{pageCount} trang</span>
+              {pageCount > 1 &&
+                Array.from({ length: Math.min(pageCount, 12) }, (_, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    aria-label={`Đến trang ${index + 1}`}
+                    className="app-button-secondary min-w-9 min-h-9 text-xs"
+                    onClick={() => {
+                      const area = scrollArea.current;
+                      const sheet = paper.current;
+                      if (!area || !sheet) return;
+                      const top =
+                        sheet.getBoundingClientRect().top -
+                        area.getBoundingClientRect().top +
+                        area.scrollTop +
+                        index * A4_HEIGHT_PX * (effectiveZoom / 100);
+                      area.scrollTo({ top: Math.max(0, top - 8), behavior: 'smooth' });
+                    }}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+            </nav>
           )}
           {barExtra}
           <div className="flex items-center gap-1">
@@ -301,8 +354,22 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam, barExtra, onPrintBlo
         <div
           ref={paper}
           style={{ zoom: effectiveZoom / 100 }}
-          className={`a4-paper mx-auto w-[210mm] min-h-[297mm] bg-white text-black p-[18mm] shadow-xs border border-[#dadce0] font-serif leading-normal ${print?.hasFooter && viewMode === 'exam' ? 'flex flex-col' : ''}`}
+          className={`a4-paper relative mx-auto w-[210mm] min-h-[297mm] bg-white text-black p-[18mm] shadow-xs border border-[#dadce0] font-serif leading-normal ${print?.hasFooter && viewMode === 'exam' ? 'flex flex-col' : ''}`}
         >
+          {viewMode === 'exam' && pageCount > 1 && (
+            <div aria-hidden="true" className="no-print pointer-events-none absolute inset-0 overflow-hidden">
+              {Array.from({ length: pageCount - 1 }, (_, index) => (
+                <div
+                  key={index}
+                  data-page-line={index + 1}
+                  className="absolute left-0 right-0 border-t border-dashed border-black/40"
+                  style={{ top: (index + 1) * A4_HEIGHT_PX }}
+                >
+                  <span className="absolute right-3 -top-5 text-[9pt] text-black/50">Hết trang {index + 1}</span>
+                </div>
+              ))}
+            </div>
+          )}
           {/* VIEW: ĐỀ THI */}
           {viewMode === 'exam' && (
             <div className="space-y-4 text-[13pt]">
@@ -379,8 +446,44 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam, barExtra, onPrintBlo
                 <>
                   <div className="space-y-4">
                     {questions.map((q, index) => (
-                      <div key={q.id} className="question-item text-[12pt]">
+                      <div
+                        key={q.id}
+                        data-question-id={q.id}
+                        onClick={onQuestion ? () => onQuestion(q.id, false) : undefined}
+                        onDoubleClick={onQuestion ? () => onQuestion(q.id, true) : undefined}
+                        className={`question-item relative text-[12pt] ${onQuestion ? 'cursor-pointer rounded hover:outline hover:outline-1 hover:outline-offset-4 hover:outline-black/30' : ''}`}
+                      >
                         <StructureBlocks blocks={structure.before.get(q.id)} light />
+                        {issueCounts?.[q.id] ? (
+                          <button
+                            type="button"
+                            data-issue-mark={q.id}
+                            aria-label={`Câu ${structure.numbers.get(q.id) ?? index + 1} có ${issueCounts[q.id]} mục cần rà soát`}
+                            title="Có mục cần rà soát"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              onIssues?.(q.id);
+                            }}
+                            className="no-print absolute -left-[13mm] top-0 flex h-5 min-w-5 items-center justify-center rounded-full border border-black/50 bg-white px-1 text-[9pt] font-bold text-black"
+                          >
+                            !
+                          </button>
+                        ) : null}
+                        {commentCounts?.[q.id] ? (
+                          <button
+                            type="button"
+                            data-comment-bubble={q.id}
+                            aria-label={`Câu ${structure.numbers.get(q.id) ?? index + 1} có ${commentCounts[q.id]} góp ý chưa giải quyết`}
+                            title="Có góp ý chưa giải quyết"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              onComments?.(q.id);
+                            }}
+                            className="no-print absolute -right-[13mm] top-0 flex h-5 min-w-5 items-center justify-center rounded-full border border-black/50 bg-white px-1 text-[9pt] text-black"
+                          >
+                            {commentCounts[q.id]}
+                          </button>
+                        ) : null}
                         <p className="leading-relaxed">
                           <b>Câu {structure.numbers.get(q.id) ?? index + 1}:</b>{' '}
                           {numericScore && q.points !== undefined && (

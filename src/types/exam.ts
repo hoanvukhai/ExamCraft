@@ -102,6 +102,8 @@ export interface OutlineNode {
   instructions?: string;
   numbering?: 'none' | 'roman' | 'letters' | 'decimal';
   questionNumbering?: 'continuous' | 'restart';
+  /** Print this part or group at the top of a new page. */
+  startOnNewPage?: boolean;
   sectionId?: string | null;
   passageId?: string;
   questionId?: string;

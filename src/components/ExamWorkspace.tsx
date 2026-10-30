@@ -142,6 +142,17 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   const [reviewOpen, setReviewOpen] = useState(false);
   const [pendingReviewAction, setPendingReviewAction] = useState<(() => void) | null>(null);
   const reviewed = reviewExam(exam);
+  // Marks in the sheet's margins: review findings by question, and unresolved comments by question.
+  const issueCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const issue of reviewed.issues) {
+      const match = /^Câu (d+)/.exec(issue.location);
+      const question = match && exam.questions[Number(match[1]) - 1];
+      if (question) counts[question.id] = (counts[question.id] ?? 0) + 1;
+    }
+    return counts;
+  }, [reviewed, exam.questions]);
+  const [commentState, setCommentState] = useState<{ key: string; counts: Record<string, number> }>({ key: '', counts: {} });
   const reviewBefore = (action: () => void) => {
     if (reviewed.issues.length) openReview(action);
     else action();
@@ -236,6 +247,38 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       field?.focus();
     }, 50);
   };
+  // A question clicked on the sheet is selected in the tree; a double click opens its detail panel.
+  const pickQuestion = (id: string, edit: boolean) => {
+    showTab('content');
+    setTimeout(() => {
+      const node = document.getElementById('editor-question-' + id);
+      node?.scrollIntoView({ block: 'center' });
+      node?.focus();
+      if (edit) window.dispatchEvent(new CustomEvent('examcraft:edit-question', { detail: { id } }));
+    }, 0);
+  };
+  const commentKey = `${exam.serverId ?? ''}:${currentUser.id}:${collaborationOpen}`;
+  useEffect(() => {
+    const serverId = exam.serverId;
+    if (!serverId) return;
+    let active = true;
+    fetch(`/api/exams/${encodeURIComponent(serverId)}/comments`, {
+      cache: 'no-store',
+      headers: { 'x-examcraft-user': currentUser.id },
+    })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((result: { comments?: { questionId: string | null; resolvedAt: string | null }[] } | null) => {
+        if (!active || !result?.comments) return;
+        const counts: Record<string, number> = {};
+        for (const comment of result.comments)
+          if (comment.questionId && !comment.resolvedAt) counts[comment.questionId] = (counts[comment.questionId] ?? 0) + 1;
+        setCommentState({ key: commentKey, counts });
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [exam.serverId, currentUser.id, commentKey]);
   const closeTab = (tab: LeftTab) => {
     setMounted((previous) => ({ ...previous, [tab]: false }));
     setLeftTab((current) => (current === tab ? 'content' : current));
@@ -1086,6 +1129,11 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
             exam={previewExam}
             onPrintBlock={canEdit ? () => showTab('template') : undefined}
             onHeaderLine={canEdit ? focusHeaderField : undefined}
+            onQuestion={canEdit ? pickQuestion : undefined}
+            issueCounts={issueCounts}
+            commentCounts={commentState.key === commentKey ? commentState.counts : undefined}
+            onIssues={() => openReview(null)}
+            onComments={openCollaboration}
             barExtra={
               <button
                 type="button"

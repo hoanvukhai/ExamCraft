@@ -5,6 +5,7 @@ import katex from 'katex';
 import 'katex/dist/contrib/mhchem.js';
 import { VariationTable } from './VariationTable';
 import { splitContentBlocks } from '@/lib/markdown-table';
+import { splitFormat } from '@/lib/rich-text';
 
 interface MathRendererProps {
   content: string;
@@ -96,7 +97,15 @@ const MathText: React.FC<MathRendererProps> = ({ content, className = '', inline
       // Text thông thường (giữ nguyên ngắt dòng \n)
       return (
         <span key={index} className="whitespace-pre-wrap">
-          {part}
+          {splitFormat(part).map((run, at) => {
+            let node: React.ReactNode = run.text;
+            if (run.flags.b) node = <b>{node}</b>;
+            if (run.flags.i) node = <i>{node}</i>;
+            if (run.flags.u) node = <u>{node}</u>;
+            if (run.flags.sup) node = <sup>{node}</sup>;
+            if (run.flags.sub) node = <sub>{node}</sub>;
+            return <React.Fragment key={at}>{node}</React.Fragment>;
+          })}
         </span>
       );
     });
