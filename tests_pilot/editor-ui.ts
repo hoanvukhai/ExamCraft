@@ -40,20 +40,30 @@ export async function toggleTheme(page: Page) {
   await page.getByRole('button', { name: /Chuyển sang giao diện/ }).click();
   await page.keyboard.press('Escape');
 }
-/** The "AI" menu of the tool row: pick "Hỏi AI (không sửa đề)" or "Sửa đề bằng Trợ lý AI". */
-export async function aiMenu(page: Page, item: string) {
+/** The AI button of the tool row opens the one AI panel (and closes it when it is already open). */
+export async function openCopilot(page: Page) {
+  const panel = page.getByRole('region', { name: 'Bảng AI', exact: true });
+  if (await panel.isVisible()) return;
   await page
     .getByRole('toolbar', { name: 'Công cụ soạn đề' })
     .getByRole('button', { name: 'AI', exact: true })
     .click();
-  await page.getByRole('menuitem', { name: item, exact: true }).click();
 }
-export const openAssistant = (page: Page) => aiMenu(page, 'Hỏi AI (không sửa đề)');
-export const openCopilot = (page: Page) => aiMenu(page, 'Sửa đề bằng Trợ lý AI');
+/** Old name of the chat: the assistant and the copilot are the same panel now. */
+export const openAssistant = openCopilot;
+/** Old command names in the tests, and what they are called in the tool row now. */
+const commandNames: Record<string, string> = {
+  'Nhân bản câu': 'Nhân bản',
+  'Xóa câu này': 'Xóa câu',
+  'Hỏi AI về cả câu': 'Hỏi AI về câu này',
+};
 async function runCommand(page: Page, label: string) {
-  const group = page.getByRole('group', { name: /^Thao tác Câu/ });
+  // The details of a selected question open beside the sheet by themselves.
+  if (label === 'Chỉnh nội dung' || label === 'Xem lời giải') return;
+  const name = commandNames[label] ?? label;
+  const group = page.getByRole('group', { name: 'Thao tác với mục đang chọn' });
   await group.waitFor();
-  const direct = group.getByRole('button', { name: label, exact: true });
+  const direct = group.getByRole('button', { name, exact: true });
   if (await direct.count()) {
     await direct.click();
     return;
@@ -62,51 +72,49 @@ async function runCommand(page: Page, label: string) {
     .getByRole('toolbar', { name: 'Công cụ soạn đề' })
     .getByRole('button', { name: 'Khác', exact: true })
     .click();
-  await page.getByRole('menuitem', { name: label, exact: true }).click();
+  await page.getByRole('menuitem', { name, exact: true }).click();
 }
-/** Select a question on the page, then run one of its commands from the tool row (directly or from "Khác"). */
+/** Select a question on the sheet, then run one of its commands from the tool row (directly or from "Khác"). */
 export async function questionCommand(page: Page, questionId: string, label: string) {
   await selectQuestion(page, questionId);
   await runCommand(page, label);
 }
 /** Same, for the question at a position (0 = first on the sheet). */
 export async function questionCommandAt(page: Page, index: number, label: string) {
-  await page
-    .locator('[id^="editor-question-"]')
-    .nth(index)
-    .getByText(/^Câu [0-9]+$/)
-    .first()
-    .click();
+  await selectQuestionAt(page, index);
   await runCommand(page, label);
 }
-/** Open the "Khác" menu of the tool row for the question at a position and return a menu item. */
+/** Select the question at a position and open the "Khác" menu of the tool row; returns a menu item. */
 export async function questionMenuItemAt(page: Page, index: number, label: string) {
-  await page
-    .locator('[id^="editor-question-"]')
-    .nth(index)
-    .getByText(/^Câu [0-9]+$/)
-    .first()
-    .click();
-  await page.getByRole('group', { name: /^Thao tác Câu/ }).waitFor();
+  await selectQuestionAt(page, index);
+  await page.getByRole('group', { name: 'Thao tác với mục đang chọn' }).waitFor();
   await page
     .getByRole('toolbar', { name: 'Công cụ soạn đề' })
     .getByRole('button', { name: 'Khác', exact: true })
     .click();
-  return page.getByRole('menuitem', { name: label, exact: true });
+  return page.getByRole('menuitem', { name: commandNames[label] ?? label, exact: true });
 }
-/** Open the exam information panel: the rail on a wide screen, the chip row on a phone. */
+/** Show the exam details (title, subject, print layout) in the panel beside the sheet. */
 export async function openInfoPanel(page: Page) {
   await page
-    .getByRole('button', { name: 'Thông tin', exact: true })
-    .filter({ visible: true })
+    .getByRole('navigation', { name: 'Đang chọn', exact: true })
+    .getByRole('button', { name: 'Toàn đề', exact: true })
+    .click();
+  const rail = page.getByRole('button', { name: 'Chi tiết', exact: true }).filter({ visible: true }).first();
+  if ((await rail.getAttribute('aria-pressed')) === 'false') await rail.click();
+}
+const sheetQuestion = (page: Page) => page.locator('.a4-preview-section [data-question-id]');
+/** Select a question by clicking its number on the sheet. */
+export async function selectQuestion(page: Page, questionId: string) {
+  await page
+    .locator('.a4-preview-section [data-question-id="' + questionId + '"] b')
     .first()
     .click();
 }
-/** Select a question by clicking its number badge (clicking its text would open the editor). */
-export async function selectQuestion(page: Page, questionId: string) {
-  await page
-    .locator('#editor-question-' + questionId)
-    .getByText(/^Câu [0-9]+$/)
-    .first()
-    .click();
+export async function selectQuestionAt(page: Page, index: number) {
+  await sheetQuestion(page).nth(index).locator('b').first().click();
+}
+/** Select any object on the sheet by its code, for example "choice:q1:B" or "part:p1". */
+export async function selectObject(page: Page, code: string) {
+  await page.locator('.a4-preview-section [data-object="' + code + '"]').first().click();
 }
