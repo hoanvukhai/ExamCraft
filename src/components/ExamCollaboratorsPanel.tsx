@@ -8,10 +8,12 @@ type Revision = { version: number; note: string | null; createdAt: string; actor
 type Comment = { id: string; body: string; questionId: string | null; version: number | null; resolvedAt: string | null; resolvedByName: string | null; mine: boolean; createdAt: string; author: { name: string } | null };
 const roles = { VIEWER: 'Chỉ xem', COMMENTER: 'Xem và góp ý', EDITOR: 'Cùng sửa nội dung' };
 const inputClass = 'rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm';
-export function ExamCollaboratorsPanel({ examId, expectedUserId, questions = [], onRestored, beforeRestore }: { examId: string; expectedUserId: string; questions?: { id: string; label: string }[]; onRestored?: (document: Exam) => void; beforeRestore?: () => boolean | Promise<boolean> }) {
+export function ExamCollaboratorsPanel({ examId, expectedUserId, questions = [], onRestored, beforeRestore, focusQuestionId }: { examId: string; expectedUserId: string; questions?: { id: string; label: string }[]; onRestored?: (document: Exam) => void; beforeRestore?: () => boolean | Promise<boolean>; focusQuestionId?: string }) {
   const [permissions, setPermissions] = useState<ExamPermissions | null>(null);
   const [members, setMembers] = useState<Member[]>([]), [revisions, setRevisions] = useState<Revision[]>([]), [comments, setComments] = useState<Comment[]>([]);
-  const [email, setEmail] = useState(''), [role, setRole] = useState<Member['role']>('VIEWER'), [body, setBody] = useState(''), [commentQuestion, setCommentQuestion] = useState('');
+  const [email, setEmail] = useState(''), [role, setRole] = useState<Member['role']>('VIEWER'), [body, setBody] = useState(''), [commentQuestion, setCommentQuestion] = useState(focusQuestionId ?? '');
+  const [seenFocus, setSeenFocus] = useState(focusQuestionId);
+  if (focusQuestionId !== seenFocus) { setSeenFocus(focusQuestionId); setCommentQuestion(focusQuestionId ?? ''); }
   const [error, setError] = useState(''), [busy, setBusy] = useState(false), [version, setVersion] = useState(0), [restoreVersion, setRestoreVersion] = useState<number | null>(null);
   const [preview, setPreview] = useState<Exam | null>(null);
   const request = async (path: string, method = 'GET', data?: unknown) => {

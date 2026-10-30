@@ -16,6 +16,8 @@ interface HeaderProps {
   examTitle: string;
   onUpdateTitle: (newTitle: string) => void;
   onShare?: () => void;
+  /** Next to "Giao bài": results of assignments already given, shared links. */
+  shareMenu?: ReactNode;
 }
 
 /** The top bar of the editor: always one row. Title and save state on the left, the exam's actions on the right. */
@@ -28,6 +30,7 @@ export const Header: React.FC<HeaderProps> = ({
   examTitle,
   onUpdateTitle,
   onShare,
+  shareMenu,
 }) => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [titleDraft, setTitleDraft] = useState({
@@ -94,6 +97,7 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="max-sm:hidden">Giao bài</span>
           </button>
         )}
+        {canEdit && onShare && shareMenu}
         {trailing}
       </div>
     </header>

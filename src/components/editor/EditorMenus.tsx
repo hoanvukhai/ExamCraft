@@ -33,6 +33,9 @@ export type ExportProps = {
   canEdit: boolean;
   ready: boolean;
   hasQuestions: boolean;
+  /** Findings of the structural review: shown at the top of the menu, never blocking an export. */
+  reviewCount?: number;
+  onReview?: () => void;
   onExportWord: (view: ExportView) => void;
   onPrint: () => void;
   onPresent: () => void;
@@ -40,7 +43,14 @@ export type ExportProps = {
 };
 
 function exportItems(p: ExportProps): MenuItem[] {
-  const items: MenuItem[] = (
+  const items: MenuItem[] = [];
+  if (p.reviewCount && p.onReview)
+    items.push({
+      label: `Đề còn ${p.reviewCount} mục cần xem`,
+      title: 'Mở danh sách rà soát. Xuất file không bị chặn.',
+      onClick: p.onReview,
+    });
+  items.push(...(
     [
       ['exam', 'Word – đề'],
       ['answers', 'Word – đáp án/barem'],
@@ -48,7 +58,7 @@ function exportItems(p: ExportProps): MenuItem[] {
       ['matrix', 'Word – ma trận'],
       ['parallel', 'Word – đề song song'],
     ] as const
-  ).map(([view, label]) => ({ label, onClick: () => p.onExportWord(view) }));
+  ).map(([view, label]) => ({ label, onClick: () => p.onExportWord(view) })));
   items.push(
     { label: 'In / PDF', onClick: p.onPrint },
     {
@@ -71,16 +81,20 @@ export function MoreMenu(p: {
   hasAssignments: boolean;
   submissionCount: number;
   onReview: () => void;
-  onTemplate: () => void;
   onCollaborate: () => void;
   onResults: () => void;
-  /** On a phone the export menu and the invite button have no room in the top bar, so they live here. */
+  /** On a phone the export menu, the invite button, undo and redo have no room in the top bar, so they live here. */
   phone?: ExportProps;
+  canUndo?: boolean;
+  canRedo?: boolean;
+  onUndo?: () => void;
+  onRedo?: () => void;
 }) {
   const items: MenuItem[] = [
     ...(p.phone ? exportItems(p.phone) : []),
     { label: 'Rà soát đề', onClick: p.onReview },
-    ...(p.canEdit ? [{ label: 'Dùng mẫu / lưu thành mẫu', onClick: p.onTemplate }] : []),
+    ...(p.canEdit && p.onUndo ? [{ label: 'Hoàn tác', disabled: !p.canUndo, onClick: p.onUndo }] : []),
+    ...(p.canEdit && p.onRedo ? [{ label: 'Làm lại', disabled: !p.canRedo, onClick: p.onRedo }] : []),
     ...(p.hasAssignments ? [{ label: `Kết quả (${p.submissionCount})`, onClick: p.onResults }] : []),
     ...(p.phone && p.hasServerExam ? [{ label: 'Cùng soạn', onClick: p.onCollaborate }] : []),
   ];

@@ -283,3 +283,46 @@ export function insertDotsAfterQuestions(exam: Exam): Map<string, string[]> {
   visit(outline, null, null);
   return dots;
 }
+
+/** False when the selected object is gone (deleted, moved out of the exam, undone). The editor then falls back to the whole exam. */
+export function objectExists(exam: Exam, code: string): boolean {
+  const object = parseCode(code);
+  switch (object.kind) {
+    case 'exam':
+    case 'print':
+      return true;
+    case 'part':
+    case 'group':
+      return !!locateNode(displayOutline(exam), object.id);
+    case 'question':
+      return exam.questions.some((question) => question.id === object.id);
+    case 'insert':
+      return (
+        (object.parent === null || !!locateNode(displayOutline(exam), object.parent)) &&
+        (object.after === null || !!locateNode(displayOutline(exam), object.after))
+      );
+    default: {
+      const question = exam.questions.find((item) => item.id === object.question);
+      if (!question) return false;
+      if (object.kind === 'figure') return !!question.figures?.some((figure) => figure.id === object.id);
+      return rowKeys(question, object.kind).includes(object.key);
+    }
+  }
+}
+
+/** The first thing inside an object, for the → key. */
+export function firstChildCode(exam: Exam, code: string): string | undefined {
+  const object = parseCode(code);
+  if (object.kind === 'part' || object.kind === 'group') {
+    const node = locateNode(displayOutline(exam), object.id)?.node.children?.[0];
+    return node ? (node.kind === 'question' ? `question:${node.questionId}` : `${node.kind}:${node.id}`) : undefined;
+  }
+  if (object.kind === 'question') {
+    const question = exam.questions.find((item) => item.id === object.id);
+    if (!question) return undefined;
+    for (const kind of ['choice', 'statement', 'item', 'pair', 'order'] as const) {
+      const key = rowKeys(question, kind)[0];
+      if (key !== undefined) return codeOf({ kind, question: question.id, key });
+    }
+  }
+}

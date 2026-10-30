@@ -372,7 +372,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
         }
       >
         {onSelectCode && selectedCode && selectedCode !== 'exam' && viewMode === 'exam' && (
-          <style>{`.a4-paper [data-object="${selectedCode.replace(/["\\]/g, '\\$&')}"]{outline:2px solid var(--ui-primary);outline-offset:3px;border-radius:2px}`}</style>
+          <style>{`.a4-paper [data-object="${selectedCode.replace(/["\\]/g, '\\$&')}"]{outline:2px solid Highlight;outline:2px solid AccentColor;outline-offset:3px;border-radius:2px}`}</style>
         )}
         <div
           ref={paper}
@@ -466,12 +466,12 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
                   <div className="space-y-4">
                     {questions.map((q, index) => (
                       <React.Fragment key={q.id}>
+                      <StructureBlocks blocks={structure.before.get(q.id)} light />
                       <div
                         data-question-id={q.id}
                         data-object={`question:${q.id}`}
                         className="question-item relative text-[12pt]"
                       >
-                        <StructureBlocks blocks={structure.before.get(q.id)} light />
                         {issueCounts?.[q.id] ? (
                           <button
                             type="button"
@@ -550,7 +550,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
                             key={code}
                             data-object={code}
                             data-insert-point={code}
-                            className="no-print group/dot -my-1 flex h-5 items-center gap-2"
+                            className="no-print group/dot -my-2 flex h-5 items-center gap-2"
                           >
                             <span className="h-px grow border-t border-dashed border-black/20" />
                             <ToolMenu

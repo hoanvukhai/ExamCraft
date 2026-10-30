@@ -172,6 +172,24 @@ export function ContextSelectionToolbar({
   );
 }
 
+/** The commands of the text field the cursor is in (bold, italic, formula…), live, for the tool row. */
+export function useFieldCommands() {
+  const context = useContext(Selection);
+  useSyncExternalStore(context?.subscribe ?? noSubscribe, context?.snapshot ?? zeroSnapshot, zeroSnapshot);
+  const target = context?.target;
+  const actor = target ? context.actors.get(target.id) : undefined;
+  const commands = target ? (actor?.current(target.field) ?? []) : [];
+  return {
+    label: actor?.label ?? target?.label ?? '',
+    commands,
+    run: (index: number, label: string) => {
+      if (!target) return;
+      const live = context.actors.get(target.id)?.current(target.field)[index];
+      if (live && !live.disabled && live.label === label) live.run();
+    },
+  };
+}
+
 export function useEditorTarget() {
   return useContext(Selection)?.target ?? null;
 }

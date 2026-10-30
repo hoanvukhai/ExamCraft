@@ -424,3 +424,10 @@ body {
     overflow: visible !important;
   }
 }
+
+/* The sheet is a design surface: the object under the pointer shows a thin dashed frame (the innermost one only). */
+.a4-scroll-area[data-selectable='true'] .a4-paper [data-object]:hover:not(:has([data-object]:hover)) {
+  outline: 1px dashed color-mix(in srgb, currentColor 45%, transparent);
+  outline-offset: 3px;
+  cursor: pointer;
+}

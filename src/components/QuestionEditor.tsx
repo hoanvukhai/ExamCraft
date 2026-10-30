@@ -93,14 +93,36 @@ export function QuestionEditor({
   const draft = editor.record.draft;
   if (
     autoApply &&
-    sourceStamp !== editor.record.baseSourceStamp &&
-    !sameQuestionSourceStamp(sourceStamp, editor.record.baseSourceStamp) &&
+    attempt === null &&
     questionValueStamp(draft) === questionValueStamp(editor.record.baseQuestion) &&
-    questionValueStamp(question) === questionValueStamp(editor.record.baseQuestion)
+    (questionValueStamp(question) !== questionValueStamp(editor.record.baseQuestion) ||
+      !sameQuestionSourceStamp(sourceStamp, editor.record.baseSourceStamp))
   ) {
-    setEditor({ ...editor, record: { ...editor.record, baseSourceStamp: sourceStamp } });
+    // Nothing typed yet: follow the exam (a toolbar command, a move, another teacher) instead of calling it stale.
+    setEditor({
+      ...editor,
+      record: {
+        ...editor.record,
+        baseQuestion: structuredClone(question),
+        draft: structuredClone(question),
+        baseSourceStamp: sourceStamp,
+      },
+    });
   }
   const acknowledged = attempt !== null && questionValueStamp(question) === questionValueStamp(attempt.value);
+  if (autoApply && acknowledged) {
+    // The exam took what was typed: that is the new starting point, and the form keeps going from there.
+    setEditor({
+      ...editor,
+      record: {
+        ...editor.record,
+        baseQuestion: structuredClone(question),
+        draft: structuredClone(question),
+        baseSourceStamp: sourceStamp,
+      },
+    });
+    setAttempt(null);
+  }
   const appliedToken = useRef<string | null>(null);
   const stale =
     !acknowledged &&
@@ -193,7 +215,9 @@ export function QuestionEditor({
   };
   const hasSelection = () => !!textRange.current && textRange.current.start !== textRange.current.end;
   const submitRef = useRef(submit);
-  submitRef.current = submit;
+  useEffect(() => {
+    submitRef.current = submit;
+  });
   const pending = autoApply && !readOnly && !stale && attempt === null && questionValueStamp(draft) !== questionValueStamp(editor.record.baseQuestion);
   const draftStamp = questionValueStamp(draft);
   useEffect(() => {

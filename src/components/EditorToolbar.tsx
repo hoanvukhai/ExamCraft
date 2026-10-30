@@ -1,8 +1,8 @@
 'use client';
 import { useEffect, useRef, useState, type ComponentType } from 'react';
 import { createPortal } from 'react-dom';
-import { ChevronDown, Sparkles, Plus } from 'lucide-react';
-import { ContextSelectionToolbar } from './editor/EditorSelection';
+import { ChevronDown, MoreHorizontal, Plus, Sparkles, Type } from 'lucide-react';
+import { useFieldCommands } from './editor/EditorSelection';
 export type ExportView = 'exam' | 'answers' | 'solutions' | 'matrix' | 'parallel';
 type Icon = ComponentType<{ className?: string }>;
 export interface MenuItem {
@@ -142,21 +142,34 @@ export function ToolMenu({
     </>
   );
 }
+export interface ToolCommand {
+  label: string;
+  title?: string;
+  onClick: () => void;
+  disabled?: boolean;
+}
 interface Props {
   canEdit: boolean;
-  copilotOpen: boolean;
-  onCopilot: () => void;
-  onAssistant: () => void;
-  onAdd: () => void;
-  onBank: () => void;
-  onImport: () => void;
-  onGenerate: () => void;
-  onAddPart: () => void;
-  onSettings: () => void;
+  /** The "Thêm" menu for the current selection: new content goes exactly where the selection says. */
+  addItems: MenuItem[];
+  aiOpen: boolean;
+  onAi: () => void;
+  /** Toàn đề › Phần I › Câu 3: every step selects that level. */
+  steps: { code: string; label: string }[];
+  onStep: (code: string) => void;
+  /** Tools of the selected object, in the order of the spec table; what does not fit goes under "Khác". */
+  commands: ToolCommand[];
+  inlineCount?: number;
+  /** Phones only: open the panel with the details of the selection. */
+  onPanel?: () => void;
 }
 
-/** The one tool row: two fixed anchors (add content, AI) and then the tools of whatever is selected. It never gets a second row. */
+/** The one tool row: two fixed anchors (add content, AI), the path of the selection, and the tools of what is selected. It never gets a second row. */
 export function EditorToolbar(p: Props) {
+  const field = useFieldCommands();
+  const inline = p.commands.slice(0, p.inlineCount ?? 5);
+  const more = p.commands.slice(inline.length);
+  const last = p.steps.length - 1;
   return (
     <div className="@container no-print shrink-0 border-b border-[var(--ui-border)]/60 bg-[var(--ui-surface)] order-last lg:order-none">
       <div
@@ -166,33 +179,104 @@ export function EditorToolbar(p: Props) {
       >
         {p.canEdit && (
           <>
-            <ToolMenu
-              label="Thêm"
-              Icon={Plus}
-              items={[
-                { label: 'Tự soạn câu mới', onClick: p.onAdd },
-                { label: 'Từ ngân hàng', onClick: p.onBank },
-                { label: 'Nhập Word/Ảnh', onClick: p.onImport },
-                { label: 'Sinh bằng AI', onClick: p.onGenerate },
-                { label: 'Phần mới', onClick: p.onAddPart },
-              ]}
-            />
-            <ToolMenu
-              label="AI"
-              Icon={Sparkles}
-              items={[
-                {
-                  label: 'Sửa đề bằng Trợ lý AI',
-                  title: p.copilotOpen ? 'Đóng bảng Trợ lý AI' : 'Mở bảng Trợ lý AI',
-                  onClick: p.onCopilot,
-                },
-                { label: 'Hỏi AI (không sửa đề)', onClick: p.onAssistant },
-              ]}
-            />
+            <ToolMenu label="Thêm" Icon={Plus} items={p.addItems} />
+            <button
+              type="button"
+              aria-label="AI"
+              aria-pressed={p.aiOpen}
+              onClick={p.onAi}
+              className={button + (p.aiOpen ? ' !bg-[var(--ui-surface-variant)]' : '')}
+            >
+              <Sparkles className="w-4 h-4 shrink-0" />
+              <span>AI</span>
+            </button>
             <span aria-hidden className="w-px h-6 bg-[var(--ui-border)] shrink-0" />
           </>
         )}
-        <ContextSelectionToolbar canEdit={p.canEdit} onSettings={p.onSettings} />
+        {p.onPanel && (
+          <button type="button" aria-label="Bảng chi tiết" onClick={p.onPanel} className={button + ' lg:hidden'}>
+            Bảng
+          </button>
+        )}
+        <nav aria-label="Đang chọn" className="flex min-w-0 shrink-0 items-center gap-0.5 text-xs">
+          {p.steps.map((step, index) => (
+            <span key={step.code} className="flex shrink-0 items-center gap-0.5">
+              {index > 0 && <span aria-hidden>›</span>}
+              <button
+                type="button"
+                aria-current={index === last ? 'true' : undefined}
+                onClick={() => p.onStep(step.code)}
+                className={
+                  'max-w-40 truncate rounded-lg px-1.5 min-h-9 !whitespace-nowrap cursor-pointer ' +
+                  (index === last ? 'font-semibold' : 'text-[var(--ui-text-secondary)] hover:bg-[var(--ui-surface-variant)]')
+                }
+              >
+                {step.label}
+              </button>
+            </span>
+          ))}
+        </nav>
+        {p.canEdit && (inline.length > 0 || more.length > 0) && (
+          <>
+            <span aria-hidden className="w-px h-6 bg-[var(--ui-border)] shrink-0" />
+            <div className="flex items-center gap-1.5" role="group" aria-label="Thao tác với mục đang chọn">
+              {inline.map((command) => (
+                <button
+                  key={command.label}
+                  type="button"
+                  title={command.title}
+                  className="app-button-secondary rounded-lg px-3 min-h-9 text-xs !whitespace-nowrap cursor-pointer disabled:opacity-40"
+                  disabled={command.disabled}
+                  onClick={command.onClick}
+                >
+                  {command.label}
+                </button>
+              ))}
+              {more.length > 0 && (
+                <ToolMenu
+                  key={String(p.canEdit) + p.steps.at(-1)?.code}
+                  label="Khác"
+                  Icon={MoreHorizontal}
+                  items={more.map((command) => ({
+                    label: command.label,
+                    title: command.title,
+                    disabled: command.disabled,
+                    onClick: command.onClick,
+                  }))}
+                />
+              )}
+            </div>
+          </>
+        )}
+        {p.canEdit && field.commands.length > 0 && (
+          <>
+            <span aria-hidden className="w-px h-6 bg-[var(--ui-border)] shrink-0" />
+            <div className="flex items-center gap-1.5" role="group" aria-label="Định dạng chữ">
+              {field.commands.slice(0, 3).map((command, index) => (
+                <button
+                  key={command.label}
+                  type="button"
+                  className="app-button-secondary rounded-lg px-3 min-h-9 text-xs !whitespace-nowrap cursor-pointer disabled:opacity-40"
+                  disabled={command.disabled}
+                  onClick={() => field.run(index, command.label)}
+                >
+                  {command.label}
+                </button>
+              ))}
+              {field.commands.length > 3 && (
+                <ToolMenu
+                  label="Chữ"
+                  Icon={Type}
+                  items={field.commands.slice(3).map((command, offset) => ({
+                    label: command.label,
+                    disabled: command.disabled,
+                    onClick: () => field.run(offset + 3, command.label),
+                  }))}
+                />
+              )}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

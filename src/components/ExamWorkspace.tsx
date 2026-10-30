@@ -5,33 +5,28 @@ import { applyCopilotSubmission } from '@/lib/copilot-submission';
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Question } from '@/types/exam';
+import type { Exam } from '@/types/exam';
 import { Header } from '@/components/Header';
 import { useWorkspace } from '@/components/workspace/WorkspaceContext';
 import { EditorSelectionProvider } from '@/components/editor/EditorSelection';
-import { EditorToolbar, type ExportView } from '@/components/EditorToolbar';
+import { EditorToolbar, ToolMenu, type ExportView, type MenuItem, type ToolCommand } from '@/components/EditorToolbar';
 import { AccountMenu, AppMenu, ExportMenu, MoreMenu } from '@/components/editor/EditorMenus';
 import { EditorRail, ResizablePanel, useStoredWidth, type RailItem } from '@/components/editor/EditorPanels';
 import { describeInsertion } from '@/lib/insertion-label';
-import { QuestionEditor } from '@/components/QuestionEditor';
-import { previewHeaderDraft, appendManualQuestion } from '@/lib/editor-draft-preview';
+import { previewHeaderDraft } from '@/lib/editor-draft-preview';
 import type { HeaderSubmission } from '@/lib/header-layout';
-import { listQuestionDrafts } from '@/lib/question-draft';
-import { QuestionCard } from '@/components/QuestionCard';
-import { accountFetch } from '@/lib/account-fetch';
 import {
   applyQuestionManualSubmission,
-  hasPendingQuestionDrafts,
   questionDraftSourceStamp,
+  questionValueStamp,
   retireSavedQuestionDrafts,
 } from '@/lib/question-draft';
-
+import { accountFetch } from '@/lib/account-fetch';
 import { applyQuestionOrderCommand } from '@/lib/question-commands';
 import { A4Preview } from '@/components/A4Preview';
 import { GenerateModal } from '@/components/GenerateModal';
 import { ShuffleModal } from '@/components/ShuffleModal';
 import { ImportModal } from '@/components/ImportModal';
-
-import { EditorSettings } from '@/components/editor/EditorSettings';
 import { QuestionBankModal } from '@/components/QuestionBankModal';
 import { RightCompanionRail } from '@/components/RightCompanionRail';
 import { ShareModal } from '@/components/ShareModal';
@@ -40,60 +35,78 @@ import { exportExamToDocx } from '@/lib/docx-export';
 import { prepareExportFigures } from '@/lib/export-figures';
 import { useExamPersistence } from '@/components/useExamPersistence';
 import { ExamCollaboratorsPanel } from '@/components/ExamCollaboratorsPanel';
-import { freezeExamScoring } from '@/lib/snapshot-scoring';
-import { requiresNumericScore } from '@/lib/education-catalog';
-
+import { normalizeQuestion } from '@/lib/exam-document';
+import { dbSaveQuestionToBank } from '@/lib/db';
 import type { BankQuestion } from '@/lib/question-client';
 import { ExamPresentation } from '@/components/ExamPresentation';
 import { EditorReview } from '@/components/editor/EditorReview';
-import { DetailSlotProvider } from '@/components/editor/EditorDetailSlot';
 import { reviewExam } from '@/lib/exam-review';
 import { EditorSaveStatus } from '@/components/editor/EditorSaveStatus';
 import { EditorTemplate } from '@/components/editor/EditorRequirements';
 import { EditorPrint } from '@/components/editor/EditorPrint';
-import { captureInsertion, insertQuestionBatch, type InsertionTarget } from '@/lib/outline-insertion';
-import { editorInsertionPoint, importedPartPoint } from '@/lib/editor-parts';
-import { OutlineEditor, type QuestionSource } from '@/components/editor/OutlineEditor';
-import { insertOutlineNodes, viewSyncedOutline, type InsertPoint } from '@/lib/exam-outline';
+import { EditorDetail } from '@/components/editor/EditorDetail';
+import { EditorOutline } from '@/components/editor/EditorOutline';
+import { EditorAiPanel, type AiTab } from '@/components/editor/EditorAiPanel';
+import { QuestionVerify } from '@/components/editor/QuestionVerify';
 import { EditorPending } from '@/components/editor/EditorPending';
-
-import { generationDocumentStamp } from '@/lib/generation-plan';
+import { captureInsertion, insertQuestionBatch, type InsertionTarget } from '@/lib/outline-insertion';
+import { importedPartPoint, withEditorParts } from '@/lib/editor-parts';
 import {
-  Trash2,
-  Link2,
-  CheckSquare,
-  Square,
-  X,
+  insertOutlineNodes,
+  moveOutlineNode,
+  outlineEntries,
+  outlineNodes,
+  removeOutlineNode,
+  viewSyncedOutline,
+  type InsertPoint,
+} from '@/lib/exam-outline';
+import { duplicateOutlineNode, nudgeOutlineNode, outlineLocation } from '@/lib/outline-editing';
+import {
+  EXAM_CODE,
+  displayOutline,
+  firstChildCode,
+  insertionFor,
+  neighbourCode,
+  nodeOfQuestion,
+  objectExists,
+  parentCode,
+  parseCode,
+  questionOf,
+  selectionChain,
+} from '@/lib/canvas-objects';
+import { blankQuestion, QUESTION_KINDS } from '@/lib/question-seeds';
+import { freezeExamScoring } from '@/lib/snapshot-scoring';
+import { generationDocumentStamp } from '@/lib/generation-plan';
+import { makeChange, mergeChange, revertChange, type Change } from '@/lib/undo-history';
+import {
   Database,
-  Eye,
   FileUp,
   LayoutTemplate,
   ListTree,
-  PencilLine,
-  Presentation,
+  Redo2,
   SlidersHorizontal,
-  Sparkles,
+  Undo2,
   Users,
 } from 'lucide-react';
 
-type RightTab = 'detail' | 'ai' | 'review' | 'collab';
-type LeftTab = 'content' | 'info' | 'template' | 'bank' | 'import' | 'generate';
+type RightTab = 'ai' | 'review' | 'collab';
+type LeftTab = 'detail' | 'template' | 'bank' | 'import' | 'outline';
+type QuestionSource = 'bank' | 'import' | 'generate';
 const railItems: RailItem<LeftTab>[] = [
-  { id: 'content', label: 'Nội dung', Icon: ListTree },
-  { id: 'info', label: 'Thông tin', Icon: SlidersHorizontal },
+  { id: 'detail', label: 'Chi tiết', Icon: SlidersHorizontal },
   { id: 'template', label: 'Mẫu', Icon: LayoutTemplate },
   { id: 'bank', label: 'Ngân hàng', Icon: Database },
   { id: 'import', label: 'Nhập đề', Icon: FileUp },
-  { id: 'generate', label: 'AI tạo câu', Icon: Sparkles },
+  { id: 'outline', label: 'Dàn ý', Icon: ListTree },
 ];
 const panelTitles: Record<LeftTab, string> = {
-  content: 'Nội dung đề',
-  info: 'Thông tin đề',
+  detail: 'Chi tiết',
   template: 'Mẫu',
   bank: 'Ngân hàng câu hỏi',
   import: 'Nhập đề từ Word hoặc ảnh',
-  generate: 'Sinh câu bằng AI',
+  outline: 'Dàn ý',
 };
+const HISTORY_LIMIT = 100;
 
 interface ExamWorkspaceProps {
   currentUser: {
@@ -105,12 +118,29 @@ interface ExamWorkspaceProps {
   examId?: string;
 }
 
+/** A new question that is still exactly as inserted: leaving it removes it instead of leaving an empty question behind. */
+function isPristine(question: Question) {
+  const blank = (value?: string) => !value?.trim();
+  return (
+    blank(question.content) &&
+    blank(question.step_by_step_solution) &&
+    blank(question.correct_answer) &&
+    !question.figures?.length &&
+    !question.parts?.length &&
+    !question.accepted_answers?.some((value) => !blank(value)) &&
+    (question.choices ?? []).every((choice) => blank(choice.text) && !choice.figures?.length) &&
+    (question.sub_questions ?? []).every((item) => blank(item.content)) &&
+    (question.matchingPairs ?? []).every((pair) => blank(pair.left) && blank(pair.right)) &&
+    (question.correctOrder ?? []).every((item) => blank(item))
+  );
+}
+
 const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examId }) => {
   const creationFolder = useSearchParams().get('folder');
   const {
     exam,
     editorSessionKey,
-    setExam,
+    setExam: setExamRaw,
     save,
     ensureSaved,
     saveCopy,
@@ -123,140 +153,219 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     dismissRecoveredDraft,
     ready,
   } = useExamPersistence(currentUser.id, examId, examId === 'new' ? creationFolder : undefined);
-  const scoredQuestions = freezeExamScoring(exam).questions;
-  const [mode, setMode] = useState<'edit' | 'comment' | 'view'>('edit');
-  const mayEdit = ready && exam.access?.canEdit !== false;
-  // Comment and view modes lock the sheet, so a teacher can read or discuss without touching the content.
-  const canEdit = mayEdit && mode === 'edit';
+  const canEdit = ready && exam.access?.canEdit !== false;
   const canPublish = ready && exam.access?.canPublish !== false;
   const manualSourceStamp = useMemo(() => questionDraftSourceStamp(exam), [exam]);
   useEffect(() => {
     if (ready && saveState === 'saved') retireSavedQuestionDrafts(currentUser.id, exam);
   }, [ready, saveState, currentUser.id, exam]);
+
+  // ----- Undo and redo: every edit made here is a step; only objects still as the edit left them are put back.
+  const localEdit = useRef(false);
+  const lastExam = useRef(exam);
+  const [history, setHistory] = useState<{ undo: Change[]; redo: Change[] }>({ undo: [], redo: [] });
+  const [notice, setNotice] = useState('');
+  const noticeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const say = useCallback((text: string) => {
+    setNotice(text);
+    if (noticeTimer.current) clearTimeout(noticeTimer.current);
+    noticeTimer.current = setTimeout(() => setNotice(''), 6000);
+  }, []);
+  const setExam = useCallback(
+    (value: React.SetStateAction<Exam>) => {
+      localEdit.current = true;
+      const applied = setExamRaw(value);
+      if (!applied) localEdit.current = false;
+      return applied;
+    },
+    [setExamRaw],
+  );
+  useEffect(() => {
+    const before = lastExam.current;
+    lastExam.current = exam;
+    if (!localEdit.current || before === exam) return;
+    localEdit.current = false;
+    const change = makeChange(before, exam);
+    if (!change) return;
+    // Typing in one field is many edits; they become one step.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setHistory((value) => ({
+      undo: [...value.undo.slice(0, -1), ...mergeChange(value.undo.at(-1), change)].slice(-HISTORY_LIMIT),
+      redo: [],
+    }));
+  }, [exam]);
+  const travel = (direction: 'undo' | 'redo') => {
+    const stack = history[direction];
+    const entry = stack.at(-1);
+    if (!entry || !canEdit) return;
+    const step: Change = direction === 'undo' ? entry : { ...entry, before: entry.after, after: entry.before };
+    const result = revertChange(exam, step);
+    if (result.changed) {
+      localEdit.current = false;
+      if (!setExamRaw(() => result.exam)) return;
+    }
+    setHistory((value) => ({
+      undo: direction === 'undo' ? value.undo.slice(0, -1) : [...value.undo, entry],
+      redo: direction === 'undo' ? [...value.redo, entry] : value.redo.slice(0, -1),
+    }));
+    say(
+      result.skipped.length
+        ? `Đã ${direction === 'undo' ? 'hoàn tác' : 'làm lại'}, bỏ qua: ${result.skipped.join('; ')}.`
+        : direction === 'undo'
+          ? 'Đã hoàn tác.'
+          : 'Đã làm lại.',
+    );
+  };
+  const undo = () => travel('undo');
+  const redo = () => travel('redo');
+
+  // ----- Panels
   const [collaborationOpen, setCollaborationOpen] = useState(false);
+  const [collabFocus, setCollabFocus] = useState<string | undefined>();
   const [presentationOpen, setPresentationOpen] = useState(false);
   const [manualDraftMessage, setManualDraftMessage] = useState('');
   const [submissionCount, setSubmissionCount] = useState<number>(0);
   const { hasActiveKey, openKeys } = useWorkspace();
-
+  const { copilotOpen: isCopilotOpen, setCopilotOpen: setIsCopilotOpen } = useWorkspace();
   const [reviewOpen, setReviewOpen] = useState(false);
   const [pendingReviewAction, setPendingReviewAction] = useState<(() => void) | null>(null);
   const reviewed = reviewExam(exam);
-  // Marks in the sheet's margins: review findings by question, and unresolved comments by question.
   const issueCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     for (const issue of reviewed.issues) {
-      const match = /^Câu (d+)/.exec(issue.location);
+      const match = /^Câu ([0-9]+)/.exec(issue.location);
       const question = match && exam.questions[Number(match[1]) - 1];
       if (question) counts[question.id] = (counts[question.id] ?? 0) + 1;
     }
     return counts;
   }, [reviewed, exam.questions]);
-  const [commentState, setCommentState] = useState<{ key: string; counts: Record<string, number> }>({ key: '', counts: {} });
-  const reviewBefore = (action: () => void) => {
-    if (reviewed.issues.length) openReview(action);
-    else action();
-  };
-  const [keyReminder, setKeyReminder] = useState(false);
+  const [commentState, setCommentState] = useState<{ key: string; counts: Record<string, number> }>({
+    key: '',
+    counts: {},
+  });
+  const [copilotCommand, setCopilotCommand] = useState<string>('');
+  const [aiTab, setAiTab] = useState<AiTab>('chat');
+  const [rightTab, setRightTab] = useState<RightTab>('ai');
+  const [leftTab, setLeftTab] = useState<LeftTab>('detail');
+  const [leftOpen, setLeftOpen] = useState(true);
+  const [phonePanel, setPhonePanel] = useState(false);
+  // Source panels keep what was typed while another tab is shown; they reset when they are closed or finished.
+  const [mounted, setMounted] = useState<{ bank?: boolean; import?: boolean; generate?: boolean }>({});
+  const [leftWidth, setLeftWidth] = useStoredWidth('examcraft_editor_left', 400, 320, 720);
+  const [rightWidth, setRightWidth] = useStoredWidth('examcraft_editor_right', 380, 300, 560);
+  const [isShuffleModalOpen, setIsShuffleModalOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isResultsModalOpen, setIsResultsModalOpen] = useState(false);
+  const [headerDraft, setHeaderDraft] = useState<HeaderSubmission | null>(null);
+  const updateHeaderPreview = useCallback((draft: HeaderSubmission | null) => setHeaderDraft(draft), []);
+  const [structureMessage, setStructureMessage] = useState('');
+
+  // ----- Selection: a list of codes (see canvas-objects); the last one is the one the panels talk about.
+  const [picked, setPicked] = useState<string[]>([EXAM_CODE]);
+  const rawCode = picked.at(-1) ?? EXAM_CODE;
+  const selectedCode = objectExists(exam, rawCode) ? rawCode : EXAM_CODE;
+  const pickedQuestionIds = useMemo(
+    () =>
+      picked
+        .filter((code) => parseCode(code).kind === 'question' && objectExists(exam, code))
+        .map((code) => questionOf(code)!),
+    [picked, exam],
+  );
+  const blankIds = useRef(new Set<string>());
+  const sessionScope = currentUser.id + ':' + editorSessionKey;
+  const [draftSession, setDraftSession] = useState(sessionScope);
+  if (draftSession !== sessionScope) {
+    setDraftSession(sessionScope);
+    setHeaderDraft(null);
+    setMounted({});
+    setLeftTab('detail');
+    setPicked([EXAM_CODE]);
+  }
+  const sheetCode = selectedCode;
+
   const withAi = (action: () => void) => {
     if (!canEdit) return;
-    if (!hasActiveKey) setKeyReminder(true);
-    else action();
+    if (!hasActiveKey) {
+      setAiTab('chat');
+      setRightTab('ai');
+      setIsCopilotOpen(true);
+    } else action();
   };
-  // Layout states
-  const { copilotOpen: isCopilotOpen, setCopilotOpen: setIsCopilotOpen, toggleAssistant } = useWorkspace();
-  const [copilotCommand, setCopilotCommand] = useState<string>('');
-  const [mobileTab, setMobileTab] = useState<'editor' | 'preview'>('editor');
-  const [leftTab, setLeftTab] = useState<LeftTab>('content');
-  const [rightTab, setRightTab] = useState<RightTab>('ai');
-  const [detailSlot, setDetailSlot] = useState<HTMLElement | null>(null);
-  const [editingIds, setEditingIds] = useState<string[]>([]);
-  const reportEditing = useCallback((id: string, editing: boolean) => {
-    setEditingIds((ids) => (editing ? (ids.includes(id) ? ids : [...ids, id]) : ids.filter((x) => x !== id)));
-    if (editing) setRightTab('detail');
-  }, [setRightTab]);
-  const detailContext = useMemo(() => ({ slot: detailSlot, report: reportEditing }), [detailSlot, reportEditing]);
   const openReview = (after: (() => void) | null) => {
     setPendingReviewAction(after ? () => after : null);
     setRightTab('review');
     setReviewOpen(true);
   };
-  const openAi = () => {
+  const openAi = (tab: AiTab = 'chat') => {
+    setAiTab(tab);
     setRightTab('ai');
     setIsCopilotOpen(true);
   };
-  const openCollaboration = () => {
+  const openCollaboration = (questionId?: string) => {
+    setCollabFocus(questionId);
     setRightTab('collab');
     setCollaborationOpen(true);
   };
-  const [leftOpen, setLeftOpen] = useState(true);
-  // Source panels keep what was typed while another tab is shown; they reset when they are closed or finished.
-  const [mounted, setMounted] = useState<Partial<Record<LeftTab, boolean>>>({});
-  const [leftWidth, setLeftWidth] = useStoredWidth('examcraft_editor_left', 440, 320, 720);
-  const [rightWidth, setRightWidth] = useStoredWidth('examcraft_editor_right', 380, 300, 560);
+  /** Only giving the exam to students waits for the review; exporting, printing and presenting never do. */
+  const reviewBefore = (action: () => void) => {
+    if (reviewed.issues.length) openReview(action);
+    else action();
+  };
 
-  // Selected questions for batch operations
-  const [selectedQuestionIds, setSelectedQuestionIds] = useState<string[]>([]);
-
-  const [isShuffleModalOpen, setIsShuffleModalOpen] = useState(false);
-  const [headerDraft, setHeaderDraft] = useState<HeaderSubmission | null>(null);
-  const updateHeaderPreview = useCallback((draft: HeaderSubmission | null) => setHeaderDraft(draft), []);
-  const infoOpen = leftOpen && leftTab === 'info';
-  const previewExam = infoOpen && headerDraft ? previewHeaderDraft(exam, headerDraft) : exam;
-  const addAnchor = useRef<HTMLDivElement>(null);
-  const [selectedPoint, setSelectedPoint] = useState<InsertPoint | null>(null);
-  const [newQuestionPoint, setNewQuestionPoint] = useState<InsertPoint | undefined>();
-  const insertionPoint = (): InsertPoint => editorInsertionPoint(exam, selectedPoint);
-  const [newQuestion, setNewQuestion] = useState<Question | null>(null);
-  const sessionScope = currentUser.id + ':' + editorSessionKey;
-  const [draftSession, setDraftSession] = useState(sessionScope);
-  if (draftSession !== sessionScope) {
-    setDraftSession(sessionScope);
-    setNewQuestion(null);
-    setHeaderDraft(null);
-    setMounted({});
-    setLeftTab('content');
-    setSelectedPoint(null);
-    setNewQuestionPoint(undefined);
-  }
   const showTab = (tab: LeftTab) => {
     setLeftTab(tab);
     setLeftOpen(true);
-    setMobileTab('editor');
-    if (tab === 'bank' || tab === 'import' || tab === 'generate')
-      setMounted((previous) => ({ ...previous, [tab]: true }));
+    if (tab === 'bank' || tab === 'import') setMounted((previous) => ({ ...previous, [tab]: true }));
   };
-  // A printed header line opens "Thông tin đề" with the matching field focused.
-  const focusHeaderField = (lineId: string) => {
-    const labelFor: Record<string, string> = {
-      'header-schoolName': 'Đơn vị chủ quản',
-      'header-departmentName': 'Trường / tổ chuyên môn',
-      'header-title': 'Tên đề',
-      'header-examCode': 'Mã đề',
-      'header-academicYear': 'Năm học',
-      'header-semester': 'Học kỳ',
-      'header-subjectGrade': 'Môn của đề',
-      'header-durationScore': 'Thời lượng',
-      'header-notes': 'Ghi chú cuối đề',
-    };
-    const label = labelFor[lineId];
-    if (!label) return;
-    showTab('info');
-    setTimeout(() => {
-      const field = document.querySelector<HTMLElement>(`aside[aria-label="Thông tin đề"] [aria-label="${label}"]`);
-      field?.focus();
-    }, 50);
+  const closeTab = (tab: LeftTab) => {
+    setMounted((previous) => ({ ...previous, [tab]: false }));
+    setLeftTab((current) => (current === tab ? 'detail' : current));
   };
-  // A question clicked on the sheet is selected in the tree; a double click opens its detail panel.
-  const pickQuestion = (id: string, edit: boolean) => {
-    showTab('content');
-    setTimeout(() => {
-      const node = document.getElementById('editor-question-' + id);
-      node?.scrollIntoView({ block: 'center' });
-      node?.focus();
-      if (edit) window.dispatchEvent(new CustomEvent('examcraft:edit-question', { detail: { id } }));
-    }, 0);
+  const pressRail = (tab: LeftTab) => {
+    if (leftOpen && leftTab === tab) setLeftOpen(false);
+    else if (tab === 'bank' || tab === 'import') openSource(tab);
+    else showTab(tab);
   };
+  const removeBlankIfLeft = (next: string) => {
+    const leaving = questionOf(rawCode);
+    if (!leaving || !blankIds.current.has(leaving) || questionOf(next) === leaving) return;
+    blankIds.current.delete(leaving);
+    const question = exam.questions.find((item) => item.id === leaving);
+    if (question && isPristine(question) && canEdit) {
+      setExam((previous) => ({ ...previous, questions: previous.questions.filter((item) => item.id !== leaving) }));
+      say('Đã bỏ câu trống. Bấm Hoàn tác nếu cần lấy lại.');
+    }
+  };
+  const select = (code: string, how: 'replace' | 'toggle' | 'range' = 'replace') => {
+    removeBlankIfLeft(code);
+    const kind = parseCode(code).kind;
+    if (how === 'toggle' && kind === 'question') {
+      setPicked((previous) => {
+        const clean = previous.filter((item) => parseCode(item).kind === 'question');
+        return clean.includes(code) ? clean.filter((item) => item !== code) || [EXAM_CODE] : [...clean, code];
+      });
+    } else if (how === 'range' && kind === 'question') {
+      const ids = displayOutline(exam)
+        .flatMap(function walk(node): string[] {
+          return node.kind === 'question' ? [node.questionId!] : (node.children ?? []).flatMap(walk);
+        });
+      const from = ids.indexOf(questionOf(rawCode) ?? '');
+      const to = ids.indexOf(questionOf(code)!);
+      if (from >= 0 && to >= 0) {
+        const [a, b] = from < to ? [from, to] : [to, from];
+        setPicked(ids.slice(a, b + 1).map((id) => `question:${id}`));
+      } else setPicked([code]);
+    } else setPicked([code]);
+    // The panel beside the sheet follows the selection, except while a source (bank, import) is being filled in.
+    if (leftTab !== 'bank' && leftTab !== 'import') {
+      setLeftTab('detail');
+      setLeftOpen(true);
+    }
+    if (kind === 'insert' && typeof window !== 'undefined' && window.innerWidth < 1024) setPhonePanel(false);
+  };
+  const tick = (questionId: string) => select(`question:${questionId}`, 'toggle');
+
+  // ----- Comments counts for the margin bubbles
   const commentKey = `${exam.serverId ?? ''}:${currentUser.id}:${collaborationOpen}`;
   useEffect(() => {
     const serverId = exam.serverId;
@@ -271,7 +380,8 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         if (!active || !result?.comments) return;
         const counts: Record<string, number> = {};
         for (const comment of result.comments)
-          if (comment.questionId && !comment.resolvedAt) counts[comment.questionId] = (counts[comment.questionId] ?? 0) + 1;
+          if (comment.questionId && !comment.resolvedAt)
+            counts[comment.questionId] = (counts[comment.questionId] ?? 0) + 1;
         setCommentState({ key: commentKey, counts });
       })
       .catch(() => {});
@@ -279,34 +389,35 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       active = false;
     };
   }, [exam.serverId, currentUser.id, commentKey]);
-  const closeTab = (tab: LeftTab) => {
-    setMounted((previous) => ({ ...previous, [tab]: false }));
-    setLeftTab((current) => (current === tab ? 'content' : current));
-  };
-  const pressRail = (tab: LeftTab) => {
-    if (leftOpen && leftTab === tab) setLeftOpen(false);
-    else {
-      if (tab === 'bank' || tab === 'import' || tab === 'generate')
-        openSource(tab === 'generate' ? 'generate' : tab);
-      else showTab(tab);
-    }
-  };
-  const openSettings = () => showTab('info');
-  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
-  const [isResultsModalOpen, setIsResultsModalOpen] = useState(false);
+  const commentCounts = commentState.key === commentKey ? commentState.counts : {};
+
+  // ----- Adding content: one menu for the toolbar, the "+" points on the sheet and the Điểm chèn form
   const sourceTarget = useRef<InsertionTarget | null>(null);
+  const [sourcePoint, setSourcePoint] = useState<InsertPoint | null>(null);
   const [modalSession, setModalSession] = useState(sessionScope);
   if (modalSession !== sessionScope) {
     setModalSession(sessionScope);
     setReviewOpen(false);
     setPendingReviewAction(null);
   }
-  const openSource = (source: Exclude<QuestionSource, 'manual'>, point = insertionPoint()) => {
+  const applyStructure = (update: (value: Exam) => Exam) => {
+    if (!canEdit) return;
+    try {
+      setExam((previous) => update(withEditorParts(previous)));
+      setStructureMessage('');
+    } catch (error) {
+      setStructureMessage(error instanceof Error ? error.message : 'Chưa áp dụng được. Nội dung vẫn được giữ.');
+    }
+  };
+  const openSource = (source: QuestionSource, point: InsertPoint = insertionFor(exam, selectedCode)) => {
     if (!canEdit) return;
     const open = () => {
       sourceTarget.current = captureInsertion(exam, currentUser.id, point);
-      setSelectedPoint(point);
-      showTab(source === 'generate' ? 'generate' : source === 'import' ? 'import' : 'bank');
+      setSourcePoint(point);
+      if (source === 'generate') {
+        setMounted((previous) => ({ ...previous, generate: true }));
+        openAi('generate');
+      } else showTab(source);
     };
     if (source === 'generate') withAi(open);
     else open();
@@ -325,28 +436,175 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       const acceptedTarget = parts?.length
         ? { ...target, point: importedPartPoint(previous, target.point) }
         : target;
-      const result = insertQuestionBatch(
-        previous,
-        currentUser.id,
-        acceptedTarget,
-        questions,
-        passages,
-        parts,
-      );
+      const result = insertQuestionBatch(previous, currentUser.id, acceptedTarget, questions, passages, parts);
       continuation = result.target;
       return result.exam;
     });
     if (applied) {
       sourceTarget.current = continuation;
-      setSelectedPoint(continuation.point);
+      setSourcePoint(continuation.point);
     }
     return applied;
   };
+  const insertBlank = (point: InsertPoint, type: Question['type'] = 'multiple_choice') => {
+    if (!canEdit) return;
+    const question = blankQuestion(exam, type);
+    const node = { id: 'question:' + question.id, kind: 'question' as const, questionId: question.id };
+    try {
+      if (!setExam((previous) => insertOutlineNodes(withEditorParts(previous), point, [node], [question]))) return;
+    } catch (error) {
+      setStructureMessage(error instanceof Error ? error.message : 'Chưa thêm được câu.');
+      return;
+    }
+    blankIds.current.add(question.id);
+    setPicked([`question:${question.id}`]);
+    setLeftTab('detail');
+    setLeftOpen(true);
+    setPhonePanel(true);
+  };
+  const insertPart = (point: InsertPoint) =>
+    applyStructure((previous) =>
+      insertOutlineNodes(
+        previous,
+        { parentId: null, afterId: parentCodeAnchor(point) },
+        [{ id: crypto.randomUUID(), kind: 'part', title: '', children: [] }],
+      ),
+    );
+  /** A new part always sits at the top level: after the part that holds the insertion point. */
+  const parentCodeAnchor = (point: InsertPoint): string | null => {
+    const outline = displayOutline(exam);
+    const holder = outline.find(
+      (node) => node.id === point.parentId || outlineNodes([node]).some((item) => item.id === point.parentId),
+    );
+    return holder?.id ?? outline.at(-1)?.id ?? null;
+  };
+  const insertGroup = (point: InsertPoint, passageId?: string) => {
+    const id = crypto.randomUUID();
+    const material = passageId ?? crypto.randomUUID();
+    applyStructure((previous) =>
+      insertOutlineNodes(
+        {
+          ...previous,
+          ...(passageId ? {} : { passages: [...(previous.passages ?? []), { id: material, title: '', content: '' }] }),
+        },
+        point,
+        [{ id, kind: 'group', title: '', passageId: material, children: [] }],
+      ),
+    );
+    setPicked([`group:${id}`]);
+  };
+  const pageBreakAt = (point: InsertPoint) => {
+    // The break belongs to the block after the point: set on the part or group that follows it, else on a new part.
+    const outline = displayOutline(exam);
+    const list = point.parentId ? outlineNodes(outline).find((node) => node.id === point.parentId)?.children : outline;
+    const index = point.afterId ? (list?.findIndex((node) => node.id === point.afterId) ?? -1) + 1 : 0;
+    const next = list?.[index];
+    if (next && next.kind !== 'question')
+      applyStructure((previous) =>
+        previous.outline
+          ? { ...previous, outline: structuredClone(previous.outline).map(function mark(node): typeof node {
+              return node.id === next.id ? { ...node, startOnNewPage: true } : { ...node, ...(node.children ? { children: node.children.map(mark) } : {}) };
+            }) }
+          : previous,
+      );
+    else say('Đặt "Bắt đầu ở trang mới" ở phần hoặc ngữ liệu đứng sau chỗ này.');
+  };
+  const reusablePassages = (exam.passages ?? []).slice(0, 5);
+  const editQuestion = (id: string, change: (question: Question) => Question) => {
+    const current = exam.questions.find((item) => item.id === id);
+    if (!current || current.locked || !canEdit) return;
+    const display: Question = {
+      ...current,
+      subject: current.subject ?? exam.metadata.subject,
+      grade: current.grade ?? exam.metadata.grade,
+    };
+    const value: Question = {
+      ...change(display),
+      status: 'draft',
+      verifiedBy: 'none',
+      version: (current.version ?? 1) + 1,
+    };
+    try {
+      normalizeQuestion(value);
+    } catch {
+      return;
+    }
+    setExam((previous) =>
+      applyQuestionManualSubmission(
+        previous,
+        {
+          ownerId: currentUser.id,
+          documentId: exam.id,
+          questionId: id,
+          baseStamp: questionValueStamp(display),
+          baseSourceStamp: manualSourceStamp,
+          token: crypto.randomUUID(),
+          value,
+        },
+        currentUser.id,
+      ),
+    );
+  };
+  const addRow = (question: Question) => {
+    const next = (keys: string[], pool: string) => pool.split('').find((key) => !keys.includes(key));
+    if (question.type === 'multiple_choice') {
+      const key = next((question.choices ?? []).map((choice) => choice.key), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
+      if (key) editQuestion(question.id, (value) => ({ ...value, choices: [...(value.choices ?? []), { key, text: '' }] }));
+      if (key) setPicked([`choice:${question.id}:${key}`]);
+    } else if (question.type === 'true_false_group') {
+      const key = next((question.sub_questions ?? []).map((item) => item.key), 'abcdefghijklmnopqrstuvwxyz');
+      if (key) editQuestion(question.id, (value) => ({ ...value, sub_questions: [...(value.sub_questions ?? []), { key, content: '' }] }));
+      if (key) setPicked([`statement:${question.id}:${key}`]);
+    } else if (question.type === 'matching') {
+      const id = crypto.randomUUID();
+      editQuestion(question.id, (value) => ({ ...value, matchingPairs: [...(value.matchingPairs ?? []), { id, left: '', right: '' }] }));
+    } else if (question.type === 'ordering') {
+      editQuestion(question.id, (value) => ({ ...value, correctOrder: [...(value.correctOrder ?? []), ''] }));
+    } else if (question.type === 'essay' || question.type === 'short_answer') {
+      const id = crypto.randomUUID();
+      editQuestion(question.id, (value) => ({ ...value, parts: [...(value.parts ?? []), { id, content: '' }] }));
+      setPicked([`item:${question.id}:${id}`]);
+    }
+  };
+  const addItemsFor = (code: string): MenuItem[] => {
+    if (!canEdit) return [];
+    const object = parseCode(code);
+    const point = insertionFor(exam, code);
+    const items: MenuItem[] = QUESTION_KINDS.map((kind) => ({
+      label: kind.label,
+      onClick: () => insertBlank(point, kind.type),
+    }));
+    const inQuestion = ['question', 'choice', 'statement', 'item', 'pair', 'order', 'figure'].includes(object.kind);
+    const question = inQuestion ? exam.questions.find((item) => item.id === questionOf(code)) : undefined;
+    const rowLabel: Partial<Record<Question['type'], string>> = {
+      multiple_choice: 'Phương án mới',
+      true_false_group: 'Mệnh đề mới',
+      essay: 'Ý mới',
+      short_answer: 'Ý mới',
+      matching: 'Cặp ghép mới',
+      ordering: 'Mục mới',
+    };
+    const inGroup = object.kind !== 'part' && nodeOfQuestion(exam, questionOf(code) ?? '')?.parent?.kind === 'group';
+    return [
+      ...(question && rowLabel[question.type]
+        ? [{ label: rowLabel[question.type]!, disabled: !!question.locked, onClick: () => addRow(question) }]
+        : []),
+      ...items,
+      ...(inGroup && object.kind === 'group' ? [] : [{ label: 'Ngữ liệu', onClick: () => insertGroup(point) }]),
+      ...reusablePassages.map((passage, index) => ({
+        label: `Dùng lại ngữ liệu: ${passage.title?.trim() || `Nội dung ${index + 1}`}`.slice(0, 48),
+        onClick: () => insertGroup(point, passage.id),
+      })),
+      { label: 'Phần mới', onClick: () => insertPart(point) },
+      { label: 'Ngắt trang', onClick: () => pageBreakAt(point) },
+      { label: 'Từ ngân hàng', onClick: () => openSource('bank', point) },
+      { label: 'Nhập Word/Ảnh', onClick: () => openSource('import', point) },
+      { label: 'Sinh bằng AI', onClick: () => openSource('generate', point) },
+    ];
+  };
 
-  const [assignmentState, setAssignmentState] = useState({
-    id: '',
-    has: false,
-  });
+  // ----- Assignments, title, exports
+  const [assignmentState, setAssignmentState] = useState({ id: '', has: false });
   useEffect(() => {
     if (!exam.serverId || exam.access?.canManage === false) return;
     let live = true;
@@ -370,177 +628,13 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       live = false;
     };
   }, [currentUser.id, exam.id, exam.serverId, exam.access?.canManage, isShareModalOpen]);
-  // Đổi tên đề thi inline Google Docs style
   const handleUpdateTitle = (newTitle: string) => {
     setExam((prev) => ({
       ...prev,
-      metadata: {
-        ...prev.metadata,
-        title: newTitle,
-      },
+      metadata: { ...prev.metadata, title: newTitle },
       updatedAt: new Date().toISOString(),
     }));
   };
-
-  // Xóa câu hỏi
-  const handleDeleteQuestion = (id: string) => {
-    setExam((prev) => ({
-      ...prev,
-      questions: prev.questions.filter((q) => q.id !== id),
-      updatedAt: new Date().toISOString(),
-    }));
-  };
-
-  // Di chuyển câu hỏi lên/xuống
-  const handleMoveQuestion = (index: number, direction: 'up' | 'down') => {
-    const questionId = exam.questions[index]?.id;
-    if (!questionId) return;
-    const command = {
-      documentId: exam.id,
-      baseOrder: exam.questions.map((question) => question.id),
-      questionId,
-      action: direction,
-    };
-    setExam((previous) => applyQuestionOrderCommand(previous, command));
-  };
-
-  // Nhân bản câu hỏi
-  const handleDuplicateQuestion = (index: number) => {
-    const questionId = exam.questions[index]?.id;
-    if (!questionId) return;
-    const command = {
-      documentId: exam.id,
-      baseOrder: exam.questions.map((question) => question.id),
-      questionId,
-      action: 'duplicate' as const,
-      newId: `q_${crypto.randomUUID()}`,
-    };
-    setExam((previous) => applyQuestionOrderCommand(previous, command));
-  };
-
-  // Thêm câu hỏi thủ công
-  const handleAddQuestion = (point?: InsertPoint) => {
-    if (!canEdit) return;
-    const recovered = listQuestionDrafts(currentUser.id, exam.id).find(
-      (entry) =>
-        entry.value?.questionId.startsWith('q_new_') &&
-        !exam.questions.some((question) => question.id === entry.value?.questionId),
-    );
-    const seed: Question = recovered?.value?.baseQuestion ?? {
-      id: 'q_new_' + crypto.randomUUID(),
-      type: 'multiple_choice',
-      difficulty: 'thong_hieu',
-      content: '',
-      choices: [
-        { key: 'A', text: '' },
-        { key: 'B', text: '' },
-        { key: 'C', text: '' },
-        { key: 'D', text: '' },
-      ],
-      subject: exam.metadata.subject,
-      grade: exam.metadata.grade,
-      step_by_step_solution: '',
-    };
-    const target = point && 'parentId' in point ? point : insertionPoint();
-    setNewQuestionPoint(target);
-    setSelectedPoint(target);
-    setNewQuestion(seed);
-    showTab('content');
-    requestAnimationFrame(() => addAnchor.current?.scrollIntoView({ block: 'start', behavior: 'smooth' }));
-  };
-
-  // Chọn/bỏ chọn câu hỏi
-  const handleToggleSelectQuestion = (id: string) => {
-    setSelectedQuestionIds((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
-    );
-  };
-
-  const handleSelectAll = () => {
-    if (selectedQuestionIds.length === exam.questions.length) {
-      setSelectedQuestionIds([]);
-    } else {
-      setSelectedQuestionIds(exam.questions.map((q) => q.id));
-    }
-  };
-
-  // Bảo AI sửa câu này
-  const handleAskAiAboutQuestion = (index: number) => {
-    const target = exam.questions[index];
-    if (!target) return;
-    setSelectedQuestionIds([target.id]);
-    openAi();
-    setCopilotCommand(`Đổi số liệu hoặc nâng cấp câu ${index + 1}`);
-  };
-
-  // Gộp các câu đã chọn thành 1 câu tự luận
-  const handleMergeSelected = () => {
-    if (selectedQuestionIds.length < 2) return;
-    const selectedQuestions = exam.questions.filter((q) => selectedQuestionIds.includes(q.id));
-    const alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
-    const mergedContent =
-      `**Bài toán tổng hợp:**\n` +
-      selectedQuestions.map((q, idx) => `**Ý ${alphabet[idx] || idx + 1})** ${q.content}`).join('\n\n');
-
-    const mergedSolution = selectedQuestions
-      .map(
-        (q, idx) =>
-          `**Hướng dẫn giải ý ${alphabet[idx] || idx + 1}:**\n${q.step_by_step_solution || 'Đang cập nhật'}`,
-      )
-      .join('\n\n');
-
-    const mergedQuestion: Question = {
-      id: `q_merged_${Date.now()}`,
-      type: 'essay',
-      difficulty: 'van_dung',
-      content: mergedContent,
-      step_by_step_solution: mergedSolution,
-      tags: ['Cau_hoi_tong_hop', 'Tu_luan'],
-    };
-
-    const firstIndex = exam.questions.findIndex((q) => q.id === selectedQuestionIds[0]);
-    const remainingQuestions = exam.questions.filter((q) => !selectedQuestionIds.includes(q.id));
-    remainingQuestions.splice(firstIndex, 0, mergedQuestion);
-
-    setExam((prev) => ({
-      ...prev,
-      questions: remainingQuestions,
-      updatedAt: new Date().toISOString(),
-    }));
-    setSelectedQuestionIds([]);
-  };
-
-  // Xóa các câu hỏi đã chọn hàng loạt
-  const handleBatchDelete = () => {
-    if (selectedQuestionIds.length === 0) return;
-    if (!window.confirm(`Bạn có chắc chắn muốn xóa ${selectedQuestionIds.length} câu hỏi đã chọn?`)) return;
-
-    setExam((prev) => ({
-      ...prev,
-      questions: prev.questions.filter((q) => !selectedQuestionIds.includes(q.id)),
-      updatedAt: new Date().toISOString(),
-    }));
-    setSelectedQuestionIds([]);
-  };
-
-  const handleSaveCurrentExam = async () => {
-    if (
-      hasPendingQuestionDrafts(
-        currentUser.id,
-        exam.id,
-        exam.questions.map((question) => question.id),
-        exam,
-      )
-    ) {
-      setManualDraftMessage(
-        'Còn nháp câu chưa áp dụng. Mở Sửa để áp dụng câu, hoặc cất riêng tại Nháp câu hỏi trước khi lưu đề.',
-      );
-      return;
-    }
-    setManualDraftMessage('');
-    await save();
-  };
-
   const downloadDraft = () => {
     const url = URL.createObjectURL(new Blob([JSON.stringify(exam, null, 2)], { type: 'application/json' }));
     const link = document.createElement('a');
@@ -549,8 +643,6 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     link.click();
     URL.revokeObjectURL(url);
   };
-
-  // Xuất file Word trực tiếp từ menu
   const handleExportWord = async (view: ExportView = 'exam') => {
     try {
       const blob = await exportExamToDocx(
@@ -571,108 +663,355 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       alert(err instanceof Error ? err.message : 'Chưa xuất được Word.');
     }
   };
+  const handleSaveCurrentExam = async () => {
+    setManualDraftMessage('');
+    await save();
+  };
 
-  const composer = newQuestion && (
-    <section
-      ref={addAnchor}
-      aria-label="Soạn câu mới"
-      className="rounded-xl border p-4 space-y-3 bg-[var(--ui-surface)]"
-    >
-      <h3 className="font-semibold">Thêm câu hỏi</h3>
-      <QuestionEditor
-        key={currentUser.id + ':' + editorSessionKey + ':' + newQuestion.id}
-        creating
-        ownerId={currentUser.id}
-        documentId={exam.id}
-        sourceStamp={manualSourceStamp}
-        question={exam.questions.find((q) => q.id === newQuestion.id) ?? newQuestion}
-        frameworkId={exam.metadata.cognitiveFrameworkId}
-        knowledgePackage={exam.metadata.knowledgePackage}
-        knowledgeScope={exam.metadata.knowledgeScope}
-        onSave={(submission) => {
-          const add = (previous: typeof exam) =>
-            appendManualQuestion(previous, submission, currentUser.id, newQuestion, newQuestionPoint);
-          // Close only after the current document accepts the insertion, including its permission and stale-draft guards.
-          if (setExam(add)) setNewQuestion(null);
-        }}
-        onApplied={() => setNewQuestion(null)}
-        onCancel={() => setNewQuestion(null)}
-      />
-    </section>
-  );
-  const sourceTab = leftTab === 'bank' || leftTab === 'import' || leftTab === 'generate';
-  const addPart = () => {
-    showTab('content');
-    setExam((previous) =>
-      insertOutlineNodes(
-        previous,
+  // ----- Commands of the selection
+  const removeQuestions = (ids: string[]) => {
+    const locked = exam.questions.filter((question) => ids.includes(question.id) && question.locked);
+    if (locked.length) {
+      say('Có câu đang khóa. Mở khóa trước khi xóa.');
+      return;
+    }
+    const message =
+      ids.length === 1 ? 'Xóa câu đang chọn khỏi đề?' : `Bạn có chắc chắn muốn xóa ${ids.length} câu hỏi đã chọn?`;
+    if (!window.confirm(message)) return;
+    setExam((previous) => ({ ...previous, questions: previous.questions.filter((question) => !ids.includes(question.id)) }));
+    setPicked([EXAM_CODE]);
+  };
+  const moveQuestion = (id: string, direction: 'up' | 'down') => {
+    const command = {
+      documentId: exam.id,
+      baseOrder: exam.questions.map((question) => question.id),
+      questionId: id,
+      action: direction,
+    };
+    setExam((previous) => applyQuestionOrderCommand(previous, command));
+  };
+  const duplicateQuestion = (id: string) => {
+    const newId = `q_${crypto.randomUUID()}`;
+    const command = {
+      documentId: exam.id,
+      baseOrder: exam.questions.map((question) => question.id),
+      questionId: id,
+      action: 'duplicate' as const,
+      newId,
+    };
+    if (setExam((previous) => applyQuestionOrderCommand(previous, command))) setPicked([`question:${newId}`]);
+  };
+  const toggleLock = (ids: string[]) => {
+    const lock = !ids.every((id) => exam.questions.find((question) => question.id === id)?.locked);
+    setExam((previous) => ({
+      ...previous,
+      questions: previous.questions.map((question) => {
+        if (!ids.includes(question.id)) return question;
+        const next = { ...question };
+        if (lock) next.locked = true;
+        else delete next.locked;
+        return next;
+      }),
+    }));
+  };
+  const labelOfNode = (id: string) => {
+    const entry = outlineEntries(viewSyncedOutline(exam)).find((item) => item.node.id === id);
+    const title = entry?.node.title?.trim();
+    return entry?.node.kind === 'part'
+      ? ['Phần', entry.label, title].filter(Boolean).join(' ')
+      : `Ngữ liệu ${title ?? ''}`.trim();
+  };
+  const moveInto = (questionIds: string[], parentId: string) => {
+    applyStructure((previous) => {
+      let result = previous;
+      for (const id of questionIds) {
+        const node = outlineNodes(result.outline ?? []).find((item) => item.questionId === id);
+        const target = outlineNodes(result.outline ?? []).find((item) => item.id === parentId);
+        if (node && target) result = moveOutlineNode(result, node.id, { parentId, afterId: target.children?.at(-1)?.id ?? null });
+      }
+      return result;
+    });
+  };
+  const removeNode = (id: string, keep: boolean) => {
+    const target = displayOutline(exam).length ? outlineNodes(displayOutline(exam)).find((node) => node.id === id) : undefined;
+    const members = outlineNodes(target ? [target] : []).filter((node) => node.kind === 'question');
+    if (!keep && members.some((node) => exam.questions.find((q) => q.id === node.questionId)?.locked)) {
+      say('Có câu đang khóa trong mục này. Mở khóa trước khi xóa.');
+      return;
+    }
+    if (!window.confirm(keep ? 'Bỏ mục này nhưng giữ các câu bên trong?' : `Xóa mục này và ${members.length} câu bên trong?`))
+      return;
+    applyStructure((previous) => {
+      const frozen = new Map(freezeExamScoring(previous).questions.map((q) => [q.id, q.points]));
+      const affected = new Set(members.map((node) => node.questionId));
+      const prepared = keep
+        ? {
+            ...previous,
+            questions: previous.questions.map((q) =>
+              affected.has(q.id) && q.points === undefined && frozen.get(q.id) !== undefined
+                ? { ...q, points: frozen.get(q.id) }
+                : q,
+            ),
+          }
+        : previous;
+      return withEditorParts(removeOutlineNode(prepared, id, keep), id);
+    });
+    setPicked([EXAM_CODE]);
+  };
+  const mergeSelected = () => {
+    if (pickedQuestionIds.length < 2) return;
+    const chosen = exam.questions.filter((q) => pickedQuestionIds.includes(q.id));
+    const alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
+    const merged: Question = {
+      id: `q_merged_${Date.now()}`,
+      type: 'essay',
+      difficulty: 'van_dung',
+      content:
+        `**Bài toán tổng hợp:**\n` +
+        chosen.map((q, idx) => `**Ý ${alphabet[idx] || idx + 1})** ${q.content}`).join('\n\n'),
+      step_by_step_solution: chosen
+        .map((q, idx) => `**Hướng dẫn giải ý ${alphabet[idx] || idx + 1}:**\n${q.step_by_step_solution || 'Đang cập nhật'}`)
+        .join('\n\n'),
+      tags: ['Cau_hoi_tong_hop', 'Tu_luan'],
+    };
+    const firstIndex = exam.questions.findIndex((q) => q.id === pickedQuestionIds[0]);
+    const rest = exam.questions.filter((q) => !pickedQuestionIds.includes(q.id));
+    rest.splice(firstIndex, 0, merged);
+    setExam((prev) => ({ ...prev, questions: rest, updatedAt: new Date().toISOString() }));
+    setPicked([`question:${merged.id}`]);
+  };
+  const saveToBank = async (question: Question) => {
+    try {
+      await dbSaveQuestionToBank(
+        question,
+        currentUser.id,
+        exam.passages?.find((passage) => passage.id === question.passageId),
+      );
+      say('Đã lưu bản sao riêng vào ngân hàng.');
+    } catch (error) {
+      say(error instanceof Error ? error.message : 'Chưa lưu được câu hỏi vào ngân hàng.');
+    }
+  };
+  const commandsFor = (): ToolCommand[] => {
+    if (!canEdit) return [];
+    const object = parseCode(selectedCode);
+    const ask = (id?: string): ToolCommand => ({
+      label: 'Góp ý',
+      title: 'Xem và gửi góp ý',
+      disabled: !exam.serverId,
+      onClick: () => openCollaboration(id),
+    });
+    if (pickedQuestionIds.length > 1)
+      return [
         {
-          parentId: null,
-          afterId: viewSyncedOutline(previous).outline?.at(-1)?.id ?? null,
+          label: `${pickedQuestionIds.length} câu`,
+          disabled: true,
+          onClick: () => {},
         },
-        [{ id: crypto.randomUUID(), kind: 'part', title: '', children: [] }],
-      ),
-    );
+        { label: 'Gộp thành 1 câu tự luận', onClick: mergeSelected },
+        { label: 'Khóa / mở khóa', onClick: () => toggleLock(pickedQuestionIds) },
+        ...displayOutline(exam)
+          .filter((node) => node.kind === 'part')
+          .map((part) => ({
+            label: `Chuyển sang ${labelOfNode(part.id)}`,
+            onClick: () => moveInto(pickedQuestionIds, part.id),
+          })),
+        { label: `Xóa (${pickedQuestionIds.length})`, onClick: () => removeQuestions(pickedQuestionIds) },
+      ];
+    switch (object.kind) {
+      case 'exam':
+        return [ask()];
+      case 'part':
+      case 'group': {
+        const location = outlineLocation(displayOutline(exam), object.id);
+        return [
+          { label: 'Lên', disabled: !location || location.index === 0, onClick: () => applyStructure((p) => nudgeOutlineNode(p, object.id, 'up')) },
+          { label: 'Xuống', disabled: !location || location.index === location.siblings.length - 1, onClick: () => applyStructure((p) => nudgeOutlineNode(p, object.id, 'down')) },
+          { label: 'Nhân bản', onClick: () => applyStructure((p) => duplicateOutlineNode(p, object.id, () => crypto.randomUUID())) },
+          ask(),
+          { label: object.kind === 'part' ? 'Bỏ phần, giữ câu' : 'Bỏ nhóm, giữ câu', onClick: () => removeNode(object.id, true) },
+          { label: object.kind === 'part' ? 'Xóa phần và câu' : 'Xóa nhóm và câu', onClick: () => removeNode(object.id, false) },
+        ];
+      }
+      case 'question': {
+        const question = exam.questions.find((item) => item.id === object.id);
+        if (!question) return [];
+        const node = nodeOfQuestion(exam, question.id);
+        const locked = !!question.locked;
+        return [
+          { label: 'Lên', disabled: locked || !node || node.index === 0, onClick: () => moveQuestion(question.id, 'up') },
+          { label: 'Xuống', disabled: locked || !node || node.index === node.siblings.length - 1, onClick: () => moveQuestion(question.id, 'down') },
+          { label: 'Nhân bản', onClick: () => duplicateQuestion(question.id) },
+          { label: locked ? 'Mở khóa' : 'Khóa', onClick: () => toggleLock([question.id]) },
+          ask(question.id),
+          { label: 'Hỏi AI về câu này', onClick: () => withAi(() => { setCopilotCommand(`Đổi số liệu hoặc nâng cấp câu ${(exam.questions.indexOf(question)) + 1}`); openAi('chat'); }) },
+          ...displayOutline(exam)
+            .filter((part) => part.kind === 'part' && part.id !== node?.parent?.id)
+            .map((part) => ({
+              label: `Chuyển sang ${labelOfNode(part.id)}`,
+              disabled: locked,
+              onClick: () => moveInto([question.id], part.id),
+            })),
+          { label: 'Lưu bản sao vào ngân hàng', onClick: () => void saveToBank(question) },
+          { label: 'Xóa câu', disabled: locked, onClick: () => removeQuestions([question.id]) },
+        ];
+      }
+      case 'choice': {
+        const question = exam.questions.find((item) => item.id === object.question);
+        if (!question) return [];
+        const choice = question.choices?.find((item) => item.key === object.key);
+        return [
+          { label: 'Đặt là đáp án đúng', disabled: !!question.locked || question.correct_answer === object.key, onClick: () => editQuestion(question.id, (value) => ({ ...value, correct_answer: object.key })) },
+          { label: choice?.pinned ? 'Bỏ ghim vị trí' : 'Ghim vị trí', disabled: !!question.locked, onClick: () => editQuestion(question.id, (value) => ({ ...value, choices: value.choices?.map((item) => item.key === object.key ? { ...item, pinned: !item.pinned } : item) })) },
+          { label: 'Xóa phương án', disabled: !!question.locked, onClick: () => { editQuestion(question.id, (value) => ({ ...value, choices: value.choices?.filter((item) => item.key !== object.key), correct_answer: value.correct_answer === object.key ? undefined : value.correct_answer })); setPicked([`question:${question.id}`]); } },
+        ];
+      }
+      case 'statement': {
+        const question = exam.questions.find((item) => item.id === object.question);
+        if (!question) return [];
+        const setTruth = (isCorrect: boolean) => editQuestion(question.id, (value) => ({ ...value, sub_questions: value.sub_questions?.map((item) => item.key === object.key ? { ...item, isCorrect } : item) }));
+        return [
+          { label: 'Đúng', disabled: !!question.locked, onClick: () => setTruth(true) },
+          { label: 'Sai', disabled: !!question.locked, onClick: () => setTruth(false) },
+          { label: 'Xóa mệnh đề', disabled: !!question.locked, onClick: () => { editQuestion(question.id, (value) => ({ ...value, sub_questions: value.sub_questions?.filter((item) => item.key !== object.key) })); setPicked([`question:${question.id}`]); } },
+        ];
+      }
+      case 'item': {
+        const question = exam.questions.find((item) => item.id === object.question);
+        if (!question) return [];
+        return [{ label: 'Xóa ý', disabled: !!question.locked, onClick: () => { editQuestion(question.id, (value) => ({ ...value, parts: value.parts?.filter((part) => part.id !== object.key) })); setPicked([`question:${question.id}`]); } }];
+      }
+      case 'figure': {
+        const question = exam.questions.find((item) => item.id === object.question);
+        if (!question) return [];
+        return [{ label: 'Xóa hình', disabled: !!question.locked, onClick: () => { editQuestion(question.id, (value) => ({ ...value, figures: value.figures?.filter((figure) => figure.id !== object.id) })); setPicked([`question:${question.id}`]); } }];
+      }
+      default:
+        return [];
+    }
   };
-  const addManual = (point?: InsertPoint) => {
-    showTab('content');
-    handleAddQuestion(point);
+
+  // ----- Keyboard on the sheet
+  const onSheetKey = (event: React.KeyboardEvent) => {
+    const area = event.currentTarget.querySelector('[aria-label="Vùng trang"]');
+    if (event.target !== area) return;
+    const code = selectedCode;
+    const go = (next?: string) => {
+      if (next) {
+        event.preventDefault();
+        select(next);
+      }
+    };
+    const key = event.key;
+    if ((event.ctrlKey || event.metaKey) && key.toLowerCase() === 'z') {
+      event.preventDefault();
+      if (event.shiftKey) redo();
+      else undo();
+    } else if ((event.ctrlKey || event.metaKey) && key.toLowerCase() === 'y') {
+      event.preventDefault();
+      redo();
+    } else if ((event.ctrlKey || event.metaKey) && key.toLowerCase() === 'd') {
+      event.preventDefault();
+      const object = parseCode(code);
+      if (object.kind === 'question') duplicateQuestion(object.id);
+      else if (object.kind === 'part' || object.kind === 'group') applyStructure((p) => duplicateOutlineNode(p, object.id, () => crypto.randomUUID()));
+    } else if (event.altKey && (key === 'ArrowUp' || key === 'ArrowDown')) {
+      event.preventDefault();
+      const object = parseCode(code);
+      const direction = key === 'ArrowUp' ? 'up' : 'down';
+      if (object.kind === 'question') moveQuestion(object.id, direction);
+      else if (object.kind === 'part' || object.kind === 'group') applyStructure((p) => nudgeOutlineNode(p, object.id, direction));
+    } else if (key === 'ArrowDown') go(neighbourCode(exam, code, 1));
+    else if (key === 'ArrowUp') go(neighbourCode(exam, code, -1));
+    else if (key === 'ArrowRight') go(firstChildCode(exam, code));
+    else if (key === 'ArrowLeft' || key === 'Escape') go(code === EXAM_CODE ? undefined : parentCode(exam, code));
+    else if (key === 'Enter') {
+      event.preventDefault();
+      document.querySelector<HTMLElement>('[aria-label="Bảng nội dung và tài nguyên"] [data-format-field], [aria-label="Bảng nội dung và tài nguyên"] input, [aria-label="Bảng nội dung và tài nguyên"] textarea')?.focus();
+    } else if (key === 'Delete' || key === 'Backspace') {
+      const object = parseCode(code);
+      if (object.kind === 'question') removeQuestions([object.id]);
+      else if (object.kind === 'part' || object.kind === 'group') removeNode(object.id, false);
+    }
   };
-  const tabTitle = panelTitles[leftTab];
+
+  // ----- Layout
+  const chain = selectionChain(exam, selectedCode);
+  const detailInfoOpen =
+    leftOpen && leftTab === 'detail' && (selectedCode === EXAM_CODE || selectedCode.startsWith('print:header'));
+  const previewExam = detailInfoOpen && headerDraft ? previewHeaderDraft(exam, headerDraft) : exam;
+  const sourceTab = leftTab === 'bank' || leftTab === 'import';
   const exportProps = {
     canEdit,
     ready,
     hasQuestions: exam.questions.length > 0,
-    onExportWord: (view: ExportView) => reviewBefore(() => void handleExportWord(view)),
-    onPrint: () => reviewBefore(() => window.print()),
-    onPresent: () => reviewBefore(() => setPresentationOpen(true)),
+    reviewCount: reviewed.issues.length,
+    onReview: () => openReview(null),
+    onExportWord: (view: ExportView) => void handleExportWord(view),
+    onPrint: () => window.print(),
+    onPresent: () => setPresentationOpen(true),
     onShuffle: () => setIsShuffleModalOpen(true),
   };
-  const moreProps = {
-    canEdit,
-    hasServerExam: Boolean(exam.serverId),
-    hasAssignments: assignmentState.id === exam.id && assignmentState.has,
-    submissionCount,
-    onReview: () => openReview(null),
-    onTemplate: () => showTab('template'),
-    onCollaborate: openCollaboration,
-    onResults: () => setIsResultsModalOpen(true),
+  const aiTarget =
+    pickedQuestionIds.length > 1
+      ? `${pickedQuestionIds.length} câu`
+      : questionOf(selectedCode)
+        ? (chain.find((step) => step.code.startsWith('question:'))?.label ?? 'Câu')
+        : selectedCode === EXAM_CODE
+          ? 'Toàn đề'
+          : (chain.at(-1)?.label ?? 'Toàn đề');
+  const single = pickedQuestionIds.length === 1 ? exam.questions.find((q) => q.id === pickedQuestionIds[0]) : undefined;
+  const aiQuestion = single ?? (questionOf(selectedCode) ? exam.questions.find((q) => q.id === questionOf(selectedCode)) : undefined);
+
+  const rightTabs: { id: RightTab; label: string; open: boolean }[] = [
+    { id: 'ai', label: 'AI', open: canEdit && isCopilotOpen },
+    { id: 'review', label: 'Rà soát', open: reviewOpen },
+    { id: 'collab', label: 'Góp ý', open: collaborationOpen && !!exam.serverId },
+  ];
+  const shownRight = rightTabs.filter((tab) => tab.open);
+  const activeRight = shownRight.find((tab) => tab.id === rightTab) ?? shownRight[0];
+  const closeRight = (id: RightTab) => {
+    if (id === 'ai') setIsCopilotOpen(false);
+    if (id === 'review') {
+      setReviewOpen(false);
+      setPendingReviewAction(null);
+    }
+    if (id === 'collab') setCollaborationOpen(false);
   };
+  const showRight = (id: RightTab) => (activeRight?.id === id ? 'flex' : 'hidden');
+
   return (
-    <DetailSlotProvider value={detailContext}>
     <div className="print-flow @container flex-1 min-h-0 w-full overflow-hidden flex flex-col bg-[var(--background)] text-[var(--foreground)]">
-      {keyReminder && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label="Cần khóa AI"
-          className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
-        >
-          <div className="app-dialog p-5 rounded-xl border bg-[var(--ui-surface)] max-w-sm space-y-4">
-            <h2>Cần khóa AI</h2>
-            <p>Thêm khóa cá nhân để dùng chức năng AI. Bạn vẫn soạn và xuất đề thủ công được.</p>
-            <button
-              type="button"
-              className="app-button-primary p-2"
-              onClick={() => {
-                setKeyReminder(false);
-                openKeys();
-              }}
-            >
-              Thêm khóa AI
-            </button>
-            <button
-              type="button"
-              className="app-button-secondary p-2 ml-2"
-              onClick={() => setKeyReminder(false)}
-            >
-              Đóng
-            </button>
-          </div>
-        </div>
-      )}
       <Header
-        leading={<AppMenu />}
+        leading={
+          <>
+            <AppMenu />
+            {canEdit && (
+              <span className="hidden sm:flex items-center gap-0.5" role="group" aria-label="Hoàn tác">
+                <button
+                  type="button"
+                  aria-label="Hoàn tác"
+                  title="Hoàn tác (Ctrl+Z)"
+                  disabled={!history.undo.length}
+                  onClick={undo}
+                  className="app-button-secondary min-h-9 min-w-9 rounded-lg inline-flex items-center justify-center disabled:opacity-40 cursor-pointer"
+                >
+                  <Undo2 className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Làm lại"
+                  title="Làm lại (Ctrl+Shift+Z)"
+                  disabled={!history.redo.length}
+                  onClick={redo}
+                  className="app-button-secondary min-h-9 min-w-9 rounded-lg inline-flex items-center justify-center disabled:opacity-40 cursor-pointer"
+                >
+                  <Redo2 className="w-4 h-4" />
+                </button>
+              </span>
+            )}
+          </>
+        }
         canEdit={canEdit}
         examTitle={exam.metadata.title}
         onUpdateTitle={handleUpdateTitle}
@@ -682,46 +1021,27 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
             else openCollaboration();
           })
         }
+        shareMenu={
+          assignmentState.id === exam.id && assignmentState.has ? (
+            <ToolMenu
+              label="Kết quả bài đã giao"
+              compact
+              Icon={Users}
+              items={[{ label: `Kết quả (${submissionCount})`, onClick: () => setIsResultsModalOpen(true) }]}
+            />
+          ) : undefined
+        }
         actions={
           <>
-            <nav aria-label="Chuyển vùng soạn" className="lg:hidden flex gap-1">
-              {(['editor', 'preview'] as const).map((tab) => (
-                <button
-                  type="button"
-                  key={tab}
-                  aria-pressed={mobileTab === tab}
-                  className={
-                    (mobileTab === tab ? 'app-button-tonal' : 'app-button-secondary') +
-                    ' min-h-9 min-w-9 px-2 sm:px-2.5 text-xs whitespace-nowrap inline-flex items-center justify-center'
-                  }
-                  aria-label={tab === 'editor' ? 'Soạn câu' : 'Xem đề'}
-                  onClick={() => setMobileTab(tab)}
-                >
-                  {tab === 'editor' ? (
-                    <PencilLine className="w-4 h-4 sm:hidden" />
-                  ) : (
-                    <Eye className="w-4 h-4 sm:hidden" />
-                  )}
-                  <span className="max-sm:hidden">{tab === 'editor' ? 'Soạn câu' : 'Xem đề'}</span>
-                </button>
-              ))}
-            </nav>
-            {mayEdit && (
-              <select
-                aria-label="Chế độ"
-                title="Sửa: chỉnh đề. Góp ý: đọc và để lại nhận xét. Xem: chỉ đọc."
-                className="teacher-field hidden md:block min-h-9 py-0 text-xs"
-                value={mode}
-                onChange={(event) => {
-                  const next = event.target.value as 'edit' | 'comment' | 'view';
-                  setMode(next);
-                  if (next === 'comment' && exam.serverId) openCollaboration();
-                }}
+            {reviewed.issues.length > 0 && (
+              <button
+                type="button"
+                aria-label="Rà soát"
+                onClick={() => openReview(null)}
+                className="app-button-secondary hidden sm:inline-flex items-center min-h-9 px-3 rounded-lg text-xs font-medium cursor-pointer"
               >
-                <option value="edit">Sửa</option>
-                {exam.serverId && <option value="comment">Góp ý</option>}
-                <option value="view">Xem</option>
-              </select>
+                Rà soát · {reviewed.issues.length}
+              </button>
             )}
             {exam.serverId && (
               <button
@@ -729,7 +1049,7 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                 aria-label="Mời cùng soạn"
                 title="Mời đồng nghiệp cùng soạn, góp ý và xem lịch sử"
                 className="app-button-secondary hidden sm:inline-flex items-center gap-1.5 min-h-9 px-3 rounded-lg text-xs font-medium cursor-pointer"
-                onClick={openCollaboration}
+                onClick={() => openCollaboration()}
               >
                 <Users className="w-4 h-4" />
                 <span className="max-md:hidden">Mời</span>
@@ -739,10 +1059,20 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
               <ExportMenu {...exportProps} />
             </span>
             <span className="sm:hidden">
-              <MoreMenu {...moreProps} phone={exportProps} />
-            </span>
-            <span className="hidden sm:block">
-              <MoreMenu {...moreProps} />
+              <MoreMenu
+                canEdit={canEdit}
+                hasServerExam={Boolean(exam.serverId)}
+                hasAssignments={assignmentState.id === exam.id && assignmentState.has}
+                submissionCount={submissionCount}
+                onReview={() => openReview(null)}
+                onCollaborate={() => openCollaboration()}
+                onResults={() => setIsResultsModalOpen(true)}
+                phone={exportProps}
+                canUndo={history.undo.length > 0}
+                canRedo={history.redo.length > 0}
+                onUndo={undo}
+                onRedo={redo}
+              />
             </span>
           </>
         }
@@ -792,10 +1122,7 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
               </button>
             )}
             {saveState === 'conflict' && ready && exam.serverId && (
-              <button
-                onClick={() => void openLatest()}
-                className="app-button-secondary min-h-8 px-2.5 text-xs"
-              >
+              <button onClick={() => void openLatest()} className="app-button-secondary min-h-8 px-2.5 text-xs">
                 Mở bản máy chủ, giữ riêng nháp
               </button>
             )}
@@ -805,18 +1132,21 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
 
       <EditorToolbar
         canEdit={canEdit}
-        copilotOpen={isCopilotOpen}
-        onCopilot={() => withAi(() => { setRightTab('ai'); setIsCopilotOpen((open) => !open); })}
-        onAssistant={toggleAssistant}
-        onAdd={addManual}
-        onBank={() => openSource('bank')}
-        onImport={() => openSource('import')}
-        onGenerate={() => openSource('generate')}
-        onAddPart={addPart}
-        onSettings={openSettings}
+        addItems={addItemsFor(selectedCode)}
+        aiOpen={isCopilotOpen}
+        onAi={() => withAi(() => (isCopilotOpen && rightTab === 'ai' ? setIsCopilotOpen(false) : openAi('chat')))}
+        steps={chain}
+        onStep={(code) => select(code)}
+        commands={commandsFor()}
+        onPanel={() => setPhonePanel((open) => !open)}
       />
+      {(notice || structureMessage) && (
+        <p role="status" className="no-print shrink-0 border-b px-3 py-1.5 text-xs bg-[var(--ui-surface)]">
+          {structureMessage || notice}
+        </p>
+      )}
       {!ready && <div className="p-4">{saveMessage || 'Đang tải nội dung. Vui lòng chờ trước khi sửa.'}</div>}
-      <div className="print-flow flex-1 flex overflow-hidden min-h-0 relative">
+      <div className="print-flow flex-1 flex overflow-hidden min-h-0 relative" onKeyDown={onSheetKey}>
         <EditorRail items={railItems} tab={leftTab} open={leftOpen} onTab={pressRail} />
 
         <ResizablePanel
@@ -826,139 +1156,44 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
           onWidth={setLeftWidth}
           min={320}
           max={720}
-          className={`${mobileTab === 'editor' ? 'flex' : 'hidden'} ${leftOpen ? 'lg:flex' : 'lg:hidden'}`}
+          className={`${leftOpen ? 'lg:flex' : 'lg:hidden'} ${
+            phonePanel ? 'max-lg:flex max-lg:fixed max-lg:inset-x-0 max-lg:bottom-0 max-lg:top-12 max-lg:z-40' : 'max-lg:hidden'
+          }`}
         >
-          <div
-            className="lg:hidden shrink-0 flex gap-1 overflow-x-auto p-2 border-b"
-            role="group"
-            aria-label="Chọn bảng"
-          >
+          <div className="lg:hidden shrink-0 flex gap-1 overflow-x-auto p-2 border-b" role="group" aria-label="Chọn bảng">
             {railItems.map(({ id, label }) => (
               <button
                 key={id}
                 type="button"
                 aria-pressed={leftTab === id}
-                className={
-                  (leftTab === id ? 'app-button-tonal' : 'app-button-secondary') +
-                  ' min-h-9 px-3 text-xs whitespace-nowrap shrink-0'
-                }
-                onClick={() =>
-                  id === 'bank' || id === 'import' || id === 'generate' ? openSource(id) : showTab(id)
-                }
+                className={(leftTab === id ? 'app-button-tonal' : 'app-button-secondary') + ' min-h-9 px-3 text-xs whitespace-nowrap shrink-0'}
+                onClick={() => (id === 'bank' || id === 'import' ? openSource(id) : showTab(id))}
               >
                 {label}
               </button>
             ))}
+            <button type="button" className="app-button-secondary min-h-9 px-3 text-xs ml-auto shrink-0" onClick={() => setPhonePanel(false)}>
+              Đóng
+            </button>
           </div>
           {sourceTab && (
             <div className="shrink-0 flex items-center gap-2 px-3 py-2 border-b text-sm">
-              <h2 className="font-semibold">{tabTitle}</h2>
+              <h2 className="font-semibold">{panelTitles[leftTab]}</h2>
               <span className="text-xs text-[var(--ui-text-secondary)] truncate">
-                · thêm vào {describeInsertion(exam, insertionPoint())}
+                · thêm vào {describeInsertion(exam, sourcePoint ?? insertionFor(exam, selectedCode))}
               </span>
               <button
                 type="button"
-                aria-label={'Đóng ' + tabTitle.toLowerCase()}
+                aria-label={'Đóng ' + panelTitles[leftTab].toLowerCase()}
                 className="ml-auto p-1.5 rounded-lg hover:bg-[var(--ui-surface-variant)] cursor-pointer"
                 onClick={() => closeTab(leftTab)}
               >
-                <X className="w-4 h-4" />
+                ×
               </button>
             </div>
           )}
           <div className="flex-1 min-h-0 overflow-y-auto">
-            <div className={leftTab === 'info' ? 'block p-3' : 'hidden'}>
-              <EditorSettings
-                key={sessionScope}
-                ownerId={currentUser.id}
-                exam={exam}
-                canEdit={canEdit}
-                hasActiveKey={hasActiveKey}
-                onChange={setExam}
-                isOpen={infoOpen}
-                onPreview={updateHeaderPreview}
-                onClose={() => setLeftTab('content')}
-                preview={null}
-              />
-            </div>
-            <div className={leftTab === 'template' ? 'block p-3 space-y-6' : 'hidden'}>
-              <EditorPrint exam={exam} canEdit={canEdit} onChange={setExam} />
-              <EditorTemplate
-                key={currentUser.id + ':' + editorSessionKey}
-                ownerId={currentUser.id}
-                exam={exam}
-                canEdit={canEdit}
-                onChange={setExam}
-                open={leftOpen && leftTab === 'template'}
-                onClose={() => setLeftTab('content')}
-              />
-            </div>
-            {mounted.bank && (
-              <div className={leftTab === 'bank' ? 'h-full' : 'hidden'}>
-                <QuestionBankModal
-                  panel
-                  ownerId={currentUser.id}
-                  key={`bank:${currentUser.id}`}
-                  isOpen
-                  onClose={() => closeTab('bank')}
-                  onInsertQuestion={(q, passage) => {
-                    const question = { ...q } as BankQuestion;
-                    delete question.passage;
-                    delete question.passageUnavailable;
-                    const inserted: Question = {
-                      ...question,
-                      id: crypto.randomUUID(),
-                    };
-                    return acceptSource([inserted], passage ? [passage] : []);
-                  }}
-                />
-              </div>
-            )}
-            {mounted.import && (
-              <div className={leftTab === 'import' ? 'h-full' : 'hidden'}>
-                <ImportModal
-                  panel
-                  ownerId={currentUser.id}
-                  documentId={exam.id}
-                  context={{
-                    subject: exam.metadata.subject,
-                    grade: exam.metadata.grade,
-                  }}
-                  isOpen
-                  onClose={() => closeTab('import')}
-                  allowParts
-                  onImportQuestions={(questions, context) =>
-                    acceptSource(questions, context.passages, undefined, context.parts)
-                  }
-                  apiKey=""
-                />
-              </div>
-            )}
-            {mounted.generate && (
-              <div className={leftTab === 'generate' ? 'h-full' : 'hidden'}>
-                <GenerateModal
-                  panel
-                  key={sessionScope}
-                  context={exam.metadata}
-                  documentStamp={generationDocumentStamp(exam)}
-                  expectedUserId={currentUser.id}
-                  appendQuestions
-                  planningHint={
-                    exam.metadata.examPlan
-                      ? 'Ma trận giáo viên đang dùng (chỉ là gợi ý cho các câu thêm): ' +
-                        JSON.stringify(exam.metadata.examPlan)
-                      : undefined
-                  }
-                  isOpen
-                  onClose={() => closeTab('generate')}
-                  onExamGenerated={(newExam, baseStamp) =>
-                    acceptSource(newExam.questions, newExam.passages, baseStamp)
-                  }
-                  apiKey=""
-                />
-              </div>
-            )}
-            <div className={`p-3 space-y-3 min-w-0 ${leftTab === 'content' ? 'block' : 'hidden'}`}>
+            <div className={leftTab === 'detail' ? 'block p-3 space-y-3 min-w-0' : 'hidden'} data-detail-panel>
               {recoveredDraft && saveState !== 'saved' && (
                 <div role="status" className="border rounded p-3 text-sm">
                   Đang mở nháp trên máy của đề này.{' '}
@@ -980,145 +1215,99 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                   )}
                 </div>
               )}
-              <EditorPending ownerId={currentUser.id} exam={exam} onCopilot={() => openAi()} />
-              <fieldset disabled={!canEdit} id="panel-exam-content" className="space-y-3 min-w-0">
-                <div className="flex items-center justify-between gap-3 text-xs">
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-sm font-semibold">Nội dung đề</h2>
-                    {exam.questions.length > 0 && (
-                      <span className="text-[var(--ui-text-secondary)]">
-                        {exam.questions.length} câu ·{' '}
-                        {['comment_only', 'survey'].includes(exam.metadata.assessmentMode ?? '')
-                          ? 'không chấm điểm số'
-                          : `${scoredQuestions.reduce((total, q) => total + (q.points ?? 0), 0)}đ`}
-                      </span>
-                    )}
-                  </div>
-                  {exam.questions.length > 0 && (
-                    <button
-                      onClick={handleSelectAll}
-                      title={
-                        selectedQuestionIds.length === exam.questions.length
-                          ? 'Bỏ chọn tất cả'
-                          : 'Chọn tất cả câu hỏi'
-                      }
-                      className="app-button-secondary flex items-center gap-1.5 px-2.5 min-h-8 text-xs rounded-lg cursor-pointer"
-                    >
-                      {selectedQuestionIds.length === exam.questions.length && exam.questions.length > 0 ? (
-                        <CheckSquare className="w-3.5 h-3.5" />
-                      ) : (
-                        <Square className="w-3.5 h-3.5" />
-                      )}
-                      <span>
-                        {selectedQuestionIds.length === exam.questions.length ? 'Bỏ chọn' : 'Chọn tất cả'}
-                      </span>
-                    </button>
-                  )}
+              <EditorPending ownerId={currentUser.id} exam={exam} onCopilot={() => openAi('chat')} />
+              {pickedQuestionIds.length > 1 ? (
+                <div className="space-y-2">
+                  <h2 className="text-sm font-semibold">{pickedQuestionIds.length} câu đã chọn</h2>
+                  <p className="text-xs text-[var(--ui-text-secondary)]">
+                    Dùng hàng công cụ để gộp, khóa, chuyển phần hoặc xóa các câu này.
+                  </p>
                 </div>
-                <OutlineEditor
-                  key={currentUser.id + ':' + editorSessionKey}
+              ) : (
+                <EditorDetail
                   exam={exam}
+                  code={selectedCode}
                   canEdit={canEdit}
+                  ownerId={currentUser.id}
+                  sessionScope={sessionScope}
+                  hasActiveKey={hasActiveKey}
+                  sourceStamp={manualSourceStamp}
                   onChange={setExam}
-                  onPoint={setSelectedPoint}
-                  onSource={(point, source: QuestionSource) => {
-                    setSelectedPoint(point);
-                    if (source === 'manual') addManual(point);
-                    else openSource(source, point);
-                  }}
-                  composerPoint={newQuestionPoint}
-                  composer={composer}
-                  renderQuestion={(q, idx, number, controls) => (
-                    <QuestionCard
-                      displayNumber={number}
-                      extraItems={controls.moveItems}
-                      selectionActive={selectedQuestionIds.length > 0}
-                      withAi={withAi}
-                      ownerId={currentUser.id}
-                      displayPoints={scoredQuestions[idx]?.points}
-                      hidePassage
-                      passage={exam.passages?.find((passage) => passage.id === q.passageId)}
-                      numericScore={requiresNumericScore(exam.metadata.assessmentMode)}
-                      cognitiveFrameworkId={exam.metadata.cognitiveFrameworkId}
-                      knowledgePackage={exam.metadata.knowledgePackage}
-                      knowledgeScope={exam.metadata.knowledgeScope}
-                      key={`${currentUser.id}:${editorSessionKey}:${q.id}`}
-                      documentId={exam.id}
-                      sourceStamp={manualSourceStamp}
-                      onManualSave={(submission) =>
-                        setExam((previous) =>
-                          applyQuestionManualSubmission(previous, submission, currentUser.id),
-                        )
-                      }
-                      index={idx}
-                      question={{
-                        ...q,
-                        subject: q.subject ?? exam.metadata.subject,
-                        grade: q.grade ?? exam.metadata.grade,
-                      }}
-                      onDelete={handleDeleteQuestion}
-                      apiKey=""
-                      onMoveUp={() => handleMoveQuestion(idx, 'up')}
-                      onMoveDown={() => handleMoveQuestion(idx, 'down')}
-                      onDuplicate={() => handleDuplicateQuestion(idx)}
-                      isFirst={controls.first}
-                      isLast={controls.last}
-                      isSelected={selectedQuestionIds.includes(q.id)}
-                      onToggleSelect={handleToggleSelectQuestion}
-                      onAskAiAboutQuestion={handleAskAiAboutQuestion}
-                    />
-                  )}
+                  onStructure={applyStructure}
+                  onPreview={updateHeaderPreview}
+                  addItems={addItemsFor}
+                  onManualSave={(submission) =>
+                    setExam((previous) => applyQuestionManualSubmission(previous, submission, currentUser.id))
+                  }
                 />
-                {selectedQuestionIds.length > 0 && (
-                  <div
-                    className={
-                      'fixed bottom-16 lg:bottom-6 left-1/2 -translate-x-1/2 z-40 bg-[var(--ui-accent)] text-[var(--ui-on-primary)] px-4 ' +
-                      'py-2.5 rounded-full shadow-lg border border-[var(--ui-border)]/30 flex items-center gap-3'
-                    }
-                  >
-                    <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-black/20">
-                      Đã chọn {selectedQuestionIds.length} câu
-                    </span>
-                    <button
-                      onClick={handleMergeSelected}
-                      disabled={selectedQuestionIds.length < 2}
-                      title={
-                        selectedQuestionIds.length < 2
-                          ? 'Chọn ít nhất 2 câu để gộp thành 1 câu tự luận'
-                          : 'Gộp các câu đã chọn thành 1 câu tự luận tổng hợp có nhiều ý a, b, c...'
-                      }
-                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg app-button-primary disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-                    >
-                      <Link2 className="w-3.5 h-3.5" />
-                      <span>Gộp thành 1 câu tự luận</span>
-                    </button>
-                    <button
-                      onClick={handleBatchDelete}
-                      title="Xóa các câu hỏi đã chọn"
-                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-rose-600 hover:bg-rose-500 text-white cursor-pointer"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                      <span>Xóa ({selectedQuestionIds.length})</span>
-                    </button>
-                    <button
-                      onClick={() => setSelectedQuestionIds([])}
-                      title="Hủy chọn tất cả"
-                      className="p-1.5 rounded-lg hover:bg-black/20 cursor-pointer"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                )}
-              </fieldset>
+              )}
             </div>
+            <div className={leftTab === 'template' ? 'block p-3 space-y-6' : 'hidden'}>
+              <EditorPrint exam={exam} canEdit={canEdit} onChange={setExam} />
+              <EditorTemplate
+                key={currentUser.id + ':' + editorSessionKey}
+                ownerId={currentUser.id}
+                exam={exam}
+                canEdit={canEdit}
+                onChange={setExam}
+                open={leftOpen && leftTab === 'template'}
+                onClose={() => setLeftTab('detail')}
+              />
+            </div>
+            <div className={leftTab === 'outline' ? 'block p-3' : 'hidden'}>
+              <EditorOutline
+                exam={exam}
+                selectedCode={selectedCode}
+                ticked={pickedQuestionIds}
+                canEdit={canEdit}
+                issueCounts={issueCounts}
+                commentCounts={commentCounts}
+                onSelect={(code) => select(code)}
+                onTick={tick}
+                onMove={(nodeId, point) => applyStructure((previous) => moveOutlineNode(previous, nodeId, point))}
+              />
+            </div>
+            {mounted.bank && (
+              <div className={leftTab === 'bank' ? 'h-full' : 'hidden'}>
+                <QuestionBankModal
+                  panel
+                  ownerId={currentUser.id}
+                  key={`bank:${currentUser.id}`}
+                  isOpen
+                  onClose={() => closeTab('bank')}
+                  onInsertQuestion={(q, passage) => {
+                    const question = { ...q } as BankQuestion;
+                    delete question.passage;
+                    delete question.passageUnavailable;
+                    const inserted: Question = { ...question, id: crypto.randomUUID() };
+                    return acceptSource([inserted], passage ? [passage] : []);
+                  }}
+                />
+              </div>
+            )}
+            {mounted.import && (
+              <div className={leftTab === 'import' ? 'h-full' : 'hidden'}>
+                <ImportModal
+                  panel
+                  ownerId={currentUser.id}
+                  documentId={exam.id}
+                  context={{ subject: exam.metadata.subject, grade: exam.metadata.grade }}
+                  isOpen
+                  onClose={() => closeTab('import')}
+                  allowParts
+                  onImportQuestions={(questions, context) =>
+                    acceptSource(questions, context.passages, undefined, context.parts)
+                  }
+                  apiKey=""
+                />
+              </div>
+            )}
           </div>
         </ResizablePanel>
 
         <section
           aria-label="Tờ đề"
-          className={`a4-preview-section min-w-0 flex-1 min-h-0 flex-col ${
-            mobileTab === 'preview' ? 'flex' : 'hidden'
-          } lg:flex print:!block print:!static print:!h-auto print:!w-full print:!overflow-visible`}
+          className="a4-preview-section min-w-0 flex-1 min-h-0 flex flex-col print:!block print:!static print:!h-auto print:!w-full print:!overflow-visible"
         >
           {previewExam !== exam && (
             <p role="status" className="no-print text-xs px-3 py-1.5 border-b bg-[var(--ui-surface)]">
@@ -1127,159 +1316,174 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
           )}
           <A4Preview
             exam={previewExam}
-            onPrintBlock={canEdit ? () => showTab('template') : undefined}
-            onHeaderLine={canEdit ? focusHeaderField : undefined}
-            onQuestion={canEdit ? pickQuestion : undefined}
+            selectedCode={canEdit ? sheetCode : undefined}
+            onSelectCode={(code) => select(code)}
+            insertItems={canEdit ? addItemsFor : undefined}
             issueCounts={issueCounts}
-            commentCounts={commentState.key === commentKey ? commentState.counts : undefined}
-            onIssues={() => openReview(null)}
-            onComments={openCollaboration}
-            barExtra={
-              <button
-                type="button"
-                className="app-button-secondary inline-flex items-center gap-1.5 min-h-9 px-3 text-xs rounded-lg cursor-pointer disabled:opacity-40"
-                disabled={!ready || exam.questions.length === 0}
-                onClick={() => reviewBefore(() => setPresentationOpen(true))}
-              >
-                <Presentation className="w-4 h-4" />
-                <span>Trình chiếu</span>
-              </button>
-            }
+            commentCounts={commentCounts}
+            onIssues={(id) => {
+              select(`question:${id}`);
+              openReview(null);
+            }}
+            onComments={(id) => {
+              select(`question:${id}`);
+              openCollaboration(id);
+            }}
           />
         </section>
 
-        {(() => {
-          const tabs: { id: RightTab; label: string; open: boolean }[] = [
-            { id: 'detail', label: 'Chi tiết câu', open: canEdit && editingIds.length > 0 },
-            { id: 'ai', label: 'AI', open: canEdit && isCopilotOpen },
-            { id: 'review', label: 'Rà soát', open: reviewOpen },
-            { id: 'collab', label: 'Góp ý', open: collaborationOpen && !!exam.serverId },
-          ];
-          const shown = tabs.filter((tab) => tab.open);
-          const active = shown.find((tab) => tab.id === rightTab) ?? shown[0];
-          const closeTab = (id: RightTab) => {
-            if (id === 'ai') setIsCopilotOpen(false);
-            if (id === 'review') {
-              setReviewOpen(false);
-              setPendingReviewAction(null);
-            }
-            if (id === 'collab') setCollaborationOpen(false);
-          };
-          const show = (id: RightTab) => (active?.id === id ? 'flex' : 'hidden');
-          return (
-            <ResizablePanel
-              side="right"
-              label="Bảng bên phải"
-              width={rightWidth}
-              onWidth={setRightWidth}
-              min={300}
-              max={560}
-              className={`${
-                active ? 'flex' : 'hidden'
-              } max-lg:fixed max-lg:inset-x-0 max-lg:bottom-0 max-lg:top-12 max-lg:z-40`}
-            >
-              <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-                <div role="tablist" aria-label="Bảng bên phải" className="no-print flex shrink-0 gap-1 border-b border-[var(--ui-border)]/60 p-1.5 overflow-x-auto">
-                  {shown.map((tab) => (
-                    <span key={tab.id} className="inline-flex shrink-0 items-center">
-                      <button
-                        type="button"
-                        role="tab"
-                        aria-selected={active?.id === tab.id}
-                        onClick={() => setRightTab(tab.id)}
-                        className={`min-h-9 rounded-lg px-3 text-xs font-semibold cursor-pointer ${
-                          active?.id === tab.id ? 'app-button-tonal' : 'app-button-secondary'
-                        }`}
-                      >
-                        {tab.label}
-                      </button>
-                      {tab.id !== 'detail' && (
-                        <button
-                          type="button"
-                          aria-label={`Đóng ${tab.label}`}
-                          onClick={() => closeTab(tab.id)}
-                          className="min-h-9 px-2 text-xs cursor-pointer"
-                        >
-                          ×
-                        </button>
-                      )}
-                    </span>
-                  ))}
-                </div>
-                <div
-                  ref={setDetailSlot}
-                  aria-label="Chi tiết câu"
-                  role="region"
-                  className={`${show('detail')} min-h-0 flex-1 flex-col overflow-auto p-3`}
-                />
-                {canEdit && (
-                  <div className={`${show('ai')} min-h-0 flex-1 flex-col`}>
+        <ResizablePanel
+          side="right"
+          label="Bảng bên phải"
+          width={rightWidth}
+          onWidth={setRightWidth}
+          min={300}
+          max={560}
+          className={`${activeRight ? 'flex' : 'hidden'} max-lg:fixed max-lg:inset-x-0 max-lg:bottom-0 max-lg:top-12 max-lg:z-40`}
+        >
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+            <div role="tablist" aria-label="Bảng bên phải" className="no-print flex shrink-0 gap-1 border-b border-[var(--ui-border)]/60 p-1.5 overflow-x-auto">
+              {shownRight.map((tab) => (
+                <span key={tab.id} className="inline-flex shrink-0 items-center">
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={activeRight?.id === tab.id}
+                    onClick={() => setRightTab(tab.id)}
+                    className={`min-h-9 rounded-lg px-3 text-xs font-semibold cursor-pointer ${
+                      activeRight?.id === tab.id ? 'app-button-tonal' : 'app-button-secondary'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={`Đóng ${tab.label}`}
+                    onClick={() => closeRight(tab.id)}
+                    className="min-h-9 px-2 text-xs cursor-pointer"
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+            </div>
+            {canEdit && (
+              <div className={`${showRight('ai')} min-h-0 flex-1 flex-col`}>
+                <EditorAiPanel
+                  tab={aiTab}
+                  onTab={setAiTab}
+                  target={aiTarget}
+                  hasKey={hasActiveKey}
+                  onKeys={openKeys}
+                  chat={
                     <RightCompanionRail
                       key={`${currentUser.id}:${exam.id}`}
                       ownerId={currentUser.id}
                       onSubmitCopilot={(submission) =>
                         setExam((previous) => applyCopilotSubmission(previous, submission, currentUser.id))
                       }
-                      isExpanded={isCopilotOpen && active?.id === 'ai'}
+                      isExpanded={isCopilotOpen && activeRight?.id === 'ai' && aiTab === 'chat'}
                       onClose={() => setIsCopilotOpen(false)}
                       exam={exam}
-                      selectedQuestionIds={selectedQuestionIds}
+                      selectedQuestionIds={pickedQuestionIds.length ? pickedQuestionIds : aiQuestion ? [aiQuestion.id] : []}
                       externalCommand={copilotCommand}
                     />
-                  </div>
-                )}
-                {reviewOpen && (
-                  <div className={`${show('review')} min-h-0 flex-1 flex-col overflow-auto`}>
-                    <EditorReview
-                      panel
-                      exam={exam}
-                      onClose={() => closeTab('review')}
-                      onContinue={
-                        pendingReviewAction
-                          ? () => {
-                              setReviewOpen(false);
-                              pendingReviewAction?.();
-                            }
-                          : undefined
-                      }
-                      onQuestion={(id) => {
-                        showTab('content');
-                        setTimeout(() => {
-                          const node = document.getElementById('editor-question-' + id);
-                          node?.scrollIntoView({ block: 'center' });
-                          node?.focus();
-                        }, 0);
-                      }}
-                    />
-                  </div>
-                )}
-                {collaborationOpen && exam.serverId && (
-                  <div className={`${show('collab')} min-h-0 flex-1 flex-col overflow-auto p-3`}>
-                    <ExamCollaboratorsPanel
-                      key={`${exam.serverId}-${currentUser.id}`}
-                      examId={exam.serverId}
-                      expectedUserId={currentUser.id}
-                      questions={exam.questions.map((q, i) => ({
-                        id: q.id,
-                        label: `Câu ${i + 1}: ${(q.content || '').replace(/\s+/g, ' ').slice(0, 40)}`,
-                      }))}
-                      onRestored={(document) => {
-                        acceptServerDocument(document);
-                      }}
-                      beforeRestore={() => {
-                        if (saveState !== 'saved') {
-                          alert('Hãy lưu xong hoặc giữ bản nháp thành đề mới trước khi khôi phục lịch sử.');
-                          return false;
+                  }
+                  generate={
+                    mounted.generate ? (
+                      <GenerateModal
+                        panel
+                        key={sessionScope}
+                        context={exam.metadata}
+                        documentStamp={generationDocumentStamp(exam)}
+                        expectedUserId={currentUser.id}
+                        appendQuestions
+                        planningHint={
+                          exam.metadata.examPlan
+                            ? 'Ma trận giáo viên đang dùng (chỉ là gợi ý cho các câu thêm): ' +
+                              JSON.stringify(exam.metadata.examPlan)
+                            : undefined
                         }
-                        return true;
-                      }}
-                    />
-                  </div>
-                )}
+                        isOpen
+                        onClose={() => {
+                          setMounted((previous) => ({ ...previous, generate: false }));
+                          setAiTab('chat');
+                        }}
+                        onExamGenerated={(newExam, baseStamp) => acceptSource(newExam.questions, newExam.passages, baseStamp)}
+                        apiKey=""
+                      />
+                    ) : (
+                      <div className="p-3 space-y-2 text-sm">
+                        <p>Sinh câu mới bằng AI vào đúng chỗ đang chọn.</p>
+                        <button
+                          type="button"
+                          className="app-button-secondary rounded-lg px-3 min-h-9 text-xs"
+                          onClick={() => openSource('generate')}
+                        >
+                          Bắt đầu sinh câu
+                        </button>
+                      </div>
+                    )
+                  }
+                  verify={
+                    aiQuestion ? (
+                      <QuestionVerify
+                        key={aiQuestion.id}
+                        question={{ ...aiQuestion, subject: aiQuestion.subject ?? exam.metadata.subject, grade: aiQuestion.grade ?? exam.metadata.grade }}
+                        ownerId={currentUser.id}
+                        documentId={exam.id}
+                        sourceStamp={manualSourceStamp}
+                        withAi={withAi}
+                      />
+                    ) : null
+                  }
+                />
               </div>
-            </ResizablePanel>
-          );
-        })()}
+            )}
+            {reviewOpen && (
+              <div className={`${showRight('review')} min-h-0 flex-1 flex-col overflow-auto`}>
+                <EditorReview
+                  panel
+                  exam={exam}
+                  onClose={() => closeRight('review')}
+                  onContinue={
+                    pendingReviewAction
+                      ? () => {
+                          setReviewOpen(false);
+                          pendingReviewAction?.();
+                        }
+                      : undefined
+                  }
+                  onQuestion={(id) => select(`question:${id}`)}
+                />
+              </div>
+            )}
+            {collaborationOpen && exam.serverId && (
+              <div className={`${showRight('collab')} min-h-0 flex-1 flex-col overflow-auto p-3`}>
+                <ExamCollaboratorsPanel
+                  key={`${exam.serverId}-${currentUser.id}`}
+                  examId={exam.serverId}
+                  expectedUserId={currentUser.id}
+                  focusQuestionId={collabFocus}
+                  questions={exam.questions.map((q, i) => ({
+                    id: q.id,
+                    label: `Câu ${i + 1}: ${(q.content || '').replace(/\s+/g, ' ').slice(0, 40)}`,
+                  }))}
+                  onRestored={(document) => {
+                    acceptServerDocument(document);
+                  }}
+                  beforeRestore={() => {
+                    if (saveState !== 'saved') {
+                      alert('Hãy lưu xong hoặc giữ bản nháp thành đề mới trước khi khôi phục lịch sử.');
+                      return false;
+                    }
+                    return true;
+                  }}
+                />
+              </div>
+            )}
+          </div>
+        </ResizablePanel>
       </div>
 
       {presentationOpen && <ExamPresentation exam={exam} onClose={() => setPresentationOpen(false)} />}
@@ -1321,7 +1525,6 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         }}
       />
     </div>
-    </DetailSlotProvider>
   );
 };
 
