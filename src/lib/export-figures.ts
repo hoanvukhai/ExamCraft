@@ -6,7 +6,7 @@ type ExportFigure = Figure & { exportSize?: { width: number; height: number } };
 /** Build temporary PNGs for Word without mutating the saved source document. */
 export async function prepareExportFigures(exam: Exam): Promise<Exam> {
   const prepared = structuredClone(exam);
-  for (const item of [...prepared.questions, ...(prepared.passages ?? [])]) {
+  for (const item of [...prepared.questions, ...prepared.questions.flatMap(q => q.choices ?? []), ...(prepared.passages ?? [])]) {
     for (const figure of item.figures ?? []) {
       const exported = figure as ExportFigure;
       if (figure.renderedBase64 || figure.kind === 'variation_table') continue;

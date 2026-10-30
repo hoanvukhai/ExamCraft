@@ -67,6 +67,7 @@ export interface Passage {
 }
 
 export interface ChoiceItem {
+  figures?: Figure[]; // Images belong to this option and move with it when shuffled. 
   key: string; // 'A' | 'B' | 'C' | 'D'
   text: string;
   pinned?: boolean; // Ghim vị trí nếu là phương án phụ thuộc ("Cả A và B")

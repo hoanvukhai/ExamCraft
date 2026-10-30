@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { X } from 'lucide-react';
 import type { Exam } from '@/types/exam';
 import { HeaderForm } from '@/components/HeaderSettingsModal';
 import { KnowledgeScopeEditor } from '@/components/KnowledgeScopeEditor';
@@ -40,19 +41,28 @@ export function EditorSettings(p: Props) {
   return (
     <aside
       aria-label="Thông tin đề"
-      className={
-        p.isOpen ? 'no-print min-w-0 h-full overflow-auto border rounded-xl bg-[var(--ui-surface)]' : 'hidden'
-      }
+      className={p.isOpen ? 'no-print min-w-0 space-y-4 pt-1' : 'hidden'}
     >
-      <header className="sticky top-0 z-10 bg-[var(--ui-surface)] flex items-center justify-between p-3 border-b">
-        <h2 ref={heading} tabIndex={-1} className="font-semibold outline-none">
-          Thông tin đề
+      <div className="flex items-center justify-between text-xs py-1">
+        <h2 ref={heading} tabIndex={-1} className="font-semibold text-[var(--ui-text-primary)] outline-none">
+          Cấu hình đề thi
         </h2>
-        <button type="button" aria-label="Đóng thông tin đề" onClick={p.onClose}>
-          Đóng
+        <button
+          type="button"
+          aria-label="Đóng thông tin đề"
+          onClick={p.onClose}
+          className="flex items-center gap-1 text-xs text-[var(--ui-text-secondary)] hover:text-[var(--ui-text-primary)] hover:underline cursor-pointer"
+        >
+          <X className="w-3.5 h-3.5" />
+          <span>Đóng</span>
         </button>
-      </header>
-      <div role="tablist" aria-label="Mục thông tin đề" className="flex flex-wrap gap-1 p-2 border-b text-xs">
+      </div>
+
+      <div
+        role="tablist"
+        aria-label="Mục thông tin đề"
+        className="flex items-center gap-4 border-b border-[var(--ui-border)] text-xs pb-1"
+      >
         {tabs.map(([key, label]) => (
           <button
             key={key}
@@ -62,16 +72,18 @@ export function EditorSettings(p: Props) {
             aria-selected={tab === key}
             aria-controls={'info-panel-' + key}
             onClick={() => setTab(key)}
-            className={
-              (tab === key ? 'app-button-primary' : 'app-button-secondary') + ' rounded-lg px-2 py-2'
-            }
+            className={`pb-2 -mb-1 border-b-2 text-xs font-medium transition-all cursor-pointer ${
+              tab === key
+                ? 'border-[var(--ui-primary)] text-[var(--ui-text-primary)] font-semibold'
+                : 'border-transparent text-[var(--ui-text-secondary)] hover:text-[var(--ui-text-primary)]'
+            }`}
           >
             {label}
           </button>
         ))}
       </div>
       {visited && (
-        <fieldset disabled={!p.canEdit} className="min-w-0 p-3">
+        <fieldset disabled={!p.canEdit} className="min-w-0 pt-2">
           <section
             role="tabpanel"
             id="info-panel-general"
@@ -116,7 +128,7 @@ export function EditorSettings(p: Props) {
           </section>
         </fieldset>
       )}
-      <details className="border-t min-w-0 p-3" open>
+      <details className="border-t min-w-0 p-3 @min-[900px]:hidden" open>
         <summary className="cursor-pointer text-sm">Xem thử thay đổi</summary>
         {p.isOpen && p.preview}
       </details>

@@ -8,6 +8,7 @@ import { Question } from '@/types/exam';
 import { Header } from '@/components/Header';
 import { EditorPhoneActions } from '@/components/workspace/WorkspaceRail';
 import { useWorkspace } from '@/components/workspace/WorkspaceContext';
+import { EditorSelectionProvider } from '@/components/editor/EditorSelection';
 import { EditorToolbar, type ExportView } from '@/components/EditorToolbar';
 import { QuestionEditor } from '@/components/QuestionEditor';
 import { previewHeaderDraft, appendManualQuestion } from '@/lib/editor-draft-preview';
@@ -44,7 +45,6 @@ import type { BankQuestion } from '@/lib/question-client';
 import { ExamPresentation } from '@/components/ExamPresentation';
 import { EditorReview } from '@/components/editor/EditorReview';
 import { reviewExam } from '@/lib/exam-review';
-import { EditorQuestionHeading } from '@/components/editor/EditorQuestionHeading';
 import { EditorSaveStatus } from '@/components/editor/EditorSaveStatus';
 import { EditorTemplate } from '@/components/editor/EditorRequirements';
 import { captureInsertion, insertQuestionBatch, type InsertionTarget } from '@/lib/outline-insertion';
@@ -54,7 +54,7 @@ import { type InsertPoint } from '@/lib/exam-outline';
 import { EditorPending } from '@/components/editor/EditorPending';
 
 import { generationDocumentStamp } from '@/lib/generation-plan';
-import { Trash2, Link2, CheckSquare, Square, X } from 'lucide-react';
+import { Trash2, Link2, CheckSquare, Square, X, FileText, SlidersHorizontal } from 'lucide-react';
 
 interface ExamWorkspaceProps {
   currentUser: {
@@ -66,7 +66,7 @@ interface ExamWorkspaceProps {
   examId?: string;
 }
 
-export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examId }) => {
+const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examId }) => {
   const creationFolder = useSearchParams().get('folder');
   const {
     exam,
@@ -135,7 +135,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   const templateAnchor = useRef<HTMLDivElement>(null);
   const [headerDraft, setHeaderDraft] = useState<HeaderSubmission | null>(null);
   const updateHeaderPreview = useCallback((draft: HeaderSubmission | null) => setHeaderDraft(draft), []);
-  const previewExam = settingsOpen ? previewHeaderDraft(exam, headerDraft) : exam;
+  const previewExam = settingsOpen && headerDraft ? previewHeaderDraft(exam, headerDraft) : exam;
   const addAnchor = useRef<HTMLDivElement>(null);
   const [selectedPoint, setSelectedPoint] = useState<InsertPoint | null>(null);
   const [newQuestionPoint, setNewQuestionPoint] = useState<InsertPoint | undefined>();
@@ -153,7 +153,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   }
   const openSettings = () => {
     setSettingsOpen(true);
-    setMobileTab('preview');
+    setMobileTab('editor');
   };
   const [isQuestionBankModalOpen, setIsQuestionBankModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -520,7 +520,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
           </div>
         </div>
       )}
-      {/* HEADER GOOGLE MINIMALIST */}
+      {/* HEADER: TÊN ĐỀ & TRẠNG THÁI LƯU LIỀN KỀ */}
       <Header
         leading={<EditorPhoneActions />}
         canEdit={canEdit}
@@ -535,7 +535,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       >
         <EditorSaveStatus state={saveState}>
           {' '}
-          <div role="status" className="flex flex-wrap gap-2 text-sm">
+          <div role="status" className="flex flex-wrap items-center gap-2 text-xs">
             {manualDraftMessage && <p role="alert">{manualDraftMessage}</p>}
             <span className="mr-1">
               {saveState === 'loading'
@@ -553,7 +553,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
             {saveState !== 'loading' && saveState !== 'saving' && (
               <button
                 onClick={() => void handleSaveCurrentExam()}
-                className="app-button-secondary min-h-9 px-3 text-xs"
+                className="app-button-secondary min-h-8 px-2.5 text-xs"
               >
                 Thử lưu lại
               </button>
@@ -564,21 +564,21 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                   setExam((value) => ({ ...value, creationFolderId: null }));
                   void save();
                 }}
-                className="app-button-secondary min-h-9 px-3 text-xs"
+                className="app-button-secondary min-h-8 px-2.5 text-xs"
               >
                 Lưu bản nháp ở ngoài thư mục
               </button>
             )}
-            <button onClick={downloadDraft} className="app-button-secondary min-h-9 px-3 text-xs">
+            <button onClick={downloadDraft} className="app-button-secondary min-h-8 px-2.5 text-xs">
               Tải bản nháp
             </button>
             {saveState === 'conflict' && (
-              <button onClick={() => void saveCopy()} className="app-button-secondary min-h-9 px-3 text-xs">
+              <button onClick={() => void saveCopy()} className="app-button-secondary min-h-8 px-2.5 text-xs">
                 Lưu bản nháp thành đề mới
               </button>
             )}
             {saveState === 'conflict' && ready && exam.serverId && (
-              <button onClick={() => void openLatest()} className="app-button-secondary min-h-9 px-3 text-xs">
+              <button onClick={() => void openLatest()} className="app-button-secondary min-h-8 px-2.5 text-xs">
                 Mở bản máy chủ, giữ riêng nháp
               </button>
             )}
@@ -695,13 +695,63 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                   onClose={() => setTemplateOpen(false)}
                 />
               </div>
-              <fieldset disabled={!canEdit} className="space-y-4 min-w-0">
-                {/* Thanh tiêu đề & Tác vụ danh sách câu hỏi */}
-                <EditorQuestionHeading
-                  exam={exam}
-                  points={scoredQuestions.reduce((total, q) => total + (q.points ?? 0), 0)}
+              {/* Cụm 2 nút chuyển đổi: Nội dung đề vs Thông tin đề (Thiết kế phẳng, không lồng khối) */}
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--ui-border)] pb-0">
+                <div
+                  aria-label="Vùng soạn thảo"
+                  className="flex items-center gap-6 text-xs"
                 >
+                  <button
+                    type="button"
+                    id="tab-exam-content"
+                    aria-label="Nội dung đề"
+                    aria-pressed={!settingsOpen}
+                    onClick={() => setSettingsOpen(false)}
+                    className={`flex items-center gap-2 pb-2.5 pt-1 border-b-2 font-medium transition-all cursor-pointer ${
+                      !settingsOpen
+                        ? 'border-[var(--ui-primary)] text-[var(--ui-text-primary)] font-semibold'
+                        : 'border-transparent text-[var(--ui-text-secondary)] hover:text-[var(--ui-text-primary)]'
+                    }`}
+                  >
+                    <FileText className="w-4 h-4" />
+                    <span>Nội dung đề</span>
+                    {exam.questions.length > 0 && (
+                      <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-[var(--ui-surface-variant)] text-[var(--ui-text-secondary)] font-normal">
+                        {exam.questions.length}
+                      </span>
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    id="tab-exam-settings"
+                    aria-label="Thông tin đề"
+                    title="Thông tin đề"
+                    aria-pressed={settingsOpen}
+                    onClick={() => openSettings()}
+                    className={`flex items-center gap-2 pb-2.5 pt-1 border-b-2 font-medium transition-all cursor-pointer ${
+                      settingsOpen
+                        ? 'border-[var(--ui-primary)] text-[var(--ui-text-primary)] font-semibold'
+                        : 'border-transparent text-[var(--ui-text-secondary)] hover:text-[var(--ui-text-primary)]'
+                    }`}
+                  >
+                    <SlidersHorizontal className="w-4 h-4" />
+                    <span>Thông tin đề</span>
+                  </button>
+                </div>
+
+                {settingsOpen ? (
+                  <span className="text-xs text-[var(--ui-text-secondary)] hidden sm:flex items-center gap-1.5 pb-2">
+                    <span>✨ Sửa & xem trước song song trên A4</span>
+                  </span>
+                ) : (
                   <div className="flex items-center gap-2">
+                    {exam.questions.length > 0 && (
+                      <span className="text-xs text-[var(--ui-text-secondary)]">
+                        {['comment_only', 'survey'].includes(exam.metadata.assessmentMode ?? '')
+                          ? 'Không chấm điểm số'
+                          : `Tổng: ${scoredQuestions.reduce((total, q) => total + (q.points ?? 0), 0)}đ`}
+                      </span>
+                    )}
                     {exam.questions.length > 0 && (
                       <button
                         onClick={handleSelectAll}
@@ -711,7 +761,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                             : 'Chọn tất cả câu hỏi'
                         }
                         className={
-                          'flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[var(--ui-text-primary)] ' +
+                          'flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-[var(--ui-text-primary)] ' +
                           'dark:text-[var(--ui-text-primary)] bg-[var(--ui-surface)] dark:bg-[var(--ui-surface-variant)] border ' +
                           'border-[var(--ui-border)] dark:border-[var(--ui-border)] hover:bg-[var(--ui-surface-variant)] dark:hover:bg-[#303134] ' +
                           'rounded-lg transition-colors cursor-pointer shadow-2xs'
@@ -728,7 +778,36 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                       </button>
                     )}
                   </div>
-                </EditorQuestionHeading>
+                )}
+              </div>
+
+              <div
+                id="panel-exam-settings"
+                role="tabpanel"
+                aria-labelledby="tab-exam-settings"
+                className={settingsOpen ? 'block' : 'hidden'}
+              >
+                <EditorSettings
+                  key={sessionScope}
+                  ownerId={currentUser.id}
+                  exam={exam}
+                  canEdit={canEdit}
+                  hasActiveKey={hasActiveKey}
+                  onChange={setExam}
+                  isOpen={settingsOpen}
+                  onPreview={updateHeaderPreview}
+                  onClose={() => setSettingsOpen(false)}
+                  preview={<A4Preview exam={previewExam} />}
+                />
+              </div>
+
+              <fieldset
+                disabled={!canEdit}
+                id="panel-exam-content"
+                role="tabpanel"
+                aria-labelledby="tab-exam-content"
+                className={`space-y-4 min-w-0 ${!settingsOpen ? 'block' : 'hidden'}`}
+              >
 
                 {/* Danh sách các câu hỏi dạng thẻ Block Card */}
                 <div className="space-y-3.5">
@@ -860,21 +939,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                   Đang xem thử thông tin chưa áp dụng.
                 </p>
               )}
-              <div className={settingsOpen ? 'hidden' : 'contents'}>
-                <A4Preview exam={previewExam} />
-              </div>
-              <EditorSettings
-                key={sessionScope}
-                ownerId={currentUser.id}
-                exam={exam}
-                canEdit={canEdit}
-                hasActiveKey={hasActiveKey}
-                onChange={setExam}
-                isOpen={settingsOpen}
-                onPreview={updateHeaderPreview}
-                onClose={() => setSettingsOpen(false)}
-                preview={<A4Preview exam={previewExam} />}
-              />
+              <A4Preview exam={previewExam} />
             </section>
           </main>
         </div>
@@ -1027,4 +1092,10 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     </div>
   );
 };
+
+
+export const ExamWorkspace: React.FC<ExamWorkspaceProps> = (props) => (
+  <EditorSelectionProvider key={props.currentUser.id + ":" + props.examId}><ExamWorkspaceContent {...props} /></EditorSelectionProvider>
+);
+
 export default ExamWorkspace;

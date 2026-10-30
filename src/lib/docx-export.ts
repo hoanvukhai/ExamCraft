@@ -708,6 +708,7 @@ export async function exportExamToDocx(
               ...renderLatexRunsForWord(choice.text, { fontSize: 22 }),
             ],
           }),
+          ...renderFiguresForDocx(choice.figures, view === 'parallel'),
         ),
       );
     if (q.type === 'true_false_group')

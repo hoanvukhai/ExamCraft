@@ -309,9 +309,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
                         {q.choices && q.type === 'multiple_choice' && (
                           <div className="grid grid-cols-2 gap-3 pl-4 py-2">
                             {q.choices.map((choice) => (
-                              <p key={choice.key}>
-                                <b>{choice.key}.</b> <MathRenderer content={choice.text} inline />
-                              </p>
+                              <div key={choice.key}><b>{choice.key}.</b> <MathRenderer content={choice.text} inline />{choice.figures?.map(renderPreviewFigure)}</div>
                             ))}
                           </div>
                         )}
@@ -416,9 +414,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam }) => {
                             {q.choices && q.type === 'multiple_choice' && (
                               <div className="pl-3 py-1">
                                 {q.choices.map((choice) => (
-                                  <p key={choice.key}>
-                                    <b>{choice.key}.</b> <MathRenderer content={choice.text} inline />
-                                  </p>
+                                  <div key={choice.key}><b>{choice.key}.</b> <MathRenderer content={choice.text} inline />{choice.figures?.map(renderPreviewFigure)}</div>
                                 ))}
                               </div>
                             )}

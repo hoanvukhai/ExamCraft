@@ -61,7 +61,7 @@ export function publicQuestion(value: unknown): Data & {
 } {
   const q = asObject(value);
   const payload = asObject(q.payload);
-  const choices = list(q.choices ?? payload.choices).map((c) => pick(c, ['key', 'text']));
+  const choices = list(q.choices ?? payload.choices).map((c) => ({ ...pick(c, ['key', 'text']), ...(Array.isArray(asObject(c).figures) ? { figures: list(asObject(c).figures).map(publicFigure) } : {}) }));
   const subQuestions = list(q.sub_questions ?? payload.sub_questions).map((s) => pick(s, ['key', 'content']));
   return {
     ...pick(q, ['id', 'sectionId', 'position', 'type', 'difficulty', 'content', 'points', 'passageId']),

@@ -435,7 +435,7 @@ function QuestionBankContent({
                     ))}
                     {q.choices?.map((choice) => (
                       <p key={choice.key}>
-                        <b>{choice.key}.</b> <MathRenderer content={choice.text} inline />
+                        <b>{choice.key}.</b> <MathRenderer content={choice.text} inline />{choice.figures?.map(figure => <FigureView key={figure.id} figure={figure} />)}
                       </p>
                     ))}
                     {q.sub_questions?.map((sub) => (

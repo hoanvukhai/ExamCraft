@@ -1,7 +1,8 @@
 'use client';
 import { useEffect, useRef, useState, type ComponentType } from 'react';
 import { createPortal } from 'react-dom';
-import { ChevronDown, FileDown, Settings2, Sparkles, Plus, MoreHorizontal } from 'lucide-react';
+import { ChevronDown, FileDown, Sparkles, Plus, MoreHorizontal } from 'lucide-react';
+import { ContextSelectionToolbar, useEditorTarget } from './editor/EditorSelection';
 import type { Exam } from '@/types/exam';
 export type ExportView = 'exam' | 'answers' | 'solutions' | 'matrix' | 'parallel';
 type Icon = ComponentType<{ className?: string }>;
@@ -19,11 +20,13 @@ export function ToolMenu({
   Icon,
   items,
   compact = false,
+  className,
 }: {
   label: string;
   Icon: Icon;
   items: MenuItem[];
   compact?: boolean;
+  className?: string;
 }) {
   const [open, setOpen] = useState(false),
     [where, setWhere] = useState({ top: 0, left: 0 });
@@ -67,7 +70,7 @@ export function ToolMenu({
           });
           setOpen((value) => !value);
         }}
-        className={button}
+        className={className || button}
       >
         <Icon className="w-4 h-4 shrink-0" />
         {!compact && <span className="@max-[300px]:hidden">{label}</span>}
@@ -79,7 +82,7 @@ export function ToolMenu({
             ref={menu}
             role="menu"
             aria-label={label}
-            style={where}
+            style={{ ...where, maxHeight: 'min(75dvh, 320px)' }}
             className="app-menu fixed w-60 max-h-[min(75dvh,320px)] overflow-auto rounded-xl border bg-[var(--ui-surface)] p-1.5 shadow-lg z-50"
             onKeyDown={(event) => {
               const items = Array.from(
@@ -151,6 +154,7 @@ interface Props {
   onTemplate: () => void;
 }
 export function EditorToolbar(p: Props) {
+  const target = useEditorTarget();
   const outputs: MenuItem[] = (
     [
       ['exam', 'Word – đề'],
@@ -169,6 +173,7 @@ export function EditorToolbar(p: Props) {
     ? [{ label: 'Dùng mẫu / lưu thành mẫu', onClick: p.onTemplate }]
     : [];
   const secondary: MenuItem[] = [
+    ...(p.canEdit ? [{ label: 'Thông tin đề', onClick: p.onSettings }, { label: 'Thêm câu mới', onClick: p.onAdd }, { label: 'Từ ngân hàng', onClick: p.onBank }, { label: 'Nhập Word/Ảnh', onClick: p.onImport }] : []),
     { label: 'Rà soát đề', onClick: p.onReview },
     ...templates,
     ...(p.hasAssignments ? [{ label: `Kết quả (${p.submissionCount})`, onClick: p.onResults }] : []),
@@ -183,13 +188,13 @@ export function EditorToolbar(p: Props) {
           : 'Chỉ xem'
       : null;
   return (
-    <div className="@container no-print shrink-0 border-b bg-[var(--ui-surface)]">
+    <div className="@container no-print shrink-0 border-b border-[var(--ui-border)]/50 bg-[var(--ui-surface)]">
       <div
         role="toolbar"
         aria-label="Công cụ soạn đề"
-        className="px-2 sm:px-3 py-2 flex items-center gap-1 min-w-0"
+        className="px-2 sm:px-4 py-1.5 flex flex-nowrap items-center gap-1.5 min-w-0"
       >
-        {p.canEdit && (
+        {p.canEdit && !target && (
           <>
             <ToolMenu
               label="Thêm"
@@ -203,16 +208,6 @@ export function EditorToolbar(p: Props) {
             />
             <button
               type="button"
-              aria-label="Thông tin đề"
-              title="Thông tin đề"
-              className={button}
-              onClick={p.onSettings}
-            >
-              <Settings2 className="w-4 h-4" />
-              <span className="hidden @min-[500px]:inline">Thông tin đề</span>
-            </button>
-            <button
-              type="button"
               aria-label="Sửa đề bằng Trợ lý AI"
               title="Sửa bằng AI"
               aria-pressed={p.copilotOpen}
@@ -224,12 +219,18 @@ export function EditorToolbar(p: Props) {
             </button>
           </>
         )}
-        <div className="ml-auto">
+        <div className="ml-auto hidden @min-[600px]:block">
           <ToolMenu label="Xuất" Icon={FileDown} items={outputs} />
         </div>
-        <ToolMenu label="Thêm công cụ" compact Icon={MoreHorizontal} items={secondary} />
-        {badge && <span className="hidden @min-[1100px]:inline text-xs">{badge}</span>}
+        <div className="@min-[600px]:hidden ml-auto">
+          <ToolMenu label="Thêm công cụ" compact Icon={MoreHorizontal} items={[...outputs, ...secondary]} />
+        </div>
+        <div className="hidden @min-[600px]:block">
+          <ToolMenu label="Thêm công cụ" compact Icon={MoreHorizontal} items={secondary} />
+        </div>
+        {badge && <span className="hidden @min-[1100px]:inline text-xs text-[var(--ui-text-secondary)]">{badge}</span>}
       </div>
+      <ContextSelectionToolbar canEdit={p.canEdit} />
     </div>
   );
 }

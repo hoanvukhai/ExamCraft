@@ -91,7 +91,7 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
       assert.equal((await context.request.get(origin+'/api/exams/'+examId).then(r=>r.json())).document.questions.length,0);
       await composer.getByRole('button',{name:'Hủy thêm, giữ nháp',exact:true}).click({timeout:6000});
       await page.reload();
-      await page.getByLabel('Tên phần 1',{exact:true}).waitFor();
+      await page.getByLabel('Tên phần 1',{exact:true}).first().waitFor();
       await addSource(page, 'Tự soạn câu mới');
       assert.equal(await composer.getByLabel('Nội dung câu hỏi',{exact:true}).inputValue(),'NEW_QUESTION_SEPARATE');
       for (const width of [320,375]) {
