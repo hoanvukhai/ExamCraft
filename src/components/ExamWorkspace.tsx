@@ -215,6 +215,27 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     if (tab === 'bank' || tab === 'import' || tab === 'generate')
       setMounted((previous) => ({ ...previous, [tab]: true }));
   };
+  // A printed header line opens "Thông tin đề" with the matching field focused.
+  const focusHeaderField = (lineId: string) => {
+    const labelFor: Record<string, string> = {
+      'header-schoolName': 'Đơn vị chủ quản',
+      'header-departmentName': 'Trường / tổ chuyên môn',
+      'header-title': 'Tên đề',
+      'header-examCode': 'Mã đề',
+      'header-academicYear': 'Năm học',
+      'header-semester': 'Học kỳ',
+      'header-subjectGrade': 'Môn của đề',
+      'header-durationScore': 'Thời lượng',
+      'header-notes': 'Ghi chú cuối đề',
+    };
+    const label = labelFor[lineId];
+    if (!label) return;
+    showTab('info');
+    setTimeout(() => {
+      const field = document.querySelector<HTMLElement>(`aside[aria-label="Thông tin đề"] [aria-label="${label}"]`);
+      field?.focus();
+    }, 50);
+  };
   const closeTab = (tab: LeftTab) => {
     setMounted((previous) => ({ ...previous, [tab]: false }));
     setLeftTab((current) => (current === tab ? 'content' : current));
@@ -1064,6 +1085,7 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
           <A4Preview
             exam={previewExam}
             onPrintBlock={canEdit ? () => showTab('template') : undefined}
+            onHeaderLine={canEdit ? focusHeaderField : undefined}
             barExtra={
               <button
                 type="button"

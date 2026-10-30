@@ -65,6 +65,8 @@ interface A4PreviewProps {
   barExtra?: React.ReactNode;
   /** Called when a printed block (student line, closing lines, footer) is clicked while editing. */
   onPrintBlock?: () => void;
+  /** Called with the header line's id when one is clicked while editing, to jump to its field. */
+  onHeaderLine?: (id: string) => void;
 }
 
 const A4_HEIGHT_PX = 1123;
@@ -96,7 +98,7 @@ function PrintBlocks({
   );
 }
 
-export const A4Preview: React.FC<A4PreviewProps> = ({ exam, barExtra, onPrintBlock }) => {
+export const A4Preview: React.FC<A4PreviewProps> = ({ exam, barExtra, onPrintBlock, onHeaderLine }) => {
   const [viewMode, setViewMode] = useState<'exam' | 'parallel' | 'answers' | 'solutions' | 'matrix'>('exam');
   // null follows the available width; explicit percentages are actual paper zoom.
   const [zoom, setZoom] = useState<number | null>(null);
@@ -316,7 +318,8 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam, barExtra, onPrintBlo
                           <div
                             key={line.id}
                             data-header-line={line.id}
-                            className={`text-[12pt] whitespace-pre-wrap break-words ${line.bold ? 'font-bold' : ''} ${line.italic ? 'italic' : ''}`}
+                            onClick={onHeaderLine ? () => onHeaderLine(line.id) : undefined}
+                            className={`${onHeaderLine ? 'cursor-pointer hover:bg-black/5 ' : ''}text-[12pt] whitespace-pre-wrap break-words ${line.bold ? 'font-bold' : ''} ${line.italic ? 'italic' : ''}`}
                             style={{ textAlign: line.align, minHeight: '1.2em' }}
                           >
                             {line.text}

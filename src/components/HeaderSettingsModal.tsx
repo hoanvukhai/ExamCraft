@@ -154,11 +154,134 @@ export function HeaderForm({
             tự đổi bộ kiến thức, kế hoạch hay khung mức.
           </p>
         )}
-        {/* Phần 1: Cơ quan & Đơn vị chủ quản */}
+        {/* Cơ bản: bốn trường bắt buộc đứng đầu */}
         <div className="space-y-3 pt-1">
           <div className="pb-1 border-b border-[var(--ui-border)]/60">
             <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--ui-text-secondary)]">
-              Đơn vị tổ chức & Cơ quan
+              Thông tin cơ bản
+            </span>
+          </div>
+          <div className="space-y-3">
+            <label className="text-xs font-medium text-[var(--ui-text-secondary)] space-y-1 block">
+              <span>
+                {labels.title} <b aria-hidden="true">*</b>
+              </span>
+              <input
+                className={field}
+                aria-label={labels.title}
+                placeholder="VD: ĐỀ KIỂM TRA HỌC KỲ I..."
+                value={displayForm.title ?? ''}
+                onChange={(event) => change({ title: event.target.value })}
+              />
+            </label>
+
+            <div className="grid grid-cols-1 @min-[400px]:grid-cols-2 gap-3">
+              <label className="text-xs font-medium text-[var(--ui-text-secondary)] space-y-1 block">
+                <span>
+                  Lớp <b aria-hidden="true">*</b>
+                </span>
+                <select
+                  className={field}
+                  aria-label="Lớp của đề"
+                  value={displayForm.grade}
+                  onChange={(event) => change({ grade: Number(event.target.value) })}
+                >
+                  {Array.from({ length: 12 }, (_, index) => (
+                    <option key={index + 1} value={index + 1}>
+                      Lớp {index + 1}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="text-xs font-medium text-[var(--ui-text-secondary)] space-y-1 block">
+                <span>
+                  Môn <b aria-hidden="true">*</b>
+                </span>
+                <select
+                  className={field}
+                  aria-label="Môn của đề"
+                  value={displayForm.subject}
+                  onChange={(event) => change({ subject: event.target.value as ExamMetadata['subject'] })}
+                >
+                  {!validSubject && (
+                    <option value={displayForm.subject}>Môn cũ cần chọn lại: {displayForm.subject}</option>
+                  )}
+                  {subjects.map((item) => (
+                    <option key={item.key} value={item.key}>
+                      {item.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+
+            <div className="grid grid-cols-1 @min-[400px]:grid-cols-2 gap-3">
+              <label className="text-xs font-medium text-[var(--ui-text-secondary)] space-y-1 block">
+                <span>
+                  Cách đánh giá <b aria-hidden="true">*</b>
+                </span>
+                <select
+                  className={field}
+                  aria-label="Cách đánh giá"
+                  value={displayForm.assessmentMode ?? 'scored'}
+                  onChange={(event) =>
+                    change({ assessmentMode: event.target.value as ExamMetadata['assessmentMode'] })
+                  }
+                >
+                  <option value="scored">Có điểm</option>
+                  <option value="comment_only">Nhận xét</option>
+                  <option value="rubric">Theo tiêu chí</option>
+                  <option value="survey">Khảo sát không chấm điểm</option>
+                </select>
+              </label>
+
+              <label className="text-xs font-medium text-[var(--ui-text-secondary)] space-y-1 block">
+                <span>Thời lượng (phút)</span>
+                <input
+                  className={field}
+                  aria-label="Thời lượng"
+                  type="number"
+                  min={0}
+                  max={1440}
+                  placeholder="VD: 45, 60, 90..."
+                  value={Number.isNaN(displayForm.durationMinutes) ? '' : displayForm.durationMinutes}
+                  onChange={(event) =>
+                    change({
+                      durationMinutes: event.target.value === '' ? Number.NaN : Number(event.target.value),
+                    })
+                  }
+                />
+              </label>
+            </div>
+          </div>
+        </div>
+
+        {/* Cảnh báo ngữ cảnh nếu có */}
+        {(!validSubject || !validFramework) && (
+          <p
+            role="alert"
+            className="text-xs text-amber-700 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 p-2.5 rounded-lg"
+          >
+            Môn hoặc khung cũ không phù hợp lớp đang chọn. Hãy chọn lại rõ ràng; gói và kế hoạch được giữ để
+            rà soát.
+          </p>
+        )}
+        {(metadata.knowledgePackage || metadata.examPlan) &&
+          (displayForm.grade !== base.grade ||
+            displayForm.subject !== base.subject ||
+            displayForm.assessmentMode !== base.assessmentMode ||
+            displayForm.cognitiveFrameworkId !== base.cognitiveFrameworkId) && (
+            <p className="text-xs text-amber-700 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 p-2.5 rounded-lg">
+              Ngữ cảnh đánh giá đã đổi; kiểm cảnh báo ở gói kiến thức và kế hoạch sau khi áp dụng.
+            </p>
+          )}
+
+        {/* Thông tin chỉ để in */}
+        <div className="space-y-3 pt-2">
+          <div className="pb-1 border-b border-[var(--ui-border)]/60">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--ui-text-secondary)]">
+              Thông tin in
             </span>
           </div>
           <div className="grid grid-cols-1 @min-[400px]:grid-cols-2 gap-3">
@@ -183,156 +306,61 @@ export function HeaderForm({
               />
             </label>
           </div>
-        </div>
-
-        {/* Phần 2: Thông tin đề thi & Phân môn */}
-        <div className="space-y-3 pt-2">
-          <div className="pb-1 border-b border-[var(--ui-border)]/60">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--ui-text-secondary)]">
-              Thông tin đề thi & Môn học
-            </span>
-          </div>
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 @min-[400px]:grid-cols-3 gap-3">
             <label className="text-xs font-medium text-[var(--ui-text-secondary)] space-y-1 block">
-              <span>{labels.title}</span>
+              <span>{labels.examCode}</span>
               <input
                 className={field}
-                aria-label={labels.title}
-                placeholder="VD: ĐỀ KIỂM TRA HỌC KỲ I..."
-                value={displayForm.title ?? ''}
-                onChange={(event) => change({ title: event.target.value })}
-              />
-            </label>
-
-            <div className="grid grid-cols-1 @min-[400px]:grid-cols-2 gap-3">
-              <label className="text-xs font-medium text-[var(--ui-text-secondary)] space-y-1 block">
-                <span>Lớp</span>
-                <select
-                  className={field}
-                  aria-label="Lớp của đề"
-                  value={displayForm.grade}
-                  onChange={(event) => change({ grade: Number(event.target.value) })}
-                >
-                  {Array.from({ length: 12 }, (_, index) => (
-                    <option key={index + 1} value={index + 1}>
-                      Lớp {index + 1}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <label className="text-xs font-medium text-[var(--ui-text-secondary)] space-y-1 block">
-                <span>Môn</span>
-                <select
-                  className={field}
-                  aria-label="Môn của đề"
-                  value={displayForm.subject}
-                  onChange={(event) => change({ subject: event.target.value as ExamMetadata['subject'] })}
-                >
-                  {!validSubject && (
-                    <option value={displayForm.subject}>Môn cũ cần chọn lại: {displayForm.subject}</option>
-                  )}
-                  {subjects.map((item) => (
-                    <option key={item.key} value={item.key}>
-                      {item.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
-
-            <div className="grid grid-cols-1 @min-[400px]:grid-cols-3 gap-3">
-              <label className="text-xs font-medium text-[var(--ui-text-secondary)] space-y-1 block">
-                <span>{labels.examCode}</span>
-                <input
-                  className={field}
-                  aria-label={labels.examCode}
-                  placeholder="VD: 101, 102..."
-                  value={displayForm.examCode ?? ''}
-                  onChange={(event) => change({ examCode: event.target.value })}
-                />
-              </label>
-              <label className="text-xs font-medium text-[var(--ui-text-secondary)] space-y-1 block">
-                <span>{labels.academicYear}</span>
-                <input
-                  className={field}
-                  aria-label={labels.academicYear}
-                  placeholder="VD: 2026 - 2027"
-                  value={displayForm.academicYear ?? ''}
-                  onChange={(event) => change({ academicYear: event.target.value })}
-                />
-              </label>
-              <label className="text-xs font-medium text-[var(--ui-text-secondary)] space-y-1 block">
-                <span>{labels.semester}</span>
-                <input
-                  className={field}
-                  aria-label={labels.semester}
-                  placeholder="VD: Học kỳ I"
-                  value={displayForm.semester ?? ''}
-                  onChange={(event) => change({ semester: event.target.value })}
-                />
-              </label>
-            </div>
-          </div>
-        </div>
-
-        {/* Cảnh báo ngữ cảnh nếu có */}
-        {(!validSubject || !validFramework) && (
-          <p role="alert" className="text-xs text-amber-700 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 p-2.5 rounded-lg">
-            Môn hoặc khung cũ không phù hợp lớp đang chọn. Hãy chọn lại rõ ràng; gói và kế hoạch được giữ để rà soát.
-          </p>
-        )}
-        {(metadata.knowledgePackage || metadata.examPlan) &&
-          (displayForm.grade !== base.grade ||
-            displayForm.subject !== base.subject ||
-            displayForm.assessmentMode !== base.assessmentMode ||
-            displayForm.cognitiveFrameworkId !== base.cognitiveFrameworkId) && (
-            <p className="text-xs text-amber-700 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 p-2.5 rounded-lg">
-              Ngữ cảnh đánh giá đã đổi; kiểm cảnh báo ở gói kiến thức và kế hoạch sau khi áp dụng.
-            </p>
-          )}
-
-        {/* Phần 3: Đánh giá & Định dạng thi */}
-        <div className="space-y-3 pt-2">
-          <div className="pb-1 border-b border-[var(--ui-border)]/60">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--ui-text-secondary)]">
-              Cấu hình thi & Đánh giá
-            </span>
-          </div>
-          <div className="grid grid-cols-1 @min-[400px]:grid-cols-2 gap-3">
-            <label className="text-xs font-medium text-[var(--ui-text-secondary)] space-y-1 block">
-              <span>Thời lượng (phút)</span>
-              <input
-                className={field}
-                aria-label="Thời lượng"
-                type="number"
-                min={0}
-                max={1440}
-                placeholder="VD: 45, 60, 90..."
-                value={Number.isNaN(displayForm.durationMinutes) ? '' : displayForm.durationMinutes}
-                onChange={(event) =>
-                  change({
-                    durationMinutes: event.target.value === '' ? Number.NaN : Number(event.target.value),
-                  })
-                }
+                aria-label={labels.examCode}
+                placeholder="VD: 101, 102..."
+                value={displayForm.examCode ?? ''}
+                onChange={(event) => change({ examCode: event.target.value })}
               />
             </label>
             <label className="text-xs font-medium text-[var(--ui-text-secondary)] space-y-1 block">
-              <span>Cách đánh giá</span>
-              <select
+              <span>{labels.academicYear}</span>
+              <input
                 className={field}
-                aria-label="Cách đánh giá"
-                value={displayForm.assessmentMode ?? 'scored'}
-                onChange={(event) =>
-                  change({ assessmentMode: event.target.value as ExamMetadata['assessmentMode'] })
-                }
-              >
-                <option value="scored">Có điểm</option>
-                <option value="comment_only">Nhận xét</option>
-                <option value="rubric">Theo tiêu chí</option>
-                <option value="survey">Khảo sát không chấm điểm</option>
-              </select>
+                aria-label={labels.academicYear}
+                placeholder="VD: 2026 - 2027"
+                value={displayForm.academicYear ?? ''}
+                onChange={(event) => change({ academicYear: event.target.value })}
+              />
             </label>
+            <label className="text-xs font-medium text-[var(--ui-text-secondary)] space-y-1 block">
+              <span>{labels.semester}</span>
+              <input
+                className={field}
+                aria-label={labels.semester}
+                placeholder="VD: Học kỳ I"
+                value={displayForm.semester ?? ''}
+                onChange={(event) => change({ semester: event.target.value })}
+              />
+            </label>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3">
+            <label className="text-xs font-medium text-[var(--ui-text-secondary)] space-y-1 block @min-[400px]:col-span-2">
+              <span>{labels.notes}</span>
+              <input
+                className={field}
+                aria-label={labels.notes}
+                placeholder="VD: Cán bộ coi thi không giải thích gì thêm..."
+                value={displayForm.notes ?? ''}
+                onChange={(event) => change({ notes: event.target.value })}
+              />
+            </label>
+          </div>
+        </div>
+
+        {/* Yêu cầu ra đề */}
+        <div className="space-y-3 pt-2">
+          <div className="pb-1 border-b border-[var(--ui-border)]/60">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--ui-text-secondary)]">
+              Yêu cầu ra đề
+            </span>
+          </div>
+          <div className="grid grid-cols-1 gap-3">
             {(!embedded || showFramework) && (
               <label className="text-xs font-medium text-[var(--ui-text-secondary)] space-y-1 block @min-[400px]:col-span-2">
                 <span>Khung mức nhận thức</span>
@@ -356,20 +384,12 @@ export function HeaderForm({
                 </select>
               </label>
             )}
-            <label className="text-xs font-medium text-[var(--ui-text-secondary)] space-y-1 block @min-[400px]:col-span-2">
-              <span>{labels.notes}</span>
-              <input
-                className={field}
-                aria-label={labels.notes}
-                placeholder="VD: Cán bộ coi thi không giải thích gì thêm..."
-                value={displayForm.notes ?? ''}
-                onChange={(event) => change({ notes: event.target.value })}
-              />
-            </label>
           </div>
         </div>
         <details className="border-t border-[var(--ui-border)]/60 pt-3">
-          <summary className="cursor-pointer font-medium text-xs text-[var(--ui-text-secondary)] hover:text-[var(--ui-text-primary)]">Dòng in, vị trí và căn chỉnh nâng cao</summary>
+          <summary className="cursor-pointer font-medium text-xs text-[var(--ui-text-secondary)] hover:text-[var(--ui-text-primary)]">
+            Dòng in, vị trí và căn chỉnh nâng cao
+          </summary>
           <p className="text-xs my-2">
             Ẩn dòng sẽ bỏ dòng khi in; ghi đè bằng chuỗi rỗng vẫn chừa một dòng trống. Bỏ ghi đè để dùng dữ
             liệu đề. Tên đề để quản lý luôn cần có, kể cả khi ẩn tên trên bản in.

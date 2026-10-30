@@ -91,6 +91,10 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
       const sheet = page.locator('.a4-preview-section');
       await sheet.getByText('Họ và tên thí sinh:').first().waitFor();
       assert.equal(await sheet.locator('[data-print-zone="footer"]').count(), 0);
+      await sheet.locator('[data-header-line="header-subjectGrade"]').click();
+      await poll(async () => (await page.evaluate(() => document.activeElement?.getAttribute('aria-label'))) === 'Môn của đề');
+      const fields = await page.locator('aside[aria-label="Thông tin đề"] [aria-label="Tên đề"], aside[aria-label="Thông tin đề"] [aria-label="Đơn vị chủ quản"]').evaluateAll(els => els.map(el => el.getAttribute('aria-label')));
+      assert.deepEqual(fields, ['Tên đề', 'Đơn vị chủ quản'], 'basic fields come before print-only fields');
       await page.getByRole('button', { name: 'Mẫu', exact: true }).click();
       const print = page.getByRole('region', { name: 'Bố cục in', exact: true }); await print.waitFor();
       await print.getByRole('button', { name: 'Áp dụng' }).first().click();

@@ -16,13 +16,15 @@ Nhánh `claude/editor-canva-a`. DB thử `examcraft_test_20261022`, không gọi
 | `examKind` | Loại bài kiểm tra | Chọn được trong Bố cục in, đi vào `{Loại bài}` |
 | TS-7.14 | Đề chưa có `printLayout` | In **giống bản cũ** (dòng thí sinh, HẾT cố định, không footer). Kiểm: không có footer, có đủ các chuỗi cũ. Chưa so DOCX từng byte với bản trước |
 | TS-7.4 | Bấm vào dòng thí sinh/cuối đề/chân trang trên tờ đề | Mở tab Mẫu |
+| TS-7.4 | Bấm một dòng đầu trang trên giấy (Môn, Mã đề, Năm học…) | Mở Thông tin đề và đặt con trỏ đúng ô |
+| TS-7.1/7.2 | Thông tin đề: Cơ bản (Tên đề, Lớp, Môn, Cách đánh giá, Thời lượng) → Thông tin in (Đơn vị, Trường, Năm học, Học kỳ, Mã đề, Ghi chú) → Yêu cầu ra đề (khung mức) | Xong; dấu `*` ở Tên đề, Lớp, Môn, Cách đánh giá |
 
 ## Chưa làm / lệch so với đặc tả
 
 - Đầu trang **không** chuyển sang v2: `headerLayout` v1 (trái/phải) giữ nguyên; ba cột đầu trang, `headerScope`, khối tiêu đề toàn ngang chưa làm. Vì vậy bố cục mẫu chỉ thay phần dòng thí sinh, lời dặn, cuối đề, chân trang.
 - Chưa có tuỳ chọn trang (phông, lề, cột phương án, đánh số câu), chưa lưu bố cục vào "mẫu của tôi" (`ExamTemplate`).
-- Chưa sửa trực tiếp chữ ngay trên giấy (bấm chỉ mở bảng bên trái) và chưa có "bấm trường tự điền → focus ô Thông tin đề".
-- Chưa đổi thứ tự bảng Thông tin đề (TS-7.1) và dấu `*` trường bắt buộc (TS-7.2).
+- Chưa sửa trực tiếp chữ ngay trên giấy (bấm dòng thí sinh/cuối đề/chân trang chỉ mở bảng bên trái).
+- Chưa chặn Giao bài/Sinh AI khi thiếu trường bắt buộc (4 trường bắt buộc luôn có giá trị sẵn).
 - Chân trang trên màn hình chỉ vẽ một lần ở cuối tờ; chia trang thật là giai đoạn D. Trình chiếu, trang học sinh không dùng bố cục này.
 
 ## Kiểm
