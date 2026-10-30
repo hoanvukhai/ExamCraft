@@ -2,7 +2,9 @@
 
 import { projectScopedQuestionEdit } from '@/lib/scoped-question-edit';
 import { useEditorActor } from './editor/EditorSelection';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { useDetailSlot } from './editor/EditorDetailSlot';
 import { Question } from '@/types/exam';
 import { ToolMenu, type MenuItem } from './EditorToolbar';
 import { MoreHorizontal } from 'lucide-react';
@@ -99,6 +101,13 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
   onAskAiAboutQuestion,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const detail = useDetailSlot();
+  const report = detail?.report;
+  const detailSlot = detail?.slot ?? null;
+  useEffect(() => {
+    report?.(question.id, isEditing);
+    return () => report?.(question.id, false);
+  }, [report, question.id, isEditing]);
   const [imageChoice, setImageChoice] = useState<string>();
   const [scopedAi, setScopedAi] = useState<{ field: string; instruction: string } | null>(null);
   const [isLocked, setIsLocked] = useState(false);
@@ -792,6 +801,13 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
           </p>
         )}
         {isEditing ? (
+          (editor) => (detailSlot ? (
+            <>
+              <p className="text-xs text-[var(--ui-text-secondary)]">Đang sửa chi tiết ở bảng bên phải.</p>
+              {createPortal(editor, detailSlot)}
+            </>
+          ) : editor)
+        )(
           <QuestionEditor
             initialChoiceKey={imageChoice}
             ownerId={ownerId}

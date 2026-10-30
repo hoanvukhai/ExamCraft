@@ -46,6 +46,7 @@ import { requiresNumericScore } from '@/lib/education-catalog';
 import type { BankQuestion } from '@/lib/question-client';
 import { ExamPresentation } from '@/components/ExamPresentation';
 import { EditorReview } from '@/components/editor/EditorReview';
+import { DetailSlotProvider } from '@/components/editor/EditorDetailSlot';
 import { reviewExam } from '@/lib/exam-review';
 import { EditorSaveStatus } from '@/components/editor/EditorSaveStatus';
 import { EditorTemplate } from '@/components/editor/EditorRequirements';
@@ -74,6 +75,7 @@ import {
   Users,
 } from 'lucide-react';
 
+type RightTab = 'detail' | 'ai' | 'review' | 'collab';
 type LeftTab = 'content' | 'info' | 'template' | 'bank' | 'import' | 'generate';
 const railItems: RailItem<LeftTab>[] = [
   { id: 'content', label: 'Nội dung', Icon: ListTree },
@@ -121,7 +123,10 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     ready,
   } = useExamPersistence(currentUser.id, examId, examId === 'new' ? creationFolder : undefined);
   const scoredQuestions = freezeExamScoring(exam).questions;
-  const canEdit = ready && exam.access?.canEdit !== false;
+  const [mode, setMode] = useState<'edit' | 'comment' | 'view'>('edit');
+  const mayEdit = ready && exam.access?.canEdit !== false;
+  // Comment and view modes lock the sheet, so a teacher can read or discuss without touching the content.
+  const canEdit = mayEdit && mode === 'edit';
   const canPublish = ready && exam.access?.canPublish !== false;
   const manualSourceStamp = useMemo(() => questionDraftSourceStamp(exam), [exam]);
   useEffect(() => {
@@ -137,10 +142,8 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   const [pendingReviewAction, setPendingReviewAction] = useState<(() => void) | null>(null);
   const reviewed = reviewExam(exam);
   const reviewBefore = (action: () => void) => {
-    if (reviewed.issues.length) {
-      setPendingReviewAction(() => action);
-      setReviewOpen(true);
-    } else action();
+    if (reviewed.issues.length) openReview(action);
+    else action();
   };
   const [keyReminder, setKeyReminder] = useState(false);
   const withAi = (action: () => void) => {
@@ -153,6 +156,27 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   const [copilotCommand, setCopilotCommand] = useState<string>('');
   const [mobileTab, setMobileTab] = useState<'editor' | 'preview'>('editor');
   const [leftTab, setLeftTab] = useState<LeftTab>('content');
+  const [rightTab, setRightTab] = useState<RightTab>('ai');
+  const [detailSlot, setDetailSlot] = useState<HTMLElement | null>(null);
+  const [editingIds, setEditingIds] = useState<string[]>([]);
+  const reportEditing = useCallback((id: string, editing: boolean) => {
+    setEditingIds((ids) => (editing ? (ids.includes(id) ? ids : [...ids, id]) : ids.filter((x) => x !== id)));
+    if (editing) setRightTab('detail');
+  }, [setRightTab]);
+  const detailContext = useMemo(() => ({ slot: detailSlot, report: reportEditing }), [detailSlot, reportEditing]);
+  const openReview = (after: (() => void) | null) => {
+    setPendingReviewAction(after ? () => after : null);
+    setRightTab('review');
+    setReviewOpen(true);
+  };
+  const openAi = () => {
+    setRightTab('ai');
+    setIsCopilotOpen(true);
+  };
+  const openCollaboration = () => {
+    setRightTab('collab');
+    setCollaborationOpen(true);
+  };
   const [leftOpen, setLeftOpen] = useState(true);
   // Source panels keep what was typed while another tab is shown; they reset when they are closed or finished.
   const [mounted, setMounted] = useState<Partial<Record<LeftTab, boolean>>>({});
@@ -380,7 +404,7 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     const target = exam.questions[index];
     if (!target) return;
     setSelectedQuestionIds([target.id]);
-    setIsCopilotOpen(true);
+    openAi();
     setCopilotCommand(`Đổi số liệu hoặc nâng cấp câu ${index + 1}`);
   };
 
@@ -544,39 +568,14 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     hasServerExam: Boolean(exam.serverId),
     hasAssignments: assignmentState.id === exam.id && assignmentState.has,
     submissionCount,
-    onReview: () => {
-      setPendingReviewAction(null);
-      setReviewOpen(true);
-    },
+    onReview: () => openReview(null),
     onTemplate: () => showTab('template'),
-    onCollaborate: () => setCollaborationOpen(true),
+    onCollaborate: openCollaboration,
     onResults: () => setIsResultsModalOpen(true),
   };
   return (
+    <DetailSlotProvider value={detailContext}>
     <div className="print-flow @container flex-1 min-h-0 w-full overflow-hidden flex flex-col bg-[var(--background)] text-[var(--foreground)]">
-      {reviewOpen && (
-        <EditorReview
-          exam={exam}
-          onClose={() => setReviewOpen(false)}
-          onContinue={
-            pendingReviewAction
-              ? () => {
-                  setReviewOpen(false);
-                  pendingReviewAction?.();
-                }
-              : undefined
-          }
-          onQuestion={(id) => {
-            setReviewOpen(false);
-            showTab('content');
-            setTimeout(() => {
-              const node = document.getElementById('editor-question-' + id);
-              node?.scrollIntoView({ block: 'center' });
-              node?.focus();
-            }, 0);
-          }}
-        />
-      )}
       {keyReminder && (
         <div
           role="dialog"
@@ -615,7 +614,7 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         onShare={() =>
           reviewBefore(() => {
             if (canPublish) setIsShareModalOpen(true);
-            else setCollaborationOpen(true);
+            else openCollaboration();
           })
         }
         actions={
@@ -642,13 +641,30 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                 </button>
               ))}
             </nav>
+            {mayEdit && (
+              <select
+                aria-label="Chế độ"
+                title="Sửa: chỉnh đề. Góp ý: đọc và để lại nhận xét. Xem: chỉ đọc."
+                className="teacher-field hidden md:block min-h-9 py-0 text-xs"
+                value={mode}
+                onChange={(event) => {
+                  const next = event.target.value as 'edit' | 'comment' | 'view';
+                  setMode(next);
+                  if (next === 'comment' && exam.serverId) openCollaboration();
+                }}
+              >
+                <option value="edit">Sửa</option>
+                {exam.serverId && <option value="comment">Góp ý</option>}
+                <option value="view">Xem</option>
+              </select>
+            )}
             {exam.serverId && (
               <button
                 type="button"
                 aria-label="Mời cùng soạn"
                 title="Mời đồng nghiệp cùng soạn, góp ý và xem lịch sử"
                 className="app-button-secondary hidden sm:inline-flex items-center gap-1.5 min-h-9 px-3 rounded-lg text-xs font-medium cursor-pointer"
-                onClick={() => setCollaborationOpen(true)}
+                onClick={openCollaboration}
               >
                 <Users className="w-4 h-4" />
                 <span className="max-md:hidden">Mời</span>
@@ -725,7 +741,7 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       <EditorToolbar
         canEdit={canEdit}
         copilotOpen={isCopilotOpen}
-        onCopilot={() => withAi(() => setIsCopilotOpen((open) => !open))}
+        onCopilot={() => withAi(() => { setRightTab('ai'); setIsCopilotOpen((open) => !open); })}
         onAssistant={toggleAssistant}
         onAdd={addManual}
         onBank={() => openSource('bank')}
@@ -898,7 +914,7 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                   )}
                 </div>
               )}
-              <EditorPending ownerId={currentUser.id} exam={exam} onCopilot={() => setIsCopilotOpen(true)} />
+              <EditorPending ownerId={currentUser.id} exam={exam} onCopilot={() => openAi()} />
               <fieldset disabled={!canEdit} id="panel-exam-content" className="space-y-3 min-w-0">
                 <div className="flex items-center justify-between gap-3 text-xs">
                   <div className="flex items-center gap-2">
@@ -1059,72 +1075,141 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
           />
         </section>
 
-        {canEdit && (
-          <ResizablePanel
-            side="right"
-            label="Bảng Trợ lý AI"
-            width={rightWidth}
-            onWidth={setRightWidth}
-            min={300}
-            max={560}
-            className={`${
-              isCopilotOpen ? 'flex' : 'hidden'
-            } max-lg:fixed max-lg:inset-x-0 max-lg:bottom-0 max-lg:top-12 max-lg:z-40`}
-          >
-            <RightCompanionRail
-              key={`${currentUser.id}:${exam.id}`}
-              ownerId={currentUser.id}
-              onSubmitCopilot={(submission) =>
-                setExam((previous) => applyCopilotSubmission(previous, submission, currentUser.id))
-              }
-              isExpanded={isCopilotOpen}
-              onClose={() => setIsCopilotOpen(false)}
-              exam={exam}
-              selectedQuestionIds={selectedQuestionIds}
-              externalCommand={copilotCommand}
-            />
-          </ResizablePanel>
-        )}
+        {(() => {
+          const tabs: { id: RightTab; label: string; open: boolean }[] = [
+            { id: 'detail', label: 'Chi tiết câu', open: canEdit && editingIds.length > 0 },
+            { id: 'ai', label: 'AI', open: canEdit && isCopilotOpen },
+            { id: 'review', label: 'Rà soát', open: reviewOpen },
+            { id: 'collab', label: 'Góp ý', open: collaborationOpen && !!exam.serverId },
+          ];
+          const shown = tabs.filter((tab) => tab.open);
+          const active = shown.find((tab) => tab.id === rightTab) ?? shown[0];
+          const closeTab = (id: RightTab) => {
+            if (id === 'ai') setIsCopilotOpen(false);
+            if (id === 'review') {
+              setReviewOpen(false);
+              setPendingReviewAction(null);
+            }
+            if (id === 'collab') setCollaborationOpen(false);
+          };
+          const show = (id: RightTab) => (active?.id === id ? 'flex' : 'hidden');
+          return (
+            <ResizablePanel
+              side="right"
+              label="Bảng bên phải"
+              width={rightWidth}
+              onWidth={setRightWidth}
+              min={300}
+              max={560}
+              className={`${
+                active ? 'flex' : 'hidden'
+              } max-lg:fixed max-lg:inset-x-0 max-lg:bottom-0 max-lg:top-12 max-lg:z-40`}
+            >
+              <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+                <div role="tablist" aria-label="Bảng bên phải" className="no-print flex shrink-0 gap-1 border-b border-[var(--ui-border)]/60 p-1.5 overflow-x-auto">
+                  {shown.map((tab) => (
+                    <span key={tab.id} className="inline-flex shrink-0 items-center">
+                      <button
+                        type="button"
+                        role="tab"
+                        aria-selected={active?.id === tab.id}
+                        onClick={() => setRightTab(tab.id)}
+                        className={`min-h-9 rounded-lg px-3 text-xs font-semibold cursor-pointer ${
+                          active?.id === tab.id ? 'app-button-tonal' : 'app-button-secondary'
+                        }`}
+                      >
+                        {tab.label}
+                      </button>
+                      {tab.id !== 'detail' && (
+                        <button
+                          type="button"
+                          aria-label={`Đóng ${tab.label}`}
+                          onClick={() => closeTab(tab.id)}
+                          className="min-h-9 px-2 text-xs cursor-pointer"
+                        >
+                          ×
+                        </button>
+                      )}
+                    </span>
+                  ))}
+                </div>
+                <div
+                  ref={setDetailSlot}
+                  aria-label="Chi tiết câu"
+                  role="region"
+                  className={`${show('detail')} min-h-0 flex-1 flex-col overflow-auto p-3`}
+                />
+                {canEdit && (
+                  <div className={`${show('ai')} min-h-0 flex-1 flex-col`}>
+                    <RightCompanionRail
+                      key={`${currentUser.id}:${exam.id}`}
+                      ownerId={currentUser.id}
+                      onSubmitCopilot={(submission) =>
+                        setExam((previous) => applyCopilotSubmission(previous, submission, currentUser.id))
+                      }
+                      isExpanded={isCopilotOpen && active?.id === 'ai'}
+                      onClose={() => setIsCopilotOpen(false)}
+                      exam={exam}
+                      selectedQuestionIds={selectedQuestionIds}
+                      externalCommand={copilotCommand}
+                    />
+                  </div>
+                )}
+                {reviewOpen && (
+                  <div className={`${show('review')} min-h-0 flex-1 flex-col overflow-auto`}>
+                    <EditorReview
+                      panel
+                      exam={exam}
+                      onClose={() => closeTab('review')}
+                      onContinue={
+                        pendingReviewAction
+                          ? () => {
+                              setReviewOpen(false);
+                              pendingReviewAction?.();
+                            }
+                          : undefined
+                      }
+                      onQuestion={(id) => {
+                        showTab('content');
+                        setTimeout(() => {
+                          const node = document.getElementById('editor-question-' + id);
+                          node?.scrollIntoView({ block: 'center' });
+                          node?.focus();
+                        }, 0);
+                      }}
+                    />
+                  </div>
+                )}
+                {collaborationOpen && exam.serverId && (
+                  <div className={`${show('collab')} min-h-0 flex-1 flex-col overflow-auto p-3`}>
+                    <ExamCollaboratorsPanel
+                      key={`${exam.serverId}-${currentUser.id}`}
+                      examId={exam.serverId}
+                      expectedUserId={currentUser.id}
+                      questions={exam.questions.map((q, i) => ({
+                        id: q.id,
+                        label: `Câu ${i + 1}: ${(q.content || '').replace(/\s+/g, ' ').slice(0, 40)}`,
+                      }))}
+                      onRestored={(document) => {
+                        acceptServerDocument(document);
+                      }}
+                      beforeRestore={() => {
+                        if (saveState !== 'saved') {
+                          alert('Hãy lưu xong hoặc giữ bản nháp thành đề mới trước khi khôi phục lịch sử.');
+                          return false;
+                        }
+                        return true;
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            </ResizablePanel>
+          );
+        })()}
       </div>
 
       {presentationOpen && <ExamPresentation exam={exam} onClose={() => setPresentationOpen(false)} />}
-      {collaborationOpen && exam.serverId && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label="Cộng tác và lịch sử"
-          className="fixed inset-0 z-50 bg-black/50 p-4 flex items-center justify-center"
-        >
-          <div className="app-dialog w-full max-w-3xl max-h-[90vh] overflow-auto bg-[var(--ui-surface)] rounded-xl p-5">
-            <button
-              type="button"
-              className="float-right px-3 py-2"
-              onClick={() => setCollaborationOpen(false)}
-            >
-              Đóng
-            </button>
-            <ExamCollaboratorsPanel
-              key={`${exam.serverId}-${currentUser.id}`}
-              examId={exam.serverId}
-              expectedUserId={currentUser.id}
-              questions={exam.questions.map((q, i) => ({
-                id: q.id,
-                label: `Câu ${i + 1}: ${(q.content || '').replace(/\s+/g, ' ').slice(0, 40)}`,
-              }))}
-              onRestored={(document) => {
-                acceptServerDocument(document);
-              }}
-              beforeRestore={() => {
-                if (saveState !== 'saved') {
-                  alert('Hãy lưu xong hoặc giữ bản nháp thành đề mới trước khi khôi phục lịch sử.');
-                  return false;
-                }
-                return true;
-              }}
-            />
-          </div>
-        </div>
-      )}
 
       <ShuffleModal
         isOpen={isShuffleModalOpen}
@@ -1163,6 +1248,7 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         }}
       />
     </div>
+    </DetailSlotProvider>
   );
 };
 

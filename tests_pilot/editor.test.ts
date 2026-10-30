@@ -116,7 +116,7 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
       assert.equal(await page.getByRole('region',{name:'Dàn ý đề',exact:true}).getByText('NGU_LIEU_PRESERVED',{exact:true}).filter({visible:true}).count(),1);
       await page.getByRole('region',{name:'Dàn ý đề',exact:true}).getByText('SOURCE_LOCAL_DOCUMENT',{exact:true}).waitFor();
       await page.getByRole('button',{name:'Thêm công cụ',exact:true}).filter({visible:true}).click(); await page.getByRole('menuitem',{name:'Rà soát đề',exact:true}).click();
-      const review=page.getByRole('dialog',{name:'Rà soát đề',exact:true}); await review.getByRole('button',{name:'Đến câu 2',exact:true}).first().click();
+      const review=page.getByRole('region',{name:'Rà soát đề',exact:true}); await review.getByRole('button',{name:'Đến câu 2',exact:true}).first().click();
       assert.equal(await page.locator('#editor-question-q2').evaluate(el=>el===document.activeElement),true);
       for (const label of ['Word – đề','Word – đáp án/barem','Word – lời giải','Word – ma trận']) {
         const download = page.waitForEvent('download'); await exportTool(page,label); const file=await download; const path=await file.path(); assert.ok(path);

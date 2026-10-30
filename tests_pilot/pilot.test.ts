@@ -271,7 +271,7 @@ test('F2 author seven types, image, passage, zero, title and reopen', { timeout:
 test('F3 answer views, shuffle, Word and print', { timeout: 120000 }, () => flow('F3', async f => {
   await authenticated(f); await openExam(f,await seedExam(f,'ngu_van'));
   await f.page.getByRole('button', { name: 'Thêm công cụ', exact: true }).filter({ visible: true }).click(); await f.page.getByRole('menuitem', { name: 'Rà soát đề', exact: true }).click();
-  const review = f.page.getByRole('dialog', { name: 'Rà soát đề', exact: true });
+  const review = f.page.getByRole('region', { name: 'Rà soát đề', exact: true });
   assert.ok((await review.innerText()).includes('Tổng điểm: 6,00'));
   assert.ok(!(await review.innerText()).includes(solution));
   await review.getByRole('button', { name: 'Đóng', exact: true }).click();
@@ -936,7 +936,7 @@ test('F24 comment resolution respects roles and private notes download as readab
   await authenticated(f); const id = await seedExam(f); await openExam(f, id);
   const version = (await f.api('/api/exams/' + id)).document.version;
   await click(f.page, 'Cùng soạn · Góp ý · Lịch sử');
-  const panel = f.page.getByRole('dialog', { name: 'Cộng tác và lịch sử', exact: true });
+  const panel = f.page.getByRole('region', { name: 'Cộng tác và lịch sử đề', exact: true });
   await panel.getByLabel('Câu được góp ý').waitFor({ state: 'attached' });
   await openDetails(f.page, 'Góp ý');
   await panel.getByLabel('Câu được góp ý').selectOption({ index: 1 });
@@ -957,7 +957,7 @@ test('F24 comment resolution respects roles and private notes download as readab
   await f.api('/api/exams/' + id + '/collaborators', 'POST', { email: f.emails[1], role: 'VIEWER' });
   const peer = await f.context(), b = await peer.newPage(); await login(b, f.emails[1], f.password); await b.waitForURL(origin + '/'); await b.goto(origin + '/editor/' + id);
   await click(b, 'Cùng soạn · Góp ý · Lịch sử'); await openDetails(b, 'Góp ý');
-  const otherPanel = b.getByRole('dialog', { name: 'Cộng tác và lịch sử', exact: true });
+  const otherPanel = b.getByRole('region', { name: 'Cộng tác và lịch sử đề', exact: true });
   await otherPanel.getByText('Chỉ xem', { exact: true }).waitFor();
   assert.equal(await otherPanel.getByRole('button', { name: 'Đánh dấu đã giải quyết', exact: true }).count(), 0);
   assert.equal(await otherPanel.getByRole('button', { name: 'Gửi góp ý', exact: true }).count(), 0);
@@ -979,7 +979,7 @@ test('F24 comment resolution respects roles and private notes download as readab
   const deniedReopen = await peer.request.patch(origin + '/api/exams/' + id + '/comments', { headers: { Origin: origin, 'x-examcraft-user': f.ids[1] }, data: { commentId: peerComment.id, resolved: false } });
   assert.equal(deniedReopen.status(), 403);
 
-  await panel.getByRole('button', { name: 'Đóng', exact: true }).click();
+  await f.page.getByRole('button', { name: 'Đóng Góp ý', exact: true }).click();
   const secret = 'pilot-f24-canary-key-0123456789'; await f.api('/api/user/keys', 'POST', { apiKey: secret, label: 'F24 fixture only' });
   await openAccount(f.page); await f.page.getByTitle('Bộ não AI Sư Phạm: Xem và dạy các phong cách ra đề cho AI').filter({ visible: true }).click(); await click(f.page, 'Dạy AI quy tắc mới');
   await f.page.getByPlaceholder('Ví dụ: Không cho thử ngược nghiệm Casio').fill('F24 PRIVATE MANUAL NOTE');

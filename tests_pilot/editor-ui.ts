@@ -9,7 +9,7 @@ export async function saveEditor(page: Page) {
   if ((await state.getAttribute('aria-expanded')) === 'true') await state.click();
 }
 export async function acceptReview(page: Page) {
-  const review = page.getByRole('dialog', { name: 'Rà soát đề', exact: true });
+  const review = page.getByRole('region', { name: 'Rà soát đề', exact: true });
   if (await review.isVisible())
     await review.getByRole('button', { name: 'Đã xem, tiếp tục', exact: true }).click();
 }

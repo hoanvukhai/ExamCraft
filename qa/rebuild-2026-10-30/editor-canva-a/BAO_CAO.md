@@ -18,19 +18,25 @@ Nhánh `claude/editor-canva-a` (worktree `tmp/canva-a`). Nền: commit đặc t�
 
 Sửa lỗi gặp khi làm: khóa hạn chế sửa trước đây khóa luôn khu cứu nháp (nay nằm ngoài khóa); nút công cụ bị CSS ép xuống dòng (`!whitespace-nowrap`); menu thả mở **lên trên** khi nằm ở nửa dưới màn hình; ba mã màu cứng trong các tệp sửa dở được đổi sang biến (baseline màu 3128 → 2508).
 
+## Làm nốt giai đoạn A (đợt 2)
+
+| Mã | Việc | Kết quả |
+|---|---|---|
+| TS-10 | Bảng phải có thẻ: Chi tiết câu, AI, Rà soát, Góp ý | Xong. Bấm "Chỉnh nội dung" của câu thì bộ soạn chi tiết hiện ở thẻ Chi tiết câu bên phải (cây bên trái chỉ ghi "Đang sửa chi tiết ở bảng bên phải"). Rà soát đề và Góp ý/lịch sử không còn là hộp thoại mà là thẻ ở bảng phải |
+| TS-4 | Chọn chế độ Sửa / Góp ý / Xem ở thanh trên | Xong (từ cỡ md). Góp ý và Xem khóa tờ đề; Góp ý mở thẻ Góp ý (chỉ có khi đề đã lưu trên máy chủ) |
+
 ## Lệch/chưa làm so với đặc tả (ghi rõ)
 
-- **Dàn ý** chưa là tab riêng: cây Phần/Nhóm/Câu nằm trong tab "Nội dung" (vẫn là nơi sửa câu và đổi thứ tự).
-- **Chi tiết câu ở bảng phải** chưa làm: bộ soạn chi tiết vẫn mở ngay trong cây ở bảng trái.
+- **Dàn ý** không tách tab riêng: cây Phần/Nhóm/Câu ở tab "Nội dung" chính là dàn ý, tách ra sẽ trùng lặp.
 - **Thêm ▾ và AI ▾ là hai nút cố định** của hàng công cụ (đặc tả để Thêm ở bảng trái); chọn vậy để nút không biến mất khi chọn câu.
-- Chưa có: hoàn tác/làm lại cấu trúc ở thanh trên, chế độ Sửa/Góp ý/Xem, rà soát và góp ý thành tab (vẫn là hộp thoại), dải trang và lưới (giai đoạn D), bảng dưới dạng ngăn kéo từ đáy trên điện thoại.
+- **Chưa làm:** hoàn tác/làm lại cấu trúc ở thanh trên (cần chụp trạng thái so với CAS và bản máy chủ, nguy cơ mất dữ liệu nên để giai đoạn sau); dải trang và lưới (giai đoạn D); ngăn kéo từ đáy trên điện thoại (hiện bảng phải phủ toàn màn hình).
 - Giai đoạn B–F chưa bắt đầu.
 
 ## Kiểm (bản dựng riêng, cổng 3130, DB thử)
 
 - Kiểu và lint: sạch (0 lỗi). SAFE 547/547.
 - Trình duyệt: editor 10/10, frame 4/4, library 6/6, teacher 7/7, admin 11/11, typography 4/4.
-- Luồng F1–F25 (trừ F8): đạt cả 24 (F2, F4, F19, F24 sau khi sửa bộ kiểm theo giao diện mới; các luồng khác đạt ngay).
+- Luồng F1–F25 (trừ F8): đạt cả 24 (F2, F4, F19, F24 sau khi sửa bộ kiểm theo giao diện mới; đợt 2 sửa lại F3/F4/F24 vì rà soát và góp ý thành thẻ). Kiểm đợt 2: editor 10/10, frame 4/4, teacher 7/7, library 6/6, admin 11/11, typography 4/4, pilot 24/24; ratchet màu 2508 giữ nguyên.
 - Bộ kiểm đã sửa theo giao diện mới: `editor`, `frame` (viết lại cho trang soạn không có menu trang), `teacher` (bảng Ngân hàng), `pilot` (lệnh câu trong hàng công cụ, Mời cùng soạn, menu ảnh đại diện), thêm trợ giúp `editor-ui.ts`.
 - Ảnh 1440/1024/375: thư mục này.
 - Chưa: thử bằng điện thoại thật; so Word/in; không chạy lại AI thật.
