@@ -3,6 +3,7 @@ import type { Exam, Question, QuestionType, DifficultyLevel, Subject, Figure } f
 import { parseKnowledgePackage, resolveKnowledgeScope } from './knowledge-package';
 import { parseExamPlan } from './exam-plan';
 import { parseHeaderLayout } from './header-layout';
+import { parsePrintLayout, EXAM_KINDS } from './print-layout';
 import { syncOutline } from './exam-outline';
 import { templateApplicationSchema } from './exam-template';
 
@@ -318,6 +319,17 @@ export function normalizeExamDocument(input: unknown): Exam {
       );
     }
   }
+  if (metadata.printLayout !== undefined) {
+    try {
+      document.metadata.printLayout = parsePrintLayout(metadata.printLayout);
+    } catch {
+      throw new DocumentValidationError(
+        'Bố cục in chưa hợp lệ; tối đa 12 khối mỗi vùng, mỗi khối 500 ký tự và mã khối riêng.',
+      );
+    }
+  }
+  if (metadata.examKind !== undefined && !(String(metadata.examKind) in EXAM_KINDS))
+    delete document.metadata.examKind;
   if (metadata.examPlan !== undefined) {
     try {
       document.metadata.examPlan = parseExamPlan(metadata.examPlan);

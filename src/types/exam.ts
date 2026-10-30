@@ -1,6 +1,7 @@
 import type { KnowledgePackage, KnowledgeScope } from '@/lib/knowledge-package';
 import type { ExamPlan } from '@/lib/exam-plan';
 import type { HeaderLayout } from '@/lib/header-layout';
+import type { PrintLayout } from '@/lib/print-layout';
 import type { TemplateApplication } from '@/lib/exam-template';
 
 export type Subject =
@@ -156,6 +157,9 @@ export interface Question {
 export interface ExamMetadata {
   templateApplication?: TemplateApplication;
   headerLayout?: HeaderLayout;
+  /** Student line, closing lines and footer (page numbers). Absent = the original fixed layout. */
+  printLayout?: PrintLayout;
+  examKind?: 'regular' | 'midterm' | 'final' | 'survey' | 'mock' | 'gifted' | 'other';
   examPlan?: ExamPlan;
   knowledgePackage?: KnowledgePackage;
   knowledgeScope?: KnowledgeScope;

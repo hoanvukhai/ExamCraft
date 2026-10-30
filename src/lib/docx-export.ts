@@ -13,6 +13,8 @@ import {
   Math,
   PageBreak,
   ImageRun,
+  Footer,
+  PageNumber,
 } from 'docx';
 import { Exam, Figure } from '@/types/exam';
 import { computeExamMatrix, generateDocxMatrixTable } from './matrix-spec-generator';
@@ -20,6 +22,7 @@ import { matchingDisplay, orderingDisplay } from './structured-question';
 import { splitContentBlocks } from './markdown-table';
 import { examPlanOutput } from './exam-plan-output';
 import { resolveHeaderLines } from './header-layout';
+import { resolvePrintLayout, type ResolvedBlock } from './print-layout';
 import type { VariationTableData } from '@/components/VariationTable';
 import { latexToMath } from './latex-math';
 
@@ -587,6 +590,132 @@ export async function exportExamToDocx(
     ],
   });
 
+  // Without a print layout the original fixed student line and closing line are used, unchanged.
+  const print = resolvePrintLayout(exam);
+  const printRuns = (block: ResolvedBlock, size: number) =>
+    block.segments.map(
+      (segment) =>
+        new TextRun({
+          ...(typeof segment === 'string'
+            ? { text: segment }
+            : { children: [segment.page === 'current' ? PageNumber.CURRENT : PageNumber.TOTAL_PAGES] }),
+          bold: block.bold,
+          italics: block.italic,
+          font: 'Times New Roman',
+          size,
+        }),
+    );
+  const printAlign = (align: ResolvedBlock['align']) =>
+    align === 'center' ? AlignmentType.CENTER : align === 'right' ? AlignmentType.RIGHT : AlignmentType.LEFT;
+  const printParagraphs = (blocks: ResolvedBlock[], size = 24) =>
+    blocks.map(
+      (block) => new Paragraph({ alignment: printAlign(block.align), children: printRuns(block, size) }),
+    );
+  const noBorders = {
+    top: { style: BorderStyle.NONE },
+    bottom: { style: BorderStyle.NONE },
+    left: { style: BorderStyle.NONE },
+    right: { style: BorderStyle.NONE },
+    insideHorizontal: { style: BorderStyle.NONE },
+    insideVertical: { style: BorderStyle.NONE },
+  } as const;
+  const studentBlocks: (Paragraph | Table)[] = !print
+    ? [studentInfoTable]
+    : print.studentLine.kind === 'none'
+      ? []
+      : [
+          ...(print.studentLine.labels.length
+            ? [
+                new Paragraph({
+                  spacing: { before: 80, after: 80 },
+                  children: print.studentLine.labels.map(
+                    (label, index) =>
+                      new TextRun({
+                        text:
+                          label +
+                          ': ' +
+                          '.'.repeat(index === 0 ? 55 : 14) +
+                          (index === print.studentLine.labels.length - 1 ? '' : '    '),
+                        italics: true,
+                        font: 'Times New Roman',
+                        size: 22,
+                      }),
+                  ),
+                }),
+              ]
+            : []),
+          ...(print.studentLine.kind === 'scoreBox'
+            ? [
+                new Table({
+                  width: { size: 100, type: WidthType.PERCENTAGE },
+                  rows: [
+                    new TableRow({
+                      height: { value: 1100, rule: 'atLeast' as never },
+                      children: [
+                        new TableCell({
+                          width: { size: 20, type: WidthType.PERCENTAGE },
+                          children: [
+                            new Paragraph({
+                              children: [
+                                new TextRun({ text: 'Điểm', bold: true, font: 'Times New Roman', size: 22 }),
+                              ],
+                            }),
+                          ],
+                        }),
+                        new TableCell({
+                          width: { size: 80, type: WidthType.PERCENTAGE },
+                          children: [
+                            new Paragraph({
+                              children: [
+                                new TextRun({
+                                  text: 'Lời nhận xét của giáo viên',
+                                  bold: true,
+                                  font: 'Times New Roman',
+                                  size: 22,
+                                }),
+                              ],
+                            }),
+                          ],
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ]
+            : []),
+        ];
+  const printFooter = print?.hasFooter
+    ? new Footer({
+        children: [
+          new Table({
+            width: { size: 100, type: WidthType.PERCENTAGE },
+            borders: noBorders,
+            rows: [
+              new TableRow({
+                children: [print.footer.left, print.footer.center, print.footer.right].map(
+                  (blocks, index) =>
+                    new TableCell({
+                      width: { size: 100 / 3, type: WidthType.PERCENTAGE },
+                      children: blocks.length
+                        ? blocks.map(
+                            (block) =>
+                              new Paragraph({
+                                alignment: [AlignmentType.LEFT, AlignmentType.CENTER, AlignmentType.RIGHT][
+                                  index
+                                ],
+                                children: printRuns(block, 20),
+                              }),
+                          )
+                        : [new Paragraph('')],
+                    }),
+                ),
+              }),
+            ],
+          }),
+        ],
+      })
+    : undefined;
+
   const docChildren: (Paragraph | Table)[] = [];
   const parallelQuestions: (Paragraph | Table)[][] = [],
     parallelAnswers: (Paragraph | Table)[][] = [];
@@ -653,7 +782,8 @@ export async function exportExamToDocx(
   docChildren.push(
     ...headerBlocks,
     new Paragraph({ spacing: { before: 100, after: 100 } }),
-    studentInfoTable,
+    ...studentBlocks,
+    ...(print ? printParagraphs(print.intro) : []),
     new Paragraph({ spacing: { before: 150, after: 100 } }),
   );
 
@@ -795,20 +925,22 @@ export async function exportExamToDocx(
   docChildren.push(...headerLines.filter((line) => line.area === 'footer').map(headerParagraph));
 
   // Cuối đề thi
-  docChildren.push(
-    new Paragraph({
-      alignment: AlignmentType.CENTER,
-      spacing: { before: 400, after: 400 },
-      children: [
-        new TextRun({
-          text: '-------------------------- HẾT --------------------------',
-          bold: true,
-          font: 'Times New Roman',
-          size: 22,
-        }),
-      ],
-    }),
-  );
+  if (print) docChildren.push(new Paragraph({ spacing: { before: 300 } }), ...printParagraphs(print.end));
+  else
+    docChildren.push(
+      new Paragraph({
+        alignment: AlignmentType.CENTER,
+        spacing: { before: 400, after: 400 },
+        children: [
+          new TextRun({
+            text: '-------------------------- HẾT --------------------------',
+            bold: true,
+            font: 'Times New Roman',
+            size: 22,
+          }),
+        ],
+      }),
+    );
 
   if (['answers', 'solutions', 'matrix'].includes(view)) docChildren.splice(questionBodyStart);
 
@@ -1079,6 +1211,7 @@ export async function exportExamToDocx(
             },
           },
         },
+        ...(printFooter ? { footers: { default: printFooter } } : {}),
         children: docChildren,
       },
     ],

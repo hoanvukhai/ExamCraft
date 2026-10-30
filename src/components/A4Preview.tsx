@@ -17,6 +17,7 @@ import { matchingDisplay, orderingDisplay } from '@/lib/structured-question';
 import { computeExamMatrix, computeExamSpecification } from '@/lib/matrix-spec-generator';
 import { examPlanOutput } from '@/lib/exam-plan-output';
 import { resolveHeaderLines } from '@/lib/header-layout';
+import { resolvePrintLayout, segmentsToText, type ResolvedBlock } from '@/lib/print-layout';
 
 const renderPreviewFigure = (figure: Figure) => <FigureView key={figure.id} figure={figure} forceLight />;
 
@@ -62,14 +63,47 @@ interface A4PreviewProps {
   exam: Exam;
   /** Extra controls for the bar under the sheet (for example the slideshow button). */
   barExtra?: React.ReactNode;
+  /** Called when a printed block (student line, closing lines, footer) is clicked while editing. */
+  onPrintBlock?: () => void;
 }
 
-export const A4Preview: React.FC<A4PreviewProps> = ({ exam, barExtra }) => {
+const A4_HEIGHT_PX = 1123;
+
+function PrintBlocks({
+  blocks,
+  page,
+  pages,
+  size = '12pt',
+}: {
+  blocks: ResolvedBlock[];
+  page?: number;
+  pages?: number;
+  size?: string;
+}) {
+  return (
+    <>
+      {blocks.map((block) => (
+        <div
+          key={block.id}
+          data-print-block={block.id}
+          className={`whitespace-pre-wrap break-words ${block.bold ? 'font-bold' : ''} ${block.italic ? 'italic' : ''}`}
+          style={{ textAlign: block.align, fontSize: size, minHeight: '1.2em' }}
+        >
+          {segmentsToText(block.segments, page, pages)}
+        </div>
+      ))}
+    </>
+  );
+}
+
+export const A4Preview: React.FC<A4PreviewProps> = ({ exam, barExtra, onPrintBlock }) => {
   const [viewMode, setViewMode] = useState<'exam' | 'parallel' | 'answers' | 'solutions' | 'matrix'>('exam');
   // null follows the available width; explicit percentages are actual paper zoom.
   const [zoom, setZoom] = useState<number | null>(null);
   const scrollArea = useRef<HTMLDivElement>(null);
   const [fitScale, setFitScale] = useState(1);
+  const paper = useRef<HTMLDivElement>(null);
+  const [pageCount, setPageCount] = useState(1);
   const effectiveZoom = zoom ?? Math.round(fitScale * 100);
   useEffect(() => {
     const area = scrollArea.current;
@@ -82,6 +116,17 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam, barExtra }) => {
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    const node = paper.current;
+    if (!node) return;
+    const measure = () => setPageCount(Math.max(1, Math.ceil((node.offsetHeight - 2) / A4_HEIGHT_PX)));
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  const print = resolvePrintLayout(exam);
   const { metadata } = exam;
   const structure = outlineView(exam);
   const questions = structure.questions;
@@ -252,8 +297,9 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam, barExtra }) => {
         }
       >
         <div
+          ref={paper}
           style={{ zoom: effectiveZoom / 100 }}
-          className="a4-paper mx-auto w-[210mm] min-h-[297mm] bg-white text-black p-[18mm] shadow-xs border border-[#dadce0] font-serif leading-normal"
+          className={`a4-paper mx-auto w-[210mm] min-h-[297mm] bg-white text-black p-[18mm] shadow-xs border border-[#dadce0] font-serif leading-normal ${print?.hasFooter && viewMode === 'exam' ? 'flex flex-col' : ''}`}
         >
           {/* VIEW: ĐỀ THI */}
           {viewMode === 'exam' && (
@@ -282,12 +328,43 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam, barExtra }) => {
               )}
 
               {/* Thông tin học sinh */}
-              <div className="text-[12pt] italic py-1 flex justify-between">
-                <span>
-                  Họ và tên thí sinh: ........................................................................
-                </span>
-                <span>Lớp: ......... SBD: ..........</span>
-              </div>
+              {!print && (
+                <div className="text-[12pt] italic py-1 flex justify-between">
+                  <span>
+                    Họ và tên thí sinh:
+                    ........................................................................
+                  </span>
+                  <span>Lớp: ......... SBD: ..........</span>
+                </div>
+              )}
+              {print && print.studentLine.kind !== 'none' && (
+                <div
+                  data-print-zone="studentLine"
+                  onClick={onPrintBlock}
+                  className={onPrintBlock ? 'cursor-pointer' : undefined}
+                >
+                  {print.studentLine.labels.length > 0 && (
+                    <div className="text-[12pt] italic py-1 flex flex-wrap justify-between gap-x-6">
+                      {print.studentLine.labels.map((label, index) => (
+                        <span key={label} className={index === 0 ? 'grow' : ''}>
+                          {label}: {'.'.repeat(index === 0 ? 60 : 14)}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  {print.studentLine.kind === 'scoreBox' && (
+                    <div className="grid grid-cols-[7rem_1fr] border border-black text-[12pt] min-h-20">
+                      <div className="border-r border-black p-2 font-bold">Điểm</div>
+                      <div className="p-2 font-bold">Lời nhận xét của giáo viên</div>
+                    </div>
+                  )}
+                </div>
+              )}
+              {print && print.intro.length > 0 && (
+                <div data-print-zone="intro" onClick={onPrintBlock}>
+                  <PrintBlocks blocks={print.intro} />
+                </div>
+              )}
 
               {/* Nội dung đề thi */}
               {questions.length === 0 && <StructureBlocks blocks={structure.trailing} light />}
@@ -311,7 +388,10 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam, barExtra }) => {
                         {q.choices && q.type === 'multiple_choice' && (
                           <div className="grid grid-cols-2 gap-3 pl-4 py-2">
                             {q.choices.map((choice) => (
-                              <div key={choice.key}><b>{choice.key}.</b> <MathRenderer content={choice.text} inline />{choice.figures?.map(renderPreviewFigure)}</div>
+                              <div key={choice.key}>
+                                <b>{choice.key}.</b> <MathRenderer content={choice.text} inline />
+                                {choice.figures?.map(renderPreviewFigure)}
+                              </div>
                             ))}
                           </div>
                         )}
@@ -352,9 +432,20 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam, barExtra }) => {
                       </div>
                     ))}
                   {/* Chân trang đề thi */}
-                  <div className="text-center text-[12pt] font-bold pt-8 border-t border-black mt-8">
-                    ---------- HẾT ----------
-                  </div>
+                  {!print && (
+                    <div className="text-center text-[12pt] font-bold pt-8 border-t border-black mt-8">
+                      ---------- HẾT ----------
+                    </div>
+                  )}
+                  {print && print.end.length > 0 && (
+                    <div
+                      data-print-zone="end"
+                      onClick={onPrintBlock}
+                      className="pt-8 border-t border-black mt-8"
+                    >
+                      <PrintBlocks blocks={print.end} />
+                    </div>
+                  )}
                 </>
               )}
             </div>
@@ -416,7 +507,10 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam, barExtra }) => {
                             {q.choices && q.type === 'multiple_choice' && (
                               <div className="pl-3 py-1">
                                 {q.choices.map((choice) => (
-                                  <div key={choice.key}><b>{choice.key}.</b> <MathRenderer content={choice.text} inline />{choice.figures?.map(renderPreviewFigure)}</div>
+                                  <div key={choice.key}>
+                                    <b>{choice.key}.</b> <MathRenderer content={choice.text} inline />
+                                    {choice.figures?.map(renderPreviewFigure)}
+                                  </div>
                                 ))}
                               </div>
                             )}
@@ -724,6 +818,21 @@ export const A4Preview: React.FC<A4PreviewProps> = ({ exam, barExtra }) => {
                   ))}
                 </tbody>
               </table>
+            </div>
+          )}
+          {viewMode === 'exam' && print?.hasFooter && (
+            <div data-print-zone="footer" onClick={onPrintBlock} className="mt-auto pt-6">
+              <div className="grid grid-cols-3 gap-3 border-t border-black pt-2 text-[10.5pt]">
+                <div>
+                  <PrintBlocks blocks={print.footer.left} page={1} pages={pageCount} size="10.5pt" />
+                </div>
+                <div>
+                  <PrintBlocks blocks={print.footer.center} page={1} pages={pageCount} size="10.5pt" />
+                </div>
+                <div>
+                  <PrintBlocks blocks={print.footer.right} page={1} pages={pageCount} size="10.5pt" />
+                </div>
+              </div>
             </div>
           )}
         </div>

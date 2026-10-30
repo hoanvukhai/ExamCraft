@@ -50,6 +50,7 @@ import { DetailSlotProvider } from '@/components/editor/EditorDetailSlot';
 import { reviewExam } from '@/lib/exam-review';
 import { EditorSaveStatus } from '@/components/editor/EditorSaveStatus';
 import { EditorTemplate } from '@/components/editor/EditorRequirements';
+import { EditorPrint } from '@/components/editor/EditorPrint';
 import { captureInsertion, insertQuestionBatch, type InsertionTarget } from '@/lib/outline-insertion';
 import { editorInsertionPoint, importedPartPoint } from '@/lib/editor-parts';
 import { OutlineEditor, type QuestionSource } from '@/components/editor/OutlineEditor';
@@ -816,7 +817,8 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                 preview={null}
               />
             </div>
-            <div className={leftTab === 'template' ? 'block p-3' : 'hidden'}>
+            <div className={leftTab === 'template' ? 'block p-3 space-y-6' : 'hidden'}>
+              <EditorPrint exam={exam} canEdit={canEdit} onChange={setExam} />
               <EditorTemplate
                 key={currentUser.id + ':' + editorSessionKey}
                 ownerId={currentUser.id}
@@ -1061,6 +1063,7 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
           )}
           <A4Preview
             exam={previewExam}
+            onPrintBlock={canEdit ? () => showTab('template') : undefined}
             barExtra={
               <button
                 type="button"

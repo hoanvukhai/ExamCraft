@@ -85,6 +85,28 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
         await page.screenshot({ path: report + '/empty-' + width + '-' + (dark?'dark':'light') + '.png' });
       }
     });
+    await t.test('print layout: a preset adds the student line, closing lines and a numbered footer, saved with the exam', async () => {
+      await page.setViewportSize({width:1440,height:1000});
+      await page.goto(origin + '/editor/' + examId);
+      const sheet = page.locator('.a4-preview-section');
+      await sheet.getByText('Họ và tên thí sinh:').first().waitFor();
+      assert.equal(await sheet.locator('[data-print-zone="footer"]').count(), 0);
+      await page.getByRole('button', { name: 'Mẫu', exact: true }).click();
+      const print = page.getByRole('region', { name: 'Bố cục in', exact: true }); await print.waitFor();
+      await print.getByRole('button', { name: 'Áp dụng' }).first().click();
+      const footer = sheet.locator('[data-print-zone="footer"]'); await footer.waitFor();
+      assert.match(await footer.innerText(), /Trang 1[/][0-9]+/);
+      assert.equal(await sheet.getByText('Họ và tên thí sinh:').count(), 0);
+      assert.ok(await sheet.getByText('Họ và tên:').count() > 0);
+      await print.getByLabel('Chân trang · phải · dòng 1', { exact: true }).fill('Đề thử {Mã đề}{Tổng số trang}');
+      await poll(async () => JSON.stringify((await db.exam.findUniqueOrThrow({where:{id:examId}})).metadata).includes('Đề thử {Mã đề}{Tổng số trang}'));
+      await page.screenshot({ path: report + '/print-layout-applied-1440.png' });
+      await print.getByRole('button', { name: 'Hoàn tác mẫu vừa áp dụng', exact: true }).click();
+      await sheet.getByText('Họ và tên thí sinh:').first().waitFor();
+      assert.equal(await sheet.locator('[data-print-zone="footer"]').count(), 0);
+      await page.screenshot({ path: report + '/print-layout-1440.png' });
+      await page.getByRole('button', { name: 'Nội dung', exact: true }).click();
+    });
     await t.test('new question stays separate, cancel/reopen keeps draft and confirmation inserts exactly once', async () => {
       await page.setViewportSize({width:1440,height:1000});
       await addSource(page, 'Tự soạn câu mới');
