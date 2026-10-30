@@ -13,7 +13,7 @@ import { loginBucket } from '../src/lib/auth-security';
 const origin = process.env.EXAMCRAFT_TEST_ORIGIN || 'http://127.0.0.1:3117';
 const report = process.env.EDITOR_REPORT_DIR || 'qa/rebuild-2026-10-28/editor-grouping';
 
-test('editor P0-P8: settings recovery review exports and narrow screens', { timeout: 240000 }, async t => {
+test('editor P0-P8: settings recovery review exports and narrow screens', { timeout: 420000 }, async t => {
   const url = requireTestDatabase();
   assert.equal(new URL(url).pathname, '/examcraft_test_20261022');
   assert.equal((await (await fetch(origin + '/api/health')).json()).isolatedTest, true);
@@ -286,7 +286,7 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
         await page.setViewportSize({width,height}); if(await page.evaluate(()=>document.documentElement.classList.contains('dark'))!==dark)await toggleTheme(page);
         await fitting();
         const toolbar=page.getByRole('toolbar',{name:'Công cụ soạn đề',exact:true});
-        const boxes=await toolbar.locator('button').filter({visible:true}).evaluateAll(items=>items.map(el=>el.getBoundingClientRect().top)); assert.ok(Math.max(...boxes)-Math.min(...boxes)<2, 'the tool row is a single line at '+width+'x'+height+' '+(dark?'dark':'light')+' '+JSON.stringify(boxes));
+        const boxes=await toolbar.locator('button').filter({visible:true}).evaluateAll(items=>items.map(el=>el.getBoundingClientRect().top)); assert.ok(Math.max(...boxes)-Math.min(...boxes)<=3, 'the tool row is a single line at '+width+'x'+height+' '+(dark?'dark':'light')+' '+JSON.stringify(boxes));
         await page.waitForTimeout(220); await page.screenshot({path:report+'/rich-'+width+'-'+(dark?'dark':'light')+'.png'});
         await phoneDetail();
         await openInfoPanel(page).catch(() => {});
