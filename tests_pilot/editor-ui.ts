@@ -10,8 +10,9 @@ export async function saveEditor(page: Page) {
 }
 export async function acceptReview(page: Page) {
   const review = page.getByRole('region', { name: 'Rà soát đề', exact: true });
-  if (await review.isVisible())
-    await review.getByRole('button', { name: 'Đã xem, tiếp tục', exact: true }).click();
+  // Only giving the exam to students waits for the review; other actions never open it.
+  const next = review.getByRole('button', { name: 'Đã xem, tiếp tục', exact: true });
+  if ((await review.isVisible()) && (await next.count())) await next.click();
 }
 /** The "Thêm" menu of the tool row: Tự soạn câu mới, Từ ngân hàng, Nhập Word/Ảnh, Sinh bằng AI, Phần mới. */
 export async function addSource(page: Page, name: string) {

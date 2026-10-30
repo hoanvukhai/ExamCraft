@@ -135,7 +135,9 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
     if (!area) return;
     const observer = new ResizeObserver((entries) => {
       const width = entries[0]?.contentRect.width ?? 794;
-      setFitScale(Math.min(1, Math.max(0.2, (width - 8) / 794)));
+      const next = Math.min(1, Math.max(0.2, (width - 8) / 794));
+      // A scrollbar appearing changes the width by ~2%: ignore such small steps so the sheet cannot flicker between two sizes.
+      setFitScale((previous) => (Math.abs(next - previous) < 0.03 ? previous : next));
     });
     observer.observe(area);
     return () => observer.disconnect();
@@ -367,7 +369,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
             : undefined
         }
         className={
-          'a4-scroll-area grow min-h-0 overflow-auto p-4 sm:p-8 outline-none ' +
+          'a4-scroll-area grow min-h-0 overflow-auto p-4 sm:p-8 outline-none [scrollbar-gutter:stable] ' +
           (viewMode === 'matrix' ? 'hidden sm:block print:!block' : '')
         }
       >

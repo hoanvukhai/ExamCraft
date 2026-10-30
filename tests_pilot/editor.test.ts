@@ -41,7 +41,7 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
     const poll = async (check: () => Promise<boolean>) => { const end = Date.now() + 15000; while (Date.now() < end) { if (await check()) return; await new Promise(resolve => setTimeout(resolve,100)); } assert.fail('expected saved state'); };
     await t.test('empty starter, exam details with live preview, AI panel without a key, templates', async () => {
       await page.goto(origin + '/editor/' + examId);
-      await sheet.getByText('Đề chưa có câu hỏi', { exact: false }).waitFor();
+      await sheet.getByText('Đề chưa có câu hỏi', { exact: false }).filter({ visible: true }).first().waitFor();
       assert.equal(await page.getByText('Bản nháp chưa lưu trên máy này', { exact: true }).count(), 0);
       assert.equal(await page.getByRole('button', { name: 'Lưu đề', exact: true }).count(), 0);
       await edit().click();
@@ -110,7 +110,7 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
     await t.test('a new question is inserted at the selection, saves by itself, and an untouched one is dropped', async () => {
       await page.setViewportSize({width:1440,height:1000});
       await page.goto(origin + '/editor/' + examId);
-      await sheet.getByText('Đề chưa có câu hỏi', { exact: false }).waitFor();
+      await sheet.getByText('Đề chưa có câu hỏi', { exact: false }).filter({ visible: true }).first().waitFor();
       await addSource(page, 'Tự soạn câu mới');
       await sheet.locator('[data-question-id]').first().waitFor();
       assert.equal(await current().innerText(), 'Câu 1');
@@ -127,6 +127,8 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
       await page.getByRole('navigation', { name: 'Đang chọn', exact: true }).getByRole('button', { name: 'Toàn đề', exact: true }).click();
       await poll(async () => (await sheet.locator('[data-question-id]').count()) === 1);
       await page.getByText('Đã bỏ câu trống', { exact: false }).waitFor();
+      await poll(async () => (await api('/api/exams/' + examId)).document.questions.length === 1);
+      await page.getByText('Đã lưu', { exact: true }).first().waitFor();
       for (const width of [320,375]) {
         await page.setViewportSize({width,height:812}); await fitting();
         await selectQuestion(page, (await api('/api/exams/' + examId)).document.questions[0].id);
@@ -142,7 +144,7 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
       await page.setViewportSize({ width:1440,height:1000 });
       const loaded = await context.request.get(origin + '/api/exams/' + examId); const doc = (await loaded.json()).document; delete doc.outline;
       doc.passages = [{ id:'p1',title:'Bài đọc dùng chung',content:'NGU_LIEU_PRESERVED',source:'SOURCE_LOCAL_DOCUMENT' }];
-      doc.questions = [{ id:'q1',type:'multiple_choice',difficulty:'thong_hieu',content:'QUESTION_ONE',choices:[{key:'A',text:'CHOICE_CORRECT'},{key:'B',text:'CHOICE_OTHER'}],correct_answer:'A',points:0,passageId:'p1',step_by_step_solution:'PRIVATE_EXPLANATION_ONE' },{ id:'q2',type:'short_answer',difficulty:'thong_hieu',content:'QUESTION_TWO',correct_answer:'2',accepted_answers:['2'],passageId:'p1',step_by_step_solution:'PRIVATE_EXPLANATION_TWO',points:0 }];
+      doc.questions = [{ id:'q1',type:'multiple_choice',difficulty:'thong_hieu',content:'QUESTION_ONE',choices:[{key:'A',text:'CHOICE_CORRECT'},{key:'B',text:'CHOICE_OTHER'}],correct_answer:'A',points:0,passageId:'p1',step_by_step_solution:'PRIVATE_EXPLANATION_ONE' },{ id:'q2',type:'short_answer',difficulty:'thong_hieu',content:'QUESTION_TWO',correct_answer:'2',accepted_answers:['2'],passageId:'p1',step_by_step_solution:'PRIVATE_EXPLANATION_TWO' }];
       const patched = await context.request.patch(origin + '/api/exams/' + examId,{headers:{Origin:origin},data:{document:doc,baseVersion:doc.version}}); assert.ok(patched.ok());
       await page.reload(); await sheet.getByText('QUESTION_ONE',{exact:false}).filter({visible:true}).first().waitFor({timeout:8000});
       assert.equal(await sheet.getByText('NGU_LIEU_PRESERVED',{exact:true}).filter({visible:true}).count(),1);

@@ -460,7 +460,7 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     setPicked([`question:${question.id}`]);
     setLeftTab('detail');
     setLeftOpen(true);
-    setPhonePanel(true);
+    if (window.innerWidth < 1024) setPhonePanel(true);
   };
   const insertPart = (point: InsertPoint) =>
     applyStructure((previous) =>

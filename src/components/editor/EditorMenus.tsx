@@ -44,9 +44,9 @@ export type ExportProps = {
 
 function exportItems(p: ExportProps): MenuItem[] {
   const items: MenuItem[] = [];
-  if (p.reviewCount && p.onReview)
+  if (p.onReview)
     items.push({
-      label: `Đề còn ${p.reviewCount} mục cần xem`,
+      label: p.reviewCount ? `Đề còn ${p.reviewCount} mục cần xem` : 'Rà soát đề',
       title: 'Mở danh sách rà soát. Xuất file không bị chặn.',
       onClick: p.onReview,
     });
@@ -92,7 +92,7 @@ export function MoreMenu(p: {
 }) {
   const items: MenuItem[] = [
     ...(p.phone ? exportItems(p.phone) : []),
-    { label: 'Rà soát đề', onClick: p.onReview },
+    ...(p.phone ? [] : [{ label: 'Rà soát đề', onClick: p.onReview }]),
     ...(p.canEdit && p.onUndo ? [{ label: 'Hoàn tác', disabled: !p.canUndo, onClick: p.onUndo }] : []),
     ...(p.canEdit && p.onRedo ? [{ label: 'Làm lại', disabled: !p.canRedo, onClick: p.onRedo }] : []),
     ...(p.hasAssignments ? [{ label: `Kết quả (${p.submissionCount})`, onClick: p.onResults }] : []),
