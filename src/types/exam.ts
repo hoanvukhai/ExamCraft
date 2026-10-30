@@ -143,6 +143,8 @@ export interface Question {
   subBranch?: 'physics' | 'chemistry' | 'biology' | 'history' | 'geography' | 'integrated';
   curriculumTrack?: 'core' | 'advanced_topic';
   points?: number; // Điểm câu hỏi (nếu ghi đè cấu hình môn)
+  /** Locked against edits, moves and deletion until a teacher unlocks it. Never sent to students. */
+  locked?: boolean;
 
   // Quản trị chất lượng & Truy vết
   status?: 'draft' | 'verified';

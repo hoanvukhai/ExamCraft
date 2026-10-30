@@ -44,8 +44,16 @@ export function QuestionEditor({
   onApplied,
   onCancel,
   creating = false,
+  autoApply = false,
+  readOnly = false,
+  focusField,
 }: {
   creating?: boolean;
+  /** Apply every valid change to the exam by itself (the editor beside the sheet), instead of waiting for a button. */
+  autoApply?: boolean;
+  readOnly?: boolean;
+  /** A field to put the cursor in when the form opens or the selection changes: "content", "choice:B", "sub:a". */
+  focusField?: string;
   ownerId: string;
   documentId: string;
   sourceStamp: string;
@@ -56,7 +64,7 @@ export function QuestionEditor({
   knowledgeScope?: KnowledgeScope;
   onSave: (value: QuestionManualSubmission) => void;
   onApplied: (previous: Question) => void;
-  onCancel: () => void;
+  onCancel?: () => void;
 }) {
   const fresh = () => {
     const recovered = listQuestionDrafts(ownerId, documentId).find(
@@ -83,6 +91,15 @@ export function QuestionEditor({
   const [warning, setWarning] = useState('');
   const [attempt, setAttempt] = useState<{ value: Question; token: string } | null>(null);
   const draft = editor.record.draft;
+  if (
+    autoApply &&
+    sourceStamp !== editor.record.baseSourceStamp &&
+    !sameQuestionSourceStamp(sourceStamp, editor.record.baseSourceStamp) &&
+    questionValueStamp(draft) === questionValueStamp(editor.record.baseQuestion) &&
+    questionValueStamp(question) === questionValueStamp(editor.record.baseQuestion)
+  ) {
+    setEditor({ ...editor, record: { ...editor.record, baseSourceStamp: sourceStamp } });
+  }
   const acknowledged = attempt !== null && questionValueStamp(question) === questionValueStamp(attempt.value);
   const appliedToken = useRef<string | null>(null);
   const stale =
@@ -119,9 +136,11 @@ export function QuestionEditor({
     setEditor({ ...editor, record });
     setAttempt(null);
   };
-  const update = (value: Partial<Question>) => setDraft({ ...draft, ...value });
+  const update = (value: Partial<Question>) => {
+    if (!readOnly) setDraft({ ...draft, ...value });
+  };
   const submit = () => {
-    if (stale) return;
+    if (stale || readOnly) return;
     const value: Question = {
       ...draft,
       ...(['short_answer', 'fill_blank'].includes(draft.type) ? { accepted_answers: [...new Set([...(draft.correct_answer?.trim() ? [draft.correct_answer.trim()] : []), ...(draft.accepted_answers ?? [])])] } : {}),
@@ -135,6 +154,7 @@ export function QuestionEditor({
       setWarning('Nội dung câu chưa hợp lệ. Kiểm các phương án, đáp án và điểm; nháp vẫn được giữ.');
       return;
     }
+    setWarning('');
     setAttempt({ value, token: editor.record.token });
     onSave({
       ownerId,
@@ -172,6 +192,23 @@ export function QuestionEditor({
     requestAnimationFrame(() => { if (range.node.isConnected) { range.node.focus(); range.node.setSelectionRange(next.start, next.end); } });
   };
   const hasSelection = () => !!textRange.current && textRange.current.start !== textRange.current.end;
+  const submitRef = useRef(submit);
+  submitRef.current = submit;
+  const pending = autoApply && !readOnly && !stale && attempt === null && questionValueStamp(draft) !== questionValueStamp(editor.record.baseQuestion);
+  const draftStamp = questionValueStamp(draft);
+  useEffect(() => {
+    if (!pending) return;
+    const timer = setTimeout(() => submitRef.current(), 600);
+    return () => clearTimeout(timer);
+  }, [pending, draftStamp]);
+  const root = useRef<HTMLFieldSetElement>(null);
+  useEffect(() => {
+    if (!focusField) return;
+    const target = root.current?.querySelector<HTMLElement>(
+      `[data-format-field="${focusField.replace(/["\\]/g, '\\$&')}"]`,
+    );
+    target?.focus({ preventScroll: false });
+  }, [focusField, question.id]);
   const draftActor = useEditorActor(question.id + ':draft', 'Bản đang sửa của câu', () => [
     { label: 'Chèn công thức', disabled: stale || !textRange.current, run: () => insertMath('formula') },
     { label: 'In đậm', disabled: stale || !hasSelection(), run: () => formatText('b') },
@@ -179,8 +216,8 @@ export function QuestionEditor({
     { label: 'Gạch chân', disabled: stale || !hasSelection(), run: () => formatText('u') },
     { label: 'Chỉ số trên', disabled: stale || !textRange.current, run: () => insertMath('sup') },
     { label: 'Chỉ số dưới', disabled: stale || !textRange.current, run: () => insertMath('sub') },
-    { label: 'Áp dụng câu', disabled: stale, run: submit },
-    { label: 'Đóng sửa, giữ nháp', run: onCancel },
+    ...(autoApply ? [] : [{ label: 'Áp dụng câu', disabled: stale, run: submit }]),
+    ...(onCancel ? [{ label: 'Đóng sửa, giữ nháp', run: onCancel }] : []),
   ]);
   const rememberText = (node: EventTarget) => {
     if (!(node instanceof HTMLInputElement || node instanceof HTMLTextAreaElement)) return;
@@ -206,12 +243,31 @@ export function QuestionEditor({
     );
   };
   return (
-    <div className="space-y-3" onFocusCapture={e => rememberText(e.target)} onSelectCapture={e => rememberText(e.target)}>
-      <p className="text-xs">
-        {creating
-          ? 'Nháp được giữ riêng trên máy. Bấm Thêm vào đề để đưa câu vào danh sách và tự lưu; Hủy thêm vẫn giữ nháp.'
-          : 'Nháp từng câu được giữ riêng trên máy. Bấm Áp dụng câu để đưa thay đổi vào đề và tự lưu; đóng bảng sửa vẫn giữ nháp.'}
-      </p>
+    <fieldset
+      ref={root}
+      disabled={readOnly}
+      className="space-y-3 min-w-0 border-0 p-0 m-0"
+      onFocusCapture={e => rememberText(e.target)}
+      onSelectCapture={e => rememberText(e.target)}
+    >
+      {!autoApply && (
+        <p className="text-xs">
+          {creating
+            ? 'Nháp được giữ riêng trên máy. Bấm Thêm vào đề để đưa câu vào danh sách và tự lưu; Hủy thêm vẫn giữ nháp.'
+            : 'Nháp từng câu được giữ riêng trên máy. Bấm Áp dụng câu để đưa thay đổi vào đề và tự lưu; đóng bảng sửa vẫn giữ nháp.'}
+        </p>
+      )}
+      {autoApply && (
+        <p role="status" aria-live="polite" className="text-xs text-[var(--ui-text-secondary)]">
+          {readOnly
+            ? 'Câu đang khóa. Mở khóa ở hàng công cụ để sửa.'
+            : warning
+              ? warning
+              : pending || attempt
+                ? 'Đang lưu thay đổi…'
+                : 'Thay đổi được lưu tự động.'}
+        </p>
+      )}
       {editor.recovered && (
         <p role="status" className="text-xs">
           Đã mở lại nháp câu chưa áp dụng. Các bản nháp khác vẫn có trong bảng Nháp câu hỏi.
@@ -650,19 +706,21 @@ export function QuestionEditor({
         </div>
       </details>
       <QuestionPartsEditor question={draft} onChange={update} />
-      <div className="flex flex-wrap gap-3 justify-end">
-        <button type="button" onClick={onCancel}>
-          {creating ? 'Hủy thêm, giữ nháp' : 'Đóng, giữ nháp'}
-        </button>
-        <button
-          type="button"
-          disabled={stale || acknowledged}
-          className="px-4 py-2 rounded app-button-primary text-white disabled:opacity-50"
-          onClick={submit}
-        >
-          {creating ? 'Thêm vào đề' : 'Áp dụng câu vào đề'}
-        </button>
-      </div>
-    </div>
+      {!autoApply && (
+        <div className="flex flex-wrap gap-3 justify-end">
+          <button type="button" onClick={onCancel}>
+            {creating ? 'Hủy thêm, giữ nháp' : 'Đóng, giữ nháp'}
+          </button>
+          <button
+            type="button"
+            disabled={stale || acknowledged}
+            className="px-4 py-2 rounded app-button-primary text-white disabled:opacity-50"
+            onClick={submit}
+          >
+            {creating ? 'Thêm vào đề' : 'Áp dụng câu vào đề'}
+          </button>
+        </div>
+      )}
+    </fieldset>
   );
 }

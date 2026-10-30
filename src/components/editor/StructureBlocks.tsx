@@ -17,6 +17,7 @@ export function StructureBlocks({ blocks, light = false }: { blocks?: StructureB
             key={block.id}
             data-outline-block={block.id}
             data-page-break={block.pageBreak ? 'true' : undefined}
+            data-object={light ? `${block.kind}:${block.id}` : undefined}
             className={`my-3 space-y-2 break-inside-avoid ${block.pageBreak ? 'break-before-page' : ''}`}
           >
             {block.title && (
@@ -53,7 +54,12 @@ export function QuestionParts({
   return (
     <>
       {question.parts?.map((part, index) => (
-        <section key={part.id} className="ml-4 my-2 space-y-1" data-question-part={part.id}>
+        <section
+          key={part.id}
+          className="ml-4 my-2 space-y-1"
+          data-question-part={part.id}
+          data-object={reveal === 'none' ? `item:${question.id}:${part.id}` : undefined}
+        >
           <p>
             <b>{questionPartLabel(question, index, number)}) </b>
             {reveal === 'none' && <MathRenderer content={part.content} inline />}

@@ -1,11 +1,14 @@
 'use client';
 
 import { MatrixCards } from '@/components/editor/MatrixCards';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { Exam, Figure } from '@/types/exam';
 import { MathRenderer } from './MathRenderer';
 import { outlineView } from '@/lib/outline-view';
 import { StructureBlocks, QuestionParts } from '@/components/editor/StructureBlocks';
+import { ToolMenu, type MenuItem } from '@/components/EditorToolbar';
+import { insertDotsAfterQuestions } from '@/lib/canvas-objects';
+import { Plus } from 'lucide-react';
 import { FigureView } from './FigureView';
 
 import { parallelAnswer } from '@/lib/parallel-view';
@@ -19,7 +22,11 @@ import { examPlanOutput } from '@/lib/exam-plan-output';
 import { resolveHeaderLines } from '@/lib/header-layout';
 import { resolvePrintLayout, segmentsToText, choiceColumnCount, type ResolvedBlock } from '@/lib/print-layout';
 
-const renderPreviewFigure = (figure: Figure) => <FigureView key={figure.id} figure={figure} forceLight />;
+const renderPreviewFigure = (figure: Figure, questionId?: string) => (
+  <div key={figure.id} data-object={questionId ? `figure:${questionId}:${figure.id}` : undefined}>
+    <FigureView figure={figure} forceLight />
+  </div>
+);
 
 function renderStructuredPrompt(question: Exam['questions'][number]) {
   const matching = matchingDisplay(question);
@@ -63,12 +70,11 @@ interface A4PreviewProps {
   exam: Exam;
   /** Extra controls for the bar under the sheet (for example the slideshow button). */
   barExtra?: React.ReactNode;
-  /** Called when a printed block (student line, closing lines, footer) is clicked while editing. */
-  onPrintBlock?: () => void;
-  /** Called with the header line's id when one is clicked while editing, to jump to its field. */
-  onHeaderLine?: (id: string) => void;
-  /** A question on the sheet was clicked (select it) or double-clicked (edit it). */
-  onQuestion?: (id: string, edit: boolean) => void;
+  /** The selected object (a code from canvas-objects) and what to do when something on the sheet is clicked. Without this the sheet is read-only. */
+  selectedCode?: string;
+  onSelectCode?: (code: string) => void;
+  /** The "Thêm" menu for a "+" point on the sheet. */
+  insertItems?: (code: string) => MenuItem[];
   /** Questions with review findings (left margin mark) and with open comments (right margin bubble). */
   issueCounts?: Record<string, number>;
   commentCounts?: Record<string, number>;
@@ -108,9 +114,9 @@ function PrintBlocks({
 export const A4Preview: React.FC<A4PreviewProps> = ({
   exam,
   barExtra,
-  onPrintBlock,
-  onHeaderLine,
-  onQuestion,
+  selectedCode,
+  onSelectCode,
+  insertItems,
   issueCounts,
   commentCounts,
   onIssues,
@@ -155,6 +161,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
   }, [exam, viewMode]);
 
   const print = resolvePrintLayout(exam);
+  const insertDots = useMemo(() => (insertItems ? insertDotsAfterQuestions(exam) : new Map<string, string[]>()), [exam, insertItems]);
   const { metadata } = exam;
   const structure = outlineView(exam);
   const questions = structure.questions;
@@ -346,11 +353,27 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
       {/* Vùng cuộn hiển thị trang A4 */}
       <div
         ref={scrollArea}
+        tabIndex={onSelectCode ? 0 : undefined}
+        aria-label={onSelectCode ? 'Vùng trang' : undefined}
+        data-selectable={onSelectCode && viewMode === 'exam' ? 'true' : undefined}
+        onClick={
+          onSelectCode && viewMode === 'exam'
+            ? (event) => {
+                // Dragging over words to copy them is not a click on an object.
+                if (window.getSelection()?.toString()) return;
+                const hit = (event.target as HTMLElement).closest<HTMLElement>('[data-object]');
+                onSelectCode(hit?.dataset.object ?? 'exam');
+              }
+            : undefined
+        }
         className={
-          'a4-scroll-area grow min-h-0 overflow-auto p-4 sm:p-8 ' +
+          'a4-scroll-area grow min-h-0 overflow-auto p-4 sm:p-8 outline-none ' +
           (viewMode === 'matrix' ? 'hidden sm:block print:!block' : '')
         }
       >
+        {onSelectCode && selectedCode && selectedCode !== 'exam' && viewMode === 'exam' && (
+          <style>{`.a4-paper [data-object="${selectedCode.replace(/["\\]/g, '\\$&')}"]{outline:2px solid var(--ui-primary);outline-offset:3px;border-radius:2px}`}</style>
+        )}
         <div
           ref={paper}
           style={{ zoom: effectiveZoom / 100 }}
@@ -385,8 +408,8 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
                           <div
                             key={line.id}
                             data-header-line={line.id}
-                            onClick={onHeaderLine ? () => onHeaderLine(line.id) : undefined}
-                            className={`${onHeaderLine ? 'cursor-pointer hover:bg-black/5 ' : ''}text-[12pt] whitespace-pre-wrap break-words ${line.bold ? 'font-bold' : ''} ${line.italic ? 'italic' : ''}`}
+                            data-object={`print:header:${line.id}`}
+                            className={`text-[12pt] whitespace-pre-wrap break-words ${line.bold ? 'font-bold' : ''} ${line.italic ? 'italic' : ''}`}
                             style={{ textAlign: line.align, minHeight: '1.2em' }}
                           >
                             {line.text}
@@ -399,7 +422,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
 
               {/* Thông tin học sinh */}
               {!print && (
-                <div className="text-[12pt] italic py-1 flex justify-between">
+                <div data-object="print:student" className="text-[12pt] italic py-1 flex justify-between">
                   <span>
                     Họ và tên thí sinh:
                     ........................................................................
@@ -408,11 +431,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
                 </div>
               )}
               {print && print.studentLine.kind !== 'none' && (
-                <div
-                  data-print-zone="studentLine"
-                  onClick={onPrintBlock}
-                  className={onPrintBlock ? 'cursor-pointer' : undefined}
-                >
+                <div data-print-zone="studentLine" data-object="print:student">
                   {print.studentLine.labels.length > 0 && (
                     <div className="text-[12pt] italic py-1 flex flex-wrap justify-between gap-x-6">
                       {print.studentLine.labels.map((label, index) => (
@@ -431,7 +450,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
                 </div>
               )}
               {print && print.intro.length > 0 && (
-                <div data-print-zone="intro" onClick={onPrintBlock}>
+                <div data-print-zone="intro" data-object="print:intro">
                   <PrintBlocks blocks={print.intro} />
                 </div>
               )}
@@ -446,12 +465,11 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
                 <>
                   <div className="space-y-4">
                     {questions.map((q, index) => (
+                      <React.Fragment key={q.id}>
                       <div
-                        key={q.id}
                         data-question-id={q.id}
-                        onClick={onQuestion ? () => onQuestion(q.id, false) : undefined}
-                        onDoubleClick={onQuestion ? () => onQuestion(q.id, true) : undefined}
-                        className={`question-item relative text-[12pt] ${onQuestion ? 'cursor-pointer rounded hover:outline hover:outline-1 hover:outline-offset-4 hover:outline-black/30' : ''}`}
+                        data-object={`question:${q.id}`}
+                        className="question-item relative text-[12pt]"
                       >
                         <StructureBlocks blocks={structure.before.get(q.id)} light />
                         {issueCounts?.[q.id] ? (
@@ -499,9 +517,9 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
                             }}
                           >
                             {q.choices.map((choice) => (
-                              <div key={choice.key}>
+                              <div key={choice.key} data-object={`choice:${q.id}:${choice.key}`}>
                                 <b>{choice.key}.</b> <MathRenderer content={choice.text} inline />
-                                {choice.figures?.map(renderPreviewFigure)}
+                                {choice.figures?.map((figure) => renderPreviewFigure(figure, q.id))}
                               </div>
                             ))}
                           </div>
@@ -509,7 +527,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
                         {q.sub_questions && q.type === 'true_false_group' && (
                           <div className="pl-4 space-y-1">
                             {q.sub_questions.map((sub) => (
-                              <p key={sub.key}>
+                              <p key={sub.key} data-object={`statement:${q.id}:${sub.key}`}>
                                 <b>{sub.key})</b> <MathRenderer content={sub.content} inline />{' '}
                                 <span className="whitespace-nowrap">□ Đúng □ Sai</span>
                               </p>
@@ -518,7 +536,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
                         )}
                         <QuestionParts question={q} number={structure.numbers.get(q.id)} />
                         {renderStructuredPrompt(q)}
-                        {q.figures?.map(renderPreviewFigure)}
+                        {q.figures?.map((figure) => renderPreviewFigure(figure, q.id))}
                         {['short_answer', 'fill_blank'].includes(q.type) && (
                           <p className="mt-2">
                             Trả lời:
@@ -526,6 +544,26 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
                           </p>
                         )}
                       </div>
+                      {insertItems &&
+                        insertDots.get(q.id)?.map((code) => (
+                          <div
+                            key={code}
+                            data-object={code}
+                            data-insert-point={code}
+                            className="no-print group/dot -my-1 flex h-5 items-center gap-2"
+                          >
+                            <span className="h-px grow border-t border-dashed border-black/20" />
+                            <ToolMenu
+                              label="Thêm tại đây"
+                              compact
+                              Icon={Plus}
+                              items={insertItems(code)}
+                              className="flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-full border border-black/30 bg-white p-0 text-black/60 hover:text-black"
+                            />
+                            <span className="h-px grow border-t border-dashed border-black/20" />
+                          </div>
+                        ))}
+                      </React.Fragment>
                     ))}
                   </div>
 
@@ -536,6 +574,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
                       <div
                         key={line.id}
                         data-header-line={line.id}
+                        data-object={`print:header:${line.id}`}
                         className={`text-[11pt] whitespace-pre-wrap break-words ${line.bold ? 'font-bold' : ''} ${line.italic ? 'italic' : ''}`}
                         style={{ textAlign: line.align, minHeight: '1.2em' }}
                       >
@@ -544,16 +583,15 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
                     ))}
                   {/* Chân trang đề thi */}
                   {!print && (
-                    <div className="text-center text-[12pt] font-bold pt-8 border-t border-black mt-8">
+                    <div
+                      data-object="print:end"
+                      className="text-center text-[12pt] font-bold pt-8 border-t border-black mt-8"
+                    >
                       ---------- HẾT ----------
                     </div>
                   )}
                   {print && print.end.length > 0 && (
-                    <div
-                      data-print-zone="end"
-                      onClick={onPrintBlock}
-                      className="pt-8 border-t border-black mt-8"
-                    >
+                    <div data-print-zone="end" data-object="print:end" className="pt-8 border-t border-black mt-8">
                       <PrintBlocks blocks={print.end} />
                     </div>
                   )}
@@ -620,7 +658,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
                                 {q.choices.map((choice) => (
                                   <div key={choice.key}>
                                     <b>{choice.key}.</b> <MathRenderer content={choice.text} inline />
-                                    {choice.figures?.map(renderPreviewFigure)}
+                                    {choice.figures?.map((figure) => renderPreviewFigure(figure))}
                                   </div>
                                 ))}
                               </div>
@@ -635,7 +673,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
                               </div>
                             )}
                             {renderStructuredPrompt(q)}
-                            {q.figures?.map(renderPreviewFigure)}
+                            {q.figures?.map((figure) => renderPreviewFigure(figure))}
                           </div>
                           <div className="p-2 text-[11pt]">
                             <p className="font-bold text-emerald-800">{answer.headline}</p>
@@ -932,7 +970,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
             </div>
           )}
           {viewMode === 'exam' && print?.hasFooter && (
-            <div data-print-zone="footer" onClick={onPrintBlock} className="mt-auto pt-6">
+            <div data-print-zone="footer" data-object="print:footer" className="mt-auto pt-6">
               <div className="grid grid-cols-3 gap-3 border-t border-black pt-2 text-[10.5pt]">
                 <div>
                   <PrintBlocks blocks={print.footer.left} page={1} pages={pageCount} size="10.5pt" />

@@ -14,12 +14,18 @@ import {
   type PrintZone,
 } from '@/lib/print-layout';
 
-type Props = { exam: Exam; canEdit: boolean; onChange: React.Dispatch<React.SetStateAction<Exam>> };
+type Props = {
+  exam: Exam;
+  canEdit: boolean;
+  onChange: React.Dispatch<React.SetStateAction<Exam>>;
+  /** Show only the lines of one printed block (selected on the sheet) instead of the whole print layout. */
+  focus?: 'student' | 'intro' | 'end' | 'footer';
+};
 
 const MAX_BLOCKS = 12;
 
 /** Printed lines around the exam body: student line, closing lines, footer with page numbers. */
-export function EditorPrint({ exam, canEdit, onChange }: Props) {
+export function EditorPrint({ exam, canEdit, onChange, focus }: Props) {
   const stored = exam.metadata.printLayout;
   const layout = (() => {
     try {
@@ -58,167 +64,175 @@ export function EditorPrint({ exam, canEdit, onChange }: Props) {
     ]);
   };
 
+  const only = focus && layout ? focus : undefined;
+  const zoneVisible = (key: PrintZone) =>
+    !only || (only === 'footer' ? key.startsWith('footer') : only === key);
   return (
     <section aria-label="Bố cục in" className="space-y-4 text-sm">
-      <div>
-        <h3 className="font-semibold">Bố cục in</h3>
-        <p className="mt-1 text-xs text-[var(--ui-text-secondary)]">
-          Dòng thí sinh, lời dặn, cuối đề và chân trang có số trang. Chọn một mẫu rồi sửa từng dòng. Đề chưa
-          chọn mẫu vẫn in như cũ.
-        </p>
-      </div>
+      {!only && (
+        <>
+          <div>
+            <h3 className="font-semibold">Bố cục in</h3>
+            <p className="mt-1 text-xs text-[var(--ui-text-secondary)]">
+              Dòng thí sinh, lời dặn, cuối đề và chân trang có số trang. Chọn một mẫu rồi sửa từng dòng. Đề
+              chưa chọn mẫu vẫn in như cũ.
+            </p>
+          </div>
 
-      <label className="block space-y-1">
-        <span className="text-xs font-semibold">Loại bài kiểm tra</span>
-        <select
-          className="teacher-field w-full"
-          disabled={!canEdit}
-          value={exam.metadata.examKind ?? ''}
-          onChange={(event) => {
-            const value = event.target.value as keyof typeof EXAM_KINDS | '';
-            onChange((prev) => {
-              const metadata = { ...prev.metadata };
-              if (value) metadata.examKind = value;
-              else delete metadata.examKind;
-              return { ...prev, metadata, updatedAt: new Date().toISOString() };
-            });
-          }}
-        >
-          <option value="">Chưa chọn</option>
-          {Object.entries(EXAM_KINDS).map(([key, label]) => (
-            <option key={key} value={key}>
-              {label}
-            </option>
-          ))}
-        </select>
-      </label>
-
-      <label className="block space-y-1">
-        <span className="text-xs font-semibold">Cột phương án trắc nghiệm</span>
-        <select
-          className="teacher-field w-full"
-          disabled={!canEdit}
-          value={String(exam.metadata.choiceColumns ?? '')}
-          onChange={(event) => {
-            const raw = event.target.value;
-            onChange((prev) => {
-              const metadata = { ...prev.metadata };
-              if (!raw) delete metadata.choiceColumns;
-              else metadata.choiceColumns = raw === 'auto' ? 'auto' : (Number(raw) as 1 | 2 | 4);
-              return { ...prev, metadata, updatedAt: new Date().toISOString() };
-            });
-          }}
-        >
-          <option value="">Như cũ (Word mỗi phương án một dòng)</option>
-          <option value="auto">Tự chọn theo độ dài</option>
-          <option value="1">1 cột</option>
-          <option value="2">2 cột</option>
-          <option value="4">4 cột</option>
-        </select>
-      </label>
-
-      <div className="space-y-2">
-        <p className="text-xs font-semibold">Mẫu bố cục</p>
-        <p className="text-xs text-[var(--ui-text-secondary)]">
-          Hiện tại: {layout ? 'đã có bố cục in' : 'bố cục in cố định như trước'}.
-        </p>
-        <ul className="space-y-2">
-          {PRINT_PRESETS.map((preset) => (
-            <li key={preset.key} className="flex items-start justify-between gap-2 rounded-lg border p-2">
-              <span className="min-w-0">
-                <strong className="block text-xs">{preset.name}</strong>
-                <span className="text-xs text-[var(--ui-text-secondary)]">{preset.note}</span>
-              </span>
-              <button
-                type="button"
-                disabled={!canEdit}
-                className="app-button-secondary min-h-9 shrink-0 px-3 text-xs"
-                onClick={() => set(preset.make(), true)}
-              >
-                Áp dụng
-              </button>
-            </li>
-          ))}
-        </ul>
-        <div className="flex flex-wrap gap-2">
-          {previous && (
-            <button
-              type="button"
+          <label className="block space-y-1">
+            <span className="text-xs font-semibold">Loại bài kiểm tra</span>
+            <select
+              className="teacher-field w-full"
               disabled={!canEdit}
-              className="app-button-secondary min-h-9 px-3 text-xs"
-              onClick={() => {
-                set(previous.layout);
-                setPrevious(null);
+              value={exam.metadata.examKind ?? ''}
+              onChange={(event) => {
+                const value = event.target.value as keyof typeof EXAM_KINDS | '';
+                onChange((prev) => {
+                  const metadata = { ...prev.metadata };
+                  if (value) metadata.examKind = value;
+                  else delete metadata.examKind;
+                  return { ...prev, metadata, updatedAt: new Date().toISOString() };
+                });
               }}
             >
-              Hoàn tác mẫu vừa áp dụng
-            </button>
-          )}
-          {layout && (
-            <button
-              type="button"
-              disabled={!canEdit}
-              className="app-button-secondary min-h-9 px-3 text-xs"
-              onClick={() => set(undefined, true)}
-            >
-              Về bố cục in cố định
-            </button>
-          )}
-        </div>
-      </div>
-
-      {layout && (
-        <>
-          <fieldset disabled={!canEdit} className="space-y-2 rounded-lg border p-2">
-            <legend className="px-1 text-xs font-semibold">Dòng thí sinh</legend>
-            <select
-              aria-label="Kiểu dòng thí sinh"
-              className="teacher-field w-full"
-              value={layout.studentLine.kind}
-              onChange={(event) =>
-                set({
-                  ...layout,
-                  studentLine: {
-                    ...layout.studentLine,
-                    kind: event.target.value as PrintLayout['studentLine']['kind'],
-                  },
-                })
-              }
-            >
-              <option value="line">Một dòng</option>
-              <option value="scoreBox">Dòng và khung Điểm · Lời nhận xét</option>
-              <option value="none">Không in</option>
+              <option value="">Chưa chọn</option>
+              {Object.entries(EXAM_KINDS).map(([key, label]) => (
+                <option key={key} value={key}>
+                  {label}
+                </option>
+              ))}
             </select>
-            <div className="flex flex-wrap gap-x-4 gap-y-1">
-              {(Object.entries(STUDENT_FIELDS) as [keyof typeof STUDENT_FIELDS, string][]).map(
-                ([key, label]) => (
-                  <label key={key} className="inline-flex items-center gap-1.5 text-xs">
-                    <input
-                      type="checkbox"
-                      checked={layout.studentLine.fields.includes(key)}
-                      onChange={(event) =>
-                        set({
-                          ...layout,
-                          studentLine: {
-                            ...layout.studentLine,
-                            fields: (Object.keys(STUDENT_FIELDS) as (keyof typeof STUDENT_FIELDS)[]).filter(
-                              (field) =>
-                                field === key
-                                  ? event.target.checked
-                                  : layout.studentLine.fields.includes(field),
-                            ),
-                          },
-                        })
-                      }
-                    />
-                    {label}
-                  </label>
-                ),
+          </label>
+
+          <label className="block space-y-1">
+            <span className="text-xs font-semibold">Cột phương án trắc nghiệm</span>
+            <select
+              className="teacher-field w-full"
+              disabled={!canEdit}
+              value={String(exam.metadata.choiceColumns ?? '')}
+              onChange={(event) => {
+                const raw = event.target.value;
+                onChange((prev) => {
+                  const metadata = { ...prev.metadata };
+                  if (!raw) delete metadata.choiceColumns;
+                  else metadata.choiceColumns = raw === 'auto' ? 'auto' : (Number(raw) as 1 | 2 | 4);
+                  return { ...prev, metadata, updatedAt: new Date().toISOString() };
+                });
+              }}
+            >
+              <option value="">Như cũ (Word mỗi phương án một dòng)</option>
+              <option value="auto">Tự chọn theo độ dài</option>
+              <option value="1">1 cột</option>
+              <option value="2">2 cột</option>
+              <option value="4">4 cột</option>
+            </select>
+          </label>
+
+          <div className="space-y-2">
+            <p className="text-xs font-semibold">Mẫu bố cục</p>
+            <p className="text-xs text-[var(--ui-text-secondary)]">
+              Hiện tại: {layout ? 'đã có bố cục in' : 'bố cục in cố định như trước'}.
+            </p>
+            <ul className="space-y-2">
+              {PRINT_PRESETS.map((preset) => (
+                <li key={preset.key} className="flex items-start justify-between gap-2 rounded-lg border p-2">
+                  <span className="min-w-0">
+                    <strong className="block text-xs">{preset.name}</strong>
+                    <span className="text-xs text-[var(--ui-text-secondary)]">{preset.note}</span>
+                  </span>
+                  <button
+                    type="button"
+                    disabled={!canEdit}
+                    className="app-button-secondary min-h-9 shrink-0 px-3 text-xs"
+                    onClick={() => set(preset.make(), true)}
+                  >
+                    Áp dụng
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <div className="flex flex-wrap gap-2">
+              {previous && (
+                <button
+                  type="button"
+                  disabled={!canEdit}
+                  className="app-button-secondary min-h-9 px-3 text-xs"
+                  onClick={() => {
+                    set(previous.layout);
+                    setPrevious(null);
+                  }}
+                >
+                  Hoàn tác mẫu vừa áp dụng
+                </button>
+              )}
+              {layout && (
+                <button
+                  type="button"
+                  disabled={!canEdit}
+                  className="app-button-secondary min-h-9 px-3 text-xs"
+                  onClick={() => set(undefined, true)}
+                >
+                  Về bố cục in cố định
+                </button>
               )}
             </div>
-          </fieldset>
+          </div>
+        </>
+      )}
+      {layout && (
+        <>
+          {(!only || only === 'student') && (
+            <fieldset disabled={!canEdit} className="space-y-2 rounded-lg border p-2">
+              <legend className="px-1 text-xs font-semibold">Dòng thí sinh</legend>
+              <select
+                aria-label="Kiểu dòng thí sinh"
+                className="teacher-field w-full"
+                value={layout.studentLine.kind}
+                onChange={(event) =>
+                  set({
+                    ...layout,
+                    studentLine: {
+                      ...layout.studentLine,
+                      kind: event.target.value as PrintLayout['studentLine']['kind'],
+                    },
+                  })
+                }
+              >
+                <option value="line">Một dòng</option>
+                <option value="scoreBox">Dòng và khung Điểm · Lời nhận xét</option>
+                <option value="none">Không in</option>
+              </select>
+              <div className="flex flex-wrap gap-x-4 gap-y-1">
+                {(Object.entries(STUDENT_FIELDS) as [keyof typeof STUDENT_FIELDS, string][]).map(
+                  ([key, label]) => (
+                    <label key={key} className="inline-flex items-center gap-1.5 text-xs">
+                      <input
+                        type="checkbox"
+                        checked={layout.studentLine.fields.includes(key)}
+                        onChange={(event) =>
+                          set({
+                            ...layout,
+                            studentLine: {
+                              ...layout.studentLine,
+                              fields: (Object.keys(STUDENT_FIELDS) as (keyof typeof STUDENT_FIELDS)[]).filter(
+                                (field) =>
+                                  field === key
+                                    ? event.target.checked
+                                    : layout.studentLine.fields.includes(field),
+                              ),
+                            },
+                          })
+                        }
+                      />
+                      {label}
+                    </label>
+                  ),
+                )}
+              </div>
+            </fieldset>
+          )}
 
-          {PRINT_ZONES.map((zone) => (
+          {PRINT_ZONES.filter((zone) => zoneVisible(zone.key)).map((zone) => (
             <fieldset key={zone.key} disabled={!canEdit} className="space-y-2 rounded-lg border p-2">
               <legend className="px-1 text-xs font-semibold">{zone.label}</legend>
               {layout[zone.key].length === 0 && (
@@ -309,10 +323,12 @@ export function EditorPrint({ exam, canEdit, onChange }: Props) {
               </button>
             </fieldset>
           ))}
-          <p className="text-xs text-[var(--ui-text-secondary)]">
-            Dòng chỉ gồm trường chưa có giá trị sẽ không in. Số trang trên màn hình là ước lượng; Word tự đánh
-            số đúng.
-          </p>
+          {!only && (
+            <p className="text-xs text-[var(--ui-text-secondary)]">
+              Dòng chỉ gồm trường chưa có giá trị sẽ không in. Số trang trên màn hình là ước lượng; Word tự
+              đánh số đúng.
+            </p>
+          )}
         </>
       )}
     </section>

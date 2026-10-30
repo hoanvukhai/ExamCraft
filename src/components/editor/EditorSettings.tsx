@@ -14,7 +14,7 @@ type Props = {
   hasActiveKey: boolean;
   onChange: React.Dispatch<React.SetStateAction<Exam>>;
   isOpen: boolean;
-  onClose: () => void;
+  onClose?: () => void;
   onPreview: (submission: HeaderSubmission | null) => void;
   preview?: ReactNode;
 };
@@ -47,15 +47,17 @@ export function EditorSettings(p: Props) {
         <h2 ref={heading} tabIndex={-1} className="font-semibold text-[var(--ui-text-primary)] outline-none">
           Cấu hình đề thi
         </h2>
-        <button
-          type="button"
-          aria-label="Đóng thông tin đề"
-          onClick={p.onClose}
-          className="flex items-center gap-1 text-xs text-[var(--ui-text-secondary)] hover:text-[var(--ui-text-primary)] hover:underline cursor-pointer"
-        >
-          <X className="w-3.5 h-3.5" />
-          <span>Đóng</span>
-        </button>
+        {p.onClose && (
+          <button
+            type="button"
+            aria-label="Đóng thông tin đề"
+            onClick={p.onClose}
+            className="flex items-center gap-1 text-xs text-[var(--ui-text-secondary)] hover:text-[var(--ui-text-primary)] hover:underline cursor-pointer"
+          >
+            <X className="w-3.5 h-3.5" />
+            <span>Đóng</span>
+          </button>
+        )}
       </div>
 
       <div
@@ -98,7 +100,7 @@ export function EditorSettings(p: Props) {
               metadata={p.exam.metadata}
               documentId={p.exam.id}
               ownerId={p.ownerId}
-              onClose={p.onClose}
+              onClose={p.onClose ?? (() => {})}
               onSaveMetadata={(submission) =>
                 p.onChange((previous) => applyHeaderSubmission(previous, submission))
               }
