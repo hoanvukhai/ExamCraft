@@ -1,4 +1,4 @@
-import { toggleTheme, openAccount, openAssistant, openCopilot } from './editor-ui';
+import { toggleTheme, openAccount, openCopilot } from './editor-ui';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -60,21 +60,20 @@ test('frame: persistent menu, document toolbar and non-overlapping assistant pan
       await account.getByRole('button', { name: 'Đăng xuất', exact: true }).waitFor();
       await page.locator('div.fixed.inset-0.z-40').click({ position: { x: 400, y: 400 } });
       const before = await page.locator('.workspace-column').boundingBox();
-      await openAssistant(page); await assistant().waitFor();
-      const center = await page.locator('.workspace-column').boundingBox(), dock = await assistant().boundingBox();
-      assert.ok(before && center && dock && before.width - center.width >= 380 && center.x + center.width <= dock.x + 1);
-      assert.equal(await assistant().getByRole('button', { name: /Xem hồ sơ|^Xem$|Ghi chú|Khóa/ }).count(), 0);
-      assert.equal(await assistant().getByText('Đang áp dụng Hồ sơ phong cách riêng của Thầy/Cô', { exact: true }).count(), 0);
-      await assistant().getByPlaceholder(/^Hỏi Thư ký AI/).fill('Nháp hỏi đáp vẫn được giữ');
-      await edit().click(); await page.locator('#right-copilot-input').waitFor(); assert.equal(await assistant().count(), 0);
+      // The old chat drawer is gone from the editor: the AI button opens the one AI panel beside the sheet.
+      assert.equal(await assistant().count(), 0);
+      await edit().click(); await page.locator('#right-copilot-input').waitFor();
+      const aiPanel = page.getByRole('complementary', { name: 'Bảng bên phải', exact: true }), dock = await aiPanel.boundingBox();
+      assert.ok(before && dock && dock.width >= 300 && dock.x + dock.width <= before.x + before.width + 1);
+      assert.equal(await page.getByRole('region', { name: 'Bảng AI', exact: true }).getByText('Đang nói về:').count(), 1);
+      assert.equal(await assistant().count(), 0);
       await page.locator('#right-copilot-input').fill('Nháp lệnh sửa đề vẫn được giữ');
-      await openAssistant(page); await assistant().waitFor(); assert.equal(await page.locator('#right-copilot-input').isVisible(), false);
-      assert.equal(await assistant().getByPlaceholder(/^Hỏi Thư ký AI/).inputValue(), 'Nháp hỏi đáp vẫn được giữ');
-      await page.screenshot({ path: report + '/editor-chat-1440.png' });
+      await page.getByRole('button', { name: 'Đóng AI', exact: true }).click(); await aiPanel.waitFor({ state: 'hidden' });
       await edit().click(); await page.locator('#right-copilot-input').waitFor();
       assert.equal(await page.locator('#right-copilot-input').inputValue(), 'Nháp lệnh sửa đề vẫn được giữ');
+      await page.screenshot({ path: report + '/editor-chat-1440.png' });
       await fitting(); await page.screenshot({ path: report + '/editor-copilot-1440.png' });
-      await page.getByRole('button', { name: 'Đóng trợ lý sửa đề', exact: true }).click();
+      await page.getByRole('button', { name: 'Đóng AI', exact: true }).click();
     });
     await t.test('phone panels close by keyboard, fit themes and preserve the exam', async () => {
       for (const [width, height] of [[1024, 800], [375, 812], [320, 740], [568, 320]]) {
@@ -85,16 +84,6 @@ test('frame: persistent menu, document toolbar and non-overlapping assistant pan
           const account = page.getByRole('region', { name: 'Tài khoản', exact: true }); await account.waitFor();
           const accountBox = await account.boundingBox(); assert.ok(accountBox && accountBox.x >= 0 && accountBox.x + accountBox.width <= width);
           await page.keyboard.press('Escape'); await account.waitFor({ state: 'hidden' });
-          await openAssistant(page);
-          const panel = page.getByRole(width >= 1024 ? 'complementary' : 'dialog', { name: 'Hỏi đáp với Trợ lý AI', exact: true }); await panel.waitFor();
-          if (width < 1024) {
-            assert.equal(await panel.getAttribute('aria-modal'), 'true');
-            await panel.getByRole('button', { name: 'Đóng hỏi đáp AI', exact: true }).press('Shift+Tab');
-            assert.equal(await panel.evaluate(el => el.contains(document.activeElement)), true);
-          }
-          await fitting(); await page.screenshot({ path: `${report}/chat-${width}-${dark ? 'dark' : 'light'}.png` });
-          await panel.getByRole('button', { name: 'Đóng hỏi đáp AI', exact: true }).press('Escape');
-          await panel.waitFor({ state: 'hidden' });
           await openCopilot(page);
           const copilot = page.getByRole(width >= 1024 ? 'complementary' : 'dialog', { name: 'Trợ lý và công cụ nhanh', exact: true }); await copilot.waitFor();
           await fitting(); await page.screenshot({ path: `${report}/copilot-${width}-${dark ? 'dark' : 'light'}.png` });
