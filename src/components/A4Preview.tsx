@@ -72,7 +72,7 @@ interface A4PreviewProps {
   barExtra?: React.ReactNode;
   /** The selected object (a code from canvas-objects) and what to do when something on the sheet is clicked. Without this the sheet is read-only. */
   selectedCode?: string;
-  onSelectCode?: (code: string) => void;
+  onSelectCode?: (code: string, how?: 'replace' | 'toggle' | 'range') => void;
   /** The "Thêm" menu for a "+" point on the sheet. */
   insertItems?: (code: string) => MenuItem[];
   /** Questions with review findings (left margin mark) and with open comments (right margin bubble). */
@@ -364,7 +364,10 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
                 // Dragging over words to copy them is not a click on an object.
                 if (window.getSelection()?.toString()) return;
                 const hit = (event.target as HTMLElement).closest<HTMLElement>('[data-object]');
-                onSelectCode(hit?.dataset.object ?? 'exam');
+                onSelectCode(
+                  hit?.dataset.object ?? 'exam',
+                  event.shiftKey ? 'range' : event.ctrlKey || event.metaKey ? 'toggle' : 'replace',
+                );
               }
             : undefined
         }

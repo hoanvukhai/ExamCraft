@@ -33,6 +33,8 @@ type Props = {
   onPreview: (submission: HeaderSubmission | null) => void;
   onManualSave: (submission: QuestionManualSubmission) => void;
   addItems: (code: string) => MenuItem[];
+  /** Put the cursor in the field that belongs to the selection (a click on the sheet), not for the arrow keys. */
+  focus?: boolean;
   message?: string;
 };
 
@@ -286,7 +288,7 @@ export function EditorDetail(p: Props) {
             key={`${p.ownerId}:${p.sessionScope}:${question.id}`}
             autoApply
             readOnly={!p.canEdit || !!question.locked}
-            focusField={fieldFor(p.code)}
+            focusField={p.focus ? fieldFor(p.code) : undefined}
             ownerId={p.ownerId}
             documentId={p.exam.id}
             sourceStamp={p.sourceStamp}

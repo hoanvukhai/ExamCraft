@@ -262,6 +262,7 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
 
   // ----- Selection: a list of codes (see canvas-objects); the last one is the one the panels talk about.
   const [picked, setPicked] = useState<string[]>([EXAM_CODE]);
+  const [focusDetail, setFocusDetail] = useState(false);
   const rawCode = picked.at(-1) ?? EXAM_CODE;
   const selectedCode = objectExists(exam, rawCode) ? rawCode : EXAM_CODE;
   const pickedQuestionIds = useMemo(
@@ -336,8 +337,9 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       say('Đã bỏ câu trống. Bấm Hoàn tác nếu cần lấy lại.');
     }
   };
-  const select = (code: string, how: 'replace' | 'toggle' | 'range' = 'replace') => {
+  const select = (code: string, how: 'replace' | 'toggle' | 'range' = 'replace', focus = false) => {
     removeBlankIfLeft(code);
+    setFocusDetail(focus);
     const kind = parseCode(code).kind;
     if (how === 'toggle' && kind === 'question') {
       setPicked((previous) => {
@@ -957,6 +959,7 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     onStructure: applyStructure,
     onPreview: updateHeaderPreview,
     addItems: addItemsFor,
+    focus: focusDetail,
     onManualSave: (submission: Parameters<typeof applyQuestionManualSubmission>[1]) =>
       setExam((previous) => applyQuestionManualSubmission(previous, submission, currentUser.id)),
   };
@@ -1326,7 +1329,7 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
           <A4Preview
             exam={previewExam}
             selectedCode={canEdit ? sheetCode : undefined}
-            onSelectCode={(code) => select(code)}
+            onSelectCode={(code, how) => select(code, how ?? 'replace', true)}
             insertItems={canEdit ? addItemsFor : undefined}
             issueCounts={issueCounts}
             commentCounts={commentCounts}

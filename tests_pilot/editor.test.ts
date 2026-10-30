@@ -162,6 +162,7 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
         if(label==='Word – đáp án/barem') assert.ok(xml.includes('ĐÁP ÁN') || xml.includes('Đáp án'));
         if(label==='Word – ma trận') { assert.ok(xml.includes('BẢNG PHÂN BỔ CÂU HỎI')); assert.ok(xml.includes('<w:tbl')); assert.ok(!xml.includes('QUESTION_ONE')); }
       }
+      await page.getByRole('button', { name: 'Đóng Rà soát', exact: true }).click();
     });
     await t.test('parts and shared content are selected on the sheet or in the outline; questions move between them', async () => {
       const loaded=await api('/api/exams/'+examId);
