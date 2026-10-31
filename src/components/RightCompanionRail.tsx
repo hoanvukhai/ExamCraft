@@ -12,7 +12,6 @@ import { CopilotHistoryControls } from './CopilotHistoryControls';
 import { accountFetch } from '@/lib/account-fetch';
 import { normalizeQuestion } from '@/lib/exam-document';
 import { 
-  Sparkles, 
   Send, 
   RefreshCw, 
   HelpCircle, 
@@ -23,8 +22,7 @@ import {
   Flame, 
   ArrowDownCircle, 
   Binary,
-  Compass,
-  X
+  Compass
 } from 'lucide-react';
 
 interface RightCompanionRailProps {
@@ -149,53 +147,8 @@ export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
       {(history.undo.length > 0 || history.redo.length > 0) && <div className={isExpanded ? 'shrink-0' : 'hidden'}><CopilotHistoryControls key={`${history.undo.at(-1)?.id}:${history.redo.at(-1)?.id}`} history={history} ownerId={ownerId} exam={exam} disabled={!!proposal} onSubmit={onSubmitCopilot} onConfirmed={(entryId, direction, submission) => setHistory(value => confirmCopilotTravel(value, entryId, direction, submission))} /></div>}
       {isExpanded && (
         <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
-          {/* Header của Side Panel chuẩn Google */}
-          <div className="px-4 py-3 border-b border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between shrink-0 bg-[#f8f9fa] dark:bg-[#1f1f1f]">
-            <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-xl bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] flex items-center justify-center shadow-2xs">
-                <Sparkles className="w-4 h-4" />
-              </div>
-              <div>
-                <h3 className="text-xs font-bold text-[#202124] dark:text-[#e3e3e3] flex items-center gap-1.5">
-                  <span>Gemini Copilot</span>
-                  <span className="text-[10px] px-1.5 py-0.2 rounded-full font-semibold bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#303134]">
-                    2.0
-                  </span>
-                </h3>
-                <p className="text-[10px] text-[#5f6368] dark:text-[#9aa0a6]">Trợ lý biên tập đề thi chuyên nghiệp</p>
-              </div>
-            </div>
-
-            <button
-              aria-label="Đóng trợ lý sửa đề"
-              onClick={onClose}
-              title="Đóng bảng Trợ lý AI"
-              className="p-1.5 rounded-lg text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-
           {/* Vùng nội dung cuộn bên trong Panel */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {/* Thẻ hiển thị Context mục tiêu */}
-            <div className="p-2.5 rounded-xl bg-[#f1f3f4] dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between text-xs">
-              <span className="text-[11px] font-medium text-[#5f6368] dark:text-[#9aa0a6]">Đang nhắm tới:</span>
-              {activeQuestionNumber !== null ? (
-                <span className="font-semibold text-xs px-2.5 py-0.5 rounded-full bg-[#f1f3f4] dark:bg-[#292a2d] text-[#3c4043] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#303134]">
-                  Câu số {activeQuestionNumber}
-                </span>
-              ) : selectedQuestionIds.length > 1 ? (
-                <span className="font-semibold text-xs px-2.5 py-0.5 rounded-lg bg-[var(--ui-surface-variant)] text-[var(--ui-text-primary)] border border-[var(--ui-border)]">
-                  {selectedQuestionIds.length} câu đã chọn
-                </span>
-              ) : (
-                <span className="font-medium text-[11px] text-[#5f6368] dark:text-[#9aa0a6] italic">
-                  Toàn bộ đề ({exam.questions.length} câu)
-                </span>
-              )}
-            </div>
-
             {/* Gợi ý một chạm (Quick Action Chips Google Pill style) */}
             <div className="space-y-1.5">
               <span className="text-[10px] font-bold uppercase tracking-wider text-[#5f6368] dark:text-[#9aa0a6] flex items-center gap-1">
@@ -321,7 +274,6 @@ export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
                 onChange={(e) => setCommand(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Nhập yêu cầu cho Gemini (vd: đổi số liệu câu 2, thêm bẫy câu 3...)"
-                disabled={isLoading || !!proposal}
                 className="w-full text-xs p-2.5 bg-[#f8f9fa] dark:bg-[#242424] text-[#202124] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043] rounded-xl focus:border-[#3c4043] dark:focus:border-[#e3e3e3] focus:ring-1 focus:ring-[#3c4043] dark:focus:ring-[#e3e3e3] outline-hidden resize-none transition-all placeholder:text-[#5f6368] dark:placeholder:text-[#9aa0a6] disabled:opacity-50"
               />
             </div>

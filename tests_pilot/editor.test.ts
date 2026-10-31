@@ -331,6 +331,26 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
       assert.notEqual((await db.exam.findUniqueOrThrow({where:{id:examId}})).title,'Không được ghi sau mất quyền');
       await page.unroute('**/api/exams/' + examId);
     });
+    await t.test('the chat box stays typeable while the AI is answering and after it answers', async () => {
+      await page.setViewportSize({width:1440,height:1000});
+      await page.goto(origin + '/editor/' + examId);
+      await sheet.first().waitFor();
+      let release: () => void = () => {};
+      const gate = new Promise<void>((resolve) => { release = resolve; });
+      await page.route('**/api/exam-copilot', async (route) => { await gate; await route.abort(); });
+      await openCopilot(page);
+      const input = page.locator('#right-copilot-input');
+      await input.fill('Đổi số liệu câu 1');
+      await input.press('Enter');
+      await page.waitForTimeout(1500);
+      assert.equal(await input.isEnabled(), true, 'typing is possible while waiting');
+      await input.fill('Câu tiếp theo gõ trong lúc chờ');
+      assert.equal(await input.inputValue(), 'Câu tiếp theo gõ trong lúc chờ');
+      release();
+      await page.waitForTimeout(1500);
+      assert.equal(await input.isEnabled(), true);
+      await page.unroute('**/api/exam-copilot');
+    });
     await t.test('formatting tags: bold from the tool row shows on the sheet; long exams are cut into pages', async () => {
       await page.setViewportSize({width:1440,height:1000});
       const now2 = new Date().toISOString();

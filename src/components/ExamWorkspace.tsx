@@ -1922,6 +1922,7 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                     type="button"
                     aria-label={`Đóng ${tab.label}`}
                     onClick={() => closeRight(tab.id)}
+                    onKeyDown={(event) => event.key === 'Escape' && closeRight(tab.id)}
                     className="min-h-9 px-2 text-xs cursor-pointer"
                   >
                     ×

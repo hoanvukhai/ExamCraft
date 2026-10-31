@@ -87,7 +87,7 @@ test('frame: persistent menu, document toolbar and non-overlapping assistant pan
           await openCopilot(page);
           const copilot = page.getByRole(width >= 1024 ? 'complementary' : 'dialog', { name: 'Trợ lý và công cụ nhanh', exact: true }); await copilot.waitFor();
           await fitting(); await page.screenshot({ path: `${report}/copilot-${width}-${dark ? 'dark' : 'light'}.png` });
-          await copilot.getByRole('button', { name: 'Đóng trợ lý sửa đề', exact: true }).press('Escape');
+          await page.getByRole('button', { name: 'Đóng AI', exact: true }).press('Escape');
           await copilot.waitFor({ state: 'hidden' });
         }
       }
