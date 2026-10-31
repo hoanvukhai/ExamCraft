@@ -48,6 +48,10 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
       const ai = page.getByRole('region', { name: 'Bảng AI', exact: true }); await ai.waitFor();
       await ai.getByText('Cần khóa AI cá nhân', { exact: false }).waitFor();
       assert.equal(await page.getByRole('dialog', { name: 'Cần khóa AI', exact: true }).count(), 0);
+      await ai.getByRole('tab', { name: 'Sinh câu', exact: true }).click();
+      await ai.getByRole('button', { name: 'Thêm khóa AI' }).filter({ visible: true }).first().waitFor();
+      await ai.getByText('Chưa có khóa AI để sinh câu', { exact: false }).filter({ visible: true }).waitFor();
+      assert.equal(await ai.getByRole('tab', { name: 'Sinh câu', exact: true }).getAttribute('aria-selected'), 'true', 'stays on the generate tab');
       await page.getByRole('button', { name: 'Đóng AI', exact: true }).click();
       await openInfoPanel(page);
       const settings = page.getByRole('complementary', { name: 'Thông tin đề', exact: true }); await settings.waitFor();
@@ -64,7 +68,6 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
       await page.getByRole('region',{name:'Dùng và lưu mẫu đề',exact:true}).waitFor();
       await page.getByRole('button',{name:'Chi tiết',exact:true}).filter({visible:true}).first().click();
       assert.equal(await settings.getByLabel('Ghi chú cuối đề', { exact: true }).inputValue(), 'Ghi chú còn khi đổi thẻ', 'what was typed survives a look at another panel');
-      await settings.getByRole('button', { name: 'Áp dụng', exact: true }).click();
       await poll(async () => JSON.stringify((await db.exam.findUniqueOrThrow({ where: { id: examId } })).metadata).includes('Ghi chú còn khi đổi thẻ'));
       for (const [width,height] of [[1440,1000],[1024,800],[375,812]]) for (const dark of [false,true]) {
         await page.setViewportSize({ width,height });

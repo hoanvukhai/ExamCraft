@@ -163,7 +163,12 @@ function ConflictChoices({
 }) {
   const [choices, setChoices] = useState<Record<string, 'mine' | 'theirs'>>({});
   return (
-    <div role="group" aria-label="Chỗ hai người cùng sửa" data-merge-conflicts className="mb-3 space-y-2 text-xs">
+    <div
+      role="group"
+      aria-label="Chỗ hai người cùng sửa"
+      data-merge-conflicts
+      className="mb-3 space-y-2 text-xs"
+    >
       <p className="font-semibold">Hai người cùng sửa {list.length} chỗ. Chọn bản giữ lại:</p>
       {list.map((item) => (
         <fieldset key={item.code} className="border rounded p-2 space-y-1">
@@ -177,13 +182,18 @@ function ConflictChoices({
                 onChange={() => setChoices((value) => ({ ...value, [item.code]: side }))}
               />
               <span>
-                <b>{side === 'mine' ? 'Của tôi' : 'Của người kia'}:</b> {side === 'mine' ? item.mine : item.theirs}
+                <b>{side === 'mine' ? 'Của tôi' : 'Của người kia'}:</b>{' '}
+                {side === 'mine' ? item.mine : item.theirs}
               </span>
             </label>
           ))}
         </fieldset>
       ))}
-      <button type="button" className="app-button-secondary min-h-8 px-2.5 text-xs" onClick={() => onResolve(choices)}>
+      <button
+        type="button"
+        className="app-button-secondary min-h-8 px-2.5 text-xs"
+        onClick={() => onResolve(choices)}
+      >
         Ghép theo lựa chọn
       </button>
     </div>
@@ -356,7 +366,10 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   useEffect(() => {
     if (!remoteChange || remoteChange.id === seenChange) return;
     const text =
-      (lastSavedBy ?? 'Người khác') + ' vừa sửa ' + remoteChange.labels.join(', ') + (remoteChange.merged ? ' — đã ghép vào bản của bạn' : '');
+      (lastSavedBy ?? 'Người khác') +
+      ' vừa sửa ' +
+      remoteChange.labels.join(', ') +
+      (remoteChange.merged ? ' — đã ghép vào bản của bạn' : '');
     queueMicrotask(() => {
       setSeenChange(remoteChange.id);
       setActivity((value) => [text, ...value].slice(0, 20));
@@ -368,7 +381,9 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     const marked = new Set<Element>();
     for (const person of people) {
       if (!person.focus) continue;
-      for (const element of document.querySelectorAll('.a4-paper [data-object="' + CSS.escape(person.focus) + '"]')) {
+      for (const element of document.querySelectorAll(
+        '.a4-paper [data-object="' + CSS.escape(person.focus) + '"]',
+      )) {
         element.setAttribute('data-others', person.name);
         marked.add(element);
       }
@@ -538,8 +553,11 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         openAi('generate');
       } else showTab(source);
     };
-    if (source === 'generate') withAi(open);
-    else open();
+    if (source === 'generate' && !hasActiveKey) {
+      // Stay on the generate tab: it says a key is needed, instead of jumping to the chat.
+      setMounted((previous) => ({ ...previous, generate: false }));
+      openAi('generate');
+    } else open();
   };
   const acceptSource = (
     questions: Question[],
@@ -1572,7 +1590,11 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         trailing={<AccountMenu />}
       >
         {people.length > 0 && (
-          <ul aria-label="Người đang mở đề" data-presence-people className="no-print flex items-center -space-x-1 mr-1">
+          <ul
+            aria-label="Người đang mở đề"
+            data-presence-people
+            className="no-print flex items-center -space-x-1 mr-1"
+          >
             {people.slice(0, 4).map((person) => (
               <li
                 key={person.userId}
@@ -1590,7 +1612,11 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
             <ConflictChoices list={mergeConflicts} onResolve={resolveConflicts} />
           )}
           {activity.length > 0 && (
-            <ul aria-label="Thay đổi từ người khác" data-activity className="mb-2 list-disc pl-4 text-xs space-y-0.5">
+            <ul
+              aria-label="Thay đổi từ người khác"
+              data-activity
+              className="mb-2 list-disc pl-4 text-xs space-y-0.5"
+            >
               {activity.map((line, index) => (
                 <li key={index}>{line}</li>
               ))}
@@ -1982,13 +2008,22 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                     ) : (
                       <div className="p-3 space-y-2 text-sm">
                         <p>Sinh câu mới bằng AI vào đúng chỗ đang chọn.</p>
-                        <button
-                          type="button"
-                          className="app-button-secondary rounded-lg px-3 min-h-9 text-xs"
-                          onClick={() => openSource('generate')}
-                        >
-                          Bắt đầu sinh câu
-                        </button>
+                        {hasActiveKey ? (
+                          <button
+                            type="button"
+                            className="app-button-secondary rounded-lg px-3 min-h-9 text-xs"
+                            onClick={() => openSource('generate')}
+                          >
+                            Bắt đầu sinh câu
+                          </button>
+                        ) : (
+                          <p role="status">
+                            Chưa có khóa AI để sinh câu.{' '}
+                            <button type="button" className="underline" onClick={openKeys}>
+                              Thêm khóa AI
+                            </button>
+                          </p>
+                        )}
                       </div>
                     )
                   }

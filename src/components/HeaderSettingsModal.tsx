@@ -81,6 +81,23 @@ export function HeaderForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [previewKey, conflict, applied, onPreview]);
   useEffect(() => () => onPreview?.(null), [onPreview]);
+  const pending = !applied && !conflict && Object.keys(submission.patch).length > 0;
+  useEffect(() => {
+    if (!embedded || !pending) return;
+    const timer = setTimeout(() => {
+      try {
+        validateHeaderSubmission(submission);
+      } catch {
+        return; // an unfinished entry stays as a draft; nothing half-typed is applied
+      }
+      setSubmitted(submission);
+      onSaveMetadata(submission);
+      setError('');
+    }, 700);
+    return () => clearTimeout(timer);
+    // The serialized draft identifies the pending change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [embedded, pending, previewKey]);
   const subjects = getCatalogSubjects(displayForm.grade),
     frameworks = COGNITIVE_FRAMEWORKS.filter((item) => item.grades.includes(displayForm.grade));
   const validSubject = subjects.some((item) => item.key === displayForm.subject),
@@ -390,145 +407,148 @@ export function HeaderForm({
           </div>
         </div>
         {lines !== 'hidden' && (
-        <details open={lines === 'open' ? true : undefined} className="border-t border-[var(--ui-border)]/60 pt-3">
-          <summary className="cursor-pointer font-medium text-xs text-[var(--ui-text-secondary)] hover:text-[var(--ui-text-primary)]">
-            Dòng in, vị trí và căn chỉnh nâng cao
-          </summary>
-          <p className="text-xs my-2">
-            Ẩn dòng sẽ bỏ dòng khi in; ghi đè bằng chuỗi rỗng vẫn chừa một dòng trống. Bỏ ghi đè để dùng dữ
-            liệu đề. Tên đề để quản lý luôn cần có, kể cả khi ẩn tên trên bản in.
-          </p>
-          {layout.lines.map((line, index) => (
-            <fieldset key={line.id} className="border rounded p-2 my-2 text-xs">
-              <legend>
-                {index + 1}. {line.binding ? labels[line.binding] : 'Dòng riêng'}
-              </legend>
-              <div className="flex flex-wrap gap-3 items-center">
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={!line.hidden}
-                    onChange={(event) => changeLine(line.id, { hidden: !event.target.checked })}
-                  />{' '}
-                  Hiện khi in
-                </label>
-                <label>
-                  Vị trí
-                  <select
-                    className="border rounded p-1 bg-transparent"
-                    value={line.area}
-                    onChange={(event) =>
-                      changeLine(line.id, {
-                        area: event.target.value as HeaderLayout['lines'][number]['area'],
-                      })
-                    }
-                  >
-                    <option value="left">Trái</option>
-                    <option value="right">Phải</option>
-                    <option value="footer">Cuối đề</option>
-                  </select>
-                </label>
-                <label>
-                  Căn
-                  <select
-                    className="border rounded p-1 bg-transparent"
-                    value={line.align}
-                    onChange={(event) =>
-                      changeLine(line.id, {
-                        align: event.target.value as HeaderLayout['lines'][number]['align'],
-                      })
-                    }
-                  >
-                    <option value="left">Trái</option>
-                    <option value="center">Giữa</option>
-                    <option value="right">Phải</option>
-                  </select>
-                </label>
-                <button
-                  type="button"
-                  disabled={index === 0}
-                  onClick={() => {
-                    const lines = [...layout.lines];
-                    [lines[index - 1], lines[index]] = [lines[index], lines[index - 1]];
-                    change({ headerLayout: { ...layout, lines } });
-                  }}
-                >
-                  Lên
-                </button>
-                <button
-                  type="button"
-                  disabled={index === layout.lines.length - 1}
-                  onClick={() => {
-                    const lines = [...layout.lines];
-                    [lines[index + 1], lines[index]] = [lines[index], lines[index + 1]];
-                    change({ headerLayout: { ...layout, lines } });
-                  }}
-                >
-                  Xuống
-                </button>
-              </div>
-              {line.binding ? (
-                <>
-                  <label className="block my-2">
+          <details
+            open={lines === 'open' ? true : undefined}
+            className="border-t border-[var(--ui-border)]/60 pt-3"
+          >
+            <summary className="cursor-pointer font-medium text-xs text-[var(--ui-text-secondary)] hover:text-[var(--ui-text-primary)]">
+              Dòng in, vị trí và căn chỉnh nâng cao
+            </summary>
+            <p className="text-xs my-2">
+              Ẩn dòng sẽ bỏ dòng khi in; ghi đè bằng chuỗi rỗng vẫn chừa một dòng trống. Bỏ ghi đè để dùng dữ
+              liệu đề. Tên đề để quản lý luôn cần có, kể cả khi ẩn tên trên bản in.
+            </p>
+            {layout.lines.map((line, index) => (
+              <fieldset key={line.id} className="border rounded p-2 my-2 text-xs">
+                <legend>
+                  {index + 1}. {line.binding ? labels[line.binding] : 'Dòng riêng'}
+                </legend>
+                <div className="flex flex-wrap gap-3 items-center">
+                  <label>
                     <input
                       type="checkbox"
-                      checked={line.override !== undefined}
-                      onChange={(event) =>
-                        changeLine(line.id, { override: event.target.checked ? '' : undefined })
-                      }
+                      checked={!line.hidden}
+                      onChange={(event) => changeLine(line.id, { hidden: !event.target.checked })}
                     />{' '}
-                    Ghi đè dòng này (có thể để trống)
+                    Hiện khi in
                   </label>
-                  {line.override !== undefined && (
-                    <input
-                      className={field}
-                      aria-label={`Ghi đè dòng ${index + 1}`}
-                      maxLength={2000}
-                      value={line.override}
-                      onChange={(event) => changeLine(line.id, { override: event.target.value })}
-                    />
-                  )}
-                </>
-              ) : (
-                <input
-                  className={field}
-                  aria-label={`Nội dung dòng ${index + 1}`}
-                  maxLength={2000}
-                  value={line.text ?? ''}
-                  onChange={(event) => changeLine(line.id, { text: event.target.value })}
-                />
-              )}
-              <button
-                type="button"
-                className="underline my-1"
-                onClick={() =>
-                  change({
-                    headerLayout: { ...layout, lines: layout.lines.filter((item) => item.id !== line.id) },
-                  })
-                }
-              >
-                Bỏ dòng
-              </button>
-            </fieldset>
-          ))}
-          <button
-            type="button"
-            disabled={layout.lines.length >= 30}
-            onClick={() =>
-              change({
-                headerLayout: {
-                  ...layout,
-                  lines: [
-                    ...layout.lines,
-                    { id: crypto.randomUUID(), area: 'right', align: 'center', hidden: false, text: '' },
-                  ],
-                },
-              })
-            }
-          >
-            Thêm dòng riêng
-          </button>
-        </details>
+                  <label>
+                    Vị trí
+                    <select
+                      className="border rounded p-1 bg-transparent"
+                      value={line.area}
+                      onChange={(event) =>
+                        changeLine(line.id, {
+                          area: event.target.value as HeaderLayout['lines'][number]['area'],
+                        })
+                      }
+                    >
+                      <option value="left">Trái</option>
+                      <option value="right">Phải</option>
+                      <option value="footer">Cuối đề</option>
+                    </select>
+                  </label>
+                  <label>
+                    Căn
+                    <select
+                      className="border rounded p-1 bg-transparent"
+                      value={line.align}
+                      onChange={(event) =>
+                        changeLine(line.id, {
+                          align: event.target.value as HeaderLayout['lines'][number]['align'],
+                        })
+                      }
+                    >
+                      <option value="left">Trái</option>
+                      <option value="center">Giữa</option>
+                      <option value="right">Phải</option>
+                    </select>
+                  </label>
+                  <button
+                    type="button"
+                    disabled={index === 0}
+                    onClick={() => {
+                      const lines = [...layout.lines];
+                      [lines[index - 1], lines[index]] = [lines[index], lines[index - 1]];
+                      change({ headerLayout: { ...layout, lines } });
+                    }}
+                  >
+                    Lên
+                  </button>
+                  <button
+                    type="button"
+                    disabled={index === layout.lines.length - 1}
+                    onClick={() => {
+                      const lines = [...layout.lines];
+                      [lines[index + 1], lines[index]] = [lines[index], lines[index + 1]];
+                      change({ headerLayout: { ...layout, lines } });
+                    }}
+                  >
+                    Xuống
+                  </button>
+                </div>
+                {line.binding ? (
+                  <>
+                    <label className="block my-2">
+                      <input
+                        type="checkbox"
+                        checked={line.override !== undefined}
+                        onChange={(event) =>
+                          changeLine(line.id, { override: event.target.checked ? '' : undefined })
+                        }
+                      />{' '}
+                      Ghi đè dòng này (có thể để trống)
+                    </label>
+                    {line.override !== undefined && (
+                      <input
+                        className={field}
+                        aria-label={`Ghi đè dòng ${index + 1}`}
+                        maxLength={2000}
+                        value={line.override}
+                        onChange={(event) => changeLine(line.id, { override: event.target.value })}
+                      />
+                    )}
+                  </>
+                ) : (
+                  <input
+                    className={field}
+                    aria-label={`Nội dung dòng ${index + 1}`}
+                    maxLength={2000}
+                    value={line.text ?? ''}
+                    onChange={(event) => changeLine(line.id, { text: event.target.value })}
+                  />
+                )}
+                <button
+                  type="button"
+                  className="underline my-1"
+                  onClick={() =>
+                    change({
+                      headerLayout: { ...layout, lines: layout.lines.filter((item) => item.id !== line.id) },
+                    })
+                  }
+                >
+                  Bỏ dòng
+                </button>
+              </fieldset>
+            ))}
+            <button
+              type="button"
+              disabled={layout.lines.length >= 30}
+              onClick={() =>
+                change({
+                  headerLayout: {
+                    ...layout,
+                    lines: [
+                      ...layout.lines,
+                      { id: crypto.randomUUID(), area: 'right', align: 'center', hidden: false, text: '' },
+                    ],
+                  },
+                })
+              }
+            >
+              Thêm dòng riêng
+            </button>
+          </details>
         )}
         {conflict && (
           <p role="alert" className="text-sm text-amber-700">
@@ -546,9 +566,15 @@ export function HeaderForm({
           </p>
         )}
         <div className="flex items-center gap-3 pt-2">
+          {embedded && (
+            <p role="status" className="text-xs text-[var(--ui-text-secondary)]">
+              {pending ? 'Đang áp dụng…' : 'Thay đổi tự áp dụng vào đề.'}
+            </p>
+          )}
           <button
             type="button"
             className="app-button-primary text-white rounded-lg px-4 py-2 text-xs font-semibold shadow-xs hover:shadow-sm disabled:opacity-40 transition-all cursor-pointer"
+            hidden={embedded}
             disabled={applied || !Object.keys(submission.patch).length}
             onClick={submit}
           >
