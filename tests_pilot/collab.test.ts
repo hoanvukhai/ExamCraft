@@ -89,17 +89,17 @@ test(
       await b.page.locator('[data-object="question:q2"]').first().click();
       await b.page.getByLabel('Nội dung câu hỏi', { exact: true }).fill('Câu 2 B đang gõ dở');
       const people = a.page.getByRole('list', { name: 'Người đang mở đề', exact: true });
-      await people.waitFor({ timeout: 25000 });
+      await people.waitFor({ timeout: 45000 });
       assert.ok((await people.locator('li').first().getAttribute('title'))?.includes('Thầy Bình'));
       await a.page
         .locator('.a4-paper [data-others="Thầy Bình"]')
         .first()
-        .waitFor({ state: 'attached', timeout: 25000 });
+        .waitFor({ state: 'attached', timeout: 45000 });
 
       // A goes to the same question: the detail is read-only until they choose to edit anyway.
       await a.page.locator('[data-object="question:q2"]').first().click();
       const lock = a.page.locator('[data-presence-lock]');
-      await lock.waitFor({ timeout: 25000 });
+      await lock.waitFor({ timeout: 45000 });
       assert.ok((await lock.textContent())?.includes('Thầy Bình'));
       assert.equal(await a.page.getByLabel('Nội dung câu hỏi', { exact: true }).isEditable(), false);
       await lock.getByRole('button', { name: 'Vẫn sửa', exact: true }).click();
@@ -128,7 +128,7 @@ test(
       await a.page.unroute('**/api/exams/' + examId);
 
       // A's tab picks up the other save, merges it with their own unsaved edit, and saves both.
-      await a.page.getByText('vừa sửa Câu 1', { exact: false }).first().waitFor({ timeout: 30000 });
+      await a.page.getByText('vừa sửa Câu 1', { exact: false }).first().waitFor({ timeout: 45000 });
       const end = Date.now() + 20000;
       let merged: { content: string; id: string }[] = [];
       while (Date.now() < end) {

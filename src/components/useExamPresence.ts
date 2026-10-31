@@ -9,7 +9,9 @@ export type Collaborator = {
   since: string;
 };
 
-const PERIOD_MS = 8000;
+/** Every few seconds with company, rarely alone. */
+const PERIOD_WITH_OTHERS_MS = 10_000;
+const PERIOD_ALONE_MS = 20_000;
 
 /**
  * Tell the server which object this tab is on and learn who else has the exam open.
@@ -24,6 +26,7 @@ export function useExamPresence(
   const [people, setPeople] = useState<Collaborator[]>([]);
   const [lastSavedBy, setLastSavedBy] = useState<string | null>(null);
   const latest = useRef({ focus, editing, seenVersion });
+  const others = useRef(0);
   useEffect(() => {
     latest.current = { focus, editing, seenVersion };
   }, [focus, editing, seenVersion]);
@@ -49,6 +52,7 @@ export function useExamPresence(
         });
         if (leave || stopped || !response.ok) return;
         const data = (await response.json()) as { people?: Collaborator[]; lastSavedBy?: string | null };
+        others.current = data.people?.length ?? 0;
         setPeople(data.people ?? []);
         setLastSavedBy(data.lastSavedBy ?? null);
       } catch {
@@ -56,12 +60,22 @@ export function useExamPresence(
       }
     };
     void send();
-    const timer = setInterval(() => void send(), PERIOD_MS);
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const schedule = () => {
+      timer = setTimeout(
+        async () => {
+          await send();
+          if (!stopped) schedule();
+        },
+        others.current ? PERIOD_WITH_OTHERS_MS : PERIOD_ALONE_MS,
+      );
+    };
+    schedule();
     const leave = () => void send(true);
     window.addEventListener('pagehide', leave);
     return () => {
       stopped = true;
-      clearInterval(timer);
+      if (timer) clearTimeout(timer);
       window.removeEventListener('pagehide', leave);
       void send(true);
     };
@@ -70,6 +84,8 @@ export function useExamPresence(
   // A move to another object or a start/stop of typing is reported soon, not at the next tick.
   useEffect(() => {
     if (!examId || examId.startsWith('draft_')) return;
+    // Alone there is nobody to tell right away; the next regular report carries the latest place.
+    if (!others.current) return;
     const timer = setTimeout(() => {
       void fetch(`/api/exams/${encodeURIComponent(examId)}/presence`, {
         method: 'POST',

@@ -213,6 +213,7 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     openLatest,
     acceptServerDocument,
     remoteChange,
+    setPeersPresent,
     conflicts: mergeConflicts,
     resolveConflicts,
     state: saveState,
@@ -359,6 +360,7 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     exam.version,
   );
   const labelOf = (code: string) => selectionChain(exam, code).at(-1)?.label ?? '';
+  useEffect(() => setPeersPresent(people.length > 0), [people.length, setPeersPresent]);
   const [override, setOverride] = useState('');
   const lockedBy = people.find((person) => person.focus === selectedCode && person.editing);
   const holdsLock = Boolean(lockedBy) && override !== selectedCode;

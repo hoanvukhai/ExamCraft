@@ -5,7 +5,7 @@ import { reconcileQuestionOutline } from '@/lib/exam-outline';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import type { Exam } from '@/types/exam';
-import { loadExam, persistExam, SaveExamError, isExamAccessError } from '@/lib/exam-client';
+import { loadExam, checkExamVersion, persistExam, SaveExamError, isExamAccessError } from '@/lib/exam-client';
 import { readDraft, writeDraft, retireWriterDraft, stageLatestExam } from '@/lib/exam-draft';
 import { copyQuestionDraftsAfterCreate } from '@/lib/question-draft';
 import { mergeExams, type MergeChoices, type MergeConflict } from '@/lib/exam-merge';
@@ -66,6 +66,11 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
     flight = useRef<Promise<Exam | null> | null>(null);
   const storageId = useRef(requestedId && requestedId !== 'new' ? requestedId : 'new');
   const generation = useRef(0);
+  const peers = useRef(false);
+  /** Tell the hook whether someone else has the exam open, so it asks more often. */
+  const setPeersPresent = useCallback((present: boolean) => {
+    peers.current = present;
+  }, []);
   // The last copy that is known to be on the server: what both of us started from when two people edit.
   const serverBase = useRef<Exam | null>(null);
   // Places both of us changed differently: shown to the teacher to choose, with the server copy they collided with.
@@ -362,6 +367,13 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
       const id = current.current.serverId,
         pollingGeneration = generation.current;
       try {
+        // Ask for the version alone; the whole exam is loaded only when something is different.
+        const quick = await checkExamVersion(id, ownerId);
+        if (
+          quick.version === current.current.version &&
+          JSON.stringify(quick.permissions) === JSON.stringify(current.current.access)
+        )
+          return;
         const remote = await loadExam(id, ownerId);
         if (
           cancelled ||
@@ -446,12 +458,28 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
         polling = false;
       }
     };
-    const interval = setInterval(() => void refresh(), 8000);
-    window.addEventListener('focus', refresh);
+    // Often when someone else is in the exam, rarely when alone, never while the tab is hidden.
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const schedule = () => {
+      timer = setTimeout(
+        () => {
+          if (document.visibilityState !== 'hidden') void refresh();
+          if (!cancelled) schedule();
+        },
+        peers.current ? 10_000 : 30_000,
+      );
+    };
+    schedule();
+    const wake = () => {
+      if (document.visibilityState !== 'hidden') void refresh();
+    };
+    window.addEventListener('focus', wake);
+    document.addEventListener('visibilitychange', wake);
     return () => {
       cancelled = true;
-      clearInterval(interval);
-      window.removeEventListener('focus', refresh);
+      if (timer) clearTimeout(timer);
+      window.removeEventListener('focus', wake);
+      document.removeEventListener('visibilitychange', wake);
     };
   }, [ownerId, writerId, freezeAccess, announce]);
 
@@ -598,6 +626,7 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
     openLatest,
     acceptServerDocument,
     remoteChange,
+    setPeersPresent,
     conflicts: conflicts?.list ?? [],
     resolveConflicts,
     state,
