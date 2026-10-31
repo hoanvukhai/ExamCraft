@@ -49,6 +49,7 @@ import { ExamPresentation } from '@/components/ExamPresentation';
 import { EditorReview } from '@/components/editor/EditorReview';
 import { reviewExam } from '@/lib/exam-review';
 import { EditorSaveStatus } from '@/components/editor/EditorSaveStatus';
+import { EditorHelp } from '@/components/editor/EditorHelp';
 import { EditorTemplate } from '@/components/editor/EditorRequirements';
 import { EditorPrint } from '@/components/editor/EditorPrint';
 import { EditorDetail } from '@/components/editor/EditorDetail';
@@ -2027,6 +2028,7 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                       </div>
                     )
                   }
+                  help={<EditorHelp kind={parseCode(selectedCode).kind} />}
                   verify={
                     aiQuestion ? (
                       <QuestionVerify

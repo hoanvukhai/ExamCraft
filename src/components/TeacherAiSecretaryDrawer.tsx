@@ -2,18 +2,21 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useSidePanel } from '@/hooks/useSidePanel';
-import {
-  Sparkles,
-  Send,
-  X,
-  RefreshCw,
-} from 'lucide-react';
+import { Sparkles, Send, X, RefreshCw } from 'lucide-react';
 
 interface ChatMessage {
   id: string;
   role: 'user' | 'assistant';
   content: string;
   timestamp: string;
+  /** Where the answer came from: the usage guide, the teacher's own data, or the AI. */
+  source?: 'guide' | 'data' | 'ai';
+  /** Related guide topics, offered as one-tap questions. */
+  choices?: string[];
+  /** The AI stopped because the answer was too long: offer to continue. */
+  truncated?: boolean;
+  /** The question that failed, so the teacher can send it again after adding a key or waiting. */
+  retry?: string;
 }
 
 interface TeacherAiSecretaryDrawerProps {
@@ -59,11 +62,21 @@ export const TeacherAiSecretaryDrawer: React.FC<TeacherAiSecretaryDrawerProps> =
     '💡 Tư vấn cấu trúc đề Tốt nghiệp THPT 2025 môn Toán?',
     '🎯 Gợi ý 3 bài toán thực tế Vận dụng cao?',
     '🔍 Có lưu ý pháp lý nào mới theo TT 17/2025 không?',
+    '❓ Làm sao để giao bài cho học sinh?',
   ];
+  const stamp = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
   const handleSendMessage = async (textToSend?: string) => {
     const text = (textToSend || inputValue).trim();
     if (!text || isLoading) return;
+    // Anything shown as a one-tap choice or retry is replaced by this new question.
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.choices || m.truncated || m.retry
+          ? { ...m, choices: undefined, truncated: false, retry: undefined }
+          : m,
+      ),
+    );
 
     const userMsg: ChatMessage = {
       id: `user_${crypto.randomUUID()}`,
@@ -97,15 +110,21 @@ export const TeacherAiSecretaryDrawer: React.FC<TeacherAiSecretaryDrawerProps> =
           id: `ai_${crypto.randomUUID()}`,
           role: 'assistant',
           content: data.reply,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          timestamp: stamp(),
+          source: data.source,
+          choices: Array.isArray(data.choices) && data.choices.length ? data.choices : undefined,
+          truncated: data.truncated === true,
         };
         setMessages((prev) => [...prev, aiMsg]);
       } else {
         const errorMsg: ChatMessage = {
           id: `ai_err_${crypto.randomUUID()}`,
           role: 'assistant',
-          content: data.error || 'Dạ thưa Thầy/Cô, hiện tại em chưa kết nối được máy chủ AI. Thầy/Cô vui lòng kiểm tra lại Khóa AI cá nhân ạ.',
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          content:
+            data.error ||
+            'Dạ thưa Thầy/Cô, hiện tại em chưa kết nối được máy chủ AI. Thầy/Cô vui lòng kiểm tra lại Khóa AI cá nhân ạ.',
+          timestamp: stamp(),
+          retry: text,
         };
         setMessages((prev) => [...prev, errorMsg]);
       }
@@ -115,7 +134,8 @@ export const TeacherAiSecretaryDrawer: React.FC<TeacherAiSecretaryDrawerProps> =
         id: `ai_err_${crypto.randomUUID()}`,
         role: 'assistant',
         content: 'Dạ, có lỗi kết nối mạng. Thầy/Cô vui lòng thử lại sau giây lát ạ.',
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        timestamp: stamp(),
+        retry: text,
       };
       setMessages((prev) => [...prev, errorMsg]);
     } finally {
@@ -126,8 +146,13 @@ export const TeacherAiSecretaryDrawer: React.FC<TeacherAiSecretaryDrawerProps> =
   if (!isOpen) return null;
 
   return (
-    <div ref={panelRef} role={modal ? 'dialog' : 'complementary'} aria-modal={modal || undefined} aria-label="Hỏi đáp với Trợ lý AI" className="no-print fixed inset-0 z-40 w-full lg:relative lg:inset-auto lg:z-auto lg:w-96 h-full min-h-0 shrink-0 bg-[var(--ui-surface)] border-l flex flex-col">
-
+    <div
+      ref={panelRef}
+      role={modal ? 'dialog' : 'complementary'}
+      aria-modal={modal || undefined}
+      aria-label="Hỏi đáp với Trợ lý AI"
+      className="no-print fixed inset-0 z-40 w-full lg:relative lg:inset-auto lg:z-auto lg:w-96 h-full min-h-0 shrink-0 bg-[var(--ui-surface)] border-l flex flex-col"
+    >
       {/* Header */}
       <div className="h-16 px-4 border-b border-[#dadce0] dark:border-[#3c4043] flex items-center justify-between shrink-0 bg-white dark:bg-[#202124]">
         <div className="flex items-center gap-3">
@@ -136,14 +161,10 @@ export const TeacherAiSecretaryDrawer: React.FC<TeacherAiSecretaryDrawerProps> =
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <h3 className="font-bold text-xs sm:text-sm text-[#202124] dark:text-white">
-                Hỏi AI
-              </h3>
+              <h3 className="font-bold text-xs sm:text-sm text-[#202124] dark:text-white">Hỏi AI</h3>
               <span className="w-2 h-2 rounded-full bg-[var(--ui-text-secondary)] " />
             </div>
-            <p className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6]">
-              Trợ lý sư phạm cá nhân hóa
-            </p>
+            <p className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6]">Trợ lý sư phạm cá nhân hóa</p>
           </div>
         </div>
 
@@ -161,12 +182,7 @@ export const TeacherAiSecretaryDrawer: React.FC<TeacherAiSecretaryDrawerProps> =
       {/* Messages Scroll Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3.5 min-h-0 bg-[#f8f9fa]/50 dark:bg-[#17181a]/50">
         {messages.map((m) => (
-          <div
-            key={m.id}
-            className={`flex flex-col ${
-              m.role === 'user' ? 'items-end' : 'items-start'
-            }`}
-          >
+          <div key={m.id} className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}>
             <div
               className={`max-w-[85%] rounded-xl px-3.5 py-2.5 text-xs leading-relaxed shadow-2xs whitespace-pre-wrap ${
                 m.role === 'user'
@@ -176,8 +192,48 @@ export const TeacherAiSecretaryDrawer: React.FC<TeacherAiSecretaryDrawerProps> =
             >
               {m.content}
             </div>
+            {m.role === 'assistant' && m.choices && (
+              <div
+                className="mt-1.5 flex max-w-[85%] flex-wrap gap-1.5"
+                role="group"
+                aria-label="Mục liên quan"
+              >
+                {m.choices.map((choice) => (
+                  <button
+                    key={choice}
+                    type="button"
+                    disabled={isLoading}
+                    onClick={() => handleSendMessage('Hướng dẫn ' + choice)}
+                    className="text-[11px] px-2.5 py-1 rounded-lg app-button-secondary"
+                  >
+                    {choice}
+                  </button>
+                ))}
+              </div>
+            )}
+            {m.role === 'assistant' && m.truncated && (
+              <button
+                type="button"
+                disabled={isLoading}
+                onClick={() => handleSendMessage('Hãy tiếp tục câu trả lời trước, bắt đầu từ chỗ bị cắt.')}
+                className="mt-1.5 text-[11px] px-2.5 py-1 rounded-lg app-button-secondary"
+              >
+                Câu trả lời bị cắt — Tiếp tục
+              </button>
+            )}
+            {m.role === 'assistant' && m.retry && (
+              <button
+                type="button"
+                disabled={isLoading}
+                onClick={() => handleSendMessage(m.retry)}
+                className="mt-1.5 text-[11px] px-2.5 py-1 rounded-lg app-button-secondary"
+              >
+                Thử lại câu vừa hỏi
+              </button>
+            )}
             <span className="text-[9px] text-[#5f6368] dark:text-[#9aa0a6] px-1 mt-1">
               {m.timestamp}
+              {m.source === 'guide' ? ' · từ hướng dẫn' : m.source === 'data' ? ' · từ dữ liệu của bạn' : ''}
             </span>
           </div>
         ))}
@@ -219,10 +275,9 @@ export const TeacherAiSecretaryDrawer: React.FC<TeacherAiSecretaryDrawerProps> =
         >
           <input
             type="text"
-            placeholder="Hỏi Thư ký AI (thống kê kho đề, tư vấn cấu trúc, gợi ý câu hỏi)..."
+            placeholder="Hỏi cách dùng trang, tìm đề/câu hỏi, hoặc tư vấn chuyên môn..."
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            disabled={isLoading}
             className="flex-1 bg-transparent text-xs text-[#202124] dark:text-white outline-hidden placeholder:text-[#5f6368] dark:placeholder:text-[#9aa0a6]"
           />
           <button

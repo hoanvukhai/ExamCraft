@@ -18,7 +18,7 @@
   "src/components/GenerateModal.tsx": 6,
   "src/components/ImportModal.tsx": 225,
   "src/components/RegradePanel.tsx": 7,
-  "src/components/RightCompanionRail.tsx": 119,
+  "src/components/RightCompanionRail.tsx": 81,
   "src/components/ShareModal.tsx": 239,
   "src/components/ShuffleModal.tsx": 112,
   "src/components/StudentDraftRecovery.tsx": 1,

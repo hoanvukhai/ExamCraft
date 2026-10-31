@@ -1,156 +1,156 @@
 {
-  "run": "630e12ce-e4e9-4296-b10a-e8ac124b8868",
+  "run": "3d2c4bc2-caf9-45cc-a55c-5f33a01ccacf",
   "sourceSha256": "1d55651568e39f543afe67e4234ba0a7cce40a1196298f3a785b716446779da3",
-  "buildId": "KMkHgNc5SinuuqyXDs0X0",
+  "buildId": "cjiOkaYJG3AScc_CYM1n3",
   "browserVersion": "156.0.8078.74",
   "browserExecutable": "C:/Program Files/Google/Chrome/Application/chrome.exe",
   "requestedFlow": "F1-F7,F9-F24",
-  "checkedAt": "2026-10-31T03:08:52.406Z",
+  "checkedAt": "2026-10-31T03:46:55.982Z",
   "environment": "isolatedTest http://127.0.0.1:3130 / examcraft_test_20261022",
   "realAiCalls": false,
   "results": [
     {
       "id": "F1",
       "status": "PASS",
-      "durationMs": 2354,
+      "durationMs": 2096,
       "cleanupComplete": true
     },
     {
       "id": "F2",
       "status": "PASS",
-      "durationMs": 12695,
+      "durationMs": 13284,
       "cleanupComplete": true
     },
     {
       "id": "F3",
       "status": "PASS",
-      "durationMs": 4990,
+      "durationMs": 5214,
       "cleanupComplete": true
     },
     {
       "id": "F4",
       "status": "PASS",
-      "durationMs": 7483,
+      "durationMs": 8283,
       "cleanupComplete": true
     },
     {
       "id": "F5",
       "status": "PASS",
-      "durationMs": 73467,
+      "durationMs": 65375,
       "cleanupComplete": true
     },
     {
       "id": "F6",
       "status": "PASS",
-      "durationMs": 18230,
+      "durationMs": 18260,
       "cleanupComplete": true
     },
     {
       "id": "F7",
       "status": "PASS",
-      "durationMs": 19200,
+      "durationMs": 19085,
       "cleanupComplete": true
     },
     {
       "id": "F9",
       "status": "PASS",
-      "durationMs": 8551,
+      "durationMs": 8607,
       "cleanupComplete": true
     },
     {
       "id": "F10",
       "status": "PASS",
-      "durationMs": 8821,
+      "durationMs": 8792,
       "cleanupComplete": true
     },
     {
       "id": "F11",
       "status": "PASS",
-      "durationMs": 4971,
+      "durationMs": 5283,
       "cleanupComplete": true
     },
     {
       "id": "F12",
       "status": "PASS",
-      "durationMs": 18589,
+      "durationMs": 18701,
       "cleanupComplete": true
     },
     {
       "id": "F13",
       "status": "PASS",
-      "durationMs": 19842,
+      "durationMs": 20094,
       "cleanupComplete": true
     },
     {
       "id": "F14",
       "status": "PASS",
-      "durationMs": 7498,
+      "durationMs": 7611,
       "cleanupComplete": true
     },
     {
       "id": "F15",
       "status": "PASS",
-      "durationMs": 3863,
+      "durationMs": 4279,
       "cleanupComplete": true
     },
     {
       "id": "F16",
       "status": "PASS",
-      "durationMs": 20148,
+      "durationMs": 20462,
       "cleanupComplete": true
     },
     {
       "id": "F17",
       "status": "PASS",
-      "durationMs": 2861,
+      "durationMs": 3187,
       "cleanupComplete": true
     },
     {
       "id": "F18",
       "status": "PASS",
-      "durationMs": 2309,
+      "durationMs": 2493,
       "cleanupComplete": true
     },
     {
       "id": "F19",
       "status": "PASS",
-      "durationMs": 10156,
+      "durationMs": 10912,
       "cleanupComplete": true
     },
     {
       "id": "F20",
       "status": "PASS",
-      "durationMs": 3390,
+      "durationMs": 3448,
       "cleanupComplete": true
     },
     {
       "id": "F21",
       "status": "PASS",
-      "durationMs": 5180,
+      "durationMs": 5343,
       "cleanupComplete": true
     },
     {
       "id": "F22",
       "status": "PASS",
-      "durationMs": 3298,
+      "durationMs": 3449,
       "cleanupComplete": true
     },
     {
       "id": "F23",
       "status": "PASS",
-      "durationMs": 3541,
+      "durationMs": 3664,
       "cleanupComplete": true
     },
     {
       "id": "F24",
       "status": "PASS",
-      "durationMs": 6115,
+      "durationMs": 6375,
       "cleanupComplete": true
     },
     {
       "id": "F25",
       "status": "PASS",
-      "durationMs": 5186,
+      "durationMs": 5201,
       "cleanupComplete": true
     }
   ]

@@ -1,7 +1,7 @@
 'use client';
 import type { ReactNode } from 'react';
 
-export type AiTab = 'chat' | 'generate' | 'verify';
+export type AiTab = 'chat' | 'generate' | 'verify' | 'help';
 
 /**
  * The one AI panel of the editor. It always says what it is talking about (the selection) and holds every AI job:
@@ -16,6 +16,7 @@ export function EditorAiPanel({
   chat,
   generate,
   verify,
+  help,
 }: {
   tab: AiTab;
   onTab: (tab: AiTab) => void;
@@ -27,11 +28,14 @@ export function EditorAiPanel({
   generate: ReactNode;
   /** Only for a single selected question. */
   verify: ReactNode | null;
+  /** How-to answers; needs no key. */
+  help: ReactNode;
 }) {
   const tabs: [AiTab, string][] = [
     ['chat', 'Trò chuyện'],
     ['generate', 'Sinh câu'],
     ...(verify ? ([['verify', 'Thẩm định']] as [AiTab, string][]) : []),
+    ['help', 'Hướng dẫn'],
   ];
   const active = tabs.some(([key]) => key === tab) ? tab : 'chat';
   return (
@@ -68,6 +72,7 @@ export function EditorAiPanel({
       </div>
       <div className={active === 'chat' ? 'flex min-h-0 flex-1 flex-col' : 'hidden'}>{chat}</div>
       <div className={active === 'generate' ? 'min-h-0 flex-1 overflow-auto' : 'hidden'}>{generate}</div>
+      <div className={active === 'help' ? 'min-h-0 flex-1 overflow-auto' : 'hidden'}>{help}</div>
       {verify && (
         <div className={active === 'verify' ? 'min-h-0 flex-1 overflow-auto p-3' : 'hidden'}>{verify}</div>
       )}
