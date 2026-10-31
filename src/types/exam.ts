@@ -2,6 +2,7 @@ import type { KnowledgePackage, KnowledgeScope } from '@/lib/knowledge-package';
 import type { ExamPlan } from '@/lib/exam-plan';
 import type { HeaderLayout } from '@/lib/header-layout';
 import type { PrintLayout } from '@/lib/print-layout';
+import type { PageSetup } from '@/lib/page-setup';
 import type { TemplateApplication } from '@/lib/exam-template';
 
 export type Subject =
@@ -165,6 +166,8 @@ export interface ExamMetadata {
   printLayout?: PrintLayout;
   /** Columns for multiple-choice options on the sheet and in Word. Absent = the original layout. */
   choiceColumns?: 'auto' | 1 | 2 | 4;
+  /** Font, size and margins of the printed exam. Absent = the original look. */
+  pageSetup?: PageSetup;
   examKind?: 'regular' | 'midterm' | 'final' | 'survey' | 'mock' | 'gifted' | 'other';
   examPlan?: ExamPlan;
   knowledgePackage?: KnowledgePackage;

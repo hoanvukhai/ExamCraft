@@ -331,15 +331,15 @@ test('editor P0-P8: settings recovery review exports and narrow screens', { time
       assert.notEqual((await db.exam.findUniqueOrThrow({where:{id:examId}})).title,'Không được ghi sau mất quyền');
       await page.unroute('**/api/exams/' + examId);
     });
-    await t.test('formatting tags: bold from the tool row shows on the sheet; long exams get page lines', async () => {
+    await t.test('formatting tags: bold from the tool row shows on the sheet; long exams are cut into pages', async () => {
       await page.setViewportSize({width:1440,height:1000});
       const now2 = new Date().toISOString();
       const questions = Array.from({ length: 24 }, (_, i) => ({ id: 'fq' + (i + 1), type: 'short_answer', difficulty: 'thong_hieu', content: 'Nội dung câu số ' + (i + 1) + ' khá dài để chiếm chỗ trên trang giấy. '.repeat(3), correct_answer: '1', accepted_answers: ['1'], step_by_step_solution: '', points: 0.25 }));
       const made = await context.request.post(origin + '/api/exams', { headers: { Origin: origin }, data: { document: { id: randomUUID(), metadata: { title: 'Đề định dạng', schoolName: '', departmentName: '', subject: 'toan', grade: 6 }, questions, createdAt: now2, updatedAt: now2 } } });
       assert.ok(made.ok()); const formatId = (await made.json()).exam.id;
       await page.goto(origin + '/editor/' + formatId);
-      await sheet.locator('[data-page-line="1"]').first().waitFor();
-      await page.getByRole('button', { name: 'Đến trang 2', exact: true }).click();
+      await sheet.locator('[data-page-gap="2"]').first().waitFor();
+      await page.getByRole('button', { name: 'Trang 2', exact: true }).first().click();
       await selectQuestion(page, 'fq1');
       const content = page.getByLabel('Nội dung câu hỏi', { exact: true });
       await content.fill('Câu KHÔNG đúng');

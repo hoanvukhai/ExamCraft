@@ -4,6 +4,7 @@ import { parseKnowledgePackage, resolveKnowledgeScope } from './knowledge-packag
 import { parseExamPlan } from './exam-plan';
 import { parseHeaderLayout } from './header-layout';
 import { parsePrintLayout, EXAM_KINDS } from './print-layout';
+import { parsePageSetup } from './page-setup';
 import { syncOutline } from './exam-outline';
 import { templateApplicationSchema } from './exam-template';
 
@@ -330,6 +331,11 @@ export function normalizeExamDocument(input: unknown): Exam {
   }
   if (metadata.choiceColumns !== undefined && ![1, 2, 4, 'auto'].includes(metadata.choiceColumns as 'auto'))
     delete document.metadata.choiceColumns;
+  if (metadata.pageSetup !== undefined) {
+    const setup = parsePageSetup(metadata.pageSetup);
+    if (setup) document.metadata.pageSetup = setup;
+    else delete document.metadata.pageSetup;
+  }
   if (metadata.examKind !== undefined && !(String(metadata.examKind) in EXAM_KINDS))
     delete document.metadata.examKind;
   if (metadata.examPlan !== undefined) {

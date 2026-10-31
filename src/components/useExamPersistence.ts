@@ -8,6 +8,24 @@ import type { Exam } from '@/types/exam';
 import { loadExam, persistExam, SaveExamError, isExamAccessError } from '@/lib/exam-client';
 import { readDraft, writeDraft, retireWriterDraft, stageLatestExam } from '@/lib/exam-draft';
 import { copyQuestionDraftsAfterCreate } from '@/lib/question-draft';
+import { mergeExams, type MergeChoices, type MergeConflict } from '@/lib/exam-merge';
+
+export type RemoteChange = { id: number; labels: string[]; merged: boolean };
+
+/** Which questions differ, as "Câu n", plus the exam information when it differs. */
+function describeChange(before: Exam, after: Exam): string[] {
+  const labels: string[] = [];
+  const old = new Map(before.questions.map((question) => [question.id, JSON.stringify(question)]));
+  after.questions.forEach((question, index) => {
+    if (old.get(question.id) !== JSON.stringify(question)) labels.push('Câu ' + (index + 1));
+  });
+  const removed = before.questions.filter(
+    (question) => !after.questions.some((item) => item.id === question.id),
+  ).length;
+  if (removed) labels.push(removed + ' câu bị xóa');
+  if (JSON.stringify(before.metadata) !== JSON.stringify(after.metadata)) labels.push('thông tin đề');
+  return labels;
+}
 
 export type SaveState = 'loading' | 'saved' | 'dirty' | 'saving' | 'offline' | 'conflict' | 'error';
 function blankExam(): Exam {
@@ -48,6 +66,15 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
     flight = useRef<Promise<Exam | null> | null>(null);
   const storageId = useRef(requestedId && requestedId !== 'new' ? requestedId : 'new');
   const generation = useRef(0);
+  // The last copy that is known to be on the server: what both of us started from when two people edit.
+  const serverBase = useRef<Exam | null>(null);
+  // Places both of us changed differently: shown to the teacher to choose, with the server copy they collided with.
+  const [conflicts, setConflicts] = useState<{ list: MergeConflict[]; remote: Exam } | null>(null);
+  const [remoteChange, setRemoteChange] = useState<RemoteChange | null>(null);
+  const announce = useCallback((before: Exam, after: Exam, merged: boolean) => {
+    const labels = describeChange(before, after);
+    if (labels.length) setRemoteChange((previous) => ({ id: (previous?.id ?? 0) + 1, labels, merged }));
+  }, []);
 
   const setExam = useCallback(
     (value: React.SetStateAction<Exam>) => {
@@ -127,6 +154,7 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
         }
         if (cancelled) return;
         current.current = loaded;
+        if (!draft) serverBase.current = loaded;
         setValue(loaded);
         edits.current = draft ? 1 : 0;
         savedEdits.current = 0;
@@ -222,6 +250,7 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
           }
         }
         current.current = next;
+        serverBase.current = saved;
         savedEdits.current = revision;
         setValue(next);
         if (stillCurrent) setRecoveredDraft(false);
@@ -355,12 +384,40 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
         )
           return;
         if (edits.current !== savedEdits.current) {
+          const base = serverBase.current;
+          if (base && base.id === remote.id) {
+            const result = mergeExams(base, current.current, remote);
+            if (!result.conflicts.length) {
+              // Different parts were changed: keep both and let the normal save carry them.
+              const merged = {
+                ...result.exam,
+                serverId: remote.serverId ?? remote.id,
+                version: remote.version,
+                access: remote.access,
+              };
+              announce(base, remote, true);
+              serverBase.current = remote;
+              current.current = merged;
+              edits.current += 1;
+              setValue(merged);
+              setState('dirty');
+              setMessage('Đã ghép phần người khác vừa sửa vào bản của bạn.');
+              return;
+            }
+          }
+          if (base && base.id === remote.id) {
+            const result = mergeExams(base, current.current, remote);
+            setConflicts({ list: result.conflicts, remote });
+          }
           setState('conflict');
           setMessage(
-            'Có người vừa lưu phiên bản mới. Bản nháp của bạn vẫn được giữ; hãy đối chiếu hoặc lưu bản sao.',
+            'Có người vừa lưu phiên bản mới và cùng sửa một chỗ với bạn. Bản nháp của bạn vẫn được giữ; hãy đối chiếu hoặc lưu bản sao.',
           );
           return;
         }
+        setConflicts(null);
+        announce(current.current, remote, false);
+        serverBase.current = remote;
         current.current = remote;
         setValue(remote);
         setState('saved');
@@ -396,7 +453,7 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
       clearInterval(interval);
       window.removeEventListener('focus', refresh);
     };
-  }, [ownerId, writerId, freezeAccess]);
+  }, [ownerId, writerId, freezeAccess, announce]);
 
   const saveCopy = useCallback(async () => {
     if (!ready.current || activeOwner.current !== ownerId) {
@@ -457,6 +514,7 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
           return null;
         }
         current.current = remote;
+        serverBase.current = remote;
         savedEdits.current = edits.current;
         setValue(remote);
         setState('saved');
@@ -489,6 +547,7 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
         return false;
       }
       const next = { ...document, serverId: document.id, access: current.current.access };
+      serverBase.current = next;
       current.current = next;
       setValue(next);
       setState('saved');
@@ -503,6 +562,31 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
     [ownerId, writerId],
   );
 
+  const resolveConflicts = useCallback(
+    (choices: MergeChoices) => {
+      const pending = conflicts,
+        base = serverBase.current;
+      if (!pending || !base || flight.current) return false;
+      const result = mergeExams(base, current.current, pending.remote, choices);
+      const merged = {
+        ...result.exam,
+        serverId: pending.remote.serverId ?? pending.remote.id,
+        version: pending.remote.version,
+        access: pending.remote.access,
+      };
+      announce(base, pending.remote, true);
+      serverBase.current = pending.remote;
+      current.current = merged;
+      edits.current += 1;
+      setValue(merged);
+      setConflicts(null);
+      setState('dirty');
+      setMessage('Đã ghép theo lựa chọn của bạn.');
+      return true;
+    },
+    [conflicts, announce],
+  );
+
   const editorExam = useMemo(() => withEditorParts(exam), [exam]);
   return {
     exam: editorExam,
@@ -513,6 +597,9 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
     saveCopy,
     openLatest,
     acceptServerDocument,
+    remoteChange,
+    conflicts: conflicts?.list ?? [],
+    resolveConflicts,
     state,
     message,
     folderUnavailable,

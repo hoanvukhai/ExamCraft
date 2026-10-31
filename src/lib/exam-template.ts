@@ -5,6 +5,8 @@ import { structuralStampFields } from './exam-outline';
 import { z } from 'zod';
 import type { Exam, ExamMetadata } from '@/types/exam';
 import { headerLayoutSchema, sameHeaderValue } from './header-layout';
+import { printLayoutSchema } from './print-layout';
+import { pageSetupSchema } from './page-setup';
 import { examPlanSchema, PLAN_TYPES } from './exam-plan';
 
 const id = z.string().trim().min(1).max(200),
@@ -72,6 +74,9 @@ export const templateSnapshotSchema = z
         semester: text.optional(),
         notes: text.optional(),
         headerLayout: headerLayoutSchema.nullable().optional(),
+        printLayout: printLayoutSchema.optional(),
+        pageSetup: pageSetupSchema.optional(),
+        choiceColumns: z.union([z.literal('auto'), z.literal(1), z.literal(2), z.literal(4)]).optional(),
       })
       .strict(),
     assessmentContext: z
@@ -246,6 +251,9 @@ export function captureTemplateSnapshot(exam: Exam): TemplateSnapshot {
       semester: m.semester ?? '',
       notes: m.notes ?? '',
       headerLayout: m.headerLayout ?? null,
+      ...(m.printLayout ? { printLayout: m.printLayout } : {}),
+      ...(m.pageSetup ? { pageSetup: m.pageSetup } : {}),
+      ...(m.choiceColumns !== undefined ? { choiceColumns: m.choiceColumns } : {}),
     },
     assessmentContext: {
       subject: m.subject,
@@ -416,6 +424,7 @@ export function applyPersonalTemplate(
   if (checked.header) {
     const { headerLayout, ...textFields } = snapshot.headerFields;
     Object.assign(metadata, textFields);
+    // A template that keeps the print layout brings it back; one made before it leaves the exam's own layout alone.
     if (Object.hasOwn(snapshot.headerFields, 'headerLayout'))
       metadata.headerLayout = headerLayout ?? undefined;
   }

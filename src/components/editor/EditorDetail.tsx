@@ -33,6 +33,10 @@ type Props = {
   onPreview: (submission: HeaderSubmission | null) => void;
   onManualSave: (submission: QuestionManualSubmission) => void;
   addItems: (code: string) => MenuItem[];
+  /** Show the advanced header lines opened (a header line is selected) or not at all. */
+  headerLines?: boolean;
+  /** What a page holds and what can be done with it. */
+  pageInfo?: (page: number) => { range: string; items: MenuItem[] };
   /** Put the cursor in the field that belongs to the selection (a click on the sheet), not for the arrow keys. */
   focus?: boolean;
   message?: string;
@@ -263,12 +267,37 @@ export function EditorDetail(p: Props) {
               hasActiveKey={p.hasActiveKey}
               onChange={p.onChange}
               isOpen
+              lines={p.headerLines ? 'open' : 'hidden'}
               onPreview={p.onPreview}
               preview={null}
             />
           ) : (
-            <EditorPrint exam={p.exam} canEdit={p.canEdit} onChange={p.onChange} focus={focus} />
+            <EditorPrint exam={p.exam} canEdit={p.canEdit} onChange={p.onChange} focus={focus} mode="presets" />
           )}
+        </div>
+      );
+    }
+    case 'page': {
+      const info = p.pageInfo?.(object.n);
+      return (
+        <div className="space-y-3">
+          <Heading note={info?.range ? info.range : 'Trang chưa có câu nào bắt đầu ở đây.'}>
+            Trang {object.n}
+          </Heading>
+          <ul className="space-y-1.5">
+            {(info?.items ?? []).map((item) => (
+              <li key={item.label}>
+                <button
+                  type="button"
+                  disabled={!p.canEdit || item.disabled}
+                  className="app-button-secondary w-full text-left rounded-lg px-3 min-h-10 text-sm"
+                  onClick={item.onClick}
+                >
+                  {item.label}
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
       );
     }
@@ -285,13 +314,14 @@ export function EditorDetail(p: Props) {
               hasActiveKey={p.hasActiveKey}
               onChange={p.onChange}
               isOpen
+              lines={p.headerLines ? 'open' : 'hidden'}
               onPreview={p.onPreview}
               preview={null}
             />
           </details>
           <details className="space-y-2">
             <summary className="cursor-pointer text-sm font-semibold">Trang và in</summary>
-            <EditorPrint exam={p.exam} canEdit={p.canEdit} onChange={p.onChange} />
+            <EditorPrint exam={p.exam} canEdit={p.canEdit} onChange={p.onChange} mode="settings" />
           </details>
         </div>
       );

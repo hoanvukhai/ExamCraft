@@ -137,6 +137,7 @@ model User {
   examCollaborations ExamCollaborator[]
   examRevisions      ExamRevision[]
   examComments       ExamComment[]
+  examPresences      ExamPresence[]
 }
 
 model Session {
@@ -271,6 +272,7 @@ model Exam {
   collaborators ExamCollaborator[]
   revisions     ExamRevision[]
   comments      ExamComment[]
+  presences     ExamPresence[]
 
   @@index([ownerId, updatedAt])
   @@index([ownerId, folderId])
@@ -548,6 +550,22 @@ model ExamRevision {
   note      String?
   createdAt DateTime @default(now())
   @@unique([examId, version])
+}
+
+/// Who has an exam open right now and what they are on (a short-lived row per teacher and exam).
+model ExamPresence {
+  id          String   @id @default(cuid())
+  examId      String
+  exam        Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  focus       String?
+  editing     Boolean  @default(false)
+  seenVersion Int?
+  lastSeenAt  DateTime @default(now())
+
+  @@unique([examId, userId])
+  @@index([examId, lastSeenAt])
 }
 
 model ExamComment {

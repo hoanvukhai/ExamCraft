@@ -16,6 +16,7 @@ type Props = {
   isOpen: boolean;
   onClose?: () => void;
   onPreview: (submission: HeaderSubmission | null) => void;
+  lines?: 'hidden' | 'open' | 'closed';
   preview?: ReactNode;
 };
 const tabs = [
@@ -95,6 +96,7 @@ export function EditorSettings(p: Props) {
             <HeaderForm
               embedded
               showFramework
+              lines={p.lines}
               onPreview={p.isOpen ? p.onPreview : undefined}
               isOpen
               metadata={p.exam.metadata}

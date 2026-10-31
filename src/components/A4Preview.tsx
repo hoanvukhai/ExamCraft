@@ -8,6 +8,9 @@ import { outlineView } from '@/lib/outline-view';
 import { StructureBlocks, QuestionParts } from '@/components/editor/StructureBlocks';
 import { ToolMenu, type MenuItem } from '@/components/EditorToolbar';
 import { insertDotsAfterQuestions } from '@/lib/canvas-objects';
+import { paginate } from '@/lib/pagination';
+import { resolvePageSetup, SHEET_MARGIN_MM } from '@/lib/page-setup';
+import { PageGrid, PageStrip } from '@/components/editor/PageStrip';
 import { Plus } from 'lucide-react';
 import { FigureView } from './FigureView';
 
@@ -20,7 +23,12 @@ import { matchingDisplay, orderingDisplay } from '@/lib/structured-question';
 import { computeExamMatrix, computeExamSpecification } from '@/lib/matrix-spec-generator';
 import { examPlanOutput } from '@/lib/exam-plan-output';
 import { resolveHeaderLines } from '@/lib/header-layout';
-import { resolvePrintLayout, segmentsToText, choiceColumnCount, type ResolvedBlock } from '@/lib/print-layout';
+import {
+  resolvePrintLayout,
+  segmentsToText,
+  choiceColumnCount,
+  type ResolvedBlock,
+} from '@/lib/print-layout';
 
 const renderPreviewFigure = (figure: Figure, questionId?: string) => (
   <div key={figure.id} data-object={questionId ? `figure:${questionId}:${figure.id}` : undefined}>
@@ -66,6 +74,9 @@ function renderStructuredPrompt(question: Exam['questions'][number]) {
   return null;
 }
 
+/** Which question starts on which page, after whole blocks were put on pages. */
+export type SheetLayout = { pages: number; units: { id: string; page: number }[] };
+
 interface A4PreviewProps {
   exam: Exam;
   /** Extra controls for the bar under the sheet (for example the slideshow button). */
@@ -75,6 +86,12 @@ interface A4PreviewProps {
   onSelectCode?: (code: string, how?: 'replace' | 'toggle' | 'range') => void;
   /** The "Thêm" menu for a "+" point on the sheet. */
   insertItems?: (code: string) => MenuItem[];
+  /** Pages: told after every layout, and what to offer on a page (copy, lock, delete…). */
+  onLayout?: (layout: SheetLayout) => void;
+  pageItems?: (page: number) => MenuItem[];
+  selectedPage?: number | null;
+  onPageMove?: (from: number, to: number) => void;
+  onPageAdd?: () => void;
   /** Questions with review findings (left margin mark) and with open comments (right margin bubble). */
   issueCounts?: Record<string, number>;
   commentCounts?: Record<string, number>;
@@ -83,6 +100,10 @@ interface A4PreviewProps {
 }
 
 const A4_HEIGHT_PX = 1123;
+const questionsStamp = (exam: Exam) =>
+  exam.questions.length +
+  ':' +
+  exam.questions.map((question) => question.content.length + (question.version ?? 0)).join(',');
 
 function PrintBlocks({
   blocks,
@@ -117,6 +138,11 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
   selectedCode,
   onSelectCode,
   insertItems,
+  onLayout,
+  pageItems,
+  selectedPage = null,
+  onPageMove,
+  onPageAdd,
   issueCounts,
   commentCounts,
   onIssues,
@@ -128,7 +154,11 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
   const scrollArea = useRef<HTMLDivElement>(null);
   const [fitScale, setFitScale] = useState(1);
   const paper = useRef<HTMLDivElement>(null);
-  const [pageCount, setPageCount] = useState(1);
+  const [layout, setLayout] = useState<SheetLayout>({ pages: 1, units: [] });
+  const pageCount = layout.pages;
+  const [currentPage, setCurrentPage] = useState(0);
+  const [stripOpen, setStripOpen] = useState(true);
+  const [gridOpen, setGridOpen] = useState(false);
   const effectiveZoom = zoom ?? Math.round(fitScale * 100);
   useEffect(() => {
     const area = scrollArea.current;
@@ -147,26 +177,79 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
     const node = paper.current;
     if (!node) return;
     const measure = () => {
-      // A part or group set to start on a new page is pushed down to the next page line.
-      const breaks = [...node.querySelectorAll<HTMLElement>('[data-page-break="true"]')];
-      breaks.forEach((block) => (block.style.marginTop = ''));
-      for (const block of breaks) {
-        const into = block.offsetTop % A4_HEIGHT_PX;
-        if (block.offsetTop > 0 && into > 2) block.style.marginTop = `calc(0.75rem + ${A4_HEIGHT_PX - into}px)`;
-      }
-      setPageCount(Math.max(1, Math.ceil((node.offsetHeight - 2) / A4_HEIGHT_PX)));
+      const units = [...node.querySelectorAll<HTMLElement>('[data-page-unit]')];
+      units.forEach((unit) => (unit.style.marginTop = ''));
+      node.style.minHeight = '';
+      if (viewMode !== 'exam') return;
+      const style = getComputedStyle(node);
+      const geometry = {
+        page: A4_HEIGHT_PX,
+        padTop: parseFloat(style.paddingTop) || 0,
+        padBottom: parseFloat(style.paddingBottom) || 0,
+      };
+      const content = node.querySelector<HTMLElement>('[data-sheet-content]');
+      const input = units.map((unit) => ({
+        top: unit.offsetTop,
+        height: unit.offsetHeight,
+        force: unit.dataset.pageBreak === 'true' || !!unit.querySelector('[data-page-break="true"]'),
+      }));
+      const tail = content ? content.offsetTop + content.offsetHeight : 0;
+      const result = paginate(input, geometry, tail);
+      units.forEach((unit, index) => {
+        if (result.push[index]) unit.style.marginTop = result.push[index] + 'px';
+      });
+      node.style.minHeight = result.pages * A4_HEIGHT_PX + 'px';
+      const next: SheetLayout = {
+        pages: result.pages,
+        units: units.map((unit, index) => ({
+          id: unit.dataset.unitQuestion ?? '',
+          page: result.pageOf[index],
+        })),
+      };
+      setLayout((previous) => (JSON.stringify(previous) === JSON.stringify(next) ? previous : next));
     };
     measure();
     const observer = new ResizeObserver(measure);
     observer.observe(node);
+    const content = node.querySelector('[data-sheet-content]');
+    if (content) observer.observe(content);
     return () => observer.disconnect();
   }, [exam, viewMode]);
-
+  useEffect(() => {
+    onLayout?.(layout);
+  }, [layout, onLayout]);
+  const goToPage = (index: number) => {
+    const area = scrollArea.current;
+    const sheet = paper.current;
+    if (!area || !sheet) return;
+    const top =
+      sheet.getBoundingClientRect().top -
+      area.getBoundingClientRect().top +
+      area.scrollTop +
+      index * A4_HEIGHT_PX * (effectiveZoom / 100);
+    area.scrollTo({ top: Math.max(0, top - 8), behavior: 'smooth' });
+  };
   const print = resolvePrintLayout(exam);
-  const insertDots = useMemo(() => (insertItems ? insertDotsAfterQuestions(exam) : new Map<string, string[]>()), [exam, insertItems]);
+  const setup = resolvePageSetup(exam);
+  const insertDots = useMemo(
+    () => (insertItems ? insertDotsAfterQuestions(exam) : new Map<string, string[]>()),
+    [exam, insertItems],
+  );
   const { metadata } = exam;
   const structure = outlineView(exam);
   const questions = structure.questions;
+  const pageRanges = Array.from({ length: layout.pages }, (_, page) => {
+    const ids = layout.units.filter((unit) => unit.page === page && unit.id).map((unit) => unit.id);
+    const numbers = ids
+      .map((id) => structure.numbers.get(id))
+      .filter((value): value is number => value !== undefined);
+    if (!numbers.length) return '';
+    return numbers.length === 1
+      ? 'Câu ' + numbers[0]
+      : 'Câu ' + numbers[0] + '–' + numbers[numbers.length - 1];
+  });
+  const layoutVersion = JSON.stringify(layout) + exam.updatedAt + questionsStamp(exam);
+
   const subjectConfig = getSubjectConfig(metadata.subject, metadata.grade);
 
   const matrixData = computeExamMatrix(exam);
@@ -186,6 +269,24 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
         'a4-preview-container flex flex-col h-full min-h-0 bg-[var(--ui-surface-variant)] overflow-hidden'
       }
     >
+      {viewMode === 'exam' && stripOpen && !gridOpen && (
+        <div className="no-print order-last shrink-0 border-t bg-[var(--ui-surface)] max-md:hidden">
+          <PageStrip
+            paper={paper}
+            version={layoutVersion}
+            pages={pageCount}
+            current={currentPage}
+            selected={selectedPage}
+            ranges={pageRanges}
+            canEdit={!!onSelectCode}
+            onGo={goToPage}
+            onSelect={(page) => onSelectCode?.('page:' + (page + 1))}
+            onAdd={onPageAdd}
+            onMove={onPageMove}
+            commands={pageItems}
+          />
+        </div>
+      )}
       <div className="no-print order-last shrink-0 border-t px-2 py-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 bg-[var(--ui-surface)]">
         <nav aria-label="Các bản xem trước" className="flex flex-nowrap overflow-x-auto gap-1">
           {(
@@ -225,31 +326,55 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
             </label>
           )}
           {viewMode === 'exam' && (
-            <nav aria-label="Các trang (ước lượng)" className="flex items-center gap-1">
-              <span className="text-[var(--ui-text-secondary)]">{pageCount} trang</span>
-              {pageCount > 1 &&
-                Array.from({ length: Math.min(pageCount, 12) }, (_, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    aria-label={`Đến trang ${index + 1}`}
-                    className="app-button-secondary min-w-9 min-h-9 text-xs"
-                    onClick={() => {
-                      const area = scrollArea.current;
-                      const sheet = paper.current;
-                      if (!area || !sheet) return;
-                      const top =
-                        sheet.getBoundingClientRect().top -
-                        area.getBoundingClientRect().top +
-                        area.scrollTop +
-                        index * A4_HEIGHT_PX * (effectiveZoom / 100);
-                      area.scrollTo({ top: Math.max(0, top - 8), behavior: 'smooth' });
-                    }}
-                  >
-                    {index + 1}
-                  </button>
-                ))}
-            </nav>
+            <div className="flex items-center gap-1" role="group" aria-label="Trang">
+              <button
+                type="button"
+                aria-label="Trang trước"
+                className="app-button-secondary min-w-9 min-h-9 md:hidden"
+                disabled={currentPage <= 0}
+                onClick={() => goToPage(currentPage - 1)}
+              >
+                ‹
+              </button>
+              <span className="text-[var(--ui-text-secondary)]" aria-live="polite">
+                {currentPage + 1}/{pageCount} trang
+              </span>
+              <button
+                type="button"
+                aria-label="Trang sau"
+                className="app-button-secondary min-w-9 min-h-9 md:hidden"
+                disabled={currentPage >= pageCount - 1}
+                onClick={() => goToPage(currentPage + 1)}
+              >
+                ›
+              </button>
+              <button
+                type="button"
+                aria-pressed={stripOpen}
+                aria-label="Dải trang"
+                title="Hiện hoặc ẩn dải trang"
+                className={
+                  (stripOpen ? 'app-button-tonal' : 'app-button-secondary') +
+                  ' min-h-9 rounded-lg px-3 text-xs max-md:hidden'
+                }
+                onClick={() => setStripOpen((value) => !value)}
+              >
+                Trang
+              </button>
+              <button
+                type="button"
+                aria-pressed={gridOpen}
+                aria-label="Lưới trang"
+                title="Xem tất cả các trang"
+                className={
+                  (gridOpen ? 'app-button-tonal' : 'app-button-secondary') +
+                  ' min-h-9 rounded-lg px-3 text-xs'
+                }
+                onClick={() => setGridOpen((value) => !value)}
+              >
+                Lưới
+              </button>
+            </div>
           )}
           {barExtra}
           <div className="flex items-center gap-1">
@@ -355,6 +480,17 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
       {/* Vùng cuộn hiển thị trang A4 */}
       <div
         ref={scrollArea}
+        onScroll={(event) => {
+          const area = event.currentTarget;
+          const sheet = paper.current;
+          if (!sheet) return;
+          const offset = area.scrollTop - (sheet.offsetTop - area.offsetTop) + area.clientHeight / 3;
+          const page = Math.max(
+            0,
+            Math.min(pageCount - 1, Math.floor(offset / (A4_HEIGHT_PX * (effectiveZoom / 100)))),
+          );
+          setCurrentPage((previous) => (previous === page ? previous : page));
+        }}
         tabIndex={onSelectCode ? 0 : undefined}
         aria-label={onSelectCode ? 'Vùng trang' : undefined}
         data-selectable={onSelectCode && viewMode === 'exam' ? 'true' : undefined}
@@ -376,31 +512,111 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
           (viewMode === 'matrix' ? 'hidden sm:block print:!block' : '')
         }
       >
+        {gridOpen && viewMode === 'exam' && (
+          <PageGrid
+            paper={paper}
+            version={layoutVersion}
+            pages={pageCount}
+            selected={selectedPage}
+            ranges={pageRanges}
+            canEdit={!!onSelectCode}
+            onSelect={(page) => onSelectCode?.('page:' + (page + 1))}
+            onOpen={(page) => {
+              setGridOpen(false);
+              setTimeout(() => goToPage(page), 50);
+            }}
+            onMove={onPageMove}
+          />
+        )}
         {onSelectCode && selectedCode && selectedCode !== 'exam' && viewMode === 'exam' && (
           <style>{`.a4-paper [data-object="${selectedCode.replace(/["\\]/g, '\\$&')}"]{outline:2px solid Highlight;outline:2px solid AccentColor;outline-offset:3px;border-radius:2px}`}</style>
         )}
         <div
           ref={paper}
-          style={{ zoom: effectiveZoom / 100 }}
-          className={`a4-paper relative mx-auto w-[210mm] min-h-[297mm] bg-white text-black p-[18mm] shadow-xs border border-[#dadce0] font-serif leading-normal ${print?.hasFooter && viewMode === 'exam' ? 'flex flex-col' : ''}`}
+          style={{
+            zoom: effectiveZoom / 100,
+            ...(setup
+              ? { padding: SHEET_MARGIN_MM[setup.margins] + 'mm', fontFamily: `'${setup.fontFamily}', serif` }
+              : {}),
+          }}
+          className={`a4-paper relative mx-auto w-[210mm] min-h-[297mm] bg-white text-black p-[18mm] shadow-xs border border-[#dadce0] font-serif leading-normal`}
         >
-          {viewMode === 'exam' && pageCount > 1 && (
-            <div aria-hidden="true" className="no-print pointer-events-none absolute inset-0 overflow-hidden">
-              {Array.from({ length: pageCount - 1 }, (_, index) => (
-                <div
-                  key={index}
-                  data-page-line={index + 1}
-                  className="absolute left-0 right-0 border-t border-dashed border-black/40"
-                  style={{ top: (index + 1) * A4_HEIGHT_PX }}
-                >
-                  <span className="absolute right-3 -top-5 text-[9pt] text-black/50">Hết trang {index + 1}</span>
+          {viewMode === 'exam' && (
+            <div aria-hidden={false} className="no-print pointer-events-none absolute inset-0 z-10">
+              {Array.from({ length: pageCount }, (_, index) => (
+                <div key={index}>
+                  {index > 0 && (
+                    <div
+                      data-page-gap={index + 1}
+                      className="absolute -left-px -right-px bg-[var(--ui-surface-variant)]"
+                      style={{ top: index * A4_HEIGHT_PX - 14, height: 28 }}
+                    />
+                  )}
+                  <div
+                    className="pointer-events-auto absolute flex items-center gap-1"
+                    style={{ top: index * A4_HEIGHT_PX - 11, left: 6 }}
+                  >
+                    <button
+                      type="button"
+                      data-object={'page:' + (index + 1)}
+                      aria-label={'Nhãn trang ' + (index + 1)}
+                      className={
+                        'rounded-md bg-[var(--ui-surface)] px-2 text-[10px] font-semibold text-[var(--ui-text-primary)] border ' +
+                        (selectedPage === index
+                          ? 'border-[var(--ui-text-primary)]'
+                          : 'border-[var(--ui-border)]')
+                      }
+                      style={{ zoom: 1, ...(index === 0 ? { transform: 'translateY(-14px)' } : {}) }}
+                    >
+                      Trang {index + 1}
+                    </button>
+                  </div>
+                  {print?.hasFooter && (
+                    <div
+                      data-print-zone="footer"
+                      data-object="print:footer"
+                      className="pointer-events-auto absolute"
+                      style={{ top: (index + 1) * A4_HEIGHT_PX - 62, left: 72, right: 72 }}
+                    >
+                      <div className="grid grid-cols-3 gap-3 border-t border-black pt-1 text-[10.5pt] text-black">
+                        <div>
+                          <PrintBlocks
+                            blocks={print.footer.left}
+                            page={index + 1}
+                            pages={pageCount}
+                            size="10.5pt"
+                          />
+                        </div>
+                        <div>
+                          <PrintBlocks
+                            blocks={print.footer.center}
+                            page={index + 1}
+                            pages={pageCount}
+                            size="10.5pt"
+                          />
+                        </div>
+                        <div>
+                          <PrintBlocks
+                            blocks={print.footer.right}
+                            page={index + 1}
+                            pages={pageCount}
+                            size="10.5pt"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
           )}
           {/* VIEW: ĐỀ THI */}
           {viewMode === 'exam' && (
-            <div className="space-y-4 text-[13pt]">
+            <div
+              data-sheet-content
+              className="space-y-4 text-[13pt]"
+              style={setup && setup.fontSize !== 11 ? { zoom: setup.fontSize / 11 } : undefined}
+            >
               {headerAreas.length > 0 && (
                 <div
                   className={`grid ${headerAreas.length > 1 ? 'grid-cols-2' : 'grid-cols-1'} gap-4 pb-3 border-b border-black`}
@@ -471,103 +687,110 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
                   <div className="space-y-4">
                     {questions.map((q, index) => (
                       <React.Fragment key={q.id}>
-                      <StructureBlocks blocks={structure.before.get(q.id)} light />
-                      <div
-                        data-question-id={q.id}
-                        data-object={`question:${q.id}`}
-                        className="question-item relative text-[12pt]"
-                      >
-                        {issueCounts?.[q.id] ? (
-                          <button
-                            type="button"
-                            data-issue-mark={q.id}
-                            aria-label={`Câu ${structure.numbers.get(q.id) ?? index + 1} có ${issueCounts[q.id]} mục cần rà soát`}
-                            title="Có mục cần rà soát"
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              onIssues?.(q.id);
-                            }}
-                            className="no-print absolute -left-[13mm] top-0 flex h-5 min-w-5 items-center justify-center rounded-full border border-black/50 bg-white px-1 text-[9pt] font-bold text-black"
-                          >
-                            !
-                          </button>
-                        ) : null}
-                        {commentCounts?.[q.id] ? (
-                          <button
-                            type="button"
-                            data-comment-bubble={q.id}
-                            aria-label={`Câu ${structure.numbers.get(q.id) ?? index + 1} có ${commentCounts[q.id]} góp ý chưa giải quyết`}
-                            title="Có góp ý chưa giải quyết"
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              onComments?.(q.id);
-                            }}
-                            className="no-print absolute -right-[13mm] top-0 flex h-5 min-w-5 items-center justify-center rounded-full border border-black/50 bg-white px-1 text-[9pt] text-black"
-                          >
-                            {commentCounts[q.id]}
-                          </button>
-                        ) : null}
-                        <p className="leading-relaxed">
-                          <b>Câu {structure.numbers.get(q.id) ?? index + 1}:</b>{' '}
-                          {numericScore && q.points !== undefined && (
-                            <span className="italic">({formatPointsString(q.points)}) </span>
-                          )}
-                          <MathRenderer content={q.content} inline />
-                        </p>
-                        {q.choices && q.type === 'multiple_choice' && (
+                        <div
+                          data-page-unit
+                          data-unit-question={q.id}
+                          data-page-break={structure.breaks.has(q.id) ? 'true' : undefined}
+                          className="space-y-4"
+                        >
+                          <StructureBlocks blocks={structure.before.get(q.id)} light />
                           <div
-                            className="grid gap-3 pl-4 py-2"
-                            style={{
-                              gridTemplateColumns: `repeat(${metadata.choiceColumns === undefined ? 2 : choiceColumnCount(q.choices, metadata.choiceColumns)}, minmax(0, 1fr))`,
-                            }}
+                            data-question-id={q.id}
+                            data-object={`question:${q.id}`}
+                            className="question-item relative text-[12pt]"
                           >
-                            {q.choices.map((choice) => (
-                              <div key={choice.key} data-object={`choice:${q.id}:${choice.key}`}>
-                                <b>{choice.key}.</b> <MathRenderer content={choice.text} inline />
-                                {choice.figures?.map((figure) => renderPreviewFigure(figure, q.id))}
+                            {issueCounts?.[q.id] ? (
+                              <button
+                                type="button"
+                                data-issue-mark={q.id}
+                                aria-label={`Câu ${structure.numbers.get(q.id) ?? index + 1} có ${issueCounts[q.id]} mục cần rà soát`}
+                                title="Có mục cần rà soát"
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  onIssues?.(q.id);
+                                }}
+                                className="no-print absolute -left-[13mm] top-0 flex h-5 min-w-5 items-center justify-center rounded-full border border-black/50 bg-white px-1 text-[9pt] font-bold text-black"
+                              >
+                                !
+                              </button>
+                            ) : null}
+                            {commentCounts?.[q.id] ? (
+                              <button
+                                type="button"
+                                data-comment-bubble={q.id}
+                                aria-label={`Câu ${structure.numbers.get(q.id) ?? index + 1} có ${commentCounts[q.id]} góp ý chưa giải quyết`}
+                                title="Có góp ý chưa giải quyết"
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  onComments?.(q.id);
+                                }}
+                                className="no-print absolute -right-[13mm] top-0 flex h-5 min-w-5 items-center justify-center rounded-full border border-black/50 bg-white px-1 text-[9pt] text-black"
+                              >
+                                {commentCounts[q.id]}
+                              </button>
+                            ) : null}
+                            <p className="leading-relaxed">
+                              <b>Câu {structure.numbers.get(q.id) ?? index + 1}:</b>{' '}
+                              {numericScore && q.points !== undefined && (
+                                <span className="italic">({formatPointsString(q.points)}) </span>
+                              )}
+                              <MathRenderer content={q.content} inline />
+                            </p>
+                            {q.choices && q.type === 'multiple_choice' && (
+                              <div
+                                className="grid gap-3 pl-4 py-2"
+                                style={{
+                                  gridTemplateColumns: `repeat(${metadata.choiceColumns === undefined ? 2 : choiceColumnCount(q.choices, metadata.choiceColumns)}, minmax(0, 1fr))`,
+                                }}
+                              >
+                                {q.choices.map((choice) => (
+                                  <div key={choice.key} data-object={`choice:${q.id}:${choice.key}`}>
+                                    <b>{choice.key}.</b> <MathRenderer content={choice.text} inline />
+                                    {choice.figures?.map((figure) => renderPreviewFigure(figure, q.id))}
+                                  </div>
+                                ))}
                               </div>
-                            ))}
-                          </div>
-                        )}
-                        {q.sub_questions && q.type === 'true_false_group' && (
-                          <div className="pl-4 space-y-1">
-                            {q.sub_questions.map((sub) => (
-                              <p key={sub.key} data-object={`statement:${q.id}:${sub.key}`}>
-                                <b>{sub.key})</b> <MathRenderer content={sub.content} inline />{' '}
-                                <span className="whitespace-nowrap">□ Đúng □ Sai</span>
+                            )}
+                            {q.sub_questions && q.type === 'true_false_group' && (
+                              <div className="pl-4 space-y-1">
+                                {q.sub_questions.map((sub) => (
+                                  <p key={sub.key} data-object={`statement:${q.id}:${sub.key}`}>
+                                    <b>{sub.key})</b> <MathRenderer content={sub.content} inline />{' '}
+                                    <span className="whitespace-nowrap">□ Đúng □ Sai</span>
+                                  </p>
+                                ))}
+                              </div>
+                            )}
+                            <QuestionParts question={q} number={structure.numbers.get(q.id)} />
+                            {renderStructuredPrompt(q)}
+                            {q.figures?.map((figure) => renderPreviewFigure(figure, q.id))}
+                            {['short_answer', 'fill_blank'].includes(q.type) && (
+                              <p className="mt-2">
+                                Trả lời:
+                                ................................................................................
                               </p>
-                            ))}
+                            )}
                           </div>
-                        )}
-                        <QuestionParts question={q} number={structure.numbers.get(q.id)} />
-                        {renderStructuredPrompt(q)}
-                        {q.figures?.map((figure) => renderPreviewFigure(figure, q.id))}
-                        {['short_answer', 'fill_blank'].includes(q.type) && (
-                          <p className="mt-2">
-                            Trả lời:
-                            ................................................................................
-                          </p>
-                        )}
-                      </div>
-                      {insertItems &&
-                        insertDots.get(q.id)?.map((code) => (
-                          <div
-                            key={code}
-                            data-object={code}
-                            data-insert-point={code}
-                            className="no-print group/dot -my-2 flex h-5 items-center gap-2"
-                          >
-                            <span className="h-px grow border-t border-dashed border-black/20" />
-                            <ToolMenu
-                              label="Thêm tại đây"
-                              compact
-                              Icon={Plus}
-                              items={insertItems(code)}
-                              className="flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-full border border-black/30 bg-white p-0 text-black/60 hover:text-black"
-                            />
-                            <span className="h-px grow border-t border-dashed border-black/20" />
-                          </div>
-                        ))}
+                        </div>
+                        {insertItems &&
+                          insertDots.get(q.id)?.map((code) => (
+                            <div
+                              key={code}
+                              data-object={code}
+                              data-insert-point={code}
+                              className="no-print group/dot -my-2 flex h-5 items-center gap-2"
+                            >
+                              <span className="h-px grow border-t border-dashed border-black/20" />
+                              <ToolMenu
+                                label="Thêm tại đây"
+                                compact
+                                Icon={Plus}
+                                items={insertItems(code)}
+                                className="flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-full border border-black/30 bg-white p-0 text-black/60 hover:text-black"
+                              />
+                              <span className="h-px grow border-t border-dashed border-black/20" />
+                            </div>
+                          ))}
                       </React.Fragment>
                     ))}
                   </div>
@@ -596,7 +819,11 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
                     </div>
                   )}
                   {print && print.end.length > 0 && (
-                    <div data-print-zone="end" data-object="print:end" className="pt-8 border-t border-black mt-8">
+                    <div
+                      data-print-zone="end"
+                      data-object="print:end"
+                      className="pt-8 border-t border-black mt-8"
+                    >
                       <PrintBlocks blocks={print.end} />
                     </div>
                   )}
@@ -975,7 +1202,7 @@ export const A4Preview: React.FC<A4PreviewProps> = ({
             </div>
           )}
           {viewMode === 'exam' && print?.hasFooter && (
-            <div data-print-zone="footer" data-object="print:footer" className="mt-auto pt-6">
+            <div className="hidden pt-6 print:block">
               <div className="grid grid-cols-3 gap-3 border-t border-black pt-2 text-[10.5pt]">
                 <div>
                   <PrintBlocks blocks={print.footer.left} page={1} pages={pageCount} size="10.5pt" />

@@ -114,8 +114,8 @@ export function validateOutline(input: unknown, questions: Question[]): OutlineN
       ) {
         throw new OutlineError('Cách đánh số câu chưa được hỗ trợ.');
       }
-      if (node.startOnNewPage !== undefined && (typeof node.startOnNewPage !== 'boolean' || node.kind === 'question')) {
-        throw new OutlineError('Ngắt trang chỉ đặt được ở phần hoặc nhóm.');
+      if (node.startOnNewPage !== undefined && typeof node.startOnNewPage !== 'boolean') {
+        throw new OutlineError('Ngắt trang chỉ nhận giá trị đúng hoặc sai.');
       }
       if (node.kind === 'question') {
         if (

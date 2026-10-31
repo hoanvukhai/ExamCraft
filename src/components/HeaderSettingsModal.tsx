@@ -19,6 +19,8 @@ import {
 export interface HeaderSettingsModalProps {
   embedded?: boolean;
   showFramework?: boolean;
+  /** The advanced printed lines (position, alignment, hidden): shown opened only while a header line is selected on the sheet. */
+  lines?: 'hidden' | 'open' | 'closed';
   onPreview?: (submission: HeaderSubmission | null) => void;
   isOpen: boolean;
   onClose: () => void;
@@ -51,6 +53,7 @@ export function HeaderForm({
   onSaveMetadata,
   embedded,
   showFramework,
+  lines = 'closed',
   onPreview,
 }: HeaderSettingsModalProps) {
   const [base, setBase] = useState(() => headerEditableSnapshot(metadata));
@@ -386,7 +389,8 @@ export function HeaderForm({
             )}
           </div>
         </div>
-        <details className="border-t border-[var(--ui-border)]/60 pt-3">
+        {lines !== 'hidden' && (
+        <details open={lines === 'open' ? true : undefined} className="border-t border-[var(--ui-border)]/60 pt-3">
           <summary className="cursor-pointer font-medium text-xs text-[var(--ui-text-secondary)] hover:text-[var(--ui-text-primary)]">
             Dòng in, vị trí và căn chỉnh nâng cao
           </summary>
@@ -525,6 +529,7 @@ export function HeaderForm({
             Thêm dòng riêng
           </button>
         </details>
+        )}
         {conflict && (
           <p role="alert" className="text-sm text-amber-700">
             Trường đang sửa đã đổi ở bản mới. Nháp của bạn vẫn giữ trong hộp này; chưa ghi đè.

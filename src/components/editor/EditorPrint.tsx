@@ -13,6 +13,7 @@ import {
   type PrintLayout,
   type PrintZone,
 } from '@/lib/print-layout';
+import { DEFAULT_PAGE_SETUP, FONT_FAMILIES, FONT_SIZES, MARGIN_KINDS } from '@/lib/page-setup';
 
 type Props = {
   exam: Exam;
@@ -20,12 +21,14 @@ type Props = {
   onChange: React.Dispatch<React.SetStateAction<Exam>>;
   /** Show only the lines of one printed block (selected on the sheet) instead of the whole print layout. */
   focus?: 'student' | 'intro' | 'end' | 'footer';
+  /** 'presets': only the ready-made layouts (the Mẫu tab). 'settings': only font, margins, columns, exam kind (the exam details). */
+  mode?: 'presets' | 'settings';
 };
 
 const MAX_BLOCKS = 12;
 
 /** Printed lines around the exam body: student line, closing lines, footer with page numbers. */
-export function EditorPrint({ exam, canEdit, onChange, focus }: Props) {
+export function EditorPrint({ exam, canEdit, onChange, focus, mode }: Props) {
   const stored = exam.metadata.printLayout;
   const layout = (() => {
     try {
@@ -65,6 +68,15 @@ export function EditorPrint({ exam, canEdit, onChange, focus }: Props) {
   };
 
   const only = focus && layout ? focus : undefined;
+  const showSettings = !only && mode !== 'presets';
+  const showPresets = !only && mode !== 'settings';
+  const setup = exam.metadata.pageSetup ?? DEFAULT_PAGE_SETUP;
+  const setSetup = (patch: Partial<typeof DEFAULT_PAGE_SETUP>) =>
+    onChange((prev) => ({
+      ...prev,
+      metadata: { ...prev.metadata, pageSetup: { ...(prev.metadata.pageSetup ?? DEFAULT_PAGE_SETUP), ...patch } },
+      updatedAt: new Date().toISOString(),
+    }));
   const zoneVisible = (key: PrintZone) =>
     !only || (only === 'footer' ? key.startsWith('footer') : only === key);
   return (
@@ -79,6 +91,71 @@ export function EditorPrint({ exam, canEdit, onChange, focus }: Props) {
             </p>
           </div>
 
+          {showSettings && (
+            <>
+              <fieldset disabled={!canEdit} className="space-y-2 rounded-lg border p-2">
+                <legend className="px-1 text-xs font-semibold">Trang in</legend>
+                <label className="block space-y-1">
+                  <span className="text-xs">Phông chữ</span>
+                  <select
+                    aria-label="Phông chữ"
+                    className="teacher-field w-full"
+                    value={setup.fontFamily}
+                    onChange={(event) => setSetup({ fontFamily: event.target.value as typeof setup.fontFamily })}
+                  >
+                    {FONT_FAMILIES.map((family) => (
+                      <option key={family} value={family}>
+                        {family}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="block space-y-1">
+                  <span className="text-xs">Cỡ chữ</span>
+                  <select
+                    aria-label="Cỡ chữ"
+                    className="teacher-field w-full"
+                    value={setup.fontSize}
+                    onChange={(event) => setSetup({ fontSize: Number(event.target.value) as typeof setup.fontSize })}
+                  >
+                    {FONT_SIZES.map((size) => (
+                      <option key={size} value={size}>
+                        {size === 11 ? '11 (như cũ)' : size}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="block space-y-1">
+                  <span className="text-xs">Lề trang</span>
+                  <select
+                    aria-label="Lề trang"
+                    className="teacher-field w-full"
+                    value={setup.margins}
+                    onChange={(event) => setSetup({ margins: event.target.value as typeof setup.margins })}
+                  >
+                    {Object.entries(MARGIN_KINDS).map(([key, label]) => (
+                      <option key={key} value={key}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                {exam.metadata.pageSetup && (
+                  <button
+                    type="button"
+                    className="app-button-secondary min-h-9 rounded-lg px-3 text-xs"
+                    onClick={() =>
+                      onChange((prev) => {
+                        const metadata = { ...prev.metadata };
+                        delete metadata.pageSetup;
+                        return { ...prev, metadata, updatedAt: new Date().toISOString() };
+                      })
+                    }
+                  >
+                    Về cỡ chữ và lề như cũ
+                  </button>
+                )}
+              </fieldset>
           <label className="block space-y-1">
             <span className="text-xs font-semibold">Loại bài kiểm tra</span>
             <select
@@ -128,6 +205,10 @@ export function EditorPrint({ exam, canEdit, onChange, focus }: Props) {
             </select>
           </label>
 
+            </>
+          )}
+
+          {showPresets && (
           <div className="space-y-2">
             <p className="text-xs font-semibold">Mẫu bố cục</p>
             <p className="text-xs text-[var(--ui-text-secondary)]">
@@ -177,9 +258,10 @@ export function EditorPrint({ exam, canEdit, onChange, focus }: Props) {
               )}
             </div>
           </div>
+          )}
         </>
       )}
-      {layout && (
+      {layout && only && (
         <>
           {(!only || only === 'student') && (
             <fieldset disabled={!canEdit} className="space-y-2 rounded-lg border p-2">

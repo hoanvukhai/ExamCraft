@@ -11,7 +11,8 @@ export type CanvasObject =
   | { kind: 'question'; id: string }
   | { kind: 'choice' | 'statement' | 'item' | 'pair' | 'order'; question: string; key: string }
   | { kind: 'figure'; question: string; id: string }
-  | { kind: 'insert'; parent: string | null; after: string | null };
+  | { kind: 'insert'; parent: string | null; after: string | null }
+  | { kind: 'page'; n: number };
 
 export const EXAM_CODE = 'exam';
 
@@ -29,6 +30,8 @@ export function codeOf(object: CanvasObject): string {
       return `figure:${object.question}:${object.id}`;
     case 'insert':
       return `insert:${object.parent ?? 'root'}:${object.after ?? 'start'}`;
+    case 'page':
+      return `page:${object.n}`;
     default:
       return `${object.kind}:${object.question}:${object.key}`;
   }
@@ -45,6 +48,7 @@ export function parseCode(code: string | null | undefined): CanvasObject {
     return { kind: 'print', zone: zone as 'header', ...(id.length ? { id: id.join(':') } : {}) };
   }
   if (kind === 'part' || kind === 'group' || kind === 'question') return { kind, id: rest };
+  if (kind === 'page') return { kind: 'page', n: Math.max(1, Number(rest) || 1) };
   if (kind === 'insert') {
     const split = rest.lastIndexOf(':');
     const parent = rest.slice(0, split);
@@ -162,6 +166,9 @@ export function selectionChain(exam: Exam, code: string): ChainStep[] {
     case 'insert':
       steps.push({ code, label: 'Điểm chèn' });
       break;
+    case 'page':
+      steps.push({ code, label: 'Trang ' + object.n });
+      break;
     default: {
       questionStep(object.question);
       const question = exam.questions.find((item) => item.id === object.question);
@@ -210,6 +217,7 @@ export function insertionFor(exam: Exam, code: string): InsertPoint {
       return { parentId: object.parent, afterId: object.after };
     case 'exam':
     case 'print':
+    case 'page':
       return editorInsertionPoint(exam);
     default: {
       const questionId = questionOf(code)!;
@@ -307,6 +315,7 @@ export function objectExists(exam: Exam, code: string): boolean {
   switch (object.kind) {
     case 'exam':
     case 'print':
+    case 'page':
       return true;
     case 'part':
     case 'group':

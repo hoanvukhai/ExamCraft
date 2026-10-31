@@ -14,12 +14,14 @@ export function outlineView(exam: Exam) {
   const synchronized = viewSyncedOutline(exam);
   const before = new Map<string, StructureBlock[]>();
   const numbers = new Map<string, number>();
+  const breaks = new Set<string>();
   let pending: StructureBlock[] = [];
   for (const entry of outlineEntries(synchronized)) {
     const { node, label } = entry;
     if (entry.question) {
       before.set(entry.question.id, pending);
       numbers.set(entry.question.id, entry.number!);
+      if (node.startOnNewPage) breaks.add(entry.question.id);
       pending = [];
     } else {
       pending.push({
@@ -37,7 +39,7 @@ export function outlineView(exam: Exam) {
       });
     }
   }
-  return { questions: synchronized.questions, before, numbers, trailing: pending };
+  return { questions: synchronized.questions, before, numbers, trailing: pending, breaks };
 }
 export function questionPartLabel(question: Question, index: number, number?: number): string {
   const explicit = question.parts?.[index]?.label;

@@ -112,7 +112,7 @@ test('the document check rejects a bad layout and drops an unknown exam kind', (
   assert.equal(kind.metadata.examKind, undefined);
 });
 
-test('a part set to start on a new page breaks the page in Word, and only parts and groups may carry the flag', async () => {
+test('a part set to start on a new page breaks the page in Word, and parts, groups and questions may carry the flag', async () => {
   const exam = base();
   exam.outline = [
     {
@@ -134,6 +134,8 @@ test('a part set to start on a new page breaks the page in Word, and only parts 
   assert.ok(!/<w:pageBreakBefore\/>/.test(body.slice(body.lastIndexOf('<w:p>', first), first)));
   const bad = structuredClone(exam);
   bad.outline![0].children![0].startOnNewPage = true;
+  assert.doesNotThrow(() => validateOutline(bad.outline!, bad.questions), 'a question may now start a page');
+  (bad.outline![0].children![0] as { startOnNewPage: unknown }).startOnNewPage = 'yes';
   assert.throws(() => validateOutline(bad.outline!, bad.questions));
 });
 

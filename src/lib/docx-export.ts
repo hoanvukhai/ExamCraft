@@ -26,6 +26,8 @@ import { resolvePrintLayout, choiceColumnCount, type ResolvedBlock } from './pri
 import type { VariationTableData } from '@/components/VariationTable';
 import { latexToMath } from './latex-math';
 import { splitFormat } from './rich-text';
+import JSZip from 'jszip';
+import { applyPageSetupToWordXml, resolvePageSetup, WORD_MARGINS } from './page-setup';
 
 /**
  * Xóa bỏ ký hiệu LaTeX thô hoặc làm sạch chuẩn xác để hiển thị trong Word
@@ -147,12 +149,26 @@ export function cleanLatexForWord(text: string): string {
  */
 export function renderContentBlocksForWord(
   text: string,
-  paragraph: { indent?: { left?: number; right?: number }; spacing?: { before?: number; after?: number } },
+  paragraph: {
+    indent?: { left?: number; right?: number };
+    spacing?: { before?: number; after?: number };
+    keepNext?: boolean;
+    keepLines?: boolean;
+    pageBreakBefore?: boolean;
+  },
   options: { fontSize?: number; italics?: boolean },
   lead: TextRun[] = [],
 ): (Paragraph | Table)[] {
   const blocks = splitContentBlocks(text ?? '');
   const out: (Paragraph | Table)[] = [];
+  // A page break belongs to the first paragraph only; the other pieces of the same content follow it.
+  const { pageBreakBefore, ...base } = paragraph;
+  let broke = false;
+  const opening = () => {
+    if (!pageBreakBefore || broke) return {};
+    broke = true;
+    return { pageBreakBefore: true };
+  };
   let leadUsed = false;
   const fontSize = options.fontSize ?? 22;
   for (const block of blocks) {
@@ -160,7 +176,8 @@ export function renderContentBlocksForWord(
       if (!block.text.trim() && (leadUsed || !lead.length)) continue;
       out.push(
         new Paragraph({
-          ...paragraph,
+          ...base,
+          ...opening(),
           children: [...(leadUsed ? [] : lead), ...renderLatexRunsForWord(block.text, options)],
         }),
       );
@@ -168,7 +185,7 @@ export function renderContentBlocksForWord(
       continue;
     }
     if (!leadUsed && lead.length) {
-      out.push(new Paragraph({ ...paragraph, children: lead }));
+      out.push(new Paragraph({ ...base, ...opening(), children: lead }));
       leadUsed = true;
     }
     const cell = (value: string, align: 'left' | 'center' | 'right', bold: boolean) =>
@@ -827,7 +844,11 @@ export async function exportExamToDocx(
     docChildren.push(...prefix);
     const blockStart = docChildren.length;
     docChildren.push(
-      ...renderContentBlocksForWord(q.content, { spacing: { before: 140, after: 80 } }, { fontSize: 22 }, [
+      ...renderContentBlocksForWord(
+        q.content,
+        { spacing: { before: 140, after: 80 }, keepNext: true, keepLines: true, ...(structure.breaks.has(q.id) ? { pageBreakBefore: true } : {}) },
+        { fontSize: 22 },
+        [
         new TextRun({
           text: 'Câu ' + (structure.numbers.get(q.id) ?? index + 1) + ': ',
           bold: true,
@@ -871,10 +892,12 @@ export async function exportExamToDocx(
         }),
       );
     } else if (q.type === 'multiple_choice')
-      q.choices?.forEach((choice) =>
+      q.choices?.forEach((choice, at, all) =>
         docChildren.push(
           new Paragraph({
             indent: { left: 300 },
+            keepNext: at < all.length - 1,
+            keepLines: true,
             children: [
               new TextRun({ text: choice.key + '. ', bold: true, size: 22 }),
               ...renderLatexRunsForWord(choice.text, { fontSize: 22 }),
@@ -1245,12 +1268,7 @@ export async function exportExamToDocx(
       {
         properties: {
           page: {
-            margin: {
-              top: 1000,
-              bottom: 1000,
-              left: 1200,
-              right: 1200,
-            },
+            margin: WORD_MARGINS[resolvePageSetup(exam)?.margins ?? 'normal'],
           },
         },
         ...(printFooter ? { footers: { default: printFooter } } : {}),
@@ -1259,5 +1277,16 @@ export async function exportExamToDocx(
     ],
   });
 
-  return await Packer.toBlob(doc);
+  const blob = await Packer.toBlob(doc);
+  const setup = resolvePageSetup(exam);
+  if (!setup || (setup.fontFamily === 'Times New Roman' && setup.fontSize === 11)) return blob;
+  const zip = await JSZip.loadAsync(await blob.arrayBuffer());
+  for (const name of Object.keys(zip.files)) {
+    if (!/^word\/(document|styles|footer[0-9]*|header[0-9]*)\.xml$/.test(name)) continue;
+    zip.file(name, applyPageSetupToWordXml(await zip.file(name)!.async('string'), setup));
+  }
+  return await zip.generateAsync({
+    type: 'blob',
+    mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  });
 }
