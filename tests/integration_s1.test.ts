@@ -95,7 +95,7 @@ test('S1 real PostgreSQL transactions in an isolated test database', async t => 
     const revisionCount = await prisma.questionRevision.count({ where: { question: { ownerId: owner } } });
     await assert.rejects(prisma.$transaction(async tx => {
       const document = fromDatabaseExam(before);
-      await updateExam(tx, owner, saved.id, { baseVersion: before.version, document: { ...document, metadata: { ...document.metadata, title: 'MUST ROLL BACK' }, questions: [] } });
+      await updateExam(tx, owner, saved.id, { baseVersion: before.version, document: { ...document, metadata: { ...document.metadata, title: 'MUST ROLL BACK' }, outline: undefined, questions: [] } });
       throw new Error('FORCED_FIXTURE_ROLLBACK');
     }), /FORCED_FIXTURE_ROLLBACK/);
     const after = await prisma.exam.findUniqueOrThrow({ where: { id: saved.id }, include: { items: { include: { question: true }, orderBy: { position: 'asc' } } } });

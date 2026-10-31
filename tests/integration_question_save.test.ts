@@ -42,7 +42,7 @@ test('incremental question saves preserve history, clear optional fields, restor
   assert.deepEqual((await rows()).map(q => q.version), initial.map(q => q.version));
   assert.equal(await history(), 40);
   assert.equal(await db.examRevision.count({ where: { examId: id } }), 3);
-  let doc = fromDatabaseExam(saved); doc.questions.reverse(); await save(doc, 'reorder');
+  let doc = fromDatabaseExam(saved); doc.questions.reverse(); doc.outline = undefined; await save(doc, 'reorder');
   assert.equal(await history(), 40); assert.deepEqual(fromDatabaseExam(saved).questions.map(q => q.id), doc.questions.map(q => q.id));
   doc = fromDatabaseExam(saved); doc.questions[0].step_by_step_solution = 'Changed solution'; await save(doc, 'one-edit');
   assert.equal(await history(), 41); assert.equal((await rows()).filter(q => q.version === 2).length, 1);
@@ -62,11 +62,11 @@ test('incremental question saves preserve history, clear optional fields, restor
   await assert.rejects(db.$transaction(tx => updateExam(tx, owner, id, { baseVersion: 1, document: doc })), denied(409));
   assert.deepEqual(await rows(), beforeRows); assert.equal(await history(), beforeCount);
   // Detach and reattach uses the same owned row, keeping its history intact.
-  doc = fromDatabaseExam(saved); const detached = doc.questions.pop()!;
+  doc = fromDatabaseExam(saved); doc.outline = undefined; const detached = doc.questions.pop()!;
   await save(doc,'remove-link'); assert.equal(await history(),beforeCount);
-  doc = fromDatabaseExam(saved); doc.questions.unshift(detached);
+  doc = fromDatabaseExam(saved); doc.outline = undefined; doc.questions.unshift(detached);
   await save(doc,'reattach'); assert.equal(await history(),beforeCount);
-  doc = fromDatabaseExam(saved); doc.questions.push({...detached,id:'new-question',content:'New question'});
+  doc = fromDatabaseExam(saved); doc.outline = undefined; doc.questions.push({...detached,id:'new-question',content:'New question'});
   await save(doc,'insert'); assert.equal(await history(),beforeCount+1); assert.equal((await rows()).length,41);
   doc = fromDatabaseExam(saved); doc.questions[0].points=1.235;
   await save(doc,'fractional-points'); const fractionalCount=await history();
@@ -92,10 +92,10 @@ test('incremental question saves preserve history, clear optional fields, restor
   assert.equal((await db.exam.findUniqueOrThrow({where:{id}})).version,racingVersion);
   assert.equal(await history(),fractionalCount);
   // Historical rows must still be ownership-checked even when no longer linked.
-  doc = fromDatabaseExam(saved); doc.questions = [];
+  doc = fromDatabaseExam(saved); doc.outline = undefined; doc.questions = [];
   await save(doc,'empty'); assert.equal(saved.items.length,0); assert.equal(await history(),fractionalCount);
   await db.question.update({where:{id:initial[0].id},data:{ownerId:other}});
-  const rejectedDoc = {...doc,questions:document.questions};
+  const rejectedDoc = {...doc,outline:undefined,questions:document.questions};
   await assert.rejects(db.$transaction(tx=>updateExam(tx,owner,id,{baseVersion:saved.version,document:rejectedDoc})),denied(403));
   assert.equal((await db.exam.findUniqueOrThrow({where:{id}})).version,saved.version);
   assert.equal(await db.examQuestion.count({where:{examId:id}}),0);
