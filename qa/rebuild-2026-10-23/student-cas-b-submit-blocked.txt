@@ -1,4 +1,0 @@
-Browser tab: 37, Title: "ExamCraft - Trợ Lý Soạn Đề AI Cho Giáo Viên", URL: "http://localhost:3117/a/6a42d7ac936460660c5be82512e3e3d5".
-The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
-~		6 text 28:02
-The focused UI element is 95 button Tải bản câu trả lời đang nhập

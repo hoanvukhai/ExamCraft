@@ -1,5 +1,0 @@
-
-> exam-craft@0.1.0 test:pilot
-> node --import tsx scripts/pilot-run.cjs
-
-BLOCKED: pilot preflight failed (browser, isolated server, or test DB). No fixture writes performed.

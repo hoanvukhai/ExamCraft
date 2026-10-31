@@ -1,9 +1,0 @@
-
-F:\Workspace\Zazz\ExamCraft\src\app\share\[id]\page.tsx
-   12:3   warning  'GraduationCap' is defined but never used                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
-   15:3   warning  'FileText' is defined but never used                                                                                                                                                                                                                                @typescript-eslint/no-unused-vars
-   74:26  warning  Do not use `window.location.href` to navigate to internal Next.js pages. Use `redirect()` in the render phase, or `useRouter().push()` in Client Components' event handlers instead. See: https://nextjs.org/docs/messages/no-location-assign-relative-destination  @next/next/no-location-assign-relative-destination
-  111:11  error    Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages                                                                                                               @next/next/no-html-link-for-pages
-
-✖ 4 problems (1 error, 3 warnings)
-

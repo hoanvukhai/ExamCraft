@@ -1,7 +1,0 @@
-src\app\a\[publicId]\page.tsx:359:    const interval = setInterval(() => {
-src\app\a\[publicId]\page.tsx:381:    const timer = setInterval(() => {
-src\app\admin\ai\page.tsx:70:    const interval = setInterval(fetchAiData, 10000); // Polling mỗi 10 giây
-src\app\teacher\assignments\[id]\page.tsx:207:    const interval = setInterval(() => {
-src\components\useExamPersistence.ts:39:      queueMicrotask(() => { if (!cancelled) setLoadedKey(`${ownerId}/${requestedId ?? 'new'}`); });
-src\components\useExamPersistence.ts:146:      catch { queueMicrotask(() => setMessage('Bộ nhớ bản nháp trên máy đã đầy hoặc bị chặn. Hãy tải bản sao JSON và thử lưu lại.')); }
-src\components\useExamPersistence.ts:188:    const interval = setInterval(() => void refresh(), 8000);

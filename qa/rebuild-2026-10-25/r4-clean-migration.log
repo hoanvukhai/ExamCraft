@@ -1,109 +1,0 @@
-
-=== Source revision ===
-33b4b1dc2a771acbb10cd9f637e990a691d16f86
-
-exit 0
-
-=== Clone local repository (no hardlinks) ===
-Cloning into 'C:\Users\ACER\AppData\Local\Temp\examcraft-clean-migration-ae82c2d3c8'...
-done.
-Updating files:  72% (1015/1395)Updating files:  73% (1019/1395)Updating files:  74% (1033/1395)Updating files:  75% (1047/1395)Updating files:  76% (1061/1395)Updating files:  77% (1075/1395)Updating files:  78% (1089/1395)Updating files:  79% (1103/1395)Updating files:  80% (1116/1395)Updating files:  81% (1130/1395)Updating files:  82% (1144/1395)Updating files:  83% (1158/1395)Updating files:  84% (1172/1395)Updating files:  85% (1186/1395)Updating files:  86% (1200/1395)Updating files:  87% (1214/1395)Updating files:  88% (1228/1395)Updating files:  89% (1242/1395)Updating files:  90% (1256/1395)Updating files:  91% (1270/1395)Updating files:  92% (1284/1395)Updating files:  93% (1298/1395)Updating files:  94% (1312/1395)Updating files:  95% (1326/1395)Updating files:  96% (1340/1395)Updating files:  97% (1354/1395)Updating files:  98% (1368/1395)Updating files:  99% (1382/1395)Updating files: 100% (1395/1395)Updating files: 100% (1395/1395), done.
-
-exit 0
-
-=== npm ci in clean checkout ===
-
-> exam-craft@0.1.0 postinstall
-> prisma generate
-
-Prisma schema loaded from prisma\schema.prisma
-
-✔ Generated Prisma Client (v6.19.3) to .\node_modules\@prisma\client in 256ms
-
-Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
-
-Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate
-
-
-added 482 packages in 2m
-npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
-npm warn deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
-warn The configuration property `package.json#prisma` is deprecated and will be removed in Prisma 7. Please migrate to a Prisma config file (e.g., `prisma.config.ts`).
-For more information, see: https://pris.ly/prisma-config
-
-
-exit 0
-
-=== Migration deploy pass 1 ===
-Prisma schema loaded from prisma\schema.prisma
-Datasource "db": PostgreSQL database "examcraft_migrate_clean_20261025_ae82c2d3c8", schema "public" at "127.0.0.1:5436"
-
-4 migrations found in prisma/migrations
-
-Applying migration `20261017173205_init_v3_schema`
-Applying migration `20261022000050_preserve_existing_workspace`
-Applying migration `20261022000100_exam_collaboration`
-Applying migration `20261022000150_user_model_preference`
-
-The following migration(s) have been applied:
-
-migrations/
-  └─ 20261017173205_init_v3_schema/
-    └─ migration.sql
-  └─ 20261022000050_preserve_existing_workspace/
-    └─ migration.sql
-  └─ 20261022000100_exam_collaboration/
-    └─ migration.sql
-  └─ 20261022000150_user_model_preference/
-    └─ migration.sql
-      
-All migrations have been successfully applied.
-warn The configuration property `package.json#prisma` is deprecated and will be removed in Prisma 7. Please migrate to a Prisma config file (e.g., `prisma.config.ts`).
-For more information, see: https://pris.ly/prisma-config
-
-
-exit 0
-
-=== Migration status pass 1 ===
-Prisma schema loaded from prisma\schema.prisma
-Datasource "db": PostgreSQL database "examcraft_migrate_clean_20261025_ae82c2d3c8", schema "public" at "127.0.0.1:5436"
-
-4 migrations found in prisma/migrations
-
-Database schema is up to date!
-warn The configuration property `package.json#prisma` is deprecated and will be removed in Prisma 7. Please migrate to a Prisma config file (e.g., `prisma.config.ts`).
-For more information, see: https://pris.ly/prisma-config
-
-
-exit 0
-
-=== Migration deploy pass 2 ===
-Prisma schema loaded from prisma\schema.prisma
-Datasource "db": PostgreSQL database "examcraft_migrate_clean_20261025_ae82c2d3c8", schema "public" at "127.0.0.1:5436"
-
-4 migrations found in prisma/migrations
-
-
-No pending migrations to apply.
-warn The configuration property `package.json#prisma` is deprecated and will be removed in Prisma 7. Please migrate to a Prisma config file (e.g., `prisma.config.ts`).
-For more information, see: https://pris.ly/prisma-config
-
-
-exit 0
-
-=== Migration status pass 2 ===
-Prisma schema loaded from prisma\schema.prisma
-Datasource "db": PostgreSQL database "examcraft_migrate_clean_20261025_ae82c2d3c8", schema "public" at "127.0.0.1:5436"
-
-4 migrations found in prisma/migrations
-
-Database schema is up to date!
-warn The configuration property `package.json#prisma` is deprecated and will be removed in Prisma 7. Please migrate to a Prisma config file (e.g., `prisma.config.ts`).
-For more information, see: https://pris.ly/prisma-config
-
-
-exit 0
-
-=== Clean checkout status ===
-
-exit 0

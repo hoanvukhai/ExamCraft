@@ -1,3 +1,0 @@
-Browser tab: 34, Title: "ExamCraft - Trợ Lý Soạn Đề AI Cho Giáo Viên", URL: "http://localhost:3117/a/446b557862363956ea976cc0becca19f".
-There has been no change in the accessibility tree.
-The focused UI element is 1 AXWebArea ExamCraft - Trợ Lý Soạn Đề AI Cho Giáo Viên, URL: localhost:3117/a/446b557862363956ea976cc0becca19f

@@ -1,7 +1,0 @@
-lich_su 200 match 1/1
-dia_ly 200 match 2/2
-sinh_hoc 200 match 1/1
-gdkt_pl 200 match 1/1
-giao_duc_quoc_phong_an_ninh 200 match 0/1
-stopped: every key reports its quota is used up
-done: 14 provider calls, 4 refusals; report written

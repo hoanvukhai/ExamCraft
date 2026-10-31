@@ -1,6 +1,0 @@
-Starting isolated ExamCraft test server (production build) at http://127.0.0.1:3117; only examcraft_test_20261022 is used.
-▲ Next.js 16.4.2
-- Local:         http://127.0.0.1:3117
-- Network:       http://127.0.0.1:3117
-✓ Ready in 279ms
-✓ Running next.config.ts took 57ms

@@ -1,9 +1,10 @@
 # Trạng thái để tiếp nối
 
-Cập nhật **26/10/2026**. Viết đè mỗi đợt; bản cũ giữ trong Git. Số test/log chỉ ở báo cáo nhóm được liên kết. Đọc yêu cầu hiện tại trước khi chọn việc; tệp này không tự cho phép việc ngoài phạm vi.
+Cập nhật **31/10/2026**. Viết đè mỗi đợt; bản cũ giữ trong Git. Số test/log chỉ ở báo cáo nhóm được liên kết. Đọc yêu cầu hiện tại trước khi chọn việc; tệp này không tự cho phép việc ngoài phạm vi.
 
 ## 1. Mốc hiện tại
 
+- **Đợt 31/10 (nhánh `claude/editor-v2`, chưa gộp vào `main`/`rebuild`):** trang soạn V2 — chọn đối tượng ngay trên tờ đề, chia trang A4 thật, dải/lưới trang, sao chép/dán câu, trình chiếu mới, cài đặt trang in (phông/cỡ/lề), cùng soạn không realtime (bảng `ExamPresence`, ghép sửa khác chỗ, chọn bản khi cùng chỗ, khóa mềm), điện thoại; chat tổng có hướng dẫn dùng trang + tra cứu dữ liệu không cần khóa AI, tab Hướng dẫn trong trang soạn. Bằng chứng: `qa/rebuild-2026-10-31/` (editor-v2-1, editor-v2-2-6, assistant-guide). Chưa áp migration `20261031000100_exam_presence` lên DB chính. Chưa deploy.
 - **Tiến độ CV: 70/78 đạt đủ tiêu chí; 3 ngoại lệ chấp nhận có phạm vi (CV017, 065, 066), không tính đạt** (thêm CV014, 015, 028, 077, CV025, 033, 039, 041, 053 ngày 25-26/10). Mức "đạt trong phạm vi pilot" vẫn tính riêng, không cộng. Mỗi lần đóng có dòng "Nghiệm thu" nêu test và giới hạn; nhật ký ở [CV_CLOSURE_REVIEW](../../qa/rebuild-2026-10-25/CV_CLOSURE_REVIEW.md).
 - **Phân công:** Claude chỉ đạo và duyệt (giữ checklist, hồ sơ 02, ASSIGNMENTS.json, BATCH_REVIEWS.json); Codex làm mã/build/DB thử/trình duyệt, không tự tick; Gemini chỉ đọc mã và viết tài liệu, **phải kiểm lại bằng cách tự mở mã** (gen 15 có 5/8 tệp bị từ chối dù công cụ kiểm đều đạt). Gemini đã nộp báo cáo test 26/10 (nghiệm thu một phần, mục 3).
 - **Đợt 26/10:** Codex gen 15: lint sạch và vào CI, F19 kho đề (sửa hai lỗi thật), migration từ checkout sạch, gom log thô vào `chay-tho/`, kiểm nguồn nhập (sửa lộ khóa số). Claude chạy lại kiểm nhanh: kiểu, lint, SAFE đạt. Bảng môn–lớp nay sinh bằng máy (`scripts/catalog-table.cjs`) có test chống mất môn.
@@ -28,8 +29,8 @@ Cập nhật **26/10/2026**. Viết đè mỗi đợt; bản cũ giữ trong Git
 
 ## 4. Môi trường
 
-- Repo `F:/Workspace/Zazz/ExamCraft`; nhánh `rebuild/2026-10-local`. `b44c0ec` đã tích hợp trước đợt này; gói Gemini đã commit `d1d2f62`. Giữ worktree/tmp/backups cũ, không xóa tự động. `main` vẫn mốc cũ, chưa push/merge.
-- Main: `examcraft_postgres`/5436/`examcraft`; test chính xác `examcraft_test_20261022`. Restore: `examcraft_restore_20261022`, `examcraft_restore_ps51_20261024`; cài mới: `examcraft_migrate_fresh_20261022`. Không đụng `study_work_postgres`/5435.
+- Repo `F:/Workspace/Zazz/ExamCraft`; nhánh `rebuild/2026-10-local` (nền) và `claude/editor-v2` (worktree `tmp/canva-a`, đã đẩy lên origin). Worktree phụ cũ đã gỡ ngày 31/10; còn worktree của Codex ở `C:/Users/ACER/.codex/worktrees/editor-structure`. **Không dùng `git worktree remove` khi `node_modules` là junction trỏ về repo chính** (đã làm hỏng `node_modules` một lần, phải `npm rebuild` + `prisma generate`). `main` vẫn mốc cũ, chưa push/merge.
+- Main: `examcraft_postgres`/5436/`examcraft`; test chính xác `examcraft_test_20261022` (đã làm trống ngày 31/10; test tự tạo dữ liệu giả và dọn). Các DB phục hồi/cài mới cũ (`examcraft_restore_*`, `examcraft_migrate_*`) và container `examcraft_postgres_qa` đã xóa ngày 31/10. Không đụng `study_work_postgres`/5435.
 - Chỉ test ghi sau khi guard kiểm DB thử; HTTP/browser cần health `isolatedTest=true`. QA3117 đã dừng; kiểm cổng/trạng thái mới, không tin session ID cũ. Chrome/Edge cài sẵn, không tải browser.
 - Máy ít RAM: một build một lúc, `NEXT_BUILD_CPUS=1`, heap1024; build/lint/SAFE/browser chạy tuần tự. PowerShell5.1 có sẵn; không mặc định có pwsh.
 - `.env`, key/cookie/backup không đưa vào Git/báo cáo. Test dùng dữ liệu giả theo ID và dọn riêng. Không ghi DB chính để làm test pass.

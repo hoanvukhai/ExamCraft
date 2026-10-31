@@ -1,8 +1,0 @@
-Backup package incomplete; source and partial artifacts retained. Secret diagnostics withheld.
-Backup package did not complete. No success is claimed.
-At F:\Workspace\Zazz\ExamCraft\scripts\backup.ps1:10 char:32
-+ ... DE -ne 0) { throw 'Backup package did not complete. No success is cla ...
-+                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    + CategoryInfo          : OperationStopped: (Backup package ...ess is claimed.:String) [], RuntimeException
-    + FullyQualifiedErrorId : Backup package did not complete. No success is claimed.
- 

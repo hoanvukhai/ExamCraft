@@ -1,6 +1,0 @@
-
-> exam-craft@0.1.0 test:editor
-> node --import tsx scripts/pilot-run.cjs --editor
-
-Pilot guard: installed browser; isolatedTest confirmed; exact test database selected.
-TAP version 13

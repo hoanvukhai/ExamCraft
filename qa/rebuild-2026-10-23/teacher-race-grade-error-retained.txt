@@ -1,4 +1,0 @@
-Browser tab: 38, Title: "QA bài làm và phản hồi muộn", URL: "http://127.0.0.1:3123/".
-The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
-~			17 button Cập nhật lúc 10:56:56, Help: Tự động cập nhật bài nộp mỗi 4 giây
-The focused UI element is 116 button Đóng
