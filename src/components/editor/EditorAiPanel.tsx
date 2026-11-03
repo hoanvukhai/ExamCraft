@@ -12,6 +12,7 @@ export function EditorAiPanel({
   onTab,
   target,
   hasKey,
+  keyState,
   onKeys,
   chat,
   generate,
@@ -23,6 +24,7 @@ export function EditorAiPanel({
   /** "Câu 3", "3 câu", "Toàn đề". */
   target: string;
   hasKey: boolean;
+  keyState?: 'loading' | 'unknown' | 'missing' | 'present';
   onKeys: () => void;
   chat: ReactNode;
   generate: ReactNode;
@@ -44,7 +46,7 @@ export function EditorAiPanel({
         <p className="text-xs text-[var(--ui-text-secondary)]">
           Đang nói về: <b className="text-[var(--ui-text-primary)]">{target}</b>
         </p>
-        {!hasKey && (
+        {!hasKey && (!keyState || keyState === 'missing') && (
           <p role="status" className="rounded-lg bg-[var(--ui-surface-variant)] p-2 text-xs">
             Cần khóa AI cá nhân để dùng AI. Bạn vẫn soạn và xuất đề thủ công được.{' '}
             <button type="button" className="underline" onClick={onKeys}>

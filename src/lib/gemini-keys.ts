@@ -100,6 +100,7 @@ export async function executeWithKeyRotation<T>(customKey: string | undefined, o
     }
     catch (error) {
       if (context.signal?.aborted) { await finish(499, key.alias); throw cancelled(); }
+      if (error instanceof ApiError) { await finish(error.status, key.alias); throw error; }
       const failure = classifyProviderFailure(error);
       if (key.id) {
         try { await prisma.userApiKey.updateMany({ where: { id: key.id, userId: context.userId }, data: { errorCount: { increment: 1 }, ...(failure.disableKey ? { isActive: false } : {}) } }); }

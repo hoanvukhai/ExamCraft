@@ -23,6 +23,8 @@ interface Workspace {
   keyErrorCount: number;
   usedToday: number;
   hasActiveKey: boolean;
+  keyState: 'loading' | 'unknown' | 'missing' | 'present';
+  reloadKeys: () => Promise<void>;
   openKeys: () => void;
   assistantOpen: boolean;
   toggleAssistant: () => void;
@@ -57,6 +59,7 @@ export function WorkspaceProvider({ user, children }: { user: WorkspaceUser; chi
   const [foldersReady, setFoldersReady] = useState(false), [foldersError, setFoldersError] = useState('');
   const folderSequence = useRef(0);
   const [keyStats, setKeyStats] = useState({ keyCount: 0, keyErrorCount: 0, usedToday: 0 });
+  const [keyState, setKeyState] = useState<'loading' | 'unknown' | 'missing' | 'present'>('loading');
   const [keysOpen, setKeysOpen] = useState(false), [notesOpen, setNotesOpen] = useState(false), [assistantOpen, setAssistantOpen] = useState(false);
   const [folderDialog, setFolderDialog] = useState<{ parentId: string | null } | null>(null);
   const [folderName, setFolderName] = useState(''), [folderColor, setFolderColor] = useState('#3c4043');
@@ -91,11 +94,13 @@ export function WorkspaceProvider({ user, children }: { user: WorkspaceUser; chi
   }, []);
 
   const reloadKeys = useCallback(() => accountFetch(user.id, '/api/user/keys').then(async response => {
+    if (!response.ok) { setKeyState('unknown'); return; }
     if (response.ok) {
       const data = await response.json(), keys: { isActive: boolean; errorCount: number }[] = data.keys || [];
+      setKeyState(keys.some(key => key.isActive) ? 'present' : 'missing');
       setKeyStats({ keyCount: keys.filter(key => key.isActive).length, keyErrorCount: keys.filter(key => key.errorCount > 0).length, usedToday: data.poolQuota?.usedToday ?? 0 });
     }
-  }).catch(() => { /* Keep the last acknowledged state if offline. */ }), [user.id]);
+  }).catch(() => { setKeyState('unknown'); }), [user.id]);
   const reloadFolders = useCallback(() => {
     const sequence = ++folderSequence.current;
     return accountFetch(user.id, '/api/folders').then(async response => {
@@ -138,10 +143,10 @@ export function WorkspaceProvider({ user, children }: { user: WorkspaceUser; chi
   }, [confirmAction, params, pathname, reloadFolders, router, toast, user.id]);
 
   const value = useMemo<Workspace>(() => ({
-    user, folders, foldersReady, foldersError, reloadFolders, openCreateFolder, deleteFolder, updateFolder, ...keyStats, hasActiveKey: keyStats.keyCount > 0, openKeys: () => setKeysOpen(true),
+    user, folders, foldersReady, foldersError, reloadFolders, openCreateFolder, deleteFolder, updateFolder, ...keyStats, hasActiveKey: keyStats.keyCount > 0, keyState, reloadKeys, openKeys: () => setKeysOpen(true),
     assistantOpen, toggleAssistant, closeAssistant, openAiNotes: () => setNotesOpen(true),
     menuExpanded, setMenuExpanded, settingsOpen, setSettingsOpen, copilotOpen, setCopilotOpen, toast, confirmAction,
-  }), [user, folders, foldersReady, foldersError, reloadFolders, openCreateFolder, deleteFolder, updateFolder, keyStats, assistantOpen, menuExpanded, setMenuExpanded, settingsOpen, setSettingsOpen, copilotOpen, setCopilotOpen, toggleAssistant, closeAssistant, toast, confirmAction]);
+  }), [user, folders, foldersReady, foldersError, reloadFolders, openCreateFolder, deleteFolder, updateFolder, keyStats, keyState, reloadKeys, assistantOpen, menuExpanded, setMenuExpanded, settingsOpen, setSettingsOpen, copilotOpen, setCopilotOpen, toggleAssistant, closeAssistant, toast, confirmAction]);
 
   return <WorkspaceContext.Provider value={value}>
     {children}

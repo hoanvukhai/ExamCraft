@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useSidePanel } from '@/hooks/useSidePanel';
+import { useChatSession } from '@/hooks/useChatSession';
 import { Exam } from '@/types/exam';
 import { CopilotProposalReview } from './CopilotProposalReview';
 import { captureCopilotBase, type CopilotSubmission } from '@/lib/copilot-submission';
@@ -33,6 +34,9 @@ interface RightCompanionRailProps {
   onSubmitCopilot: (submission: CopilotSubmission) => void;
   selectedQuestionIds: string[];
   externalCommand?: string;
+  keyState?: 'loading' | 'unknown' | 'missing' | 'present';
+  onKeys?: () => void;
+  onReloadKeys?: () => Promise<void>;
   onGenerate?: () => void;
   onUseTemplate?: () => void;
   onImportDocument?: () => void;
@@ -46,14 +50,27 @@ export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
   onSubmitCopilot,
   selectedQuestionIds,
   externalCommand,
+  keyState, onKeys, onReloadKeys,
   onGenerate,
   onUseTemplate,
   onImportDocument,
 }) => {
+  const {session, setSession, notice: chatNotice} = useChatSession(ownerId, exam.id);
+  const [restoredComposer, setRestoredComposer] = useState(false);
+  const controller = useRef<AbortController | null>(null);
+  const requestSequence = useRef(0);
+  const [errorCode, setErrorCode] = useState('');
+  const [freeAnswer, setFreeAnswer] = useState('');
+  const [touchKeyboard, setTouchKeyboard] = useState(false);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { setTouchKeyboard(matchMedia('(pointer: coarse)').matches); }, []);
+  useEffect(() => () => { requestSequence.current++; controller.current?.abort(); }, []);
   const { panelRef, modal } = useSidePanel(isExpanded, onClose);
   const [composer, setComposer] = useState({ text: externalCommand ?? '', revision: 0 });
   const command = composer.text;
   const setCommand = (text: string) => setComposer(previous => ({ text, revision: previous.revision + 1 }));
+
+  useEffect(() => { if (restoredComposer) setSession(previous => previous && previous.draft !== command ? {...previous, draft:command} : previous); }, [command, restoredComposer, setSession]);
   const [receivedCommand, setReceivedCommand] = useState(externalCommand);
   if (externalCommand !== receivedCommand) { setReceivedCommand(externalCommand); if (externalCommand) setCommand(externalCommand); }
   const proposalJournal = useAiProposal(ownerId, exam.id, 'copilot');
@@ -65,9 +82,12 @@ export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
   const [clarification, setClarification] = useState<{
     message: string;
     quickOptions: string[];
+    questionId: string;
   } | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  if (session && !restoredComposer) { setRestoredComposer(true); setCommand(session.draft); setClarification(session.clarification ?? null); }
+  const [retryText, setRetryText] = useState<string | null>(null);
 
   // Tìm câu hỏi đang được chọn
   const activeQuestionIndex = selectedQuestionIds.length === 1 
@@ -90,7 +110,18 @@ export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
     if (!textToSend.trim()) return;
     if (proposal || inFlight.current) return;
 
+    if (!session) return;
+    setRetryText(textToSend);
+    if (keyState === 'loading') { setErrorCode('KEY_LOADING'); setErrorMessage('Đang tải danh sách khóa. Yêu cầu đang gõ vẫn được giữ.'); return; }
+    if (keyState === 'missing') { setErrorCode('NO_API_KEY'); setErrorMessage('Chưa có khóa AI đang bật. Thêm hoặc bật khóa rồi bấm Tiếp tục yêu cầu này.'); return; }
+    if (session.turns.length >= 40) { setErrorCode('CHAT_LIMIT'); setErrorMessage('Hội thoại đã dài. Hãy tải lại nội dung để dự phòng và mở một yêu cầu mới; chưa gọi AI.'); return; }
     const submittedRevision = composer.revision;
+    const requestId = crypto.randomUUID();
+    const sequence = ++requestSequence.current;
+    const abort = new AbortController(); controller.current = abort;
+    const timeout = setTimeout(() => abort.abort(), 240000);
+    const sentTurns = [...session.turns, {id:requestId,role:'user' as const,text:textToSend}];
+    setSession(previous => previous ? {...previous,turns:sentTurns,pending:true,clarification:null} : previous);
     const base = captureCopilotBase(ownerId, exam);
     inFlight.current = true;
     setIsLoading(true);
@@ -102,28 +133,39 @@ export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
     try {
       const res = await accountFetch(ownerId, '/api/exam-copilot', {
         method: 'POST',
+        signal: abort.signal,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          recentTurns: session.turns,
+          conversationId: session.conversationId, requestId,
+          ...(clarification ? {replyTo:clarification.questionId} : {}),
           exam,
           command: textToSend,
           targetQuestionId: selectedQuestionIds.length === 1 ? selectedQuestionIds[0] : undefined,
         }),
       });
 
-      const data = await res.json();
+      if (sequence !== requestSequence.current || abort.signal.aborted) return;
+      const data = await res.json().catch(() => ({success:false, code:'GATEWAY_ERROR', error:'Chưa đọc được phản hồi máy chủ. Yêu cầu vẫn được giữ; hãy thử lại sau.'}));
+      if (sequence !== requestSequence.current || abort.signal.aborted) return;
       if (!data.success || !data.result) {
+        setErrorCode(data.code || 'AI_ERROR');
         setErrorMessage(data.error || 'AI chưa xử lý được yêu cầu này. Thầy/Cô vui lòng thử lại.');
         return;
       }
 
       const result = data.result;
+      setSession(previous => previous ? {...previous, turns:[...previous.turns, {id:crypto.randomUUID(),role:'assistant',text:result.message || result.explanation || 'Có đề xuất để bạn xem và nhận.'}]} : previous);
 
       // Trường hợp 1: AI cần làm rõ thêm thông tin
       if (result.type === 'clarification') {
-        setClarification({
+        const question = {
+          questionId: requestId,
           message: result.message || 'AI cần thêm thông tin để làm chính xác yêu cầu của Thầy/Cô:',
           quickOptions: result.quickOptions || [],
-        });
+        };
+        setClarification(question);
+        setSession(previous => previous ? {...previous,clarification:question} : previous);
         return;
       }
 
@@ -137,16 +179,22 @@ export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
           : current);
       }
     } catch (err: unknown) {
-      console.error('Lỗi gọi Copilot:', err);
-      setErrorMessage('Không thể kết nối đến máy chủ AI. Vui lòng kiểm tra lại mạng hoặc API Key.');
+      if (sequence !== requestSequence.current) return;
+      setErrorCode(abort.signal.aborted ? 'TIMEOUT' : 'NETWORK_ERROR');
+      setErrorMessage(abort.signal.aborted ? 'Chưa nhận được kết quả trong thời gian chờ. Yêu cầu còn trong lịch sử; chưa tự gọi lại.' : 'Chưa kết nối được máy chủ. Yêu cầu vẫn được giữ; hãy thử lại sau.');
+      void err;
     } finally {
-      inFlight.current = false;
-      setIsLoading(false);
+      clearTimeout(timeout);
+      if (sequence === requestSequence.current) {
+        setSession(previous => previous ? {...previous,pending:false} : previous);
+        inFlight.current = false;
+        setIsLoading(false);
+      }
     }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey && !isLoading) {
+    if (e.key === 'Enter' && !e.shiftKey && !isLoading && !touchKeyboard && !e.nativeEvent.isComposing) {
       e.preventDefault();
       handleSendCommand();
     }
@@ -155,7 +203,7 @@ export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
   return (
     <aside ref={panelRef} role={modal && isExpanded ? 'dialog' : undefined} aria-modal={modal && isExpanded || undefined}
       aria-label="Trợ lý và công cụ nhanh"
-      className={`no-print select-none flex-col justify-between bg-[var(--ui-surface)] h-full w-full overflow-hidden ${
+      className={`no-print select-text flex-col justify-between bg-[var(--ui-surface)] h-full w-full overflow-hidden ${
         isExpanded ? 'flex' : 'hidden'
       }`}
     >
@@ -166,8 +214,11 @@ export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
         <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
           {/* Vùng nội dung cuộn bên trong Panel */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            {chatNotice && <p role="status" className="text-xs">{chatNotice}</p>}
+            {session && session.turns.length > 0 && <div aria-label="Lịch sử trò chuyện" className="space-y-3 text-sm">{session.turns.map(turn => <div key={turn.id} className="whitespace-pre-wrap break-words rounded-xl border p-3"><b>{turn.role === 'user' ? 'Bạn' : 'AI'}</b><p>{turn.text}</p></div>)}</div>}
+            {session && <button type="button" className="text-xs underline" onClick={() => { const url=URL.createObjectURL(new Blob([JSON.stringify(session,null,2)],{type:'application/json'})); const anchor=document.createElement('a');anchor.href=url;anchor.download='examcraft-hoi-thoai.json';anchor.click();setTimeout(()=>URL.revokeObjectURL(url),1000); }}>Tải hội thoại</button>}
             {/* Gợi ý một chạm (Quick Action Chips Google Pill style) */}
-            {!hasStartedChat && !proposal && <div className="space-y-1.5">
+            {!hasStartedChat && !session?.turns.length && !proposal && <div className="space-y-1.5">
               <span className="text-[10px] font-bold uppercase tracking-wider text-[#5f6368] dark:text-[#9aa0a6] flex items-center gap-1">
                 <Compass className="w-3 h-3" />
                 Gợi ý lệnh nhanh:
@@ -260,6 +311,10 @@ export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
                   </p>
                 </div>
 
+                <form onSubmit={event => {event.preventDefault(); if(freeAnswer.trim()) {void handleSendCommand(freeAnswer);setFreeAnswer('');}}} className="flex flex-col gap-2">
+                  <label>Tự nhập câu trả lời<input aria-label="Tự nhập câu trả lời" value={freeAnswer} onChange={event=>setFreeAnswer(event.target.value)} className="w-full rounded-lg border p-2 bg-[var(--ui-surface)]" maxLength={12000} /></label>
+                  <button type="submit" disabled={isLoading || !!proposal || !freeAnswer.trim()} className="app-button-secondary min-h-11">Gửi câu trả lời</button>
+                </form>
                 {clarification.quickOptions.length > 0 && (
                   <div className="flex flex-col gap-1.5 pt-1">
                     {clarification.quickOptions.map((opt, i) => (
@@ -290,7 +345,11 @@ export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
             {errorMessage && (
               <div className="p-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-xl text-xs text-rose-900 dark:text-rose-200 flex items-start gap-2">
                 <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
-                <span>{errorMessage}</span>
+                <div role="alert" className="space-y-2"><p>{errorMessage}</p>
+                  {['NO_API_KEY','INVALID_KEY','EXPIRED_KEY','REVOKED_KEY','KEY_DISABLED'].includes(errorCode) && <button type="button" className="underline min-h-11" onClick={onKeys}>Quản lý khóa AI</button>}
+                  {errorCode === 'KEY_LOADING' && <button type="button" className="underline min-h-11" onClick={()=>void onReloadKeys?.()}>Tải lại danh sách khóa</button>}
+                  {!['CHAT_LIMIT','KEY_LOADING'].includes(errorCode) && <button type="button" disabled={isLoading || !!proposal} className="underline min-h-11" onClick={()=>void handleSendCommand(retryText ?? undefined)}>Tiếp tục yêu cầu này</button>}
+                </div>
               </div>
             )}
           </div>
@@ -312,9 +371,10 @@ export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
 
             <div className="flex items-center justify-between gap-2">
               <span className="text-[10px] text-[#5f6368] dark:text-[#9aa0a6]">
-                Nhấn <kbd className="px-1.5 py-0.5 rounded bg-[#f1f3f4] dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] font-mono">Enter ↵</kbd> để gửi
+                {touchKeyboard ? 'Enter xuống dòng · Dùng nút để gửi' : <>Nhấn <kbd className="px-1.5 py-0.5 rounded bg-[#f1f3f4] dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] font-mono">Enter ↵</kbd> để gửi</>}
               </span>
 
+              {isLoading && <button type="button" className="app-button-secondary min-h-11 px-3" onClick={() => {requestSequence.current++;controller.current?.abort();inFlight.current=false;setIsLoading(false);setSession(previous=>previous ? {...previous,pending:false}:previous);setErrorCode('AI_CANCELLED');setErrorMessage('Đã dừng chờ kết quả. Nội dung đã gửi và chữ đang gõ vẫn được giữ.');}}>Dừng</button>}
               <button
                 onClick={() => handleSendCommand()}
                   disabled={isLoading || !!proposal || !command.trim()}

@@ -79,7 +79,7 @@ test('legacy zero daily cap does not block an authenticated operation or read a 
   } finally { prisma.$transaction = transaction; prisma.aiUsageLog.update = update; }
 });
 
-test('saved-key retry stays within the owner and preserves the requested model', async () => {
+test('invalid saved-key retry stays within the owner and preserves the requested model', async () => {
   const transaction = prisma.$transaction, findKeys = prisma.userApiKey.findMany, updateKey = prisma.userApiKey.updateMany, updateLog = prisma.aiUsageLog.update;
   const previousSecret = process.env.SESSION_SECRET;
   process.env.SESSION_SECRET = 'fixture-encryption-secret-retry-only';
@@ -91,7 +91,7 @@ test('saved-key retry stays within the owner and preserves the requested model',
   prisma.userApiKey.updateMany = (async (query: { where: { userId: string }; data: unknown }) => { assert.equal(query.where.userId, 'owner-only'); return { count: 1 }; }) as unknown as typeof prisma.userApiKey.updateMany;
   prisma.aiUsageLog.update = (async (query: { data: unknown }) => { logged.push(query.data); return {}; }) as unknown as typeof prisma.aiUsageLog.update;
   try {
-    assert.equal(await executeWithKeyRotation(undefined, async (key, model) => { calls++; assert.equal(model, 'gemini-selected-model'); if (key.endsWith('one')) throw Object.assign(new Error('fixture quota'), { status: 429 }); return 'result-two'; }, { userId: 'owner-only' }), 'result-two');
+    assert.equal(await executeWithKeyRotation(undefined, async (key, model) => { calls++; assert.equal(model, 'gemini-selected-model'); if (key.endsWith('one')) throw Object.assign(new Error('API_KEY_INVALID fixture'), { status: 400 }); return 'result-two'; }, { userId: 'owner-only' }), 'result-two');
     assert.equal(calls, 2);
     assert.deepEqual((logged[0] as { keyAlias: string }).keyAlias, 'user_key:two');
   } finally {

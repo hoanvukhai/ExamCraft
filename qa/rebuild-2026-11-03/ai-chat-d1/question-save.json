@@ -1,0 +1,73 @@
+{
+  "status": "PASS",
+  "database": "examcraft_test_20261022",
+  "measurements": [
+    {
+      "label": "unchanged-0",
+      "queries": 15,
+      "durationMs": 84
+    },
+    {
+      "label": "unchanged-1",
+      "queries": 15,
+      "durationMs": 70
+    },
+    {
+      "label": "reorder",
+      "queries": 15,
+      "durationMs": 65
+    },
+    {
+      "label": "one-edit",
+      "queries": 17,
+      "durationMs": 88
+    },
+    {
+      "label": "clear",
+      "queries": 17,
+      "durationMs": 93
+    },
+    {
+      "label": "after-clear",
+      "queries": 15,
+      "durationMs": 66
+    },
+    {
+      "label": "restore-deleted",
+      "queries": 17,
+      "durationMs": 66
+    },
+    {
+      "label": "remove-link",
+      "queries": 15,
+      "durationMs": 66
+    },
+    {
+      "label": "reattach",
+      "queries": 15,
+      "durationMs": 63
+    },
+    {
+      "label": "insert",
+      "queries": 17,
+      "durationMs": 67
+    },
+    {
+      "label": "fractional-points",
+      "queries": 17,
+      "durationMs": 67
+    },
+    {
+      "label": "after-fractional-points",
+      "queries": 15,
+      "durationMs": 62
+    },
+    {
+      "label": "empty",
+      "queries": 12,
+      "durationMs": 30
+    }
+  ],
+  "historyPreserved": true,
+  "limitations": "Local service/DB measurements; no WAN latency, no previous-code timing benchmark."
+}

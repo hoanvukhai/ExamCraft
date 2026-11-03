@@ -295,7 +295,7 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   const [presentationOpen, setPresentationOpen] = useState(false);
   const [manualDraftMessage, setManualDraftMessage] = useState('');
   const [submissionCount, setSubmissionCount] = useState<number>(0);
-  const { hasActiveKey, openKeys } = useWorkspace();
+  const { hasActiveKey, openKeys, keyState, reloadKeys } = useWorkspace();
   const { copilotOpen: isCopilotOpen, setCopilotOpen: setIsCopilotOpen } = useWorkspace();
   const [reviewOpen, setReviewOpen] = useState(false);
   const [pendingReviewAction, setPendingReviewAction] = useState<(() => void) | null>(null);
@@ -1972,7 +1972,8 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                   onTab={setAiTab}
                   target={aiTarget}
                   hasKey={hasActiveKey}
-                  onKeys={openKeys}
+                  keyState={keyState}
+                  onKeys={() => { setIsCopilotOpen(false); openKeys(); }}
                   chat={
                     <RightCompanionRail
                       key={`${currentUser.id}:${exam.id}`}
@@ -1987,6 +1988,9 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                         pickedQuestionIds.length ? pickedQuestionIds : aiQuestion ? [aiQuestion.id] : []
                       }
                       externalCommand={copilotCommand}
+                      keyState={keyState}
+                      onKeys={() => { setIsCopilotOpen(false); openKeys(); }}
+                      onReloadKeys={reloadKeys}
                       onGenerate={() => openSource('generate')}
                       onUseTemplate={() => { setIsCopilotOpen(false); showTab('template'); setPhonePanel(true); }}
                       onImportDocument={() => { setIsCopilotOpen(false); openSource('import'); setPhonePanel(true); }}
