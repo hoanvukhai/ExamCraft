@@ -1,13 +1,13 @@
-# CODEX — chat AI V2
+# CODEX — xử lý rà soát bàn giao chat AI V2
 
-- task_id: CHAT-AI-V2-COMPLETION
+- task_id: CHAT-AI-V2-REVIEW-FIX
 - state: WAITING_REVIEW
-- worktree: F:/Workspace/Zazz/ExamCraft/tmp/chat-ai-v2
-- branch: codex/chat-ai-v2
-- commit mã gần nhất: 5f6bf4d (mã + test cùng commit; nền đợt 909d297).
-- Đã xong tuyến kỹ thuật: bootstrap thật, giữ/khôi phục chat, lựa chọn định danh, key/error/cancel, metadata+nhiều câu nguyên tử, sinh trọn đề/core chung, scoped insertion/grade checks, undo/redo chung, xem hình/đáp án và giao bài không bịa thời lượng.
-- Đã kiểm: CI đầy đủ, HTTP/pilot, integration PostgreSQL, chat xuyên suốt với provider giả, hồi quy Đ0–Đ2/editor và guards. Số liệu/log/giới hạn chỉ ở qa/rebuild-2026-11-03/ai-chat-completion/BAO_CAO.md và CHECK_RESULTS.json.
-- Bản cho người dùng thử: localhost:3123, DB thử tách riêng; health isolatedTest=false chặn automated tests. Codex không gọi provider thật; người dùng tự thêm key/gửi nếu muốn. Bí mật mã hóa hiện có được giữ. Tài khoản manual/local identities được giữ cho người dùng thử, không ghi mật khẩu vào hồ sơ.
-- Không push/main/deploy/migration, không ghi DB chính, không sửa checklist/02/ASSIGNMENTS/BATCH_REVIEWS của Claude.
-- Bước kế: người dùng thử thật; Claude duyệt DOI_CHIEU.md, các giới hạn hợp đồng/nguồn/chuyên môn và quyết định tích hợp. Không tự ghi DONE hoặc tự đóng CV.
-- Tệp cần giữ: toàn bộ nhóm báo cáo hiện tại, nhánh mã, source snapshot, bản nháp/đề xuất riêng, và manual-preview-identities.json local (không Git). Không quay về worktree C/tmp/chat-ai-v2 cũ.
+- worktree: F:/Workspace/Zazz/ExamCraft/tmp/chat-ai-v2; branch codex/chat-ai-v2.
+- Commit mã/test gần nhất: 657d66e. Nền trước rà: 5f6bf4d (mã), 85ac659 (hồ sơ). Commit hồ sơ/dọn output đi sau, xem Git log.
+- Đã xong: cập nhật library theo bootstrap và vị trí thư mục; khôi phục complementary desktop/dialog không modal trên điện thoại, không khóa Tab; đưa library/frame vào CI; pin/cấu hình Prettier, định dạng phạm vi nhánh; guard key/caller bằng AST; kết quả kiểm chuẩn ghi theo ngày chạy.
+- Đã dọn raw QA mới sau khi cất/kiểm hash, trả riêng output lịch sử và thêm ignore/policy. Giữ báo cáo, mã kiểm, đặc tả, cấu hình, trạng thái tài khoản manual và dữ liệu. Không dùng reset/clean.
+- Kiểm đã chạy: CI mở rộng, integration riêng, chat completion và Đ0–Đ2, formatter check/debug-check, hash bảo toàn dữ liệu manual; đều đạt. Số liệu, lệnh và giới hạn chỉ tại qa/rebuild-2026-11-03/chat-review/BAO_CAO.md.
+- Đang giữ: máy chủ người dùng 3123 đã mở lại, tài khoản/mật khẩu và SESSION_SECRET cũ; health không nhận isolatedTest để chặn chạy tự động nhầm. Máy chủ tự động 3124/AI giả đã dừng sau CI.
+- Bước kế: Claude duyệt commit/báo cáo; chủ dự án thử AI thật và chuyên môn trên 3123. Chưa thử AI thật, điện thoại vật lý hoặc trình đọc màn hình thật. Không còn việc mã trong phạm vi rà này; chưa tự đóng CV hay coi nghiệm thu chuyên môn hoàn tất.
+- Không gọi AI thật, không ghi DB chính, không migration/push/deploy. Không sửa checklist/02/ASSIGNMENTS/BATCH_REVIEWS của Claude.
+- Raw cất ở tmp/qa-before-review-20261103T152251Z-0cfe6971; giữ manual-preview-identities.json/log local, không đưa raw trở lại Git.

@@ -1,5 +1,7 @@
 # Đề xuất thông tin đề — nhóm nền Đ2
 
+> Cập nhật lưu trữ QA: ảnh/log/JSON sinh tự động đã cất ở local, không còn theo dõi trong Git. Xem [quy tắc lưu kết quả](../../KET_QUA_SINH_TU_DONG.md) và đợt rà `qa/rebuild-2026-11-03/chat-review/BAO_CAO.md`. Mốc raw cũ vẫn truy được tại Git `85ac659`; bản đang đổi khi dọn có manifest trong `tmp/qa-before-review-20261103T152251Z-0cfe6971`.
+
 03/11/2026. Đang làm liên tục theo yêu cầu chủ dự án; không phải báo hoàn tất Đ1–Đ4.
 
 Đã có: action update_metadata với allowlist tên/môn/lớp/phút/năm/học kỳ/đơn vị/mã/ghi chú; chặn owner/quyền/version, môn không thuộc catalog và dữ liệu không hợp lệ. Có đối chiếu trước/sau, nhận một gói, kiểm đúng tài khoản/quyền/bản nền và không áp hai lần. Đề có câu chưa được tự đổi môn/lớp để tránh gán nhãn mới lên câu cũ; cần gói thay nội dung ở bước sau. Đổi tên giữ ảnh/ngữ liệu/điểm 0/đáp án/lời giải. Idle HeaderForm cập nhật theo metadata mới; nháp đang sửa dở được giữ. Proposal mới về metadata dùng formatVersion 2, reader vẫn nhận v1, lỗi dữ liệu giữ bytes. Gỡ Hoàn tác riêng khỏi chat, dùng lịch sử chung của editor. Giữ thư viện lịch sử cũ để đọc/test tương thích, không còn mount UI điều khiển riêng.

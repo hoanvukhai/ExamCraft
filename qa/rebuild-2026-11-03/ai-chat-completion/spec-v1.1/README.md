@@ -1,0 +1,6 @@
+# Đặc tả tham chiếu 1.1
+
+Hai tệp Markdown ở đây được giữ nguyên từ bản Claude duyệt; không phải báo cáo tiến độ hay checklist mới. Các đường dẫn dữ liệu/ảnh trong nguyên bản thuộc nơi gốc, không phải artifact cần đưa thêm vào Git.
+
+- `DAC_TA_CHAT_AI_V2.md` — SHA-256 `381c90b4246537fa2d85f03ea81283a8537336f19a5d7441f052482bad7bee24`; gốc `F:/Workspace/Zazz/ExamCraft/tmp/canva-a/qa/rebuild-2026-11-03/ai-chat-audit/DAC_TA_CHAT_AI_V2.md`.
+- `NGHIEM_THU_CHAT_AI_V2.md` — SHA-256 `bf6a2f81182919993207d3af253b28866a80bf30708eb3bdf4e5a45fadb98650`; gốc `F:/Workspace/Zazz/ExamCraft/tmp/canva-a/qa/rebuild-2026-11-03/ai-chat-audit/NGHIEM_THU_CHAT_AI_V2.md`.

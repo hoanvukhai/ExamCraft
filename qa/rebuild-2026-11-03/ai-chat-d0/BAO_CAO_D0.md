@@ -1,5 +1,7 @@
 # Đ0 — sửa lỗi trước khi nâng trợ lý AI
 
+> Cập nhật lưu trữ QA: ảnh/log/JSON sinh tự động đã cất ở local, không còn theo dõi trong Git. Xem [quy tắc lưu kết quả](../../KET_QUA_SINH_TU_DONG.md) và đợt rà `qa/rebuild-2026-11-03/chat-review/BAO_CAO.md`. Mốc raw cũ vẫn truy được tại Git `85ac659`; bản đang đổi khi dọn có manifest trong `tmp/qa-before-review-20261103T152251Z-0cfe6971`.
+
 03/11/2026 · **WAITING_REVIEW** · Chỉ thực hiện Đ0, chưa bắt đầu Đ1.
 
 Mã và test: **`555a45b`**, nhánh **`codex/chat-ai-v2`**, nền **`865bcea`**.
@@ -24,30 +26,30 @@ Chỉ sửa bốn tệp sản phẩm: `ExamWorkspace.tsx`, `useExamPersistence.t
 
 | Kiểm | Kết quả | Log |
 |---|---|---|
-| TypeScript | Đạt, mã thoát 0 | [typecheck.log](typecheck.log), không có lỗi |
-| Lint tệp sửa và test mới | Đạt, không lỗi/cảnh báo | [lint.log](lint.log) |
-| Production build | Đạt; CPU=1, heap 1024 | [build.log](build.log); ID `C5BtkF-PhVLJug57s_6nv` |
-| Guard liên quan | **53/53 đạt** | [guards.log](guards.log): header, nháp/lưu/quyền, Copilot, journal, lịch sử |
-| `npm run test:integration` | **8/8 đạt** | [integration.log](integration.log), [integration_s1.json](integration_s1.json), [question-save.json](question-save.json) |
-| Chrome Đ0 | **8/8 đạt** (7 nhóm và ca cha) | [browser.log](browser.log), [browser-results.json](browser-results.json), [mã kiểm](../../../tests_pilot/ai_chat_d0.test.ts) |
+| TypeScript | Đạt, mã thoát 0 | typecheck.log (`typecheck.log`, raw local), không có lỗi |
+| Lint tệp sửa và test mới | Đạt, không lỗi/cảnh báo | lint.log (`lint.log`, raw local) |
+| Production build | Đạt; CPU=1, heap 1024 | build.log (`build.log`, raw local); ID `C5BtkF-PhVLJug57s_6nv` |
+| Guard liên quan | **53/53 đạt** | guards.log (`guards.log`, raw local): header, nháp/lưu/quyền, Copilot, journal, lịch sử |
+| `npm run test:integration` | **8/8 đạt** | integration.log (`integration.log`, raw local), integration_s1.json (`integration_s1.json`, raw local), question-save.json (`question-save.json`, raw local) |
+| Chrome Đ0 | **8/8 đạt** (7 nhóm và ca cha) | browser.log (`browser.log`, raw local), browser-results.json (`browser-results.json`, raw local), [mã kiểm](../../../tests_pilot/ai_chat_d0.test.ts) |
 
 DB thật dùng để test: **examcraft_test_20261022 / 5436**, đã kiểm guard URL và SQL `current_database()` trước ghi. Máy chủ local **3123**, health `isolatedTest=true`. Chrome cài sẵn; provider được giả lập tại request trình duyệt, server chỉ trỏ provider về local. Không Vercel Preview, không DB chính, không provider thật.
 
 Fixture tài khoản/câu/đề có ID riêng, đã dọn và xác nhận không còn tài khoản/đề thử. Không lưu cookie/key/.env vào báo cáo. Máy chủ 3123 đã dừng sau kiểm; không thay bản đang xem ở 3117/3122, không deploy.
 
-Ảnh đã xem: [thông tin desktop](metadata-desktop.png), [375px](metadata-375.png), [B còn sau kết quả A](composer-keeps-B-375.png), gợi ý trống [320px](empty-starters-320.png), [375px](empty-starters-375.png), [390px](empty-starters-390.png), [desktop](empty-starters-1440.png), [dark 375px](empty-starters-375-dark.png). Chuyển theme bằng nút thật và chờ hiệu ứng màu xong trước chụp.
+Ảnh đã xem: thông tin desktop (`metadata-desktop.png`, raw local), 375px (`metadata-375.png`, raw local), B còn sau kết quả A (`composer-keeps-B-375.png`, raw local), gợi ý trống 320px (`empty-starters-320.png`, raw local), 375px (`empty-starters-375.png`, raw local), 390px (`empty-starters-390.png`, raw local), desktop (`empty-starters-1440.png`, raw local), dark 375px (`empty-starters-375-dark.png`, raw local). Chuyển theme bằng nút thật và chờ hiệu ứng màu xong trước chụp.
 
 ## Giới hạn và lỗi ngoài đợt
 
-- **Menu tài khoản bị bảng AI che trên điện thoại:** mở AI → mở avatar → đổi giao diện bị chặn bởi lớp AI. [Bằng chứng](browser-existing-menu-overlay.log). Đóng AI trước thì dùng được; bộ kiểm cuối làm đúng lối này, không click cưỡng bức. Lỗi chưa sửa, chuyển Claude duyệt tiếp. Ảnh dark cũng còn tên đề trên thanh đầu khó đọc; không tuyên bố mọi chi tiết giao diện dark đều đã đạt.
+- **Menu tài khoản bị bảng AI che trên điện thoại:** mở AI → mở avatar → đổi giao diện bị chặn bởi lớp AI. Bằng chứng (`browser-existing-menu-overlay.log`, raw local). Đóng AI trước thì dùng được; bộ kiểm cuối làm đúng lối này, không click cưỡng bức. Lỗi chưa sửa, chuyển Claude duyệt tiếp. Ảnh dark cũng còn tên đề trên thanh đầu khó đọc; không tuyên bố mọi chi tiết giao diện dark đều đã đạt.
 - Chưa làm Đ1: hội thoại bền, nút Dừng, lỗi/key, Enter cảm ứng/IME và target nhiều câu. Chỉ kiểm giữ composer trong phiên đang mở, chưa hứa giữ qua reload/đổi tài khoản/đổi ID đề.
 - Chưa làm Đ2–Đ3: AI đổi metadata/tạo cả đề và bootstrap trống. Đề mới vẫn có mặc định kỹ thuật Toán 6/45 phút; Đ0 ngăn lưu rác, không đổi dữ liệu cũ sang rỗng.
 - Chưa chạy full CI/SAFE/mọi trang; lượt đầy đủ thuộc Đ4. Viewport Chrome chưa thay kiểm điện thoại vật lý/bàn phím thật. Mock không xác nhận chất lượng model hay key thật.
 
 ## Lịch sử kiểm và chạy lại
 
-- Dựng lần đầu ở C với thư viện F lỗi đường dẫn chéo ổ: [log](build-cross-drive-failed.log). Worktree hiện hành đã chuyển sang F, không sửa config sản phẩm để lách lỗi. Bản C ở `tmp/chat-ai-v2` chỉ là bản sao trung gian.
-- Lượt đầu cần sửa thao tác test đóng bảng điện thoại và selector nút Đóng: [điều hướng](browser-initial-navigation-failed.log), [selector](browser-selector-failed.log). Các lượt đó không tính đạt. Lần thử theme phát hiện lỗi menu thật ghi ở trên. Mã sản phẩm không đổi trong các lần chỉnh bộ kiểm này.
+- Dựng lần đầu ở C với thư viện F lỗi đường dẫn chéo ổ: log (`build-cross-drive-failed.log`, raw local). Worktree hiện hành đã chuyển sang F, không sửa config sản phẩm để lách lỗi. Bản C ở `tmp/chat-ai-v2` chỉ là bản sao trung gian.
+- Lượt đầu cần sửa thao tác test đóng bảng điện thoại và selector nút Đóng: điều hướng (`browser-initial-navigation-failed.log`, raw local), selector (`browser-selector-failed.log`, raw local). Các lượt đó không tính đạt. Lần thử theme phát hiện lỗi menu thật ghi ở trên. Mã sản phẩm không đổi trong các lần chỉnh bộ kiểm này.
 - [run-check.cjs](run-check.cjs) nhận `typecheck`, `lint`, `guards`, `integration`, `build`, `server`, `browser`, rồi đường dẫn tệp môi trường local hiện có. Chỉ đọc cấu hình vào bộ nhớ; kiểm đích DB thử, không copy .env. Integration gom bằng chứng mới về đây và phục hồi báo cáo lịch sử do script cũ ghi.
 
 Từ worktree F hiện hành, ví dụ:

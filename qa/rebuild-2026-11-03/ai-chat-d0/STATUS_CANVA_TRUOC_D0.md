@@ -1,5 +1,7 @@
 # CODEX status
 
+> Cập nhật lưu trữ QA: ảnh/log/JSON sinh tự động đã cất ở local, không còn theo dõi trong Git. Xem [quy tắc lưu kết quả](../../KET_QUA_SINH_TU_DONG.md) và đợt rà `qa/rebuild-2026-11-03/chat-review/BAO_CAO.md`. Mốc raw cũ vẫn truy được tại Git `85ac659`; bản đang đổi khi dọn có manifest trong `tmp/qa-before-review-20261103T152251Z-0cfe6971`.
+
 task_id: AI-CHAT-UX-SPEC-20261103
 state: WAITING_REVIEW
 source_reviewed: F:/Workspace/Zazz/ExamCraft/tmp/canva-a

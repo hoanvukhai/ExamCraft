@@ -1,11 +1,13 @@
 # Tự xem bản chat AI mới
 
+> Cập nhật lưu trữ QA: ảnh/log/JSON sinh tự động đã cất ở local, không còn theo dõi trong Git. Xem [quy tắc lưu kết quả](../../KET_QUA_SINH_TU_DONG.md) và đợt rà `qa/rebuild-2026-11-03/chat-review/BAO_CAO.md`. Mốc raw cũ vẫn truy được tại Git `85ac659`; bản đang đổi khi dọn có manifest trong `tmp/qa-before-review-20261103T152251Z-0cfe6971`.
+
 Bản mã: `F:/Workspace/Zazz/ExamCraft/tmp/chat-ai-v2`, nhánh `codex/chat-ai-v2`. Không dùng thư mục Codex cũ ở ổ C để chạy bản này.
 
 ## Đúng bản, đúng cổng
 
 - Cổng **3123** dành cho bản chat AI V2 này khi bàn giao chạy local. Cổng 3117/3122 và web Vercel không được thay bằng đợt này.
-- Trong lúc Codex chạy tự động, 3123 là máy chủ DB thử, AI giả; không nhập khóa thật vào máy chủ tự động đó. Chỉ tự thử sau thông báo cuối và xem trạng thái máy chủ trong báo cáo.
+- Cổng **3123 dành riêng cho bạn thử**; cổng **3124 dành bộ kiểm tự động với AI giả**. Không chạy bộ kiểm vào cổng 3123. Chỉ nhập khóa cá nhân ở bản cho người dùng sau thông báo đã mở lại.
 - Bản cho bạn thử dùng **DB thử tách riêng** và tài khoản thử được cấp trong thông báo cuối. Bí mật mã hóa ổn định được đọc từ cấu hình local hiện có của `tmp/canva-a/.env`; không chép hoặc đổi tệp cấu hình, không xoay bí mật. Tài khoản dữ liệu chính không dùng để đăng nhập ở đây. Khi chính bạn gửi AI, nhà cung cấp có thể tính lượt/phí theo khóa của bạn; bộ kiểm của Codex không gọi AI thật.
 
 ## Tự mở lại nếu máy chủ đã tắt

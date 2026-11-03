@@ -53,3 +53,11 @@ tests/*.docx
 # raw run output: keep the reports of each batch, not every server log and per-run json
 /qa/rebuild-*/server-*.log
 /qa/rebuild-*/pilot-run-*.json
+
+# Generated dated QA output stays local; keep reports and test source in Git.
+/qa/rebuild-*/**/*.jpeg
+/qa/rebuild-*/**/*.jpg
+/qa/rebuild-*/**/*.json
+/qa/rebuild-*/**/*.log
+/qa/rebuild-*/**/*.pdf
+/qa/rebuild-*/**/*.png

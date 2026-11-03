@@ -1,6 +1,8 @@
 # Đối chiếu phạm vi chat AI V2
 
-Bản chốt: [đặc tả 1.1](spec-v1.1/DAC_TA_CHAT_AI_V2.md), [nghiệm thu](spec-v1.1/NGHIEM_THU_CHAT_AI_V2.md). Hai tệp là bản chụp tham chiếu nguyên trạng; hash và nơi gốc ở `spec-reference.json`. Không phải checklist mới. Phạm vi gốc mục 0 và yêu cầu chủ dự án làm liền mạch quyết định phạm vi. Claude vẫn quyết định duyệt checklist chính.
+> Cập nhật lưu trữ QA: ảnh/log/JSON sinh tự động đã cất ở local, không còn theo dõi trong Git. Xem [quy tắc lưu kết quả](../../KET_QUA_SINH_TU_DONG.md) và đợt rà `qa/rebuild-2026-11-03/chat-review/BAO_CAO.md`. Mốc raw cũ vẫn truy được tại Git `85ac659`; bản đang đổi khi dọn có manifest trong `tmp/qa-before-review-20261103T152251Z-0cfe6971`.
+
+Bản chốt: [đặc tả 1.1](spec-v1.1/DAC_TA_CHAT_AI_V2.md), [nghiệm thu](spec-v1.1/NGHIEM_THU_CHAT_AI_V2.md). Hai tệp là bản chụp tham chiếu nguyên trạng; hash và nơi gốc ở [README tham chiếu](spec-v1.1/README.md). Không phải checklist mới. Phạm vi gốc mục 0 và yêu cầu chủ dự án làm liền mạch quyết định phạm vi. Claude vẫn quyết định duyệt checklist chính.
 
 | Nhóm yêu cầu | Thực hiện và nơi đối chiếu | Bằng chứng phải đọc |
 |---|---|---|

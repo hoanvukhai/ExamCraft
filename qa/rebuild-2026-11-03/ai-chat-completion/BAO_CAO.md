@@ -1,5 +1,9 @@
 # Hoàn thiện chat AI V2 — bàn giao để thử và duyệt
 
+> Cập nhật lưu trữ QA: ảnh/log/JSON sinh tự động đã cất ở local, không còn theo dõi trong Git. Xem [quy tắc lưu kết quả](../../KET_QUA_SINH_TU_DONG.md) và đợt rà `qa/rebuild-2026-11-03/chat-review/BAO_CAO.md`. Mốc raw cũ vẫn truy được tại Git `85ac659`; bản đang đổi khi dọn có manifest trong `tmp/qa-before-review-20261103T152251Z-0cfe6971`.
+
+> Đợt rà phản hồi Claude đã hoàn tất, mã mới `657d66e`: [kết quả kiểm và dọn QA](../chat-review/BAO_CAO.md). Bản 3123 đã mở lại; giữ tài khoản và dữ liệu cũ.
+
 Ngày 03/11/2026. Mã: **`5f6bf4d`**, nhánh `codex/chat-ai-v2`, worktree `F:/Workspace/Zazz/ExamCraft/tmp/chat-ai-v2`. Trạng thái **WAITING_REVIEW**; Codex không tự đóng CV hoặc ký thay nghiệm thu chuyên môn.
 
 ## Chủ dự án đọc nhanh
@@ -30,7 +34,7 @@ Bản mới đã sẵn sàng để bạn thử tại **http://localhost:3123**. 
 | Hồi quy bàn soạn, đa kích thước/theme và mất quyền | 13/13 | `editor.log`, `editor-regression/` |
 | Chốt logic đích/phạm vi/metadata/dự phòng | 96/96 | `guards.log` |
 
-Không cộng các bộ kiểm thành phần trăm hoàn thành; có ca trùng và có tiêu chí cần người. `CHECK_RESULTS.json` giữ số liệu máy đọc, hai build ID và chế độ chạy. `source-snapshot.json` ghi hash tệp mã đã commit. Ảnh browser thuộc build ghi trong JSON; CI cuối dựng lại commit chốt, gồm khoảng cách/vùng chạm hai nút hội thoại. Không chạy lại toàn bộ chỉ vì đóng hồ sơ.
+Không cộng các bộ kiểm thành phần trăm hoàn thành; có ca trùng và có tiêu chí cần người. Số liệu máy đọc và snapshot cũ đã cất local; báo cáo giữ kết quả và mốc mã có thể đối chiếu trong Git. Kết quả sau rà bàn giao xem báo cáo đợt chat-review. Ảnh browser thuộc build ghi trong JSON; CI cuối dựng lại commit chốt, gồm khoảng cách/vùng chạm hai nút hội thoại. Không chạy lại toàn bộ chỉ vì đóng hồ sơ.
 
 Các fixture tự động dùng Chrome cài sẵn, SQL xác nhận DB thử và health `isolatedTest=true`. Provider là mô phỏng local; không đưa khóa thật vào test. Luồng chat có kiểm: không tạo đề trước nhận, hỏi/đáp rồi tải lại, nhận/lưu/undo/redo cả đề, sửa nhiều câu + tên nguyên tử, clone tab, cất/nhập hội thoại, tạo lại đề giữ thông tin, ảnh 5 MiB không mất, MAX_TOKENS không áp dụng, giao bài thiếu thời lượng bị chặn đúng chế độ, phone 320/375/390 và dark. Fixture tự động đã dọn theo ID riêng.
 
