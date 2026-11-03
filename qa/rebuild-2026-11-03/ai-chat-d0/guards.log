@@ -1,0 +1,328 @@
+TAP version 13
+# Subtest: durable proposals survive a fresh storage view, preserve payload and remain isolated by account/document
+ok 1 - durable proposals survive a fresh storage view, preserve payload and remain isolated by account/document
+  ---
+  duration_ms: 9.8974
+  type: 'test'
+  ...
+# Subtest: each writer has a unique immutable slot; archive verifies a recoverable copy and protects later revisions
+ok 2 - each writer has a unique immutable slot; archive verifies a recoverable copy and protects later revisions
+  ---
+  duration_ms: 10.2546
+  type: 'test'
+  ...
+# Subtest: quota failures keep the source and RAM response, never delete unreadable or malformed records
+ok 3 - quota failures keep the source and RAM response, never delete unreadable or malformed records
+  ---
+  duration_ms: 1.0019
+  type: 'test'
+  ...
+# Subtest: archived records only reopen on explicit selection, without applying content or crossing question identity
+ok 4 - archived records only reopen on explicit selection, without applying content or crossing question identity
+  ---
+  duration_ms: 0.6714
+  type: 'test'
+  ...
+# Subtest: Copilot payload roundtrips independently and corrupted identity stays downloadable but not actionable
+ok 5 - Copilot payload roundtrips independently and corrupted identity stays downloadable but not actionable
+  ---
+  duration_ms: 0.6789
+  type: 'test'
+  ...
+# Subtest: undo/redo edit preserves figures/zero and creates higher question versions, never restores verified status
+ok 6 - undo/redo edit preserves figures/zero and creates higher question versions, never restores verified status
+  ---
+  duration_ms: 14.4864
+  type: 'test'
+  ...
+# Subtest: two accepts, two undos and two redos update chain stamps; add/remove never duplicate question IDs
+ok 7 - two accepts, two undos and two redos update chain stamps; add/remove never duplicate question IDs
+  ---
+  duration_ms: 3.4237
+  type: 'test'
+  ...
+# Subtest: undo delete restores the exact ID/body at a new version and redo removes only that row
+ok 8 - undo delete restores the exact ID/body at a new version and redo removes only that row
+  ---
+  duration_ms: 0.5681
+  type: 'test'
+  ...
+# Subtest: newer edits, context, permission, account and updater races refuse travel; duplicate confirmation is harmless
+ok 9 - newer edits, context, permission, account and updater races refuse travel; duplicate confirmation is harmless
+  ---
+  duration_ms: 0.9478
+  type: 'test'
+  ...
+# Subtest: copilot base captures full question order and context without sharing mutable source
+ok 10 - copilot base captures full question order and context without sharing mutable source
+  ---
+  duration_ms: 11.1225
+  type: 'test'
+  ...
+# Subtest: modify pins points and links, clears old answer body, resets verification and preserves other question
+ok 11 - modify pins points and links, clears old answer body, resets verification and preserves other question
+  ---
+  duration_ms: 2.354
+  type: 'test'
+  ...
+# Subtest: handler and parent updater both refuse account/doc/context/order or any newer question edits
+ok 12 - handler and parent updater both refuse account/doc/context/order or any newer question edits
+  ---
+  duration_ms: 1.3062
+  type: 'test'
+  ...
+# Subtest: add uses a fresh ID and document subject/grade, has no automatic points or foreign links
+ok 13 - add uses a fresh ID and document subject/grade, has no automatic points or foreign links
+  ---
+  duration_ms: 1.0658
+  type: 'test'
+  ...
+# Subtest: delete requires explicit target; unsupported/incomplete actions and malformed candidates stay unapplied
+ok 14 - delete requires explicit target; unsupported/incomplete actions and malformed candidates stay unapplied
+  ---
+  duration_ms: 2.5534
+  type: 'test'
+  ...
+# Subtest: independent writer slots preserve both drafts even when shared-slot reads race from the same stale value
+ok 15 - independent writer slots preserve both drafts even when shared-slot reads race from the same stale value
+  ---
+  duration_ms: 13.8188
+  type: 'test'
+  ...
+# Subtest: retiring an acknowledged new draft never removes another writer and failed own-slot writes do not advance the shared pointer
+ok 16 - retiring an acknowledged new draft never removes another writer and failed own-slot writes do not advance the shared pointer
+  ---
+  duration_ms: 1.3108
+  type: 'test'
+  ...
+# Subtest: different tab writers preserve unsaved content even when a server cache replaces the shared slot
+ok 17 - different tab writers preserve unsaved content even when a server cache replaces the shared slot
+  ---
+  duration_ms: 1.9567
+  type: 'test'
+  ...
+# Subtest: a new tab protects legacy drafts without writer IDs and preserves unreadable existing documents
+ok 18 - a new tab protects legacy drafts without writer IDs and preserves unreadable existing documents
+  ---
+  duration_ms: 1.0364
+  type: 'test'
+  ...
+# Subtest: opening latest archives the full unsaved draft separately and a recovery opens as a new document
+ok 19 - opening latest archives the full unsaved draft separately and a recovery opens as a new document
+  ---
+  duration_ms: 0.9776
+  type: 'test'
+  ...
+# Subtest: a blocked archive or mismatched document never replaces the original local draft
+ok 20 - a blocked archive or mismatched document never replaces the original local draft
+  ---
+  duration_ms: 0.5941
+  type: 'test'
+  ...
+# Subtest: applying an accepted generated draft preserves teacher headers and refuses intervening edits
+ok 21 - applying an accepted generated draft preserves teacher headers and refuses intervening edits
+  ---
+  duration_ms: 0.5641
+  type: 'test'
+  ...
+# Subtest: generation keeps zero counts and refuses extra questions instead of expanding the requested plan
+ok 22 - generation keeps zero counts and refuses extra questions instead of expanding the requested plan
+  ---
+  duration_ms: 6.0664
+  type: 'test'
+  ...
+# Subtest: generation accepts all seven types with exact requested counts and structured matching and ordering keys
+ok 23 - generation accepts all seven types with exact requested counts and structured matching and ordering keys
+  ---
+  duration_ms: 2.5036
+  type: 'test'
+  ...
+# Subtest: structured generation refuses missing or duplicate pair IDs, incomplete order and unanswered fill blanks
+ok 24 - structured generation refuses missing or duplicate pair IDs, incomplete order and unanswered fill blanks
+  ---
+  duration_ms: 1.5622
+  type: 'test'
+  ...
+# Subtest: starting another document preserves the previous unsaved draft and listing never crosses accounts
+ok 25 - starting another document preserves the previous unsaved draft and listing never crosses accounts
+  ---
+  duration_ms: 0.5806
+  type: 'test'
+  ...
+# Subtest: generation refuses unsupported grade-subject combinations and inappropriate cognitive frameworks
+ok 26 - generation refuses unsupported grade-subject combinations and inappropriate cognitive frameworks
+  ---
+  duration_ms: 0.3839
+  type: 'test'
+  ...
+# Subtest: scored drafts require actual answer keys, survey drafts remove scoring and answers
+ok 27 - scored drafts require actual answer keys, survey drafts remove scoring and answers
+  ---
+  duration_ms: 0.4895
+  type: 'test'
+  ...
+# Subtest: browser drafts and acknowledged offline copies stay isolated by account
+ok 28 - browser drafts and acknowledged offline copies stay isolated by account
+  ---
+  duration_ms: 0.2552
+  type: 'test'
+  ...
+# Subtest: missing duration is readable in preview and Word without assigning a new duration
+ok 29 - missing duration is readable in preview and Word without assigning a new duration
+  ---
+  duration_ms: 88.3745
+  type: 'test'
+  ...
+# Subtest: header submission only merges edited fields and preserves newer scope/plan and unedited header metadata
+ok 30 - header submission only merges edited fields and preserves newer scope/plan and unedited header metadata
+  ---
+  duration_ms: 8.7609
+  type: 'test'
+  ...
+# Subtest: a changed edited field, different document or lost permission blocks apply with exact same object and intact submission
+ok 31 - a changed edited field, different document or lost permission blocks apply with exact same object and intact submission
+  ---
+  duration_ms: 0.339
+  type: 'test'
+  ...
+# Subtest: grade/context edits retain old subject, framework, package references and plan for explicit review
+ok 32 - grade/context edits retain old subject, framework, package references and plan for explicit review
+  ---
+  duration_ms: 0.3337
+  type: 'test'
+  ...
+# Subtest: empty override remains one visible blank line, hidden drops line, undefined uses bound value and literal order remains
+ok 33 - empty override remains one visible blank line, hidden drops line, undefined uses bound value and literal order remains
+  ---
+  duration_ms: 3.157
+  type: 'test'
+  ...
+# Subtest: shared header resolves current year, notes, duration and actual score including0 instead of plan targets
+ok 34 - shared header resolves current year, notes, duration and actual score including0 instead of plan targets
+  ---
+  duration_ms: 0.6616
+  type: 'test'
+  ...
+# Subtest: default header omits empty school/year without invented authority, explicit empty lines roundtrip and malformed layouts reject
+ok 35 - default header omits empty school/year without invented authority, explicit empty lines roundtrip and malformed layouts reject
+  ---
+  duration_ms: 2.5307
+  type: 'test'
+  ...
+# Subtest: unsupported patch keys/empty internal title reject without changing document
+ok 36 - unsupported patch keys/empty internal title reject without changing document
+  ---
+  duration_ms: 0.49
+  type: 'test'
+  ...
+# Subtest: actual Word header uses ordered shared lines, blanks, alignment, footer/year/current score and hides private answers
+ok 37 - actual Word header uses ordered shared lines, blanks, alignment, footer/year/current score and hides private answers
+  ---
+  duration_ms: 25.9971
+  type: 'test'
+  ...
+# Subtest: only access failures freeze editing; validation, version conflicts and outages keep recovery available
+ok 38 - only access failures freeze editing; validation, version conflicts and outages keep recovery available
+  ---
+  duration_ms: 1.0837
+  type: 'test'
+  ...
+# Subtest: adapter roundtrip retains seven question types, zero points, passages, figures and authoring fields
+ok 39 - adapter roundtrip retains seven question types, zero points, passages, figures and authoring fields
+  ---
+  duration_ms: 7.3285
+  type: 'test'
+  ...
+# Subtest: document validator rejects duplicates, unsupported types and invalid grades without defaulting to Math
+ok 40 - document validator rejects duplicates, unsupported types and invalid grades without defaulting to Math
+  ---
+  duration_ms: 0.6708
+  type: 'test'
+  ...
+# Subtest: legacy database Decimal values retain zero and overridden points
+ok 41 - legacy database Decimal values retain zero and overridden points
+  ---
+  duration_ms: 0.7982
+  type: 'test'
+  ...
+# Subtest: service rejects foreign folders/templates/questions and permits system templates
+ok 42 - service rejects foreign folders/templates/questions and permits system templates
+  ---
+  duration_ms: 1.3275
+  type: 'test'
+  ...
+# Subtest: create is idempotent for an unchanged document and keeps teacher identities separate
+ok 43 - create is idempotent for an unchanged document and keeps teacher identities separate
+  ---
+  duration_ms: 9.208
+  type: 'test'
+  ...
+# Subtest: updates require owner and base version; competing writers cannot both save
+ok 44 - updates require owner and base version; competing writers cannot both save
+  ---
+  duration_ms: 21.5862
+  type: 'test'
+  ...
+# Subtest: denied reference updates preserve the exam version and linked questions
+ok 45 - denied reference updates preserve the exam version and linked questions
+  ---
+  duration_ms: 3.0331
+  type: 'test'
+  ...
+# Subtest: legacy question-item updates never return a stale cached workspace document
+ok 46 - legacy question-item updates never return a stale cached workspace document
+  ---
+  duration_ms: 3.0312
+  type: 'test'
+  ...
+# Subtest: client creates legacy local drafts even when they already have a browser version
+ok 47 - client creates legacy local drafts even when they already have a browser version
+  ---
+  duration_ms: 3.7612
+  type: 'test'
+  ...
+# Subtest: client keeps the caller document on conflict and does not turn errors into success
+ok 48 - client keeps the caller document on conflict and does not turn errors into success
+  ---
+  duration_ms: 1.2883
+  type: 'test'
+  ...
+# Subtest: collaboration roles separate viewing, commenting, editing and owner management
+ok 49 - collaboration roles separate viewing, commenting, editing and owner management
+  ---
+  duration_ms: 0.3655
+  type: 'test'
+  ...
+# Subtest: private invitations require owner and an existing active account; revoked access is checked every save
+ok 50 - private invitations require owner and an existing active account; revoked access is checked every save
+  ---
+  duration_ms: 14.1209
+  type: 'test'
+  ...
+# Subtest: two invited editors use CAS; revisions preserve the original and record the real actor
+ok 51 - two invited editors use CAS; revisions preserve the original and record the real actor
+  ---
+  duration_ms: 14.8797
+  type: 'test'
+  ...
+# Subtest: old documents acquire a baseline without overwriting history; trash is inaccessible to collaborators
+ok 52 - old documents acquire a baseline without overwriting history; trash is inaccessible to collaborators
+  ---
+  duration_ms: 8.0522
+  type: 'test'
+  ...
+# Subtest: account pin rejects stale-tab writes and the client forwards the expected account without changing its draft
+ok 53 - account pin rejects stale-tab writes and the client forwards the expected account without changing its draft
+  ---
+  duration_ms: 1.9737
+  type: 'test'
+  ...
+1..53
+# tests 53
+# suites 0
+# pass 53
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4477.0269

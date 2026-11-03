@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-03",
+  "branch": "codex/chat-ai-v2",
+  "codeCommit": "555a45b",
+  "base": "865bcea",
+  "worktree": "F:\\Workspace\\Zazz\\ExamCraft\\tmp\\chat-ai-v2",
+  "sourceFiles": [
+    {
+      "file": "src/components/ExamWorkspace.tsx",
+      "sha256": "67AB01FA41733BF7AB2A91E1F6F725C50B587DD8A8B86F4A96537CB007D13971"
+    },
+    {
+      "file": "src/components/RightCompanionRail.tsx",
+      "sha256": "29E27A47966FB10840BEA461270BF2E7B37FB73788094754C040F35104FAD443"
+    },
+    {
+      "file": "src/components/useExamPersistence.ts",
+      "sha256": "EC1696AD9ED4483048537DAC60561D80AF9B78ECC7CC3D02B9AB10F0484319B9"
+    },
+    {
+      "file": "src/components/editor/EditorSaveStatus.tsx",
+      "sha256": "91BCFF82D53064098F5BB85C1F8BD5814F4C2C51891839D0609E2651CC3B1D40"
+    },
+    {
+      "file": "tests_pilot/ai_chat_d0.test.ts",
+      "sha256": "8D41E8CD7C2E7FB2FAEB32E4E0BFAC6FFB1D0ED2FCD61E549FAEAC7FB0660FED"
+    },
+    {
+      "file": "F:\\Workspace\\Zazz\\ExamCraft\\tmp\\canva-a\\qa\\rebuild-2026-11-03\\ai-chat-audit\\DAC_TA_CHAT_AI_V2.md",
+      "sha256": "381C90B4246537FA2D85F03EA81283A8537336F19A5D7441F052482BAD7BEE24"
+    },
+    {
+      "file": "F:\\Workspace\\Zazz\\ExamCraft\\tmp\\canva-a\\qa\\rebuild-2026-11-03\\ai-chat-audit\\NGHIEM_THU_CHAT_AI_V2.md",
+      "sha256": "BF6A2F81182919993207D3AF253B28866A80BF30708EB3BDF4E5A45FADB98650"
+    }
+  ]
+}
