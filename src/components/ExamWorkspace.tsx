@@ -351,6 +351,10 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   );
   const blankIds = useRef(new Set<string>());
   const sessionScope = currentUser.id + ':' + editorSessionKey;
+  // Wait for the real document once, but retain typed details if access later freezes.
+  const [loadedDetailSession, setLoadedDetailSession] = useState<string | null>(null);
+  if (ready && loadedDetailSession !== sessionScope) setLoadedDetailSession(sessionScope);
+  const canShowDetails = ready || loadedDetailSession === sessionScope;
 
   // ----- Working together without realtime: who has the exam open, who is on the same object, what changed.
   const { people, lastSavedBy } = useExamPresence(
@@ -1634,6 +1638,8 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                   ? 'Đang lưu…'
                   : saveState === 'dirty'
                     ? 'Có thay đổi đang chờ lưu'
+                    : saveState === 'pristine'
+                      ? 'Đề mới chưa có thay đổi; chưa lưu lên máy chủ'
                     : saveState === 'offline'
                       ? 'Mất kết nối — đang giữ bản nháp trên máy'
                       : saveState === 'saved'
@@ -1645,7 +1651,7 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                 onClick={() => void handleSaveCurrentExam()}
                 className="app-button-secondary min-h-8 px-2.5 text-xs"
               >
-                Thử lưu lại
+                {saveState === 'pristine' ? 'Lưu đề' : 'Thử lưu lại'}
               </button>
             )}
             {folderUnavailable && ready && !exam.serverId && exam.creationFolderId && (
@@ -1816,9 +1822,9 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
               ) : null}
               {/* The exam details stay mounted: what was typed in "Thông tin đề" survives a look at another object. */}
               <div className={pickedQuestionIds.length <= 1 && examDetail ? 'block' : 'hidden'}>
-                <EditorDetail {...detailProps} code={EXAM_CODE} />
+                {canShowDetails && <EditorDetail {...detailProps} code={EXAM_CODE} />}
               </div>
-              {pickedQuestionIds.length <= 1 && !examDetail && (
+              {canShowDetails && pickedQuestionIds.length <= 1 && !examDetail && (
                 <EditorDetail {...detailProps} code={selectedCode} />
               )}
             </div>
@@ -1981,6 +1987,9 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                         pickedQuestionIds.length ? pickedQuestionIds : aiQuestion ? [aiQuestion.id] : []
                       }
                       externalCommand={copilotCommand}
+                      onGenerate={() => openSource('generate')}
+                      onUseTemplate={() => { setIsCopilotOpen(false); showTab('template'); setPhonePanel(true); }}
+                      onImportDocument={() => { setIsCopilotOpen(false); openSource('import'); setPhonePanel(true); }}
                     />
                   }
                   generate={

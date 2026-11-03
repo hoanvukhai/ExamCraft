@@ -27,7 +27,7 @@ function describeChange(before: Exam, after: Exam): string[] {
   return labels;
 }
 
-export type SaveState = 'loading' | 'saved' | 'dirty' | 'saving' | 'offline' | 'conflict' | 'error';
+export type SaveState = 'loading' | 'pristine' | 'saved' | 'dirty' | 'saving' | 'offline' | 'conflict' | 'error';
 function blankExam(): Exam {
   const now = new Date(),
     year = now.getMonth() >= 7 ? now.getFullYear() : now.getFullYear() - 1;
@@ -165,7 +165,8 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
         savedEdits.current = 0;
         ready.current = true;
         setLoadedKey(`${ownerId}/${requestedId ?? 'new'}`);
-        setState(draft ? 'dirty' : id === 'new' ? 'dirty' : 'saved');
+        // Opening a new sheet is not an edit. Recovered drafts still need their normal save.
+        setState(draft ? 'dirty' : id === 'new' ? 'pristine' : 'saved');
         setMessage(
           id === 'new' && draft && (draft.creationFolderId ?? null) !== (creationFolderId ?? null)
             ? 'Đang giữ bản nháp trước cùng vị trí tạo ban đầu. Hãy lưu hoặc giữ bản này thành đề riêng trước khi tạo đề ở thư mục khác.'

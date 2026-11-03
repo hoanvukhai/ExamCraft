@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSidePanel } from '@/hooks/useSidePanel';
 import { Exam } from '@/types/exam';
 import { CopilotProposalReview } from './CopilotProposalReview';
@@ -33,6 +33,9 @@ interface RightCompanionRailProps {
   onSubmitCopilot: (submission: CopilotSubmission) => void;
   selectedQuestionIds: string[];
   externalCommand?: string;
+  onGenerate?: () => void;
+  onUseTemplate?: () => void;
+  onImportDocument?: () => void;
 }
 
 export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
@@ -43,15 +46,22 @@ export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
   onSubmitCopilot,
   selectedQuestionIds,
   externalCommand,
+  onGenerate,
+  onUseTemplate,
+  onImportDocument,
 }) => {
   const { panelRef, modal } = useSidePanel(isExpanded, onClose);
-  const [command, setCommand] = useState(externalCommand ?? '');
+  const [composer, setComposer] = useState({ text: externalCommand ?? '', revision: 0 });
+  const command = composer.text;
+  const setCommand = (text: string) => setComposer(previous => ({ text, revision: previous.revision + 1 }));
   const [receivedCommand, setReceivedCommand] = useState(externalCommand);
   if (externalCommand !== receivedCommand) { setReceivedCommand(externalCommand); if (externalCommand) setCommand(externalCommand); }
   const proposalJournal = useAiProposal(ownerId, exam.id, 'copilot');
   const proposal = proposalJournal.entry?.record?.kind === 'copilot' ? proposalJournal.entry.record : null;
   const [history, setHistory] = useState(emptyCopilotHistory);
   const [isLoading, setIsLoading] = useState(false);
+  const inFlight = useRef(false);
+  const [hasStartedChat, setHasStartedChat] = useState(false);
   const [clarification, setClarification] = useState<{
     message: string;
     quickOptions: string[];
@@ -76,12 +86,15 @@ export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
   }, [externalCommand, isExpanded]);
 
   const handleSendCommand = async (cmdText?: string) => {
-    const textToSend = cmdText || command;
+    const textToSend = cmdText ?? command;
     if (!textToSend.trim()) return;
-    if (proposal || isLoading) return;
+    if (proposal || inFlight.current) return;
 
+    const submittedRevision = composer.revision;
     const base = captureCopilotBase(ownerId, exam);
+    inFlight.current = true;
     setIsLoading(true);
+    setHasStartedChat(true);
     setClarification(null);
     setSuccessMessage(null);
     setErrorMessage(null);
@@ -118,12 +131,16 @@ export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
       if (result.type === 'action') {
         if (result.modifiedQuestion) normalizeQuestion(result.modifiedQuestion);
         createAiProposal({ kind: 'copilot', result, base });
-        setCommand('');
+        // Clear only the submitted composer revision. Chips never consume a separate typed draft.
+        setComposer(current => cmdText === undefined && current.revision === submittedRevision
+          ? { text: '', revision: current.revision + 1 }
+          : current);
       }
     } catch (err: unknown) {
       console.error('Lỗi gọi Copilot:', err);
       setErrorMessage('Không thể kết nối đến máy chủ AI. Vui lòng kiểm tra lại mạng hoặc API Key.');
     } finally {
+      inFlight.current = false;
       setIsLoading(false);
     }
   };
@@ -150,13 +167,27 @@ export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
           {/* Vùng nội dung cuộn bên trong Panel */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {/* Gợi ý một chạm (Quick Action Chips Google Pill style) */}
-            <div className="space-y-1.5">
+            {!hasStartedChat && !proposal && <div className="space-y-1.5">
               <span className="text-[10px] font-bold uppercase tracking-wider text-[#5f6368] dark:text-[#9aa0a6] flex items-center gap-1">
                 <Compass className="w-3 h-3" />
                 Gợi ý lệnh nhanh:
               </span>
 
-              <div className="grid grid-cols-1 gap-1.5">
+              {exam.questions.length === 0 ? (
+                <div className="space-y-2 text-xs">
+                  <p>Đề chưa có câu hỏi. Bắt đầu bằng cách sinh câu, dùng mẫu hoặc nhập tài liệu.</p>
+                  {[
+                    { label: 'Sinh câu từ mô tả', action: onGenerate },
+                    { label: 'Dùng mẫu', action: onUseTemplate },
+                    { label: 'Nhập tài liệu', action: onImportDocument },
+                  ].filter(item => item.action).map(item => (
+                    <button key={item.label} type="button" onClick={item.action}
+                      className="app-button-secondary flex min-h-11 w-full items-center justify-between rounded-xl px-3 text-left">
+                      {item.label}<ChevronRight className="h-4 w-4" />
+                    </button>
+                  ))}
+                </div>
+              ) : <div className="grid grid-cols-1 gap-1.5">
                 <button
                   onClick={() => handleSendCommand(activeQuestionNumber ? `Đổi số liệu và tính toán lại đáp án cho câu ${activeQuestionNumber}` : 'Đổi số liệu toàn bộ các câu hỏi trong đề thi')}
                   disabled={isLoading || !!proposal}
@@ -170,7 +201,7 @@ export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
                 </button>
 
                 <button
-                  onClick={() => handleSendCommand(activeQuestionNumber ? `Nâng cấp câu ${activeQuestionNumber} lên mức vận dụng có bẫy toán học` : 'Tăng độ khó các câu hỏi trong đề thi')}
+                  onClick={() => handleSendCommand(activeQuestionNumber ? `Tăng độ khó câu ${activeQuestionNumber}, giữ đúng môn và nội dung đang học` : 'Tăng độ khó các câu hỏi trong đề thi')}
                   disabled={isLoading || !!proposal}
                   className="w-full text-left text-xs px-3 py-2 rounded-xl bg-[#f8f9fa] dark:bg-[#242424] hover:bg-[#f1f3f4] dark:hover:bg-[#2d2f31] border border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] transition-colors flex items-center justify-between cursor-pointer group"
                 >
@@ -194,13 +225,13 @@ export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
                 </button>
 
                 <button
-                  onClick={() => handleSendCommand(activeQuestionNumber ? `Chuyển câu ${activeQuestionNumber} thành bài toán ứng dụng thực tế` : 'Thêm bối cảnh thực tế cho đề thi')}
+                  onClick={() => handleSendCommand(activeQuestionNumber ? `Thêm bối cảnh thực tế cho câu ${activeQuestionNumber}, giữ đúng môn học` : 'Thêm bối cảnh thực tế cho đề thi')}
                   disabled={isLoading || !!proposal}
                   className="w-full text-left text-xs px-3 py-2 rounded-xl bg-[#f8f9fa] dark:bg-[#242424] hover:bg-[#f1f3f4] dark:hover:bg-[#2d2f31] border border-[#dadce0] dark:border-[#3c4043] text-[#202124] dark:text-[#e3e3e3] transition-colors flex items-center justify-between cursor-pointer group"
                 >
                   <div className="flex items-center gap-2">
                     <Wand2 className="w-3.5 h-3.5 text-[var(--ui-text-secondary)]" />
-                    <span>Biến thành toán thực tế</span>
+                    <span>Thêm bối cảnh thực tế</span>
                   </div>
                   <ChevronRight className="w-3.5 h-3.5 text-[#5f6368] dark:text-[#9aa0a6] group-hover:translate-x-0.5 transition-transform" />
                 </button>
@@ -216,8 +247,8 @@ export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
                   </div>
                   <ChevronRight className="w-3.5 h-3.5 text-[#5f6368] dark:text-[#9aa0a6] group-hover:translate-x-0.5 transition-transform" />
                 </button>
-              </div>
-            </div>
+              </div>}
+            </div>}
 
             {/* Hộp AI hỏi lại để làm rõ (Clarification Dialog) */}
             {clarification && (
@@ -273,7 +304,8 @@ export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
                 value={command}
                 onChange={(e) => setCommand(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Nhập yêu cầu cho Gemini (vd: đổi số liệu câu 2, thêm bẫy câu 3...)"
+                aria-label="Yêu cầu cho AI"
+                placeholder={exam.questions.length ? 'Nhập yêu cầu, ví dụ: sửa câu 2, giải thích đáp án…' : 'Mô tả câu hỏi bạn muốn thêm…'}
                 className="w-full text-xs p-2.5 bg-[#f8f9fa] dark:bg-[#242424] text-[#202124] dark:text-[#e3e3e3] border border-[#dadce0] dark:border-[#3c4043] rounded-xl focus:border-[#3c4043] dark:focus:border-[#e3e3e3] focus:ring-1 focus:ring-[#3c4043] dark:focus:ring-[#e3e3e3] outline-hidden resize-none transition-all placeholder:text-[#5f6368] dark:placeholder:text-[#9aa0a6] disabled:opacity-50"
               />
             </div>
@@ -291,7 +323,7 @@ export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
                 {isLoading ? (
                   <>
                     <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                    <span>Đang xử lý...</span>
+                    <span>Đang xử lý yêu cầu trước…</span>
                   </>
                 ) : (
                   <>
