@@ -1,3 +1,4 @@
+import type { ExamTarget } from '@/lib/exam-request';
 import type { KnowledgePackage, KnowledgeScope } from '@/lib/knowledge-package';
 import type { ExamPlan } from '@/lib/exam-plan';
 import type { HeaderLayout } from '@/lib/header-layout';
@@ -160,6 +161,7 @@ export interface Question {
 }
 
 export interface ExamMetadata {
+  targetExam?: ExamTarget;
   templateApplication?: TemplateApplication;
   headerLayout?: HeaderLayout;
   /** Student line, closing lines and footer (page numbers). Absent = the original fixed layout. */
@@ -184,7 +186,7 @@ export interface ExamMetadata {
   departmentName: string;
   subject: Subject;
   grade: number; // 1 -> 12
-  durationMinutes: number; // 15, 45, 50, 60, 90, 120
+  durationMinutes?: number; // Chưa đặt thời lượng không đồng nghĩa mặc định 45 phút.
   examCode?: string; // 101, 102...
   academicYear?: string;
   semester?: string; // 'Học kỳ 1' | 'Học kỳ 2'

@@ -843,7 +843,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                     <span>
                       {currentView === 'trash'
                         ? `Xóa ${new Date(exam.deletedAt || exam.updatedAt).toLocaleDateString('vi-VN')}`
-                        : `${exam.durationMinutes || 45} phút`}
+                        : exam.durationMinutes == null ? 'Chưa đặt thời lượng' : `${exam.durationMinutes} phút`}
                     </span>
                   </div>
 

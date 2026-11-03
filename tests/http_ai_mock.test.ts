@@ -115,16 +115,17 @@ test('AI routes use only the caller key, count usage per key id, fail honestly a
     checks.push('invalid-key-disabled');
   });
 
-  await t.test('a rate-limited key falls back to the next of the same user, and other users keys are never used', async () => {
+  await t.test('rate limits require a manual retry, keep keys active and never borrow another user key', async () => {
     reset(key => key.startsWith('limited') ? { status: 429, body: { error: { code: 429, message: 'RESOURCE_EXHAUSTED quota', status: 'RESOURCE_EXHAUSTED' } } } : ok());
     await db.userApiKey.deleteMany({ where: { userId: ids.a } });
     await addKey('a', 'limited-key-0123456789ab', 'Hết hạn mức'); await addKey('a', 'good-key-0123456789abcdef', 'Còn hạn mức');
+    const limited = await parse('a'); assert.equal(limited.status,429,String(limited.data.error));assert.equal(seen.length,1,'no key rotation after quota response');
     const r = await parse('a'); assert.equal(r.status, 200, String(r.data.error));
     assert.ok(seen.every(s => s.key !== 'stored-key-0123456789abcdef' && s.key !== 'bad-key-0123456789abcdef'), 'only this user keys were tried');
     assert.ok(seen.map(s => s.key).includes('good-key-0123456789abcdef'), 'the working key answered');
     assert.equal(await db.userApiKey.count({ where: { userId: ids.a, isActive: true } }), 2, 'a rate limit does not switch a key off');
     reset(); await db.userApiKey.deleteMany({ where: { userId: ids.b } }); assert.equal((await parse('b')).status, 401, 'user B has no key and cannot borrow the keys of A'); assert.equal(seen.length, 0);
-    checks.push('rate-limit-fallback-and-isolation');
+    checks.push('rate-limit-manual-retry-and-isolation');
   });
 
   await t.test('old daily limits including zero do not block calls; provider rules still apply', async () => {

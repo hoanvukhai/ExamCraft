@@ -61,6 +61,7 @@ export const generationPlanSchema = z
     grade: z.number().int().min(1).max(12),
     topic: z.string().trim().min(1).max(12000),
     durationMinutes: z.number().int().min(1).max(1440),
+    totalPoints:z.number().finite().positive().max(1000).optional(),
     numMultipleChoice: z.number().int().min(0).max(100).default(0),
     numTrueFalse: z.number().int().min(0).max(100).default(0),
     numShortAnswer: z.number().int().min(0).max(100).default(0),
@@ -115,7 +116,13 @@ export const generationPlanSchema = z
   });
 export type GenerationPlan = z.infer<typeof generationPlanSchema>;
 
+const generatedFigure=z.object({id:z.string().min(1),kind:z.enum(['variation_table','function_plot','geometry','image']),data:z.unknown(),caption:z.string().optional()});
 const responseQuestion = z.object({
+  id:z.string().min(1).max(200).optional(),
+  sectionId:z.string().max(200).optional(),
+  passageId:z.string().max(200).optional(),
+  figures:z.array(generatedFigure).max(20).optional(),
+  parts:z.array(z.object({id:z.string().min(1),label:z.string().optional(),content:z.string(),points:z.number().nonnegative().optional(),answer:z.string().optional(),solution:z.string().optional(),rubric:z.array(z.object({criterion:z.string(),maxPoints:z.number().nonnegative()})).optional()})).max(100).optional(),
   type: z.enum([
     'multiple_choice',
     'true_false_group',
@@ -127,7 +134,7 @@ const responseQuestion = z.object({
   ]),
   difficulty: z.enum(['nhan_biet', 'thong_hieu', 'van_dung', 'van_dung_cao']).default('thong_hieu'),
   content: z.string().min(1),
-  choices: z.array(z.object({ key: z.string().min(1), text: z.string() })).optional(),
+  choices: z.array(z.object({ key: z.string().min(1), text: z.string(), figures:z.array(generatedFigure).max(10).optional() })).optional(),
   sub_questions: z
     .array(
       z.object({
@@ -164,6 +171,8 @@ const responseQuestion = z.object({
 });
 const responseSchema = z.object({
   title: z.string().optional(),
+  passages:z.array(z.object({id:z.string().min(1),title:z.string().optional(),content:z.string(),source:z.string().optional(),figures:z.array(generatedFigure).max(20).optional()})).max(100).optional(),
+  parts:z.array(z.object({id:z.string().min(1),title:z.string().default(''),questionIds:z.array(z.string().min(1)).max(100)})).max(100).optional(),
   questions: z.array(responseQuestion).max(100),
 });
 
@@ -246,6 +255,9 @@ export function validateGeneratedExam(value: unknown, plan: GenerationPlan) {
       delete q.correct_answer;
       delete q.accepted_answers;
       delete q.points;
+      delete q.rubric;
+      q.step_by_step_solution='';
+      q.parts=q.parts?.map(part=>({id:part.id,label:part.label,content:part.content}));
       q.sub_questions = q.sub_questions?.map((sub) => {
         const value = { ...sub };
         delete value.isCorrect;

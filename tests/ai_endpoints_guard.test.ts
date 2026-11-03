@@ -11,7 +11,7 @@ const providerFiles = files.filter(({ text }) => /new GoogleGenAI\(/.test(text))
 
 test('provider clients are only created in the known places', () => {
   assert.deepEqual(providerFiles.map(item => item.file).sort(), [
-    'src/app/api/exam-copilot/route.ts', 'src/app/api/generate-exam/route.ts', 'src/app/api/knowledge-scope/propose/route.ts', 'src/app/api/ocr-exam-image/route.ts',
+    'src/app/api/exam-copilot/route.ts', 'src/lib/exam-generation.ts', 'src/app/api/knowledge-scope/propose/route.ts', 'src/app/api/ocr-exam-image/route.ts',
     'src/app/api/parse-docx/route.ts', 'src/app/api/parse-exam-text/route.ts', 'src/app/api/teacher/ai-memory/analyze/route.ts', 'src/app/api/teacher/assistant/route.ts',
     'src/app/api/tweak-question/route.ts', 'src/app/api/verify-question/route.ts',
   ].sort(), 'a new place that calls the provider must be reviewed against these rules, then added here');
@@ -21,13 +21,14 @@ test('every route that calls the provider goes through the per-user key helper w
   assert.ok(providerFiles.length >= 10);
   for (const { file, text } of providerFiles) {
     assert.match(text, /executeWithKeyRotation\(/, `${file} must use executeWithKeyRotation`);
-    assert.match(text, /userId:\s*[\w.]+/, `${file} must pass the signed-in user id to the helper`);
-    assert.match(text, /requireAuth|requireRequestAuth|requireTeacher|getCurrentUser/, `${file} must authenticate the caller`);
+    assert.match(text, /userId(?:\s*:\s*[\w.]+|\s*[,}])/, `${file} must pass the signed-in user id to the helper`);
+    if(file==='src/lib/exam-generation.ts'){for(const caller of ['src/app/api/generate-exam/route.ts','src/app/api/exam-copilot/route.ts'])assert.match(files.find(item=>item.file===caller)!.text,/requireAuth/,caller+' authenticates before calling the shared core');}
+    else assert.match(text, /requireAuth|requireRequestAuth|requireTeacher|getCurrentUser/, `${file} must authenticate the caller`);
   }
 });
 
-test('only routes create a provider client, so the key can only come from the helper callback', () => {
-  assert.ok(providerFiles.every(item => item.file.startsWith('src/app/api/')), 'no library creates a client with a key of its own');
+test('reviewed provider clients use only the helper callback key', () => {
+  assert.ok(providerFiles.every(item => item.file.startsWith('src/app/api/') || item.file==='src/lib/exam-generation.ts'), 'no library creates a client with a key of its own');
   assert.ok(providerFiles.length >= 10, 'the route scan must actually find the AI routes');
   for (const { file, text } of providerFiles) assert.match(text, /new GoogleGenAI\(\{\s*apiKey(\s*:\s*key)?\s*(?:,\s*httpOptions:\s*\{\s*retryOptions:\s*\{\s*attempts:\s*1\s*\}\s*\}\s*)?\}\)/, `${file} builds the client from the callback key`);
 });

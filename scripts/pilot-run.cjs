@@ -4,7 +4,7 @@ const { spawnSync } = require('node:child_process');
 const path = require('node:path');
 const { requireTestDatabase } = require('../tests/helpers/test-database.ts');
 async function main() {
-  process.loadEnvFile(path.resolve('.env'));
+  if (fs.existsSync(path.resolve('.env'))) process.loadEnvFile(path.resolve('.env'));
   const app = new URL(process.env.DATABASE_URL);
   const target = new URL(app); target.pathname = '/examcraft_test_20261022';
   const env = { ...process.env, TEST_DATABASE_URL: target.href, EXAMCRAFT_ALLOW_TEST_DB: '1' };

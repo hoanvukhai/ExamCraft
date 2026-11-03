@@ -1,8 +1,10 @@
+import {examTargetSchema} from './exam-request';
 import { getCatalogSubjects } from './education-catalog';
 import { z } from 'zod';
 import type { Exam, ExamMetadata } from '@/types/exam';
 import { normalizeExamDocument } from './exam-document';
 export const copilotMetadataSchema = z.object({
+ targetExam:examTargetSchema.optional(),examKind:z.enum(['regular','midterm','final','survey','mock','gifted','other']).optional(),locality:z.string().max(200).optional(),
  title:z.string().trim().min(1).max(500).optional(),subject:z.string().min(1).max(100).refine(value=>getCatalogSubjects().some(subject=>subject.key===value),'Môn chưa có trong danh mục.').optional(),grade:z.number().int().min(1).max(12).optional(),
  durationMinutes:z.number().finite().min(0).max(1440).optional(),academicYear:z.string().max(200).optional(),semester:z.string().max(200).optional(),
  schoolName:z.string().max(500).optional(),departmentName:z.string().max(500).optional(),examCode:z.string().max(200).optional(),notes:z.string().max(2000).optional(),

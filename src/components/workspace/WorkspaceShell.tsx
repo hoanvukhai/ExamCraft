@@ -37,7 +37,7 @@ function Frame({ children }: { children: ReactNode }) {
 /** The frame for every signed-in page. The editor page is a design surface: it draws its own bars and hides the page menu and rail. */
 export function WorkspaceShell({ user, children }: { user: WorkspaceUser; children: ReactNode }) {
   return (
-    <WorkspaceProvider user={user}>
+    <WorkspaceProvider key={user.id} user={user}>
       <Frame>{children}</Frame>
     </WorkspaceProvider>
   );

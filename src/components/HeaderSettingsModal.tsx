@@ -273,7 +273,7 @@ export function HeaderForm({
                   min={0}
                   max={1440}
                   placeholder="VD: 45, 60, 90..."
-                  value={Number.isNaN(displayForm.durationMinutes) ? '' : displayForm.durationMinutes}
+                  value={displayForm.durationMinutes === undefined || Number.isNaN(displayForm.durationMinutes) ? '' : displayForm.durationMinutes}
                   onChange={(event) =>
                     change({
                       durationMinutes: event.target.value === '' ? Number.NaN : Number(event.target.value),

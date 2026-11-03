@@ -1,4 +1,5 @@
 import type { Exam, OutlineNode, Passage, Question } from '@/types/exam';
+import {withEditorParts} from './editor-parts';
 import { syncOutline } from './exam-outline';
 
 /** What one edit changed, by object. Reverting only touches objects that are still exactly as the edit left them. */
@@ -17,6 +18,7 @@ export type ExamDiff = {
   passages: string[];
   metadata: string[];
   outline: boolean;
+  sections: boolean;
 };
 
 export function diffExam(before: Exam, after: Exam): ExamDiff {
@@ -39,6 +41,7 @@ export function diffExam(before: Exam, after: Exam): ExamDiff {
     questions: changed(before.questions, after.questions),
     passages: changed(before.passages, after.passages),
     metadata: metaKeys,
+    sections: !same(before.sections,after.sections),
     outline:
       !same(before.outline, after.outline) ||
       !same(
@@ -49,7 +52,7 @@ export function diffExam(before: Exam, after: Exam): ExamDiff {
 }
 
 export const hasChange = (diff: ExamDiff) =>
-  diff.questions.length > 0 || diff.passages.length > 0 || diff.metadata.length > 0 || diff.outline;
+  diff.questions.length > 0 || diff.passages.length > 0 || diff.metadata.length > 0 || diff.outline || diff.sections;
 
 export const diffSignature = (diff: ExamDiff) => canonical(diff);
 
@@ -82,6 +85,7 @@ export function revertChange(current: Exam, change: Change): Reverted {
     let passages: Passage[] | undefined = current.passages ? [...current.passages] : undefined;
     const metadata = { ...current.metadata } as unknown as Record<string, unknown>;
     let outline: OutlineNode[] | undefined = current.outline;
+    let sections=current.sections;
 
     for (const id of diff.questions) {
       const was = pick(change.before.questions, id),
@@ -120,8 +124,9 @@ export function revertChange(current: Exam, change: Change): Reverted {
         else metadata[key] = was;
       } else skipped.push('thông tin đã được sửa tiếp');
     }
+    if(withStructure&&diff.sections){if(same(current.sections,change.after.sections))sections=change.before.sections;else skipped.push('phần chấm điểm đã đổi sau đó');}
     if (withStructure && diff.outline) {
-      if (same(current.outline, change.after.outline)) outline = change.before.outline;
+      if (same(withEditorParts(current).outline, withEditorParts(change.after).outline)) outline = change.before.outline;
       else skipped.push('thứ tự và cấu trúc đã đổi sau đó');
     }
     return {
@@ -129,6 +134,7 @@ export function revertChange(current: Exam, change: Change): Reverted {
       questions,
       passages,
       metadata: metadata as unknown as Exam['metadata'],
+      sections,
       outline,
     } as Exam;
   };

@@ -1,4 +1,5 @@
 'use client';
+import { copyChatSessionsAfterCreate } from '@/lib/chat-session';
 import { withEditorParts } from '@/lib/editor-parts';
 import { reconcileQuestionOutline } from '@/lib/exam-outline';
 
@@ -48,7 +49,7 @@ function blankExam(): Exam {
   };
 }
 
-export function useExamPersistence(ownerId: string, requestedId?: string, creationFolderId?: string | null) {
+export function useExamPersistence(ownerId: string, requestedId?: string, creationFolderId?: string | null, initialDocument?:Exam) {
   const pathname = usePathname();
   const [exam, setValue] = useState<Exam>(blankExam);
   const [state, setState] = useState<SaveState>('loading');
@@ -134,10 +135,10 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
     setFolderUnavailable(false);
     (async () => {
       try {
-        const draft = readDraft(localStorage, ownerId, id);
+        const draft = id==='new' && initialDocument ? null : readDraft(localStorage, ownerId, id);
         if (!cancelled) setRecoveredDraft(Boolean(draft && id !== 'new'));
         let loaded: Exam;
-        if (id === 'new') loaded = draft ?? { ...blankExam(), creationFolderId: creationFolderId ?? null };
+        if (id === 'new') loaded = initialDocument ? {...initialDocument,creationFolderId:creationFolderId??null} : draft ?? { ...blankExam(), creationFolderId: creationFolderId ?? null };
         else {
           const server = await loadExam(id, ownerId);
           loaded = draft ? { ...draft, access: server.access } : server;
@@ -161,12 +162,12 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
         current.current = loaded;
         if (!draft) serverBase.current = loaded;
         setValue(loaded);
-        edits.current = draft ? 1 : 0;
+        edits.current = draft || initialDocument ? 1 : 0;
         savedEdits.current = 0;
         ready.current = true;
         setLoadedKey(`${ownerId}/${requestedId ?? 'new'}`);
         // Opening a new sheet is not an edit. Recovered drafts still need their normal save.
-        setState(draft ? 'dirty' : id === 'new' ? 'pristine' : 'saved');
+        setState(draft || initialDocument ? 'dirty' : id === 'new' ? 'pristine' : 'saved');
         setMessage(
           id === 'new' && draft && (draft.creationFolderId ?? null) !== (creationFolderId ?? null)
             ? 'Đang giữ bản nháp trước cùng vị trí tạo ban đầu. Hãy lưu hoặc giữ bản này thành đề riêng trước khi tạo đề ở thư mục khác.'
@@ -201,7 +202,7 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
     return () => {
       cancelled = true;
     };
-  }, [ownerId, requestedId, creationFolderId, pathname]);
+  }, [ownerId, requestedId, creationFolderId, pathname, initialDocument]);
 
   const freezeAccess = useCallback(() => {
     let warning = '';
@@ -246,6 +247,7 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
               access: saved.access,
             };
         if (!document.serverId && document.id !== saved.id) {
+          try{const copied=copyChatSessionsAfterCreate(savingOwner,document.id,saved.id,localStorage);if(!copied)setMessage('Đề đã lưu; hội thoại trước còn ở ID nháp để tải và đối chiếu. Chưa ghi đè hội thoại ở đề mới.');else if(sessionStorage.getItem('examcraft:bootstrap-id:'+encodeURIComponent(savingOwner))===document.id)sessionStorage.setItem('examcraft:bootstrap-id:'+encodeURIComponent(savingOwner),'bootstrap_'+crypto.randomUUID());}catch{setMessage('Đề đã lưu; bộ nhớ máy chưa xác nhận chuyển hội thoại. Bản trước vẫn được giữ.');}
           try {
             if (!copyQuestionDraftsAfterCreate(savingOwner, document.id, saved.id, localStorage))
               setMessage(

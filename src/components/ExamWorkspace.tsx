@@ -1,4 +1,6 @@
 'use client';
+import { ExamBootstrapGate, type InitialEditorTool } from '@/components/ExamBootstrap';
+import { selectionTarget } from '@/lib/copilot-target';
 
 import { applyCopilotSubmission } from '@/lib/copilot-submission';
 
@@ -136,6 +138,8 @@ interface ExamWorkspaceProps {
     role: string;
   };
   examId?: string;
+  initialDocument?:Exam;
+  initialTool?:InitialEditorTool;
 }
 
 /** A new question that is still exactly as inserted: leaving it removes it instead of leaving an empty question behind. */
@@ -201,7 +205,7 @@ function ConflictChoices({
   );
 }
 
-const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examId }) => {
+const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examId, initialDocument, initialTool }) => {
   const creationFolder = useSearchParams().get('folder');
   const {
     exam,
@@ -222,7 +226,7 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     recoveredDraft,
     dismissRecoveredDraft,
     ready,
-  } = useExamPersistence(currentUser.id, examId, examId === 'new' ? creationFolder : undefined);
+  } = useExamPersistence(currentUser.id, examId, examId === 'new' ? creationFolder : undefined,initialDocument);
   const canEdit = ready && exam.access?.canEdit !== false;
   const canPublish = ready && exam.access?.canPublish !== false;
   const manualSourceStamp = useMemo(() => questionDraftSourceStamp(exam), [exam]);
@@ -263,6 +267,13 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       redo: [],
     }));
   }, [exam]);
+  const initialContentUndo=useRef(false);
+  useEffect(()=>{
+    if(!ready||!initialDocument?.questions.length||initialContentUndo.current)return;
+    initialContentUndo.current=true;
+    const blank={...exam,questions:[],passages:undefined,outline:undefined,sections:undefined};
+    const change=makeChange(blank,exam);if(change)queueMicrotask(()=>setHistory(previous=>previous.undo.length?previous:{undo:[change],redo:[]}));
+  },[ready,initialDocument,exam]);
   const travel = (direction: 'undo' | 'redo') => {
     const stack = history[direction];
     const entry = stack.at(-1);
@@ -566,6 +577,11 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       openAi('generate');
     } else open();
   };
+  const initialToolOpened=useRef(false);
+  useEffect(()=>{if(!ready||!initialTool||initialToolOpened.current)return;initialToolOpened.current=true;if(initialTool==='import')openSource('import');else if(initialTool==='template')showTab('template');if(initialTool!=='detail')setPhonePanel(true);
+  // Only open the explicitly selected startup tool once; do not reopen after each edit.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[ready,initialTool]);
   const acceptSource = (
     questions: Question[],
     passages?: import('@/types/exam').Passage[],
@@ -1505,7 +1521,7 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
           <>
             <AppMenu />
             {canEdit && (
-              <span className="hidden sm:flex items-center gap-0.5" role="group" aria-label="Hoàn tác">
+              <span className="flex items-center gap-0.5" role="group" aria-label="Hoàn tác">
                 <button
                   type="button"
                   aria-label="Hoàn tác"
@@ -1987,6 +2003,7 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                       selectedQuestionIds={
                         pickedQuestionIds.length ? pickedQuestionIds : aiQuestion ? [aiQuestion.id] : []
                       }
+                      target={selectionTarget(selectedCode,pickedQuestionIds)}
                       externalCommand={copilotCommand}
                       keyState={keyState}
                       onKeys={() => { setIsCopilotOpen(false); openKeys(); }}
@@ -2157,10 +2174,9 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   );
 };
 
-export const ExamWorkspace: React.FC<ExamWorkspaceProps> = (props) => (
-  <EditorSelectionProvider key={props.currentUser.id + ':' + props.examId}>
-    <ExamWorkspaceContent {...props} />
-  </EditorSelectionProvider>
-);
+export const ExamWorkspace: React.FC<ExamWorkspaceProps> = (props) => {
+ const renderEditor=(initial?:Exam,tool?:InitialEditorTool)=><EditorSelectionProvider key={props.currentUser.id+':'+props.examId}><ExamWorkspaceContent {...props} initialDocument={initial??props.initialDocument} initialTool={tool??props.initialTool}/></EditorSelectionProvider>;
+ return props.examId==='new'?<ExamBootstrapGate key={props.currentUser.id} ownerId={props.currentUser.id} renderEditor={renderEditor}/>:renderEditor();
+};
 
 export default ExamWorkspace;

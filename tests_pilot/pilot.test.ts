@@ -1,4 +1,4 @@
-import { saveEditor, addSource, acceptReview, exportTool, openAccount, openCopilot, questionCommandAt, questionMenuItemAt } from './editor-ui';
+import { saveEditor, addSource, acceptReview, exportTool, openAccount, openCopilot, selectQuestion, questionCommandAt, questionMenuItemAt } from './editor-ui';
 import test from 'node:test';
 import { writeQaReport } from '../tests/helpers/qa-report';
 import http from 'node:http';
@@ -201,6 +201,10 @@ test('F2 author seven types, image, passage, zero, title and reopen', { timeout:
     await route.fulfill({ response });
   });
   await f.page.getByRole('button', { name: 'Tạo đề', exact: true }).click();
+  await f.page.getByRole('button',{name:'Tự soạn',exact:true}).click();
+  await f.page.getByLabel('Lớp bắt đầu',{exact:true}).selectOption('6');
+  await f.page.getByLabel('Môn bắt đầu',{exact:true}).selectOption('toan');
+  await f.page.getByRole('button',{name:'Mở bàn soạn',exact:true}).click();
   await f.page.getByTitle('Nhấn để đổi tên đề thi').click();
   const titleInput = f.page.locator('header input').first(); await titleInput.fill('Pilot Toán 6 tự soạn'); await titleInput.press('Enter');
   // The part and its shared passage are chosen in the outline and on the sheet; questions are added at the selection.
@@ -358,8 +362,8 @@ test('F5 assign link with and without class and inspect frozen policies', { time
   for(const classId of ['',group.id]){
     await openExam(f,id);await f.page.getByTitle('Tạo link cho học sinh làm bài hoặc chia sẻ đề cho đồng nghiệp').click();await f.page.getByLabel('Giao cho lớp học').locator('option',{hasText:'Lớp pilot'}).waitFor({state:'attached'}); /* the class list loads asynchronously and selects its first class when it arrives */ await f.page.getByLabel('Giao cho lớp học').selectOption(classId);await click(f.page,/Bài Trên Lớp/);
     if(!classId){
-      // datetime-local uses minute precision. Wait for the real server clock to cross this near-future deadline.
-      closing=new Date(Math.ceil((Date.now()+12000)/60000)*60000);
+      // datetime-local uses minute precision. Give the UI flow enough headroom; tighten only the dedicated fixture after its student form is open.
+      closing=new Date(Math.ceil((Date.now()+180000)/60000)*60000);
       const local=(d:Date)=>{const pad=(n:number)=>String(n).padStart(2,'0');return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes());};
       await f.page.getByText('Tùy chọn nâng cao: giờ mở/đóng, số lượt, mã vào bài',{exact:true}).click();
       await f.page.getByLabel('Giờ mở (để trống: mở ngay)',{exact:true}).fill(local(new Date(Date.now()-60000)));
@@ -410,6 +414,8 @@ test('F5 assign link with and without class and inspect frozen policies', { time
   assert.ok(policyText.includes('Mở:') && policyText.includes('Đóng:') && policyText.includes('Số lượt:'));
   assert.ok(!policyText.includes('không đặt hạn')); assert.ok(!policyText.includes('ngay khi giao'));
   const guest=await f.context(),p=await guest.newPage();await p.goto(origin+'/a/'+advanced.publicId);await p.getByPlaceholder('Ví dụ: Nguyễn Văn An').waitFor();
+  // Exercise server revalidation on an already-open form without racing all preceding UI steps.
+  closing=new Date(Date.now()+1500);await f.db.assignment.update({where:{id:advanced.id},data:{closesAt:closing}});
   await waitUntil(async()=>Date.now()>closing!.getTime()+200, 'Real server close time not reached',90000);
   await p.getByPlaceholder('Ví dụ: Nguyễn Văn An').fill('Vào muộn pilot');
   const code=p.locator('input').filter({visible:true}).first();await code.fill('PILOT01');
@@ -798,9 +804,11 @@ test('F19 library search, starred, recent, trash, restore and safe controls', { 
   await f.page.getByRole('button', { name: 'Hỏi đáp với Trợ lý AI', exact: true }).filter({ visible: true }).click();
   await f.page.getByRole('heading', { name: 'Hỏi AI', exact: true }).waitFor();
   await f.page.getByRole('button', { name: 'Đóng hỏi đáp AI', exact: true }).click(); checked.push('secretary-open-close-only-no-ai-call');
+  const countBeforeNew=await f.db.exam.count({where:{ownerId:f.ids[0]}});
   await f.page.getByRole('button', { name: 'Tạo đề', exact: true }).click();
-  await f.page.getByTitle('Lưu các thay đổi lên máy chủ').first().waitFor();
-  await menuLink(f.page, 'Tất cả đề thi');
+  await f.page.getByRole('heading', { name: 'Bạn muốn soạn đề gì?', exact: true }).waitFor();
+  assert.equal(await f.db.exam.count({where:{ownerId:f.ids[0]}}),countBeforeNew,'Opening new does not create an empty server exam');
+  await f.page.getByRole('link',{name:'Về kho đề',exact:true}).click();
   for (const id of ids) assert.equal((await f.db.exam.findUniqueOrThrow({ where: { id } })).deletedAt, null);
   checked.push('new-exam-and-return-keeps-originals');
   fs.writeFileSync(reportDir + '/library-ui-' + run + '.json', JSON.stringify({ run, buildId, checkedAt: new Date().toISOString(), inventory, checked, limitation: 'Inventory includes safe controls covered by other pilot flows; this flow does not send AI prompts, submit keys, delete folders or log out.' }, null, 2));
@@ -857,6 +865,7 @@ test('F21 collaborator Copilot uses its own key and preserves the owner concurre
     const context = await f.context(), b = await context.newPage(); await login(b, f.emails[1], f.password); await b.waitForURL(origin + '/');
     await f.api('/api/user/keys', 'POST', { apiKey: 'pilot-editor-key-0123456789', label: 'Editor fixture' }, context);
     await b.goto(origin + '/editor/' + id);
+    await selectQuestion(b,'q1'); // This question contains an image: the selected scope sends that image.
     await openCopilot(b);
     await b.locator('#right-copilot-input').fill('Sửa nội dung câu 1 thành câu thử F21'); await b.locator('#right-copilot-input').press('Enter');
     await waitUntil(async () => mock.keys.length === 1, 'Collaborator request must reach local provider');
@@ -868,7 +877,7 @@ test('F21 collaborator Copilot uses its own key and preserves the owner concurre
     const aiQuestion = { ...document().questions[0], content: 'F21 AI PROPOSAL' };
     mock.respond({ type: 'action', action: 'modify_single_question', targetQuestionIndex: 1, targetQuestionId: 'q1', explanation: 'F21 proposal', modifiedQuestion: aiQuestion });
     const proposal = b.getByRole('region', { name: 'Đề xuất AI chưa áp dụng' });
-    await b.getByText('F21 proposal', { exact: true }).waitFor();
+    await proposal.getByText('F21 proposal', { exact: true }).waitFor();
     const apply = b.getByRole('region', { name: 'Bảng AI', exact: true }).getByRole('button', { name: 'Áp dụng', exact: true });
     if (await apply.isEnabled()) { await apply.click(); await saveEditor(b); if (await b.getByLabel('Trạng thái lưu', {exact:true}).getAttribute('aria-expanded') !== 'true') await b.getByLabel('Trạng thái lưu', {exact:true}).click(); await b.getByText('Lưu bản nháp thành đề mới', { exact: true }).waitFor(); }
     else { await b.getByText(/Chưa áp dụng để giữ bản mới/).waitFor(); }

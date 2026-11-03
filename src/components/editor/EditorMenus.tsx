@@ -1,4 +1,5 @@
 'use client';
+import { createPortal } from 'react-dom';
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -151,7 +152,7 @@ export function AccountMenu() {
           {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
         </span>
       </button>
-      {open && (
+      {open && createPortal(
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
           <div
@@ -221,7 +222,7 @@ export function AccountMenu() {
               </p>
             )}
           </div>
-        </>
+        </>, document.body
       )}
     </div>
   );

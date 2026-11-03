@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import type {Exam} from '../src/types/exam';
-import {captureCopilotBase,prepareCopilotSubmission,applyCopilotSubmission} from '../src/lib/copilot-submission';
+import {captureCopilotBase,metadataCopilotBase,prepareCopilotSubmission,applyCopilotSubmission} from '../src/lib/copilot-submission';
 import {validateCopilotResult} from '../src/lib/copilot-result';
 import {createAiProposal,parseAiProposal} from '../src/lib/ai-proposal-journal';
 import {makeChange,revertChange} from '../src/lib/undo-history';
@@ -34,4 +34,12 @@ test('new metadata journal is version 2; owner guard remains and old version 1 s
  const entry=createAiProposal({kind:'copilot',base,result:{action:'update_metadata',metadataPatch:{title:'New'}}},storage);
  assert.equal(parseAiProposal(entry.raw,'teacher',doc.id).formatVersion,2);assert.throws(()=>parseAiProposal(entry.raw,'other',doc.id));
  const old={...JSON.parse(entry.raw),formatVersion:1,result:{action:'delete_question',targetQuestionId:'missing'}};assert.equal(parseAiProposal(JSON.stringify(old),'teacher',doc.id).formatVersion,1);
+});
+
+test('lean metadata proposal avoids copying image bytes and never overwrites newer question content',()=>{
+ const doc=exam();doc.questions=[{id:'q',type:'short_answer',difficulty:'thong_hieu',content:'old',step_by_step_solution:'',correct_answer:'1',figures:[{id:'image',kind:'image',data:'data:image/png;base64,KEEP_ORIGINAL'}]}];
+ const base=metadataCopilotBase(captureCopilotBase('teacher',doc));assert.ok(!JSON.stringify(base).includes('KEEP_ORIGINAL'));
+ const newer={...doc,questions:doc.questions.map(q=>({...q,content:'New local edit'}))};
+ const submission=prepareCopilotSubmission(base,{action:'update_metadata',metadataPatch:{title:'Renamed'}},'teacher',newer)!;assert.ok(submission);
+ const after=applyCopilotSubmission(newer,submission,'teacher');assert.equal(after.metadata.title,'Renamed');assert.deepEqual(after.questions,newer.questions);
 });

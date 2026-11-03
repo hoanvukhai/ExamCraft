@@ -66,8 +66,10 @@ export function parseProviderJson(text: string): unknown {
   catch { throw new ApiError(502, 'AI trả về kết quả không đọc được. Chưa có gì được lưu; hãy thử lại hoặc nhập thủ công.', 'AI_BAD_OUTPUT'); }
 }
 
+export interface ProviderBudget { remaining:number }
+
 /** One authenticated operation uses only the user's temporary key or saved keys. No implicit model change. */
-export async function executeWithKeyRotation<T>(customKey: string | undefined, operation: (apiKey: string, model: string) => Promise<T>, context?: { userId?: string; endpoint?: string; model?: string; signal?: AbortSignal; dataVersion?: string }): Promise<T> {
+export async function executeWithKeyRotation<T>(customKey: string | undefined, operation: (apiKey: string, model: string) => Promise<T>, context?: { userId?: string; endpoint?: string; model?: string; signal?: AbortSignal; dataVersion?: string; budget?:ProviderBudget }): Promise<T> {
   if (!context?.userId) throw new AiRequestError('Vui lòng đăng nhập để dùng AI.', 401, 'UNAUTHORIZED');
   const cancelled = () => new AiRequestError('Đã hủy yêu cầu AI; chưa áp dụng kết quả.', 499, 'AI_CANCELLED');
   if (context.signal?.aborted) throw cancelled();
@@ -95,6 +97,7 @@ export async function executeWithKeyRotation<T>(customKey: string | undefined, o
     let result: T;
     try {
       if (context.signal?.aborted) throw cancelled();
+      if(context.budget){if(context.budget.remaining<=0)throw new ApiError(422,'Đã dùng hết số lượt cho yêu cầu này. Chưa tự gọi tiếp.','AI_INCOMPLETE');context.budget.remaining--;}
       result = await operation(key.rawKey, reservation.model);
       if (context.signal?.aborted) throw cancelled();
     }

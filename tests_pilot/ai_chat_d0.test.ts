@@ -121,15 +121,18 @@ test('Chat AI Đ0: loaded metadata, idle new, composer revisions and contextual 
         if (['POST', 'PATCH'].includes(request.method()) && /\/api\/exams(?:\/[^/]+)?$/.test(new URL(request.url()).pathname)) saves.push(request.method());
       };
       page.on('request', listener);
-      await page.goto(origin + '/editor/new'); await info();
-      await page.getByLabel('Tên đề', { exact: true }).waitFor();
+      await page.goto(origin + '/editor/new');
+      await page.getByRole('heading',{name:'Bạn muốn soạn đề gì?',exact:true}).waitFor();
       await delay(5500);
       assert.equal(page.url(), origin + '/editor/new');
       assert.deepEqual(saves, []);
       assert.equal(await db.exam.count({ where: { ownerId: id } }), before);
-      assert.match(await page.getByLabel('Trạng thái lưu', { exact: true }).innerText(), /Chưa lưu/);
+      assert.equal(await page.getByLabel('Lớp của đề',{exact:true}).count(),0);
       assert.equal(await page.evaluate(owner => localStorage.getItem('examcraft:draft:' + encodeURIComponent(owner) + ':new'), id), null);
-      await page.getByLabel('Tên đề', { exact: true }).fill('Đề mới do người dùng sửa');
+      await page.getByRole('button',{name:'Tự soạn',exact:true}).click();
+      await page.getByLabel('Lớp bắt đầu',{exact:true}).selectOption('6');
+      await page.getByLabel('Môn bắt đầu',{exact:true}).selectOption('toan');
+      await page.getByRole('button',{name:'Mở bàn soạn',exact:true}).click();
       await until(async () => page.url() !== origin + '/editor/new', 'first real edit is saved');
       assert.equal(await db.exam.count({ where: { ownerId: id } }), before + 1);
       assert.equal(saves.filter(method => method === 'POST').length, 1);
@@ -163,12 +166,14 @@ test('Chat AI Đ0: loaded metadata, idle new, composer revisions and contextual 
       checks.push('TC-077 access loss retains disabled unfinished form');
     });
 
+    await context.route('**/api/user/keys',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({keys:[{isActive:true,errorCount:0}],poolQuota:{usedToday:0}})}));
     await t.test('TC-019: action response preserves B, ABA revision, chip draft; unchanged sent draft clears; no auto-send', async () => {
       const cases = ['typed-B', 'ABA', 'chip', 'unchanged', 'clarification', 'error'] as const;
       for (const scenario of cases) {
         await page.setViewportSize({ width: 1440, height: 1000 });
         await page.goto(origin + '/editor/' + examId); await info();
         await openCopilot(page);
+        if(scenario==='chip')await page.getByRole('button',{name:'Yêu cầu mới',exact:true}).click();
         if (scenario === 'typed-B') await page.setViewportSize({ width: 375, height: 812 });
         const input = page.getByLabel('Yêu cầu cho AI', { exact: true });
         await input.fill('Yêu cầu A');
@@ -194,7 +199,7 @@ test('Chat AI Đ0: loaded metadata, idle new, composer revisions and contextual 
           if (scenario === 'ABA') await input.fill('Yêu cầu A');
         } finally { release(); }
         if (scenario === 'error') await page.getByText('Lỗi dịch vụ giả lập Đ0', { exact: true }).waitFor();
-        else if (scenario === 'clarification') await page.getByText('Câu hỏi giả lập Đ0', { exact: true }).waitFor();
+        else if (scenario === 'clarification') await page.getByLabel('Tự nhập câu trả lời',{exact:true}).waitFor();
         else await page.getByRole('region', { name: 'Đề xuất AI chưa áp dụng', exact: true }).waitFor();
         const expected = scenario === 'unchanged' ? '' : ['ABA', 'chip'].includes(scenario) ? 'Yêu cầu A' : 'B — đang gõ tiếng Việt';
         assert.equal(await input.inputValue(), expected, scenario);
@@ -216,6 +221,11 @@ test('Chat AI Đ0: loaded metadata, idle new, composer revisions and contextual 
       for (const width of [320, 375, 390, 1440]) {
         await page.setViewportSize({ width, height: width === 1440 ? 1000 : 812 });
         await page.goto(origin + '/editor/new');
+        await page.getByRole('button',{name:'Tự soạn',exact:true}).click();
+        await page.getByLabel('Lớp bắt đầu',{exact:true}).selectOption('6');
+        await page.getByLabel('Môn bắt đầu',{exact:true}).selectOption('toan');
+        await page.getByRole('button',{name:'Mở bàn soạn',exact:true}).click();
+        await until(async()=>!page.url().endsWith('/new'),'manual empty exam saved');
         await until(async () => await page.getByLabel('Tên đề', { exact: true }).count() > 0, 'new editor ready');
         await openCopilot(page);
         assert.equal(await page.getByRole('button', { name: 'Đổi số liệu các câu', exact: true }).count(), 0);

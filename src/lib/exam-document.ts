@@ -1,3 +1,4 @@
+import { examTargetSchema } from './exam-request';
 import type { Prisma } from '@prisma/client';
 import type { Exam, Question, QuestionType, DifficultyLevel, Subject, Figure } from '@/types/exam';
 import { parseKnowledgePackage, resolveKnowledgeScope } from './knowledge-package';
@@ -302,6 +303,7 @@ export function normalizeExamDocument(input: unknown): Exam {
   if (new Set(questions.map((q) => q.id)).size !== questions.length)
     throw new DocumentValidationError('Mã câu hỏi bị trùng; cần tạo bản sao với mã riêng');
   const document = { ...clone(raw), metadata: { ...clone(metadata), grade }, questions } as unknown as Exam;
+  if(metadata.targetExam!==undefined){try{document.metadata.targetExam=examTargetSchema.parse(metadata.targetExam);}catch{throw new DocumentValidationError('Thông tin mục tiêu kỳ thi chưa hợp lệ.');}}
   if (metadata.templateApplication !== undefined) {
     try {
       document.metadata.templateApplication = templateApplicationSchema.parse(metadata.templateApplication);

@@ -7,7 +7,7 @@ const desktopSnapshot = () => matchMedia(query).matches;
 const serverSnapshot = () => false;
 
 /** Dock on desktop; on narrow screens keep keyboard focus in the full-screen panel. */
-export function useSidePanel(open: boolean, onClose: () => void) {
+export function useSidePanel(open: boolean, onClose: () => void, trapFocus=true) {
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef(onClose);
   useEffect(() => { closeRef.current = onClose; }, [onClose]);
@@ -21,7 +21,7 @@ export function useSidePanel(open: boolean, onClose: () => void) {
     const keyboard = (event: KeyboardEvent) => {
       if (!panel.contains(document.activeElement)) return;
       if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closeRef.current(); }
-      if (modal && event.key === 'Tab') {
+      if (modal && trapFocus && event.key === 'Tab') {
         const items = controls(), first = items[0], last = items.at(-1);
         if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
         if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
@@ -29,6 +29,6 @@ export function useSidePanel(open: boolean, onClose: () => void) {
     };
     document.addEventListener('keydown', keyboard);
     return () => { document.removeEventListener('keydown', keyboard); if ((panel.contains(document.activeElement) || document.activeElement === document.body) && previous?.isConnected && previous.getClientRects().length) previous.focus(); };
-  }, [open, modal]);
+  }, [open, modal, trapFocus]);
   return { panelRef, modal };
 }

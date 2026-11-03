@@ -114,6 +114,8 @@ export async function POST(req: NextRequest) {
     if (exam.items.length === 0 || exam.items.some(item => item.question.deletedAt || item.question.ownerId !== user.id)) {
       return NextResponse.json({ error: 'Đề phải có câu hỏi hợp lệ thuộc quyền sở hữu của bạn' }, { status: 400 });
     }
+    const assignmentDuration=data.durationMinutes??exam.durationMinutes;
+    if((data.mode!=='HOMEWORK'&&!assignmentDuration)||(assignmentDuration!=null&&(!Number.isInteger(assignmentDuration)||assignmentDuration<1||assignmentDuration>1440)))return NextResponse.json({error:'Hãy đặt thời lượng làm bài trước khi giao. Đề chưa có thời lượng.'},{status:400});
     const opensAt = data.opensAt ? new Date(data.opensAt) : new Date();
     const closesAt = data.closesAt ? new Date(data.closesAt) : null;
     if (closesAt && closesAt <= opensAt) return NextResponse.json({ error: 'Thời gian đóng phải sau thời gian mở' }, { status: 400 });
@@ -134,7 +136,7 @@ export async function POST(req: NextRequest) {
     const snapshot = {
       ...document,
       examId: exam.id, title: exam.title, subject: exam.subject, grade: exam.grade,
-      durationMinutes: data.durationMinutes || exam.durationMinutes || 60,
+      durationMinutes: assignmentDuration,
       sections: frozen.sections, questions: frozen.questions,
       snapshotAt: new Date().toISOString(),
     };
@@ -158,7 +160,7 @@ export async function POST(req: NextRequest) {
         snapshot: JSON.parse(JSON.stringify(snapshot)),
         opensAt,
         closesAt,
-        durationMinutes: data.durationMinutes || exam.durationMinutes || 60,
+        durationMinutes: assignmentDuration,
         maxAttempts: data.maxAttempts,
         shuffleQuestions: data.shuffleQuestions,
         shuffleChoices: data.shuffleChoices,

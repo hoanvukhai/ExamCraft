@@ -2,7 +2,7 @@ import { copilotMetadataSchema } from './copilot-metadata';
 import type { Question } from '@/types/exam';
 import type { QuestionAiBase } from './question-ai-review';
 import type { CopilotActionResult, CopilotBase } from './copilot-submission';
-import { normalizeQuestion } from './exam-document';
+import { normalizeExamDocument, normalizeQuestion } from './exam-document';
 
 type Payload = { kind: 'question'; base: QuestionAiBase; question: Question } | { kind: 'copilot'; base: CopilotBase; result: CopilotActionResult };
 export type AiProposalRecord = Payload & { formatVersion: 1 | 2; journalId: string; createdAt: string };
@@ -34,8 +34,11 @@ export function parseAiProposal(raw: string, ownerId: string, documentId?: strin
     normalizeQuestion(value.base.question); normalizeQuestion({ ...value.question, id: value.base.question.id });
   } else if (value.kind === 'copilot') {
     if (!Array.isArray(value.base.questions) || value.base.questions.length > 1000 || !value.result || typeof value.result.action !== 'string') throw Error('Invalid Copilot proposal.');
+    if(value.base.metadataOnly&&(!value.base.metadata||value.base.questions.length||value.base.sourceStamp!=='metadata-only'))throw Error('Invalid metadata base.');
     value.base.questions.forEach(normalizeQuestion);
     if (value.result.metadataPatch) { if(value.formatVersion!==2||!value.base.metadata) throw Error('Missing metadata base.');copilotMetadataSchema.parse(value.result.metadataPatch); }
+    if(value.result.candidate)normalizeExamDocument(value.result.candidate);
+    value.result.modifiedQuestions?.forEach(normalizeQuestion);
     if (value.result.modifiedQuestion) normalizeQuestion(value.result.modifiedQuestion);
   } else throw Error('Unknown proposal format.');
   return value;
@@ -65,7 +68,7 @@ export function countArchivedAiProposals(ownerId: string): number {
 
 /** Only immutable proposal/base data is stored; never pass request options or API keys. */
 export function createAiProposal(payload: Payload, storage?: Store): AiProposalEntry {
-  const record: AiProposalRecord = { ...structuredClone(payload), formatVersion: payload.kind === 'copilot' && payload.result.metadataPatch ? 2 : 1, journalId: crypto.randomUUID(), createdAt: new Date().toISOString() };
+  const record: AiProposalRecord = { ...structuredClone(payload), formatVersion: payload.kind === 'copilot' && (payload.result.metadataPatch || payload.result.modifiedQuestions || payload.result.candidate) ? 2 : 1, journalId: crypto.randomUUID(), createdAt: new Date().toISOString() };
   const raw = JSON.stringify(record, (_key, item) => { if (typeof item === 'number' && !Number.isFinite(item)) throw Error('Invalid number in proposal.'); return item; });
   parseAiProposal(raw, record.base.ownerId, record.base.documentId, true);
   const key = aiProposalKey(record); ram.set(key, raw);

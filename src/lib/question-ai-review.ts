@@ -31,6 +31,7 @@ export function prepareQuestionAiSubmission(base: QuestionAiBase, candidate: Que
     for (const key of ['choices', 'sub_questions', 'correct_answer', 'accepted_answers', 'matchingPairs', 'correctOrder'] as const) delete retained[key];
     const value = normalizeQuestion({
       ...retained, ...normalizedCandidate,
+      choices: normalizedCandidate.choices?.map(choice=>{const old=base.question.choices?.find(item=>item.key===choice.key);return !Object.hasOwn(choice,'figures')&&old?.figures?{...choice,figures:old.figures}:choice;}),
       figures: Object.hasOwn(candidate, 'figures') ? normalizedCandidate.figures : retained.figures,
       id: base.question.id, subject: base.question.subject, grade: base.question.grade,
       points: base.question.points,

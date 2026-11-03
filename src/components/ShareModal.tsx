@@ -71,9 +71,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   const setAssignmentTitle = (value: string) => setTitleDraft({ source: exam.metadata.title, value });
   const [mode, setMode] = useState<'HOMEWORK' | 'CLASSWORK' | 'EXAM'>('CLASSWORK');
   const [identityMode, setIdentityMode] = useState<'PICK_FROM_LIST' | 'FREE_NAME'>('PICK_FROM_LIST');
-  const [durationMinutes, setDurationMinutes] = useState<number>(
-    exam?.metadata?.durationMinutes || 45
-  );
+  const [durationMinutes, setDurationMinutes] = useState<number | ''>(exam.metadata.durationMinutes ?? '');
   const [showResult, setShowResult] = useState<'IMMEDIATE' | 'AFTER_CLOSE' | 'NEVER'>('IMMEDIATE');
   const [showSolution, setShowSolution] = useState<'IMMEDIATE' | 'AFTER_CLOSE' | 'NEVER'>('AFTER_CLOSE');
   const [enableLeaderboard, setEnableLeaderboard] = useState<boolean>(false);
@@ -131,6 +129,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   // Xử lý Giao bài lên Server DB (Tạo bản chụp Snapshot bất biến)
   const handleAssignExam = async (e: React.FormEvent) => {
     e.preventDefault();
+    if((mode!=='HOMEWORK'||durationMinutes!=='')&&(!Number.isInteger(Number(durationMinutes))||Number(durationMinutes)<1||Number(durationMinutes)>1440)){setOptionsError('Hãy đặt thời lượng làm bài trước khi giao. Đề chưa đặt thời lượng sẽ không tự dùng 45 phút.');return;}
     const options = buildAssignmentOptions({
       opensAtLocal, closesAtLocal, maxAttempts: maxAttemptsText, defaultMaxAttempts: mode === 'EXAM' ? 1 : 3,
       joinCode: joinCodeText, requirePin, shuffleQuestions, shuffleChoices,
@@ -448,10 +447,13 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                     <input
                       type="number"
                       value={durationMinutes}
-                      onChange={(e) => setDurationMinutes(Number(e.target.value))}
+                      onChange={(e) => setDurationMinutes(e.target.value?Number(e.target.value):'')}
                       className="w-full bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3 py-2 text-[#202124] dark:text-[#e3e3e3] focus:border-[#3c4043] dark:focus:border-[#e3e3e3] outline-hidden"
-                      min={5}
-                      max={300}
+                      aria-label="Thời lượng giao bài (phút)"
+                      placeholder={mode==='HOMEWORK'?'Không giới hạn':'Chưa đặt thời lượng'}
+                      required={mode!=='HOMEWORK'}
+                      min={1}
+                      max={1440}
                     />
                   </div>
 
