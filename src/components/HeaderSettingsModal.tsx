@@ -64,6 +64,14 @@ export function HeaderForm({
     submitted !== null &&
     headerSubmissionApplied(metadata, submitted) &&
     sameHeaderValue(form, { ...submitted.base, ...submitted.patch });
+  const [observed, setObserved] = useState(() => headerEditableSnapshot(metadata));
+  const latest = headerEditableSnapshot(metadata);
+  if (!sameHeaderValue(observed, latest)) {
+    const settled = submitted && headerSubmissionApplied(observed, submitted) && sameHeaderValue(form, {...submitted.base,...submitted.patch});
+    setObserved(latest);
+    // External changes refresh an idle form. A teacher's unfinished edit remains guarded.
+    if (sameHeaderValue(form, base) || settled) { setBase(latest); setForm(latest); setSubmitted(null); }
+  }
   const displayForm = applied ? headerEditableSnapshot(metadata) : form;
   const submission: HeaderSubmission = { documentId, base, patch: headerPatch(base, form) };
   const conflict =

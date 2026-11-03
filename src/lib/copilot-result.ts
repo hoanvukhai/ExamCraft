@@ -1,3 +1,4 @@
+import { applyCopilotMetadata, copilotMetadataSchema } from './copilot-metadata';
 import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import type { Exam } from '@/types/exam';
@@ -8,16 +9,21 @@ const responseSchema = z.object({
   type: z.enum(['clarification', 'action']),
   message: z.string().max(4000).optional(),
   quickOptions: z.array(z.string().max(300)).max(6).optional(),
-  action: z.enum(['modify_single_question', 'add_question', 'delete_question', 'modify_all_numbers']).optional(),
+  action: z.enum(['modify_single_question', 'add_question', 'delete_question', 'modify_all_numbers', 'update_metadata']).optional(),
   targetQuestionId: z.string().nullable().optional(),
   targetQuestionIndex: z.number().int().positive().nullable().optional(),
   explanation: z.string().max(4000).optional(),
+  metadataPatch: copilotMetadataSchema.optional(),
   modifiedQuestion: z.record(z.string(), z.unknown()).nullable().optional(),
 });
 
 export function validateCopilotResult(input: unknown, exam: Exam, requestedTarget?: string) {
   const result = responseSchema.parse(input);
   if (result.type === 'clarification') return { ...result, message: result.message || 'Thầy/cô muốn sửa phần nào?', quickOptions: result.quickOptions ?? [] };
+  if (result.action === 'update_metadata') {
+    try { applyCopilotMetadata(exam,result.metadataPatch); } catch { throw new ApiError(422,'Thông tin đề xuất chưa hợp lệ hoặc cần đối chiếu câu khi đổi môn/lớp. Chưa áp dụng.','AI_BAD_OUTPUT'); }
+    return {...result,modifiedQuestion:null};
+  }
   if (result.action === 'modify_all_numbers') return { type: 'clarification', message: 'Hãy chọn từng câu để xem và duyệt thay đổi trước khi áp dụng.', quickOptions: [] };
   if (!result.action) throw new ApiError(422, 'AI chưa trả về hành động hợp lệ.');
   let original = result.targetQuestionId ? exam.questions.find(q => q.id === result.targetQuestionId) : undefined;

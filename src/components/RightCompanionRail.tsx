@@ -8,8 +8,6 @@ import { CopilotProposalReview } from './CopilotProposalReview';
 import { captureCopilotBase, type CopilotSubmission } from '@/lib/copilot-submission';
 import { createAiProposal } from '@/lib/ai-proposal-journal';
 import { useAiProposal } from '@/hooks/useAiProposal';
-import { appendCopilotHistory, confirmCopilotTravel, emptyCopilotHistory } from '@/lib/copilot-history';
-import { CopilotHistoryControls } from './CopilotHistoryControls';
 import { accountFetch } from '@/lib/account-fetch';
 import { normalizeQuestion } from '@/lib/exam-document';
 import { 
@@ -75,7 +73,6 @@ export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
   if (externalCommand !== receivedCommand) { setReceivedCommand(externalCommand); if (externalCommand) setCommand(externalCommand); }
   const proposalJournal = useAiProposal(ownerId, exam.id, 'copilot');
   const proposal = proposalJournal.entry?.record?.kind === 'copilot' ? proposalJournal.entry.record : null;
-  const [history, setHistory] = useState(emptyCopilotHistory);
   const [isLoading, setIsLoading] = useState(false);
   const inFlight = useRef(false);
   const [hasStartedChat, setHasStartedChat] = useState(false);
@@ -208,8 +205,7 @@ export const RightCompanionRail: React.FC<RightCompanionRailProps> = ({
       }`}
     >
       {proposalJournal.notice && <p role="status" className={isExpanded ? 'p-3 text-sm' : 'hidden'}>{proposalJournal.notice}</p>}
-      {proposal && <div className={isExpanded ? 'max-h-[60%] shrink-0 min-h-0 overflow-y-auto' : 'hidden'}><CopilotProposalReview key={proposalJournal.entry!.key} base={proposal.base} result={proposal.result} ownerId={ownerId} exam={exam} onSubmit={onSubmitCopilot} onApplied={submission => { setHistory(value => appendCopilotHistory(value, submission)); proposalJournal.archive(); setSuccessMessage('Đã áp dụng vào bản soạn. Bản đối chiếu được giữ; hãy lưu đề và kiểm tra nội dung trước khi chốt.'); }} onDiscard={() => { proposalJournal.archive(); }} /></div>}
-      {(history.undo.length > 0 || history.redo.length > 0) && <div className={isExpanded ? 'shrink-0' : 'hidden'}><CopilotHistoryControls key={`${history.undo.at(-1)?.id}:${history.redo.at(-1)?.id}`} history={history} ownerId={ownerId} exam={exam} disabled={!!proposal} onSubmit={onSubmitCopilot} onConfirmed={(entryId, direction, submission) => setHistory(value => confirmCopilotTravel(value, entryId, direction, submission))} /></div>}
+      {proposal && <div className={isExpanded ? 'max-h-[60%] shrink-0 min-h-0 overflow-y-auto' : 'hidden'}><CopilotProposalReview key={proposalJournal.entry!.key} base={proposal.base} result={proposal.result} ownerId={ownerId} exam={exam} onSubmit={onSubmitCopilot} onApplied={() => { proposalJournal.archive(); setSuccessMessage('Đã áp dụng vào bản soạn. Bản đối chiếu được giữ; hãy lưu đề và kiểm tra nội dung trước khi chốt.'); }} onDiscard={() => { proposalJournal.archive(); }} /></div>}
       {isExpanded && (
         <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
           {/* Vùng nội dung cuộn bên trong Panel */}

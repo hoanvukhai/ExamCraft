@@ -29,7 +29,7 @@ test('every route that calls the provider goes through the per-user key helper w
 test('only routes create a provider client, so the key can only come from the helper callback', () => {
   assert.ok(providerFiles.every(item => item.file.startsWith('src/app/api/')), 'no library creates a client with a key of its own');
   assert.ok(providerFiles.length >= 10, 'the route scan must actually find the AI routes');
-  for (const { file, text } of providerFiles) assert.match(text, /new GoogleGenAI\(\{\s*apiKey(\s*:\s*key)?\s*\}\)/, `${file} builds the client from the callback key`);
+  for (const { file, text } of providerFiles) assert.match(text, /new GoogleGenAI\(\{\s*apiKey(\s*:\s*key)?\s*(?:,\s*httpOptions:\s*\{\s*retryOptions:\s*\{\s*attempts:\s*1\s*\}\s*\}\s*)?\}\)/, `${file} builds the client from the callback key`);
 });
 
 test('no code reads a provider key from the environment or writes keys to logs', () => {

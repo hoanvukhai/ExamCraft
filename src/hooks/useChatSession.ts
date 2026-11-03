@@ -17,7 +17,6 @@ export function useChatSession(ownerId: string, documentId: string) {
       if (restored.pending) { restored = {...restored, pending:false}; queueMicrotask(() => setNotice('Lượt trước bị gián đoạn; chưa rõ kết quả. Yêu cầu còn trong lịch sử, chưa tự gọi lại AI.')); }
     } catch { writable.current = false; queueMicrotask(() => setNotice('Chưa đọc được hội thoại trên máy. Bản cũ vẫn được giữ; phiên này chỉ giữ trong bộ nhớ, hãy tải về trước khi đóng.')); }
     // Restore once per mounted owner/document; the caller keys this component by both IDs.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSession(restored);
   }, [ownerId, documentId]);
   useEffect(() => {

@@ -1,5 +1,6 @@
 'use client';
 
+import { metadataStamp } from '@/lib/copilot-metadata';
 import { useEffect, useRef, useState } from 'react';
 import type { Exam } from '@/types/exam';
 import { AiProposalPreview } from './AiProposalPreview';
@@ -13,7 +14,7 @@ export function CopilotProposalReview({ base, result, ownerId, exam, onSubmit, o
   const [attempt, setAttempt] = useState<CopilotSubmission | null>(null);
   const [message, setMessage] = useState('');
   const applied = useRef<string | null>(null);
-  const acknowledged = !!attempt && ownerId === base.ownerId && exam.id === base.documentId && sameQuestionSourceStamp(questionDraftSourceStamp(exam), base.sourceStamp) && copilotQuestionsStamp(exam.questions) === copilotQuestionsStamp(attempt.questions);
+  const acknowledged = !!attempt && ownerId === base.ownerId && exam.id === base.documentId && (attempt.metadata ? metadataStamp(exam.metadata) === metadataStamp(attempt.metadata) : sameQuestionSourceStamp(questionDraftSourceStamp(exam), base.sourceStamp)) && copilotQuestionsStamp(exam.questions) === copilotQuestionsStamp(attempt.questions);
   const stale = !acknowledged && !copilotBaseMatches(base, ownerId, exam);
   const preview = result.modifiedQuestion ? { ...result.modifiedQuestion, points: result.action === 'modify_single_question' ? base.questions.find(question => question.id === result.targetQuestionId)?.points : undefined } : undefined;
   useEffect(() => {
@@ -33,6 +34,7 @@ export function CopilotProposalReview({ base, result, ownerId, exam, onSubmit, o
     {stale && <p role="alert">Câu, thứ tự hoặc phạm vi đã đổi từ khi gửi AI. Chưa áp dụng để giữ bản mới; đề xuất vẫn ở đây.</p>}
     {message && <p role="status">{message}</p>}
     {result.action === 'delete_question' && <p>Đề xuất bỏ câu: {base.questions.find(question => question.id === result.targetQuestionId)?.content ?? 'Chưa xác định câu'}. Chỉ bỏ khỏi bản soạn khi bấm Áp dụng.</p>}
+    {result.metadataPatch && <table className="w-full break-words text-xs"><caption>Thông tin đề sẽ thay đổi</caption><thead><tr><th>Trường</th><th>Hiện tại</th><th>Đề xuất</th></tr></thead><tbody>{Object.entries(result.metadataPatch).map(([key,value])=><tr key={key}><td>{({title:'Tên đề',subject:'Môn',grade:'Lớp',durationMinutes:'Số phút',academicYear:'Năm học',semester:'Học kỳ',schoolName:'Đơn vị',departmentName:'Trường/tổ',examCode:'Mã đề',notes:'Ghi chú'} as Record<string,string>)[key] ?? key}</td><td>{String(exam.metadata[key as keyof typeof exam.metadata] ?? '')}</td><td>{String(value)}</td></tr>)}</tbody></table>}
     {preview && <AiProposalPreview question={preview} before={exam.questions.find(question => question.id === result.targetQuestionId)} />}
     <div className="flex flex-wrap gap-3"><button type="button" disabled={stale || acknowledged} onClick={apply}>Áp dụng</button><button type="button" onClick={download}>Tải đề xuất</button><button type="button" onClick={onDiscard}>Cất đề xuất</button></div>
     <p className="text-xs">Bản đối chiếu có trong mục Đề xuất AI trên máy, kể cả sau khi cất hoặc áp dụng. Tải về để dự phòng; áp dụng vào bản soạn chưa phải xác nhận lưu máy chủ.</p>

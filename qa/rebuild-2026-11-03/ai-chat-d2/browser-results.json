@@ -1,0 +1,14 @@
+{
+  "checks": [
+    "metadata preview/accept/server save/common undo/reload; image/points/solution/passage retained",
+    "newer manual metadata wins; stale proposal retained across reload"
+  ],
+  "cleanup": true,
+  "pageErrors": [],
+  "database": "examcraft_test_20261022",
+  "origin": "http://127.0.0.1:3123",
+  "provider": "browser-intercepted synthetic responses; no real AI",
+  "buildId": "K5yTvte0Ya6gh5nGStiyC",
+  "checkedAt": "2026-11-03T08:53:26.056Z",
+  "limitations": "Chrome viewport checks; not a physical phone or production/Vercel check."
+}

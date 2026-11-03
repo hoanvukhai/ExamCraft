@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenAI } from '@google/genai';
-import { Exam, Question } from '@/types/exam';
+import { Exam } from '@/types/exam';
 import { requestApiKey } from '@/lib/ai-policy';
 import { executeWithKeyRotation, parseProviderJson } from '@/lib/gemini-keys';
 import { normalizeExamDocument } from '@/lib/exam-document';
@@ -86,11 +86,13 @@ Các loại hành động hỗ trợ:
 2. "modify_all_numbers": Yêu cầu sửa nhiều câu cần được làm rõ; không báo đã sửa cả đề nếu chưa trả đủ nội dung.
 3. "add_question": Thêm 1 câu hỏi mới theo chủ đề được yêu cầu.
 4. "delete_question": Xóa câu hỏi được chỉ định.
+5. "update_metadata": Đề xuất sửa tên, môn/lớp, thời lượng, năm học/học kỳ, đơn vị, mã đề, ghi chú. Trả metadataPatch chỉ các trường có yêu cầu rõ: title, subject, grade, durationMinutes, academicYear, semester, schoolName, departmentName, examCode, notes. Không đổi môn/lớp đề đã có câu nếu chưa đối chiếu nội dung; giải thích ngắn việc cần làm rõ. Đổi tên không sinh hay sửa câu. Không đưa quyền, owner, version hay nhãn chính thức vào patch.
 
 Định dạng JSON trả về cho TRƯỜNG HỢP 2:
 {
   "type": "action",
-  "action": "modify_single_question" | "modify_all_numbers" | "add_question" | "delete_question",
+  "action": "modify_single_question" | "modify_all_numbers" | "add_question" | "delete_question" | "update_metadata",
+  "metadataPatch": object (chỉ khi update_metadata),
   "targetQuestionIndex": number | null (1-indexed),
   "targetQuestionId": string | null,
   "explanation": "Tóm tắt ngắn gọn việc đã làm cho giáo viên",
@@ -128,7 +130,7 @@ ${JSON.stringify(exam.questions, null, 2)}
     const responseText = await executeWithKeyRotation(
       customApiKey,
       async (apiKey, modelName) => {
-        const ai = new GoogleGenAI({ apiKey });
+        const ai = new GoogleGenAI({ apiKey, httpOptions: {retryOptions:{attempts:1}} });
         const response = await ai.models.generateContent({
           model: modelName,
           contents: userPrompt,
