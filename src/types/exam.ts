@@ -70,7 +70,7 @@ export interface Passage {
 }
 
 export interface ChoiceItem {
-  figures?: Figure[]; // Images belong to this option and move with it when shuffled. 
+  figures?: Figure[]; // Images belong to this option and move with it when shuffled.
   key: string; // 'A' | 'B' | 'C' | 'D'
   text: string;
   pinned?: boolean; // Ghim vị trí nếu là phương án phụ thuộc ("Cả A và B")
@@ -237,7 +237,8 @@ export interface ShuffledExamVariant {
   seed?: number;
 }
 
-export type IntegratedSubBranch = 'all' | 'physics' | 'chemistry' | 'biology' | 'history' | 'geography';
+export type IntegratedSubBranch =
+  'all' | 'physics' | 'chemistry' | 'biology' | 'history' | 'geography';
 export type CurriculumTrack = 'core' | 'advanced_topic';
 
 export interface GenerationParams {

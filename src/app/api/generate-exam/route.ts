@@ -12,13 +12,32 @@ export const maxDuration = 300;
 
 export async function POST(req: NextRequest) {
   try {
-    if (!isSameOriginMutation(req)) return NextResponse.json({ error: 'Yêu cầu không hợp lệ' }, { status: 403 });
+    if (!isSameOriginMutation(req))
+      return NextResponse.json({ error: 'Yêu cầu không hợp lệ' }, { status: 403 });
     const user = await requireAuth();
     assertRequestAccount(req.headers, user.id);
     const body = await req.json();
     const validation = generationPlanSchema.safeParse(body.params);
-    if (!validation.success) return NextResponse.json({ success: false, error: validation.error.issues.map(i => i.message).join('; ') }, { status: 400 });
-    const exam=await generateExamForPlan(validation.data,user.id,req.signal,requestApiKey(body));
-    return NextResponse.json({ success: true, exam, isFallback: false, warnings: ['Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng.'] });
-  } catch (error) { return apiErrorResponse(error, 'AI chưa hoàn tất yêu cầu tạo bài'); }
+    if (!validation.success)
+      return NextResponse.json(
+        { success: false, error: validation.error.issues.map((i) => i.message).join('; ') },
+        { status: 400 },
+      );
+    const exam = await generateExamForPlan(
+      validation.data,
+      user.id,
+      req.signal,
+      requestApiKey(body),
+    );
+    return NextResponse.json({
+      success: true,
+      exam,
+      isFallback: false,
+      warnings: [
+        'Bản nháp do AI tạo; giáo viên cần kiểm nội dung, đáp án, điểm và phạm vi trước khi dùng.',
+      ],
+    });
+  } catch (error) {
+    return apiErrorResponse(error, 'AI chưa hoàn tất yêu cầu tạo bài');
+  }
 }

@@ -3,7 +3,17 @@ import { createPortal } from 'react-dom';
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Brain, FileDown, Key, LogOut, Menu, Moon, MoreHorizontal, ShieldCheck, Sun } from 'lucide-react';
+import {
+  Brain,
+  FileDown,
+  Key,
+  LogOut,
+  Menu,
+  Moon,
+  MoreHorizontal,
+  ShieldCheck,
+  Sun,
+} from 'lucide-react';
 import { ToolMenu, type ExportView, type MenuItem } from '../EditorToolbar';
 import { useTheme } from '../ThemeProvider';
 import { useWorkspace } from '../workspace/WorkspaceContext';
@@ -51,15 +61,17 @@ function exportItems(p: ExportProps): MenuItem[] {
       title: 'Mở danh sách rà soát. Xuất file không bị chặn.',
       onClick: p.onReview,
     });
-  items.push(...(
-    [
-      ['exam', 'Word – đề'],
-      ['answers', 'Word – đáp án/barem'],
-      ['solutions', 'Word – lời giải'],
-      ['matrix', 'Word – ma trận'],
-      ['parallel', 'Word – đề song song'],
-    ] as const
-  ).map(([view, label]) => ({ label, onClick: () => p.onExportWord(view) })));
+  items.push(
+    ...(
+      [
+        ['exam', 'Word – đề'],
+        ['answers', 'Word – đáp án/barem'],
+        ['solutions', 'Word – lời giải'],
+        ['matrix', 'Word – ma trận'],
+        ['parallel', 'Word – đề song song'],
+      ] as const
+    ).map(([view, label]) => ({ label, onClick: () => p.onExportWord(view) })),
+  );
   items.push(
     { label: 'In / PDF', onClick: p.onPrint },
     {
@@ -94,9 +106,15 @@ export function MoreMenu(p: {
   const items: MenuItem[] = [
     ...(p.phone ? exportItems(p.phone) : []),
     ...(p.phone ? [] : [{ label: 'Rà soát đề', onClick: p.onReview }]),
-    ...(p.canEdit && p.onUndo ? [{ label: 'Hoàn tác', disabled: !p.canUndo, onClick: p.onUndo }] : []),
-    ...(p.canEdit && p.onRedo ? [{ label: 'Làm lại', disabled: !p.canRedo, onClick: p.onRedo }] : []),
-    ...(p.hasAssignments ? [{ label: `Kết quả (${p.submissionCount})`, onClick: p.onResults }] : []),
+    ...(p.canEdit && p.onUndo
+      ? [{ label: 'Hoàn tác', disabled: !p.canUndo, onClick: p.onUndo }]
+      : []),
+    ...(p.canEdit && p.onRedo
+      ? [{ label: 'Làm lại', disabled: !p.canRedo, onClick: p.onRedo }]
+      : []),
+    ...(p.hasAssignments
+      ? [{ label: `Kết quả (${p.submissionCount})`, onClick: p.onResults }]
+      : []),
     ...(p.phone && p.hasServerExam ? [{ label: 'Cùng soạn', onClick: p.onCollaborate }] : []),
   ];
   return <ToolMenu label="Thêm công cụ" Icon={MoreHorizontal} compact items={items} />;
@@ -152,78 +170,80 @@ export function AccountMenu() {
           {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
         </span>
       </button>
-      {open && createPortal(
-        <>
-          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div
-            role="region"
-            aria-label="Tài khoản"
-            className="app-menu fixed right-2 top-12 sm:absolute sm:right-0 sm:top-full sm:mt-2 z-50 w-72 max-w-[calc(100vw-1rem)] rounded-2xl border bg-[var(--ui-surface)] p-2 text-xs shadow-lg"
-          >
-            <div className="p-2 border-b mb-1">
-              <p className="font-bold text-sm truncate">{user.name}</p>
-              <p className="text-[11px] text-[var(--ui-text-secondary)] truncate">{user.email}</p>
+      {open &&
+        createPortal(
+          <>
+            <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+            <div
+              role="region"
+              aria-label="Tài khoản"
+              className="app-menu fixed right-2 top-12 sm:absolute sm:right-0 sm:top-full sm:mt-2 z-50 w-72 max-w-[calc(100vw-1rem)] rounded-2xl border bg-[var(--ui-surface)] p-2 text-xs shadow-lg"
+            >
+              <div className="p-2 border-b mb-1">
+                <p className="font-bold text-sm truncate">{user.name}</p>
+                <p className="text-[11px] text-[var(--ui-text-secondary)] truncate">{user.email}</p>
+              </div>
+              <button
+                type="button"
+                className={row}
+                aria-label="Ghi chú riêng cho AI"
+                title="Bộ não AI Sư Phạm: Xem và dạy các phong cách ra đề cho AI"
+                onClick={() => {
+                  setOpen(false);
+                  openAiNotes();
+                }}
+              >
+                <Brain className="w-4 h-4" />
+                <span>Ghi chú riêng cho AI</span>
+              </button>
+              <button
+                type="button"
+                className={row}
+                aria-label="Quản lý khóa AI"
+                title="Quản lý Google Gemini API Key"
+                onClick={() => {
+                  setOpen(false);
+                  openKeys();
+                }}
+              >
+                <Key className="w-4 h-4" />
+                <span className="flex-1">Khóa AI</span>
+                <span className={`w-2 h-2 rounded-full ${dot}`} aria-hidden />
+              </button>
+              <button
+                type="button"
+                className={row}
+                aria-label={`Chuyển sang giao diện ${theme === 'dark' ? 'Sáng' : 'Tối'}`}
+                title="Đổi giao diện Sáng / Tối"
+                onClick={toggleTheme}
+              >
+                {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                <span>Giao diện {theme === 'dark' ? 'sáng' : 'tối'}</span>
+              </button>
+              {user.role === 'SUPER_ADMIN' && (
+                <Link href="/admin/users" className={row} onClick={() => setOpen(false)}>
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>Quản trị người dùng</span>
+                </Link>
+              )}
+              <button
+                type="button"
+                className={row + ' border-t mt-1 rounded-t-none'}
+                onClick={() => void leave()}
+                disabled={leaving}
+              >
+                <LogOut className="w-4 h-4" />
+                <span>{leaving ? 'Đang đăng xuất...' : 'Đăng xuất'}</span>
+              </button>
+              {error && (
+                <p role="alert" className="px-2 pb-1 text-[11px] text-red-700 dark:text-red-300">
+                  {error}
+                </p>
+              )}
             </div>
-            <button
-              type="button"
-              className={row}
-              aria-label="Ghi chú riêng cho AI"
-              title="Bộ não AI Sư Phạm: Xem và dạy các phong cách ra đề cho AI"
-              onClick={() => {
-                setOpen(false);
-                openAiNotes();
-              }}
-            >
-              <Brain className="w-4 h-4" />
-              <span>Ghi chú riêng cho AI</span>
-            </button>
-            <button
-              type="button"
-              className={row}
-              aria-label="Quản lý khóa AI"
-              title="Quản lý Google Gemini API Key"
-              onClick={() => {
-                setOpen(false);
-                openKeys();
-              }}
-            >
-              <Key className="w-4 h-4" />
-              <span className="flex-1">Khóa AI</span>
-              <span className={`w-2 h-2 rounded-full ${dot}`} aria-hidden />
-            </button>
-            <button
-              type="button"
-              className={row}
-              aria-label={`Chuyển sang giao diện ${theme === 'dark' ? 'Sáng' : 'Tối'}`}
-              title="Đổi giao diện Sáng / Tối"
-              onClick={toggleTheme}
-            >
-              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-              <span>Giao diện {theme === 'dark' ? 'sáng' : 'tối'}</span>
-            </button>
-            {user.role === 'SUPER_ADMIN' && (
-              <Link href="/admin/users" className={row} onClick={() => setOpen(false)}>
-                <ShieldCheck className="w-4 h-4" />
-                <span>Quản trị người dùng</span>
-              </Link>
-            )}
-            <button
-              type="button"
-              className={row + ' border-t mt-1 rounded-t-none'}
-              onClick={() => void leave()}
-              disabled={leaving}
-            >
-              <LogOut className="w-4 h-4" />
-              <span>{leaving ? 'Đang đăng xuất...' : 'Đăng xuất'}</span>
-            </button>
-            {error && (
-              <p role="alert" className="px-2 pb-1 text-[11px] text-red-700 dark:text-red-300">
-                {error}
-              </p>
-            )}
-          </div>
-        </>, document.body
-      )}
+          </>,
+          document.body,
+        )}
     </div>
   );
 }

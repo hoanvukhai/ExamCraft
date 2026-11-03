@@ -33,7 +33,10 @@ export class DocumentValidationError extends Error {
 
 function number(value: unknown, label: string, allowZero = true): number {
   const scalar =
-    value && typeof value === 'object' && 'toNumber' in value && typeof value.toNumber === 'function'
+    value &&
+    typeof value === 'object' &&
+    'toNumber' in value &&
+    typeof value.toNumber === 'function'
       ? value.toNumber()
       : value;
   const n = typeof scalar === 'string' && scalar.trim() !== '' ? Number(scalar) : scalar;
@@ -76,7 +79,8 @@ export function normalizeQuestion(input: unknown, index = 0): Question {
   const difficulty = String(q.difficulty ?? editor.difficulty ?? 'thong_hieu').toLowerCase();
   if (!levels.has(difficulty))
     throw new DocumentValidationError(`Câu ${index + 1}: nhãn mức cũ không hợp lệ`);
-  if (typeof q.content !== 'string') throw new DocumentValidationError(`Câu ${index + 1}: thiếu nội dung`);
+  if (typeof q.content !== 'string')
+    throw new DocumentValidationError(`Câu ${index + 1}: thiếu nội dung`);
   const result = {
     ...clone(editor),
     ...clone(combined),
@@ -93,7 +97,11 @@ export function normalizeQuestion(input: unknown, index = 0): Question {
       [payload, 'correct_answer'],
       [editor, 'correct_answer'],
     ),
-    accepted_answers: field('accepted_answers', [payload, 'accepted_answers'], [editor, 'accepted_answers']),
+    accepted_answers: field(
+      'accepted_answers',
+      [payload, 'accepted_answers'],
+      [editor, 'accepted_answers'],
+    ),
     rubric: field('rubric', [payload, 'rubric'], [editor, 'rubric']),
     parts: field('parts', [editor, 'parts']),
     partsNumbering: field('partsNumbering', [editor, 'partsNumbering']),
@@ -102,7 +110,11 @@ export function normalizeQuestion(input: unknown, index = 0): Question {
     // A canonical DB null means removed, not "reuse the older editor payload".
     figures: figures(Object.hasOwn(q, 'figures') ? q.figures : editor.figures),
     subBranch: field('subBranch', [payload, 'subBranch'], [editor, 'subBranch']),
-    curriculumTrack: field('curriculumTrack', [payload, 'curriculumTrack'], [editor, 'curriculumTrack']),
+    curriculumTrack: field(
+      'curriculumTrack',
+      [payload, 'curriculumTrack'],
+      [editor, 'curriculumTrack'],
+    ),
     matchingPairs: field(
       'matchingPairs',
       [payload, 'matchingPairs'],
@@ -141,7 +153,8 @@ export function normalizeQuestion(input: unknown, index = 0): Question {
   }
   const validateList = (value: unknown, label: string) => {
     if (value === undefined || value === null) return [];
-    if (!Array.isArray(value) || value.length > 100) return fail(`${label} phải là danh sách tối đa 100 mục`);
+    if (!Array.isArray(value) || value.length > 100)
+      return fail(`${label} phải là danh sách tối đa 100 mục`);
     return value.map(record);
   };
   const choices = validateList(result.choices, 'phương án');
@@ -150,7 +163,11 @@ export function normalizeQuestion(input: unknown, index = 0): Question {
     new Set(choices.map((c) => c.key)).size !== choices.length
   )
     fail('nhãn phương án bị trùng hoặc thiếu nội dung');
-  if (result.choices) result.choices = choices.map(c => ({ ...c, ...(c.figures != null ? { figures: figures(c.figures) } : {}) })) as unknown as Question['choices'];
+  if (result.choices)
+    result.choices = choices.map((c) => ({
+      ...c,
+      ...(c.figures != null ? { figures: figures(c.figures) } : {}),
+    })) as unknown as Question['choices'];
   const subs = validateList(result.sub_questions, 'ý đúng/sai');
   if (
     subs.some(
@@ -167,7 +184,8 @@ export function normalizeQuestion(input: unknown, index = 0): Question {
     fail('đáp án phải là văn bản');
   if (
     result.accepted_answers != null &&
-    (!Array.isArray(result.accepted_answers) || result.accepted_answers.some((a) => typeof a !== 'string'))
+    (!Array.isArray(result.accepted_answers) ||
+      result.accepted_answers.some((a) => typeof a !== 'string'))
   )
     fail('các đáp án được chấp nhận phải là danh sách văn bản');
   const pairs = validateList(result.matchingPairs, 'cặp ghép');
@@ -191,7 +209,10 @@ export function normalizeQuestion(input: unknown, index = 0): Question {
     )
   )
     fail('tiêu chí hoặc điểm tối đa không hợp lệ');
-  if (result.partsNumbering !== undefined && !['letters', 'decimal', 'roman'].includes(result.partsNumbering))
+  if (
+    result.partsNumbering !== undefined &&
+    !['letters', 'decimal', 'roman'].includes(result.partsNumbering)
+  )
     fail('kiểu đánh số ý chưa hợp lệ');
   const parts = validateList(result.parts, 'ý của câu');
   if (parts.length && !['essay', 'short_answer'].includes(result.type))
@@ -296,17 +317,30 @@ export function normalizeExamDocument(input: unknown): Exam {
   if (typeof metadata.subject !== 'string' || !metadata.subject.trim())
     throw new DocumentValidationError('Cần chọn môn học; hệ thống không tự thay bằng Toán');
   const grade = number(metadata.grade, 'Lớp', false);
-  if (!Number.isInteger(grade) || grade > 12) throw new DocumentValidationError('Lớp phải từ 1 đến 12');
+  if (!Number.isInteger(grade) || grade > 12)
+    throw new DocumentValidationError('Lớp phải từ 1 đến 12');
   if (!Array.isArray(raw.questions) || raw.questions.length > 1000)
     throw new DocumentValidationError('Danh sách câu hỏi không hợp lệ hoặc quá 1.000 câu');
   const questions = raw.questions.map(normalizeQuestion);
   if (new Set(questions.map((q) => q.id)).size !== questions.length)
     throw new DocumentValidationError('Mã câu hỏi bị trùng; cần tạo bản sao với mã riêng');
-  const document = { ...clone(raw), metadata: { ...clone(metadata), grade }, questions } as unknown as Exam;
-  if(metadata.targetExam!==undefined){try{document.metadata.targetExam=examTargetSchema.parse(metadata.targetExam);}catch{throw new DocumentValidationError('Thông tin mục tiêu kỳ thi chưa hợp lệ.');}}
+  const document = {
+    ...clone(raw),
+    metadata: { ...clone(metadata), grade },
+    questions,
+  } as unknown as Exam;
+  if (metadata.targetExam !== undefined) {
+    try {
+      document.metadata.targetExam = examTargetSchema.parse(metadata.targetExam);
+    } catch {
+      throw new DocumentValidationError('Thông tin mục tiêu kỳ thi chưa hợp lệ.');
+    }
+  }
   if (metadata.templateApplication !== undefined) {
     try {
-      document.metadata.templateApplication = templateApplicationSchema.parse(metadata.templateApplication);
+      document.metadata.templateApplication = templateApplicationSchema.parse(
+        metadata.templateApplication,
+      );
     } catch {
       throw new DocumentValidationError(
         'Bản sao mẫu chưa đúng định dạng; cần giữ nguồn, phiên bản và cấu trúc hợp lệ.',
@@ -331,7 +365,10 @@ export function normalizeExamDocument(input: unknown): Exam {
       );
     }
   }
-  if (metadata.choiceColumns !== undefined && ![1, 2, 4, 'auto'].includes(metadata.choiceColumns as 'auto'))
+  if (
+    metadata.choiceColumns !== undefined &&
+    ![1, 2, 4, 'auto'].includes(metadata.choiceColumns as 'auto')
+  )
     delete document.metadata.choiceColumns;
   if (metadata.pageSetup !== undefined) {
     const setup = parsePageSetup(metadata.pageSetup);
@@ -357,7 +394,10 @@ export function normalizeExamDocument(input: unknown): Exam {
       });
       document.metadata.knowledgePackage = pkg;
       if (metadata.knowledgeScope !== undefined)
-        document.metadata.knowledgeScope = resolveKnowledgeScope(pkg, metadata.knowledgeScope).scope;
+        document.metadata.knowledgeScope = resolveKnowledgeScope(
+          pkg,
+          metadata.knowledgeScope,
+        ).scope;
     } catch {
       throw new DocumentValidationError(
         'Gói kiến thức hoặc phạm vi chưa hợp lệ với môn, lớp và phiên bản của đề. Hãy kiểm tra lại gói.',
@@ -396,7 +436,9 @@ export function normalizeExamDocument(input: unknown): Exam {
     throw new DocumentValidationError('Ngữ liệu dùng chung không hợp lệ');
   if (document.passages) {
     if (
-      document.passages.some((p) => typeof p.id !== 'string' || !p.id || typeof p.content !== 'string') ||
+      document.passages.some(
+        (p) => typeof p.id !== 'string' || !p.id || typeof p.content !== 'string',
+      ) ||
       new Set(document.passages.map((p) => p.id)).size !== document.passages.length
     )
       throw new DocumentValidationError('Ngữ liệu thiếu mã, trùng mã hoặc thiếu nội dung');
@@ -410,7 +452,9 @@ export function normalizeExamDocument(input: unknown): Exam {
   try {
     return syncOutline(document);
   } catch (error) {
-    throw new DocumentValidationError(error instanceof Error ? error.message : 'Dàn ý không hợp lệ');
+    throw new DocumentValidationError(
+      error instanceof Error ? error.message : 'Dàn ý không hợp lệ',
+    );
   }
 }
 
@@ -432,7 +476,9 @@ export function fromDatabaseExam(input: unknown): Exam {
       updatedAt: ex.updatedAt,
       metadata: {
         ...record(saved.metadata),
-        ...Object.fromEntries(Object.entries(metadata).filter(([key]) => key !== 'workspaceDocument')),
+        ...Object.fromEntries(
+          Object.entries(metadata).filter(([key]) => key !== 'workspaceDocument'),
+        ),
         title: ex.title,
         subject: ex.subject,
         grade: ex.grade,
@@ -507,7 +553,11 @@ export function questionToDatabase(
     topics: q.topics ?? [],
     tags: q.tags ?? [],
     visibility: 'PRIVATE',
-    sourceKind: q.importedFromFile ? 'IMPORTED_FILE' : q.aiGenerated ? 'AI_GENERATED' : 'TEACHER_WRITTEN',
+    sourceKind: q.importedFromFile
+      ? 'IMPORTED_FILE'
+      : q.aiGenerated
+        ? 'AI_GENERATED'
+        : 'TEACHER_WRITTEN',
     ...(q.importedFromFile ? { shareable: false } : {}),
     aiGenerated: q.aiGenerated ?? false,
     source: q.source,

@@ -6,7 +6,13 @@ import { reconcileQuestionOutline } from '@/lib/exam-outline';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import type { Exam } from '@/types/exam';
-import { loadExam, checkExamVersion, persistExam, SaveExamError, isExamAccessError } from '@/lib/exam-client';
+import {
+  loadExam,
+  checkExamVersion,
+  persistExam,
+  SaveExamError,
+  isExamAccessError,
+} from '@/lib/exam-client';
 import { readDraft, writeDraft, retireWriterDraft, stageLatestExam } from '@/lib/exam-draft';
 import { copyQuestionDraftsAfterCreate } from '@/lib/question-draft';
 import { mergeExams, type MergeChoices, type MergeConflict } from '@/lib/exam-merge';
@@ -24,11 +30,13 @@ function describeChange(before: Exam, after: Exam): string[] {
     (question) => !after.questions.some((item) => item.id === question.id),
   ).length;
   if (removed) labels.push(removed + ' câu bị xóa');
-  if (JSON.stringify(before.metadata) !== JSON.stringify(after.metadata)) labels.push('thông tin đề');
+  if (JSON.stringify(before.metadata) !== JSON.stringify(after.metadata))
+    labels.push('thông tin đề');
   return labels;
 }
 
-export type SaveState = 'loading' | 'pristine' | 'saved' | 'dirty' | 'saving' | 'offline' | 'conflict' | 'error';
+export type SaveState =
+  'loading' | 'pristine' | 'saved' | 'dirty' | 'saving' | 'offline' | 'conflict' | 'error';
 function blankExam(): Exam {
   const now = new Date(),
     year = now.getMonth() >= 7 ? now.getFullYear() : now.getFullYear() - 1;
@@ -49,7 +57,12 @@ function blankExam(): Exam {
   };
 }
 
-export function useExamPersistence(ownerId: string, requestedId?: string, creationFolderId?: string | null, initialDocument?:Exam) {
+export function useExamPersistence(
+  ownerId: string,
+  requestedId?: string,
+  creationFolderId?: string | null,
+  initialDocument?: Exam,
+) {
   const pathname = usePathname();
   const [exam, setValue] = useState<Exam>(blankExam);
   const [state, setState] = useState<SaveState>('loading');
@@ -79,12 +92,17 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
   const [remoteChange, setRemoteChange] = useState<RemoteChange | null>(null);
   const announce = useCallback((before: Exam, after: Exam, merged: boolean) => {
     const labels = describeChange(before, after);
-    if (labels.length) setRemoteChange((previous) => ({ id: (previous?.id ?? 0) + 1, labels, merged }));
+    if (labels.length)
+      setRemoteChange((previous) => ({ id: (previous?.id ?? 0) + 1, labels, merged }));
   }, []);
 
   const setExam = useCallback(
     (value: React.SetStateAction<Exam>) => {
-      if (!ready.current || activeOwner.current !== ownerId || current.current.access?.canEdit === false)
+      if (
+        !ready.current ||
+        activeOwner.current !== ownerId ||
+        current.current.access?.canEdit === false
+      )
         return false;
       const base = withEditorParts(current.current);
       const candidate = typeof value === 'function' ? value(base) : value;
@@ -135,10 +153,13 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
     setFolderUnavailable(false);
     (async () => {
       try {
-        const draft = id==='new' && initialDocument ? null : readDraft(localStorage, ownerId, id);
+        const draft = id === 'new' && initialDocument ? null : readDraft(localStorage, ownerId, id);
         if (!cancelled) setRecoveredDraft(Boolean(draft && id !== 'new'));
         let loaded: Exam;
-        if (id === 'new') loaded = initialDocument ? {...initialDocument,creationFolderId:creationFolderId??null} : draft ?? { ...blankExam(), creationFolderId: creationFolderId ?? null };
+        if (id === 'new')
+          loaded = initialDocument
+            ? { ...initialDocument, creationFolderId: creationFolderId ?? null }
+            : (draft ?? { ...blankExam(), creationFolderId: creationFolderId ?? null });
         else {
           const server = await loadExam(id, ownerId);
           loaded = draft ? { ...draft, access: server.access } : server;
@@ -177,7 +198,10 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
         if (cancelled) return;
         try {
           const cached = readDraft(localStorage, ownerId, id, true);
-          if (cached && !(error instanceof SaveExamError && error.status >= 400 && error.status < 500)) {
+          if (
+            cached &&
+            !(error instanceof SaveExamError && error.status >= 400 && error.status < 500)
+          ) {
             current.current = cached;
             setValue(cached);
             edits.current = 1;
@@ -195,7 +219,9 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
         }
         setState('error');
         setMessage(
-          error instanceof Error ? error.message : 'Không mở được bản nháp. Dữ liệu cũ vẫn được giữ.',
+          error instanceof Error
+            ? error.message
+            : 'Không mở được bản nháp. Dữ liệu cũ vẫn được giữ.',
         );
       }
     })();
@@ -210,7 +236,8 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
       try {
         writeDraft(localStorage, ownerId, storageId.current, current.current, true, writerId);
       } catch {
-        warning = ' Bộ nhớ nháp bị chặn hoặc đầy; hãy tải bản nháp đang mở xuống trước khi rời trang.';
+        warning =
+          ' Bộ nhớ nháp bị chặn hoặc đầy; hãy tải bản nháp đang mở xuống trước khi rời trang.';
       }
     }
     ready.current = false;
@@ -235,7 +262,8 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
     const operation = (async () => {
       try {
         const saved = await persistExam(document, savingOwner);
-        if (activeOwner.current !== savingOwner || generation.current !== savingGeneration) return null;
+        if (activeOwner.current !== savingOwner || generation.current !== savingGeneration)
+          return null;
         const stillCurrent = edits.current === revision;
         const next = stillCurrent
           ? saved
@@ -247,14 +275,40 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
               access: saved.access,
             };
         if (!document.serverId && document.id !== saved.id) {
-          try{const copied=copyChatSessionsAfterCreate(savingOwner,document.id,saved.id,localStorage);if(!copied)setMessage('Đề đã lưu; hội thoại trước còn ở ID nháp để tải và đối chiếu. Chưa ghi đè hội thoại ở đề mới.');else if(sessionStorage.getItem('examcraft:bootstrap-id:'+encodeURIComponent(savingOwner))===document.id)sessionStorage.setItem('examcraft:bootstrap-id:'+encodeURIComponent(savingOwner),'bootstrap_'+crypto.randomUUID());}catch{setMessage('Đề đã lưu; bộ nhớ máy chưa xác nhận chuyển hội thoại. Bản trước vẫn được giữ.');}
+          try {
+            const copied = copyChatSessionsAfterCreate(
+              savingOwner,
+              document.id,
+              saved.id,
+              localStorage,
+            );
+            if (!copied)
+              setMessage(
+                'Đề đã lưu; hội thoại trước còn ở ID nháp để tải và đối chiếu. Chưa ghi đè hội thoại ở đề mới.',
+              );
+            else if (
+              sessionStorage.getItem(
+                'examcraft:bootstrap-id:' + encodeURIComponent(savingOwner),
+              ) === document.id
+            )
+              sessionStorage.setItem(
+                'examcraft:bootstrap-id:' + encodeURIComponent(savingOwner),
+                'bootstrap_' + crypto.randomUUID(),
+              );
+          } catch {
+            setMessage(
+              'Đề đã lưu; bộ nhớ máy chưa xác nhận chuyển hội thoại. Bản trước vẫn được giữ.',
+            );
+          }
           try {
             if (!copyQuestionDraftsAfterCreate(savingOwner, document.id, saved.id, localStorage))
               setMessage(
                 'Đề đã lưu; có nháp câu chưa chuyển đầy đủ. Bản gốc vẫn được giữ trong danh sách nháp trên máy.',
               );
           } catch {
-            setMessage('Đề đã lưu; hãy giữ tab và tải nháp câu vì bộ nhớ máy chưa xác nhận được bản nháp.');
+            setMessage(
+              'Đề đã lưu; hãy giữ tab và tải nháp câu vì bộ nhớ máy chưa xác nhận được bản nháp.',
+            );
           }
         }
         current.current = next;
@@ -284,7 +338,8 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
         setState(stillCurrent ? 'saved' : 'dirty');
         return saved;
       } catch (error) {
-        if (activeOwner.current !== savingOwner || generation.current !== savingGeneration) return null;
+        if (activeOwner.current !== savingOwner || generation.current !== savingGeneration)
+          return null;
         const warning = isExamAccessError(error) ? freezeAccess() : '';
         setFolderUnavailable(error instanceof SaveExamError && error.code === 'FOLDER_UNAVAILABLE');
         setState(
@@ -295,7 +350,8 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
               : 'offline',
         );
         setMessage(
-          (error instanceof Error ? error.message : 'Chưa lưu được đề. Bản nháp vẫn được giữ.') + warning,
+          (error instanceof Error ? error.message : 'Chưa lưu được đề. Bản nháp vẫn được giữ.') +
+            warning,
         );
         return null;
       } finally {
@@ -323,7 +379,9 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
         writeDraft(localStorage, ownerId, storageId.current, exam, true, writerId);
       } catch {
         queueMicrotask(() =>
-          setMessage('Bộ nhớ bản nháp trên máy đã đầy hoặc bị chặn. Hãy tải bản sao JSON và thử lưu lại.'),
+          setMessage(
+            'Bộ nhớ bản nháp trên máy đã đầy hoặc bị chặn. Hãy tải bản sao JSON và thử lưu lại.',
+          ),
         );
       }
     }
@@ -390,7 +448,9 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
           current.current = { ...current.current, access: remote.access };
           setValue(current.current);
           setState('conflict');
-          setMessage('Quyền sửa đã thay đổi. Bản nháp vẫn được giữ, nhưng chưa thể ghi vào đề chung.');
+          setMessage(
+            'Quyền sửa đã thay đổi. Bản nháp vẫn được giữ, nhưng chưa thể ghi vào đề chung.',
+          );
           return;
         }
         if (
@@ -514,7 +574,12 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
   }, [ownerId, save]);
 
   const openLatest = useCallback(async (): Promise<Exam | null> => {
-    if (!ready.current || activeOwner.current !== ownerId || !current.current.serverId || flight.current)
+    if (
+      !ready.current ||
+      activeOwner.current !== ownerId ||
+      !current.current.serverId ||
+      flight.current
+    )
       return null;
     const id = current.current.serverId,
       revision = edits.current,
@@ -532,7 +597,9 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
           return null;
         if (edits.current !== revision) {
           setState('conflict');
-          setMessage('Bạn vừa sửa thêm trong lúc tải. Chưa thay bản đang soạn; hãy thử mở bản máy chủ lại.');
+          setMessage(
+            'Bạn vừa sửa thêm trong lúc tải. Chưa thay bản đang soạn; hãy thử mở bản máy chủ lại.',
+          );
           return null;
         }
         try {
@@ -554,12 +621,14 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
         );
         return remote;
       } catch (error) {
-        if (generation.current !== requestGeneration || activeOwner.current !== ownerId) return null;
+        if (generation.current !== requestGeneration || activeOwner.current !== ownerId)
+          return null;
         const warning = isExamAccessError(error) ? freezeAccess() : '';
         setState('conflict');
         setMessage(
-          (error instanceof Error ? error.message : 'Chưa mở được bản máy chủ; bản nháp vẫn được giữ.') +
-            warning,
+          (error instanceof Error
+            ? error.message
+            : 'Chưa mở được bản máy chủ; bản nháp vẫn được giữ.') + warning,
         );
         return null;
       } finally {
@@ -572,7 +641,11 @@ export function useExamPersistence(ownerId: string, requestedId?: string, creati
 
   const acceptServerDocument = useCallback(
     (document: Exam) => {
-      if (flight.current || edits.current !== savedEdits.current || document.id !== current.current.id) {
+      if (
+        flight.current ||
+        edits.current !== savedEdits.current ||
+        document.id !== current.current.id
+      ) {
         setState('conflict');
         setMessage('Bản trên máy chủ đã đổi. Bản nháp đang sửa vẫn được giữ để đối chiếu.');
         return false;

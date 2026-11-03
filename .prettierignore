@@ -1,0 +1,9 @@
+node_modules/
+.next/
+tmp/
+qa/**/*.log
+qa/**/*.png
+qa/**/*.jpg
+qa/**/*.pdf
+qa/**/*.json
+qa/**/*.md

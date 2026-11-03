@@ -44,7 +44,9 @@ const labels = {
 };
 
 export function HeaderSettingsModal(props: HeaderSettingsModalProps) {
-  return props.isOpen ? <HeaderForm key={`${props.ownerId}:${props.documentId}`} {...props} /> : null;
+  return props.isOpen ? (
+    <HeaderForm key={`${props.ownerId}:${props.documentId}`} {...props} />
+  ) : null;
 }
 export function HeaderForm({
   metadata,
@@ -67,15 +69,24 @@ export function HeaderForm({
   const [observed, setObserved] = useState(() => headerEditableSnapshot(metadata));
   const latest = headerEditableSnapshot(metadata);
   if (!sameHeaderValue(observed, latest)) {
-    const settled = submitted && headerSubmissionApplied(observed, submitted) && sameHeaderValue(form, {...submitted.base,...submitted.patch});
+    const settled =
+      submitted &&
+      headerSubmissionApplied(observed, submitted) &&
+      sameHeaderValue(form, { ...submitted.base, ...submitted.patch });
     setObserved(latest);
     // External changes refresh an idle form. A teacher's unfinished edit remains guarded.
-    if (sameHeaderValue(form, base) || settled) { setBase(latest); setForm(latest); setSubmitted(null); }
+    if (sameHeaderValue(form, base) || settled) {
+      setBase(latest);
+      setForm(latest);
+      setSubmitted(null);
+    }
   }
   const displayForm = applied ? headerEditableSnapshot(metadata) : form;
   const submission: HeaderSubmission = { documentId, base, patch: headerPatch(base, form) };
   const conflict =
-    Object.keys(submission.patch).length > 0 && headerSubmissionConflict(metadata, submission) && !applied;
+    Object.keys(submission.patch).length > 0 &&
+    headerSubmissionConflict(metadata, submission) &&
+    !applied;
   const previewKey = JSON.stringify(submission);
   useEffect(() => {
     if (!onPreview) return;
@@ -150,7 +161,9 @@ export function HeaderForm({
   return (
     <div
       className={
-        embedded ? 'contents' : 'fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4'
+        embedded
+          ? 'contents'
+          : 'fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4'
       }
     >
       <div
@@ -172,14 +185,14 @@ export function HeaderForm({
         )}
         {onPreview && !embedded && (
           <p role="note" className="text-xs">
-            Bản xem trước phản ánh thay đổi hợp lệ đang nhập. Bấm Áp dụng để lưu vào đề; Đóng vẫn giữ bản đang
-            nhập trong phiên này.
+            Bản xem trước phản ánh thay đổi hợp lệ đang nhập. Bấm Áp dụng để lưu vào đề; Đóng vẫn
+            giữ bản đang nhập trong phiên này.
           </p>
         )}
         {!embedded && (
           <p className="text-xs">
-            Chỉ áp dụng các trường bạn sửa. Thay đổi phạm vi hoặc kế hoạch mới hơn được giữ. Đổi môn/lớp không
-            tự đổi bộ kiến thức, kế hoạch hay khung mức.
+            Chỉ áp dụng các trường bạn sửa. Thay đổi phạm vi hoặc kế hoạch mới hơn được giữ. Đổi
+            môn/lớp không tự đổi bộ kiến thức, kế hoạch hay khung mức.
           </p>
         )}
         {/* Cơ bản: bốn trường bắt buộc đứng đầu */}
@@ -230,10 +243,14 @@ export function HeaderForm({
                   className={field}
                   aria-label="Môn của đề"
                   value={displayForm.subject}
-                  onChange={(event) => change({ subject: event.target.value as ExamMetadata['subject'] })}
+                  onChange={(event) =>
+                    change({ subject: event.target.value as ExamMetadata['subject'] })
+                  }
                 >
                   {!validSubject && (
-                    <option value={displayForm.subject}>Môn cũ cần chọn lại: {displayForm.subject}</option>
+                    <option value={displayForm.subject}>
+                      Môn cũ cần chọn lại: {displayForm.subject}
+                    </option>
                   )}
                   {subjects.map((item) => (
                     <option key={item.key} value={item.key}>
@@ -273,10 +290,16 @@ export function HeaderForm({
                   min={0}
                   max={1440}
                   placeholder="VD: 45, 60, 90..."
-                  value={displayForm.durationMinutes === undefined || Number.isNaN(displayForm.durationMinutes) ? '' : displayForm.durationMinutes}
+                  value={
+                    displayForm.durationMinutes === undefined ||
+                    Number.isNaN(displayForm.durationMinutes)
+                      ? ''
+                      : displayForm.durationMinutes
+                  }
                   onChange={(event) =>
                     change({
-                      durationMinutes: event.target.value === '' ? Number.NaN : Number(event.target.value),
+                      durationMinutes:
+                        event.target.value === '' ? Number.NaN : Number(event.target.value),
                     })
                   }
                 />
@@ -291,8 +314,8 @@ export function HeaderForm({
             role="alert"
             className="text-xs text-amber-700 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 p-2.5 rounded-lg"
           >
-            Môn hoặc khung cũ không phù hợp lớp đang chọn. Hãy chọn lại rõ ràng; gói và kế hoạch được giữ để
-            rà soát.
+            Môn hoặc khung cũ không phù hợp lớp đang chọn. Hãy chọn lại rõ ràng; gói và kế hoạch
+            được giữ để rà soát.
           </p>
         )}
         {(metadata.knowledgePackage || metadata.examPlan) &&
@@ -396,7 +419,9 @@ export function HeaderForm({
                   className={field}
                   aria-label="Khung mức nhận thức"
                   value={displayForm.cognitiveFrameworkId ?? ''}
-                  onChange={(event) => change({ cognitiveFrameworkId: event.target.value || undefined })}
+                  onChange={(event) =>
+                    change({ cognitiveFrameworkId: event.target.value || undefined })
+                  }
                 >
                   <option value="">Chưa chọn khung</option>
                   {!validFramework && (
@@ -423,8 +448,8 @@ export function HeaderForm({
               Dòng in, vị trí và căn chỉnh nâng cao
             </summary>
             <p className="text-xs my-2">
-              Ẩn dòng sẽ bỏ dòng khi in; ghi đè bằng chuỗi rỗng vẫn chừa một dòng trống. Bỏ ghi đè để dùng dữ
-              liệu đề. Tên đề để quản lý luôn cần có, kể cả khi ẩn tên trên bản in.
+              Ẩn dòng sẽ bỏ dòng khi in; ghi đè bằng chuỗi rỗng vẫn chừa một dòng trống. Bỏ ghi đè
+              để dùng dữ liệu đề. Tên đề để quản lý luôn cần có, kể cả khi ẩn tên trên bản in.
             </p>
             {layout.lines.map((line, index) => (
               <fieldset key={line.id} className="border rounded p-2 my-2 text-xs">
@@ -531,7 +556,10 @@ export function HeaderForm({
                   className="underline my-1"
                   onClick={() =>
                     change({
-                      headerLayout: { ...layout, lines: layout.lines.filter((item) => item.id !== line.id) },
+                      headerLayout: {
+                        ...layout,
+                        lines: layout.lines.filter((item) => item.id !== line.id),
+                      },
                     })
                   }
                 >
@@ -548,7 +576,13 @@ export function HeaderForm({
                     ...layout,
                     lines: [
                       ...layout.lines,
-                      { id: crypto.randomUUID(), area: 'right', align: 'center', hidden: false, text: '' },
+                      {
+                        id: crypto.randomUUID(),
+                        area: 'right',
+                        align: 'center',
+                        hidden: false,
+                        text: '',
+                      },
                     ],
                   },
                 })
@@ -565,7 +599,8 @@ export function HeaderForm({
         )}
         {applied && (
           <p role="status" className="text-sm text-emerald-700">
-            Đã áp dụng các trường vào bản soạn. Đề sẽ tự lưu trên máy chủ; xem trạng thái cạnh tên đề.
+            Đã áp dụng các trường vào bản soạn. Đề sẽ tự lưu trên máy chủ; xem trạng thái cạnh tên
+            đề.
           </p>
         )}
         {error && (

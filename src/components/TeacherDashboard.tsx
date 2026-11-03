@@ -104,9 +104,11 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
   const searchQuery = location.get('search') || '';
   const setSearchQuery = (value: string) => changeLocation('search', value);
   const selectedSubject = location.get('subject') || 'all';
-  const setSelectedSubject = (value: string) => changeLocation('subject', value === 'all' ? null : value);
+  const setSelectedSubject = (value: string) =>
+    changeLocation('subject', value === 'all' ? null : value);
   const selectedGrade = location.get('grade') || 'all';
-  const setSelectedGrade = (value: string) => changeLocation('grade', value === 'all' ? null : value);
+  const setSelectedGrade = (value: string) =>
+    changeLocation('grade', value === 'all' ? null : value);
   const queryKey = JSON.stringify([
     currentUser.id,
     currentView,
@@ -184,11 +186,13 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
           }
         } else {
           const data = await res.json();
-          if (sequence === loadSequence.current) setLoadError(data.error || 'Chưa tải được kho đề.');
+          if (sequence === loadSequence.current)
+            setLoadError(data.error || 'Chưa tải được kho đề.');
         }
       })
       .catch(() => {
-        if (sequence === loadSequence.current) setLoadError('Chưa kết nối được để tải kho đề. Hãy thử lại.');
+        if (sequence === loadSequence.current)
+          setLoadError('Chưa kết nối được để tải kho đề. Hãy thử lại.');
       })
       .finally(() => {
         if (sequence === loadSequence.current) {
@@ -342,7 +346,9 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
 
   // Xóa vĩnh viễn: chỉ trong thùng rác, có xác nhận riêng; máy chủ từ chối nếu đề đã giao
   const purgeOne = async (item: ExamSummary) => {
-    const res = await accountFetch(currentUser.id, `/api/exams/${item.id}?permanent=1`, { method: 'DELETE' });
+    const res = await accountFetch(currentUser.id, `/api/exams/${item.id}?permanent=1`, {
+      method: 'DELETE',
+    });
     const result = await res.json().catch(() => ({}));
     if (!res.ok) throw Error(result.error || 'Chưa xóa vĩnh viễn được.');
   };
@@ -439,7 +445,9 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
       router.push(`/editor/${examId}`);
     } else {
       router.push(
-        selectedFolderId ? `/editor/new?folder=${encodeURIComponent(selectedFolderId)}` : '/editor/new',
+        selectedFolderId
+          ? `/editor/new?folder=${encodeURIComponent(selectedFolderId)}`
+          : '/editor/new',
       );
     }
   };
@@ -457,7 +465,9 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
     setIsGenerateModalOpen(false);
     showToast('Đã giữ bản nháp. Đang mở bàn soạn...');
     router.push(
-      selectedFolderId ? `/editor/new?folder=${encodeURIComponent(selectedFolderId)}` : '/editor/new',
+      selectedFolderId
+        ? `/editor/new?folder=${encodeURIComponent(selectedFolderId)}`
+        : '/editor/new',
     );
   };
 
@@ -604,8 +614,8 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
             <div>
               <h1 className="text-2xl font-semibold">Thùng rác</h1>
               <p className="text-sm text-[var(--ui-text-secondary)] mt-2">
-                Đề đã chuyển vào thùng rác. Khôi phục để tiếp tục mở và chỉnh sửa, hoặc xóa vĩnh viễn nếu
-                không cần nữa. Đề đã giao cho học sinh không xóa vĩnh viễn được.
+                Đề đã chuyển vào thùng rác. Khôi phục để tiếp tục mở và chỉnh sửa, hoặc xóa vĩnh
+                viễn nếu không cần nữa. Đề đã giao cho học sinh không xóa vĩnh viễn được.
               </p>
             </div>
             {exams.length > 0 && (
@@ -724,7 +734,8 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
         </div>
 
         {/* VÙNG DANH SÁCH ĐỀ THI */}
-        {folderUnavailable && currentView !== 'trash' ? null : loadError && loadedQuery === queryKey ? (
+        {folderUnavailable && currentView !== 'trash' ? null : loadError &&
+          loadedQuery === queryKey ? (
           <div role="alert" className="border rounded-xl p-5">
             <p>{loadError}</p>
             <button
@@ -843,7 +854,9 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
                     <span>
                       {currentView === 'trash'
                         ? `Xóa ${new Date(exam.deletedAt || exam.updatedAt).toLocaleDateString('vi-VN')}`
-                        : exam.durationMinutes == null ? 'Chưa đặt thời lượng' : `${exam.durationMinutes} phút`}
+                        : exam.durationMinutes == null
+                          ? 'Chưa đặt thời lượng'
+                          : `${exam.durationMinutes} phút`}
                     </span>
                   </div>
 
@@ -1094,7 +1107,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
           </div>
         )}
         {totalPages > 1 && (
-          <nav aria-label="Trang kho đề" className="flex justify-center items-center gap-4 py-5 text-sm">
+          <nav
+            aria-label="Trang kho đề"
+            className="flex justify-center items-center gap-4 py-5 text-sm"
+          >
             <button
               type="button"
               disabled={pendingList || page <= 1}
@@ -1306,7 +1322,9 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
           const prepared = insertQuestionBatch(
             { ...newExam, questions: [], passages: [] },
             currentUser.id,
-            captureInsertion({ ...newExam, questions: [], passages: [] }, currentUser.id, { parentId: null }),
+            captureInsertion({ ...newExam, questions: [], passages: [] }, currentUser.id, {
+              parentId: null,
+            }),
             importedQuestions,
             context.passages,
             context.parts,
@@ -1320,7 +1338,9 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ currentUser 
           });
           setIsImportModalOpen(false);
           router.push(
-            selectedFolderId ? `/editor/new?folder=${encodeURIComponent(selectedFolderId)}` : '/editor/new',
+            selectedFolderId
+              ? `/editor/new?folder=${encodeURIComponent(selectedFolderId)}`
+              : '/editor/new',
           );
           return true;
         }}

@@ -61,7 +61,7 @@ export const generationPlanSchema = z
     grade: z.number().int().min(1).max(12),
     topic: z.string().trim().min(1).max(12000),
     durationMinutes: z.number().int().min(1).max(1440),
-    totalPoints:z.number().finite().positive().max(1000).optional(),
+    totalPoints: z.number().finite().positive().max(1000).optional(),
     numMultipleChoice: z.number().int().min(0).max(100).default(0),
     numTrueFalse: z.number().int().min(0).max(100).default(0),
     numShortAnswer: z.number().int().min(0).max(100).default(0),
@@ -92,7 +92,8 @@ export const generationPlanSchema = z
       p.numFillBlank +
       p.numMatching +
       p.numOrdering;
-    if (total < 1 || total > 100) ctx.addIssue({ code: 'custom', message: 'Tổng số câu phải từ 1 đến 100' });
+    if (total < 1 || total > 100)
+      ctx.addIssue({ code: 'custom', message: 'Tổng số câu phải từ 1 đến 100' });
     if (p.cognitiveFrameworkId) {
       const f = getCognitiveFramework(p.cognitiveFrameworkId);
       if (!f || !f.grades.includes(p.grade))
@@ -116,13 +117,33 @@ export const generationPlanSchema = z
   });
 export type GenerationPlan = z.infer<typeof generationPlanSchema>;
 
-const generatedFigure=z.object({id:z.string().min(1),kind:z.enum(['variation_table','function_plot','geometry','image']),data:z.unknown(),caption:z.string().optional()});
+const generatedFigure = z.object({
+  id: z.string().min(1),
+  kind: z.enum(['variation_table', 'function_plot', 'geometry', 'image']),
+  data: z.unknown(),
+  caption: z.string().optional(),
+});
 const responseQuestion = z.object({
-  id:z.string().min(1).max(200).optional(),
-  sectionId:z.string().max(200).optional(),
-  passageId:z.string().max(200).optional(),
-  figures:z.array(generatedFigure).max(20).optional(),
-  parts:z.array(z.object({id:z.string().min(1),label:z.string().optional(),content:z.string(),points:z.number().nonnegative().optional(),answer:z.string().optional(),solution:z.string().optional(),rubric:z.array(z.object({criterion:z.string(),maxPoints:z.number().nonnegative()})).optional()})).max(100).optional(),
+  id: z.string().min(1).max(200).optional(),
+  sectionId: z.string().max(200).optional(),
+  passageId: z.string().max(200).optional(),
+  figures: z.array(generatedFigure).max(20).optional(),
+  parts: z
+    .array(
+      z.object({
+        id: z.string().min(1),
+        label: z.string().optional(),
+        content: z.string(),
+        points: z.number().nonnegative().optional(),
+        answer: z.string().optional(),
+        solution: z.string().optional(),
+        rubric: z
+          .array(z.object({ criterion: z.string(), maxPoints: z.number().nonnegative() }))
+          .optional(),
+      }),
+    )
+    .max(100)
+    .optional(),
   type: z.enum([
     'multiple_choice',
     'true_false_group',
@@ -134,7 +155,15 @@ const responseQuestion = z.object({
   ]),
   difficulty: z.enum(['nhan_biet', 'thong_hieu', 'van_dung', 'van_dung_cao']).default('thong_hieu'),
   content: z.string().min(1),
-  choices: z.array(z.object({ key: z.string().min(1), text: z.string(), figures:z.array(generatedFigure).max(10).optional() })).optional(),
+  choices: z
+    .array(
+      z.object({
+        key: z.string().min(1),
+        text: z.string(),
+        figures: z.array(generatedFigure).max(10).optional(),
+      }),
+    )
+    .optional(),
   sub_questions: z
     .array(
       z.object({
@@ -171,8 +200,28 @@ const responseQuestion = z.object({
 });
 const responseSchema = z.object({
   title: z.string().optional(),
-  passages:z.array(z.object({id:z.string().min(1),title:z.string().optional(),content:z.string(),source:z.string().optional(),figures:z.array(generatedFigure).max(20).optional()})).max(100).optional(),
-  parts:z.array(z.object({id:z.string().min(1),title:z.string().default(''),questionIds:z.array(z.string().min(1)).max(100)})).max(100).optional(),
+  passages: z
+    .array(
+      z.object({
+        id: z.string().min(1),
+        title: z.string().optional(),
+        content: z.string(),
+        source: z.string().optional(),
+        figures: z.array(generatedFigure).max(20).optional(),
+      }),
+    )
+    .max(100)
+    .optional(),
+  parts: z
+    .array(
+      z.object({
+        id: z.string().min(1),
+        title: z.string().default(''),
+        questionIds: z.array(z.string().min(1)).max(100),
+      }),
+    )
+    .max(100)
+    .optional(),
   questions: z.array(responseQuestion).max(100),
 });
 
@@ -205,7 +254,10 @@ export function validateGeneratedExam(value: unknown, plan: GenerationPlan) {
   const framework = getCognitiveFramework(plan.cognitiveFrameworkId);
   const scope =
     plan.knowledgePackage && plan.knowledgeScope
-      ? knowledgeScopeContext(parseKnowledgePackage(plan.knowledgePackage, plan), plan.knowledgeScope)
+      ? knowledgeScopeContext(
+          parseKnowledgePackage(plan.knowledgePackage, plan),
+          plan.knowledgeScope,
+        )
       : undefined;
   const allowedKnowledge = new Set(scope?.knowledge.map((item) => item.id)),
     allowedOutcomes = new Set(scope?.outcomes.map((item) => item.id));
@@ -228,16 +280,24 @@ export function validateGeneratedExam(value: unknown, plan: GenerationPlan) {
       q.outcomeIds?.some((id) => !allowedOutcomes.has(id))
     )
       throw new Error('AI gắn mã kiến thức hoặc yêu cầu ngoài phạm vi được chọn');
-    if (scope && plan.assessmentMode !== 'survey' && !q.knowledgeIds?.length && !q.outcomeIds?.length)
+    if (
+      scope &&
+      plan.assessmentMode !== 'survey' &&
+      !q.knowledgeIds?.length &&
+      !q.outcomeIds?.length
+    )
       throw new Error('AI chưa gắn câu hỏi với kiến thức trong phạm vi đã chọn');
     if (
       q.type === 'multiple_choice' &&
-      (!q.choices || q.choices.length < 2 || new Set(q.choices.map((c) => c.key)).size !== q.choices.length)
+      (!q.choices ||
+        q.choices.length < 2 ||
+        new Set(q.choices.map((c) => c.key)).size !== q.choices.length)
     )
       throw new Error('Phương án lựa chọn thiếu hoặc trùng mã');
     if (
       q.type === 'true_false_group' &&
-      (!q.sub_questions?.length || new Set(q.sub_questions.map((s) => s.key)).size !== q.sub_questions.length)
+      (!q.sub_questions?.length ||
+        new Set(q.sub_questions.map((s) => s.key)).size !== q.sub_questions.length)
     )
       throw new Error('Câu đúng/sai thiếu ý hoặc trùng mã');
     if (
@@ -256,8 +316,8 @@ export function validateGeneratedExam(value: unknown, plan: GenerationPlan) {
       delete q.accepted_answers;
       delete q.points;
       delete q.rubric;
-      q.step_by_step_solution='';
-      q.parts=q.parts?.map(part=>({id:part.id,label:part.label,content:part.content}));
+      q.step_by_step_solution = '';
+      q.parts = q.parts?.map((part) => ({ id: part.id, label: part.label, content: part.content }));
       q.sub_questions = q.sub_questions?.map((sub) => {
         const value = { ...sub };
         delete value.isCorrect;
@@ -266,7 +326,10 @@ export function validateGeneratedExam(value: unknown, plan: GenerationPlan) {
     } else if (plan.assessmentMode === 'scored') {
       if (q.type === 'multiple_choice' && !q.choices?.some((c) => c.key === q.correct_answer))
         throw new Error('AI chưa cung cấp đáp án lựa chọn hợp lệ');
-      if (q.type === 'true_false_group' && q.sub_questions?.some((s) => typeof s.isCorrect !== 'boolean'))
+      if (
+        q.type === 'true_false_group' &&
+        q.sub_questions?.some((s) => typeof s.isCorrect !== 'boolean')
+      )
         throw new Error('AI chưa soạn đủ đáp án các ý đúng/sai');
       if (
         ['short_answer', 'fill_blank'].includes(q.type) &&

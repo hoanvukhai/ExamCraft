@@ -19,7 +19,12 @@ import {
   type ToolCommand,
 } from '@/components/EditorToolbar';
 import { AccountMenu, AppMenu, ExportMenu, MoreMenu } from '@/components/editor/EditorMenus';
-import { EditorRail, ResizablePanel, useStoredWidth, type RailItem } from '@/components/editor/EditorPanels';
+import {
+  EditorRail,
+  ResizablePanel,
+  useStoredWidth,
+  type RailItem,
+} from '@/components/editor/EditorPanels';
 import { describeInsertion } from '@/lib/insertion-label';
 import { previewHeaderDraft } from '@/lib/editor-draft-preview';
 import type { HeaderSubmission } from '@/lib/header-layout';
@@ -59,7 +64,11 @@ import { EditorOutline } from '@/components/editor/EditorOutline';
 import { EditorAiPanel, type AiTab } from '@/components/editor/EditorAiPanel';
 import { QuestionVerify } from '@/components/editor/QuestionVerify';
 import { EditorPending } from '@/components/editor/EditorPending';
-import { captureInsertion, insertQuestionBatch, type InsertionTarget } from '@/lib/outline-insertion';
+import {
+  captureInsertion,
+  insertQuestionBatch,
+  type InsertionTarget,
+} from '@/lib/outline-insertion';
 import { importedPartPoint, withEditorParts } from '@/lib/editor-parts';
 import {
   insertOutlineNodes,
@@ -138,8 +147,8 @@ interface ExamWorkspaceProps {
     role: string;
   };
   examId?: string;
-  initialDocument?:Exam;
-  initialTool?:InitialEditorTool;
+  initialDocument?: Exam;
+  initialTool?: InitialEditorTool;
 }
 
 /** A new question that is still exactly as inserted: leaving it removes it instead of leaving an empty question behind. */
@@ -205,7 +214,12 @@ function ConflictChoices({
   );
 }
 
-const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examId, initialDocument, initialTool }) => {
+const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({
+  currentUser,
+  examId,
+  initialDocument,
+  initialTool,
+}) => {
   const creationFolder = useSearchParams().get('folder');
   const {
     exam,
@@ -226,7 +240,12 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     recoveredDraft,
     dismissRecoveredDraft,
     ready,
-  } = useExamPersistence(currentUser.id, examId, examId === 'new' ? creationFolder : undefined,initialDocument);
+  } = useExamPersistence(
+    currentUser.id,
+    examId,
+    examId === 'new' ? creationFolder : undefined,
+    initialDocument,
+  );
   const canEdit = ready && exam.access?.canEdit !== false;
   const canPublish = ready && exam.access?.canPublish !== false;
   const manualSourceStamp = useMemo(() => questionDraftSourceStamp(exam), [exam]);
@@ -237,7 +256,10 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   // ----- Undo and redo: every edit made here is a step; only objects still as the edit left them are put back.
   const localEdit = useRef(false);
   const lastExam = useRef(exam);
-  const [history, setHistory] = useState<{ undo: Change[]; redo: Change[] }>({ undo: [], redo: [] });
+  const [history, setHistory] = useState<{ undo: Change[]; redo: Change[] }>({
+    undo: [],
+    redo: [],
+  });
   const [notice, setNotice] = useState('');
   const noticeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const say = useCallback((text: string) => {
@@ -263,17 +285,29 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     if (!change) return;
     // Typing in one field is many edits; they become one step.
     setHistory((value) => ({
-      undo: [...value.undo.slice(0, -1), ...mergeChange(value.undo.at(-1), change)].slice(-HISTORY_LIMIT),
+      undo: [...value.undo.slice(0, -1), ...mergeChange(value.undo.at(-1), change)].slice(
+        -HISTORY_LIMIT,
+      ),
       redo: [],
     }));
   }, [exam]);
-  const initialContentUndo=useRef(false);
-  useEffect(()=>{
-    if(!ready||!initialDocument?.questions.length||initialContentUndo.current)return;
-    initialContentUndo.current=true;
-    const blank={...exam,questions:[],passages:undefined,outline:undefined,sections:undefined};
-    const change=makeChange(blank,exam);if(change)queueMicrotask(()=>setHistory(previous=>previous.undo.length?previous:{undo:[change],redo:[]}));
-  },[ready,initialDocument,exam]);
+  const initialContentUndo = useRef(false);
+  useEffect(() => {
+    if (!ready || !initialDocument?.questions.length || initialContentUndo.current) return;
+    initialContentUndo.current = true;
+    const blank = {
+      ...exam,
+      questions: [],
+      passages: undefined,
+      outline: undefined,
+      sections: undefined,
+    };
+    const change = makeChange(blank, exam);
+    if (change)
+      queueMicrotask(() =>
+        setHistory((previous) => (previous.undo.length ? previous : { undo: [change], redo: [] })),
+      );
+  }, [ready, initialDocument, exam]);
   const travel = (direction: 'undo' | 'redo') => {
     const stack = history[direction];
     const entry = stack.at(-1);
@@ -320,10 +354,12 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     }
     return counts;
   }, [reviewed, exam.questions]);
-  const [commentState, setCommentState] = useState<{ key: string; counts: Record<string, number> }>({
-    key: '',
-    counts: {},
-  });
+  const [commentState, setCommentState] = useState<{ key: string; counts: Record<string, number> }>(
+    {
+      key: '',
+      counts: {},
+    },
+  );
   const [copilotCommand, setCopilotCommand] = useState<string>('');
   const [aiTab, setAiTab] = useState<AiTab>('chat');
   const [rightTab, setRightTab] = useState<RightTab>('ai');
@@ -331,14 +367,19 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   const [leftOpen, setLeftOpen] = useState(true);
   const [phonePanel, setPhonePanel] = useState(false);
   // Source panels keep what was typed while another tab is shown; they reset when they are closed or finished.
-  const [mounted, setMounted] = useState<{ bank?: boolean; import?: boolean; generate?: boolean }>({});
+  const [mounted, setMounted] = useState<{ bank?: boolean; import?: boolean; generate?: boolean }>(
+    {},
+  );
   const [leftWidth, setLeftWidth] = useStoredWidth('examcraft_editor_left', 400, 320, 720);
   const [rightWidth, setRightWidth] = useStoredWidth('examcraft_editor_right', 380, 300, 560);
   const [isShuffleModalOpen, setIsShuffleModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isResultsModalOpen, setIsResultsModalOpen] = useState(false);
   const [headerDraft, setHeaderDraft] = useState<HeaderSubmission | null>(null);
-  const updateHeaderPreview = useCallback((draft: HeaderSubmission | null) => setHeaderDraft(draft), []);
+  const updateHeaderPreview = useCallback(
+    (draft: HeaderSubmission | null) => setHeaderDraft(draft),
+    [],
+  );
   const [structureMessage, setStructureMessage] = useState('');
   const [sheetLayout, setSheetLayout] = useState<SheetLayout>({ pages: 1, units: [] });
   const onSheetLayout = useCallback((layout: SheetLayout) => setSheetLayout(layout), []);
@@ -451,7 +492,8 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   const showTab = (tab: LeftTab) => {
     setLeftTab(tab);
     setLeftOpen(true);
-    if (tab === 'bank' || tab === 'import') setMounted((previous) => ({ ...previous, [tab]: true }));
+    if (tab === 'bank' || tab === 'import')
+      setMounted((previous) => ({ ...previous, [tab]: true }));
   };
   const closeTab = (tab: LeftTab) => {
     setMounted((previous) => ({ ...previous, [tab]: false }));
@@ -482,7 +524,9 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     if (how === 'toggle' && kind === 'question') {
       setPicked((previous) => {
         const clean = previous.filter((item) => parseCode(item).kind === 'question');
-        return clean.includes(code) ? clean.filter((item) => item !== code) || [EXAM_CODE] : [...clean, code];
+        return clean.includes(code)
+          ? clean.filter((item) => item !== code) || [EXAM_CODE]
+          : [...clean, code];
       });
     } else if (how === 'range' && kind === 'question') {
       const ids = displayOutline(exam).flatMap(function walk(node): string[] {
@@ -500,7 +544,8 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       setLeftTab('detail');
       setLeftOpen(true);
     }
-    if (kind === 'insert' && typeof window !== 'undefined' && window.innerWidth < 1024) setPhonePanel(false);
+    if (kind === 'insert' && typeof window !== 'undefined' && window.innerWidth < 1024)
+      setPhonePanel(false);
   };
   const tick = (questionId: string) => select(`question:${questionId}`, 'toggle');
 
@@ -515,14 +560,18 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       headers: { 'x-examcraft-user': currentUser.id },
     })
       .then((response) => (response.ok ? response.json() : null))
-      .then((result: { comments?: { questionId: string | null; resolvedAt: string | null }[] } | null) => {
-        if (!active || !result?.comments) return;
-        const counts: Record<string, number> = {};
-        for (const comment of result.comments)
-          if (comment.questionId && !comment.resolvedAt)
-            counts[comment.questionId] = (counts[comment.questionId] ?? 0) + 1;
-        setCommentState({ key: commentKey, counts });
-      })
+      .then(
+        (
+          result: { comments?: { questionId: string | null; resolvedAt: string | null }[] } | null,
+        ) => {
+          if (!active || !result?.comments) return;
+          const counts: Record<string, number> = {};
+          for (const comment of result.comments)
+            if (comment.questionId && !comment.resolvedAt)
+              counts[comment.questionId] = (counts[comment.questionId] ?? 0) + 1;
+          setCommentState({ key: commentKey, counts });
+        },
+      )
       .catch(() => {});
     return () => {
       active = false;
@@ -577,11 +626,16 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       openAi('generate');
     } else open();
   };
-  const initialToolOpened=useRef(false);
-  useEffect(()=>{if(!ready||!initialTool||initialToolOpened.current)return;initialToolOpened.current=true;if(initialTool==='import')openSource('import');else if(initialTool==='template')showTab('template');if(initialTool!=='detail')setPhonePanel(true);
-  // Only open the explicitly selected startup tool once; do not reopen after each edit.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[ready,initialTool]);
+  const initialToolOpened = useRef(false);
+  useEffect(() => {
+    if (!ready || !initialTool || initialToolOpened.current) return;
+    initialToolOpened.current = true;
+    if (initialTool === 'import') openSource('import');
+    else if (initialTool === 'template') showTab('template');
+    if (initialTool !== 'detail') setPhonePanel(true);
+    // Only open the explicitly selected startup tool once; do not reopen after each edit.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready, initialTool]);
   const acceptSource = (
     questions: Question[],
     passages?: import('@/types/exam').Passage[],
@@ -613,7 +667,11 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     }
     return applied;
   };
-  const insertBlank = (point: InsertPoint, type: Question['type'] = 'multiple_choice', newPage = false) => {
+  const insertBlank = (
+    point: InsertPoint,
+    type: Question['type'] = 'multiple_choice',
+    newPage = false,
+  ) => {
     if (!canEdit) return;
     const question = blankQuestion(exam, type);
     const node = {
@@ -623,7 +681,11 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       ...(newPage ? { startOnNewPage: true } : {}),
     };
     try {
-      if (!setExam((previous) => insertOutlineNodes(withEditorParts(previous), point, [node], [question])))
+      if (
+        !setExam((previous) =>
+          insertOutlineNodes(withEditorParts(previous), point, [node], [question]),
+        )
+      )
         return;
     } catch (error) {
       setStructureMessage(error instanceof Error ? error.message : 'Chưa thêm được câu.');
@@ -645,7 +707,9 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   const parentCodeAnchor = (point: InsertPoint): string | null => {
     const outline = displayOutline(exam);
     const holder = outline.find(
-      (node) => node.id === point.parentId || outlineNodes([node]).some((item) => item.id === point.parentId),
+      (node) =>
+        node.id === point.parentId ||
+        outlineNodes([node]).some((item) => item.id === point.parentId),
     );
     return holder?.id ?? outline.at(-1)?.id ?? null;
   };
@@ -658,7 +722,9 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
           ...previous,
           ...(passageId
             ? {}
-            : { passages: [...(previous.passages ?? []), { id: material, title: '', content: '' }] }),
+            : {
+                passages: [...(previous.passages ?? []), { id: material, title: '', content: '' }],
+              }),
         },
         point,
         [{ id, kind: 'group', title: '', passageId: material, children: [] }],
@@ -672,7 +738,9 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     const list = point.parentId
       ? outlineNodes(outline).find((node) => node.id === point.parentId)?.children
       : outline;
-    const index = point.afterId ? (list?.findIndex((node) => node.id === point.afterId) ?? -1) + 1 : 0;
+    const index = point.afterId
+      ? (list?.findIndex((node) => node.id === point.afterId) ?? -1) + 1
+      : 0;
     const next = list?.[index];
     if (next && next.kind !== 'question')
       applyStructure((previous) =>
@@ -726,7 +794,8 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     );
   };
   const addRow = (question: Question) => {
-    const next = (keys: string[], pool: string) => pool.split('').find((key) => !keys.includes(key));
+    const next = (keys: string[], pool: string) =>
+      pool.split('').find((key) => !keys.includes(key));
     if (question.type === 'multiple_choice') {
       const key = next(
         (question.choices ?? []).map((choice) => choice.key),
@@ -756,7 +825,10 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         matchingPairs: [...(value.matchingPairs ?? []), { id, left: '', right: '' }],
       }));
     } else if (question.type === 'ordering') {
-      editQuestion(question.id, (value) => ({ ...value, correctOrder: [...(value.correctOrder ?? []), ''] }));
+      editQuestion(question.id, (value) => ({
+        ...value,
+        correctOrder: [...(value.correctOrder ?? []), ''],
+      }));
     } else if (question.type === 'essay' || question.type === 'short_answer') {
       const id = crypto.randomUUID();
       editQuestion(question.id, (value) => ({
@@ -774,10 +846,18 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       label: kind.label,
       onClick: () => insertBlank(point, kind.type),
     }));
-    const inQuestion = ['question', 'choice', 'statement', 'item', 'pair', 'order', 'figure'].includes(
-      object.kind,
-    );
-    const question = inQuestion ? exam.questions.find((item) => item.id === questionOf(code)) : undefined;
+    const inQuestion = [
+      'question',
+      'choice',
+      'statement',
+      'item',
+      'pair',
+      'order',
+      'figure',
+    ].includes(object.kind);
+    const question = inQuestion
+      ? exam.questions.find((item) => item.id === questionOf(code))
+      : undefined;
     const rowLabel: Partial<Record<Question['type'], string>> = {
       multiple_choice: 'Phương án mới',
       true_false_group: 'Mệnh đề mới',
@@ -787,17 +867,27 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       ordering: 'Mục mới',
     };
     const inGroup =
-      object.kind !== 'part' && nodeOfQuestion(exam, questionOf(code) ?? '')?.parent?.kind === 'group';
+      object.kind !== 'part' &&
+      nodeOfQuestion(exam, questionOf(code) ?? '')?.parent?.kind === 'group';
     return [
       ...(question && rowLabel[question.type]
-        ? [{ label: rowLabel[question.type]!, disabled: !!question.locked, onClick: () => addRow(question) }]
+        ? [
+            {
+              label: rowLabel[question.type]!,
+              disabled: !!question.locked,
+              onClick: () => addRow(question),
+            },
+          ]
         : []),
       ...items,
       ...(inGroup && object.kind === 'group'
         ? []
         : [{ label: 'Ngữ liệu', onClick: () => insertGroup(point) }]),
       ...reusablePassages.map((passage, index) => ({
-        label: `Dùng lại ngữ liệu: ${passage.title?.trim() || `Nội dung ${index + 1}`}`.slice(0, 48),
+        label: `Dùng lại ngữ liệu: ${passage.title?.trim() || `Nội dung ${index + 1}`}`.slice(
+          0,
+          48,
+        ),
         onClick: () => insertGroup(point, passage.id),
       })),
       { label: 'Phần mới', onClick: () => insertPart(point) },
@@ -813,7 +903,10 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
   useEffect(() => {
     if (!exam.serverId || exam.access?.canManage === false) return;
     let live = true;
-    void accountFetch(currentUser.id, '/api/assignments?examId=' + encodeURIComponent(exam.serverId))
+    void accountFetch(
+      currentUser.id,
+      '/api/assignments?examId=' + encodeURIComponent(exam.serverId),
+    )
       .then(async (response) => {
         if (!response.ok) return;
         const data = await response.json();
@@ -822,7 +915,8 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
           setAssignmentState({ id: exam.id, has: rows.length > 0 });
           setSubmissionCount(
             rows.reduce(
-              (total: number, row: { _count?: { attempts?: number } }) => total + (row._count?.attempts ?? 0),
+              (total: number, row: { _count?: { attempts?: number } }) =>
+                total + (row._count?.attempts ?? 0),
               0,
             ),
           );
@@ -841,7 +935,9 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     }));
   };
   const downloadDraft = () => {
-    const url = URL.createObjectURL(new Blob([JSON.stringify(exam, null, 2)], { type: 'application/json' }));
+    const url = URL.createObjectURL(
+      new Blob([JSON.stringify(exam, null, 2)], { type: 'application/json' }),
+    );
     const link = document.createElement('a');
     link.href = url;
     link.download = 'ExamCraft-ban-nhap.json';
@@ -875,7 +971,9 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
 
   // ----- Commands of the selection
   const removeQuestions = (ids: string[]) => {
-    const locked = exam.questions.filter((question) => ids.includes(question.id) && question.locked);
+    const locked = exam.questions.filter(
+      (question) => ids.includes(question.id) && question.locked,
+    );
     if (locked.length) {
       say('Có câu đang khóa. Mở khóa trước khi xóa.');
       return;
@@ -909,7 +1007,8 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       action: 'duplicate' as const,
       newId,
     };
-    if (setExam((previous) => applyQuestionOrderCommand(previous, command))) setPicked([`question:${newId}`]);
+    if (setExam((previous) => applyQuestionOrderCommand(previous, command)))
+      setPicked([`question:${newId}`]);
   };
   const toggleLock = (ids: string[]) => {
     const lock = !ids.every((id) => exam.questions.find((question) => question.id === id)?.locked);
@@ -951,13 +1050,18 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       ? outlineNodes(displayOutline(exam)).find((node) => node.id === id)
       : undefined;
     const members = outlineNodes(target ? [target] : []).filter((node) => node.kind === 'question');
-    if (!keep && members.some((node) => exam.questions.find((q) => q.id === node.questionId)?.locked)) {
+    if (
+      !keep &&
+      members.some((node) => exam.questions.find((q) => q.id === node.questionId)?.locked)
+    ) {
       say('Có câu đang khóa trong mục này. Mở khóa trước khi xóa.');
       return;
     }
     if (
       !window.confirm(
-        keep ? 'Bỏ mục này nhưng giữ các câu bên trong?' : `Xóa mục này và ${members.length} câu bên trong?`,
+        keep
+          ? 'Bỏ mục này nhưng giữ các câu bên trong?'
+          : `Xóa mục này và ${members.length} câu bên trong?`,
       )
     )
       return;
@@ -1020,7 +1124,9 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     const first = questionsOnPage(page)[0];
     const node = first ? nodeOfQuestion(exam, first)?.node : undefined;
     if (!node) return;
-    applyStructure((previous) => patchOutlineNode(previous, node.id, { startOnNewPage: on || undefined }));
+    applyStructure((previous) =>
+      patchOutlineNode(previous, node.id, { startOnNewPage: on || undefined }),
+    );
   };
   const duplicatePage = (page: number) => {
     const ids = questionsOnPage(page);
@@ -1078,7 +1184,8 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     const page = index + 1;
     const ids = questionsOnPage(page);
     const locked =
-      ids.length > 0 && ids.every((id) => exam.questions.find((question) => question.id === id)?.locked);
+      ids.length > 0 &&
+      ids.every((id) => exam.questions.find((question) => question.id === id)?.locked);
     const first = ids[0] ? nodeOfQuestion(exam, ids[0])?.node : undefined;
     return [
       { label: 'Nhân bản trang', disabled: !ids.length, onClick: () => duplicatePage(page) },
@@ -1142,7 +1249,9 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
       return;
     }
     const before = exam.questions.length;
-    applyStructure((previous) => pasteClipboard(previous, payload!, point, () => crypto.randomUUID()));
+    applyStructure((previous) =>
+      pasteClipboard(previous, payload!, point, () => crypto.randomUUID()),
+    );
     say(`Đã dán ${payload.questions.length} câu (bản mới, có mã riêng).`);
     void before;
   };
@@ -1170,7 +1279,10 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
             label: `Chuyển sang ${labelOfNode(part.id)}`,
             onClick: () => moveInto(pickedQuestionIds, part.id),
           })),
-        { label: `Xóa (${pickedQuestionIds.length})`, onClick: () => removeQuestions(pickedQuestionIds) },
+        {
+          label: `Xóa (${pickedQuestionIds.length})`,
+          onClick: () => removeQuestions(pickedQuestionIds),
+        },
       ];
     const clip = (nodeIds: string[]): ToolCommand[] => [
       { label: 'Sao chép', onClick: () => copyNodeIds(nodeIds) },
@@ -1239,7 +1351,9 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
             label: 'Hỏi AI về câu này',
             onClick: () =>
               withAi(() => {
-                setCopilotCommand(`Đổi số liệu hoặc nâng cấp câu ${exam.questions.indexOf(question) + 1}`);
+                setCopilotCommand(
+                  `Đổi số liệu hoặc nâng cấp câu ${exam.questions.indexOf(question) + 1}`,
+                );
                 openAi('chat');
               }),
           },
@@ -1255,7 +1369,10 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
             .map((group) => {
               const material = exam.passages?.find((item) => item.id === group.passageId);
               const name =
-                material?.title || group.title || material?.content.slice(0, 32) || 'nội dung chung';
+                material?.title ||
+                group.title ||
+                material?.content.slice(0, 32) ||
+                'nội dung chung';
               return {
                 label: `Đưa vào ${name}`,
                 disabled: locked,
@@ -1264,7 +1381,9 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
             }),
           ...clip(node ? [node.node.id] : []),
           {
-            label: node?.node.startOnNewPage ? 'Bỏ ngắt trang trước câu' : 'Bắt đầu câu này ở trang mới',
+            label: node?.node.startOnNewPage
+              ? 'Bỏ ngắt trang trước câu'
+              : 'Bắt đầu câu này ở trang mới',
             disabled: locked || !node,
             onClick: () =>
               node &&
@@ -1286,7 +1405,8 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
           {
             label: 'Đặt là đáp án đúng',
             disabled: !!question.locked || question.correct_answer === object.key,
-            onClick: () => editQuestion(question.id, (value) => ({ ...value, correct_answer: object.key })),
+            onClick: () =>
+              editQuestion(question.id, (value) => ({ ...value, correct_answer: object.key })),
           },
           {
             label: choice?.pinned ? 'Bỏ ghim vị trí' : 'Ghim vị trí',
@@ -1306,7 +1426,8 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
               editQuestion(question.id, (value) => ({
                 ...value,
                 choices: value.choices?.filter((item) => item.key !== object.key),
-                correct_answer: value.correct_answer === object.key ? undefined : value.correct_answer,
+                correct_answer:
+                  value.correct_answer === object.key ? undefined : value.correct_answer,
               }));
               setPicked([`question:${question.id}`]);
             },
@@ -1462,7 +1583,9 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
     onPreview: updateHeaderPreview,
     addItems: addItemsFor,
     pageInfo: (page: number) => ({
-      range: questionsOnPage(page).length ? questionsOnPage(page).length + ' câu bắt đầu ở trang này' : '',
+      range: questionsOnPage(page).length
+        ? questionsOnPage(page).length + ' câu bắt đầu ở trang này'
+        : '',
       items: pageItemsFor(page - 1),
     }),
     focus: focusDetail,
@@ -1492,10 +1615,14 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
           ? 'Toàn đề'
           : (chain.at(-1)?.label ?? 'Toàn đề');
   const single =
-    pickedQuestionIds.length === 1 ? exam.questions.find((q) => q.id === pickedQuestionIds[0]) : undefined;
+    pickedQuestionIds.length === 1
+      ? exam.questions.find((q) => q.id === pickedQuestionIds[0])
+      : undefined;
   const aiQuestion =
     single ??
-    (questionOf(selectedCode) ? exam.questions.find((q) => q.id === questionOf(selectedCode)) : undefined);
+    (questionOf(selectedCode)
+      ? exam.questions.find((q) => q.id === questionOf(selectedCode))
+      : undefined);
 
   const rightTabs: { id: RightTab; label: string; open: boolean }[] = [
     { id: 'ai', label: 'AI', open: canEdit && isCopilotOpen },
@@ -1561,7 +1688,12 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
               label="Kết quả bài đã giao"
               compact
               Icon={Users}
-              items={[{ label: `Kết quả (${submissionCount})`, onClick: () => setIsResultsModalOpen(true) }]}
+              items={[
+                {
+                  label: `Kết quả (${submissionCount})`,
+                  onClick: () => setIsResultsModalOpen(true),
+                },
+              ]}
             />
           ) : undefined
         }
@@ -1621,7 +1753,10 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
             {people.slice(0, 4).map((person) => (
               <li
                 key={person.userId}
-                title={person.name + (person.focus ? ' · ' + (labelOf(person.focus) || 'đang xem đề') : '')}
+                title={
+                  person.name +
+                  (person.focus ? ' · ' + (labelOf(person.focus) || 'đang xem đề') : '')
+                }
                 className="w-7 h-7 rounded-full border bg-[var(--ui-primary-container)] text-[11px] font-semibold flex items-center justify-center"
               >
                 {person.name.trim().slice(0, 1).toUpperCase()}
@@ -1656,11 +1791,11 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                     ? 'Có thay đổi đang chờ lưu'
                     : saveState === 'pristine'
                       ? 'Đề mới chưa có thay đổi; chưa lưu lên máy chủ'
-                    : saveState === 'offline'
-                      ? 'Mất kết nối — đang giữ bản nháp trên máy'
-                      : saveState === 'saved'
-                        ? saveMessage || 'Đã lưu trên máy chủ'
-                        : saveMessage || 'Chưa lưu được đề'}
+                      : saveState === 'offline'
+                        ? 'Mất kết nối — đang giữ bản nháp trên máy'
+                        : saveState === 'saved'
+                          ? saveMessage || 'Đã lưu trên máy chủ'
+                          : saveMessage || 'Chưa lưu được đề'}
             </span>
             {saveState !== 'loading' && saveState !== 'saving' && (
               <button
@@ -1685,7 +1820,10 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
               Tải bản nháp
             </button>
             {saveState === 'conflict' && (
-              <button onClick={() => void saveCopy()} className="app-button-secondary min-h-8 px-2.5 text-xs">
+              <button
+                onClick={() => void saveCopy()}
+                className="app-button-secondary min-h-8 px-2.5 text-xs"
+              >
                 Lưu bản nháp thành đề mới
               </button>
             )}
@@ -1706,7 +1844,9 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         addItems={addItemsFor(selectedCode)}
         aiOpen={isCopilotOpen}
         onAi={() =>
-          withAi(() => (isCopilotOpen && rightTab === 'ai' ? setIsCopilotOpen(false) : openAi('chat')))
+          withAi(() =>
+            isCopilotOpen && rightTab === 'ai' ? setIsCopilotOpen(false) : openAi('chat'),
+          )
         }
         steps={chain}
         onStep={(code) => select(code)}
@@ -1714,12 +1854,20 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
         onPanel={() => setPhonePanel((open) => !open)}
       />
       {(notice || structureMessage) && (
-        <p role="status" className="no-print shrink-0 border-b px-3 py-1.5 text-xs bg-[var(--ui-surface)]">
+        <p
+          role="status"
+          className="no-print shrink-0 border-b px-3 py-1.5 text-xs bg-[var(--ui-surface)]"
+        >
           {structureMessage || notice}
         </p>
       )}
-      {!ready && <div className="p-4">{saveMessage || 'Đang tải nội dung. Vui lòng chờ trước khi sửa.'}</div>}
-      <div className="print-flow flex-1 flex overflow-hidden min-h-0 relative" onKeyDown={onSheetKey}>
+      {!ready && (
+        <div className="p-4">{saveMessage || 'Đang tải nội dung. Vui lòng chờ trước khi sửa.'}</div>
+      )}
+      <div
+        className="print-flow flex-1 flex overflow-hidden min-h-0 relative"
+        onKeyDown={onSheetKey}
+      >
         <EditorRail items={railItems} tab={leftTab} open={leftOpen} onTab={pressRail} />
 
         <ResizablePanel
@@ -1805,7 +1953,11 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                 </div>
               )}
               {lockedBy && holdsLock && canEdit && (
-                <div role="status" data-presence-lock className="border rounded p-3 text-sm space-y-2">
+                <div
+                  role="status"
+                  data-presence-lock
+                  className="border rounded p-3 text-sm space-y-2"
+                >
                   <p>
                     <b>{lockedBy.name}</b> đang sửa mục này. Xem tạm, tránh hai người sửa cùng lúc.
                   </p>
@@ -1827,7 +1979,11 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                   </div>
                 </div>
               )}
-              <EditorPending ownerId={currentUser.id} exam={exam} onCopilot={() => openAi('chat')} />
+              <EditorPending
+                ownerId={currentUser.id}
+                exam={exam}
+                onCopilot={() => openAi('chat')}
+              />
               {pickedQuestionIds.length > 1 ? (
                 <div className="space-y-2">
                   <h2 className="text-sm font-semibold">{pickedQuestionIds.length} câu đã chọn</h2>
@@ -1914,7 +2070,10 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
           className="a4-preview-section min-w-0 flex-1 min-h-0 flex flex-col print:!block print:!static print:!h-auto print:!w-full print:!overflow-visible"
         >
           {previewExam !== exam && (
-            <p role="status" className="no-print text-xs px-3 py-1.5 border-b bg-[var(--ui-surface)]">
+            <p
+              role="status"
+              className="no-print text-xs px-3 py-1.5 border-b bg-[var(--ui-surface)]"
+            >
               Đang xem thử thông tin chưa áp dụng.
             </p>
           )}
@@ -1925,7 +2084,9 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
             insertItems={canEdit ? addItemsFor : undefined}
             onLayout={onSheetLayout}
             pageItems={canEdit ? pageItemsFor : undefined}
-            selectedPage={selectedCode.startsWith('page:') ? Number(selectedCode.slice(5)) - 1 : null}
+            selectedPage={
+              selectedCode.startsWith('page:') ? Number(selectedCode.slice(5)) - 1 : null
+            }
             onPageMove={canEdit ? movePage : undefined}
             onPageAdd={canEdit ? addPage : undefined}
             issueCounts={issueCounts}
@@ -1989,28 +2150,48 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                   target={aiTarget}
                   hasKey={hasActiveKey}
                   keyState={keyState}
-                  onKeys={() => { setIsCopilotOpen(false); openKeys(); }}
+                  onKeys={() => {
+                    setIsCopilotOpen(false);
+                    openKeys();
+                  }}
                   chat={
                     <RightCompanionRail
                       key={`${currentUser.id}:${exam.id}`}
                       ownerId={currentUser.id}
                       onSubmitCopilot={(submission) =>
-                        setExam((previous) => applyCopilotSubmission(previous, submission, currentUser.id))
+                        setExam((previous) =>
+                          applyCopilotSubmission(previous, submission, currentUser.id),
+                        )
                       }
                       isExpanded={isCopilotOpen && activeRight?.id === 'ai' && aiTab === 'chat'}
                       onClose={() => setIsCopilotOpen(false)}
                       exam={exam}
                       selectedQuestionIds={
-                        pickedQuestionIds.length ? pickedQuestionIds : aiQuestion ? [aiQuestion.id] : []
+                        pickedQuestionIds.length
+                          ? pickedQuestionIds
+                          : aiQuestion
+                            ? [aiQuestion.id]
+                            : []
                       }
-                      target={selectionTarget(selectedCode,pickedQuestionIds)}
+                      target={selectionTarget(selectedCode, pickedQuestionIds)}
                       externalCommand={copilotCommand}
                       keyState={keyState}
-                      onKeys={() => { setIsCopilotOpen(false); openKeys(); }}
+                      onKeys={() => {
+                        setIsCopilotOpen(false);
+                        openKeys();
+                      }}
                       onReloadKeys={reloadKeys}
                       onGenerate={() => openSource('generate')}
-                      onUseTemplate={() => { setIsCopilotOpen(false); showTab('template'); setPhonePanel(true); }}
-                      onImportDocument={() => { setIsCopilotOpen(false); openSource('import'); setPhonePanel(true); }}
+                      onUseTemplate={() => {
+                        setIsCopilotOpen(false);
+                        showTab('template');
+                        setPhonePanel(true);
+                      }}
+                      onImportDocument={() => {
+                        setIsCopilotOpen(false);
+                        openSource('import');
+                        setPhonePanel(true);
+                      }}
                     />
                   }
                   generate={
@@ -2114,7 +2295,9 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
                   }}
                   beforeRestore={() => {
                     if (saveState !== 'saved') {
-                      alert('Hãy lưu xong hoặc giữ bản nháp thành đề mới trước khi khôi phục lịch sử.');
+                      alert(
+                        'Hãy lưu xong hoặc giữ bản nháp thành đề mới trước khi khôi phục lịch sử.',
+                      );
                       return false;
                     }
                     return true;
@@ -2175,8 +2358,24 @@ const ExamWorkspaceContent: React.FC<ExamWorkspaceProps> = ({ currentUser, examI
 };
 
 export const ExamWorkspace: React.FC<ExamWorkspaceProps> = (props) => {
- const renderEditor=(initial?:Exam,tool?:InitialEditorTool)=><EditorSelectionProvider key={props.currentUser.id+':'+props.examId}><ExamWorkspaceContent {...props} initialDocument={initial??props.initialDocument} initialTool={tool??props.initialTool}/></EditorSelectionProvider>;
- return props.examId==='new'?<ExamBootstrapGate key={props.currentUser.id} ownerId={props.currentUser.id} renderEditor={renderEditor}/>:renderEditor();
+  const renderEditor = (initial?: Exam, tool?: InitialEditorTool) => (
+    <EditorSelectionProvider key={props.currentUser.id + ':' + props.examId}>
+      <ExamWorkspaceContent
+        {...props}
+        initialDocument={initial ?? props.initialDocument}
+        initialTool={tool ?? props.initialTool}
+      />
+    </EditorSelectionProvider>
+  );
+  return props.examId === 'new' ? (
+    <ExamBootstrapGate
+      key={props.currentUser.id}
+      ownerId={props.currentUser.id}
+      renderEditor={renderEditor}
+    />
+  ) : (
+    renderEditor()
+  );
 };
 
 export default ExamWorkspace;

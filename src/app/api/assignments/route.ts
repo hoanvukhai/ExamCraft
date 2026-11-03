@@ -71,7 +71,11 @@ export async function GET(req: NextRequest) {
   } catch (error: unknown) {
     if (error instanceof ApiError) return apiErrorResponse(error, 'Chưa đọc được bài giao');
     const err = error as Error;
-    if (err.message === 'MUST_CHANGE_PASSWORD') return NextResponse.json({ error: 'Vui lòng đổi mật khẩu trước khi tiếp tục' }, { status: 403 });
+    if (err.message === 'MUST_CHANGE_PASSWORD')
+      return NextResponse.json(
+        { error: 'Vui lòng đổi mật khẩu trước khi tiếp tục' },
+        { status: 403 },
+      );
     if (err.message === 'UNAUTHORIZED') {
       return NextResponse.json({ error: 'Chưa đăng nhập' }, { status: 401 });
     }
@@ -90,7 +94,7 @@ export async function POST(req: NextRequest) {
     if (!parsed.success) {
       return NextResponse.json(
         { error: parsed.error.issues[0]?.message || 'Dữ liệu giao bài không hợp lệ' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -111,33 +115,91 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Không tìm thấy đề thi cần giao' }, { status: 404 });
     }
 
-    if (exam.items.length === 0 || exam.items.some(item => item.question.deletedAt || item.question.ownerId !== user.id)) {
-      return NextResponse.json({ error: 'Đề phải có câu hỏi hợp lệ thuộc quyền sở hữu của bạn' }, { status: 400 });
+    if (
+      exam.items.length === 0 ||
+      exam.items.some((item) => item.question.deletedAt || item.question.ownerId !== user.id)
+    ) {
+      return NextResponse.json(
+        { error: 'Đề phải có câu hỏi hợp lệ thuộc quyền sở hữu của bạn' },
+        { status: 400 },
+      );
     }
-    const assignmentDuration=data.durationMinutes??exam.durationMinutes;
-    if((data.mode!=='HOMEWORK'&&!assignmentDuration)||(assignmentDuration!=null&&(!Number.isInteger(assignmentDuration)||assignmentDuration<1||assignmentDuration>1440)))return NextResponse.json({error:'Hãy đặt thời lượng làm bài trước khi giao. Đề chưa có thời lượng.'},{status:400});
+    const assignmentDuration = data.durationMinutes ?? exam.durationMinutes;
+    if (
+      (data.mode !== 'HOMEWORK' && !assignmentDuration) ||
+      (assignmentDuration != null &&
+        (!Number.isInteger(assignmentDuration) ||
+          assignmentDuration < 1 ||
+          assignmentDuration > 1440))
+    )
+      return NextResponse.json(
+        { error: 'Hãy đặt thời lượng làm bài trước khi giao. Đề chưa có thời lượng.' },
+        { status: 400 },
+      );
     const opensAt = data.opensAt ? new Date(data.opensAt) : new Date();
     const closesAt = data.closesAt ? new Date(data.closesAt) : null;
-    if (closesAt && closesAt <= opensAt) return NextResponse.json({ error: 'Thời gian đóng phải sau thời gian mở' }, { status: 400 });
-    if (closesAt && closesAt <= new Date()) return NextResponse.json({ error: 'Giờ đóng đã qua. Hãy chọn một thời điểm trong tương lai.' }, { status: 400 });
+    if (closesAt && closesAt <= opensAt)
+      return NextResponse.json({ error: 'Thời gian đóng phải sau thời gian mở' }, { status: 400 });
+    if (closesAt && closesAt <= new Date())
+      return NextResponse.json(
+        { error: 'Giờ đóng đã qua. Hãy chọn một thời điểm trong tương lai.' },
+        { status: 400 },
+      );
     const joinCode = normalizeJoinCode(data.joinCode);
-    if (joinCode === null) return NextResponse.json({ error: 'Mã vào bài gồm 4–12 chữ cái hoặc chữ số, không dấu, không khoảng trắng.' }, { status: 400 });
-    const policyError = assignmentPolicyError({ requirePin: data.requirePin, hasGroup: Boolean(data.groupId), identityMode: data.identityMode, opensAt, closesAt, maxAttempts: data.maxAttempts });
+    if (joinCode === null)
+      return NextResponse.json(
+        { error: 'Mã vào bài gồm 4–12 chữ cái hoặc chữ số, không dấu, không khoảng trắng.' },
+        { status: 400 },
+      );
+    const policyError = assignmentPolicyError({
+      requirePin: data.requirePin,
+      hasGroup: Boolean(data.groupId),
+      identityMode: data.identityMode,
+      opensAt,
+      closesAt,
+      maxAttempts: data.maxAttempts,
+    });
     if (policyError) return NextResponse.json({ error: policyError }, { status: 400 });
-    if (data.identityMode !== 'FREE_NAME' && !data.groupId) return NextResponse.json({ error: 'Hãy chọn lớp cho chế độ nhận diện này hoặc chọn tự nhập tên' }, { status: 400 });
+    if (data.identityMode !== 'FREE_NAME' && !data.groupId)
+      return NextResponse.json(
+        { error: 'Hãy chọn lớp cho chế độ nhận diện này hoặc chọn tự nhập tên' },
+        { status: 400 },
+      );
     if (data.groupId) {
-      const group = await prisma.group.findFirst({ where: { id: data.groupId, ownerId: user.id, archivedAt: null } });
-      if (!group) return NextResponse.json({ error: 'Không tìm thấy lớp thuộc quyền quản lý của bạn' }, { status: 404 });
+      const group = await prisma.group.findFirst({
+        where: { id: data.groupId, ownerId: user.id, archivedAt: null },
+      });
+      if (!group)
+        return NextResponse.json(
+          { error: 'Không tìm thấy lớp thuộc quyền quản lý của bạn' },
+          { status: 404 },
+        );
     }
 
     const document = fromDatabaseExam(exam);
-    const frozen = freezeExamScoring(document, (document as ExamWithSections).sections ?? exam.sections);
-    if (frozen.missing.length) return NextResponse.json({ error: 'Còn ' + frozen.missing.length + ' câu chưa có điểm. Hãy đặt điểm hoặc chọn nhận xét/khảo sát trước khi giao bài.' }, { status: 400 });
+    const frozen = freezeExamScoring(
+      document,
+      (document as ExamWithSections).sections ?? exam.sections,
+    );
+    if (frozen.missing.length)
+      return NextResponse.json(
+        {
+          error:
+            'Còn ' +
+            frozen.missing.length +
+            ' câu chưa có điểm. Hãy đặt điểm hoặc chọn nhận xét/khảo sát trước khi giao bài.',
+        },
+        { status: 400 },
+      );
     const snapshot = {
       ...document,
-      examId: exam.id, title: exam.title, subject: exam.subject, grade: exam.grade,
+      examId: exam.id,
+      title: exam.title,
+      subject: exam.subject,
+      grade: exam.grade,
       durationMinutes: assignmentDuration,
-      sections: frozen.sections, questions: frozen.questions,
+      sections: frozen.sections,
+      questions: frozen.questions,
       snapshotAt: new Date().toISOString(),
     };
 
@@ -187,7 +249,11 @@ export async function POST(req: NextRequest) {
   } catch (error: unknown) {
     if (error instanceof ApiError) return apiErrorResponse(error, 'Chưa tạo được bài giao');
     const err = error as Error;
-    if (err.message === 'MUST_CHANGE_PASSWORD') return NextResponse.json({ error: 'Vui lòng đổi mật khẩu trước khi tiếp tục' }, { status: 403 });
+    if (err.message === 'MUST_CHANGE_PASSWORD')
+      return NextResponse.json(
+        { error: 'Vui lòng đổi mật khẩu trước khi tiếp tục' },
+        { status: 403 },
+      );
     if (err.message === 'UNAUTHORIZED') {
       return NextResponse.json({ error: 'Chưa đăng nhập' }, { status: 401 });
     }

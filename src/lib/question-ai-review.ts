@@ -1,6 +1,10 @@
 import type { Question } from '@/types/exam';
 import { normalizeQuestion } from './exam-document';
-import { sameQuestionSourceStamp, questionValueStamp, type QuestionManualSubmission } from './question-draft';
+import {
+  sameQuestionSourceStamp,
+  questionValueStamp,
+  type QuestionManualSubmission,
+} from './question-draft';
 
 export interface QuestionAiBase {
   ownerId: string;
@@ -9,17 +13,39 @@ export interface QuestionAiBase {
   question: Question;
 }
 
-export function captureQuestionAiBase(ownerId: string, documentId: string, sourceStamp: string, question: Question): QuestionAiBase {
+export function captureQuestionAiBase(
+  ownerId: string,
+  documentId: string,
+  sourceStamp: string,
+  question: Question,
+): QuestionAiBase {
   return { ownerId, documentId, sourceStamp, question: structuredClone(question) };
 }
 
-export function questionAiBaseMatches(base: QuestionAiBase, ownerId: string, documentId: string, sourceStamp: string, question: Question): boolean {
-  return base.ownerId === ownerId && base.documentId === documentId && sameQuestionSourceStamp(base.sourceStamp, sourceStamp)
-    && questionValueStamp(base.question) === questionValueStamp(question);
+export function questionAiBaseMatches(
+  base: QuestionAiBase,
+  ownerId: string,
+  documentId: string,
+  sourceStamp: string,
+  question: Question,
+): boolean {
+  return (
+    base.ownerId === ownerId &&
+    base.documentId === documentId &&
+    sameQuestionSourceStamp(base.sourceStamp, sourceStamp) &&
+    questionValueStamp(base.question) === questionValueStamp(question)
+  );
 }
 
 /** Prepare an explicit teacher acceptance; the parent updater must guard again. */
-export function prepareQuestionAiSubmission(base: QuestionAiBase, candidate: Question, ownerId: string, documentId: string, sourceStamp: string, currentQuestion: Question): QuestionManualSubmission | null {
+export function prepareQuestionAiSubmission(
+  base: QuestionAiBase,
+  candidate: Question,
+  ownerId: string,
+  documentId: string,
+  sourceStamp: string,
+  currentQuestion: Question,
+): QuestionManualSubmission | null {
   if (!questionAiBaseMatches(base, ownerId, documentId, sourceStamp, currentQuestion)) return null;
   try {
     // A provider response is a question, not an arbitrary patch. Do not make a
@@ -28,21 +54,51 @@ export function prepareQuestionAiSubmission(base: QuestionAiBase, candidate: Que
     const retained = normalizeQuestion(base.question);
     // A newly proposed body must not inherit an old answer or old type's
     // interaction fields, even when the candidate leaves them unspecified.
-    for (const key of ['choices', 'sub_questions', 'correct_answer', 'accepted_answers', 'matchingPairs', 'correctOrder'] as const) delete retained[key];
+    for (const key of [
+      'choices',
+      'sub_questions',
+      'correct_answer',
+      'accepted_answers',
+      'matchingPairs',
+      'correctOrder',
+    ] as const)
+      delete retained[key];
     const value = normalizeQuestion({
-      ...retained, ...normalizedCandidate,
-      choices: normalizedCandidate.choices?.map(choice=>{const old=base.question.choices?.find(item=>item.key===choice.key);return !Object.hasOwn(choice,'figures')&&old?.figures?{...choice,figures:old.figures}:choice;}),
+      ...retained,
+      ...normalizedCandidate,
+      choices: normalizedCandidate.choices?.map((choice) => {
+        const old = base.question.choices?.find((item) => item.key === choice.key);
+        return !Object.hasOwn(choice, 'figures') && old?.figures
+          ? { ...choice, figures: old.figures }
+          : choice;
+      }),
       figures: Object.hasOwn(candidate, 'figures') ? normalizedCandidate.figures : retained.figures,
-      id: base.question.id, subject: base.question.subject, grade: base.question.grade,
+      id: base.question.id,
+      subject: base.question.subject,
+      grade: base.question.grade,
       points: base.question.points,
-      sectionId: base.question.sectionId, passageId: base.question.passageId,
+      sectionId: base.question.sectionId,
+      passageId: base.question.passageId,
       knowledgeReference: base.question.knowledgeReference,
-      knowledgeIds: base.question.knowledgeIds, outcomeIds: base.question.outcomeIds,
-      subBranch: base.question.subBranch, curriculumTrack: base.question.curriculumTrack,
-      version: (currentQuestion.version ?? 1) + 1, status: 'draft', verifiedBy: 'none', aiGenerated: true,
+      knowledgeIds: base.question.knowledgeIds,
+      outcomeIds: base.question.outcomeIds,
+      subBranch: base.question.subBranch,
+      curriculumTrack: base.question.curriculumTrack,
+      version: (currentQuestion.version ?? 1) + 1,
+      status: 'draft',
+      verifiedBy: 'none',
+      aiGenerated: true,
     });
-    return { ownerId: base.ownerId, documentId: base.documentId, questionId: base.question.id,
-      baseStamp: questionValueStamp(base.question), baseSourceStamp: base.sourceStamp,
-      token: crypto.randomUUID(), value };
-  } catch { return null; }
+    return {
+      ownerId: base.ownerId,
+      documentId: base.documentId,
+      questionId: base.question.id,
+      baseStamp: questionValueStamp(base.question),
+      baseSourceStamp: base.sourceStamp,
+      token: crypto.randomUUID(),
+      value,
+    };
+  } catch {
+    return null;
+  }
 }

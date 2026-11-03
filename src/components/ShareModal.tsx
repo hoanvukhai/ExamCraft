@@ -56,7 +56,12 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   onCloudSyncSuccess,
 }) => {
   const active = useRef(isOpen);
-  useEffect(() => { active.current = isOpen; return () => { active.current = false; }; }, [isOpen]);
+  useEffect(() => {
+    active.current = isOpen;
+    return () => {
+      active.current = false;
+    };
+  }, [isOpen]);
   const [activeTab, setActiveTab] = useState<'assign' | 'share'>('assign');
   const origin = useSyncExternalStore(subscribeOrigin, browserOrigin, serverOrigin);
 
@@ -66,14 +71,27 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   const [loadingGroups, setLoadingGroups] = useState(false);
 
   // Cấu hình giao bài
-  const [titleDraft, setTitleDraft] = useState({ source: exam.metadata.title, value: exam.metadata.title || 'Bài kiểm tra trực tuyến' });
-  const assignmentTitle = exam.metadata.title && titleDraft.source !== exam.metadata.title ? exam.metadata.title : titleDraft.value;
-  const setAssignmentTitle = (value: string) => setTitleDraft({ source: exam.metadata.title, value });
+  const [titleDraft, setTitleDraft] = useState({
+    source: exam.metadata.title,
+    value: exam.metadata.title || 'Bài kiểm tra trực tuyến',
+  });
+  const assignmentTitle =
+    exam.metadata.title && titleDraft.source !== exam.metadata.title
+      ? exam.metadata.title
+      : titleDraft.value;
+  const setAssignmentTitle = (value: string) =>
+    setTitleDraft({ source: exam.metadata.title, value });
   const [mode, setMode] = useState<'HOMEWORK' | 'CLASSWORK' | 'EXAM'>('CLASSWORK');
-  const [identityMode, setIdentityMode] = useState<'PICK_FROM_LIST' | 'FREE_NAME'>('PICK_FROM_LIST');
-  const [durationMinutes, setDurationMinutes] = useState<number | ''>(exam.metadata.durationMinutes ?? '');
+  const [identityMode, setIdentityMode] = useState<'PICK_FROM_LIST' | 'FREE_NAME'>(
+    'PICK_FROM_LIST',
+  );
+  const [durationMinutes, setDurationMinutes] = useState<number | ''>(
+    exam.metadata.durationMinutes ?? '',
+  );
   const [showResult, setShowResult] = useState<'IMMEDIATE' | 'AFTER_CLOSE' | 'NEVER'>('IMMEDIATE');
-  const [showSolution, setShowSolution] = useState<'IMMEDIATE' | 'AFTER_CLOSE' | 'NEVER'>('AFTER_CLOSE');
+  const [showSolution, setShowSolution] = useState<'IMMEDIATE' | 'AFTER_CLOSE' | 'NEVER'>(
+    'AFTER_CLOSE',
+  );
   const [enableLeaderboard, setEnableLeaderboard] = useState<boolean>(false);
   // Tùy chọn nâng cao: để trống = giữ hành vi cũ (mở ngay, không hạn đóng, 1 lượt cho phòng thi, 3 lượt cho loại khác)
   const [opensAtLocal, setOpensAtLocal] = useState('');
@@ -104,7 +122,10 @@ export const ShareModal: React.FC<ShareModalProps> = ({
       async function loadGroups() {
         try {
           setLoadingGroups(true);
-          const res = await accountFetch(ownerId, '/api/groups', { signal: controller.signal, cache: 'no-store' });
+          const res = await accountFetch(ownerId, '/api/groups', {
+            signal: controller.signal,
+            cache: 'no-store',
+          });
           const data = await res.json();
           if (controller.signal.aborted) return;
           if (res.ok && data.groups) {
@@ -129,20 +150,41 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   // Xử lý Giao bài lên Server DB (Tạo bản chụp Snapshot bất biến)
   const handleAssignExam = async (e: React.FormEvent) => {
     e.preventDefault();
-    if((mode!=='HOMEWORK'||durationMinutes!=='')&&(!Number.isInteger(Number(durationMinutes))||Number(durationMinutes)<1||Number(durationMinutes)>1440)){setOptionsError('Hãy đặt thời lượng làm bài trước khi giao. Đề chưa đặt thời lượng sẽ không tự dùng 45 phút.');return;}
+    if (
+      (mode !== 'HOMEWORK' || durationMinutes !== '') &&
+      (!Number.isInteger(Number(durationMinutes)) ||
+        Number(durationMinutes) < 1 ||
+        Number(durationMinutes) > 1440)
+    ) {
+      setOptionsError(
+        'Hãy đặt thời lượng làm bài trước khi giao. Đề chưa đặt thời lượng sẽ không tự dùng 45 phút.',
+      );
+      return;
+    }
     const options = buildAssignmentOptions({
-      opensAtLocal, closesAtLocal, maxAttempts: maxAttemptsText, defaultMaxAttempts: mode === 'EXAM' ? 1 : 3,
-      joinCode: joinCodeText, requirePin, shuffleQuestions, shuffleChoices,
-      hasGroup: Boolean(selectedGroupId), identityMode: selectedGroupId ? identityMode : 'FREE_NAME',
+      opensAtLocal,
+      closesAtLocal,
+      maxAttempts: maxAttemptsText,
+      defaultMaxAttempts: mode === 'EXAM' ? 1 : 3,
+      joinCode: joinCodeText,
+      requirePin,
+      shuffleQuestions,
+      shuffleChoices,
+      hasGroup: Boolean(selectedGroupId),
+      identityMode: selectedGroupId ? identityMode : 'FREE_NAME',
     });
-    if (!options.ok) { setOptionsError(options.error); return; }
+    if (!options.ok) {
+      setOptionsError(options.error);
+      return;
+    }
     setOptionsError('');
     try {
       setAssigning(true);
 
       const savedExam = onEnsureSaved ? await onEnsureSaved() : await persistExam(exam, ownerId);
       if (!active.current) return;
-      if (!savedExam) throw new Error('Đề chưa được lưu. Hãy xử lý trạng thái lưu trước khi giao bài.');
+      if (!savedExam)
+        throw new Error('Đề chưa được lưu. Hãy xử lý trạng thái lưu trước khi giao bài.');
       const serverExamId = savedExam.id;
 
       // 2. Tạo Assignment với snapshot bất biến
@@ -200,16 +242,37 @@ export const ShareModal: React.FC<ShareModalProps> = ({
       if (!active.current) return;
       if (!saved) throw new Error('Đề chưa được lưu. Hãy xử lý trạng thái lưu trước khi chia sẻ.');
       const id = saved.id;
-      const response = await accountFetch(ownerId, '/api/exams/' + id + '/share', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ showAnswers: shareAnswers, allowCopy: shareCopy, expiresAt: new Date(Date.now() + 7 * 86400000).toISOString() }) });
+      const response = await accountFetch(ownerId, '/api/exams/' + id + '/share', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          showAnswers: shareAnswers,
+          allowCopy: shareCopy,
+          expiresAt: new Date(Date.now() + 7 * 86400000).toISOString(),
+        }),
+      });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Chưa tạo được link');
-      setSharePath(data.publicLink); setShareLinkId(data.link.id); setShareExamId(id); onCloudSyncSuccess?.();
-    } catch (error) { alert(error instanceof Error ? error.message : 'Chưa tạo được link'); }
-    finally { setSharing(false); }
+      setSharePath(data.publicLink);
+      setShareLinkId(data.link.id);
+      setShareExamId(id);
+      onCloudSyncSuccess?.();
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Chưa tạo được link');
+    } finally {
+      setSharing(false);
+    }
   };
   const revokeShareLink = async () => {
-    const response = await accountFetch(ownerId, '/api/exams/' + shareExamId + '/share', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ linkId: shareLinkId }) });
-    if (response.ok) { setSharePath(''); setShareLinkId(''); } else alert('Chưa thu hồi được link, hãy thử lại');
+    const response = await accountFetch(ownerId, '/api/exams/' + shareExamId + '/share', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ linkId: shareLinkId }),
+    });
+    if (response.ok) {
+      setSharePath('');
+      setShareLinkId('');
+    } else alert('Chưa thu hồi được link, hãy thử lại');
   };
 
   return (
@@ -223,11 +286,16 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               <Share2 className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-[#202124] dark:text-[#e3e3e3]">Chia Sẻ & Giao Bài Thi Trực Tuyến</h3>
-              <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">Tạo phòng thi có chấm điểm tự động hoặc link tải Word</p>
+              <h3 className="text-base font-bold text-[#202124] dark:text-[#e3e3e3]">
+                Chia Sẻ & Giao Bài Thi Trực Tuyến
+              </h3>
+              <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">
+                Tạo phòng thi có chấm điểm tự động hoặc link tải Word
+              </p>
             </div>
           </div>
-          <button aria-label="Đóng hộp thoại"
+          <button
+            aria-label="Đóng hộp thoại"
             onClick={onClose}
             className="p-1.5 rounded-lg text-[#5f6368] dark:text-[#9aa0a6] hover:text-[#202124] dark:hover:text-[#e3e3e3] hover:bg-[#f1f3f4] dark:hover:bg-[#292a2d] transition-colors cursor-pointer"
           >
@@ -269,9 +337,12 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                   <CheckCircle2 className="w-6 h-6" />
                 </div>
                 <div>
-                  <h4 className="text-base font-bold text-[#202124] dark:text-[#e3e3e3]">Phòng Thi Trực Tuyến Đã Sẵn Sàng!</h4>
+                  <h4 className="text-base font-bold text-[#202124] dark:text-[#e3e3e3]">
+                    Phòng Thi Trực Tuyến Đã Sẵn Sàng!
+                  </h4>
                   <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] mt-1">
-                    Bản chụp đề thi bất biến đã được tạo. Học sinh không cần tài khoản, chỉ cần bấm link để làm bài.
+                    Bản chụp đề thi bất biến đã được tạo. Học sinh không cần tài khoản, chỉ cần bấm
+                    link để làm bài.
                   </p>
                 </div>
 
@@ -443,22 +514,28 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 
                 <div className="grid grid-cols-2 gap-3 text-xs">
                   <div>
-                    <label className="block text-[#5f6368] dark:text-[#9aa0a6] mb-1">Thời lượng (phút):</label>
+                    <label className="block text-[#5f6368] dark:text-[#9aa0a6] mb-1">
+                      Thời lượng (phút):
+                    </label>
                     <input
                       type="number"
                       value={durationMinutes}
-                      onChange={(e) => setDurationMinutes(e.target.value?Number(e.target.value):'')}
+                      onChange={(e) =>
+                        setDurationMinutes(e.target.value ? Number(e.target.value) : '')
+                      }
                       className="w-full bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3 py-2 text-[#202124] dark:text-[#e3e3e3] focus:border-[#3c4043] dark:focus:border-[#e3e3e3] outline-hidden"
                       aria-label="Thời lượng giao bài (phút)"
-                      placeholder={mode==='HOMEWORK'?'Không giới hạn':'Chưa đặt thời lượng'}
-                      required={mode!=='HOMEWORK'}
+                      placeholder={mode === 'HOMEWORK' ? 'Không giới hạn' : 'Chưa đặt thời lượng'}
+                      required={mode !== 'HOMEWORK'}
                       min={1}
                       max={1440}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[#5f6368] dark:text-[#9aa0a6] mb-1">Bảng xếp hạng:</label>
+                    <label className="block text-[#5f6368] dark:text-[#9aa0a6] mb-1">
+                      Bảng xếp hạng:
+                    </label>
                     <button
                       type="button"
                       onClick={() => setEnableLeaderboard(!enableLeaderboard)}
@@ -475,29 +552,94 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                 </div>
 
                 <details className="rounded-xl border border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#202124] px-3.5 py-2.5 text-xs">
-                  <summary className="cursor-pointer font-medium text-[#202124] dark:text-[#e3e3e3]">Tùy chọn nâng cao: giờ mở/đóng, số lượt, mã vào bài</summary>
+                  <summary className="cursor-pointer font-medium text-[#202124] dark:text-[#e3e3e3]">
+                    Tùy chọn nâng cao: giờ mở/đóng, số lượt, mã vào bài
+                  </summary>
                   <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <label className="block text-[#5f6368] dark:text-[#9aa0a6]">Giờ mở (để trống: mở ngay)
-                      <input type="datetime-local" value={opensAtLocal} onChange={e => setOpensAtLocal(e.target.value)} className="mt-1 w-full bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3 py-2 text-[#202124] dark:text-[#e3e3e3]" />
+                    <label className="block text-[#5f6368] dark:text-[#9aa0a6]">
+                      Giờ mở (để trống: mở ngay)
+                      <input
+                        type="datetime-local"
+                        value={opensAtLocal}
+                        onChange={(e) => setOpensAtLocal(e.target.value)}
+                        className="mt-1 w-full bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3 py-2 text-[#202124] dark:text-[#e3e3e3]"
+                      />
                     </label>
-                    <label className="block text-[#5f6368] dark:text-[#9aa0a6]">Giờ đóng (để trống: không hạn)
-                      <input type="datetime-local" value={closesAtLocal} onChange={e => setClosesAtLocal(e.target.value)} className="mt-1 w-full bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3 py-2 text-[#202124] dark:text-[#e3e3e3]" />
+                    <label className="block text-[#5f6368] dark:text-[#9aa0a6]">
+                      Giờ đóng (để trống: không hạn)
+                      <input
+                        type="datetime-local"
+                        value={closesAtLocal}
+                        onChange={(e) => setClosesAtLocal(e.target.value)}
+                        className="mt-1 w-full bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3 py-2 text-[#202124] dark:text-[#e3e3e3]"
+                      />
                     </label>
-                    <label className="block text-[#5f6368] dark:text-[#9aa0a6]">Số lượt làm (1–10)
-                      <input type="number" inputMode="numeric" min={1} max={10} placeholder={mode === 'EXAM' ? '1 (phòng thi)' : '3'} value={maxAttemptsText} onChange={e => setMaxAttemptsText(e.target.value)} className="mt-1 w-full bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3 py-2 text-[#202124] dark:text-[#e3e3e3]" />
+                    <label className="block text-[#5f6368] dark:text-[#9aa0a6]">
+                      Số lượt làm (1–10)
+                      <input
+                        type="number"
+                        inputMode="numeric"
+                        min={1}
+                        max={10}
+                        placeholder={mode === 'EXAM' ? '1 (phòng thi)' : '3'}
+                        value={maxAttemptsText}
+                        onChange={(e) => setMaxAttemptsText(e.target.value)}
+                        className="mt-1 w-full bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3 py-2 text-[#202124] dark:text-[#e3e3e3]"
+                      />
                     </label>
-                    <label className="block text-[#5f6368] dark:text-[#9aa0a6]">Mã vào bài (4–12 chữ/số, tùy chọn)
-                      <input type="text" autoComplete="off" maxLength={12} value={joinCodeText} onChange={e => setJoinCodeText(e.target.value)} className="mt-1 w-full bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3 py-2 uppercase text-[#202124] dark:text-[#e3e3e3]" />
+                    <label className="block text-[#5f6368] dark:text-[#9aa0a6]">
+                      Mã vào bài (4–12 chữ/số, tùy chọn)
+                      <input
+                        type="text"
+                        autoComplete="off"
+                        maxLength={12}
+                        value={joinCodeText}
+                        onChange={(e) => setJoinCodeText(e.target.value)}
+                        className="mt-1 w-full bg-white dark:bg-[#292a2d] border border-[#dadce0] dark:border-[#3c4043] rounded-xl px-3 py-2 uppercase text-[#202124] dark:text-[#e3e3e3]"
+                      />
                     </label>
                   </div>
                   <div className="mt-3 space-y-1.5 text-[#202124] dark:text-[#e3e3e3]">
-                    <label className="flex items-center gap-2"><input type="checkbox" checked={shuffleQuestions} onChange={e => setShuffleQuestions(e.target.checked)} /> Trộn thứ tự câu hỏi cho mỗi học sinh</label>
-                    <label className="flex items-center gap-2"><input type="checkbox" checked={shuffleChoices} onChange={e => setShuffleChoices(e.target.checked)} /> Trộn thứ tự đáp án A/B/C/D</label>
-                    <label className={`flex items-center gap-2 ${selectedGroupId && identityMode !== 'FREE_NAME' ? '' : 'opacity-50'}`}><input type="checkbox" disabled={!selectedGroupId || identityMode === 'FREE_NAME'} checked={requirePin && Boolean(selectedGroupId) && identityMode !== 'FREE_NAME'} onChange={e => setRequirePin(e.target.checked)} /> Yêu cầu PIN của học sinh (chỉ khi giao cho một lớp)</label>
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={shuffleQuestions}
+                        onChange={(e) => setShuffleQuestions(e.target.checked)}
+                      />{' '}
+                      Trộn thứ tự câu hỏi cho mỗi học sinh
+                    </label>
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={shuffleChoices}
+                        onChange={(e) => setShuffleChoices(e.target.checked)}
+                      />{' '}
+                      Trộn thứ tự đáp án A/B/C/D
+                    </label>
+                    <label
+                      className={`flex items-center gap-2 ${selectedGroupId && identityMode !== 'FREE_NAME' ? '' : 'opacity-50'}`}
+                    >
+                      <input
+                        type="checkbox"
+                        disabled={!selectedGroupId || identityMode === 'FREE_NAME'}
+                        checked={
+                          requirePin && Boolean(selectedGroupId) && identityMode !== 'FREE_NAME'
+                        }
+                        onChange={(e) => setRequirePin(e.target.checked)}
+                      />{' '}
+                      Yêu cầu PIN của học sinh (chỉ khi giao cho một lớp)
+                    </label>
                   </div>
-                  <p className="mt-2 text-[11px] text-[#5f6368] dark:text-[#9aa0a6]">Giờ theo múi giờ của máy này. Đặt giờ đóng rồi, học sinh vào sau giờ đó sẽ bị từ chối; bài đang làm dở vẫn được nộp theo quy định thời gian của lượt.</p>
+                  <p className="mt-2 text-[11px] text-[#5f6368] dark:text-[#9aa0a6]">
+                    Giờ theo múi giờ của máy này. Đặt giờ đóng rồi, học sinh vào sau giờ đó sẽ bị từ
+                    chối; bài đang làm dở vẫn được nộp theo quy định thời gian của lượt.
+                  </p>
                 </details>
-                {optionsError && <p role="alert" className="text-xs text-red-600 dark:text-red-400">{optionsError}</p>}
+                {optionsError && (
+                  <p role="alert" className="text-xs text-red-600 dark:text-red-400">
+                    {optionsError}
+                  </p>
+                )}
 
                 <button
                   type="submit"
@@ -520,16 +662,52 @@ export const ShareModal: React.FC<ShareModalProps> = ({
         {/* TAB 2: LINK XEM & TẢI FILE WORD (.DOCX) */}
         {activeTab === 'share' && (
           <div className="space-y-4">
-            <p className="text-xs">Link xem có hiệu lực 7 ngày. Ai có link đều xem được nội dung bạn cho phép.</p>
-            <p data-testid="share-pin-note" className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">Link giữ bản đề tại thời điểm tạo. Nếu bạn sửa đề sau đó, hãy tạo link mới để người xem thấy bản mới.{pinnedVersionOf(sharePath) ? <> Link hiện tại giữ <strong>phiên bản {pinnedVersionOf(sharePath)}</strong> của đề.</> : null}</p>
-            <label className="block text-sm"><input type="checkbox" checked={shareAnswers} onChange={e => setShareAnswers(e.target.checked)} /> Kèm đáp án và lời giải</label>
-            <label className="block text-sm"><input type="checkbox" checked={shareCopy} onChange={e => setShareCopy(e.target.checked)} /> Cho giáo viên đã đăng nhập tạo bản sao</label>
-            <button disabled={sharing} onClick={createShareLink} className="px-4 py-2 rounded-lg app-button-primary text-white disabled:opacity-50">{sharing ? 'Đang tạo…' : 'Tạo link chia sẻ'}</button>
-            {sharePath && <button onClick={revokeShareLink} className="ml-3 text-sm text-red-600">Thu hồi link này</button>}
+            <p className="text-xs">
+              Link xem có hiệu lực 7 ngày. Ai có link đều xem được nội dung bạn cho phép.
+            </p>
+            <p data-testid="share-pin-note" className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">
+              Link giữ bản đề tại thời điểm tạo. Nếu bạn sửa đề sau đó, hãy tạo link mới để người
+              xem thấy bản mới.
+              {pinnedVersionOf(sharePath) ? (
+                <>
+                  {' '}
+                  Link hiện tại giữ <strong>phiên bản {pinnedVersionOf(sharePath)}</strong> của đề.
+                </>
+              ) : null}
+            </p>
+            <label className="block text-sm">
+              <input
+                type="checkbox"
+                checked={shareAnswers}
+                onChange={(e) => setShareAnswers(e.target.checked)}
+              />{' '}
+              Kèm đáp án và lời giải
+            </label>
+            <label className="block text-sm">
+              <input
+                type="checkbox"
+                checked={shareCopy}
+                onChange={(e) => setShareCopy(e.target.checked)}
+              />{' '}
+              Cho giáo viên đã đăng nhập tạo bản sao
+            </label>
+            <button
+              disabled={sharing}
+              onClick={createShareLink}
+              className="px-4 py-2 rounded-lg app-button-primary text-white disabled:opacity-50"
+            >
+              {sharing ? 'Đang tạo…' : 'Tạo link chia sẻ'}
+            </button>
+            {sharePath && (
+              <button onClick={revokeShareLink} className="ml-3 text-sm text-red-600">
+                Thu hồi link này
+              </button>
+            )}
             <div className="p-4 rounded-xl bg-[#f8f9fa] dark:bg-[#292a2d]/60 border border-[#dadce0] dark:border-[#3c4043] space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-[#202124] dark:text-[#e3e3e3] flex items-center gap-1.5">
-                  <FileDown className="w-4 h-4 text-[#3c4043] dark:text-[#e3e3e3]" /> Link Xem, In A4 & Tải file Word:
+                  <FileDown className="w-4 h-4 text-[#3c4043] dark:text-[#e3e3e3]" /> Link Xem, In
+                  A4 & Tải file Word:
                 </span>
                 <a
                   href={shareWordUrl || undefined}
@@ -550,7 +728,8 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                   className="grow bg-transparent text-xs text-[#5f6368] dark:text-[#9aa0a6] font-mono px-2 outline-none select-all truncate"
                 />
                 <button
-                  disabled={!shareWordUrl} onClick={() => copyToClipboard(shareWordUrl, 'share')}
+                  disabled={!shareWordUrl}
+                  onClick={() => copyToClipboard(shareWordUrl, 'share')}
                   className="px-3.5 py-1.5 app-button-primary dark:bg-[#e3e3e3] dark:hover:bg-[#f1f3f4] text-white dark:text-[#202124] rounded-lg text-xs font-medium flex items-center gap-1 shrink-0 transition-all cursor-pointer shadow-xs"
                 >
                   {copiedShareLink ? (
@@ -566,7 +745,8 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               </div>
 
               <p className="text-[11px] text-[#5f6368] dark:text-[#9aa0a6] leading-relaxed">
-                Người mở link chỉ có thể xem, in ấn hoặc tải file Word `.docx`, hoàn toàn không sửa được bản gốc của Thầy/Cô.
+                Người mở link chỉ có thể xem, in ấn hoặc tải file Word `.docx`, hoàn toàn không sửa
+                được bản gốc của Thầy/Cô.
               </p>
             </div>
           </div>

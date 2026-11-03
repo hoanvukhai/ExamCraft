@@ -1,5 +1,14 @@
 'use client';
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { AlertCircle, Check, FolderPlus, X } from 'lucide-react';
 import { accountFetch } from '@/lib/account-fetch';
@@ -8,8 +17,20 @@ import { useConfirmAction } from '@/components/ConfirmAction';
 import { ApiKeyModal } from '@/components/ApiKeyModal';
 import { AiLearningModal } from '@/components/AiLearningModal';
 
-export interface WorkspaceUser { id: string; name: string; email: string; role: string }
-export interface FolderData { id: string; name: string; color?: string; parentId?: string | null; _count?: { exams: number }; children?: FolderData[] }
+export interface WorkspaceUser {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+}
+export interface FolderData {
+  id: string;
+  name: string;
+  color?: string;
+  parentId?: string | null;
+  _count?: { exams: number };
+  children?: FolderData[];
+}
 
 interface Workspace {
   user: WorkspaceUser;
@@ -52,40 +73,81 @@ const menuKey = 'examcraft_menu_collapsed';
 export const folderPalette = ['#202124', '#3c4043', '#5f6368', '#80868b', '#9aa0a6', '#bdc1c6'];
 
 /** Holds what every teacher page shares: folders, AI key status, the assistant and notes dialogs, the menu state and one confirmation/toast. */
-export function WorkspaceProvider({ user, children }: { user: WorkspaceUser; children: ReactNode }) {
-  const router = useRouter(), params = useSearchParams(), pathname = usePathname();
+export function WorkspaceProvider({
+  user,
+  children,
+}: {
+  user: WorkspaceUser;
+  children: ReactNode;
+}) {
+  const router = useRouter(),
+    params = useSearchParams(),
+    pathname = usePathname();
   const { confirmAction, confirmation } = useConfirmAction();
   const [folders, setFolders] = useState<FolderData[]>([]);
-  const [foldersReady, setFoldersReady] = useState(false), [foldersError, setFoldersError] = useState('');
+  const [foldersReady, setFoldersReady] = useState(false),
+    [foldersError, setFoldersError] = useState('');
   const folderSequence = useRef(0);
   const [keyStats, setKeyStats] = useState({ keyCount: 0, keyErrorCount: 0, usedToday: 0 });
-  const [keyState, setKeyState] = useState<'loading' | 'unknown' | 'missing' | 'present'>('loading');
-  const [keysOpen, setKeysOpen] = useState(false), [notesOpen, setNotesOpen] = useState(false), [assistantOpen, setAssistantOpen] = useState(false);
+  const [keyState, setKeyState] = useState<'loading' | 'unknown' | 'missing' | 'present'>(
+    'loading',
+  );
+  const [keysOpen, setKeysOpen] = useState(false),
+    [notesOpen, setNotesOpen] = useState(false),
+    [assistantOpen, setAssistantOpen] = useState(false);
   const [folderDialog, setFolderDialog] = useState<{ parentId: string | null } | null>(null);
-  const [folderName, setFolderName] = useState(''), [folderColor, setFolderColor] = useState('#3c4043');
+  const [folderName, setFolderName] = useState(''),
+    [folderColor, setFolderColor] = useState('#3c4043');
   const [menuExpanded, setMenuState] = useState(true);
   const [copilotOpen, setCopilotState] = useState(false);
   const copilotRef = useRef(false);
   const [settingsOpen, setSettingsState] = useState(false);
-  const setSettingsOpen = useCallback((value: boolean) => { if (value) { copilotRef.current = false; setCopilotState(false); setAssistantOpen(false); } setSettingsState(value); }, []);
+  const setSettingsOpen = useCallback((value: boolean) => {
+    if (value) {
+      copilotRef.current = false;
+      setCopilotState(false);
+      setAssistantOpen(false);
+    }
+    setSettingsState(value);
+  }, []);
   const setCopilotOpen = useCallback((value: boolean | ((previous: boolean) => boolean)) => {
     const next = typeof value === 'function' ? value(copilotRef.current) : value;
     copilotRef.current = next;
-    if (next) { setAssistantOpen(false); setSettingsState(false); }
+    if (next) {
+      setAssistantOpen(false);
+      setSettingsState(false);
+    }
     setCopilotState(next);
   }, []);
-  const toggleAssistant = useCallback(() => { setSettingsState(false); copilotRef.current = false; setCopilotState(false); setAssistantOpen(open => !open); }, []);
+  const toggleAssistant = useCallback(() => {
+    setSettingsState(false);
+    copilotRef.current = false;
+    setCopilotState(false);
+    setAssistantOpen((open) => !open);
+  }, []);
   const closeAssistant = useCallback(() => setAssistantOpen(false), []);
-  const [toastMessage, setToastMessage] = useState<{ text: string; kind: 'info' | 'error' } | null>(null);
+  const [toastMessage, setToastMessage] = useState<{ text: string; kind: 'info' | 'error' } | null>(
+    null,
+  );
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    try { if (localStorage.getItem(menuKey) === '1') { // eslint-disable-next-line react-hooks/set-state-in-effect
-      setMenuState(false); } } catch { /* A per-viewer convenience only. */ }
+    try {
+      if (localStorage.getItem(menuKey) === '1') {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setMenuState(false);
+      }
+    } catch {
+      /* A per-viewer convenience only. */
+    }
   }, []);
   const setMenuExpanded = useCallback((value: boolean) => {
     setMenuState(value);
-    try { localStorage.setItem(menuKey, value ? '0' : '1'); } catch { /* ignore */ }
+    try {
+      localStorage.setItem(menuKey, value ? '0' : '1');
+    } catch {
+      /* ignore */
+    }
   }, []);
   const toast = useCallback((message: string, kind: 'info' | 'error' = 'info') => {
     setToastMessage({ text: message, kind });
@@ -93,84 +155,299 @@ export function WorkspaceProvider({ user, children }: { user: WorkspaceUser; chi
     toastTimer.current = setTimeout(() => setToastMessage(null), kind === 'error' ? 9000 : 3500);
   }, []);
 
-  const reloadKeys = useCallback(() => accountFetch(user.id, '/api/user/keys').then(async response => {
-    if (!response.ok) { setKeyState('unknown'); return; }
-    if (response.ok) {
-      const data = await response.json(), keys: { isActive: boolean; errorCount: number }[] = data.keys || [];
-      setKeyState(keys.some(key => key.isActive) ? 'present' : 'missing');
-      setKeyStats({ keyCount: keys.filter(key => key.isActive).length, keyErrorCount: keys.filter(key => key.errorCount > 0).length, usedToday: data.poolQuota?.usedToday ?? 0 });
-    }
-  }).catch(() => { setKeyState('unknown'); }), [user.id]);
+  const reloadKeys = useCallback(
+    () =>
+      accountFetch(user.id, '/api/user/keys')
+        .then(async (response) => {
+          if (!response.ok) {
+            setKeyState('unknown');
+            return;
+          }
+          if (response.ok) {
+            const data = await response.json(),
+              keys: { isActive: boolean; errorCount: number }[] = data.keys || [];
+            setKeyState(keys.some((key) => key.isActive) ? 'present' : 'missing');
+            setKeyStats({
+              keyCount: keys.filter((key) => key.isActive).length,
+              keyErrorCount: keys.filter((key) => key.errorCount > 0).length,
+              usedToday: data.poolQuota?.usedToday ?? 0,
+            });
+          }
+        })
+        .catch(() => {
+          setKeyState('unknown');
+        }),
+    [user.id],
+  );
   const reloadFolders = useCallback(() => {
     const sequence = ++folderSequence.current;
-    return accountFetch(user.id, '/api/folders').then(async response => {
-      const data = await response.json();
-      if (!response.ok) throw Error(data.error || 'Chưa tải được thư mục.');
-      if (sequence === folderSequence.current) { setFolders(data.folders || []); setFoldersError(''); }
-    }).catch(cause => { if (sequence === folderSequence.current) setFoldersError(teacherErrorMessage(cause, 'Chưa kết nối được để tải thư mục.')); })
-      .finally(() => { if (sequence === folderSequence.current) setFoldersReady(true); });
+    return accountFetch(user.id, '/api/folders')
+      .then(async (response) => {
+        const data = await response.json();
+        if (!response.ok) throw Error(data.error || 'Chưa tải được thư mục.');
+        if (sequence === folderSequence.current) {
+          setFolders(data.folders || []);
+          setFoldersError('');
+        }
+      })
+      .catch((cause) => {
+        if (sequence === folderSequence.current)
+          setFoldersError(teacherErrorMessage(cause, 'Chưa kết nối được để tải thư mục.'));
+      })
+      .finally(() => {
+        if (sequence === folderSequence.current) setFoldersReady(true);
+      });
   }, [user.id]);
-  useEffect(() => { void reloadKeys(); void reloadFolders(); }, [reloadKeys, reloadFolders]);
+  useEffect(() => {
+    void reloadKeys();
+    void reloadFolders();
+  }, [reloadKeys, reloadFolders]);
 
-  const openCreateFolder = useCallback((parentId: string | null = null) => { setFolderName(''); setFolderDialog({ parentId }); }, []);
+  const openCreateFolder = useCallback((parentId: string | null = null) => {
+    setFolderName('');
+    setFolderDialog({ parentId });
+  }, []);
   const createFolder = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!folderName.trim() || !folderDialog) return;
     try {
-      const response = await accountFetch(user.id, '/api/folders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: folderName.trim(), color: folderColor, parentId: folderDialog.parentId }) });
+      const response = await accountFetch(user.id, '/api/folders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: folderName.trim(),
+          color: folderColor,
+          parentId: folderDialog.parentId,
+        }),
+      });
       const data = await response.json();
-      if (!response.ok) { toast(data.error || 'Không thể tạo thư mục', 'error'); return; }
-      toast('Đã tạo thư mục mới thành công!'); setFolderDialog(null); setFolderName(''); void reloadFolders();
-    } catch { toast('Lỗi kết nối máy chủ khi tạo thư mục', 'error'); }
+      if (!response.ok) {
+        toast(data.error || 'Không thể tạo thư mục', 'error');
+        return;
+      }
+      toast('Đã tạo thư mục mới thành công!');
+      setFolderDialog(null);
+      setFolderName('');
+      void reloadFolders();
+    } catch {
+      toast('Lỗi kết nối máy chủ khi tạo thư mục', 'error');
+    }
   };
-  const updateFolder = useCallback(async (id: string, changes: { name?: string; color?: string }) => {
-    try {
-      const response = await accountFetch(user.id, `/api/folders/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(changes) });
-      const data = await response.json().catch(() => ({}));
-      if (!response.ok) { toast(data.error || 'Chưa lưu được thư mục', 'error'); return false; }
-      toast('Đã cập nhật thư mục.'); await reloadFolders(); return true;
-    } catch { toast('Chưa kết nối được để lưu thư mục. Hãy thử lại.', 'error'); return false; }
-  }, [reloadFolders, toast, user.id]);
-  const deleteFolder = useCallback(async (id: string, name: string) => {
-    if (!await confirmAction(`Xóa thư mục “${name}”? Các đề bên trong được chuyển ra ngoài, không bị xóa.`)) return;
-    try {
-      const response = await accountFetch(user.id, `/api/folders/${id}`, { method: 'DELETE' });
-      if (!response.ok) { const result = await response.json(); throw Error(result.error || 'Chưa xóa được thư mục.'); }
-      toast('Đã xóa thư mục.');
-      if (params.get('folder') === id) router.push(pathname.startsWith('/teacher/folders') ? '/teacher/folders' : '/');
-      await reloadFolders(); router.refresh();
-    } catch (cause) { toast(teacherErrorMessage(cause, 'Chưa kết nối được để xóa thư mục. Hãy thử lại.'), 'error'); }
-  }, [confirmAction, params, pathname, reloadFolders, router, toast, user.id]);
+  const updateFolder = useCallback(
+    async (id: string, changes: { name?: string; color?: string }) => {
+      try {
+        const response = await accountFetch(user.id, `/api/folders/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(changes),
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          toast(data.error || 'Chưa lưu được thư mục', 'error');
+          return false;
+        }
+        toast('Đã cập nhật thư mục.');
+        await reloadFolders();
+        return true;
+      } catch {
+        toast('Chưa kết nối được để lưu thư mục. Hãy thử lại.', 'error');
+        return false;
+      }
+    },
+    [reloadFolders, toast, user.id],
+  );
+  const deleteFolder = useCallback(
+    async (id: string, name: string) => {
+      if (
+        !(await confirmAction(
+          `Xóa thư mục “${name}”? Các đề bên trong được chuyển ra ngoài, không bị xóa.`,
+        ))
+      )
+        return;
+      try {
+        const response = await accountFetch(user.id, `/api/folders/${id}`, { method: 'DELETE' });
+        if (!response.ok) {
+          const result = await response.json();
+          throw Error(result.error || 'Chưa xóa được thư mục.');
+        }
+        toast('Đã xóa thư mục.');
+        if (params.get('folder') === id)
+          router.push(pathname.startsWith('/teacher/folders') ? '/teacher/folders' : '/');
+        await reloadFolders();
+        router.refresh();
+      } catch (cause) {
+        toast(
+          teacherErrorMessage(cause, 'Chưa kết nối được để xóa thư mục. Hãy thử lại.'),
+          'error',
+        );
+      }
+    },
+    [confirmAction, params, pathname, reloadFolders, router, toast, user.id],
+  );
 
-  const value = useMemo<Workspace>(() => ({
-    user, folders, foldersReady, foldersError, reloadFolders, openCreateFolder, deleteFolder, updateFolder, ...keyStats, hasActiveKey: keyStats.keyCount > 0, keyState, reloadKeys, openKeys: () => setKeysOpen(true),
-    assistantOpen, toggleAssistant, closeAssistant, openAiNotes: () => setNotesOpen(true),
-    menuExpanded, setMenuExpanded, settingsOpen, setSettingsOpen, copilotOpen, setCopilotOpen, toast, confirmAction,
-  }), [user, folders, foldersReady, foldersError, reloadFolders, openCreateFolder, deleteFolder, updateFolder, keyStats, keyState, reloadKeys, assistantOpen, menuExpanded, setMenuExpanded, settingsOpen, setSettingsOpen, copilotOpen, setCopilotOpen, toggleAssistant, closeAssistant, toast, confirmAction]);
+  const value = useMemo<Workspace>(
+    () => ({
+      user,
+      folders,
+      foldersReady,
+      foldersError,
+      reloadFolders,
+      openCreateFolder,
+      deleteFolder,
+      updateFolder,
+      ...keyStats,
+      hasActiveKey: keyStats.keyCount > 0,
+      keyState,
+      reloadKeys,
+      openKeys: () => setKeysOpen(true),
+      assistantOpen,
+      toggleAssistant,
+      closeAssistant,
+      openAiNotes: () => setNotesOpen(true),
+      menuExpanded,
+      setMenuExpanded,
+      settingsOpen,
+      setSettingsOpen,
+      copilotOpen,
+      setCopilotOpen,
+      toast,
+      confirmAction,
+    }),
+    [
+      user,
+      folders,
+      foldersReady,
+      foldersError,
+      reloadFolders,
+      openCreateFolder,
+      deleteFolder,
+      updateFolder,
+      keyStats,
+      keyState,
+      reloadKeys,
+      assistantOpen,
+      menuExpanded,
+      setMenuExpanded,
+      settingsOpen,
+      setSettingsOpen,
+      copilotOpen,
+      setCopilotOpen,
+      toggleAssistant,
+      closeAssistant,
+      toast,
+      confirmAction,
+    ],
+  );
 
-  return <WorkspaceContext.Provider value={value}>
-    {children}
-    {confirmation}
-    {folderDialog && <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-      <form onSubmit={createFolder} className="app-dialog bg-[var(--ui-surface)] rounded-2xl p-6 max-w-sm w-full border shadow-xs">
-        <div className="app-dialog-header flex items-center justify-between pb-3 border-b mb-4">
-          <h3 className="font-semibold text-sm flex items-center gap-2"><FolderPlus className="w-4 h-4" /><span>{folderDialog.parentId ? 'Tạo Thư Mục Con (Cấp 2)' : 'Tạo Thư Mục Mới (Cấp 1)'}</span></h3>
-          <button aria-label="Đóng hộp thoại" type="button" onClick={() => setFolderDialog(null)} className="p-1 rounded-lg hover:bg-[var(--ui-surface-variant)] cursor-pointer"><X className="w-4 h-4" /></button>
+  return (
+    <WorkspaceContext.Provider value={value}>
+      {children}
+      {confirmation}
+      {folderDialog && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <form
+            onSubmit={createFolder}
+            className="app-dialog bg-[var(--ui-surface)] rounded-2xl p-6 max-w-sm w-full border shadow-xs"
+          >
+            <div className="app-dialog-header flex items-center justify-between pb-3 border-b mb-4">
+              <h3 className="font-semibold text-sm flex items-center gap-2">
+                <FolderPlus className="w-4 h-4" />
+                <span>
+                  {folderDialog.parentId ? 'Tạo Thư Mục Con (Cấp 2)' : 'Tạo Thư Mục Mới (Cấp 1)'}
+                </span>
+              </h3>
+              <button
+                aria-label="Đóng hộp thoại"
+                type="button"
+                onClick={() => setFolderDialog(null)}
+                className="p-1 rounded-lg hover:bg-[var(--ui-surface-variant)] cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="space-y-3 mb-5">
+              <div>
+                <label
+                  htmlFor="workspace-folder-name"
+                  className="block text-xs font-semibold text-[var(--ui-text-secondary)] mb-1"
+                >
+                  Tên thư mục
+                </label>
+                <input
+                  id="workspace-folder-name"
+                  type="text"
+                  required
+                  autoFocus
+                  value={folderName}
+                  onChange={(event) => setFolderName(event.target.value)}
+                  placeholder="Ví dụ: Khối 12, Học kỳ 1, Ôn thi HSG..."
+                  className="teacher-field w-full px-3.5 text-sm"
+                />
+              </div>
+              <div>
+                <span className="block text-xs font-semibold text-[var(--ui-text-secondary)] mb-1">
+                  Màu sắc nhận diện
+                </span>
+                <div className="flex items-center gap-2">
+                  {folderPalette.map((color) => (
+                    <button
+                      key={color}
+                      type="button"
+                      aria-label={`Màu ${color}`}
+                      onClick={() => setFolderColor(color)}
+                      className={`w-6 h-6 rounded-lg cursor-pointer transition-transform ${folderColor === color ? 'scale-125 ring-2 ring-black/40' : ''}`}
+                      style={{ backgroundColor: color }}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setFolderDialog(null)}
+                className="app-button-secondary min-h-10 px-4 text-sm"
+              >
+                Hủy
+              </button>
+              <button
+                type="submit"
+                className="app-button-primary min-h-10 px-4 text-sm font-semibold"
+              >
+                Tạo thư mục
+              </button>
+            </div>
+          </form>
         </div>
-        <div className="space-y-3 mb-5">
-          <div><label htmlFor="workspace-folder-name" className="block text-xs font-semibold text-[var(--ui-text-secondary)] mb-1">Tên thư mục</label>
-            <input id="workspace-folder-name" type="text" required autoFocus value={folderName} onChange={event => setFolderName(event.target.value)} placeholder="Ví dụ: Khối 12, Học kỳ 1, Ôn thi HSG..." className="teacher-field w-full px-3.5 text-sm" /></div>
-          <div><span className="block text-xs font-semibold text-[var(--ui-text-secondary)] mb-1">Màu sắc nhận diện</span>
-            <div className="flex items-center gap-2">{folderPalette.map(color => <button key={color} type="button" aria-label={`Màu ${color}`} onClick={() => setFolderColor(color)} className={`w-6 h-6 rounded-lg cursor-pointer transition-transform ${folderColor === color ? 'scale-125 ring-2 ring-black/40' : ''}`} style={{ backgroundColor: color }} />)}</div></div>
+      )}
+      {toastMessage && (
+        <div
+          role={toastMessage.kind === 'error' ? 'alert' : 'status'}
+          className={`no-print fixed bottom-6 right-6 z-50 max-w-sm px-4 py-2.5 rounded-2xl text-xs font-semibold shadow-xs flex items-center gap-2 ${toastMessage.kind === 'error' ? 'bg-red-700 text-white' : 'bg-[var(--ui-accent)] text-[var(--ui-on-primary)]'}`}
+        >
+          {toastMessage.kind === 'error' ? (
+            <AlertCircle className="w-4 h-4 shrink-0" />
+          ) : (
+            <Check className="w-4 h-4 shrink-0" />
+          )}
+          <span>{toastMessage.text}</span>
         </div>
-        <div className="flex items-center justify-end gap-2">
-          <button type="button" onClick={() => setFolderDialog(null)} className="app-button-secondary min-h-10 px-4 text-sm">Hủy</button>
-          <button type="submit" className="app-button-primary min-h-10 px-4 text-sm font-semibold">Tạo thư mục</button>
-        </div>
-      </form>
-    </div>}
-    {toastMessage && <div role={toastMessage.kind === 'error' ? 'alert' : 'status'} className={`no-print fixed bottom-6 right-6 z-50 max-w-sm px-4 py-2.5 rounded-2xl text-xs font-semibold shadow-xs flex items-center gap-2 ${toastMessage.kind === 'error' ? 'bg-red-700 text-white' : 'bg-[var(--ui-accent)] text-[var(--ui-on-primary)]'}`}>{toastMessage.kind === 'error' ? <AlertCircle className="w-4 h-4 shrink-0" /> : <Check className="w-4 h-4 shrink-0" />}<span>{toastMessage.text}</span></div>}
-    <ApiKeyModal ownerId={user.id} key={`keys:${user.id}`} isOpen={keysOpen} onClose={() => { setKeysOpen(false); void reloadKeys(); }} onKeyUpdated={() => void reloadKeys()} />
-    <AiLearningModal isOpen={notesOpen} onClose={() => setNotesOpen(false)} currentUser={{ id: user.id, name: user.name }} />
-  </WorkspaceContext.Provider>;
+      )}
+      <ApiKeyModal
+        ownerId={user.id}
+        key={`keys:${user.id}`}
+        isOpen={keysOpen}
+        onClose={() => {
+          setKeysOpen(false);
+          void reloadKeys();
+        }}
+        onKeyUpdated={() => void reloadKeys()}
+      />
+      <AiLearningModal
+        isOpen={notesOpen}
+        onClose={() => setNotesOpen(false)}
+        currentUser={{ id: user.id, name: user.name }}
+      />
+    </WorkspaceContext.Provider>
+  );
 }

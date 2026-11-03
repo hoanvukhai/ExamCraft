@@ -15,7 +15,9 @@ function Frame({ children }: { children: ReactNode }) {
     <div className="workspace-root app-page h-dvh flex bg-[var(--background)] text-[var(--foreground)] overflow-hidden">
       {!editor && <WorkspaceMenu variant={variant} />}
       <div className="workspace-column flex-1 min-w-0 min-h-0 flex flex-col">
-        {!editor && <PhoneBar variant={variant} brand={<Brand admin={variant === 'admin'} compact />} />}
+        {!editor && (
+          <PhoneBar variant={variant} brand={<Brand admin={variant === 'admin'} compact />} />
+        )}
         {!editor && <WorkspaceTabs variant={variant} />}
         <div
           className={`workspace-content flex-1 min-h-0 ${editor ? 'flex flex-col overflow-hidden' : 'overflow-y-auto'}`}
