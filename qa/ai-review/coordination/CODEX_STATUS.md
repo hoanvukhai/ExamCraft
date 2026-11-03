@@ -1,16 +1,13 @@
-# CODEX — tiếp nối trợ lý AI V2
+# CODEX — chat AI V2
 
-- task_id: CHAT-AI-V2-CONTINUE
-- state: NEEDS_RESUME
-- branch: codex/chat-ai-v2
-- latest_code_commit: 5c473c8 (metadata); trước đó f9b4864 (hội thoại)
+- task_id: CHAT-AI-V2-COMPLETION
+- state: WAITING_REVIEW
 - worktree: F:/Workspace/Zazz/ExamCraft/tmp/chat-ai-v2
-- Chủ dự án đã cho phép làm liền mạch các đợt, không cần chờ duyệt từng đợt. Không đổi trạng thái này thành chờ xin phép; tiếp tục công việc khi khôi phục lượt.
-- Đã có và kiểm: hội thoại/input/câu hỏi làm rõ lưu riêng theo tài khoản/đề/writer; preflight thiếu khóa; phân loại lỗi và hạn chế retry; Dừng chống kết quả muộn; Enter cảm ứng/IME; metadata proposal allowlist với trước/sau, CAS bản nền, journal v2 đọc v1, common undo và form idle cập nhật.
-- Đã kiểm: lint/build, guard liên quan, integration DB thử, Chrome và SAFE. Số liệu/log chỉ tại qa/rebuild-2026-11-03/ai-chat-d1/BAO_CAO.md và ai-chat-d2/BAO_CAO.md. Không suy đã hoàn tất Đ1–Đ4 từ kết quả test.
-- Còn Đ1: target nhiều câu/phần/trường và kiểm câu khóa; facts/giới hạn hỏi; chuyển ID chat sau save; nhánh yêu cầu mới; chống trùng writer khi clone tab; thu gọn media; lưu câu trả lời tự nhập đang gõ; thẻ trả lời cũ sau đổi ngữ cảnh.
-- Còn Đ2: metadata + nhiều câu/cấu trúc trong cùng proposal; đổi môn/lớp đề đã có câu có đối chiếu; metadata mục tiêu kỳ thi/assessment/scope phức tạp, nút undo trên điện thoại.
-- Chưa bắt đầu Đ3: bootstrap trống (không Toán 6/45), shared generation core, tạo cả đề/đáp án/phần/ngữ liệu và proposal nhận một lần; giới hạn lượt gọi toàn đơn vị. Không lách bằng Exam giả.
-- Đ4 chưa đủ: full CI/HTTP/provider mock trên đường API, mobile tổng thể, kiểm tương thích và checklist nghiệm thu. SAFE đã qua nhưng chưa đồng nghĩa mọi ca đặc tả đạt.
-- DB chính/key dữ liệu cũ giữ nguyên; không migration, provider thật, push/deploy. Chỉ fixture DB examcraft_test_20261022 đã kiểm và dọn. Máy chủ thử 3123 đã dừng; Docker giữ nguyên.
-- Cần tiếp tục từ đây, đọc mục 0 và 14 đặc tả 1.1 ở tmp/canva-a/qa/rebuild-2026-11-03/ai-chat-audit; không đọc lại mọi chat/báo cáo cũ. Không tự đóng CV/checklist03/hồ sơ02.
+- branch: codex/chat-ai-v2
+- commit mã gần nhất: 5f6bf4d (mã + test cùng commit; nền đợt 909d297).
+- Đã xong tuyến kỹ thuật: bootstrap thật, giữ/khôi phục chat, lựa chọn định danh, key/error/cancel, metadata+nhiều câu nguyên tử, sinh trọn đề/core chung, scoped insertion/grade checks, undo/redo chung, xem hình/đáp án và giao bài không bịa thời lượng.
+- Đã kiểm: CI đầy đủ, HTTP/pilot, integration PostgreSQL, chat xuyên suốt với provider giả, hồi quy Đ0–Đ2/editor và guards. Số liệu/log/giới hạn chỉ ở qa/rebuild-2026-11-03/ai-chat-completion/BAO_CAO.md và CHECK_RESULTS.json.
+- Bản cho người dùng thử: localhost:3123, DB thử tách riêng; health isolatedTest=false chặn automated tests. Codex không gọi provider thật; người dùng tự thêm key/gửi nếu muốn. Bí mật mã hóa hiện có được giữ. Tài khoản manual/local identities được giữ cho người dùng thử, không ghi mật khẩu vào hồ sơ.
+- Không push/main/deploy/migration, không ghi DB chính, không sửa checklist/02/ASSIGNMENTS/BATCH_REVIEWS của Claude.
+- Bước kế: người dùng thử thật; Claude duyệt DOI_CHIEU.md, các giới hạn hợp đồng/nguồn/chuyên môn và quyết định tích hợp. Không tự ghi DONE hoặc tự đóng CV.
+- Tệp cần giữ: toàn bộ nhóm báo cáo hiện tại, nhánh mã, source snapshot, bản nháp/đề xuất riêng, và manual-preview-identities.json local (không Git). Không quay về worktree C/tmp/chat-ai-v2 cũ.

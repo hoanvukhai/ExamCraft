@@ -1,0 +1,30 @@
+{
+  "checks": [
+    "bootstrap idle/no fake subject or grade; local help and missing key make zero calls",
+    "real API: 1 clarification + 2 full-generation calls; one accept, linked passages/answers; chat follows saved ID",
+    "multiple IDs + metadata one proposal, protected scores, one undo restores all",
+    "clone tab forks writer; original draft survives",
+    "private archive/import restores composer after reload, no provider calls or exam mutation",
+    "existing whole replacement costs two calls, preserves teacher headers, explicit rename and one common undo",
+    "5 MiB image stays in source; metadata request under 4 MiB",
+    "MAX_TOKENS: incomplete, no proposal or automatic repair loop",
+    "manual grade/subject explicit, no 45-minute fallback; phone 320/375/390, dark and avatar above AI"
+  ],
+  "cleanup": true,
+  "pageErrors": [],
+  "database": "examcraft_test_20261022",
+  "origin": "http://127.0.0.1:3123",
+  "provider": "actual app API and local synthetic provider on 3118; no real AI",
+  "providerCalls": 8,
+  "payloadSizes": [
+    265,
+    687,
+    2853,
+    3051,
+    3424,
+    249
+  ],
+  "buildId": "Ng5Gnsgiq5avmXtOPJgEh",
+  "checkedAt": "2026-11-03T11:06:40.769Z",
+  "limitations": "Chrome viewport checks; not a physical phone or production/Vercel check."
+}

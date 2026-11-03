@@ -1,0 +1,200 @@
+{
+  "codeCommit": "5f6bf4da48b0193b816e0ed02f4038087425919a",
+  "baseBeforeCompletion": "909d297",
+  "branch": "codex/chat-ai-v2",
+  "worktree": "F:/Workspace/Zazz/ExamCraft/tmp/chat-ai-v2",
+  "files": [
+    {
+      "path": "package.json",
+      "sha256": "ec76daffaad851e716fc9349425e9989ffe52cc0d72e54ad29c4a02d79c8cadb"
+    },
+    {
+      "path": "scripts/pilot-run.cjs",
+      "sha256": "c4adbfb7f34fdbdab856b580e928ef248ab81a4d884e601ff7b011eccd400bd1"
+    },
+    {
+      "path": "src/app/api/assignments/route.ts",
+      "sha256": "1ee8950147ec0e26e1cf87e0dca9bc5f69600bf46c60976dfa3a116f38d956c8"
+    },
+    {
+      "path": "src/app/api/exam-copilot/route.ts",
+      "sha256": "a9f1a13335c8512ef153198771914e126b92683e88f0fd602bb86287249ccc49"
+    },
+    {
+      "path": "src/app/api/generate-exam/route.ts",
+      "sha256": "b11bc4eafbf67941618473057b236fa1cd681f8f67a1a5fb51b609f36d2145cd"
+    },
+    {
+      "path": "src/components/AiProposalPreview.tsx",
+      "sha256": "5d5d2a3d78b626464d6cf1bc71fca0768b4395fa42e869bed55dbd514fd54200"
+    },
+    {
+      "path": "src/components/ChatRecoveryTools.tsx",
+      "sha256": "17bee06b4081e87598f3bd2e0b45c1565168bb518c425988c75eb96adb486e74"
+    },
+    {
+      "path": "src/components/CopilotHistoryControls.tsx",
+      "sha256": null
+    },
+    {
+      "path": "src/components/CopilotProposalReview.tsx",
+      "sha256": "7bc1f8bbd545673625302c8dac6f4d387760c7ef03184632d6e01d3313d3c32a"
+    },
+    {
+      "path": "src/components/ExamBootstrap.tsx",
+      "sha256": "a47a18b850c830f8c60a80e10d12e2666387d156963791dac69686cd822005c7"
+    },
+    {
+      "path": "src/components/ExamWorkspace.tsx",
+      "sha256": "a6bcfcf08f36a9c7223473fd60e998865a33b4194e250e689d6fc62eed476a28"
+    },
+    {
+      "path": "src/components/HeaderSettingsModal.tsx",
+      "sha256": "0bc1bce9b980266d8522327ea67fbf87513f11094928a2e506959e8dcdee6391"
+    },
+    {
+      "path": "src/components/RightCompanionRail.tsx",
+      "sha256": "cf82f01b326e8e6afae282e86293e0a5e291fd1a88f788e81adaaf2578665bfa"
+    },
+    {
+      "path": "src/components/ShareModal.tsx",
+      "sha256": "dd920f1b7279fa02ef8a2e071000ab05c10fe8161f072db184f3ac9698e12736"
+    },
+    {
+      "path": "src/components/TeacherDashboard.tsx",
+      "sha256": "472718cfdd54e471fe4487ff4b24a43746bcb1ecda873977e90cda05114b422d"
+    },
+    {
+      "path": "src/components/editor/EditorMenus.tsx",
+      "sha256": "a03717962ed262bde00102ab8ed0b973ff5bf1a74410a856fcf1a1237c5337f6"
+    },
+    {
+      "path": "src/components/useExamPersistence.ts",
+      "sha256": "1e3e5a503a629a0fff2998dac746113caa774a1d9fec991057e8b66f8a0276f2"
+    },
+    {
+      "path": "src/components/workspace/WorkspaceShell.tsx",
+      "sha256": "79cf5906360888fdce7ac67d6b14aab8d31b440ed5f1e103dd16a248179f492d"
+    },
+    {
+      "path": "src/hooks/useChatSession.ts",
+      "sha256": "8564d75ade278f780d5b016c6f5bec1075cac3240cc25343f1ea0cb31df06b0d"
+    },
+    {
+      "path": "src/hooks/useSidePanel.ts",
+      "sha256": "9cfbbc5402cc7ad55d0c89e46fc598d6650bb68c8db6535d9045981f218b0ff2"
+    },
+    {
+      "path": "src/lib/ai-proposal-journal.ts",
+      "sha256": "6ae17656d92a251627fbcc2d8d5a3ff4e82c6e58bedd745aa332354cd8f66eda"
+    },
+    {
+      "path": "src/lib/bootstrap-planning.ts",
+      "sha256": "19e29303500ba8f0a526f89cc31f967eb636574c520addf827e86a01f782fc02"
+    },
+    {
+      "path": "src/lib/chat-session.ts",
+      "sha256": "bd8ebe0f645026aeb194b585bdeea9d714f5dfb4325fa998566fe235c9b32bc7"
+    },
+    {
+      "path": "src/lib/copilot-clarification.ts",
+      "sha256": "d3b52fe3ddc3289c5874c96ce0ec85684d4ddaf2a8302eae1885e971126c8b50"
+    },
+    {
+      "path": "src/lib/copilot-help.ts",
+      "sha256": "acd65d87fb32d895000913fbed0b9157f2dc3a41e110b48e5ddb584c1e991fa4"
+    },
+    {
+      "path": "src/lib/copilot-history.ts",
+      "sha256": null
+    },
+    {
+      "path": "src/lib/copilot-metadata.ts",
+      "sha256": "6efdbc361259841c57c5657379f20347e8d432be7d0a6a4b6b2fd38ce3f643a3"
+    },
+    {
+      "path": "src/lib/copilot-result.ts",
+      "sha256": "df26517054e6a3796dca36544da35f0e2a0a543cd60d785677a9ac59e7426a30"
+    },
+    {
+      "path": "src/lib/copilot-submission.ts",
+      "sha256": "fd497e30b70cbeefcb404ff7995b510445727e2596a4e74908699c0518814ace"
+    },
+    {
+      "path": "src/lib/copilot-target.ts",
+      "sha256": "a61741c43c77ea3d979b9881335a1bf87a32357edac44282aa3377863f8ced48"
+    },
+    {
+      "path": "src/lib/exam-document.ts",
+      "sha256": "05ce9b4dc70edc39adfd7f5ca267d4691c98917b720d1b4942ae3c9fc3416e52"
+    },
+    {
+      "path": "src/lib/exam-generation.ts",
+      "sha256": "b64d10f58a3b35a6778c73928516a96f8dda4446c1eccdec08a39a89de067722"
+    },
+    {
+      "path": "src/lib/exam-request.ts",
+      "sha256": "6a58c54c7d66d48306d4f22d41604fd033324195dc046ba84016bd04e56d1d3e"
+    },
+    {
+      "path": "src/lib/gemini-keys.ts",
+      "sha256": "e550650f3688101849d54d90c0c65edc526264415e988f6dbe7c6bc817462302"
+    },
+    {
+      "path": "src/lib/generation-plan.ts",
+      "sha256": "4933977fca1c1c5939111a97d43e5143cd07b56039074ffc7f613da3ec466fb2"
+    },
+    {
+      "path": "src/lib/question-ai-review.ts",
+      "sha256": "bcd94ff2d85eb5d23b7260c9dd641ee95b22fa34df41c22954de8fe0773e4930"
+    },
+    {
+      "path": "src/lib/undo-history.ts",
+      "sha256": "9b611becd4dfa028943d108e4bb44293519a7002ac9871d9bd1b4b06e924cc91"
+    },
+    {
+      "path": "src/types/exam.ts",
+      "sha256": "fd6869fc277d296a2876ade71ca6bf38e26f04c46960eb365e14860837154d18"
+    },
+    {
+      "path": "tests/ai_endpoints_guard.test.ts",
+      "sha256": "1e021dc81695bc1db572215c43e9d027becc0d90b0eef61bf1dc2a67baab71e0"
+    },
+    {
+      "path": "tests/bootstrap_generation.test.ts",
+      "sha256": "efac26f7a85fbe69ea6e74921fc2c1f8349c09780f8fed962b94afa8118bfba1"
+    },
+    {
+      "path": "tests/chat_session.test.ts",
+      "sha256": "bda0efc333d71c558873a150ac3c7f8b501772e9886bbedf7f034bc1ddfa6e89"
+    },
+    {
+      "path": "tests/copilot_history.test.ts",
+      "sha256": "9667f30f65b5a76c94592586bb1ad7232df27d81e3ab1a16537c3d3c1198a70a"
+    },
+    {
+      "path": "tests/copilot_metadata.test.ts",
+      "sha256": "006447ed0253ebec1902b317ffd16664380ed9096bba09a8c7fe54e84a238d38"
+    },
+    {
+      "path": "tests/copilot_target.test.ts",
+      "sha256": "0d9a662d568acd9e669a0908bc49ee1e5c3dcedc76f53596b6f2cd96017a1955"
+    },
+    {
+      "path": "tests/http_ai_mock.test.ts",
+      "sha256": "13df2f43f539874caedb1d28ce731d7feeef7bb3930d6647f7a9650dd0bc0438"
+    },
+    {
+      "path": "tests_pilot/ai_chat_completion.test.ts",
+      "sha256": "048e57db3143e2d6e1b509562bd15e4d7e5aeb89186c6790fd6a7bf21e6cf560"
+    },
+    {
+      "path": "tests_pilot/ai_chat_d0.test.ts",
+      "sha256": "4187cde7613cfa4576dad67ddcf2676f0f51939e3a93d9941cd834443e5f982c"
+    },
+    {
+      "path": "tests_pilot/pilot.test.ts",
+      "sha256": "70b1f13a5a064d989b85db21de16f8b91c3913f2e83d9dc531fa0cc812d5d66f"
+    }
+  ]
+}

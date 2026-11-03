@@ -1,0 +1,56 @@
+{
+  "codeCommit": "5f6bf4da48b0193b816e0ed02f4038087425919a",
+  "ci": "PASS",
+  "safe": {
+    "tests": 624,
+    "pass": 624,
+    "fail": 0
+  },
+  "http": {
+    "tests": 118,
+    "pass": 118,
+    "fail": 0
+  },
+  "pilot": {
+    "tests": 24,
+    "pass": 24,
+    "fail": 0
+  },
+  "integration": {
+    "tests": 8,
+    "pass": 8,
+    "fail": 0
+  },
+  "chatCompletion": {
+    "tests": 10,
+    "pass": 10,
+    "fail": 0
+  },
+  "chatRegressionD0D2": {
+    "tests": 15,
+    "pass": 15,
+    "fail": 0
+  },
+  "editor": {
+    "tests": 13,
+    "pass": 13,
+    "fail": 0
+  },
+  "focusedGuards": {
+    "tests": 96,
+    "pass": 96,
+    "fail": 0
+  },
+  "ciBuildId": "haNm7miJJZZLqO5qvFwGs",
+  "chatBrowserBuildId": "Ng5Gnsgiq5avmXtOPJgEh",
+  "automaticTestsDatabase": "examcraft_test_20261022",
+  "automaticProvider": "local synthetic only",
+  "manualPreview": {
+    "origin": "http://localhost:3123",
+    "database": "examcraft_test_20261022",
+    "healthIsolatedTest": false,
+    "providerCallsByCodex": 0,
+    "keysAddedByCodex": 0,
+    "credentials": "Shown once in the final response; never written to reports."
+  }
+}

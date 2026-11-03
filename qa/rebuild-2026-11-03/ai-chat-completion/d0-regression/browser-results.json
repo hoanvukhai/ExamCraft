@@ -1,0 +1,19 @@
+{
+  "checks": [
+    "TC-077 loaded/title/grade/reload/media preserved",
+    "TC-077 selection keeps unfinished form",
+    "TC-078 idle no-save; first edit one create",
+    "TC-078 old new draft recovery/media retained",
+    "TC-077 access loss retains disabled unfinished form",
+    "TC-019 action/ABA/chip/unchanged/clarification/error; one call; proposal not auto-applied",
+    "TC-068 starters, phone panel navigation, desktop/mobile widths/dark, zero AI calls"
+  ],
+  "cleanup": true,
+  "pageErrors": [],
+  "database": "examcraft_test_20261022",
+  "origin": "http://127.0.0.1:3123",
+  "provider": "browser-intercepted synthetic responses; no real AI",
+  "buildId": "44Wl_95R_BUYP0uVIkIGr",
+  "checkedAt": "2026-11-03T10:55:49.909Z",
+  "limitations": "Chrome viewport checks; not a physical phone or production/Vercel check."
+}

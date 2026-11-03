@@ -1,0 +1,15 @@
+{
+  "checks": [
+    "missing key: no provider call; command retained",
+    "reload: transcript, original intent, clarification identity and separate composer retained",
+    "stop: no late proposal, no retry, new draft retained"
+  ],
+  "cleanup": true,
+  "pageErrors": [],
+  "database": "examcraft_test_20261022",
+  "origin": "http://127.0.0.1:3123",
+  "provider": "browser-intercepted synthetic responses; no real AI",
+  "buildId": "44Wl_95R_BUYP0uVIkIGr",
+  "checkedAt": "2026-11-03T10:55:57.107Z",
+  "limitations": "Chrome viewport checks; not a physical phone or production/Vercel check."
+}
